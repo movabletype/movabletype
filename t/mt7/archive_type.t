@@ -205,13 +205,13 @@ my $contents_html = {
     none_ao      => "\n\"3\"\"1\"",
     none_cf      => "\n\"3\"\"1\"",
     daily_ao     => "\n\"3\"",
-    daily_cf     => "\n\"3\"\"1\"",
+    daily_cf     => "\n\"1\"\"3\"",
     weekly_ao    => "\n\"3\"",
-    weekly_cf    => "\n\"3\"\"1\"",
+    weekly_cf    => "\n\"1\"\"3\"",
     monthly_ao   => "\n\"3\"",
-    monthly_cf   => "\n\"3\"\"1\"",
+    monthly_cf   => "\n\"1\"\"3\"",
     yearly_ao    => "\n\"3\"\"1\"",
-    yearly_cf    => "\n\"3\"\"1\"",
+    yearly_cf    => "\n\"1\"\"3\"",
 };
 my %html = (
     'ContentType' => {

@@ -318,11 +318,17 @@ https://movabletype.atlassian.net/browse/MTC-26224
 --- template
 <MTContents sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
 </MTContents>
---- expected_contenttype_author
-7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_todo_contenttype_author
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
-10: cd_same_same_date | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_php_todo_contenttype_author
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -336,9 +342,12 @@ https://movabletype.atlassian.net/browse/MTC-26224
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 --- expected_contenttype_category
-7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 --- expected_contenttype_category_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -377,11 +386,13 @@ https://movabletype.atlassian.net/browse/MTC-26224
 --- template
 <MTContents sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
 </MTContents>
---- expected_contenttype_author
-11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
-6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_todo_contenttype_author
 10: cd_same_same_date | October 31, 2018 12:00 AM
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
@@ -399,9 +410,12 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- expected_contenttype_category
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
-7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_php_todo_contenttype_category
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 --- expected_contenttype_category_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -439,6 +453,13 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 <MTContents blog_id="[% blog_id %]" sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
 </MTContents>
 --- expected_todo_contenttype_author
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
@@ -498,6 +519,13 @@ https://movabletype.atlassian.net/browse/MTC-26228
 <MTContents blog_id="[% blog_id %]" sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
 </MTContents>
 --- expected_todo_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
@@ -616,6 +644,13 @@ https://movabletype.atlassian.net/browse/MTC-26228
 <MTContents site_id="[% blog_id %]" sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
 </MTContents>
 --- expected_todo_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_php_todo_contenttype_author
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
