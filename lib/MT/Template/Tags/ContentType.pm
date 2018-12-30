@@ -166,7 +166,15 @@ sub _hdlr_contents {
 
     $terms{status} = MT::ContentStatus::RELEASE();
 
-    my $map = $ctx->stash('template_map');
+    my $map
+        = $archiver
+        ? $archiver->_get_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+        )
+        : $ctx->stash('template_map');
 
     if (  !$archive_contents
         && $map

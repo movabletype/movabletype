@@ -325,10 +325,6 @@ https://movabletype.atlassian.net/browse/MTC-26224
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
---- expected_php_todo_contenttype_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
-https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -345,9 +341,6 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 --- expected_contenttype_category_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -393,10 +386,6 @@ https://movabletype.atlassian.net/browse/MTC-26224
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 --- FIXME
 https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
---- expected_php_todo_contenttype_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
-https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -413,9 +402,6 @@ https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
---- expected_php_todo_contenttype_category
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
 --- expected_contenttype_category_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM

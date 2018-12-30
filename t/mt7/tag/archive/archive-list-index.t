@@ -2700,15 +2700,12 @@ cd_same_same_date
 cd_same_same_date
 --- expected_contenttype_author
 author1
+cd_same_same_date
 cd_same_apple_orange_peach
 cd_same_apple_orange
-cd_same_same_date
 
 author2
 cd_same_peach
---- expected_php_todo_contenttype_author
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26228
 --- expected_contenttype_author_daily
 author1: November  1, 2008
 cd_same_apple_orange
@@ -2815,7 +2812,7 @@ cd_same_apple_orange_peach
 
 cat_peach: 2004
 cd_same_peach
---- expected_contenttype_daily
+--- expected_todo_contenttype_daily
 November  1, 2008
 cd_same_apple_orange
 
@@ -2825,7 +2822,9 @@ cd_same_apple_orange_peach
 November  1, 2004
 cd_same_peach
 cd_same_same_date
---- expected_contenttype_monthly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229
+--- expected_todo_contenttype_monthly
 November 2008
 cd_same_apple_orange
 
@@ -2835,7 +2834,9 @@ cd_same_apple_orange_peach
 November 2004
 cd_same_peach
 cd_same_same_date
---- expected_contenttype_weekly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229
+--- expected_todo_contenttype_weekly
 October 26, 2008 - November  1, 2008
 cd_same_apple_orange
 
@@ -2845,7 +2846,9 @@ cd_same_apple_orange_peach
 October 31, 2004 - November  6, 2004
 cd_same_peach
 cd_same_same_date
---- expected_contenttype_yearly
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229
+--- expected_todo_contenttype_yearly
 2008
 cd_same_apple_orange
 
@@ -2855,6 +2858,8 @@ cd_same_apple_orange_peach
 2004
 cd_same_peach
 cd_same_same_date
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229
 --- expected_daily
 December  3, 2018
 cd_same_peach
