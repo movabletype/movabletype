@@ -411,7 +411,7 @@ Content is not found.
 --- expected
 1
 
-=== MT:Contents with sort_by="field:hoge" modifier
+=== MT:Contents with sort_by="field:hoge" modifier (ascend)
 --- template
 <mt:Contents blog_id="1" content_type="test content type 1" sort_by="field:date and time" sort_order="ascend">
 <mt:ContentID></mt:Contents>
@@ -422,7 +422,7 @@ Content is not found.
 2
 1
 
-=== MT:Contents with sort_by="field:hoge" modifier
+=== MT:Contents with sort_by="field:hoge" modifier (descend)
 --- template
 <mt:Contents blog_id="1" content_type="test content type 1" sort_by="field:date and time" sort_order="descend">
 <mt:ContentID></mt:Contents>
@@ -433,7 +433,7 @@ Content is not found.
 4
 5
 
-=== MT:Contents with sort_by="authored_on" modifier
+=== MT:Contents with sort_by="authored_on" modifier (ascend)
 --- template
 <mt:Contents blog_id="1" content_type="test content type 1" sort_by="authored_on" sort_order="ascend">
 <mt:ContentID></mt:Contents>
@@ -444,7 +444,7 @@ Content is not found.
 4
 5
 
-=== MT:Contents with sort_by="authored_on" modifier
+=== MT:Contents with sort_by="authored_on" modifier (descend)
 --- template
 <mt:Contents blog_id="1" content_type="test content type 1" sort_by="authored_on" sort_order="descend">
 <mt:ContentID></mt:Contents>
