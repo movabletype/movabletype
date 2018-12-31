@@ -4214,16 +4214,24 @@ abstract class MTDatabase {
         $mt = MT::get_instance();
         $ctx = $mt->context();
 
-        if ($sql = $this->include_exclude_blogs($args)) {
-            $blog_filter = 'and cd_blog_id ' . $sql;
-            $blog = $ctx->stash('blog');
-            if ( !empty( $blog ) )
-                $blog_id = $blog->blog_id;
+        if (isset($args['site_id'])) {
+            $blog_id = $args['site_id'];
         } elseif (isset($args['blog_id'])) {
-            $blog_id = intval($args['blog_id']);
-            $blog_filter = 'and cd_blog_id = ' . $blog_id;
-            $blog = $this->fetch_blog($blog_id);
+            $blog_id = $args['blog_id'];
+        } elseif ($ctx->stash('blog_id')) {
+            $blog_id = $ctx->stash('blog_id');
+        } elseif ($ctx->stash('blog')) {
+            $blog = $ctx->stash('blog');
         }
+
+        if (isset($blog_id)) {
+            $blog = $this->fetch_blog($blog_id);
+        } elseif (isset($blog)) {
+            $blog_id = $blog->blog_id;
+        }
+
+        $blog_filter = 'and cd_blog_id = ' . $blog_id;
+
         if (empty($blog))
             return null;
 
@@ -4367,12 +4375,20 @@ abstract class MTDatabase {
                 $dt_field = 'cd_' . $arg;
             }
             else {
-                if (preg_match('/^[0-9]+$/', $arg))
-                    $date_cfs = $this->fetch_content_fields(array('id' => $arg));
+                if (preg_match('/^[0-9]+$/', $arg)) {
+                    $date_cf = $this->fetch_content_field($arg);
+                    if ($date_cf) {
+                        $date_cfs = array($date_cf);
+                    }
+                }
                 if (!isset($date_cfs))
                     $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
                 if (!isset($date_cfs))
-                    $date_cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
+                    $date_cfs = $this->fetch_content_fields(array(
+                        'blog_id' => $blog_id,
+                        'content_type_id' => $content_type_id,
+                        'name' => $arg,
+                    ));
                 if (isset($date_cfs)) {
                     $date_cf = $date_cfs[0];
                     $date_cf_id = $date_cf->cf_id;
@@ -4440,6 +4456,7 @@ abstract class MTDatabase {
                 } else if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
                     $key= $m[1];
                     $cfs = $this->fetch_content_fields(array(
+                        'blog_id' => $blog_id,
                         'content_type_id' => $content_type_id,
                         'name' => $key
                     ));
@@ -4550,7 +4567,11 @@ abstract class MTDatabase {
 
         if (count($fields)) {
             foreach ($fields as $key => $value) {
-                $cfs = $this->fetch_content_fields(array('content_type_id' => $content_type_id, 'name' => $key));
+                $cfs = $this->fetch_content_fields(array(
+                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'name' => $key,
+                ));
                 if (!isset($cfs))
                     $cfs = $this->fetch_content_fields(array('unique_id' => $key));
                 if (!isset($cfs)) continue;
@@ -5043,41 +5064,48 @@ abstract class MTDatabase {
     }
 
     public function fetch_content_fields($args) {
-        if (isset($args['blog_id'])) {
-            $blog_id = $args['blog_id'];
-        }
-        else {
-            $mt = MT::get_instance();
-            $ctx = $mt->context();
-            $blog = $ctx->stash('blog');
-            if ( !empty( $blog ) )
-                $blog_id = $blog->blog_id;
-        }
-        if (!isset($blog_id)) return null;
-
-        if (isset($args['name'])) {
-            $name_filter .= 'and cf_name = \'' . $args['name'] . '\'';
-        }
         if (isset($args['unique_id'])) {
             $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
-        }
-        if (isset($args['content_type_id'])) {
-            if (is_array($args['content_type_id'])) {
-                if (count($args['content_type_id']) > 1) {
-                    $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+        } else {
+            if (isset($args['content_type_id'])) {
+                if (is_array($args['content_type_id'])) {
+                    if (count($args['content_type_id']) > 1) {
+                        $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                    } else {
+                        $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
+                    }
                 } else {
-                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
+                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
                 }
-            } else {
-                $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
             }
-        }
-        if (isset($args['related_cat_set_id'])) {
-            $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
+
+            if (isset($args['blog_id'])) {
+                $blog_id = $args['blog_id'];
+            }
+            else {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                if ( !empty( $blog ) )
+                    $blog_id = $blog->blog_id;
+            }
+            if (isset($blog_id)) {
+                $blog_filter = "and cf_blog_id = $blog_id";
+            }
+
+            if (!isset($blog_id) && !isset($args['content_type_id'])) return null;
+
+            if (isset($args['name'])) {
+                $name_filter .= 'and cf_name = \'' . $args['name'] . '\'';
+            }
+            if (isset($args['related_cat_set_id'])) {
+                $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
+            }
         }
         $sql = "select *
                   from mt_cf
-                 where cf_blog_id = $blog_id
+                 where 1 = 1
+                   $blog_filter
                    $content_type_id_filter
                    $name_filter
                    $unique_id_filter

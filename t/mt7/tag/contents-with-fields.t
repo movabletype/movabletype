@@ -606,7 +606,6 @@ Content Data9
 Content Data10
 
 === all tests in 1 template (MTC-26242)
---- SKIP
 --- template
 <mt:Contents content_type="Content Type" blog_id="[% blog_id %]" field:single="single" sort_by="field:single"><mt:ContentLabel>
 </mt:Contents>
