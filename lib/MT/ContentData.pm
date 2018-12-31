@@ -103,8 +103,8 @@ __PACKAGE__->install_properties(
         primary_key     => 'id',
         audit           => 1,
         meta            => 1,
-        child_classes   => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
-        child_of        => [ 'MT::Blog', 'MT::ContentType' ],
+        child_classes => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
+        child_of      => [ 'MT::Blog',              'MT::ContentType' ],
     }
 );
 

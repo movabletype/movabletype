@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -109,7 +109,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort    => 'name', limit => 0 }
+                    { sort => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -872,7 +872,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort    => 'name', limit => 1 },
+            { sort => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -41,7 +41,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.1',              '__PRODUCT_VERSION_ID__',
+        '7.1',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -3921,7 +3921,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2018 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2019 Six Apart.
 All rights reserved.
 
 =cut

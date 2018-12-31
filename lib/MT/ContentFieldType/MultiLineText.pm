@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -76,18 +76,18 @@ sub field_value_handler {
 
     my $blog         = $ctx->stash('blog');
     my $content_data = $ctx->stash('content')
-      or return $ctx->_no_content_error;
-    my $convert_breaks =
-      exists $args->{convert_breaks} ? $args->{convert_breaks}
-      : $content_data
-      ? MT::Serialize->unserialize( $content_data->convert_breaks )
-      : undef;
+        or return $ctx->_no_content_error;
+    my $convert_breaks
+        = exists $args->{convert_breaks} ? $args->{convert_breaks}
+        : $content_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
 
     if ($convert_breaks) {
-        my $filters =
-          ref $convert_breaks eq 'REF'
-          ? $$convert_breaks->{ $field_data->{id} }
-          : '__default__';
+        my $filters
+            = ref $convert_breaks eq 'REF'
+            ? $$convert_breaks->{ $field_data->{id} }
+            : '__default__';
 
         $value = MT->apply_text_filters( $value, [$filters], $ctx );
     }

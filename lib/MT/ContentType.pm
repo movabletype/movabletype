@@ -842,7 +842,7 @@ sub _make_tag_system_filter {
             label => sub {
                 MT->translate( 'Tags with [_1]', $self->name );
             },
-            view      => [ 'website', 'blog' ],
+            view => [ 'website', 'blog' ],
             items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
             order     => $order,
             condition => sub {

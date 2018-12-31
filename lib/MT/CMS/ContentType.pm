@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2007-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -786,7 +786,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi   => $content_field->options->{multiple} ? 1 : 0,
+                can_multi => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,

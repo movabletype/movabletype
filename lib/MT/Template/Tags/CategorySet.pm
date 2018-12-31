@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -67,7 +67,7 @@ sub _hdlr_category_sets {
     }
     else {
         $content_type = $ctx->get_content_type_context( $args, $cond );
-        if( $args->{content_type} && !$content_type ) {
+        if ( $args->{content_type} && !$content_type ) {
             return;
         }
         if ($content_type) {
@@ -81,7 +81,7 @@ sub _hdlr_category_sets {
                 = MT->model('category_set')->load( { id => [@set_ids] } )
                 if @set_ids;
         }
-        if( $blog_id && scalar(@category_sets) == 0 ){
+        if ( $blog_id && scalar(@category_sets) == 0 ) {
             @category_sets
                 = MT->model('category_set')->load( { blog_id => $blog_id } );
         }

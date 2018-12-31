@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2703,7 +2703,6 @@ sub init_plugins {
             # group callbacks
             $pkg . 'save_filter.group' => "${pfx}Group::save_filter",
 
-            
         }
     );
 

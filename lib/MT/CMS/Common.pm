@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1267,16 +1267,16 @@ sub list {
         }
         push @list_columns,
             {
-            id                 => $prop->id,
-            type               => $prop->type,
-            label              => MT::Util::encode_html( $prop->label ),
-            primary            => $primary_col{$id} ? 1 : 0,
-            col_class          => $prop->col_class,
-            sortable           => $prop->can_sort($scope),
-            sorted             => $prop->id eq $default_sort ? 1 : 0,
-            display            => $show,
-            is_default         => $force || $default,
-            checked            => $show,
+            id        => $prop->id,
+            type      => $prop->type,
+            label     => MT::Util::encode_html( $prop->label ),
+            primary   => $primary_col{$id} ? 1 : 0,
+            col_class => $prop->col_class,
+            sortable  => $prop->can_sort($scope),
+            sorted    => $prop->id eq $default_sort ? 1 : 0,
+            display   => $show,
+            is_default => $force || $default,
+            checked => $show,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -692,7 +692,7 @@ sub prepare_statement {
             }
             else {
                 $cond = [$cond] unless ref $cond;
-                my $tuple   = $to_class->primary_key_tuple;
+                my $tuple = $to_class->primary_key_tuple;
             COLUMN: foreach my $i ( 0 .. $#$cond ) {
                     next unless defined $cond->[$i];
                     my $t = $tuple->[$i];

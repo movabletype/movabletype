@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -356,8 +356,7 @@ sub init_core_registry {
                     'This module is required for file uploads (to determine the size of uploaded images in many different formats).',
             },
             'CGI::Cookie' => {
-                link =>
-                    'https://metacpan.org/pod/CGI::Cookie',
+                link  => 'https://metacpan.org/pod/CGI::Cookie',
                 label => 'This module is required for cookie authentication.',
             },
             'DBI' => {
@@ -388,9 +387,9 @@ sub init_core_registry {
                     'Scalar::Util is required for initializing Movable Type application.',
             },
             'HTML::Entities' => {
-                link => 'https://metacpan.org/pod/HTML::Entities',
+                link    => 'https://metacpan.org/pod/HTML::Entities',
                 version => 3.69,
-                label => 'HTML::Entities is required by CGI.pm',
+                label   => 'HTML::Entities is required by CGI.pm',
             },
         },
         database_options => {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2163,8 +2163,8 @@ sub open_batch_editor {
 
     # Loading objects
     my $iter = $pkg->load_iter(
-        { class => $type,         id        => \@ids, blog_id => \@blog_ids },
-        { sort  => 'authored_on', direction => 'descend' }
+        { class => $type, id => \@ids, blog_id => \@blog_ids },
+        { sort => 'authored_on', direction => 'descend' }
     );
 
     my $list_pref = $app->list_pref($type);

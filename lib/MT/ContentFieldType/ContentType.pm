@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -136,7 +136,7 @@ sub ss_validator {
     my $field_label     = $options->{label};
 
     my $iter = MT::ContentData->load_iter(
-        {   id              => @$data ? $data : 0,
+        {   id => @$data ? $data : 0,
             blog_id         => $app->blog->id,
             content_type_id => $content_type_id,
         },
