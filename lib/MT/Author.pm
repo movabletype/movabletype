@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -945,14 +945,15 @@ sub save {
         unless $auth->id;
     $auth->SUPER::save(@_) or return $auth->error( $auth->errstr );
     if ($privs_found) {
-        my $perm = MT->model('permission')->load({
-            blog_id => 0,
-            author_id => $auth->id,
-        });
+        my $perm = MT->model('permission')->load(
+            {   blog_id   => 0,
+                author_id => $auth->id,
+            }
+        );
         if ( !$perm ) {
             $perm = MT->model('permission')->new unless $perm;
             $perm->author_id( $auth->id );
-            $perm->blog_id( 0 );
+            $perm->blog_id(0);
         }
         $perm->permissions($privs);
         $perm->save
