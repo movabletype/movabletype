@@ -887,7 +887,9 @@ sub _hdlr_entries {
                 else {
                     $args{direction} = $args->{sort_order} || 'descend';
                 }
-                $no_resort = 1 unless $args->{sort_by};
+                $no_resort = 1
+                    unless $args->{sort_by}
+                    || ( $blog && $blog->sort_order_posts );
                 if (   ( my $last = $args->{lastn} )
                     && ( exists $args->{limit} ) )
                 {
