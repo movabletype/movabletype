@@ -31,14 +31,23 @@ class TemplateMap extends BaseObject
 
     public function cat_field() {
         $col_name = 'templatemap_cat_field_id';
+        return $this->get_content_field($col_name);
+    }
+
+    public function dt_field() {
+        $col_name = 'templatemap_dt_field_id';
+        return $this->get_content_field($col_name);
+    }
+
+    private function get_content_field($col_name) {
         if (!isset($this->$col_name) || !is_numeric($this->$col_name)) {
             return null;
         }
-        $cat_field_id = $this->$col_name;
+        $cf_id = $this->$col_name;
         require_once('class.mt_content_field.php');
-        $cat_field = new ContentField;
-        $cat_field->Load("cf_id = $cat_field_id");
-        return $cat_field;
+        $cf = new ContentField;
+        $cf->Load("cf_id = $cf_id");
+        return $cf;
     }
 }
 ?>
