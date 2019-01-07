@@ -3271,9 +3271,10 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             }
             $order = $is_prev ? 'previous' : 'next';
             $blog_id = $ctx->stash('blog_id');
+            $content_type_id = $ctx->stash('content_type')->id;
             $maps = $ctx->mt->db()->fetch_templatemap(array(
                 'blog_id'         => $blog_id,
-                'content_type_id' => $ctx->stash('content_type')->id,
+                'content_type_id' => $content_type_id,
                 'preferred'       => 1,
                 'type'            => $at
             ));
@@ -3282,7 +3283,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
                 $dt_field_id = $map->templatemap_dt_field_id;
             }
 
-            if ($content = $this->get_author_content($ts, $blog_id, $author->author_name, $order)) {
+            if ($content = $this->get_author_content($ts, $blog_id, $author->author_name, $order, $content_type_id)) {
                 $helper = $this->get_helper();
                 $ctx->stash('contents', array( $content ));
 
@@ -3306,7 +3307,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $content;
     }
 
-    public function get_author_content($ts, $blog_id, $auth_name, $order) {
+    public function get_author_content($ts, $blog_id, $auth_name, $order, $content_type_id) {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -3322,7 +3323,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         $args['author'] = $auth_name;
 
         $mt = MT::get_instance();
-        list($content) = $mt->db()->fetch_contents($args);
+        list($content) = $mt->db()->fetch_contents($args, $content_type_id);
         return $content;
     }
 
