@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1412,8 +1412,8 @@ sub _set_start_upload_params {
 
     if ( my $perms = $app->permissions ) {
         my $blog_id = $app->param('blog_id');
-        if ( $blog_id ) {
-            my $blog    = MT->model('blog')->load($blog_id)
+        if ($blog_id) {
+            my $blog = MT->model('blog')->load($blog_id)
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $blog_id ) );
 
@@ -1560,9 +1560,10 @@ sub _upload_file_compat {
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
-                    if( $basename eq $ext_old ) {
-                        $basename .= '.'  . $ext_new;
-                    } else {
+                    if ( $basename eq $ext_old ) {
+                        $basename .= '.' . $ext_new;
+                    }
+                    else {
                         $basename =~ s/$ext_old$/$ext_new/;
                     }
                     $app->param( "changed_file_ext", "$ext_old,$ext_new" );
@@ -2097,9 +2098,10 @@ sub _upload_file {
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
-            if( $basename eq $ext_old ){
+            if ( $basename eq $ext_old ) {
                 $basename .= '.' . $ext_new;
-            } else {
+            }
+            else {
                 $basename =~ s/$ext_old$/$ext_new/;
             }
             $app->param( "changed_file_ext", "$ext_old,$ext_new" );
