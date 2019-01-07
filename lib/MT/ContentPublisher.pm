@@ -1622,7 +1622,9 @@ sub _rebuild_content_archive_type {
             (
             $at,
             $blog->id,
-            ( $content_data ? $content_data->content_type_id : 0 ),
+            (   $param{ContentData} ? $param{ContentData}->content_type_id
+                : 0
+            ),
             (     $param{Category} && $param{Category}->category_set_id
                 ? $param{Category}->category_set_id
                 : 0
@@ -1633,11 +1635,12 @@ sub _rebuild_content_archive_type {
         }
         else {
             my @joins;
-            if ( $content_data && !$param{TemplateID} ) {
+            if ( $param{ContentData} && !$param{TemplateID} ) {
                 my $join = MT::Template->join_on(
                     undef,
-                    {   'id'              => \'= templatemap_template_id',
-                        'content_type_id' => $content_data->content_type_id,
+                    {   'id' => \'= templatemap_template_id',
+                        'content_type_id' =>
+                            $param{ContentData}->content_type_id,
                     }
                 );
                 push @joins, $join;
