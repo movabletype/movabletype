@@ -35,10 +35,11 @@ sub dated_group_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+    my $map = $obj->_get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
         }
     );
     my $dt_field_id = $map ? $map->dt_field_id : '';
@@ -92,10 +93,11 @@ sub dated_category_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+    my $map = $obj->_get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
         }
     );
     my $cat_field_id = $map ? $map->cat_field_id : '';
@@ -170,10 +172,11 @@ sub dated_author_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $ctx->stash('template_map') || $obj->_search_preferred_map(
+    my $map = $obj->_get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
         }
     );
     my $dt_field_id = $map ? $map->dt_field_id : '';

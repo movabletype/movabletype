@@ -384,7 +384,8 @@ https://movabletype.atlassian.net/browse/MTC-26224
 7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
 --- expected_php_todo_contenttype_author
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26225
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -439,7 +440,8 @@ https://movabletype.atlassian.net/browse/MTC-26225
 </MTContents>
 --- expected_todo_contenttype_author
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26225
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -497,7 +499,8 @@ https://movabletype.atlassian.net/browse/MTC-26228
 </MTContents>
 --- expected_todo_contenttype_author
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26225
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -555,7 +558,8 @@ https://movabletype.atlassian.net/browse/MTC-26228
 </MTContents>
 --- expected_todo_contenttype_author
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26225
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
@@ -613,7 +617,8 @@ https://movabletype.atlassian.net/browse/MTC-26228
 </MTContents>
 --- expected_todo_contenttype_author
 --- FIXME
-https://movabletype.atlassian.net/browse/MTC-26225
+https://movabletype.atlassian.net/browse/MTC-26228 (sort by mapping field)
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
 --- expected_contenttype_author_daily
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
@@ -658,3 +663,550 @@ https://movabletype.atlassian.net/browse/MTC-26228
 11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
 6: cd_same_apple_orange | October 31, 2018 12:00 AM
 
+=== MTContents sort_order="ascend" (authored_on, cat_apple) ($use_stash == 1) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+
+=== MTContents sort_order="descend" (authored_on, cat_apple) ($use_stash == 1) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_todo_contenttype_author
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_contenttype_category
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_category_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_todo_contenttype_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+
+=== MTContents sort_by="authored_on" sort_order="ascend" (authored_on, cat_apple) ($use_stash == 1) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents sort_by="authored_on" sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+
+=== MTContents sort_by="authored_on" sort_order="descend" (authored_on, cat_apple) ($use_stash == 1) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents sort_by="authored_on" sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_todo_contenttype_author
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_author_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_contenttype_category
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_category_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_todo_contenttype_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+--- expected_todo_contenttype_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-26229 (secondary sort)
+
+=== MTContents blog_id="[% blog_id %]" sort_order="ascend" (authored_on, cat_apple) ($use_stash == 0) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents blog_id=[% blog_id %] sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+
+=== MTContents blog_id="[% blog_id %]" sort_order="descend" (authored_on, cat_apple) ($use_stash == 0) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents blog_id=[% blog_id %] sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_author_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_category_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+
+=== MTContents blog_id="[% blog_id %]" sort_by="authored_on" sort_order="ascend" (authored_on, cat_apple) ($use_stash == 0) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents blog_id=[% blog_id %] sort_by="authored_on" sort_order="ascend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+
+=== MTContents blog_id="[% blog_id %]" sort_by="authored_on" sort_order="descend" (authored_on, cat_apple) ($use_stash == 0) MTC-26225
+--- stash
+{
+    cd        => 'cd_same_apple_orange',
+    cat_field => 'cf_same_catset_fruit',
+    category  => 'cat_apple',
+}
+--- template
+<MTContents blog_id=[% blog_id %] sort_by="authored_on" sort_order="descend"><MTContentID>: <MTContentLabel> | <MTContentDate>
+</MTContents>
+--- expected_contenttype_author
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_author_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_author_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+7: cd_same_apple_orange_peach | October 31, 2017 12:00 AM
+--- expected_contenttype_category_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_category_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_daily
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_monthly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_weekly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
+--- expected_contenttype_yearly
+11: cd_same_apple_orange_plus | October 31, 2018 12:00 AM
+10: cd_same_same_date | October 31, 2018 12:00 AM
+6: cd_same_apple_orange | October 31, 2018 12:00 AM
