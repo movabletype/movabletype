@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2363,7 +2363,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => [ "blog", "website" ],
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2372,7 +2372,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',

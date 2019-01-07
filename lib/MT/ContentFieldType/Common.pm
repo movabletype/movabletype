@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -385,7 +385,7 @@ sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $asset_terms = {
-        id     => @$value ? $value : 0,
+        id => @$value ? $value : 0,
         class  => '*',
         parent => \'IS NULL',
     };

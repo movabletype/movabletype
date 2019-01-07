@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -481,7 +481,8 @@ sub _post_content_common {
 
     if ( my $website = $blog->website ) {
         my $d
-            = $self->get_config_value( TARGET_BLOGS_IN_WEBSITE(), $website->id );
+            = $self->get_config_value( TARGET_BLOGS_IN_WEBSITE(),
+            $website->id );
         $code->($d);
     }
 }

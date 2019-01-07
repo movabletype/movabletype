@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -100,13 +100,9 @@ sub list_props {
                 return $html;
             },
         },
-        content_type_count => {
-            base => 'blog.content_type_count',
-        },
-        content_count => {
-            base => 'blog.content_count',
-        },
-        theme_id => {
+        content_type_count => { base => 'blog.content_type_count', },
+        content_count      => { base => 'blog.content_count', },
+        theme_id           => {
             base                  => 'blog.theme_id',
             single_select_options => sub {
                 my $prop = shift;

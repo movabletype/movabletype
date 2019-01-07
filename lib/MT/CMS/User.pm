@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -452,7 +452,9 @@ sub set_object_status {
         next unless $obj;
         next if ( $obj->id == $app->user->id ) && ( $type eq 'author' );
         next if $new_status == $obj->status;
-        next if !$app->user->is_superuser      && ($type eq 'author' && $obj->is_superuser);
+        next
+            if !$app->user->is_superuser
+            && ( $type eq 'author' && $obj->is_superuser );
 
         $obj->status($new_status);
         if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
@@ -1317,7 +1319,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args         => { sort => 'name' },
+                {   args => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
@@ -1330,14 +1332,14 @@ PERMCHECK: {
         }
         else {
             $app->listing(
-                {   terms     => $terms,
-                    args      => { sort => 'name' },
-                    type      => $type,
-                    code      => $hasher,
-                    params    => $params,
-                    template  => 'include/listing_panel.tmpl',
-                    $type eq 'site' ? ( pre_build => $pre_build ) : (),
-                    $app->param('search') ? ( no_limit => 1 ) : (),
+                {   terms    => $terms,
+                    args     => { sort => 'name' },
+                    type     => $type,
+                    code     => $hasher,
+                    params   => $params,
+                    template => 'include/listing_panel.tmpl',
+                    $type eq 'site'       ? ( pre_build => $pre_build ) : (),
+                    $app->param('search') ? ( no_limit  => 1 )          : (),
                 }
             );
         }

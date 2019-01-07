@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -85,7 +85,7 @@ sub field_html_params {
 
     my $asset_class = $app->model($type);
 
-    {   asset_loop           => @asset_loop ? \@asset_loop : undef,
+    {   asset_loop => @asset_loop ? \@asset_loop : undef,
         asset_type_for_field => $asset_class->class_type,
         multiple             => $multiple,
         required             => $required,
@@ -553,7 +553,7 @@ sub feed_value_handler {
         }
     }
     my @assets = MT->model('asset')->load(
-        { id        => $asset_ids, class => '*' },
+        { id => $asset_ids, class => '*' },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @assets;

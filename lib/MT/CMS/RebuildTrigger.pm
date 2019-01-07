@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -92,8 +92,8 @@ sub add {
             panel_description => $app->translate("Description"),
         },
         'content_type' => {
-            panel_title => $app->translate("Select Content Type"),
-            panel_label => $app->translate("Name"),
+            panel_title       => $app->translate("Select Content Type"),
+            panel_label       => $app->translate("Name"),
             panel_description => $app->translate("Description"),
         },
     };

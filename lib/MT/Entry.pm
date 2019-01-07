@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -896,7 +896,7 @@ sub _nextprev {
         direction => $direction,
         terms => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args  => $args,
-        by    => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
+        by => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
     );
     weaken( $obj->{$label} = $o ) if $o;
     return $o;

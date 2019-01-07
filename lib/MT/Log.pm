@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -449,7 +449,7 @@ sub to_hash {
     $hash->{ "log.level_" . $log->level }       = 1 if $log->level;
     $hash->{ "log.class_" . $log->class }       = 1 if $log->class;
     $hash->{ "log.category_" . $log->category } = 1 if $log->category;
-    $hash->{'log.description'}                  = $log->description;
+    $hash->{'log.description'} = $log->description;
     if ( my $obj = $log->metadata_object ) {
         my $obj_hash = $obj->to_hash;
         $hash->{"log.$_"} = $obj_hash->{$_} foreach keys %$obj_hash;

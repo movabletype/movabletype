@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -74,7 +74,7 @@ sub edit {
         my $appears_in_uneditables = 0;
         my $place_class            = $app->model('objectasset');
         my $place_iter             = $place_class->load_iter(
-            {   blog_id  => $obj->blog_id || 0,
+            {   blog_id => $obj->blog_id || 0,
                 asset_id => $obj->parent ? $obj->parent : $obj->id
             }
         );
@@ -345,8 +345,8 @@ sub insert {
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html       => $text || '',
-                edit_field        => $edit_field,
+            {   upload_html => $text || '',
+                edit_field => $edit_field,
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
             },

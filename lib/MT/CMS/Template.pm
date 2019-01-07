@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1728,7 +1728,7 @@ sub create_preview_content {
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {   limit     => $number || 1,
+        {   limit => $number || 1,
             direction => 'descend',
             'sort'    => 'authored_on',
             %$cat_args,
