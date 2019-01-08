@@ -48,7 +48,7 @@ test-phpunit:
 	php -v
 	phpunit
 
-PHP_LINT_DIR ?= .
+PHP_LINT_DIR ?= php plugins
 
 test-php-lint:
 	php -v
