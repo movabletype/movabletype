@@ -1775,6 +1775,7 @@ sub _run_app {
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ abs_path( $app->config->SeachTemplatePath ) ] );
+    $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
