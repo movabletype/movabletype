@@ -4,11 +4,9 @@
 #
 
 package MT::Test::Permission;
-use base qw( Exporter );
-
-our @EXPORT = qw( make_base_data );
 
 use strict;
+use warnings;
 
 sub make_author {
     my $pkg    = shift;
@@ -54,10 +52,11 @@ sub make_website {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name                     => 'Test site',
         site_url                 => 'http://narnia.na/',
-        site_path                => 't',
+        site_path                => $test_root,
         description              => "Narnia None Test Website",
         custom_dynamic_templates => 'custom',
         convert_paras            => 1,
@@ -87,11 +86,10 @@ sub make_website {
     my $website = MT::Website->new();
     $website->set_values($values);
     $website->class('website');
-    $website->commenter_authenticators('enabled_TypeKey');
     $website->save() or die "Couldn't save website: " . $website->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_website = MT::Theme->load('classic_website')
@@ -108,12 +106,13 @@ sub make_blog {
     my $pkg    = shift;
     my %params = @_;
 
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $values = {
         name         => 'none',
         site_url     => '/::/nana/',
         archive_url  => '/::/nana/archives/',
-        site_path    => 'site/',
-        archive_path => 'site/archives/',
+        site_path    => "$test_root/site/",
+        archive_path => "$test_root/site/archives/",
         archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
         archive_type_preferred   => 'Individual',
         description              => "Narnia None Test Blog",
@@ -151,7 +150,7 @@ sub make_blog {
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
     my $classic_blog = MT::Theme->load('classic_blog')
@@ -299,15 +298,18 @@ sub make_comment {
     return $comment;
 }
 
+my $template_name_index = 0;
+
 sub make_template {
     my $pkg    = shift;
     my %params = @_;
 
     my $values = {
         blog_id => 1,
-        name    => 'blog-name',
+        name    => 'blog-name ' . $template_name_index++,
         text    => '<MTBlogName>',
         type    => 'custom',
+        outfile => 'blog.html',
     };
 
     if (%params) {
@@ -748,7 +750,7 @@ sub make_tag {
 
     my $values = {
         name       => 'Tag',
-        n8d_id     => 'tag',
+        n8d_id     => 0,
         is_private => 0,
     };
 

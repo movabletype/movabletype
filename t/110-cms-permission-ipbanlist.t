@@ -2,17 +2,26 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new(
+        ShowIpInformation => 1,
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-use Test::More;
+
+MT::Test->init_app;
 
 ### Make test data
+
+$test_env->prepare_fixture('db');
 
 # Website
 my $website = MT::Test::Permission->make_website();
@@ -72,10 +81,6 @@ MT::Association->link( $ogawa    => $manage_feedback => $second_blog );
 
 # BanList
 my $banlist = MT::Test::Permission->make_banlist( blog_id => $blog->id, );
-
-my $config = MT->config;
-$config->ShowIpInformation( 1, 1 );
-$config->save_config;
 
 # Run
 my ( $app, $out );

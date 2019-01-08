@@ -1,22 +1,33 @@
 # $Id: 14-archive.t 2562 2008-06-12 05:12:23Z bchoate $
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+BEGIN {
+    if ( eval { require Archive::Tar } ) {
+        plan tests => 10;
+    }
+    else {
+        plan skip_all => 'Archive::Tar is not installed';
+    }
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use Cwd;
 use MT;
 use MT::Test;
-use strict;
-
-if ( eval { require Archive::Tar } ) {
-    plan tests => 10;
-}
-else {
-    plan skip_all => 'Archive::Tar is not installed';
-}
 
 my $mt = MT->new;
 use MT::Util::Archive;
-my $tmp = ( $^O eq 'MSWin32' ) ? 'C:\Windows\Temp' : MT->config->TempDir;
+my $tmp = ( $^O eq 'MSWin32' ) ? File::Spec->tmpdir : MT->config->TempDir;
 my %files = (
     'zip' => File::Spec->catfile( $tmp, 'test1.zip' ),
     'tgz' => File::Spec->catfile( $tmp, 'test1.tar.gz' ),

@@ -2,14 +2,21 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
-use MT::Test qw( :app :db :data );
-use Test::More;
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $app  = MT->instance;
 my $user = $app->model('author')->load(1);
@@ -60,7 +67,7 @@ for my $type (qw(entry page)) {
             my $p = MT::Util::to_json(
                 {   param => $data->{param},
                     ( $data->{config} ? ( config => $data->{config} ) : () )
-                }
+                }, { canonical => 1 }
             );
             subtest $p => sub {
                 local $app->config->{__var}{ lc('GlobalSanitizeSpec') }

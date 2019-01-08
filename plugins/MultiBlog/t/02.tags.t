@@ -2,15 +2,17 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 BEGIN {
-    use Test::More;
     eval { require PHP::Serialization }
         or plan skip_all => 'PHP::Serialization is not installed';
 }
@@ -352,6 +354,8 @@ none
 
 
 === mt:Include after Multiblog with mode="context"
+--- skip_dynamic
+1
 --- template
 <mt:Entries blog_ids="1" lastn="1">
 <mt:MultiBlog mode="context" include_blogs="1">
@@ -363,8 +367,9 @@ template-module:2
 --- access_overrides
 { 1 => 2 }
 
-
 === mt:Include after Multiblog with mode="loop"
+--- skip_dynamic
+1
 --- template
 <mt:Entries blog_ids="1">
 <mt:MultiBlog mode="loop">
@@ -378,6 +383,7 @@ template-module:2
 
 
 === mt:BlogCategoryCount
+--- SKIP
 --- template
 <mt:BlogCategoryCount include_blogs="1,2,3" />
 --- expected
@@ -385,6 +391,8 @@ template-module:2
 
 
 === mt:BlogEntryCount
+--- skip_dynamic
+1
 --- template
 <mt:BlogEntryCount include_blogs="1,2,3" />
 --- expected
@@ -392,6 +400,8 @@ template-module:2
 
 
 === mt:BlogPingCount
+--- skip_dynamic
+1
 --- template
 <mt:BlogPingCount include_blogs="1,2,3" />
 --- expected

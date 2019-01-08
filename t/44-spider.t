@@ -1,10 +1,11 @@
 #!/usr/bin/perl -w
 
 use strict;
-
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
 BEGIN {
     plan $ENV{MT_TEST_SPIDER}
         ? (tests => 4)
@@ -12,9 +13,17 @@ BEGIN {
         ;
 }
 
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use LWP::UserAgent::Local;
 use URI;
-use MT::Test qw(:db :data);
+use MT::Test;
+
+$test_env->prepare_fixture('db_data');
 
 my $username = "Chuck D"; # Melody
 my $password = "bass"; # Nelson

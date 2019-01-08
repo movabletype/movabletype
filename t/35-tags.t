@@ -1,18 +1,27 @@
 #!/usr/bin/perl
 # $Id: 35-tags.t 3531 2009-03-12 09:11:52Z fumiakiy $
+
 use strict;
 use warnings;
-use IPC::Open2;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new(
+        ThemesDirectory => 'TEST_ROOT/themes/',
+    );
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
+
+use IPC::Open2;
+use File::Path;
+File::Path::mkpath($test_env->path('themes'));
 
 $| = 1;
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
 use MT::Test qw(:db :data);
-use Test::More;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
@@ -25,7 +34,7 @@ my $mt = MT->new();
 
 # Set config directives.
 $mt->config->AllowComments( 1, 1 );
-$mt->config->StaticFilePath( './mt-static', 1 );
+$mt->config->StaticFilePath( $test_env->path('mt-static'), 1 );
 $mt->config->CommenterRegistration( { Allow => 1 }, 1 );
 $mt->config->save_config;
 
@@ -61,24 +70,28 @@ $ctx->stash('builder', MT::Builder->new);
 my $entry  = MT::Entry->load( 1 );
 ok($entry, "Test entry loaded");
 
+my $server_path = MT->instance->server_path;
+$server_path =~ s|\\|/|g if $^O eq 'MSWin32';
+
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
 my %const = (
     CFG_FILE => MT->instance->{cfg_file},
     VERSION_ID => MT->instance->version_id,
-    CURRENT_WORKING_DIRECTORY => MT->instance->server_path,
+    CURRENT_WORKING_DIRECTORY => $server_path,
     STATIC_CONSTANT => '1',
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
     DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => POSIX::strftime("%Y", localtime),
-    CURRENT_MONTH => POSIX::strftime("%m", localtime),
+    CURRENT_YEAR => POSIX::strftime("%Y", gmtime(time + $blog->server_offset * 3600)),
+    CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
+    TEST_ROOT => $test_env->root,
 );
 
-$test_json =~ s/\Q$_\E/$const{$_}/g for keys %const;
+$test_json =~ s/$_/\Q$const{$_}\E/g for keys %const;
 $test_suite = $json->decode($test_json);
 
 $ctx->{current_timestamp} = '20040816135142';
@@ -98,7 +111,11 @@ foreach my $test_item (@$test_suite) {
     is($result, $test_item->{e}, "perl test " . $num++);
 }
 
-php_tests($test_suite);
+SKIP: {
+    skip "Can't find executable file: php", scalar @$test_suite
+        unless has_php();
+    php_tests($test_suite);
+}
 
 sub build {
     my($ctx, $markup) = @_;
@@ -125,7 +142,7 @@ $cfg_file = '<CFG_FILE>';
 $const = array(
     'CFG_FILE' => $cfg_file,
     'VERSION_ID' => VERSION_ID,
-    'CURRENT_WORKING_DIRECTORY' => '',
+    'CURRENT_WORKING_DIRECTORY' => '<CURRENT_WORKING_DIRECTORY>',
     'STATIC_CONSTANT' => '',
     'DYNAMIC_CONSTANT' => '1',
     'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
@@ -134,19 +151,13 @@ $const = array(
     'CURRENT_MONTH' => strftime("%m"),
     'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
     'THREE_DAYS_AGO' => '<THREE_DAYS_AGO>',
+    'TEST_ROOT' => '<TEST_ROOT>',
 );
 
 $output_results = 0;
 
 $mt = MT::get_instance(1, $cfg_file);
 $ctx =& $mt->context();
-
-$path = $mt->config('mtdir');
-if (substr($path, strlen($path) - 1, 1) == '/')
-    $path = substr($path, 1, strlen($path)-1);
-if (substr($path, strlen($path) - 2, 2) == '/t')
-    $path = substr($path, 0, strlen($path) - 2);
-$const['CURRENT_WORKING_DIRECTORY'] = $path;
 
 $db = $mt->db();
 
@@ -158,6 +169,11 @@ $ctx->stash('blog', $blog);
 $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
 $entry = $db->fetch_entry(1);
+
+if ($blog->server_offset) {
+    $const['CURRENT_YEAR'] = strftime("%Y", time() + $blog->server_offset * 3600);
+    $const['CURRENT_MONTH'] = strftime("%m", time() + $blog->server_offset * 3600);
+}
 
 $suite = load_tests();
 
