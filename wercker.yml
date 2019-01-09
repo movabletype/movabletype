@@ -7,6 +7,7 @@ build:
         code: |
           rm t/34-sqlite.t
           rm plugins/MultiBlog/t/02.tags.t
+          rm t/dangling-symlinks.t
     - script:
         name: Install CPAN modules
         code: |
