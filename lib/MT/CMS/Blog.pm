@@ -1851,7 +1851,7 @@ sub _post_save_cfg_screens {
 # publishing method selected:
 #     none (0% publish queue, all static)
 #     async_all (100% publish queue)
-#     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
+#     async_partial (high-priority templates publish synchronously (main index, preferred entry_based/contenttype_based archives, feed templates))
 #     all (100% dynamic)
 #     archives (archives dynamic, static indexes)
 #     custom (custom configuration)

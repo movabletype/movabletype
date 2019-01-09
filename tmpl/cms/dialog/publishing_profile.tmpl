@@ -88,11 +88,7 @@ function init() {
                         <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
                         <__trans phrase="High Priority Static Publishing">
                         <small class="form-text text-muted hint">
-                <mt:if name="is_blog">
-                            <__trans phrase="Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.">
-                <mt:else>
-                            <__trans phrase="Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.">
-                </mt:if>
+                            <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
                         </small>
                     </label>
                 </li>
