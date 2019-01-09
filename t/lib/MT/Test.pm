@@ -1837,6 +1837,9 @@ sub _run_app {
             delete $app->{__test_output};
             undef $app;
 
+            # avoid processing multiple requests in a second
+            sleep(1);
+
             $app = _run_app( $class, \%params, $level + 1 );
         }
     }
