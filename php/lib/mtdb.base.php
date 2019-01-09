@@ -1238,7 +1238,13 @@ abstract class MTDatabase {
                     $max_comment_filter
                     $min_comment_filter";
         if ($sort_field) {
-            $sql .= "order by $sort_field $base_order";
+            $sql .= "order by $sort_field ";
+            $sql .=
+                   $sort_field == 'entry_authored_on'
+                && !isset( $args['base_sort_order'] )
+                && $base_order != $order
+                ? $order
+                : $base_order;
             if ($sort_field == 'entry_authored_on') {
                 $sql .= ",entry_id $base_order";
             }
