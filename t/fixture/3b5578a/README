@@ -1,0 +1,11 @@
+plugins/FormattedText
+plugins/FormattedTextForTinyMCE
+plugins/GoogleAnalytics
+plugins/Markdown
+plugins/MultiBlog
+plugins/StyleCatcher
+plugins/Textile
+plugins/TinyMCE
+plugins/WXRImporter
+plugins/WidgetManager
+plugins/spamlookup

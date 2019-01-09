@@ -3,14 +3,22 @@
 
 use strict;
 use warnings;
-use utf8;
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+use utf8;
 use File::Spec;
 
 use MT;
 use MT::FileMgr;
-use MT::Test qw(:db :data);
+use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
     rich_text_transform html_text_transform encode_html decode_html
@@ -30,11 +38,16 @@ use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
 use MT::I18N qw( encode_text );
 
+$test_env->prepare_fixture('db_data');
+
 my $mt = MT->new;
+
+MT->set_instance($mt);
+
 $mt->config( 'NoHTMLEntities', 1 );
 
 if ( $^O eq 'MSWin32' ) {
-    $mt->config( 'TempDir', 'C:\Windows\Temp' );
+    $mt->config( 'TempDir', File::Spec->tmpdir );
 }
 
 ## Use done_testing()
@@ -132,7 +145,7 @@ my %xml_tests = (
         '&amp;#0; &amp;#2; &#67; &amp;#x2; &#x67; &amp;#x19; &amp;#25',
 );
 
-for my $test ( keys %xml_tests ) {
+for my $test ( sort keys %xml_tests ) {
     if ( ref( $xml_tests{$test} ) eq 'ARRAY' ) {
         is( encode_xml($test), $xml_tests{$test}[0] );    #65 #69 #73
         is( decode_xml( $xml_tests{$test}[0] ), $test );  #66 #70 #74
@@ -552,7 +565,7 @@ is( xliterate_utf8('Ã'), 'A', 'xliterate_utf8()' );
 {
     require File::Temp;
     my ( $fh, $file )
-        = File::Temp::tempfile( undef, DIR => MT->config->TempDir );
+        = File::Temp::tempfile( DIR => MT->config->TempDir );
     close($fh);
     unlink($file);
 

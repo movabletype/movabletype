@@ -6,8 +6,8 @@ build:
         name: Remove skip test
         code: |
           rm t/34-sqlite.t
-          rm t/90-podcoverage.t
           rm plugins/MultiBlog/t/02.tags.t
+          rm t/dangling-symlinks.t
     - script:
         name: Install CPAN modules
         code: |
@@ -18,10 +18,6 @@ build:
           find /var/lib/mysql -type f | xargs touch
           service mysql start
           service memcached start
-    - script:
-        name: Copy config file
-        code: |
-          cp t/mysql-test.cfg mt-config.cgi
     - script:
         name: Use JSON::PP
         code: |

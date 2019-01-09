@@ -2,12 +2,20 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;

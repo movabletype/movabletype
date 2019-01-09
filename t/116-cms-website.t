@@ -1,46 +1,27 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
-
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->skip_if_addon_exists('Cloud.pack');
 }
 
-# Move addons/Cloud.pack/config.yaml to config.yaml.disabled.
-# An error occurs in save_community_prefs mode when Cloud.pack installed.
-use File::Spec;
-use File::Copy;
-
-BEGIN {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config ) {
-        move( $cloudpack_config, $cloudpack_config_rename )
-            or plan skip_all => "$cloudpack_config cannot be moved.";
-    }
-}
-
-END {
-    my $cloudpack_config
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml /);
-    my $cloudpack_config_rename
-        = File::Spec->catfile(qw/ addons Cloud.pack config.yaml.disabled /);
-
-    if ( -f $cloudpack_config_rename ) {
-        move( $cloudpack_config_rename, $cloudpack_config );
-    }
-}
-
-use lib 't/lib', 'lib', 'extlib', '../lib', '../extlib';
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
 
+MT::Test->init_app;
+
 ### Make test data
+
+$test_env->prepare_fixture('db');
 
 # Website
 my $website = MT::Test::Permission->make_website();

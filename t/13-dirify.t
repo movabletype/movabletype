@@ -1,11 +1,17 @@
 #!/usr/bin/perl
 # $Id: 13-dirify.t 2562 2008-06-12 05:12:23Z bchoate $
+
 use strict;
 use warnings;
-
-use lib 't/lib';
-use lib 'lib';
-use lib 'extlib';
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT;
 use MT::Test;
@@ -28,7 +34,7 @@ my @tests = (
     },
 );
 
-use Test::More tests => 5;
+plan tests => 5;
 
 MT->set_language('en_US');
 

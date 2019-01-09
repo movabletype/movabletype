@@ -2,21 +2,32 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use Data::Dumper;
 use File::Spec;
 use File::Temp qw( tempdir );
-use Test::More;
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
 if ( $^O eq 'MSWin32' ) {
-    $app->config->TempDir('C:\Windows\Temp');
+    $app->config->TempDir( File::Spec->tmpdir );
 }
+
+$Data::Dumper::Sortkeys = 1;
+$Data::Dumper::Indent = 0;
 
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );

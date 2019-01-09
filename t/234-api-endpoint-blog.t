@@ -2,12 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
 use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -18,7 +25,7 @@ $author->save;
 
 # Oops, sitepath is not absolute.
 my $website = $app->model('website')->load(2);
-$website->site_path($FindBin::Bin);
+$website->site_path($test_env->root);
 $website->save or die $website->errstr;
 
 # TODO: Avoid an error when installing GoogleAnalytics plugin.
@@ -280,7 +287,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                     themeId  => 'dummy',
                 },
             },
@@ -311,7 +318,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
             author_id => 0,
@@ -325,7 +332,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
             restrictions => { 0 => [qw/ create_new_website /], },
@@ -356,7 +363,7 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
+                    sitePath => $test_env->root,
                 },
             },
         },
@@ -382,7 +389,7 @@ sub suite {
                 website => {
                     name     => 'SitePath ends with slash',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                 },
             },
         },
@@ -408,8 +415,8 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
-                    archivePath => $FindBin::Bin . '/archives',
+                    sitePath => $test_env->root,
+                    archivePath => $test_env->root . '/archives',
                     archiveUrl  => 'http://narnia2.na/archives/',
                 },
             },
@@ -436,8 +443,8 @@ sub suite {
                 website => {
                     name     => 'test-api-permission-website',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin,
-                    archivePath => $FindBin::Bin . '/archives/',
+                    sitePath => $test_env->root,
+                    archivePath => $test_env->root . '/archives/',
                     archiveUrl => 'http://narnia2.na/archives/',
                 },
             },
@@ -449,7 +456,7 @@ sub suite {
                 website => {
                     name         => 'test-api-permission-website-2',
                     url          => 'http://narnia2.na/',
-                    sitePath     => $FindBin::Bin,
+                    sitePath     => $test_env->root,
                     themeId      => 'classic_website',
                     serverOffset => -5.5,
                     language     => 'de',
@@ -480,7 +487,7 @@ sub suite {
 
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
-                is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 is( $got->{themeId},      'classic_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
@@ -495,7 +502,7 @@ sub suite {
                 website => {
                     name     => 'test-api-website-3',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                     themeId  => 'classic_website',
                 },
             },
@@ -508,7 +515,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
@@ -711,7 +718,7 @@ sub suite {
                     name          => 'blog-3 name',
                     url           => 'blog-3',
                     siteSubdomain => 'www',
-                    sitePath      => $FindBin::Bin,    # absolute.
+                    sitePath      => $test_env->root,    # absolute.
                     serverOffset  => +8,
                     language      => 'nl',
                 },
@@ -746,7 +753,7 @@ sub suite {
                 is( $got->{themeId}, 'classic_blog', 'themeId' );
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
-                is( $got->{sitePath},     $FindBin::Bin, 'sitePath' );
+                is( $got->{sitePath},     $test_env->root, 'sitePath' );
                 is( $got->{serverOffset}, 8,             'serverOffset' );
                 is( $got->{language},     'nl',          'language' );
             },
@@ -760,7 +767,7 @@ sub suite {
                 blog => {
                     name     => 'test-api-blog-3',
                     url      => 'http://narnia2.na/',
-                    sitePath => $FindBin::Bin . '/',
+                    sitePath => $test_env->root . '/',
                     themeId  => 'classic_blog',
                 },
             },
@@ -772,7 +779,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
@@ -868,10 +875,10 @@ sub suite {
                     language     => 'fr',
                     url          => 'http://www.sixapart.com',
                     sitePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'update' ),
+                        File::Spec->catfile( $test_env->root, 'update' ),
                     archiveUrl => 'http://www.sixapart.com/archive/',
                     archivePath =>
-                        File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                        File::Spec->catfile( $test_env->root, 'archive' ),
 
                     fileExtension        => 'pl',
                     archiveTypePreferred => 'Category',
@@ -965,12 +972,12 @@ sub suite {
                 is( $got->{language},     'fr', 'language' );
                 is( $got->{url}, 'http://www.sixapart.com/', 'url' );
                 is( $got->{sitePath},
-                    File::Spec->catfile( $FindBin::Bin, 'update' ),
+                    File::Spec->catfile( $test_env->root, 'update' ),
                     'sitePath' );
                 is( $got->{archiveUrl}, 'http://www.sixapart.com/archive/',
                     'archiveUrl' );
                 is( $got->{archivePath},
-                    File::Spec->catfile( $FindBin::Bin, 'archive' ),
+                    File::Spec->catfile( $test_env->root, 'archive' ),
                     'archivePath' );
 
                 is( $got->{fileExtension}, 'pl', 'fileExtension' );
@@ -1182,7 +1189,7 @@ sub suite {
                 website => {
                     name     => 'test-api-website-3-update',
                     url      => 'http://narnia2.na/update/',
-                    sitePath => File::Spec->catfile( $FindBin::Bin, 'update' )
+                    sitePath => File::Spec->catfile( $test_env->root, 'update' )
                         . '/',
                 },
             },
@@ -1196,7 +1203,7 @@ sub suite {
 
                 my $got = $app->current_format->{unserialize}->($body);
 
-                # is( $got->{sitePath},     $FindBin::Bin,     'sitePath' );
+                # is( $got->{sitePath},     $test_env->root,     'sitePath' );
                 ok( ( $got->{sitePath} !~ m{(/|\\)$} ), 'sitePath' );
             },
         },
