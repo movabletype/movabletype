@@ -42,7 +42,11 @@ function init() {
 
     <div id="profile-panel" class="hidden panel">
 
+    <mt:if name="is_blog">
         <p><__trans phrase="Choose the profile that best matches the requirements for this blog."></p>
+    <mt:else>
+        <p><__trans phrase="Choose the profile that best matches the requirements for this website."></p>
+    </mt:if>
 
         <mtapp:setting
             id="dynamicity"
