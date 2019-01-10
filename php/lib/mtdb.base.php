@@ -1310,12 +1310,10 @@ abstract class MTDatabase {
                     $max_comment_filter
                     $min_comment_filter";
         if ($sort_field) {
-            $ctx =& $mt->context();
-            $tag = strtolower($ctx->this_tag());
             $sql .= "order by $sort_field ";
             $sql .=
                    $sort_field == 'entry_authored_on'
-                && $tag == 'mtentries'
+                && !isset( $args['base_sort_order'] )
                 && $base_order != $order
                 ? $order
                 : $base_order;
