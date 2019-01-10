@@ -13,7 +13,7 @@
 requires 'File::Spec', '0.8';
 
 requires 'DBI', '1.21';
-requires 'DBD::mysql';
+requires 'DBD::mysql', '4.050';
 
 # TODO: These are installed by carton install.
 #feature 'mssqlserver', 'MSSQLServer support' => sub {
