@@ -2,18 +2,26 @@
 
 use strict;
 use warnings;
-
-use lib 't/lib', 'lib', 'extlib';
-use Test::More tests => 42;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-        $ENV{MT_APP} = 'MT::App::CMS';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
+
+plan tests => 42;
 
 use MT;
 use MT::Author;
 use MT::Blog;
-use MT::Test qw( :app :db :data );
+use MT::Test;
+
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
 
 my $blog = MT::Blog->load(1);
 my $user = MT::Author->load(2);

@@ -8,9 +8,10 @@ use base qw( Exporter );
 
 our $VERSION = 0.9;
 our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks );
+    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks has_php );
 
 use strict;
+use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
@@ -22,6 +23,8 @@ use MT;
 use MT::Mail;
 
 use Cwd qw( abs_path );
+use URI;
+use URI::QueryParam;
 
 # Speed-up tests on Windows.
 if ( $^O eq 'MSWin32' ) {
@@ -91,7 +94,7 @@ BEGIN {
 }
 
 # Suppress output when "MailTransfer debug"
-{
+unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
     *MT::Mail::_send_mt_debug = sub {1};
 }
@@ -113,7 +116,7 @@ sub import {
 
     # We need *some* instance created up front, to initialize the database
     # factory etc properly, so do so now.
-    MT->instance;
+    MT->instance unless $ENV{MT_TEST_ROOT};
 
     # Export requested or all exportable functions.
     $pkg->export_to_level( 1, @to_export || qw( :DEFAULT ) );
@@ -129,10 +132,10 @@ sub init_app {
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1;" or die "Can't load $app";
 
-    $app->instance( $cfg ? ( Config => $cfg ) : () );
+    $app->set_instance( $app->new( $cfg ? ( Config => $cfg ) : () ) );
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        File::Spec->rel2abs( $app->config->SearchTemplatePath ) );
+        [ File::Spec->rel2abs( $app->config->SearchTemplatePath ) ] );
 
     # kill __test_output for a new request
     require MT;
@@ -183,7 +186,7 @@ sub init_cms {
     my ($cfg) = @_;
 
     require MT::App::CMS;
-    MT::App::CMS->instance( $cfg ? ( Config => $cfg ) : () );
+    MT->set_instance( MT::App::CMS->new( $cfg ? ( Config => $cfg ) : () ) );
 }
 
 sub init_time {
@@ -342,7 +345,7 @@ sub init_memcached {
     };
 }
 
-sub init_newdb {
+sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
 
@@ -372,6 +375,13 @@ sub init_newdb {
                 or die $@;
         }
     }
+    @classes;
+}
+
+sub init_newdb {
+    my $pkg = shift;
+
+    my @classes = $pkg->_load_classes(@_);
 
     # Clear existing database tables
     my $driver = MT::Object->driver();
@@ -432,11 +442,9 @@ sub error {
 sub init_data {
     my $pkg = shift;
 
-    # nix the old site just in case
-    rmtree('t/site') if ( -d 't/site' );
-
+    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
     my $themedir = File::Spec->catdir( $MT::MT_DIR => 'themes' );
-    MT->config->ThemesDirectory($themedir);
+    MT->config->ThemesDirectory( [$themedir] );
     require MT::Theme;
 
     require MT::Website;
@@ -444,7 +452,7 @@ sub init_data {
     $website->set_values(
         {   name                     => 'Test site',
             site_url                 => 'http://narnia.na/',
-            site_path                => 't',
+            site_path                => $test_root,
             description              => "Narnia None Test Website",
             custom_dynamic_templates => 'custom',
             convert_paras            => 1,
@@ -483,8 +491,8 @@ sub init_data {
         {   name         => 'none',
             site_url     => '/::/nana/',
             archive_url  => '/::/nana/archives/',
-            site_path    => 'site/',
-            archive_path => 'site/archives/',
+            site_path    => "$test_root/site/",
+            archive_path => "$test_root/site/archives/",
             archive_type => 'Individual,Monthly,Weekly,Daily,Category,Page',
             archive_type_preferred   => 'Individual',
             description              => "Narnia None Test Blog",
@@ -1747,6 +1755,7 @@ sub _run_app {
             {
                 local $/ = undef;
                 open my $upload, "<", $src or die "Can't open $src: $!";
+                binmode $upload if $filename =~ /\.(?:gif|png|jpg)$/;
                 my $d = <$upload>;
                 close $upload;
                 print $cgi_fh $d;
@@ -1765,7 +1774,8 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        abs_path( $app->config->SeachTemplatePath ) );
+        [ abs_path( $app->config->SeachTemplatePath ) ] );
+    $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1917,8 +1927,19 @@ sub _run_tasks {
         MT::Session->remove( { id => "Task:$t" } );
     }
 
+    MT->set_instance( MT->new );
+
     require MT::TaskMgr;
     MT::TaskMgr->run_tasks(@$tasks);
+}
+
+my $HasPHP;
+
+sub has_php {
+    return $HasPHP if defined $HasPHP;
+    my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
+    my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
+    $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
 }
 
 1;

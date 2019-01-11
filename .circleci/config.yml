@@ -13,12 +13,8 @@ jobs:
           name: Remove skip tests
           command: |
             rm t/34-sqlite.t
-            rm t/90-podcoverage.t
             rm plugins/MultiBlog/t/02.tags.t
-      - run:
-          name: Copy mt-config.cgi
-          command: |
-            cp t/mysql-test.cfg mt-config.cgi
+            rm t/dangling-symlinks.t
       - run:
           name: Run test
           command: |

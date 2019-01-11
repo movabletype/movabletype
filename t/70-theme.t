@@ -1,23 +1,30 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
-use lib qw( t/lib lib extlib ../lib ../extlib );
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-    $ENV{MT_APP} = 'MT::App::CMS';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw(:app :db :data);
-use Test::More qw( no_plan );
+use MT::Test;
 use YAML::Tiny;
 use File::Spec;
 use FindBin qw( $Bin );
 use MT;
 
+MT::Test->init_app;
+
+$test_env->prepare_fixture('db_data');
+
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );
-$mt->config->ThemesDirectory('t/themes');
+$mt->config->ThemesDirectory(File::Spec->catdir( $ENV{MT_HOME}, 't', 'themes'));
 use_ok('MT::Theme', 'use MT::Theme');
 
 ## building test themes.
@@ -60,7 +67,7 @@ ok( MT->model('template')->load({ blog_id => $blog->id, type => 'backup'}) );
 ## create second theme instance.
 my $theme2;
 ok($theme2 = MT::Theme->_load_from_themes_directory('other_theme'), 'Load from themes directory');
-is( File::Spec->rel2abs($theme2->path), File::Spec->catdir( $Bin, 'themes/other_theme'));
+is( File::Spec->rel2abs($theme2->path), File::Spec->catdir( $ENV{MT_HOME}, 't/themes/other_theme'));
 $theme2->apply($blog);
 my $atom = MT->model('template')->load({
     blog_id => $blog->id,
@@ -68,6 +75,8 @@ my $atom = MT->model('template')->load({
     name => 'Atom',
 });
 is( $atom->text, 'ATOMTEMPLATE BODY FOR TEST');
+
+done_testing;
 
 __DATA__
 MyTheme:

@@ -17,9 +17,19 @@
 #     convert_high_ascii
 #     const
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-#use Test::More tests => 16;
-use Test::More skip_all => 'MT::I18N functions were deprecated';
+use strict;
+use warnings;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+BEGIN { plan skip_all => 'MT::I18N functions were deprecated'; }
+
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use utf8;
 
