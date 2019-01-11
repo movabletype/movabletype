@@ -510,7 +510,6 @@ sub stage_distro {
     }
 
     # Un-tar the distribution.
-    my $tar;
     unless ( $self->{'debug'} ) {
         $self->verbose("Extract: $dest...");
 

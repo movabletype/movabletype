@@ -328,7 +328,6 @@ sub dialog_insert_asset {
     my %param;
 
     require MT::Asset;
-    my $text;
     my $assets;
 
     # Parse JSON.

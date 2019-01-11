@@ -52,7 +52,7 @@ foreach (keys %conv) {
     $conv{$key_esc}=$value_esc;
 }
 
-my (%phrase, %is_used, $args);
+my (%phrase, %is_used);
 my $text = <>;
 my $tmpl = $ARGV;
 exit unless $text;
@@ -115,7 +115,6 @@ do {
             }
         }
         %phrase = ();
-        my $t;
         while ($text =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
             my($msg, %args) = ($1);
             while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #'

@@ -219,7 +219,6 @@ sub edit_role {
     }
 
     # Load permissions from registry
-    my $registered_perms;
     my $perms = $app->model('permission')->perms_from_registry;
     for my $perm ( values %$perms ) {
         $perm->{can_do} = 0;
