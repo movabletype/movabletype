@@ -82,7 +82,6 @@ sub find_junk {
     } else {
         return;
     }
-    my $i;
     MT->_register_core_callbacks({NotJunkTest =>
                                   \&_cb_notjunktest_filter});
 
