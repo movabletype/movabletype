@@ -2,11 +2,13 @@
 
 use strict;
 use warnings;
-
 use lib qw(lib t/lib);
+use MT::Test::Env;
+our $test_env;
 
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use IPC::Open2;
@@ -25,35 +27,49 @@ filters {
     expected => [qw( chomp )],
 };
 
-my $blog_id = 1;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-my $blog = MT::Blog->load($blog_id);
-$blog->days_on_index(1);
-$blog->sort_order_posts('ascend');
-$blog->save;
+        my $site = MT::Test::Permission->make_blog(
+            parent_id   => 0,
+            name        => 'test site',
+            archive_url => 'http://example.com/sort-order-posts/'
+        );
 
-my $time = time;
-my $now  = epoch2ts( $blog, $time );
-my $next = epoch2ts( $blog_id, $time + 1 );
-my $prev = epoch2ts( $blog_id, $time - 1 );
+        $site->days_on_index(1);
+        $site->sort_order_posts('ascend');
+        $site->save;
 
-my $entry_now = MT::Test::Permission->make_entry(
-    blog_id     => $blog_id,
-    title       => "now entry",
-    authored_on => $now,
+        my $site_id = $site->id;
+
+        my $time = time;
+        my $now  = epoch2ts( $site, $time );
+        my $next = epoch2ts( $site_id, $time + 1 );
+        my $prev = epoch2ts( $site_id, $time - 1 );
+
+        my $entry_now = MT::Test::Permission->make_entry(
+            blog_id     => $site_id,
+            title       => "now entry",
+            authored_on => $now,
+        );
+
+        my $entry_next = MT::Test::Permission->make_entry(
+            blog_id     => $site_id,
+            title       => "next entry",
+            authored_on => $next,
+        );
+
+        my $entry_prev = MT::Test::Permission->make_entry(
+            blog_id     => $site_id,
+            title       => "previous entry",
+            authored_on => $prev,
+        );
+    }
 );
 
-my $entry_next = MT::Test::Permission->make_entry(
-    blog_id     => $blog_id,
-    title       => "next entry",
-    authored_on => $next,
-);
-
-my $entry_prev = MT::Test::Permission->make_entry(
-    blog_id     => $blog_id,
-    title       => "previous entry",
-    authored_on => $prev,
-);
+my $site = MT->model('blog')->load( { name => 'test site' } );
+my $site_id = $site->id;
 
 run {
     my $block = shift;
@@ -66,10 +82,9 @@ SKIP:
         $tmpl->text( $block->template );
         my $ctx = $tmpl->context;
 
-        my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
+        $ctx->stash( 'blog',          $site );
+        $ctx->stash( 'blog_id',       $site->id );
+        $ctx->stash( 'local_blog_id', $site->id );
         $ctx->stash( 'builder',       MT::Builder->new );
 
         my $result = $tmpl->build;
@@ -87,7 +102,7 @@ sub php_test_script {
 <?php
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
+\$site_id   = '$site_id';
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -107,10 +122,10 @@ $mt->init_plugins();
 $db = $mt->db();
 $ctx =& $mt->context();
 
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
+$ctx->stash('blog_id', $site_id);
+$ctx->stash('local_blog_id', $site_id);
+$site = $db->fetch_blog($site_id);
+$ctx->stash('blog', $site);
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);
