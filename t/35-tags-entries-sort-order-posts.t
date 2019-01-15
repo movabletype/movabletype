@@ -167,7 +167,7 @@ SKIP:
 
 __END__
 
-=== no modifire (sort_oder_posts => 'ascend')
+=== no modifier (sort_oder_posts => 'ascend')
 --- template
 <mt:Entries><mt:EntryTitle>
 </mt:Entries>
