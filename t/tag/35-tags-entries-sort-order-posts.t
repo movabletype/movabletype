@@ -31,8 +31,10 @@ $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;
 
+        my $website = MT->model('website')->load or die;
+
         my $site = MT::Test::Permission->make_blog(
-            parent_id   => 0,
+            parent_id   => $website->id,
             name        => 'test site',
             archive_url => 'http://example.com/sort-order-posts/'
         );
