@@ -2657,6 +2657,13 @@ sub handler_to_coderef {
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
 
+    # $name may be an array of coderefs, when handlers of the same key
+    # from multiple sources (core, plugins, addons) are merged
+    if ( ref $name eq 'ARRAY' ) {
+        my @codes = map { $pkg->handler_to_coderef( $_, $delayed ) } @$name;
+        return sub { my @args = @_; $_->(@args) for @codes };
+    }
+
     my $code;
     if ( $name !~ m/->/ ) {
 
