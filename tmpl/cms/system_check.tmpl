@@ -51,8 +51,7 @@
 </mtapp:setting>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
+<mt:setvarblock name="jq_js_include" append="1">
   jQuery('.msg-warning').each( function(){
     var $this = jQuery(this);
     var $detail = $this.find('span.exception');
@@ -65,7 +64,6 @@
       }
     });
   });
-</script>
 </mt:setVarBlock>
 
 <mt:include name="layout/default.tmpl">
