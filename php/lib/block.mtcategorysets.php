@@ -90,8 +90,10 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__counter__'] = $count;
         $ctx->stash('_category_sets_counter', $count);
         $ctx->stash('category_set', $cs);
-        $ctx->stash('blog', $cs->blog());
-        $ctx->stash('blog_id', $cs->blog_id);
+        if ($cs->blog_id != $ctx->stash('blog_id')) {
+            $ctx->stash('blog', $cs->blog());
+            $ctx->stash('blog_id', $cs->blog_id);
+        }
         if($content_type)
             $ctx->stash('content_type', $content_type);
 
