@@ -31,7 +31,7 @@ sub edit {
         }
         else {
             $param->{'list_on_index'} = ( $obj->days_on_index || 0 );
-            $param->{'days'} = 1;
+            $param->{'days'}          = 1;
         }
         $lang = $obj->language || 'en';
         $lang = 'en' if lc($lang) eq 'en-us' || lc($lang) eq 'en_us';
@@ -212,7 +212,7 @@ sub edit {
             my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
             %$param = ( %$param, %$pref_param );
             $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %$param = ( %$param, %$pref_param );
+            %$param     = ( %$param, %$pref_param );
             $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
                 = 1;
             $param->{ 'status_default_' . $obj->status_default } = 1
@@ -261,7 +261,7 @@ sub edit {
 
             if ( $cfg->is_readonly('DataAPIDisableSite') ) {
                 $param->{'data_api_disable_site_readonly'} = 1;
-                $param->{config_warning} = $app->translate(
+                $param->{config_warning}                   = $app->translate(
                     "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
                     'DataAPIDisableSite',
                 );
@@ -345,7 +345,7 @@ sub edit {
                 = $app->load_text_filters( $obj->convert_paras, 'entry' );
         }
         $param->{nav_config} = 1;
-        $param->{error} = $app->errstr if $app->errstr;
+        $param->{error}      = $app->errstr if $app->errstr;
     }
     elsif ( $param->{output} && $param->{output} eq 'cfg_web_services.tmpl' )
     {
@@ -353,7 +353,7 @@ sub edit {
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
         if ( $app->config->is_readonly('DataAPIDisableSite') ) {
             $param->{'data_api_disable_site_readonly'} = 1;
-            $param->{config_warning} = $app->translate(
+            $param->{config_warning}                   = $app->translate(
                 "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
                 'DataAPIDisableSite',
             );
@@ -496,9 +496,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $q->param('saved_deleted');
     $param{saved_added}      = 1 if $q->param('saved_added');
     $param{archives_changed} = 1 if $q->param('archives_changed');
-    $param{no_writedir}    = $q->param('no_writedir');
-    $param{no_cachedir}    = $q->param('no_cachedir');
-    $param{no_writecache}  = $q->param('no_writecache');
+    $param{no_writedir}      = $q->param('no_writedir');
+    $param{no_cachedir}      = $q->param('no_cachedir');
+    $param{no_writecache}    = $q->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -641,7 +641,7 @@ sub cfg_registration {
         push @roles, { role_id => $r_id, role_name => $role->name };
         push @role_ids, $r_id;
     }
-    $param{new_roles} = \@roles;
+    $param{new_roles}             = \@roles;
     $param{new_created_user_role} = join( ',', @role_ids );
 
     $app->param( '_type', $app->blog->class );
@@ -755,7 +755,7 @@ sub rebuild_pages {
     $pub->start_time($start_time)
         if $start_time;    # force start time to parameter start_time
 
-    my $archiver = $pub->archiver($type);
+    my $archiver      = $pub->archiver($type);
     my $archive_label = $archiver ? $archiver->archive_label : '';
 
     $archive_label = $app->translate($type) unless $archive_label;
@@ -912,6 +912,7 @@ sub rebuild_pages {
         if ( !$special ) {
             return $app->permission_denied()
                 unless $perms->can_do('rebuild');
+            my $map;
             if ($template_id) {
                 my $tmpl = MT->model('template')->load($template_id)
                     or return $app->errtrans( 'Cannot load template #[_1].',
@@ -921,7 +922,7 @@ sub rebuild_pages {
                     ->can_do('rebuild');
             }
             elsif ($map_id) {
-                my $map = MT->model('templatemap')->load($map_id)
+                $map = MT->model('templatemap')->load($map_id)
                     or return $app->errtrans( 'Cannot load template #[_1].',
                     $map_id );
                 return $app->permission_denied()
@@ -951,7 +952,7 @@ sub rebuild_pages {
                     $no_static ? ( NoStatic => 1 ) : (),
                     $template_id ? ( TemplateID => $template_id, Force => 1 )
                     : (),
-                    $map_id ? ( TemplateMap => $template_id, Force => 1 )
+                    $map ? ( TemplateMap => $map, Force => 1 )
                     : (),
                 ) or return $app->publish_error();
                 $offset += $count;
@@ -1303,7 +1304,7 @@ sub _create_build_order {
         }
     }
     $param->{archive_type_loop} = \@data;
-    $param->{build_order} = join ',', @at, 'index';
+    $param->{build_order}       = join ',', @at, 'index';
     1;
 }
 
@@ -1452,7 +1453,7 @@ sub dialog_select_weblog {
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
-        $row->{label} = $row->{name};
+        $row->{label}  = $row->{name};
         $row->{'link'} = $obj->site_url;
     };
 
@@ -1686,7 +1687,7 @@ sub pre_save {
             my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
             %param = ( %param, %$pref_param );
             $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %param = ( %param, %$pref_param );
+            %param      = ( %param, %$pref_param );
             $param{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
                 = 1;
             $param{words_in_excerpt} = 40
@@ -2014,7 +2015,7 @@ sub post_save {
         $app->cookie_val();
         my ( $x, $y, $remember )
             = split( /::/, $cookies{ $app->user_cookie() }->value );
-        my $cookie = $cookies{'commenter_id'};
+        my $cookie       = $cookies{'commenter_id'};
         my $cookie_value = $cookie ? $cookie->value : '';
         my ( $id, $blog_ids ) = split( ':', $cookie_value );
         if ( $blog_ids ne 'S' && $blog_ids ne 'N' ) {
@@ -2231,7 +2232,7 @@ sub make_blog_list {
         $row->{can_edit_assets}       = $perms->can_do('edit_assets');
         $row->{can_administer_blog}   = $perms->can_do('administer_blog');
         $row->{can_list_blogs} = $perms->can_do('open_blog_listing_screen');
-        $row->{checked} = grep { $_ == $blog->id } @ids;
+        $row->{checked}        = grep { $_ == $blog->id } @ids;
         push @$data, $row;
     }
     $data;
@@ -2309,8 +2310,7 @@ sub build_blog_table {
                         junk_status => MT::Comment::NOT_JUNK()
                     }
                 )
-                )
-                || 0;
+            ) || 0;
             $row->{num_pings} = (
                   $ping_count
                 ? $ping_count->{$blog_id}
@@ -2319,8 +2319,7 @@ sub build_blog_table {
                         junk_status => MT::TBPing::NOT_JUNK()
                     }
                 )
-                )
-                || 0;
+            ) || 0;
             $row->{num_authors} = 0;
             if ( $author->is_superuser ) {
                 $row->{can_create_post}       = 1;
@@ -3215,7 +3214,7 @@ sub clone {
         else {
             $base_url = $raw_site_url[0];
         }
-        $param->{site_url} = $base_url;
+        $param->{site_url}        = $base_url;
         $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
@@ -3616,7 +3615,7 @@ sub save_data_api_settings {
     my ($app) = @_;
 
     my $blog_id = $app->param('id') || 0;
-    my $cfg = $app->config;
+    my $cfg     = $app->config;
 
     my $data_api_disable_site
         = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
