@@ -67,6 +67,26 @@ $test_env->prepare_fixture(
             title       => "previous entry",
             authored_on => $prev,
         );
+
+        my $cat = MT::Test::Permission->make_category(
+            blog_id => $site_id,
+            label   => 'foo',
+        );
+        MT::Test::Permission->make_placement(
+            blog_id     => $site_id,
+            entry_id    => $entry_now->id,
+            category_id => $cat->id,
+        );
+        MT::Test::Permission->make_placement(
+            blog_id     => $site_id,
+            entry_id    => $entry_next->id,
+            category_id => $cat->id,
+        );
+        MT::Test::Permission->make_placement(
+            blog_id     => $site_id,
+            entry_id    => $entry_prev->id,
+            category_id => $cat->id,
+        );
     }
 );
 
@@ -170,6 +190,15 @@ __END__
 === no modifier (sort_oder_posts => 'ascend')
 --- template
 <mt:Entries><mt:EntryTitle>
+</mt:Entries>
+--- expected
+previous entry
+now entry
+next entry
+
+=== category="foo" (sort_order_posts => 'ascend')
+--- template
+<mt:Entries category="foo"><mt:EntryTitle>
 </mt:Entries>
 --- expected
 previous entry
