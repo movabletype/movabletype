@@ -13,10 +13,10 @@ Movable Type requires the following applications:
 * A web server like nginx, Apache or Windows IIS;
 * Access to a database like MySQL;
 * The following Perl modules:
- * [DBI](http://search.cpan.org/dist/DBI)
- * [Image::Size](http://search.cpan.org/dist/Image-Size)
- * [CGI::Cookie](http://search.cpan.org/search?query=cgi-cookie&mode=module)
- * [HTML::Entities](http://search.cpan.org/dist/HTML-Parser/lib/HTML/Entities.pm)
+ * [DBI](https://metacpan.org/pod/DBI)
+ * [Image::Size](https://metacpan.org/pod/Image::Size)
+ * [CGI::Cookie](https://metacpan.org/pod/CGI::Cookie)
+ * [HTML::Entities](https://metacpan.org/pod/HTML::Entities)
 
 Consult the CPAN documentation to learn how to [determine if a Perl module is already installed](http://www.cpan.org/misc/cpan-faq.html#How_installed_modules) and,
 if they are not, [how to install them](http://www.cpan.org/misc/cpan-faq.html#How_install_Perl_modules).

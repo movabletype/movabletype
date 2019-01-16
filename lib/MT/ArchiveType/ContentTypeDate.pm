@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -35,8 +35,14 @@ sub dated_group_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $ctx->stash('template_map');
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
+    my $map = $obj->_get_preferred_map(
+        {   archive_type    => $at,
+            blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
     require MT::ContentData;
     my @content_data = MT::ContentData->load(
         {   blog_id => $blog->id,
@@ -87,9 +93,15 @@ sub dated_category_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map          = $ctx->stash('template_map');
-    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
-    my $dt_field_id  = defined $map && $map ? $map->dt_field_id : '';
+    my $map = $obj->_get_preferred_map(
+        {   archive_type    => $at,
+            blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $cat_field_id = $map ? $map->cat_field_id : '';
+    my $dt_field_id  = $map ? $map->dt_field_id  : '';
     my @contents     = MT::ContentData->load(
         {   blog_id => $blog->id,
             (   $content_type_id ? ( content_type_id => $content_type_id )
@@ -160,9 +172,15 @@ sub dated_author_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map         = $ctx->stash('template_map');
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-    my @contents    = MT::ContentData->load(
+    my $map = $obj->_get_preferred_map(
+        {   archive_type    => $at,
+            blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
+    my @contents = MT::ContentData->load(
         {   blog_id   => $blog->id,
             author_id => $author->id,
             (   $content_type_id ? ( content_type_id => $content_type_id )
@@ -309,6 +327,23 @@ sub make_archive_group_args {
     elsif ( $date_type eq 'weekly' ) {
         $args->{sort} = [
             {   column => $target_column,
+                desc   => $order
+            }
+        ];
+    }
+    elsif ( $date_type eq 'monthly' ) {
+        $args->{sort} = [
+            {   column => "extract(year from $target_column)",
+                desc   => $order
+            },
+            {   column => "extract(month from $target_column)",
+                desc   => $order
+            }
+        ];
+    }
+    elsif ( $date_type eq 'yearly' ) {
+        $args->{sort} = [
+            {   column => "extract(year from $target_column)",
                 desc   => $order
             }
         ];

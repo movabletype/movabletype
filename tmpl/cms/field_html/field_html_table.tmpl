@@ -7,6 +7,9 @@
   <mt:var name="loaded_tables_field_css" value="1">
 
   <mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css?v=<mt:var name="mt_version_id" escape="html">">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css?v=<mt:var name="mt_version_id" escape="html">">
+
 <style type="text/css">
 .a-table-btn-group-list > .a-table-btn-list:first-child,
 .a-table-btn-group-list > .a-table-btn-list:last-child {
@@ -16,7 +19,22 @@
 .a-table-btn {
   cursor: pointer;
 }
+
+@media (max-width: 767.98px) {
+  .a-table-btn-list {
+    padding-bottom: 16px!important;
+    padding-right: 5px!important;
+  }
+  .a-table-btn {
+    height: 36px!important;
+    width: 36px;
+  }
+}
 </style>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="js_include" append="1">
+<script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">"></script>
   </mt:setvarblock>
 
   <mt:setvarblock name="jq_js_include" append="1">

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,7 +13,7 @@ use base qw( MT::ArchiveType::ContentTypeDate MT::ArchiveType::Yearly );
 use MT::Util qw( start_end_year );
 
 sub name {
-    return 'ContentTypeYearly';
+    return 'ContentType-Yearly';
 }
 
 sub archive_label {
@@ -44,7 +44,7 @@ sub default_archive_templates {
 
 sub template_params {
     return {
-        archive_class               => "contenttype-datebased-yearly-archive",
+        archive_class               => "contenttype-yearly-archive",
         datebased_yearly_archive    => 1,
         module_yearly_archives      => 1,
         archive_template            => 1,
@@ -64,10 +64,15 @@ sub archive_group_iter {
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
 
-    my $map = $ctx->stash('template_map');
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+    my $content_type_id = $ctx->stash('content_type')->id;
+    my $map             = $obj->_get_preferred_map(
+        {   blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
+
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
@@ -99,7 +104,7 @@ sub archive_group_contents {
         ? sprintf( "%04d%02d%02d000000", $param->{year}, 1, 1 )
         : undef;
     my $limit = $param->{limit};
-    $obj->dated_group_contents( $ctx, 'Yearly', $ts, $limit,
+    $obj->dated_group_contents( $ctx, $obj->name, $ts, $limit,
         $content_type_id );
 }
 

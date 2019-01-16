@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,7 +22,8 @@ sub init {
     $options{Debug}   = 1 if $MT::DebugMode;
     my $ftp = $fmgr->{ftp} = Net::FTP->new( $_[0], %options )
         or return $fmgr->error("FTP connection failed: $@");
-    $ftp->login( @_[ 1, 2 ] );
+    $ftp->login( @_[ 1, 2 ] )
+        or return $fmgr->error( 'FTP login failed: ' . $ftp->message );
     $fmgr;
 }
 

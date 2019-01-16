@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -603,6 +603,7 @@ sub prepare_statement {
 
     ## Implement `join` arg like MT::ObjectDriver, for compatibility.
     my %joined_table = ();
+    my %seen_alias;
     while ( my $join = shift @joins ) {
         my ( $j_class, $j_col, $j_terms, $j_args ) = @$join;
         my $j_unique;
@@ -669,11 +670,15 @@ sub prepare_statement {
                 : $class;
             my $to_table = $driver->table_for($to_class);
             my $j_table  = $driver->table_for($j_class);
+            my $j_alias  = $j_args->{alias};
+            if ( $j_alias && $seen_alias{$j_alias}++ ) {
+                $j_alias .= '_' . $seen_alias{$j_alias};
+            }
             if ( 'HASH' eq ref $cond ) {
                 my $dbh = $driver->rw_handle;
                 foreach my $cond_col ( keys %$cond ) {
                     my $col = $driver->_decorate_column_name( $j_class,
-                        $cond_col );
+                        $cond_col, $j_alias );
                     $cond_query .= ' AND ' if $cond_query;
                     my $condition = $cond->{$cond_col};
                     if ( 'SCALAR' eq ref $condition ) {
@@ -687,8 +692,7 @@ sub prepare_statement {
             }
             else {
                 $cond = [$cond] unless ref $cond;
-                my $tuple   = $to_class->primary_key_tuple;
-                my $j_alias = $j_args->{alias};
+                my $tuple = $to_class->primary_key_tuple;
             COLUMN: foreach my $i ( 0 .. $#$cond ) {
                     next unless defined $cond->[$i];
                     my $t = $tuple->[$i];
@@ -708,7 +712,7 @@ sub prepare_statement {
 
             $stmt->add_join(
                 $to_table,
-                {   table     => $j_table,
+                {   table => $j_alias ? "$j_table $j_alias" : $j_table,
                     condition => $cond_query,
                     type      => $j_args->{type},
                 },
@@ -814,6 +818,11 @@ sub sql {
         $dbh->do($_) or return $driver->last_error;
     }
     1;
+}
+
+sub search {
+    my $driver = shift;
+    $driver->SUPER::search(@_);
 }
 
 1;

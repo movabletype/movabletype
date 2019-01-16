@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,6 +32,7 @@ class MTViewer extends SmartyBC {
         'mthassubfolders' => 1,
         'mthasparentfolders' => 1,
         'mthasparentfolder' => 1,
+        'mtauthorhascontent' => 1,
         'mtauthorhasentry' => 1,
         'mtauthorhaspage' => 1,
         'mtwebsitehasblog' => 1,
@@ -57,6 +58,11 @@ class MTViewer extends SmartyBC {
         'mtpingsheader' => 1,
         'mtsubcatisfirst' => 1,
         'mtsubcatislast' => 1,
+        'mtcontentfieldsheader' => 1,
+        'mtcontentfieldsfooter' => 1,
+        'mtcontentfieldheader' => 1,
+        'mtcontentfieldfooter' => 1,
+        'mtcontentfield' => 1,
     );
     var $sanitized = array(
         'mtcommentauthor' => 1,

@@ -11,7 +11,7 @@
                         <label class="custom-control-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
                     </div>
                 <mt:if name="can_edit_categories">
-                    <div class="col">
+                    <div class="col d-none d-md-block">
                         <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
                             <mtapp:svgicon id="ic_add" size="sm" color="success" title="Add">
                         </a>
@@ -37,7 +37,7 @@
 <div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector" style="display: none;">
 <mt:if name="object_type" eq="entry">
   <mt:if name="can_edit_categories">
-  <div class="input-group">
+  <div class="input-group d-none d-md-flex">
     <input id="add-category-input" type="text" class="form-control" placeholder="<$mt:var name="container_label_name"$>" aria-label="<$mt:var name="container_label_name"$>">
     <div class="input-group-append">
       <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" size="sm" title="<__trans phrase="Add">"><__trans phrase="Add"></button>

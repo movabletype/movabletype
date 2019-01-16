@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,7 @@ use strict;
 use warnings;
 
 use MT::BackupRestore::ContentTypePermission;
+use MT::Serialize;
 use MT::Util qw( encode_url );
 use Symbol;
 use base qw( MT::ErrorHandler );
@@ -44,25 +45,25 @@ sub core_backup_instructions {
     # and/or special instructions.
     # Every other class will have the order of '500'.
     return {
-        'website'      => { 'order' => 350 },
-        'blog'         => { 'order' => 400 },
-        'author'       => { 'order' => 420 },
-        'category_set' => { 'order' => 490 },
+        'website'       => { 'order' => 350 },
+        'blog'          => { 'order' => 400 },
+        'author'        => { 'order' => 420 },
+        'category_set'  => { 'order' => 480 },
+        'content_type'  => { 'order' => 480 },
+        'cf'            => { 'order' => 490 },
+        'content_field' => { 'order' => 490 },
 
         # These 'association' classes should be backed up
         # after the object classes.
-        'association'  => { 'order' => 510 },
-        'placement'    => { 'order' => 510 },
-        'trackback'    => { 'order' => 510 },
-        'filter'       => { 'order' => 510 },
-        'content_type' => { 'order' => 510 },
+        'association' => { 'order' => 510 },
+        'placement'   => { 'order' => 510 },
+        'trackback'   => { 'order' => 510 },
+        'filter'      => { 'order' => 510 },
 
         # Ping should be backed up after Trackback.
-        'tbping'        => { 'order' => 520 },
-        'ping'          => { 'order' => 520 },
-        'ping_cat'      => { 'order' => 520 },
-        'cf'            => { 'order' => 520 },
-        'content_field' => { 'order' => 520 },
+        'tbping'   => { 'order' => 520 },
+        'ping'     => { 'order' => 520 },
+        'ping_cat' => { 'order' => 520 },
 
         # Comment should be backed up after TBPing
         # because saving a comment ultimately triggers
@@ -1020,11 +1021,41 @@ sub cb_restore_objects {
                 }
             }
         }
+        $content_data->data( \%new_data );
+
+        if ( my $raw_convert_breaks = $content_data->convert_breaks ) {
+            if ( my $convert_breaks
+                = MT::Serialize->unserialize($raw_convert_breaks) )
+            {
+                if (   $convert_breaks
+                    && $$convert_breaks
+                    && ref $$convert_breaks eq 'HASH' )
+                {
+                    my %new_convert_breaks;
+                    for my $old_field_id ( keys %{$$convert_breaks} ) {
+                        my $new_field
+                            = $all_objects->{"MT::ContentField#$old_field_id"}
+                            or next;
+                        $new_convert_breaks{ $new_field->id }
+                            = $$convert_breaks->{$old_field_id};
+                    }
+                    my $new_raw_conver_breaks
+                        = MT::Serialize->serialize( \{%new_convert_breaks} );
+                    $content_data->convert_breaks($new_raw_conver_breaks);
+                }
+            }
+        }
+
+        if ( MT->component('BlockEditor') ) {
+            require BlockEditor::BackupRestore;
+            BlockEditor::BackupRestore->update_cd_block_editor_data(
+                $content_data, $all_objects );
+        }
+
         $callback->(
             MT->translate( "Importing content data ... ( [_1] )", $i++ ),
             'cb-restore-content-data-data'
         );
-        $content_data->data( \%new_data );
         $content_data->save or die $content_data->errstr;
     }
     $callback->( MT->translate("Done.") . "\n" );
@@ -1676,7 +1707,7 @@ package MT::ContentField;
 
 sub parents {
     my $obj = shift;
-    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
         content_type_id => [ MT->model('content_type') ],
         related_content_type_id =>
             { class => MT->model('content_type'), optional => 1 },
@@ -1814,7 +1845,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }
@@ -1860,7 +1891,10 @@ sub backup_terms_args {
 
 sub parents {
     my $obj = shift;
-    { blog_id => [ MT->model('blog'), MT->model('website') ], };
+    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+        content_type_id =>
+            { class => MT->model('content_type'), optional => 1 },
+    };
 }
 
 package MT::TemplateMap;
@@ -1868,7 +1902,10 @@ package MT::TemplateMap;
 sub parents {
     my $obj = shift;
     {   blog_id     => [ MT->model('blog'), MT->model('website') ],
-        template_id => MT->model('template')
+        template_id => MT->model('template'),
+        cat_field_id =>
+            { class => MT->model('content_field'), optional => 1 },
+        dt_field_id => { class => MT->model('content_field'), optional => 1 },
     };
 }
 

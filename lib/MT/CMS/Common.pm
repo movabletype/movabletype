@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -593,7 +593,9 @@ sub save {
         if (   $obj->type eq 'archive'
             || $obj->type eq 'category'
             || $obj->type eq 'page'
-            || $obj->type eq 'individual' )
+            || $obj->type eq 'individual'
+            || $obj->type eq 'ct'
+            || $obj->type eq 'ct_archive' )
         {
             my $static_maps = delete $app->{static_dynamic_maps};
             require MT::TemplateMap;
@@ -1265,16 +1267,16 @@ sub list {
         }
         push @list_columns,
             {
-            id                 => $prop->id,
-            type               => $prop->type,
-            label              => MT::Util::encode_html( $prop->label ),
-            primary            => $primary_col{$id} ? 1 : 0,
-            col_class          => $prop->col_class,
-            sortable           => $prop->can_sort($scope),
-            sorted             => $prop->id eq $default_sort ? 1 : 0,
-            display            => $show,
-            is_default         => $force || $default,
-            checked            => $show,
+            id        => $prop->id,
+            type      => $prop->type,
+            label     => MT::Util::encode_html( $prop->label ),
+            primary   => $primary_col{$id} ? 1 : 0,
+            col_class => $prop->col_class,
+            sortable  => $prop->can_sort($scope),
+            sorted    => $prop->id eq $default_sort ? 1 : 0,
+            display   => $show,
+            is_default => $force || $default,
+            checked => $show,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,
@@ -1817,7 +1819,8 @@ sub filtered_list {
     $res{messages} = \@messages;
     %res = ( %forward_params, %res );
     $MT::DebugMode && $debug->{section}->('finalize');
-    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%res, $objs );
+    MT->run_callbacks( 'cms_filtered_list_param.' . $callback_ds,
+        $app, \%res, $objs );
 
     if ($MT::DebugMode) {
         my $total = Time::HiRes::tv_interval( $debug->{total} );

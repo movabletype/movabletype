@@ -489,7 +489,7 @@
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreCount></MTAuthors>", "e" : ""}, #488
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreHigh></MTAuthors>", "e" : ""}, #489
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorScoreLow></MTAuthors>", "e" : ""}, #490
-{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpic></MTAuthors>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"\" />"}, #491
+{ "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpic></MTAuthors>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"Image photo\" />"}, #491
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicAsset><MTAssetFileName></MTAuthorUserpicAsset></MTAuthors>", "e" : "test.jpg"}, #492
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorUserpicURL></MTAuthors>", "e" : "/mt-static/support/assets_c/userpics/userpic-2-100x100.png"}, #493
 { "r" : "1", "t" : "<MTAuthors lastn=\"1\"><MTAuthorBasename></MTAuthors>", "e" : "chucky_dee"}, #494
@@ -554,7 +554,7 @@
 { "r" : "1", "t" : "<MTEntries lastn='3'><MTEntriesHeader><ul></MTEntriesHeader><li><MTEntryTitle></li><MTEntriesFooter><ul></MTEntriesFooter></MTEntries>", "e" : "<ul><li>A Rainy Day</li><li>Verse 5</li><li>Verse 4</li><ul>"}, #553
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAdditionalCategories glue=','><MTCategoryLabel></MTEntryAdditionalCategories></MTEntries>", "e" : ""}, #554
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorID></MTEntries>", "e" : "2"}, #555
-{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpic></MTEntries>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"\" />"}, #556
+{ "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpic></MTEntries>", "e" : "<img src=\"/mt-static/support/assets_c/userpics/userpic-2-100x100.png?3\" width=\"100\" height=\"100\" alt=\"Image photo\" />"}, #556
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicAsset><MTAssetFilename></MTEntryAuthorUserpicAsset></MTEntries>", "e" : "test.jpg"}, #557
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryAuthorUserpicURL></MTEntries>", "e" : "/mt-static/support/assets_c/userpics/userpic-2-100x100.png"}, #558
 { "r" : "1", "t" : "<MTEntries lastn=\"1\"><MTEntryBlogDescription></MTEntries>", "e" : "Narnia None Test Blog"}, #559

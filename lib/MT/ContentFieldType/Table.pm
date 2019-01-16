@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -87,6 +87,7 @@ sub options_validation_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $value ) = @_;
+    $value = '' unless defined $value && $value ne '';
     return qq{<table border="1">$value</table>};
 }
 

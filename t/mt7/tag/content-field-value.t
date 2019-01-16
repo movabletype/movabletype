@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -183,6 +183,22 @@ $test_env->prepare_fixture(
             description  => 'Sample photo',
         );
 
+        my $child_ct = MT::Test::Permission->make_content_type(
+            name    => 'test child content data',
+            blog_id => $blog_id,
+        );
+        my $child_cd_01 = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $child_ct->id,
+            author_id       => 1,
+        );
+        my $cf_ct = MT::Test::Permission->make_content_field(
+            blog_id         => $blog_id,
+            content_type_id => $ct->id,
+            name            => 'content type',
+            type            => 'content_type',
+        );
+
         my $fields = [
             {   id        => $cf_single_line_text->id,
                 order     => 1,
@@ -322,6 +338,15 @@ $test_env->prepare_fixture(
                     min      => 1,
                 },
             },
+            {   id      => $cf_ct->id,
+                order   => 17,
+                type    => $cf_ct->type,
+                options => {
+                    label    => $cf_ct->name,
+                    multiple => 1,
+                    source   => $child_ct->id,
+                },
+            },
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
@@ -348,6 +373,7 @@ $test_env->prepare_fixture(
                 $cf_tag->id      => [ $tag2->id,      $tag1->id ],
                 $cf_category->id => [ $category2->id, $category1->id ],
                 $cf_image->id    => [ $image1->id,    $image2->id ],
+                $cf_ct->id       => [ $child_cd_01->id ],
             },
         );
         $cd01->convert_breaks(
@@ -384,7 +410,7 @@ $test_env->prepare_fixture(
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -409,6 +435,7 @@ Empty
 Empty
 Empty
 Empty
+Empty
 
 === mt:ContentFieldValue no glue
 --- template
@@ -416,8 +443,8 @@ Empty
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
-test multi line text
-aaaaa
+<p>test multi line text<br />
+aaaaa</p>
 12345
 https://example.com/~abby
 abc
@@ -437,6 +464,7 @@ aaabbbccc
 21
 21
 12
+No Label (ID:1)
 
 === mt:ContentFieldValue with glue
 --- template
@@ -444,8 +472,8 @@ aaabbbccc
 </mt:ContentFields></mt:Contents>
 --- expected
 test single line text
-test multi line text
-aaaaa
+<p>test multi line text<br />
+aaaaa</p>
 12345
 https://example.com/~abby
 abc
@@ -465,6 +493,7 @@ aaa,bbb,ccc
 2,1
 2,1
 1,2
+No Label (ID:1)
 
 === mt:ContentFieldValue with convert_breaks
 --- template
@@ -509,21 +538,7 @@ test
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%X"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="cz"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="dk"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="nl"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue language="en"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="fr"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="de"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="is"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="it"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="no"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="pl"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="pt"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="si"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="es"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="fi"></mt:ContentField>
-<mt:ContentField content_field="date and time"><mt:ContentFieldValue language="se"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
 <mt:ContentField content_field="date and time"><mt:ContentFieldValue utc="1"></mt:ContentField>
 </mt:Contents>
@@ -550,21 +565,7 @@ June  3, 2017
  6:05 PM
 2017-06-03T18:05:00+00:00
 Sat, 03 Jun 2017 18:05:00 +0000
- 3. &#268;erven 2017 18:05
-03.06.2017 18:05
- 3 juni 2017 18:05
 June  3, 2017  6:05 PM
- 3 juin 2017 18h05
- 3.06.17 18:05
-03.06.17 18:05
-03.06.17 18:05
-Juni  3, 2017  6:05 EM
- 3 czerwca 2017 18:05
-junho  3, 2017  6:05 PM
-03.06.17 18:05
- 3 de Junio 2017 a las 06:05 PM
-03.06.17 18:05
-juni  3, 2017  6:05 EM
 2017-06-03
 June  3, 2017  6:05 PM
 
@@ -593,21 +594,7 @@ June  3, 2017  6:05 PM
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%X"></mt:ContentField>
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="cz"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="dk"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="nl"></mt:ContentField>
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue language="en"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="fr"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="de"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="is"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="it"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="no"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="pl"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="pt"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="si"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="es"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="fi"></mt:ContentField>
-<mt:ContentField content_field="date_only"><mt:ContentFieldValue language="se"></mt:ContentField>
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
 <mt:ContentField content_field="date_only"><mt:ContentFieldValue utc="1"></mt:ContentField>
 </mt:Contents>
@@ -634,21 +621,7 @@ June  5, 2017
 12:00 AM
 2017-06-05T00:00:00+00:00
 Mon, 05 Jun 2017 00:00:00 +0000
- 5. &#268;erven 2017  0:00
-05.06.2017 00:00
- 5 juni 2017  0:00
 June  5, 2017 12:00 AM
- 5 juin 2017  0h00
- 5.06.17  0:00
-05.06.17 00:00
-05.06.17 00:00
-Juni  5, 2017 12:00 FM
- 5 czerwca 2017  0:00
-junho  5, 2017 12:00 AM
-05.06.17 00:00
- 5 de Junio 2017 a las 12:00 AM
-05.06.17 00:00
-juni  5, 2017 12:00 FM
 2017-06-05
 June  5, 2017 12:00 AM
 
@@ -677,21 +650,7 @@ June  5, 2017 12:00 AM
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%X"></mt:ContentField>
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue format_name="iso8601"></mt:ContentField>
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue format_name="rfc822"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="cz"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="dk"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="nl"></mt:ContentField>
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue language="en"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="fr"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="de"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="is"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="it"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="no"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="pl"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="pt"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="si"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="es"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="fi"></mt:ContentField>
-<mt:ContentField content_field="time_only"><mt:ContentFieldValue language="se"></mt:ContentField>
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue format="%Y-%m-%d"></mt:ContentField>
 <mt:ContentField content_field="time_only"><mt:ContentFieldValue utc="1"></mt:ContentField>
 </mt:Contents>
@@ -718,21 +677,7 @@ January  1, 1970
 12:34 PM
 1970-01-01T12:34:56+00:00
 Thu, 01 Jan 1970 12:34:56 +0000
- 1. Leden 1970 12:34
-01.01.1970 12:34
- 1 januari 1970 12:34
 January  1, 1970 12:34 PM
- 1 janvier 1970 12h34
- 1.01.70 12:34
-01.01.70 12:34
-01.01.70 12:34
-Januar  1, 1970 12:34 EM
- 1 stycznia 1970 12:34
-janeiro  1, 1970 12:34 PM
-01.01.70 12:34
- 1 de Enero 1970 a las 12:34 PM
-01.01.70 12:34
-januari  1, 1970 12:34 EM
 1970-01-01
 January  1, 1970 12:34 PM
 

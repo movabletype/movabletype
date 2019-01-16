@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -49,7 +49,7 @@ sub _content_type_registry {
         ss_validator =>
             '$Core::MT::ContentFieldType::ContentType::ss_validator',
         tag_handler =>
-            '$Core::MT::ContentFieldType::Common::tag_handler_content_type',
+            '$Core::MT::ContentFieldType::ContentType::tag_handler',
         feed_value_handler =>
             '$Core::MT::ContentFieldType::ContentType::feed_value_handler',
         preview_handler =>
@@ -71,7 +71,7 @@ sub _content_type_registry {
                 base    => '__virtual.integer',
                 col     => 'value_integer',
                 display => 'none',
-                terms => '$Core::MT::ContentFieldType::ContentType::temrs_id',
+                terms => '$Core::MT::ContentFieldType::ContentType::terms_id',
             },
         },
         options_validation_handler =>
@@ -1162,7 +1162,7 @@ sub _tags_registry {
 }
 
 sub _list_registry {
-    {   label                => 'List',
+    {   label                => '__LIST_FIELD_LABEL',
         data_type            => 'varchar',
         order                => 190,
         icon_class           => 'ic_list',

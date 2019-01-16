@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -263,7 +263,8 @@ sub setup {
     $ENV{BUILD_VERSIONS_TRAILER} ||= $self->{'versions-trailer=s'};
 
 # Set the full name to use for the distribution (e.g. MT-3.3b1-fr-r12345-20061225).
-    $self->{'workspace-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}";
+    $self->{'workspace-dir=s'} = "$self->{'pack=s'}-$self->{'stamp=s'}"
+        unless $self->{'workspace-dir=s'};
 }
 
 sub make {

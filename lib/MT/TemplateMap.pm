@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -334,6 +334,16 @@ sub _is_for_content_type {
     $self->archive_type =~ /^ContentType/;
 }
 
+sub template {
+    my $self = shift;
+    $self->cache_property(
+        'tempalte',
+        sub {
+            MT->model('template')->load( $self->template_id || 0 );
+        },
+    );
+}
+
 1;
 __END__
 
@@ -464,6 +474,10 @@ Returns nothing when dt_field_id is invalid or this mapping is not for Content T
 
 Returns MT::ContentField related to this mapping's category field.
 Returns nothing when cat_field_id is invalid or this mapping is not for Content Type.
+
+=item * template()
+
+Returns parent MT::Template of this mapping.
 
 =back
 

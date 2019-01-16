@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -202,17 +202,35 @@ sub _hdlr_archives {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     local $ctx->{current_archive_type} = $at;
     ## If we are producing a Category archive list, don't bother to
     ## handle it here--instead hand it over to <MTCategories>.
     return $ctx->invoke_handler( 'categories', $args, $cond )
         if $at eq 'Category';
-    if ( $at eq 'ContentType-Category' ) {
-        my $category_set = $ctx->stash('category_set')
-            or return $ctx->_no_category_set_error();
+    if ( $at =~ /^ContentType-Category/ ) {
+        my $map = $archiver->_get_preferred_map(
+            {   blog_id         => $blog->id,
+                content_type_id => $ctx->stash('content_type')->id,
+                map             => $ctx->stash('template_map'),
+            }
+        );
+        my $cat_field = $map ? $map->cat_field : undef;
+        my $category_set
+            = $cat_field
+            ? MT->model('category_set')
+            ->load( $cat_field->related_cat_set_id || 0 )
+            : undef;
+        local $ctx->{__stash}{category_set} = $category_set if $category_set;
+        $category_set ||= $ctx->stash('category_set');
+        return $ctx->_no_category_set_error unless $category_set;
         $args->{category_set_id} = $category_set->id;
-        return $ctx->invoke_handler( 'categories', $args, $cond );
+        if ( $at eq 'ContentType-Category' ) {
+            return $ctx->invoke_handler( 'categories', $args, $cond );
+        }
     }
     my %args;
     my $sort_order
@@ -306,10 +324,12 @@ sub _hdlr_archives {
             sub {
                 $archiver->archive_group_entries( $ctx, %curr );
             }
-        ) if $archiver->group_based;
+            )
+            if $archiver->group_based && !$archiver->contenttype_group_based;
         local $ctx->{__stash}{contents} = delay(
             sub {
-                $archiver->archive_group_contents( $ctx, \%curr );
+                $archiver->archive_group_contents( $ctx, \%curr,
+                    $ctx->stash('content_type')->id );
             }
         ) if $archiver->contenttype_group_based;
         $ctx->{__stash}{$_} = $curr{$_} for keys %curr;
@@ -442,6 +462,9 @@ sub _hdlr_archive_prev_next {
     local $ctx->{__stash}{content_type}
         = $ctx->get_content_type_context( $args, $cond )
         if $args->{content_type};
+    if ( $at =~ /^ContentType/ && !$ctx->stash('content_type') ) {
+        return $ctx->_no_content_type_error;
+    }
 
     my ( $prev_method, $next_method )
         = $arctype->contenttype_based
@@ -452,7 +475,11 @@ sub _hdlr_archive_prev_next {
         : ( 'previous_archive_entry', 'next_archive_entry' );
 
     my $obj;
-    if ( $arctype->date_based && $arctype->category_based ) {
+    if (   $arctype->date_based
+        && $arctype->category_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_category_based )
+    {
         my $param = {
             ts       => $ctx->{current_timestamp},
             blog_id  => $ctx->stash('blog_id'),
@@ -463,7 +490,11 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->date_based && $arctype->author_based ) {
+    elsif ($arctype->date_based
+        && $arctype->author_based
+        && !$arctype->contenttype_date_based
+        && !$arctype->contenttype_author_based )
+    {
         my $param = {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
@@ -474,12 +505,12 @@ sub _hdlr_archive_prev_next {
             ? $arctype->$prev_method($param)
             : $arctype->$next_method($param);
     }
-    elsif ( $arctype->category_based ) {
+    elsif ( $arctype->category_based && !$arctype->contenttype_date_based ) {
         return $is_prev
             ? $ctx->invoke_handler( 'categoryprevious', $args, $cond )
             : $ctx->invoke_handler( 'categorynext',     $args, $cond );
     }
-    elsif ( $arctype->author_based ) {
+    elsif ( $arctype->author_based && !$arctype->date_based ) {
         if ($is_prev) {
             $ctx->stash( 'tag', 'AuthorPrevious' );
         }
@@ -489,14 +520,26 @@ sub _hdlr_archive_prev_next {
         require MT::Template::Tags::Author;
         return MT::Template::Tags::Author::_hdlr_author_next_prev(@_);
     }
-    elsif ( $arctype->entry_based || $arctype->contenttype_based ) {
-        my $obj_key = $arctype->contenttype_based ? 'content' : 'entry';
-        my $o = $ctx->stash($obj_key);
+    elsif ( $arctype->entry_based ) {
+        my $o = $ctx->stash('entry');
         if ($is_prev) {
             $obj = $o->previous(1);
         }
         else {
             $obj = $o->next(1);
+        }
+    }
+    elsif ( $arctype->contenttype_based ) {
+        my $terms = {
+            status     => 2,               # MT::ContentStatus::RELEASE()
+            date_field => 'authored_on',
+        };
+        my $o = $ctx->stash('content');
+        if ($is_prev) {
+            $obj = $o->previous($terms);
+        }
+        else {
+            $obj = $o->next($terms);
         }
     }
     else {
@@ -517,11 +560,14 @@ sub _hdlr_archive_prev_next {
             ts      => $ctx->{current_timestamp},
             blog_id => $ctx->stash('blog_id'),
         };
-        if ( $arctype->contenttype_date_based ) {
+        if ( $arctype->contenttype_author_based ) {
+            $param->{author} = $ctx->stash('author');
+        }
+        if (   $arctype->contenttype_date_based
+            || $arctype->contenttype_category_based )
+        {
             my $content_type = $ctx->stash('content_type');
-            my $content_data = $ctx->stash('content');
-            if ( $content_type && $content_data ) {
-                $param->{content_data} = $content_data;
+            if ($content_type) {
                 my ($map) = MT::TemplateMap->load(
                     {   blog_id      => $param->{blog_id},
                         archive_type => $at,
@@ -535,7 +581,13 @@ sub _hdlr_archive_prev_next {
                         ),
                     },
                 );
-                $param->{datetime_field_id} = $map->dt_field_id if $map;
+                $param->{datetime_field_id} = $map->dt_field_id
+                    if $map && $arctype->contenttype_date_based;
+                if ( $arctype->contenttype_category_based ) {
+                    $param->{category_field_id} = $map->cat_field_id if $map;
+                    $param->{category_id} = $ctx->stash('category')->id
+                        if $ctx->stash('category');
+                }
             }
         }
         $obj
@@ -545,16 +597,24 @@ sub _hdlr_archive_prev_next {
     }
     if ($obj) {
         my $builder = $ctx->stash('builder');
-        my $stash_key
-            = $arctype->contenttype_based
-            || $arctype->contenttype_category_based
-            || $arctype->contenttype_author_based
-            || $arctype->contenttype_date_based ? 'contents' : 'entries';
-        local $ctx->{__stash}->{$stash_key} = [$obj];
-
-        my $date_field_data;
+        my ( $stash_key, $stash_key_plural );
         if (   $arctype->contenttype_based
             || $arctype->contenttype_category_based
+            || $arctype->contenttype_author_based
+            || $arctype->contenttype_date_based )
+        {
+            $stash_key        = 'content';
+            $stash_key_plural = 'contents';
+        }
+        else {
+            $stash_key        = 'entry';
+            $stash_key_plural = 'entries';
+        }
+        local $ctx->{__stash}->{$stash_key}        = $obj;
+        local $ctx->{__stash}->{$stash_key_plural} = [$obj];
+
+        my $date_field_data;
+        if (   $arctype->contenttype_category_based
             || $arctype->contenttype_author_based
             || $arctype->contenttype_date_based )
         {
@@ -650,17 +710,21 @@ sub _hdlr_if_archive_type {
     if ( $at =~ /ContentType/ ) {
         if ( defined $args->{content_type} && $args->{content_type} ne '' ) {
             my $content_type = $ctx->stash('content_type');
-            if (defined $content_type
-                && (   $args->{content_type} eq $content_type->unique_id
-                    || $args->{content_type} eq $content_type->id
-                    || $args->{content_type} eq $content_type->name )
+            return defined $content_type
+                && ( $args->{content_type} eq $content_type->unique_id
+                || $args->{content_type} eq $content_type->id
+                || $args->{content_type} eq $content_type->name );
+        }
+        else {
+            return $ctx->error(
+                MT->translate(
+                    "You used an [_1] tag without a valid [_2] attribute.",
+                    "<MTIfArchiveType>", "content_type"
                 )
-            {
-                return 1;
-            }
+            );
         }
     }
-    return 0;
+    1;
 }
 
 ###########################################################################
@@ -681,6 +745,13 @@ Specifies the name of the archive type you wish to check to see if it is enabled
 A list of possible values values for type can be found on the L<ArchiveType>
 tag.
 
+=item * content_type (optional)
+
+Specifies id, unique_id or name of the content type of the archive type that you
+wish to check to see if it is enabled.
+
+This is ignored when you check archive type not realted to content type. This is required when you check archive type related to content type. This tag returns false when you check archive type related to content type and invalid content_type modifier.
+
 =back
 
 B<Example:>
@@ -697,10 +768,29 @@ B<Example:>
 
 sub _hdlr_archive_type_enabled {
     my ( $ctx, $args ) = @_;
-    my $blog         = $ctx->stash('blog');
-    my $at           = ( $args->{type} || $args->{archive_type} );
-    my $content_type = $at =~ /ContentType/ ? ( $args->{content_type} ) : '';
-    return $blog->has_archive_type( $at, $content_type );
+    my $blog = $ctx->stash('blog');
+    my $at = ( $args->{type} || $args->{archive_type} );
+
+    my $ct;
+    if ( $at =~ /ContentType/ ) {
+        my $ct_arg
+            = defined $args->{content_type} ? $args->{content_type} : '';
+        return $ctx->error(
+            MT->translate(
+                "You used an [_1] tag without a valid [_2] attribute.",
+                "<MTIfArchiveTypeEnabled>",
+                "content_type"
+            )
+        ) unless $ct_arg;
+        my $ct_class = MT->model('content_type');
+        $ct
+            = $ct_class->load($ct_arg)
+            || $ct_class->load( { unique_id => $ct_arg } )
+            || $ct_class->load( { blog_id => $blog->id, name => $ct_arg } );
+        return unless $ct;
+    }
+
+    return $blog->has_archive_type( $at, $ct ? $ct->id : 0 );
 }
 
 ###########################################################################
@@ -835,18 +925,20 @@ sub _hdlr_archive_link {
         $cat = $ctx->stash('category') || $ctx->stash('archive_category');
     }
 
+    my $content_type_id
+        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+
     return $ctx->error(
         MT->translate(
             "You used an [_1] tag for linking into '[_2]' archives, but that archive type is not published.",
             '<$MTArchiveLink$>',
             $at
         )
-    ) unless $blog->has_archive_type($at);
+    ) unless $blog->has_archive_type( $at, $content_type_id || 0 );
 
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
     my $arch = $blog->archive_url;
-    $arch = $blog->site_url if $content && $content->class eq 'page';
+    $arch = $blog->site_url
+        if $content && $content->can('class') && $content->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
     $arch
         .= archive_file_for( $content, $blog, $at, $cat, undef,
@@ -1098,12 +1190,25 @@ sub _hdlr_archive_count {
     elsif ( my $count = $ctx->stash('archive_count') ) {
         return $ctx->count_format( $count, $args );
     }
-    my $e = $ctx->stash('entries');
-    $e = [ $ctx->stash('entry') ]
-        if !$e && $ctx->stash('entry');
-    my @entries;
-    @entries = @$e if ref($e) eq 'ARRAY';
-    my $count = scalar @entries;
+    my $count;
+    if ( ( defined $at && $at =~ /^ContentType/ )
+        || $ctx->stash('content_type') )
+    {
+        my $c = $ctx->stash('contents');
+        $c = [ $ctx->stash('content') ]
+            if !$c && $ctx->stash('content');
+        my @contents;
+        @contents = @$c if ref($c) eq 'ARRAY';
+        $count = scalar @contents;
+    }
+    else {
+        my $e = $ctx->stash('entries');
+        $e = [ $ctx->stash('entry') ]
+            if !$e && $ctx->stash('entry');
+        my @entries;
+        @entries = @$e if ref($e) eq 'ARRAY';
+        $count = scalar @entries;
+    }
     return $ctx->count_format( $count, $args );
 }
 

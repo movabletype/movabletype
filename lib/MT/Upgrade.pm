@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -173,7 +173,7 @@ sub run_step {
         local $MT::CallbacksEnabled = 0;
         if ( my $cond = $fn->{condition} ) {
             $cond = MT->handler_to_coderef($cond);
-            next unless $cond->( $self, %param );
+            return unless $cond->( $self, %param );
         }
         my %update_params;
         if ( $fn->{updater} ) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -753,6 +753,29 @@ sub __deep_localize_labels {
                 && $hash->{'no_translate'}->{$k};
             if ( !ref( my $label = $hash->{$k} ) ) {
                 $hash->{$k} = sub { $c->translate($label) };
+            }
+        }
+    }
+}
+
+sub __deep_localize_templatized_values {
+    my ( $c, $hash ) = @_;
+    foreach my $k ( keys %$hash ) {
+        if ( ref( $hash->{$k} ) eq 'HASH' ) {
+            __deep_localize_templatized_values( $c, $hash->{$k} );
+        }
+        else {
+            next unless $k =~ m/\A(?:
+                  name
+                | description
+                | category_field
+                | category_set
+                | content_type
+                | datetime_field
+                | source
+            )\z/x;
+            if ( !ref( my $value = $hash->{$k} ) ) {
+                $hash->{$k} = $c->translate_templatized($value);
             }
         }
     }

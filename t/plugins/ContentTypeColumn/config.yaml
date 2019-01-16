@@ -1,0 +1,11 @@
+name: ContentTypeColumn
+schema_version: 0.01
+
+callbacks:
+  init_app: $ContentTypeColumn::ContentTypeColumn::cb_init_app
+  MT::ContentData::pre_save: $ContentTypeColumn::ContentTypeColumn::cb_pre_save
+
+object_types:
+  cd:
+    random: integer
+

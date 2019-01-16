@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -128,17 +128,14 @@ sub archive_group_contents {
     my ( $ctx, $param, $content_type_id ) = @_;
 
     $content_type_id ||=
-          $ctx->stash('template')
-        ? $ctx->stash('template')->content_type_id
-        : undef;
+          $ctx->stash('content_type') ? $ctx->stash('content_type')->id
+        : $ctx->stash('template') ? $ctx->stash('template')->content_type_id
+        :                           undef;
 
     my $blog  = $ctx->stash('blog');
     my $a     = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    if ( $limit && ( $limit eq 'auto' ) ) {
-        my $blog = $ctx->stash('blog');
-        $limit = $blog->entries_on_index if $blog;
-    }
+    $limit = 0 if defined $limit && $limit eq 'none';
     return [] unless $a;
     require MT::ContentData;
     my @contents = MT::ContentData->load(

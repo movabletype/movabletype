@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,11 +10,6 @@ use strict;
 use warnings;
 use base qw( MT::ErrorHandler );
 
-use constant FALSE => -99999;
-use Exporter;
-*import = \&Exporter::import;
-use vars qw( @EXPORT );
-@EXPORT = qw( FALSE );
 use MT::Util qw( weaken );
 use MT::Template::Handler;
 
@@ -523,12 +518,21 @@ sub set_blog_load_context {
 
 sub set_content_type_load_context {
     my ( $ctx, $args, $cond, $cd_terms, $cd_args ) = @_;
+
+    $ctx->set_blog_load_context( $args, $cd_terms, $cd_args )
+        or return $ctx->error( $ctx->errstr );
+
     if ( my $arg = $args->{content_type} ) {
         my $class = MT->model('content_type');
         my $ct;
-        $ct = $class->load($arg) if ( $arg =~ /^\d+$/ );
+        my $blog_id = $cd_terms->{blog_id};
+        $ct = $class->load($arg) if ( $arg =~ /^[0-9]+$/ );
         $ct = $class->load( { unique_id => $arg } ) unless $ct;
-        $ct = $class->load( { name      => $arg } ) unless $ct;
+        $ct = $class->load(
+            {   name    => $arg,
+                blog_id => $blog_id,
+            }
+        ) unless $ct;
         return $ctx->_no_content_type_error unless $ct;
         $cd_terms->{content_type_id} = $ct->id;
     }
@@ -545,7 +549,8 @@ sub get_content_type_context {
     if ( my $str = $args->{content_type} ) {
         if (!$content_type
             || (   $content_type
-                && $content_type->unique_id != $str
+                && ( $str =~ /^[0-9]+$/ && $content_type->id != $str )
+                && $content_type->unique_id ne $str
                 && ($content_type->blog_id != $blog_id
                     || (   $content_type->blog_id == $blog_id
                         && $content_type->name ne $str )
@@ -558,9 +563,12 @@ sub get_content_type_context {
             unless ($content_type) {
                 ($content_type)
                     = MT->model('content_type')
-                    ->load( { blog_id => $blog_id, name => $str } )
-                    or return $ctx->_no_content_type_error();
+                    ->load( { blog_id => $blog_id, name => $str } );
             }
+            if ( !$content_type && $str =~ /^[0-9]+$/ ) {
+                $content_type = MT->model('content_type')->load($str);
+            }
+            return $ctx->_no_content_type_error() unless $content_type;
         }
     }
 
@@ -1050,6 +1058,18 @@ sub _no_blog_error {
         MT->translate(
             "You used an '[_1]' tag outside of the context of the blog; "
                 . "Perhaps you mistakenly placed it outside of an 'MTBlogs' container tag?",
+            $tag_name
+        )
+    );
+}
+
+sub _no_site_error {
+    my ($ctx) = @_;
+    my $tag_name = $ctx->stash('tag');
+    $tag_name = 'mt' . $tag_name unless $tag_name =~ m/^MT/i;
+    return $_[0]->error(
+        MT->translate(
+            "You used an '[_1]' tag outside of the context of the site;",
             $tag_name
         )
     );

@@ -440,4 +440,34 @@
       && ( year % 100 != 0 || year % 400 == 0 );
   };
 
+  MT.Util.isMobileView = function () {
+      return jQuery(window.top).width() < 768;
+  };
+
+  // copy from mt-static/js/editor/editor.js
+  MT.Util.isIos = function () {
+      return window.navigator.userAgent.match(/i(Phone|Pad|Pod)/);
+  };
+
+  // copy from Chart API
+  MT.Util.isSmartphone = function () {
+      var userAgent = window.navigator ? window.navigator.userAgent : '';
+      return (/android|iphone|ipod|ipad/i).test(userAgent);
+  };
+
+  // DOM change is not applied until scrolling .modal-body on iOS
+  MT.Util.refreshModalBodyOnIos = function () {
+      if (!MT.Util.isIos()) {
+        return;
+      }
+      var modalBody = jQuery('.modal-body').get(0);
+      if (!modalBody) {
+        return;
+      }
+      modalBody.scrollBy(0, 1);
+      modalBody.scrollBy(0, -1);
+  };
+
+
+
 })(window);

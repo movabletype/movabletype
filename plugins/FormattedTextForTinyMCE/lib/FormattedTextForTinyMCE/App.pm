@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -16,7 +16,7 @@ sub view_text {
     my $user = $app->user;
 
     my $formatted_text
-        = MT->model('formatted_text')->load( $app->param('id') )
+        = MT->model('formatted_text')->load( scalar $app->param('id') )
         or return $app->error( $app->translate('Cannot load boilerplate.') );
 
     return $app->permission_denied()

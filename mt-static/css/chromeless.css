@@ -19,7 +19,7 @@ body {
 .reset-password.container,
 .change-password.container
 {
-  width: 400px;
+  max-width: 400px;
 }
 
 label {

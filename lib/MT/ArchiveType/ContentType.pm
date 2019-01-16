@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -30,7 +30,6 @@ sub template_params {
         archive_class       => "contenttype-archive",
         contenttype_archive => 1,
         archive_template    => 1,
-        archive_listing     => 1,
     };
 }
 
@@ -62,9 +61,8 @@ sub archive_file {
 }
 
 sub archive_title {
-    my $obj   = shift;
-    my $title = $_[1]->content_type->name . ': ' . $_[1]->id;
-    encode_html( remove_html($title) );
+    my $obj = shift;
+    encode_html( remove_html( $_[1]->label ) );
 }
 
 sub archive_group_iter {
@@ -73,21 +71,41 @@ sub archive_group_iter {
 
     my $order
         = ( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
+    my $blog_id         = $ctx->stash('blog')->id;
+    my $content_type_id = $ctx->stash('content_type')->id;
 
-    my $blog_id = $ctx->stash('blog')->id;
+    my $map = $obj->_get_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $dt_field = $map ? $map->dt_field : undef;
+
+    my $iter_args = { $args->{lastn} ? ( limit => $args->{lastn} ) : () };
+    if ($dt_field) {
+        $iter_args->{join} = MT->model('content_field_index')->join_on(
+            undef,
+            {   content_field_id => $dt_field->id,
+                content_data_id  => \'= cd_id',
+            },
+            {   direction => $order,
+                sort      => 'value_datetime',
+            },
+        );
+    }
+    else {
+        $iter_args->{direction} = $order;
+        $iter_args->{sort}      = 'authored_on';
+    }
+
     require MT::ContentData;
     my $iter = MT::ContentData->load_iter(
-        {   blog_id => $blog_id,
-            status  => MT::ContentStatus::RELEASE(),
-            (   $ctx->stash('content_type')
-                ? ( content_type_id => $ctx->stash('content_type')->id )
-                : ()
-            ),
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            status          => MT::ContentStatus::RELEASE(),
         },
-        {   'sort'    => 'authored_on',
-            direction => $order,
-            $args->{lastn} ? ( limit => $args->{lastn} ) : ()
-        }
+        $iter_args,
     );
     return sub {
         while ( my $content = $iter->() ) {

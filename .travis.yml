@@ -15,7 +15,7 @@ env:
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.18" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - TEST_COMMAND="npm run test-riot"
+    - TEST_COMMAND="travis_retry npm run test-riot"
 
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
     - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"

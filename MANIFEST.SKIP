@@ -160,6 +160,9 @@ themes/broken_blog_theme
 #?package=MTA ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTA ^addons/AWS.pack
 #?package=MTA ^plugins/P-M-SizeLimit
+#?package=MTA ^mt-cp.cgi
+#?package=MTA ^addons/Community.pack
+#?package=MTA ^mt-static/addons/Community.pack
 
 #?package=MTAAWS ^COPYING
 #?package=MTAAWS ^COPYRIGHT
@@ -180,6 +183,35 @@ themes/broken_blog_theme
 #?package=MTCLOUD ^mt-cp.cgi
 #?package=MTCLOUD ^addons/Community.pack
 #?package=MTCLOUD ^mt-static/addons/Community.pack
+
+#?package=MTP ^COPYING
+#?package=MTP ^COPYRIGHT
+#?package=MTP ^addons/Enterprise.pack
+#?package=MTP ^mt-static/addons/Enterprise.pack
+#?package=MTP ^tools/migrate-mssql
+#?package=MTP ^addons/Cloud.pack
+#?package=MTP ^mt-hb.cgi
+#?package=MTP ^mt-static/addons/Cloud.pack
+#?package=MTP ^VERSIONS
+#?package=MTP ^lib/MT/FileMgr/FTP.pm
+#?package=MTP ^lib/MT/FileMgr/FTPS.pm
+#?package=MTP ^addons/Sync.pack
+#?package=MTP ^mt-static/addons/Sync.pack
+#?package=MTP ^addons/AWS.pack
+#?package=MTP ^mt-sp.cgi
+#?package=MTP ^plugins/SmartphoneOption
+#?package=MTP ^mt-static/SmartphoneOption
+#?package=MTP ^plugins/Motion
+#?package=MTP ^mt-static/plugins/Motion
+#?package=MTP ^mt-static/jquery/themes/Motion
+
+#?package=MTP ^mt-cp.cgi
+#?package=MTP ^addons/Community.pack
+#?package=MTP ^mt-static/addons/Community.pack
+
+#?pacakge=MTP ^plugins/mixiComment
+#?pacakge=MTP ^mt-static/plugins/mixiComment
+#?package=MTP ^plugins/P-M-SizeLimit
 
 #?language=ja ^plugins/zemanta
 
@@ -335,3 +367,7 @@ yarn.lock
 
 # Test
 \.proverc
+
+# Composer
+^composer.json
+^composer.lock

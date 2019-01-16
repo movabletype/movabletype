@@ -1,22 +1,50 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
 # $Id$
 
 function smarty_function_mtcategoryarchivelink($args, &$ctx) {
-    $category = $ctx->stash('category') or $ctx->stash('archive_category');
-    if (!$category) {
-        $entry = $ctx->stash('entry');
-        if (!empty($entry) && ($categoty = $entry->category())) {
-            $category = $entry->category();
+    require_once('MTUtil.php');
+    $category = get_category_context($ctx);
+    if (!$category) return '';
+
+    if ($ctx->stash('content') || $category->category_category_set_id) {
+        $cat_at_label = 'ContentType-Category';
+    } else {
+        $cat_at_label = 'Category';
+    }
+
+    $curr_at = $ctx->stash('current_archive_type');
+    $curr_at or $curr_at = $ctx->stash('archive_type');
+    $curr_at or $curr_at = $cat_at_label;
+
+    $blog = $ctx->stash('blog');
+    if (!$blog && $curr_at !== $cat_at_label) {
+        return '';
+    }
+    if ($curr_at !== $cat_at_label) {
+        $blog_at = $blog->archive_type;
+        $blog_ats = explode(',', $blog_at);
+        $cat_arc = false;
+        foreach ($blog_ats as $at) {
+            if ($cat_at_label === $at) {
+                $cat_arc = true;
+                break;
+            }
+        }
+        if (!$cat_arc) {
+            return $ctx->error($ctx->mt->translate(
+                '[_1] cannot be used without publishing [_2] archive.',
+                '<$MTCategoryArchiveLink$>',
+                $cat_at_label
+            ));
         }
     }
-    if (!isset($args['blog_id']))
-        $args['blog_id'] = $ctx->stash('blog_id');
-    if (!$category) return '';
-    $link = $ctx->mt->db()->category_link($category->category_id, $args);
+
+    $content_type_id = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : 0;
+    $link = $ctx->mt->db()->category_link($category->category_id, $cat_at_label, $content_type_id);
     if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');

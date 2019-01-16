@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -110,11 +110,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.0.4';
+    $version = '7.1';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4211';
+    $release_version = 'r.4502';
 }
 
 my ( $mt, $LH );
@@ -893,8 +893,7 @@ if ($mt) {
     foreach my $key ( keys %$drivers ) {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
-        my $link   = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
+        my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
         push @DATA,
             [
             $driver->{dbd_package},

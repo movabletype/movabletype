@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,7 +9,6 @@ package MT::ContentPublisher;
 use strict;
 use warnings;
 use base qw( MT::WeblogPublisher );
-our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
 
 use MT;
 use MT::ArchiveType;
@@ -342,29 +341,36 @@ sub rebuild {
                 }
                 else {
                     my @cats;
-                    my @cat_cf_ids = map { $_->id } MT::ContentField->load(
-                        {   type            => 'categories',
-                            content_type_id => $content_data->content_type_id,
-                        },
-                        { fetchonly => { id => 1 } },
-                    );
-                    if (@cat_cf_ids) {
-                        @cats = MT::Category->load(
-                            { category_set_id => { op => '>', value => 0 } },
-                            {   join => MT::ObjectCategory->join_on(
-                                    undef,
-                                    {   category_id => \'= category_id',
-                                        object_ds   => 'content_data',
-                                        object_id   => $content_data->id,
-                                        cf_id       => \@cat_cf_ids,
-                                    },
-                                ),
-                                unique => 1,
+                    if ( $archiver->contenttype_category_based ) {
+                        my @cat_cf_ids
+                            = map { $_->id } MT::ContentField->load(
+                            {   type => 'categories',
+                                content_type_id =>
+                                    $content_data->content_type_id,
                             },
-                        );
+                            { fetchonly => { id => 1 } },
+                            );
+                        if (@cat_cf_ids) {
+                            @cats = MT::Category->load(
+                                {   category_set_id =>
+                                        { op => '>', value => 0 }
+                                },
+                                {   join => MT::ObjectCategory->join_on(
+                                        undef,
+                                        {   category_id => \'= category_id',
+                                            object_ds   => 'content_data',
+                                            object_id   => $content_data->id,
+                                            cf_id       => \@cat_cf_ids,
+                                        },
+                                    ),
+                                    unique => 1,
+                                },
+                            );
+                        }
                     }
-                    @cats = (undef)
-                        if !@cats && !$archiver->contenttype_category_based;
+                    else {
+                        @cats = (undef);
+                    }
                     for my $cat (@cats) {
                         $mt->_rebuild_content_archive_type(
                             ContentData => $content_data,
@@ -471,6 +477,51 @@ sub rebuild_archives {
     $mt->SUPER::rebuild_archives(@_);
 }
 
+# return hashref
+#  key: content_field_id
+#  value: categories to be rebuilt
+sub _get_categories_for_rebuild {
+    my $mt    = shift;
+    my %param = @_;
+
+    my $cd            = $param{content_data};
+    my $old_cats_json = $param{old_categories};
+    my $ct            = $cd->content_type;
+
+    my ( $old_categories, @field_ids );
+    if ($old_cats_json) {
+        $old_categories
+            = eval { MT::Util::from_json($old_cats_json) } || {};
+        @field_ids = keys %$old_categories;
+    }
+    else {
+        $old_categories = {};
+        @field_ids = map { $_->{id} } @{ $ct->categories_fields };
+    }
+
+    my %categories_for_rebuild;
+    for my $field_id (@field_ids) {
+        my $field_hash = $ct->get_field($field_id);
+        my %rebuild_ids;
+        $rebuild_ids{$_} = 1 for @{ $cd->data->{$field_id}       || [] };
+        $rebuild_ids{$_} = 1 for @{ $old_categories->{$field_id} || [] };
+        if (%rebuild_ids) {
+            $categories_for_rebuild{$field_id} = [
+                MT->model('category')->load(
+                    {   id              => [ keys %rebuild_ids ],
+                        category_set_id => \'> 0',
+                    }
+                )
+            ];
+        }
+        else {
+            $categories_for_rebuild{$field_id} = [];
+        }
+    }
+
+    return \%categories_for_rebuild;
+}
+
 #   rebuild_content_data
 #
 # $mt->rebuild_content_data(ContentData => $content_data_id,
@@ -485,17 +536,18 @@ sub rebuild_content_data {
     my %param = @_;
 
     my $content_data = $param{ContentData}
-        or
-        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+        or return $mt->trans_error( "Parameter '[_1]' is required",
+        'ContentData' );
     unless ( ref $content_data ) {
         $content_data = MT::ContentData->load($content_data);
     }
     unless ($content_data) {
-        return $mt->errtrans( "Parameter '[_1]' is invalid", 'ContentData' );
+        return $mt->trans_error( "Parameter '[_1]' is invalid",
+            'ContentData' );
     }
 
     my $blog = $param{Blog} || $content_data->blog
-        or return $mt->errtrans( "Load of blog '[_1]' failed",
+        or return $mt->trans_error( "Load of blog '[_1]' failed",
         $content_data->blog_id );
     return 1 if $blog->is_dynamic;
 
@@ -503,6 +555,11 @@ sub rebuild_content_data {
     MT::Util::Log::init();
 
     MT::Util::Log->info('--- Start rebuild_content_data.');
+
+    my $categories_for_rebuild = $mt->_get_categories_for_rebuild(
+        content_data   => $content_data,
+        old_categories => $param{OldCategories},
+    );
 
     my %cache_maps;
 
@@ -541,10 +598,10 @@ sub rebuild_content_data {
 
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
-                    for my $cat (
-                        $content_data->field_categories( $map->cat_field_id )
-                        )
-                    {
+                    my @cats
+                        = @{ $categories_for_rebuild->{ $map->cat_field_id }
+                            || [] };
+                    for my $cat (@cats) {
                         $mt->_rebuild_content_archive_type(
                             ContentData => $content_data,
                             Blog        => $blog,
@@ -560,22 +617,11 @@ sub rebuild_content_data {
             }
             else {
                 for my $map (@maps) {
-
-                    # If necessary, category is loaded.
-                    my $cat;
-                    if ( $map->cat_field_id ) {
-                        my $obj_category = MT->model('objectcategory')->load(
-                            {   object_ds  => 'content_data',
-                                object_id  => $content_data->id,
-                                is_primary => 1
-                            }
-                        );
-                        $cat
-                            = $obj_category
-                            ? MT->model('category')
-                            ->load( $obj_category->category_id )
-                            : '';
-                    }
+                    my $cat = _get_primary_category_of_content_data(
+                        {   cat_field_id    => $map->cat_field_id,
+                            content_data_id => $content_data->id,
+                        }
+                    );
                     $mt->_rebuild_content_archive_type(
                         ContentData => $content_data,
                         Blog        => $blog,
@@ -584,7 +630,7 @@ sub rebuild_content_data {
                         NoStatic    => $param{NoStatic},
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Author      => $content_data->author,
-                        ( $cat ? ( Category => $cat ) : () ),
+                        Category    => $cat,
                     ) or return;
                 }
             }
@@ -657,45 +703,48 @@ sub rebuild_content_data {
         my %at = map { $_ => 1 } split /,/, $blog->archive_type;
         my @db_at = grep {
             my $archiver = $mt->archiver($_);
-            $archiver && $archiver->date_based
+            $archiver && $archiver->contenttype_date_based
         } $mt->archive_types;
         for my $at (@db_at) {
             if ( $at{$at} ) {
-                my $archiver = $mt->archiver($at);
+                my $archiver = $mt->archiver($at) or next;
+
+                my @maps;
+                if ( $cache_maps{$at} ) {
+                    @maps = @{ $cache_maps{$at} };
+                }
+                else {
+                    @maps = MT::TemplateMap->load(
+                        {   blog_id      => $content_data->blog_id,
+                            archive_type => $at,
+                        },
+                        {   join => MT::Template->join_on(
+                                undef,
+                                {   id => \'= templatemap_template_id',
+                                    content_type_id =>
+                                        $content_data->content_type_id,
+                                },
+                            ),
+                        },
+                    );
+                    $cache_maps{$at} = \@maps;
+                }
+
                 if ( $archiver->category_based ) {
-                    my @maps;
-                    if ( $cache_maps{$at} ) {
-                        @maps = @{ $cache_maps{$at} };
-                    }
-                    else {
-                        @maps = MT::TemplateMap->load(
-                            {   blog_id      => $content_data->blog_id,
-                                archive_type => $at,
-                            },
-                            {   join => MT::Template->join_on(
-                                    undef,
-                                    {   id => \'= templatemap_template_id',
-                                        content_type_id =>
-                                            $content_data->content_type_id,
-                                    },
-                                ),
-                            },
-                        );
-                        $cache_maps{$at} = \@maps;
-                    }
 
                     for my $map (@maps) {
-                        for my $cat (
-                            $content_data->field_categories(
-                                $map->cat_field_id
-                            )
-                            )
-                        {
-
+                        my @cats
+                            = @{ $categories_for_rebuild
+                                ->{ $map->cat_field_id } || [] };
+                        for my $cat (@cats) {
                             if (my $prev_arch
                                 = $archiver->previous_archive_content_data(
-                                    {   content_data => $content_data,
-                                        category     => $cat,
+                                    {   category_field_id =>
+                                            $map->cat_field_id,
+                                        category_id  => $cat->id,
+                                        content_data => $content_data,
+                                        datetime_field_id =>
+                                            $map->dt_field_id,
                                     }
                                 )
                                 )
@@ -713,8 +762,12 @@ sub rebuild_content_data {
                             }
                             if (my $next_arch
                                 = $archiver->next_archive_content_data(
-                                    {   content_data => $content_data,
-                                        category     => $cat,
+                                    {   category_field_id =>
+                                            $map->cat_field_id,
+                                        category_id  => $cat->id,
+                                        content_data => $content_data,
+                                        datetime_field_id =>
+                                            $map->dt_field_id,
                                     }
                                 )
                                 )
@@ -734,54 +787,67 @@ sub rebuild_content_data {
                     }
                 }
                 else {
-                    if (my $prev_arch
-                        = $archiver->previous_archive_content_data(
-                            {   content_data => $content_data,
-                                $archiver->author_based
-                                ? ( author => $content_data->author )
-                                : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_content_archive_type(
-                            NoStatic => $param{NoStatic},
+                    for my $map (@maps) {
+                        if (my $prev_arch
+                            = $archiver->previous_archive_content_data(
+                                {   $archiver->author_based
+                                    ? ( author => $content_data->author )
+                                    : (),
+                                    content_data      => $content_data,
+                                    datetime_field_id => $map->dt_field_id,
+                                }
+                            )
+                            )
+                        {
+                            my $cat = _get_primary_category_of_content_data(
+                                {   cat_field_id    => $map->cat_field_id,
+                                    content_data_id => $prev_arch->id,
+                                }
+                            );
+                            $mt->_rebuild_content_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            ContentData => $prev_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $content_data->author )
-                            : (),
-                        ) or return;
-                    }
-                    if (my $next_arch = $archiver->next_archive_content_data(
-                            {   content_data => $content_data,
+                                # Force       => ($param{Force} ? 1 : 0),
+                                ContentData => $prev_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                TemplateMap => $map,
+                                Category    => $cat,
                                 $archiver->author_based
-                                ? ( author => $content_data->author )
+                                ? ( Author => $content_data->author )
                                 : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_content_archive_type(
-                            NoStatic => $param{NoStatic},
+                            ) or return;
+                        }
+                        if (my $next_arch
+                            = $archiver->next_archive_content_data(
+                                {   $archiver->author_based
+                                    ? ( author => $content_data->author )
+                                    : (),
+                                    content_data      => $content_data,
+                                    datetime_field_id => $map->dt_field_id,
+                                }
+                            )
+                            )
+                        {
+                            my $cat = _get_primary_category_of_content_data(
+                                {   cat_field_id    => $map->cat_field_id,
+                                    content_data_id => $next_arch->id,
+                                }
+                            );
+                            $mt->_rebuild_content_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            ContentData => $next_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $content_data->author )
-                            : (),
-                        ) or return;
+                                # Force       => ($param{Force} ? 1 : 0),
+                                ContentData => $next_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                TemplateMap => $map,
+                                Category    => $cat,
+                                $archiver->author_based
+                                ? ( Author => $content_data->author )
+                                : (),
+                            ) or return;
+                        }
                     }
                 }
             }
@@ -791,6 +857,24 @@ sub rebuild_content_data {
     MT::Util::Log->info('--- End   rebuild_content_data.');
 
     1;
+}
+
+# move to MT::ContentData?
+sub _get_primary_category_of_content_data {
+    my ($args) = @_;
+    $args ||= {};
+    my $cat_field_id = $args->{cat_field_id} or return;
+    my $cd_id = $args->{content_data_id};
+
+    my $obj_category = MT->model('objectcategory')->load(
+        {   cf_id      => $cat_field_id,
+            is_primary => 1,
+            object_ds  => 'content_data',
+            object_id  => $cd_id,
+        }
+    ) or return;
+    my $cat = MT->model('category')->load( $obj_category->category_id );
+    return $cat;
 }
 
 sub rebuild_file {
@@ -884,7 +968,9 @@ sub rebuild_file {
         $ctx->{__stash}{template_map} = $map
             if $archiver->contenttype_author_based;
     }
-    if ( $archiver->contenttype_based ) {
+    if ( $archiver->contenttype_based
+        or ( $archiver->contenttype_group_based and $args{ContentData} ) )
+    {
         $content_data = $args{ContentData};
         die MT->translate( "[_1] archive type requires [_2] parameter",
             $archiver->archive_label, 'ContentData' )
@@ -896,7 +982,9 @@ sub rebuild_file {
             = MT::ContentType->load( $content_data->content_type_id );
         $ctx->var( 'content_archive', 1 );
         $ctx->{__stash}{content_type} = $content_type;
-        $ctx->{__stash}{content}      = $content_data;
+        if ( $archiver->contenttype_based ) {
+            $ctx->{__stash}{content} = $content_data;
+        }
         $ctx->{__stash}{template_map} = $map;
     }
     local $ctx->{current_timestamp}     = $start if $start;
@@ -947,6 +1035,11 @@ sub rebuild_file {
     #      the old date-based archive doesn't necessarily get fixed,
     #      but if another comes along it will get corrected
     unless ($finfo) {
+        my $any_contenttype_based = (
+                   $archiver->contenttype_based
+                or $archiver->contenttype_group_based
+        );
+
         my %terms;
         $terms{blog_id}     = $blog->id;
         $terms{category_id} = $category->id
@@ -956,11 +1049,14 @@ sub rebuild_file {
         $terms{entry_id} = $entry->id
             if $archiver->entry_based;
         $terms{startdate} = $start
-            if $archiver->date_based && ( !$archiver->entry_based );
+            if $archiver->date_based
+            && ( !$archiver->entry_based )
+            && ( !$any_contenttype_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
         $terms{cd_id}          = $content_data->id
-            if $archiver->contenttype_based;
+            if $content_data
+            and $any_contenttype_based;
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
@@ -974,7 +1070,20 @@ sub rebuild_file {
         }
         else {
          # if the shoe don't fit, remove all shoes and create the perfect shoe
-            foreach (@finfos) { $_->remove(); }
+            foreach (@finfos) {
+                $_->remove();
+                if ( MT->config('DeleteFilesAtRebuild') ) {
+                    $mt->_delete_archive_file(
+                        Blog        => $blog,
+                        File        => $_->file_path,
+                        ArchiveType => $at,
+                        (   $any_contenttype_based && $content_data
+                            ? ( ContentData => $content_data->id )
+                            : ()
+                        ),
+                    );
+                }
+            }
 
             $finfo = MT::FileInfo->set_info_for_url(
                 $rel_url, $file, $at,
@@ -991,7 +1100,7 @@ sub rebuild_file {
                     (          $archiver->author_based
                             && $author ? ( Author => $author->id ) : ()
                     ),
-                    (   $archiver->contenttype_based && $content_data
+                    (   $any_contenttype_based && $content_data
                         ? ( ContentData => $content_data->id )
                         : ()
                     ),
@@ -1305,6 +1414,18 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
+    my $pub          = shift;
+    my ($fi)         = @_;
+    my $archive_type = $fi->archive_type;
+    if ( $archive_type =~ /^ContentType/ ) {
+        $pub->rebuild_content_from_fileinfo(@_);
+    }
+    else {
+        $pub->rebuild_entry_from_fileinfo(@_);
+    }
+}
+
+sub rebuild_content_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
 
@@ -1499,24 +1620,41 @@ sub _rebuild_content_archive_type {
             || MT->instance->request( '__cached_maps', {} );
         my $cache_key = join ':',
             (
-            $at, $blog->id,
-            ( $content_data ? $content_data->content_type_id : 0 )
+            $at,
+            $blog->id,
+            (   $param{ContentData} ? $param{ContentData}->content_type_id
+                : 0
+            ),
+            (     $param{Category} && $param{Category}->category_set_id
+                ? $param{Category}->category_set_id
+                : 0
+            ),
             );
         if ( my $maps = $cached_maps->{$cache_key} ) {
             @map = @$maps;
         }
         else {
-            my $args
-                = $content_data && !$param{TemplateID}
-                ? {
-                'join' => MT::Template->join_on(
+            my @joins;
+            if ( $param{ContentData} && !$param{TemplateID} ) {
+                my $join = MT::Template->join_on(
                     undef,
-                    {   'id'              => \'= templatemap_template_id',
-                        'content_type_id' => $content_data->content_type_id,
+                    {   'id' => \'= templatemap_template_id',
+                        'content_type_id' =>
+                            $param{ContentData}->content_type_id,
                     }
-                )
-                }
-                : undef;
+                );
+                push @joins, $join;
+            }
+            if ( $param{Category} ) {
+                my $join = MT->model('content_field')->join_on(
+                    undef,
+                    {   id => \'= templatemap_cat_field_id',
+                        related_cat_set_id =>
+                            $param{Category}->category_set_id || 0,
+                    },
+                );
+                push @joins, $join;
+            }
             @map = MT::TemplateMap->load(
                 {   archive_type => $at,
                     blog_id      => $blog->id,
@@ -1524,7 +1662,7 @@ sub _rebuild_content_archive_type {
                     ? ( template_id => $param{TemplateID} )
                     : ()
                 },
-                $args
+                @joins ? { joins => \@joins } : (),
             );
             $cached_maps->{$cache_key} = \@map;
         }
@@ -1688,11 +1826,14 @@ sub _rebuild_content_archive_type {
                 : '';
             my $cache_map_key
                 = $blog->id . ':'
-                . ( $content_type_id ? $content_type_id . ':' : '' )
-                . $at;
+                . (
+                ( $at =~ /^ContentType/ && $content_type_id )
+                ? $content_type_id . ':'
+                : ''
+                ) . $at;
             unless ( $map = $cache_map->{$cache_map_key} ) {
                 my $args
-                    = $content_type_id
+                    = ( $at =~ /^ContentType/ && $content_type_id )
                     ? {
                     join => MT->model('template')->join_on(
                         undef,
@@ -1747,8 +1888,12 @@ sub _rebuild_content_archive_type {
             if $obj && ( ref $obj eq 'MT::Entry' || ref $obj eq 'MT::Page' );
         local $ctx->{__stash}{content} = $obj
             if $obj && ref $obj eq 'MT::ContentData';
+        local $ctx->{__stash}{content_type} = $obj->content_type
+            if $ctx->stash('content');
         local $ctx->{__stash}{author}
             = $author ? $author : $obj ? $obj->author : undef;
+        local $ctx->{__stash}{template_map} = $map if $map;
+
         if ( $obj && !$timestamp ) {
             $timestamp
                 = $at eq 'ContentType' && $map && $map->dt_field_id
@@ -1928,8 +2073,8 @@ sub rebuild_deleted_content_data {
     my %param        = @_;
     my $app          = MT->instance;
     my $content_data = $param{ContentData}
-        or
-        return $mt->errtrans( "Parameter '[_1]' is required", 'ContentData' );
+        or return $mt->trans_error( "Parameter '[_1]' is required",
+        'ContentData' );
     $content_data = MT::ContentData->load($content_data)
         unless ref $content_data;
     return unless $content_data;
@@ -1941,7 +2086,7 @@ sub rebuild_deleted_content_data {
     my $blog = $param{Blog};
     unless ($blog) {
         $blog = $content_data->blog
-            or return $mt->errtrans(
+            or return $mt->trans_error(
             "Load of blog '[_1]' failed",
             $content_data->blog_id || '(none)'
             );
@@ -2169,7 +2314,6 @@ sub publish_future_contents {
         my $iter = MT->model('content_data')->load_iter(
             {   blog_id => $site->id,
                 status  => MT::ContentStatus::FUTURE(),
-                class   => '*'
             },
             {   'sort'    => 'authored_on',
                 direction => 'descend'
@@ -2284,7 +2428,6 @@ sub unpublish_past_contents {
             {   blog_id        => $site->id,
                 status         => MT::ContentStatus::RELEASE(),
                 unpublished_on => [ undef, $now ],
-                class          => '*',
             },
             {   range     => { unpublished_on => 1 },
                 'sort'    => 'unpublished_on',

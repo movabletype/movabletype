@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -37,6 +37,7 @@ abstract class MTDatabase {
     protected $_author_id_cache = array();
     protected $_category_set_id_cache = array();
     protected $_rebuild_trigger_cache = array();
+    protected $_content_link_cache = array();
 
 
     // Construction
@@ -83,6 +84,10 @@ abstract class MTDatabase {
         return $order;
     }
 
+    public function binary_column( $column ) {
+        return $column;
+    }
+
     public function SelectLimit($sql, $limit = -1, $offset = -1) {
         return $this->conn->SelectLimit($sql, $limit, $offset);
     }
@@ -90,7 +95,7 @@ abstract class MTDatabase {
     public function unserialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->unserialize($data);
     }
@@ -98,7 +103,7 @@ abstract class MTDatabase {
     public function serialize($data) {
         if (!$this->serializer) {
             require_once("MTSerialize.php");
-            $this->serializer = new MTSerialize();
+            $this->serializer = MTSerialize::get_instance();
         }
         return $this->serializer->serialize($data);
     }
@@ -467,15 +472,56 @@ abstract class MTDatabase {
         if (isset($args['blog_id'])) {
             $blog_filter = 'and templatemap_blog_id = ' . intval($args['blog_id']);
         }
+        if (isset($args['preferred'])) {
+            $preferred_filter = 'and templatemap_is_preferred = ' . intval($args['preferred']);
+        }
+        if (isset($args['build_type'])) {
+            $build_type_filter = 'and templatemap_build_type = ' . intval($args['build_type']);
+        }
+        if (isset($args['content_type'])) {
+            $params = array('content_type' => $args['content_type']);
+            if (isset($args['blog_id'])) {
+                $params['blog_id'] = $args['blog_id'];
+            }
+            $content_types = $this->fetch_content_types($params);
+            if (isset($content_types)) {
+                $content_type = $content_types[0];
+                $extras['join'] = array(
+                    'mt_template' => array(
+                        'condition' => "template_id = templatemap_template_id"
+                        )
+                    );
+                $content_type_filter = 'and template_content_type_id = ' . intval($content_type->id);
+            }
+            else {
+                return '';
+            }
+        }
+        if (isset($args['content_type_id'])) {
+            $extras['join'] = array(
+                'mt_template' => array(
+                    'condition' => "template_id = templatemap_template_id"
+                    )
+                );
+            if (is_array($args['content_type_id'])) {
+                $content_type_id = $args['content_type_id'][0];
+            } else {
+                $content_type_id = $args['content_type_id'];
+            }
+            $content_type_filter = 'and template_content_type_id = ' . intval($content_type_id);
+        }
 
         $where = "1 = 1
                   $blog_filter
                   $type_filter
+                  $preferred_filter
+                  $build_type_filter
+                  $content_type_filter
                   order by templatemap_archive_type";
 
         require_once('class.mt_templatemap.php');
         $tmap = new TemplateMap;
-        $result = $tmap->Find($where);
+        $result = $tmap->Find($where, false, false, $extras);
         return $result;
     }
 
@@ -505,12 +551,17 @@ abstract class MTDatabase {
         return $config;
     }
 
-    public function category_link($cid) {
-        if (isset($this->_cat_link_cache[$cid])) {
-            $url = $this->_cat_link_cache[$cid];
+    public function category_link($cid, $at = 'Category', $content_type_id = 0) {
+        $cache_key = implode(':', array($cid, $at, $content_type_id));
+        if (isset($this->_cat_link_cache[$cache_key])) {
+            $url = $this->_cat_link_cache[$cache_key];
         } else {
+            if ($at == 'ContentType-Category' && !$content_type_id) {
+                return null;
+            }
+
             $where = "fileinfo_category_id = $cid and
-                      fileinfo_archive_type = 'Category'";
+                      fileinfo_archive_type = '$at'";
             require_once('class.mt_fileinfo.php');
             $finfo = new FileInfo;
             $finfos = $finfo->Find($where);
@@ -520,11 +571,18 @@ abstract class MTDatabase {
             $found = false;
             foreach($finfos as $fi) {
                 $tmap = $fi->TemplateMap();
-                if ($tmap->is_preferred == 1) {
-                    $found = true;
-                    $finfo = $fi;
-                    break;
+                if ($tmap->is_preferred != 1) {
+                    continue;
                 }
+                if ($at == 'ContentType-Category') {
+                    $tmpl = $tmap->template();
+                    if ($tmpl->content_type_id != $content_type_id) {
+                        continue;
+                    }
+                }
+                $found = true;
+                $finfo = $fi;
+                break;
             }
             if (!$found)
                 return null;
@@ -537,7 +595,7 @@ abstract class MTDatabase {
             $url = $blog_url . $finfo->url;
             require_once('MTUtil.php');
             $url = _strip_index($url, $blog);
-            $this->_cat_link_cache[$cid] = $url;
+            $this->_cat_link_cache[$cache_key] = $url;
         }
         return $url;
     }
@@ -575,6 +633,9 @@ abstract class MTDatabase {
 
             require_once('MTUtil.php');
             $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
+            if (substr($blog_url, -1, 1) == '/' && substr($finfo->fileinfo_url, 0, 1) == '/') {
+                $blog_url = substr_replace($blog_url, "", -1);
+            }
             $url = $blog_url . $finfo->fileinfo_url;
             $url = _strip_index($url, $blog);
             $this->_archive_link_cache[$ts.';'.$at] = $url;
@@ -908,7 +969,7 @@ abstract class MTDatabase {
             }
 
            if (!empty($cats)) {
-               $cexpr = create_cat_expr_function($category_arg, $cats, array('children' => $args['include_subcategories']));
+               $cexpr = create_cat_expr_function($category_arg, $cats, 'entry', array('children' => $args['include_subcategories']));
                if ($cexpr) {
                    $cmap = array();
                    $cat_list = array();
@@ -922,7 +983,7 @@ abstract class MTDatabase {
                                $entry_list[$p->placement_entry_id] = 1;
                        }
                    }
-                   $ctx['p'] =& $cmap;
+                   $ctx['c'] =& $cmap;
                    $filters[] = $cexpr;
                } else {
                    return null;
@@ -934,13 +995,13 @@ abstract class MTDatabase {
             if (!empty($cat)) {
                 $cats = array($cat);
                 $cmap = array();
-                $cexpr = create_cat_expr_function($cat->category_label, $cats, array('children' => $args['include_subcategories']));
+                $cexpr = create_cat_expr_function($cat->category_label, $cats, 'entry', array('children' => $args['include_subcategories']));
                 $pl = $this->fetch_placements(array('category_id' => array($cat->category_id)));
                 if (!empty($pl)) {
                     foreach ($pl as $p) {
                         $cmap[$p->placement_entry_id][$p->placement_category_id]++;
                     }
-                    $ctx['p'] =& $cmap;
+                    $ctx['c'] =& $cmap;
                     $filters[] = $cexpr;
                 } else {
                     # this category have no entries (or pages)
@@ -1784,22 +1845,58 @@ abstract class MTDatabase {
            }
         }
 
-        $count_column = 'placement_id';
-        if ($args['show_empty']) {
-            $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
-            if (isset($args['entry_id'])) {
-                $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.intval($args['entry_id']);
+        if (!isset($args['category_set_id']) || $args['category_set_id'] == 0) {
+            if ($args['show_empty']) {
+                $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
+                if (isset($args['entry_id'])) {
+                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_id = '.intval($args['entry_id']);
+                } else {
+                    $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_status = 2';
+                }
+                $count_column = 'entry_id';
             } else {
-                $join_clause .= ' left outer join mt_entry on placement_entry_id = entry_id and entry_status = 2';
+                $join_clause = ', mt_entry, mt_placement';
+                $cat_filter .= ' and placement_category_id = category_id';
+                if (isset($args['entry_id'])) {
+                    $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.intval($args['entry_id']);
+                } else {
+                    $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
+                }
+                $count_column = 'placement_id';
             }
-            $count_column = 'entry_id';
-        } else {
-            $join_clause = ', mt_entry, mt_placement';
-            $cat_filter .= ' and placement_category_id = category_id';
-            if (isset($args['entry_id'])) {
-                $entry_filter = ' and placement_entry_id = entry_id and placement_entry_id = '.intval($args['entry_id']);
+        }
+        else {
+            if ($args['show_empty']) {
+                $join_clause = 'left outer join mt_objectcategory on objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if (isset($args['content_id'])) {
+                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.intval($args['content_id']);
+                } else {
+                    $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_status = 2';
+                }
+                $count_column = 'cd_id';
             } else {
-                $entry_filter = ' and placement_entry_id = entry_id and entry_status = 2';
+                $join_clause = ', mt_cd, mt_objectcategory';
+                $cat_filter .= ' and objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if (isset($args['content_id'])) {
+                    $entry_filter = ' and objectcategory_object_id = cd_id and objectcategory_object_id = '.intval($args['content_id']);
+                } else {
+                    $entry_filter = ' and objectcategory_object_id = cd_id and cd_status = 2';
+                }
+                if (isset($args['content_type'])) {
+                  $mt = MT::get_instance();
+                  $ctx = $mt->context();
+                  if ($ctx->stash('content_type')){
+                    $content_type = $ctx->stash('content_type');
+                  } else {
+                    $content_types = $ctx->mt->db()->fetch_content_types($args);
+                    if ($content_types){
+                      $content_type = $content_types[0];
+                    }
+                  }
+                  if (isset($content_type))
+                    $content_type_filter = ' and cd_content_type_id ='.intval($content_type->id);
+                }
+                $count_column = 'objectcategory_id';
             }
         }
 
@@ -1811,7 +1908,7 @@ abstract class MTDatabase {
         $class_filter = " and category_class='$class'";
 
         if (isset($args['category_set_id'])) {
-            if ($args['category_set_id'] !== '*') {
+            if ($args['category_set_id'] !== '*' && $args['category_set_id'] !== '> 0') {
                 $category_set_id = intval($args['category_set_id']);
             }
         } else if (!isset($args['category_id'])
@@ -1821,6 +1918,9 @@ abstract class MTDatabase {
         }
         if (isset($category_set_id)) {
             $category_set_filter = "and category_category_set_id = $category_set_id";
+        }
+        elseif ($args['category_set_id'] === '> 0') {
+            $category_set_filter = "and category_category_set_id > 0";
         }
 
         $sql = "
@@ -1833,6 +1933,7 @@ abstract class MTDatabase {
                    $parent_filter
                    $class_filter
                    $category_set_filter
+                   $content_type_filter
              group by category_id
         ";
 
@@ -1863,7 +1964,9 @@ abstract class MTDatabase {
                 try {
                     if (isset($category_set_id) && $category_set_id) {
                         $category_set = $mt->db()->fetch_category_set($category_set_id);
-                        $custom_order = $category_set->order;
+                        if ($category_set) {
+                            $custom_order = $category_set->order;
+                        }
                     } else {
                         $ctx = $mt->context();
                         $blog = $ctx->stash('blog');
@@ -1999,12 +2102,21 @@ abstract class MTDatabase {
             $author_filter .= " and author_name = '".$args['author_name']."'";
         }
 
-        # Adds entry join and filter
-        if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
-            $args['need_entry'] = 0;
-        if (!isset($args['need_entry']))
-            $args['need_entry'] = 1;
-        if ($args['need_entry']) {
+        # Adds entry/cd join and filter
+        $content_type = $ctx->stash('content_type');
+        if (isset($content_type)) {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_content']))
+                $args['need_content'] = 0;
+            if (!isset($args['need_content']))
+                $args['need_content'] = 1;
+        }
+        else {
+            if (isset($args['any_type']) && $args['any_type'] && !isset($args['need_entry']))
+                $args['need_entry'] = 0;
+            if (!isset($args['need_entry']))
+                $args['need_entry'] = 1;
+        }
+        if ($args['need_entry'] && !(isset($args['id']) || isset($args['username']))) {
             $extras['join']['mt_entry'] = array(
                     'condition' => "author_id = entry_author_id"
                 );
@@ -2012,6 +2124,17 @@ abstract class MTDatabase {
             $entry_filter = " and entry_status = 2";
             if ( $blog_ids )
                 $entry_filter .= " and entry_blog_id " . $blog_ids;
+        }
+        elseif ($args['need_content'] && !(isset($args['id']) || isset($args['username']))) {
+            $extras['join']['mt_cd'] = array(
+                    'condition' => "author_id = cd_author_id"
+                );
+            $extras['distinct'] = 'distinct';
+            $cd_filter = " and cd_status = 2";
+            if ( $blog_ids )
+                $cd_filter .= " and cd_blog_id" . $blog_ids;
+            if (isset($content_type))
+                $cd_filter .= " and cd_content_type_id = " . $content_type->id;
         } else {
             $extras['distinct'] = 'distinct';
             if (!isset($args['roles']) and !isset($args['role'])) {
@@ -2220,6 +2343,7 @@ abstract class MTDatabase {
         $where = "1 = 1
                   $author_filter
                   $entry_filter
+                  $cd_filter
                   $sort_filter
                   $order_sql
         ";
@@ -2559,7 +2683,7 @@ abstract class MTDatabase {
             select fileinfo_category_id, fileinfo_url, A.blog_site_url as blog_site_url, A.blog_file_extension as blog_file_extension, A.blog_archive_url as blog_archive_url, B.blog_site_url as website_url, A.blog_parent_id as blog_parent_id
               from mt_fileinfo, mt_templatemap, mt_blog A, mt_blog B
              where fileinfo_category_id in ($id_list)
-               and fileinfo_archive_type = 'Category'
+               and (fileinfo_archive_type = 'Category' or fileinfo_archive_type = 'ContentType-Category')
               and A.blog_id = fileinfo_blog_id
                and templatemap_id = fileinfo_templatemap_id
                and templatemap_is_preferred = 1
@@ -2660,6 +2784,35 @@ abstract class MTDatabase {
         require_once('class.mt_entry.php');
         $entry = new Entry;
         $result = $entry->count(array('where' => $where));
+        return $result;
+    }
+
+    function author_content_count($args) {
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and cd_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        }
+        $author_filter = '';
+        if (isset($args['author_id'])) {
+            $author_id = intval($args['author_id']);
+            $author_filter = 'and cd_author_id = ' . $author_id;
+        }
+        $content_type_filter = '';
+        if (isset($args['content_type_id'])) {
+            $content_type_id = intval($args['content_type_id']);
+            $content_type_filter = 'and cd_content_type_id = ' . $content_type_id;
+        }
+
+        $where = "cd_status = 2
+                  $content_type_filter
+                  $blog_filter
+                  $author_filter";
+
+        require_once('class.mt_content_data.php');
+        $cd = new ContentData;
+        $result = $cd->count(array('where' => $where));
         return $result;
     }
 
@@ -2836,7 +2989,6 @@ abstract class MTDatabase {
         return $placement->Find($where, false, false, $extras);
     }
 
-
     public function fetch_objecttags($args) {
         $id_list = '';
         if (isset($args['tag_id']))
@@ -2856,6 +3008,15 @@ abstract class MTDatabase {
                     'condition' => 'asset_id = objecttag_object_id'
                     )
                 );
+        }
+        elseif (isset($args['datasource']) && strtolower($args['datasource']) == 'content_data') {
+            $datasource = $args['datasource'];
+            $extras['join'] = array(
+                'mt_cd' => array(
+                    'condition' => 'cd_id = objecttag_object_id'
+                    )
+                );
+            $object_filter = 'and cd_status = 2';
         } else {
             $datasource = 'entry';
             $extras['join'] = array(
@@ -3863,16 +4024,18 @@ abstract class MTDatabase {
         }
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        $category_set->Load("category_set_id = $category_set_id");
+        $loaded = $category_set->Load("category_set_id = $category_set_id");
+        if (!$loaded) return null;
         $this->_category_set_id_cache[$category_set_id] = $category_set;
         return $category_set;
     }
 
     public function fetch_category_sets($args) {
+        $extras = array();
         if ($args['limit'] && $args['limit'] > 0) {
-            $limit = $args['limit'];
+            $extras['limit'] = $args['limit'];
         } else {
-            $limit = -1;
+            $extras['limit'] = -1;
         }
         if ($args['blog_id'] && $args['blog_id'] > 0) {
             $blog_filter = "and category_set_blog_id = " . $args['blog_id'];
@@ -3880,16 +4043,33 @@ abstract class MTDatabase {
             $blog_filter = "";
         }
         if (isset($args['name']) && !empty($args['name'])) {
-            $name_filter = 'and category_set_name = "' . $args['name'] . '"';
+            $name_filter = "and category_set_name = '" . $this->escape($args['name']) . "'";
         } else {
             $name_filter = "";
         }
+        if( isset($args['content_type']) ){
+            $content_types = $this->fetch_content_types($args);
+            $ct_ids = array();
+            foreach ($content_types as $ct) {
+                array_push($ct_ids, $ct->id);
+            }
+            if($content_types && count($ct_ids) > 0){
+                $extras['join'] = array(
+                    'mt_cf' => array(
+                        'condition' => "cf_type = 'categories'",
+                    )
+                );
+                $field_filter = " and cf_content_type_id in (" . implode(',', $ct_ids) . ")
+                    and category_set_id = cf_related_cat_set_id";
+            }
+        }
         $where = "1 = 1
                   $blog_filter
-                  $name_filter";
+                  $name_filter
+                  $field_filter";
         require_once('class.mt_category_set.php');
         $category_set = new CategorySet;
-        return $category_set->Find($where, $limit);
+        return $category_set->Find($where, false, false, $extras);
     }
 
     private function build_date_filter($args, $field) {
@@ -3922,6 +4102,1333 @@ abstract class MTDatabase {
         $rebuild_trigger->Load("rebuild_trigger_blog_id = $blog_id");
         $this->_rebuild_trigger_cache[$blog_id] = $rebuild_trigger;
         return $rebuild_trigger;
+    }
+
+    function fetch_content_type($id) {
+        if ( isset( $this->_content_type_id_cache[$id] ) && !empty( $this->_content_type_id_cache[$id] ) ) {
+            return $this->_content_type_id_cache[$id];
+        }
+        require_once("class.mt_content_type.php");
+        $content_type= New ContentType;
+        $loaded = $content_type->Load( $id );
+        if ($loaded) {
+            $this->_content_type_id_cache[$id] = $content_type;
+            return $content_type;
+        } else {
+            return null;
+        }
+    }
+
+    public function fetch_content_types($args) {
+        require_once('class.mt_content_type.php');
+
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'content_type_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'content_type_blog_id = ' . $blog_id;
+        }
+
+        $content_types= array();
+        if (isset($args['content_type'])) {
+            $str = $args['content_type'];
+            if (isset($blog_filter))
+                $blog_filter = 'and '.$blog_filter;
+            if (ctype_digit($str)) {
+                $sql = "select
+                            mt_content_type.*
+                        from mt_content_type
+                        where
+                            content_type_id = $str
+                            $blog_filter";
+                $result = $this->db()->SelectLimit($sql);
+            }
+            if (!isset($result) || $result->EOF) {
+                $sql = "select
+                            mt_content_type.*
+                        from mt_content_type
+                        where
+                            content_type_unique_id = '$str'
+                            $blog_filter";
+                $result = $this->db()->SelectLimit($sql);
+                if ($result->EOF) {
+                    $sql = "select
+                                mt_content_type.*
+                            from mt_content_type
+                            where
+                                content_type_name = '$str'
+                                $blog_filter";
+                    $result = $this->db()->SelectLimit($sql);
+                }
+                if ($result->EOF) return null;
+            }
+        } else {
+            $sql = "select
+                        mt_content_type.*
+                    from mt_content_type
+                    where
+                        $blog_filter";
+            $result = $this->db()->SelectLimit($sql);
+            if ($result->EOF) return null;
+        }
+
+        $field_names = array_keys($result->fields);
+
+        $j = 0;
+        while (!$result->EOF) {
+            $ct = new ContentType;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $ct->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($ct)) break;
+
+            $ct->content_type_authored_on = $this->db2ts($ct->content_type_authored_on);
+            $ct->content_type_modified_on = $this->db2ts($ct->content_type_modified_on);
+            $content_types[] = $ct;
+        }
+
+        return $content_types;
+    }
+
+    function fetch_content($cid) {
+        if ( isset( $this->_cd_id_cache[$cid] ) && !empty( $this->_cd_id_cache[$cid] ) ) {
+            return $this->_cd_id_cache[$cid];
+        }
+        require_once("class.mt_content_data.php");
+        $cd = New ContentData;
+        $cd ->Load( $cid );
+        if ( !empty( $cd) ) {
+            $this->_cd_id_cache[$cid] = $cd;
+            return $cd;
+        } else {
+            return null;
+        }
+    }
+
+    public function fetch_contents($args, $content_type_id, &$total_count = NULL) {
+        require_once('class.mt_content_data.php');
+        $extras = array();
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+
+        if (isset($args['site_id'])) {
+            $blog_id = $args['site_id'];
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = $args['blog_id'];
+        } elseif ($ctx->stash('blog_id')) {
+            $blog_id = $ctx->stash('blog_id');
+        } elseif ($ctx->stash('blog')) {
+            $blog = $ctx->stash('blog');
+        }
+
+        if (isset($blog_id)) {
+            $blog = $this->fetch_blog($blog_id);
+        } elseif (isset($blog)) {
+            $blog_id = $blog->blog_id;
+        }
+
+        $blog_filter = 'and cd_blog_id = ' . $blog_id;
+
+        if (empty($blog))
+            return null;
+
+        if (isset($content_type_id)) {
+            if (is_array($content_type_id)) {
+                if ( count($content_type_id) > 1 )
+                    $content_type_filter = "and cd_content_type_id in (" . implode(',', $content_type_id) . ' )';
+                else
+                    $content_type_filter = "and cd_content_type_id = " . $content_type_id[0];
+            } else {
+                $content_type_filter = 'and cd_content_type_id = '.$content_type_id;
+            }
+        }
+
+        // determine any content fields that we should filter on
+        $fields = array();
+        foreach ($args as $name => $v)
+            if (preg_match('/^field___(\w+)$/', $name, $m))
+                $fields[$m[1]] = $v;
+
+        # automatically include offset if in request
+        if ($args['offset'] == 'auto') {
+            $args['offset'] = 0;
+            if ($args['limit']) {
+                if (intval($_REQUEST['offset']) > 0) {
+                    $args['offset'] = intval($_REQUEST['offset']);
+                }
+            }
+        }
+
+        if ($args['limit'] == 'auto') {
+            if (intval($_REQUEST['limit']) > 0) {
+                $args['limit'] = intval($_REQUEST['limit']);
+            }
+        }
+
+        if (isset($args['include_blogs']) or isset($args['exclude_blogs'])) {
+            $blog_ctx_arg = isset($args['include_blogs']) ?
+                array('include_blogs' => $args['include_blogs']) :
+                array('exclude_blogs' => $args['exclude_blogs']);
+            $include_with_website = $args['include_parent_site'] || $args['include_with_website'];
+            if (isset($args['include_blogs']) && isset($include_with_website)) {
+                $blog_ctx_arg = array_merge($blog_ctx_arg, array('include_with_website' => $include_with_website));
+            }
+        }
+
+        # a context hash for filter routines
+        $filters = array();
+
+        if (!isset($_REQUEST['content_ids_published'])) {
+            $_REQUEST['content_ids_published'] = array();
+        }
+
+        if (isset($args['unique']) && $args['unique']) {
+            $filter_ctx = array();
+            $filter_func = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
+            $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
+            $filters[] = array($filter_func, $filter_ctx);
+        }
+
+        # special case for selecting a particular content
+        if (isset($args['id'])) {
+            $content_filter = 'and cd_id = '.$args['id'];
+            $start = ''; $end = ''; $limit = 1; $blog_filter = ''; $day_filter = '';
+        } else {
+            $content_filter = '';
+        }
+
+        $content_list = array();
+
+        if (count($content_list) && ($content_filter == '')) {
+            $content_list = implode(",", array_keys($content_list));
+            # set a reasonable cap on the content list cache. if
+            # user is selecting something too big, then they'll
+            # just have to wait through a scan.
+            if (strlen($content_list) < 2048)
+                $content_filter = "and cd_id in ($content_list)";
+        }
+
+        if (isset($args['author'])) {
+            $author_filter = 'and author_name = \'' .
+                $this->escape($args['author']) . "'";
+            $extras['join']['mt_author'] = array(
+                    'condition' => "cd_author_id = author_id"
+                    );
+        } elseif (isset($args['author_id']) && preg_match('/^\d+$/', $args['author_id']) && $args['author_id'] > 0) {
+            $author_filter = "and cd_author_id = '" . $args['author_id'] . "'";
+        }
+
+        $join_clause = '';
+
+        $map = $mt->db()->fetch_templatemap(array(
+            'blog_id'         => $blog_id,
+            'content_type_id' => $content_type_id,
+            'preferred'       => 1,
+            'type'            => $ctx->stash('current_archive_type'),
+        ));
+
+        if (isset($args['current_timestamp']) || isset($args['current_timestamp_end'])) {
+            if ($map && ($dt_field_id = $map[0]->dt_field_id)) {
+                $start = isset($args['current_timestamp'])
+                    ? $args['current_timestamp'] : null;
+                $end = isset($args['current_timestamp_end'])
+                    ? $args['current_timestamp_end'] : null;
+                $alias = 'cf_idx_' . $dt_field_id;
+                $field = "$alias.cf_idx_value_datetime";
+                if ($start and $end) {
+                    $start = $this->ts2db($start);
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field between '$start' and '$end'";
+                } elseif ($start) {
+                    $start = $this->ts2db($start);
+                    $field_filter = " and $field >= '$start'";
+                } elseif ($end) {
+                    $end = $this->ts2db($end);
+                    $field_filter = " and $field <= '$end'";
+                } else {
+                    return '';
+                }
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $dt_field_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id" .
+                                  $field_filter;
+                $extras['join'][$join_table] = array('condition' => $join_condition);
+                if (isset($args['_current_timestamp_sort']) && $args['_current_timestamp_sort']) {
+                    $sort_field = "$alias.cf_idx_value_datetime";
+                }
+            } else {
+                $dt_field    = 'cd_authored_on';
+                $date_filter = $this->build_date_filter($args, $dt_field);
+            }
+        }
+
+        $dt_field    = 'cd_authored_on';
+        $dt_field_id = 0;
+        if ( $arg = $args['date_field'] ) {
+            if (   $arg === 'authored_on'
+                || $arg === 'modified_on'
+                || $arg === 'created_on' )
+            {
+                $dt_field = 'cd_' . $arg;
+            }
+            else {
+                if (preg_match('/^[0-9]+$/', $arg)) {
+                    $date_cf = $this->fetch_content_field($arg);
+                    if ($date_cf) {
+                        $date_cfs = array($date_cf);
+                    }
+                }
+                if (!isset($date_cfs))
+                    $date_cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                if (!isset($date_cfs))
+                    $date_cfs = $this->fetch_content_fields(array(
+                        'blog_id' => $blog_id,
+                        'content_type_id' => $content_type_id,
+                        'name' => $arg,
+                    ));
+                if (isset($date_cfs)) {
+                    $date_cf = $date_cfs[0];
+                    $date_cf_id = $date_cf->cf_id;
+                    $type = $date_cf->cf_type;
+                }
+            }
+            if (isset($date_cf)) {
+                $alias = 'cf_idx_' . $date_cf_id;
+
+                require_once "content_field_type_lib.php";
+                $cf_type = ContentFieldTypeFactory::get_type($type);
+                $data_type = $cf_type->get_data_type();
+
+                $dt_field = "$alias.cf_idx_value_$data_type";
+
+                $join_table = "mt_cf_idx $alias";
+                $join_condition = "$alias.cf_idx_content_field_id = " . $date_cf_id .
+                                  " and $alias.cf_idx_content_data_id = cd_id";
+                $extras['join'][$join_table] = array('condition' => $join_condition);
+            }
+            $date_filter = $this->build_date_filter($args, $dt_field);
+        }
+
+        if (isset($args['days']) && !$date_filter) {
+            $day_filter = 'and ' . $this->limit_by_day_sql($dt_field, intval($args['days']));
+        } elseif (isset($args['limit'])) {
+            if (!isset($args['id'])) $limit = $args['limit'];
+        } else {
+            $found_valid_args = 0;
+            foreach ( array(
+                'limit', 'days',
+                'author',
+              ) as $valid_key )
+            {
+                if (array_key_exists($valid_key, $args)) {
+                    $found_valid_args = 1;
+                    break;
+                }
+            }
+        }
+
+        if (isset($args['sort_order'])) {
+            if ($args['sort_order'] == 'ascend') {
+                $order = 'asc';
+            } elseif ($args['sort_order'] == 'descend') {
+                $order = 'desc';
+            }
+        } 
+        if (!isset($order)) {
+            $order = 'desc';
+            if (isset($blog) && isset($blog->blog_sort_order_posts)) {
+                if ($blog->blog_sort_order_posts == 'ascend') {
+                    $order = 'asc';
+                }
+            }
+        }
+
+        if (isset($args['offset']))
+            $offset = $args['offset'];
+
+        if (!isset($sort_field)) {
+            if (isset($args['sort_by']) || $map && $map[0]->dt_field_id) {
+                if (!isset($args['sort_by'])) {
+                    $cf = $map[0]->dt_field();
+                } else if (preg_match('/^field:((\s|\w)+)$/', $args['sort_by'], $m)) {
+                    $key= $m[1];
+                    $cfs = $this->fetch_content_fields(array(
+                        'blog_id' => $blog_id,
+                        'content_type_id' => $content_type_id,
+                        'name' => $key
+                    ));
+                    if (!isset($cfs))
+                        $cfs = $this->fetch_content_fields(array(
+                            'unique_id' => $key
+                        ));
+                    if (isset($cfs)) {
+                        $cf = $cfs[0];
+                    }
+                }
+                if (isset($cf)) {
+                    $type = $cf->cf_type;
+                    require_once "content_field_type_lib.php";
+                    $cf_type = ContentFieldTypeFactory::get_type($type);
+
+                    $alias = 'sb_cf_idx_' . $cf->id;
+
+                    $data_type = $cf_type->get_data_type();
+                    $join_table = "mt_cf_idx $alias";
+                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                      " and $alias.cf_idx_content_data_id = cd_id";
+                    $extras['join'][$join_table] = array('condition' => $join_condition, 'type' => 'left');
+
+                    $sort_field = "$alias.cf_idx_value_$data_type";
+                    $no_resort = 1;
+                }
+                if (!isset($sort_field) && isset($args['sort_by'])) {
+                    if ($args['sort_by'] == 'authored_on') {
+                        $sort_field = 'cd_authored_on';
+                    } elseif ($args['sort_by'] == 'modified_on') {
+                        $sort_field = 'cd_modified_on';
+                    } elseif ($args['sort_by'] == 'created_on') {
+                        $sort_field = 'cd_created_on';
+                    } elseif ($args['sort_by'] == 'author_id') {
+                        $sort_field = 'cd_author_id';
+                    } elseif ($args['sort_by'] == 'identifier') {
+                        $sort_field = 'cd_identifier';
+                    } elseif (preg_match('/field[:\.]/', $args['sort_by'])) {
+                        $post_sort_limit = $limit ? $limit : 0;
+                        $post_sort_offset = $offset ? $offset : 0;
+                        $limit = 0; $offset = 0;
+                        $no_resort = 0;
+                    } else {
+                        $sort_field = 'cd_' . $args['sort_by'];
+                    }
+                    if ($sort_field) $no_resort = 1;
+                }
+            }
+            else {
+                $sort_field = 'cd_authored_on';
+            }
+        }
+
+        if ($sort_field) {
+            $base_order = (
+                isset( $args['sort_order'] )
+                    ? $args['sort_order']
+                    : ( isset( $args['base_sort_order'] )
+                            ? $args['base_sort_order']
+                            : '' )
+            ) === 'ascend' ? 'asc' : 'desc';
+        }
+
+        $field_filter = '';
+        if(isset($args['category_set'])){
+            $id = $args['category_set'];
+
+            if(preg_match('/^[0-9]+$/',$id))
+                $category_set = $this->fetch_category_set($id);
+            if(!$category_set){
+                $category_sets = $this->fetch_category_sets(array(
+                    'blog_id' => $blog_id,
+                    'name' => $id,
+                    'limit' => 1,
+                ));
+                if($category_sets)
+                    $category_set = $category_sets[0];
+            }
+            if(isset($category_set)){
+                $category_set_id = $category_set->id;
+                
+                $cat_fields = $this->fetch_content_fields(array(
+                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'related_cat_set_id' => $category_set_id,
+                ));
+                if($cat_fields){
+                    $cf = $cat_fields[0];
+                    if (isset($args['category']) or $ctx->stash('category')){
+                        if (!array_key_exists($cf->cf_name, $fields) && !array_key_exists($cf->cf_unique_id, $fields)) {
+                            $fields[$cf->cf_name] = isset($args['category']) ? $args['category'] : $ctx->stash('category')->label;
+                        }
+                    } else {
+                        $alias = 'cf_idx_' . $cf->id;
+                        require_once "content_field_type_lib.php";
+                        $cf_type = ContentFieldTypeFactory::get_type('categories');
+                        $data_type = $cf_type->get_data_type();
+
+                        $join_table = "mt_cf_idx $alias";
+                        $join_condition = "$alias.cf_idx_content_field_id = " . $cf->id .
+                                          " and $alias.cf_idx_content_data_id = cd_id\n";
+                        $extras['join'][$join_table] = array('condition' => $join_condition);
+                    }
+                }
+            }
+        }
+
+        if (count($fields)) {
+            foreach ($fields as $key => $value) {
+                $cfs = $this->fetch_content_fields(array(
+                    'blog_id' => $blog_id,
+                    'content_type_id' => $content_type_id,
+                    'name' => $key,
+                ));
+                if (!isset($cfs))
+                    $cfs = $this->fetch_content_fields(array('unique_id' => $key));
+                if (!isset($cfs)) continue;
+                
+                $cf = $cfs[0];
+                $type = $cf->cf_type;
+
+                if ($type === 'categories' && !(array_key_exists('_no_use_category_filter', $args) && $args['_no_use_category_filter'])) {
+                    $category_arg = $value;
+                    $category_set_id = $cf->cf_related_cat_set_id;
+                    require_once("MTUtil.php");
+                    if (!preg_match('/\b(AND|OR|NOT)\b|\(|\)/i', $category_arg)) {
+                        $not_clause = false;
+                        $cats = cat_path_to_category($category_arg, $blog_ctx_arg, 'category', $category_set_id);
+                        if (empty($cats)) {
+                            return null;
+                        } else {
+                            $category_arg = '';
+                            foreach ($cats as $cat) {
+                                if ($category_arg != '')
+                                    $category_arg .= ' OR ';
+                                $category_arg .= '#' . $cat->category_id;
+                            }
+                        }
+                    } else {
+                        $not_clause = preg_match('/\bNOT\b/i', $category_arg);
+                        if ($blog_ctx_arg)
+                            $cats = $this->fetch_categories(array_merge($blog_ctx_arg, array('show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id)));
+                        else
+                            $cats = $this->fetch_categories(array('blog_id' => $blog_id, 'show_empty' => 1, 'class' => 'category', 'category_set_id' => $category_set_id));
+                    }
+
+                    if (!empty($cats)) {
+                        $cexpr = create_cat_expr_function($category_arg, $cats, 'cd', array('children' => $args['include_subcategories'], 'content_type' => 1));
+                        if ($cexpr) {
+                            $cmap = array();
+                            $cat_list = array();
+                            foreach ($cats as $cat)
+                                $cat_list[] = $cat->category_id;
+                            $ol = $this->fetch_objectcategory(array('category_id' => $cat_list, 'cf_id' => $cf->cf_id));
+                            if (!empty($ol)) {
+                                foreach ($ol as $o) {
+                                    $cmap[$o->objectcategory_object_id][$o->objectcategory_category_id]++;
+                                    if (!$not_clause)
+                                        $content_list[$o->objectcategory_oject_id] = 1;
+                                }
+                            }
+                            $filter_ctx = array();
+                            $filter_ctx['c'] = $cmap;
+                            $filters[] = array($cexpr, $filter_ctx);
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+                elseif ($type === 'tags') {
+                    $tag_arg = $value;
+                    require_once("MTUtil.php");
+                    $not_clause = preg_match('/\bNOT\b/i', $tag_arg);
+
+                    $include_private = 0;
+                    $tag_array = tag_split($tag_arg);
+                    foreach ($tag_array as $tag) {
+                        $tag_body = trim(preg_replace('/\bNOT\b/i','',$tag));
+                        if ($tag_body && (substr($tag_body,0,1) == '@')) {
+                            $include_private = 1;
+                        }
+                    }
+                    if (isset($blog_ctx_arg))
+                        $tags = $this->fetch_content_tags(array_merge($blog_ctx_arg, array('tag' => $tag_arg, 'include_private' => $include_private)));
+                    else
+                        $tags = $this->fetch_content_tags(array('blog_id' => $blog_id, 'tag' => $tag_arg, 'include_private' => $include_private));
+                    if (!is_array($tags)) $tags = array();
+                    $cexpr = create_tag_expr_function($tag_arg, $tags, 'cd');
+
+                    if ($cexpr) {
+                        $tmap = array();
+                        $tag_list = array();
+                        foreach ($tags as $tag) {
+                            $tag_list[] = $tag->tag_id;
+                        }
+                        if (isset($blog_ctx_arg))
+                            $ot = $this->fetch_objecttags(array_merge($blog_ctx_arg, array('tag_id' => $tag_list, 'datasource' => 'content_data')));
+                        else
+                            $ot = $this->fetch_objecttags(array('tag_id' => $tag_list, 'datasource' => 'content_data', 'blog_id' => $blog_id));
+
+                        if ($ot) {
+                            foreach ($ot as $o) {
+                                $tmap[$o->objecttag_object_id][$o->objecttag_tag_id]++;
+                                if (!$not_clause)
+                                    $cd_list[$o->objecttag_object_id] = 1;
+                            }
+                        }
+                        $filter_ctx = array();
+                        $filter_ctx['t'] = $tmap;
+                        $filters[] = array($cexpr, $filter_ctx);;
+                    } else {
+                        return null;
+                    }
+                }
+                else {
+                    $alias = 'cf_idx_' . $cf->id;
+
+                    require_once "content_field_type_lib.php";
+                    $cf_type = ContentFieldTypeFactory::get_type($type);
+                    $data_type = $cf_type->get_data_type();
+
+                    $join_table = "mt_cf_idx $alias";
+                    $join_condition = "$alias.cf_idx_content_field_id = " . $cf->cf_id .
+                                      " and $alias.cf_idx_content_data_id = cd_id";
+                    $extras['join'][$join_table] = array('condition' => $join_condition);
+
+                    $quote = $data_type == 'integer' || $data_type == 'double' ? '' : '\'';
+                    $field_filter .= " and $alias.cf_idx_value_$data_type = $quote$value$quote\n";
+                }
+            }
+        }
+
+        if (count($filters) || !is_null($total_count)) {
+            $post_select_limit = $limit;
+            $post_select_offset = $offset;
+            $limit = 0; $offset = 0;
+        }
+
+        if (isset($extras['join'])) {
+            $joins = $extras['join'];
+            $keys = array_keys($joins);
+            foreach($keys as $key) {
+                $table = $key;
+                $cond = $joins[$key]['condition'];
+                $type = '';
+                if (isset($joins[$key]['type']))
+                    $type = $joins[$key]['type'];
+                $join_clause .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
+            }
+        }
+
+        if (isset($args['unique_id'])) {
+            $unique_id_filter = 'and cd_unique_id = \'' . $args['unique_id'] . '\'';
+        }
+
+        $sql = "select
+                    mt_cd.*
+                from mt_cd
+                    $join_clause
+                where
+                    cd_status = 2
+                    $blog_filter
+                    $content_type_filter
+                    $content_filter
+                    $author_filter
+                    $date_filter
+                    $day_filter
+                    $field_filter
+                    $unique_id_filter";
+        if ($sort_field) {
+            $sql .= "order by $sort_field $base_order";
+            if ($sort_field == 'cd_authored_on') {
+                $sql .= ",cd_id $base_order";
+            }
+        }
+
+        if ( !is_null($total_count) ) {
+            $orig_offset = $post_select_offset ? $post_select_offset : $offset;
+            $orig_limit = $post_select_limit ? $post_select_limit : $limit;
+        }
+
+        if ($limit <= 0) $limit = -1;
+        if ($offset <= 0) $offset = -1;
+        $result = $this->db()->SelectLimit($sql, $limit, $offset);
+        if (!$result || $result->EOF) return null;
+
+        $field_names = array_keys($result->fields);
+
+        $contents = array();
+        $j = 0;
+        $offset = $post_select_offset ? $post_select_offset : $orig_offset;
+        $limit = $post_select_limit ? $post_select_limit : 0;
+        $id_list = array();
+        $_total_count = 0;
+        $_seen = array();
+        while (!$result->EOF) {
+            $cd = new ContentData;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $cd->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cd)) break;
+            if (count($filters)) {
+                foreach ($filters as $f) {
+                    $func = $f[0];
+                    $filter_ctx = $f[1];
+                    if (!$func($cd, $filter_ctx)) {
+                        continue 2;
+                    }
+                }
+            }
+
+            if (array_key_exists($cd->id, $_seen)) continue;
+            $_seen[$cd->id] = 1;
+
+            $_total_count++;
+            if ( !is_null($total_count) ) {
+                if ( ($orig_limit > 0)
+                  && ( ($_total_count-$offset) > $orig_limit) ) {
+                    // collected all the entries; only count numbers;
+                    continue;
+                }
+            }
+            if ($offset && ($j++ < $offset)) continue;
+            $cd->cd_authored_on = $this->db2ts($cd->cd_authored_on);
+            $cd->cd_modified_on = $this->db2ts($cd->cd_modified_on);
+            $id_list[] = $cd->cd_id;
+            $contents[] = $cd;
+            $this->_comment_count_cache[$cd->cd_id] = $cd->cd_comment_count;
+            $this->_ping_count_cache[$cd->cd_id] = $cd->cd_ping_count;
+            if ( is_null($total_count) ) {
+                // the request does not want total count; break early
+                if (($limit > 0) && (count($contents) >= $limit)) break;
+            }
+        }
+        ContentData::bulk_load_meta($contents);
+
+        if ( !is_null($total_count) )
+            $total_count = $_total_count;
+
+        if (!$no_resort) {
+            $sort_field = '';
+            if (isset($args['sort_by'])) {
+                if ($args['sort_by'] == 'title') {
+                    $sort_field = 'entry_title';
+                } elseif ($args['sort_by'] == 'id') {
+                    $sort_field = 'entry_id';
+                } elseif ($args['sort_by'] == 'status') {
+                    $sort_field = 'entry_status';
+                } elseif ($args['sort_by'] == 'modified_on') {
+                    $sort_field = 'entry_modified_on';
+                } elseif ($args['sort_by'] == 'author_id') {
+                    $sort_field = 'entry_author_id';
+                } elseif ($args['sort_by'] == 'excerpt') {
+                    $sort_field = 'entry_excerpt';
+                } elseif ($args['sort_by'] == 'comment_created_on') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'score') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'rate') {
+                    $sort_field = $args['sort_by'];
+                } elseif ($args['sort_by'] == 'trackback_count') {
+                    $sort_field = 'entry_ping_count';  
+                } elseif (preg_match('/^field[:\.](.+)$/', $args['sort_by'], $match)) {
+                    $sort_field = 'entry_field.' . $match[1];
+                } else {
+                    $sort_field = 'entry_' . $args['sort_by'];
+                }
+            } else {
+                $sort_field = 'cd_authored_on';
+            }
+
+            if ($sort_field) {
+                if ($sort_field == 'cd_authored_on') {
+                    // already double-sorted by the DB
+                } else {
+                    if (preg_match('/^cd_(field\..*)/', $sort_field, $match)) {
+                        if (! $content_meta_info) {
+                            $content_meta_info = ContentData('cd');
+                        }
+                        $sort_by_numeric =
+                            preg_match('/integer|float/', $content_meta_info[$match[1]]);
+                    }
+                    else {
+                        $sort_by_numeric =
+                            ($sort_field == 'cd_status') || ($sort_field == 'cd_author_id') || ($sort_field == 'cd_id')
+                            || ($sort_field == 'cd_comment_count') || ($sort_field == 'cd_ping_count');
+                    }
+
+                    $sort_fn = "\$f = '" . addslashes($sort_field) . "'; " .
+                        ($sort_by_numeric
+                            ? 'if ($a->$f == $b->$f) return 0; return $a->$f < $b->$f ? -1 : 1;'
+                            : 'return strcmp($a->$f,$b->$f);');
+
+                    $sorter = create_function(
+                        $order == 'asc' ? '$a,$b' : '$b,$a',
+                        $sort_fn);
+                    usort($contents, $sorter);
+
+                    if (isset($post_sort_offset)) {
+                        $contents = array_slice($contents, $post_sort_offset, $post_sort_limit);
+                    }
+                }
+            }
+        }
+
+        if (count($id_list) <= 30) { # TODO: find a good upper limit
+            # pre-cache comment counts and categories for these contents
+            $this->cache_categories($id_list);
+            $this->cache_permalinks($id_list);
+        }
+
+        return $contents;
+    }
+
+    public function fetch_next_prev_content($direction, $args) {
+        require_once('class.mt_content_data.php');
+        $mt = MT::get_instance();
+        $ctx = $mt->context();
+        $obj = $ctx->stash('content');
+        if( $direction !== 'next' && $direction !== 'previous' )
+            return undef;
+        $next = $direction === 'next' ? 1 : 0;
+
+        $blog_id         = $obj->blog_id;
+        $content_type_id = $obj->content_type_id;
+
+        if (isset($args['by_author'])) {
+            $author_id = $obj->author_id;
+            $author_filter = "and cd_author_id = $author_id";
+        }
+
+        if ( $arg = $args['category_field'] ) {
+            if (preg_match('/^[0-9]+$/', $arg))
+                $cf = $this->fetch_content_field($arg);
+            if (!isset($cf)) {
+                $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                if (!isset($cfs))
+                    $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
+                if (isset($cfs)) $cf = $cfs[0];
+            }
+            if (isset($cf)) $cat_field_id = $cf->id;
+            $obj_cats = $this->fetch_objectcategories(array('object_id' => $obj->id, 'category_field_id' => $cat_field_id));
+            foreach ($obj_cats as $obj_cat) {
+                if ($obj_cat->is_primary)
+                    $category_id = $obj_cat->category_id;
+            }
+        }
+
+        if ( $arg = $args['date_field'] ) {
+            if (   $arg === 'authored_on'
+                || $arg === 'modified_on'
+                || $arg === 'created_on' )
+            {
+                $by = $arg;
+            }
+            else {
+                if (preg_match('/^[0-9]+$/', $arg))
+                    $cf = $this->fetch_content_field($arg);
+                if (!isset($cf)) {
+                    $cfs = $this->fetch_content_fields(array('unique_id' => $arg));
+                    if (!isset($cfs))
+                        $cfs = $this->fetch_content_fields(array('name' => $arg, 'content_type_id' => $content_type_id));
+                    if (isset($cfs)) $cf = $cfs[0];
+                }
+                if (isset($cf)) $dt_field_id = $cf->id;
+            }
+        }
+        else {
+            $map = $this->fetch_templatemap(array(
+                'type'         => 'ContentType',
+                'preferred'    => 1,
+                'content_type' => $obj->id
+            ));
+            if (isset($map))
+                $dt_field_id = $map->dt_field_id;
+        }
+        if (isset($dt_field_id)) {
+            $data = $obj->data();
+            $date_field_value = $this->ts2db($data[$dt_field_id]);
+        }
+
+        $label = '__' . $direction;
+        if (isset($author_id))
+            $label .= ':author=' . $author_id;
+        if (isset($by))
+            $label .= ':by_' . $by;
+        if (isset($cat_field_id))
+            $label .= ":category_field_id=$cat_field_id:category_id=$category_id";
+        if (isset($dt_field_id))
+            $label .= ":date_field_id=$dt_field_id";
+        if (isset($obj->$label))
+            return $obj->$label;
+
+        $args = Array();
+
+        if ($cat_field_id) {
+            $joins;
+            if (isset($category_id)) {
+                $joins .= "join mt_cf_idx as cat_cf_idx";
+                $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
+                $joins .= " and cat_cf_idx.cf_idx_value_integer = '$category_id'";
+            }
+            else {
+                $joins .= "left join mt_cf_idx as cat_cf_idx";
+                $joins .= " on cat_cf_idx.cf_idx_content_data_id = cd_id";
+                $joins .= " and cat_cf_idx.cf_idx_content_field_id = '$cat_field_id'";
+                $joins .= " and cat_cf_idx.cf_idx_value_integer IS NULL";
+            }
+        }
+
+        if ($dt_field_id) {
+            $desc = $next ? 'ASC' : 'DESC';
+            $op   = $next ? '>'   : '<';
+
+            if (!empty($joins)) $joins .= ' ';
+            $joins .= "join mt_cf_idx as dt_cf_idx";
+            $joins .= " on dt_cf_idx.cf_idx_content_data_id = cd_id";
+            $joins .= " and dt_cf_idx.cf_idx_content_field_id = '$dt_field_id'";
+            $joins .= " and dt_cf_idx.cf_idx_value_datetime $op '$date_field_value'";
+            $order_by = "order by dt_cf_idx.cf_idx_value_datetime $desc, dt_cf_idx.cf_idx_id $desc";
+        }
+
+        if (!isset($by)) $by = 'authored_on';
+
+        $sql = "
+            select *
+             from mt_cd
+                  $joins
+             where cd_blog_id = '$blog_id'
+               and cd_content_type_id = '$content_type_id'
+               and cd_status = '2'";
+
+        if ($dt_field_id) {
+            $sql .= "
+                   $author_filter
+                $order_by";
+            $result = $this->db()->SelectLimit($sql, 1, false);
+            if (!$result || $result->EOF) return null;
+        }
+        else {
+            $desc = $next ? 'ASC' : 'DESC';
+            $op   = $next ? '>'   : '<';
+            $by_value = $this->db2ts($obj->$by);
+            $id       = $obj->id;
+
+            $additional_sql = "
+                   and cd_$by $op '$by_value'
+                   $author_filter
+                 order by cd_$by $desc, cd_id $desc";
+            $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
+
+            if (!$result || $result->EOF) {
+                $additional_sql = "
+                       and cd_$by = '$by_value'
+                       and cd_id $op $id
+                       $author_filter
+                     order by cd_$by $desc, cd_id $desc";
+                $result = $this->db()->SelectLimit($sql . $additional_sql, 1, false);
+                if (!$result || $result->EOF) return null;
+            }
+        }
+
+        $field_names = array_keys($result->fields);
+        $contents    = array();
+
+        while (!$result->EOF) {
+            $cd = new ContentData;
+            foreach($field_names as $key) {
+  	            $key = strtolower($key);
+                $cd->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cd)) break;
+
+            $cd->cd_authored_on = $this->db2ts($cd->cd_authored_on);
+            $cd->cd_modified_on = $this->db2ts($cd->cd_modified_on);
+            $contents[] = $cd;
+        }
+        ContentData::bulk_load_meta($contents);
+
+        if (isset($contents)) $obj->$label = $contents[0];
+
+        return $contents[0];
+    }
+
+    function fetch_content_field($id) {
+        if ( isset( $this->_content_field_id_cache[$id] ) && !empty( $this->_content_field_id_cache[$id] ) ) {
+            return $this->_content_field_id_cache[$id];
+        }
+        require_once("class.mt_content_field.php");
+        $content_field= New ContentField;
+        $content_field->Load( $id );
+        if ( !empty( $content_field ) ) {
+            $this->_content_field_id_cache[$id] = $content_field;
+            return $content_field;
+        } else {
+            return null;
+        }
+    }
+
+    public function fetch_content_fields($args) {
+        if (isset($args['unique_id'])) {
+            $unique_id_filter = 'and cf_unique_id = \'' . $args['unique_id'] . '\'';
+        } else {
+            if (isset($args['content_type_id'])) {
+                if (is_array($args['content_type_id'])) {
+                    if (count($args['content_type_id']) > 1) {
+                        $content_type_id_filter = 'and cf_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                    } else {
+                        $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'][0];
+                    }
+                } else {
+                    $content_type_id_filter = 'and cf_content_type_id = ' . $args['content_type_id'];
+                }
+            }
+
+            if (isset($args['blog_id'])) {
+                $blog_id = $args['blog_id'];
+            }
+            else {
+                $mt = MT::get_instance();
+                $ctx = $mt->context();
+                $blog = $ctx->stash('blog');
+                if ( !empty( $blog ) )
+                    $blog_id = $blog->blog_id;
+            }
+            if (isset($blog_id)) {
+                $blog_filter = "and cf_blog_id = $blog_id";
+            }
+
+            if (!isset($blog_id) && !isset($args['content_type_id'])) return null;
+
+            if (isset($args['name'])) {
+                $name_filter .= 'and cf_name = \'' . $args['name'] . '\'';
+            }
+            if (isset($args['related_cat_set_id'])) {
+                $related_cat_set_id_filter = 'and cf_related_cat_set_id = \'' . $args['related_cat_set_id'] . '\'';
+            }
+        }
+        $sql = "select *
+                  from mt_cf
+                 where 1 = 1
+                   $blog_filter
+                   $content_type_id_filter
+                   $name_filter
+                   $unique_id_filter
+                   $related_cat_set_id_filter";
+        $result = $this->db()->SelectLimit($sql);
+        if ($result->EOF) return null;
+
+        $field_names = array_keys($result->fields);
+
+        $content_fields = array();
+        while (!$result->EOF) {
+            require_once('class.mt_content_field.php');
+            $cf = new ContentField;
+            foreach($field_names as $key) {
+  	        $key = strtolower($key);
+                $cf->$key = $result->fields($key);
+            }
+            $result->MoveNext();
+
+            if (empty($cf)) break;
+
+            $cf->cf_modified_on = $this->db2ts($cf->cf_modified_on);
+            $content_fields[] = $cf;
+        }
+
+        return $content_fields;
+    }
+
+    public function fetch_objectcategory($args) {
+        $id_list = '';
+        if (isset($args['category_id']))
+            $id_list = implode(',', $args['category_id']);
+        if (empty($id_list))
+            return;
+
+        $cf_filter = '';
+        if (isset($args['cf_id']) && is_numeric($args['cf_id'])) {
+            $cf_filter = 'and objectcategory_cf_id = ' . $args['cf_id'];
+        }
+
+        $blog_filter = $this->include_exclude_blogs($args);
+        if ($blog_filter != '')
+            $blog_filter = 'and objectcategory_blog_id' . $blog_filter;
+
+        $extras = array();
+        $datasource = 'content_data';
+        $extras['join'] = array(
+            'mt_cd' => array(
+                'condition' => 'cd_id = objectcategory_object_id'
+                )
+            );
+        $object_filter = 'and cd_status = 2';
+
+        require_once('class.mt_objectcategory.php');
+        $ocat = new ObjectCategory;
+
+        $where = "objectcategory_object_ds = '$datasource'
+                and objectcategory_category_id in ($id_list)
+                $blog_filter
+                $cf_filter
+                $object_filter";
+
+        return $ocat->Find($where, false, false, $extras);
+    }
+
+    public function fetch_objectcategories($args) {
+        if (isset($args['object_id']))
+            $object_id = $args['object_id'];
+        else
+            return undef;
+
+        if (isset($args['category_field_id']))
+            $category_field_id = $args['category_field_id'];
+        else
+            return undef;
+
+        require_once('class.mt_objectcategory.php');
+        $ocat = new ObjectCategory;
+
+        $where = "objectcategory_cf_id = '$category_field_id'
+                  and objectcategory_object_ds = 'content_data'
+                  and objectcategory_object_id = '$object_id'";
+
+        return $ocat = $ocat->Find($where);
+    }
+
+    public function fetch_content_tags($args) {
+        # load tags
+
+        $class = 'content_data';
+        $cacheable 
+            = empty( $args['tags'] )
+            && empty( $args['tag'] )
+            && empty( $args['include_private'] );
+
+        if (isset($args['cd_id'])) {
+            if ($cacheable) {
+                if (isset($this->_cd_tag_cache[$args['cd_id']])) {
+                    return $this->_cd_tag_cache[$args['cd_id']];
+                }
+            }
+            $cd_filter = 'and objecttag_tag_id in (select objecttag_tag_id from mt_objecttag where objecttag_object_id='.intval($args['cd_id']).')';
+        }
+
+        $blog_filter = $this->include_exclude_blogs($args);
+        if ($blog_filter == '' and isset($args['blog_id'])) {
+            if ($cacheable) {
+                if (!isset($args['cd_id'])) {
+                    if (isset($this->_blog_tag_cache[$args['blog_id'].":$class"])) {
+                        return $this->_blog_tag_cache[$args['blog_id'].":$class"];
+                    }
+                }
+            }
+            $blog_filter = ' = '. intval($args['blog_id']);
+        }
+        if ($blog_filter != '') 
+            $blog_filter = 'and objecttag_blog_id ' . $blog_filter;
+
+        $ct_filter = '';
+        if (isset($args['content_type_id'])) {
+            if (is_array($args['content_type_id'])) {
+                if (count($args['content_type_id']) > 1) {
+                    $ct_filter = 'and cd_content_type_id in (' . implode(',', $args['content_type_id']) . ')';
+                } else {
+                    $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'][0];
+                }
+            } else {
+                $ct_filter = 'and cd_content_type_id = ' . $args['content_type_id'];
+            }
+        }
+
+        if (empty($args['include_private'])) {
+            $private_filter = 'and (tag_is_private = 0 or tag_is_private is null)';
+        }
+        if (! empty($args['tags'])) {
+            $tag_list = '';
+            require_once("MTUtil.php");
+            $tag_array = tag_split($args['tags']);
+            foreach ($tag_array as $tag) {
+                if ($tag_list != '') $tag_list .= ',';
+                $tag_list .= "'" . $this->escape($tag) . "'";
+            }
+            if ($tag_list != '') {
+                $tag_filter = 'and (tag_name in (' . $tag_list . '))';
+                $private_filter = '';
+            }
+        }
+
+        $sort_col = isset($args['sort_by']) ? $args['sort_by'] : 'name';
+        $sort_col = "tag_$sort_col";
+        if (isset($args['sort_order']) and $args['sort_order'] == 'descend') {
+            $order = 'desc';
+        } else {
+            $order = 'asc';
+        }
+        $id_order = '';
+        if ($sort_col == 'tag_name' || $sort_col == 'name') {
+            $sort_col = 'lower(tag_name)';
+        }else{
+            $id_order = ', lower(tag_name)';
+        }
+
+        $sql = "
+            select tag_id, tag_name, count(*) as tag_count
+             from mt_tag, mt_objecttag, mt_cd
+             where objecttag_tag_id = tag_id
+               and cd_id = objecttag_object_id and objecttag_object_datasource='content_data'
+               and cd_status = 2
+                   $blog_filter
+                   $tag_filter
+                   $cd_filter
+                   $ct_filter
+                   $private_filter
+            group by tag_id, tag_name
+            order by $sort_col $order $id_order, tag_id desc";
+        $rs = $this->db()->SelectLimit($sql);
+
+        require_once('class.mt_tag.php');
+        $tags = array();
+        while(!$rs->EOF) {
+            $tag = new Tag;
+            $tag->tag_id = $rs->Fields('tag_id');
+            $tag->tag_name = $rs->Fields('tag_name');
+            $tag->tag_count = $rs->Fields('tag_count');
+            $tags[] = $tag;
+            $rs->MoveNext();
+        }
+        if ($cacheable) {
+            if ($args['cd_id'])
+                $this->_cd_tag_cache[$args['cd_id']] = $tags;
+            elseif (!$args['cd_id'])
+                $this->_blog_tag_cache[$args['blog_id'].":$class"] = $tags;
+        }
+        return $tags;
+    }
+    public function fetch_content_type_id($args){
+        require_once('class.mt_content_type.php');
+
+        $ct = new ContentType;
+        if (isset($args['content_type'])) {
+            $str = $args['content_type'];
+            if (ctype_digit($str)) {
+                $where = "content_type_id = $str";
+                $ct->Load($where);
+            }
+            if (is_null($ct->id)) {
+                $str = $this->escape($str);
+                $where = "content_type_unique_id = '$str'";
+                $ct->Load($where);
+                if (is_null($ct->id)) {
+                    $where = "content_type_name = '$str'";
+                    if (isset($args['blog_id']))
+                        $where .= " and content_type_blog_id = " . intval($args['blog_id']);
+                    $ct->Load($where);
+                }
+                if (is_null($ct->id)) return null;
+            }
+        }
+        return $ct->id;
+    }
+    
+    public function content_count($args){
+        if ($sql = $this->include_exclude_blogs($args)) {
+            $blog_filter = 'and cd_blog_id ' . $sql;
+        } elseif (isset($args['blog_id'])) {
+            $blog_id = intval($args['blog_id']);
+            $blog_filter = 'and cd_blog_id = ' . $blog_id;
+        }
+        $where = "cd_status = 2
+                  $blog_filter";
+        if (isset($args['content_type'])) {
+            $content_types = $this->fetch_content_types($args);
+            if ($content_types) {
+                $where .= ' and cd_content_type_id = ' . $content_types[0]->id;
+            }
+        }
+
+        require_once('class.mt_content_data.php');
+        $ct = new ContentData();
+        $count = $ct->count(array('where' => $where));
+        return $count;
+    }
+
+    public function content_link($cid, $at = "ContentType", $args = null) {
+        $cid = intval($cid);
+        if (isset($this->_content_link_cache[$cid.';'.$at])) {
+            $url = $this->_content_link_cache[$cid.';'.$at];
+        } else {
+            $extras['join'] = array(
+                'mt_templatemap' => array(
+                    'condition' => "templatemap_id = fileinfo_templatemap_id"
+                    )
+                );
+            $filter = '';
+
+            if (preg_match('/Category/', $at)) {
+                $extras['join']['mt_objectcategory'] = array(
+                    'condition' => "fileinfo_category_id = objectcategory_category_id"
+                );
+                $filter = " and objectcategory_object_ds = 'content_data'";
+                $filter .= " and objectcategory_object_id = $cid";
+                $filter .= " and objectcategory_is_primary = 1";
+            }
+
+            $content = $this->fetch_content($cid);
+
+            $ts = $this->db2ts($content->authored_on);
+            if (preg_match('/Monthly$/', $at)) {
+                $ts = substr($ts, 0, 6) . '01000000';
+            } elseif (preg_match('/Daily$/', $at)) {
+                $ts = substr($ts, 0, 8) . '000000';
+            } elseif (preg_match('/Weekly$/', $at)) {
+                require_once("MTUtil.php");
+                list($ws, $we) = start_end_week($ts);
+                $ts = $ws;
+            } elseif (preg_match('/Yearly$/', $at)) {
+                $ts = substr($ts, 0, 4) . '0101000000';
+            } elseif ($at == 'ContentType') {
+                $filter .= " and fileinfo_cd_id = $cid";
+            }
+            if (preg_match('/(Monthly|Daily|Weekly|Yearly)$/', $at)) {
+                $filter .= " and fileinfo_startdate = '$ts'";
+            }
+            if (preg_match('/Author/', $at)) {
+                $filter .= " and fileinfo_author_id = ". $content->author_id;
+            }
+
+            $where .= "templatemap_archive_type = '$at'
+                       and templatemap_is_preferred = 1
+                       $filter";
+            if (isset($args['blog_id']))
+                $where .= " and fileinfo_blog_id = " . $args['blog_id'];
+            require_once('class.mt_fileinfo.php');
+            $finfo = new FileInfo;
+            $infos = $finfo->Find($where, false, false, $extras);
+            if (empty($infos))
+                return null;
+
+            $finfo = $infos[0];
+            $blog = $finfo->blog();
+            $blog_url = $blog->archive_url();
+            if (empty($blog_url))
+                $blog_url = $blog->site_url();
+
+            require_once('MTUtil.php');
+            if(preg_match('/https?/',$blog_url)){
+                $blog_url = preg_replace('!(https?://(?:[^/]+))/.*!', '$1', $blog_url);
+                $url = caturl(array($blog_url, $finfo->fileinfo_url));
+            } else {
+                $url = $finfo->fileinfo_url;
+            }
+            if(!isset($args['with_index']) || !$args['with_index'] ){
+                $url = _strip_index($url, $blog);
+            }
+            $this->_content_link_cache[$cid.';'.$at] = $url;
+        }
+
+        if ( $at != 'ContentType' && (!$args || !isset($args['no_anchor'])) ) {
+            $url .= '#' . (!$args || isset($args['valid_html']) ? 'a' : '') .
+                    sprintf("%06d", $cid);
+        }
+
+        return $url;
     }
 }
 ?>

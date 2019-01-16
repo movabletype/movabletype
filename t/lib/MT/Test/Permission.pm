@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -94,9 +94,9 @@ sub make_website {
     MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
-    my $classic_website = MT::Theme->load('classic_website')
+    my $theme = MT::Theme->load( $values->{theme_id} )
         or die MT::Theme->errstr;
-    $classic_website->apply($website);
+    $theme->apply($website);
     $website->save() or die "Couldn't save blog: " . $website->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
@@ -154,9 +154,9 @@ sub make_blog {
     MT->config->ThemesDirectory( [$themedir] );
 
     require MT::Theme;
-    my $classic_blog = MT::Theme->load('classic_blog')
+    my $theme = MT::Theme->load( $values->{theme_id} )
         or die MT::Theme->errstr;
-    $classic_blog->apply($blog);
+    $theme->apply($blog);
     $blog->save() or die "Couldn't save blog: " . $blog->errstr;
 
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
@@ -1040,7 +1040,6 @@ sub make_content_data {
         status         => MT::ContentStatus::RELEASE(),
         author_id      => 1,
         authored_on    => '20170530163600',
-        unpublished_on => '20170531163600',
         %params,
     };
 
@@ -1077,6 +1076,29 @@ sub make_content_data {
             }
         ) if !$mock_permission->is_mocked('perms_from_registry');
     }
+}
+
+sub make_filter {
+    my $pkg    = shift;
+    my %params = @_;
+
+    my $values = {
+        blog_id     => 1,
+        author_id  => 1,
+        label => 'Test filter',
+        object_ds => 'entry',
+        %params,
+    };
+
+    require MT::Filter;
+    my $filter = MT::Filter->new;
+
+    $filter->$_( $values->{$_} ) for keys %{$values};
+    $filter->save or die q{Couldn't save filter record: } . $filter->errstr;
+
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+
+    return $filter;
 }
 
 1;

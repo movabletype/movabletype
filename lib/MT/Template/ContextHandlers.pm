@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -25,11 +25,11 @@ sub core_tags {
         block => {
 
             ## Core
-            Ignore         => sub {''},
-            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore    => sub {''},
+            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -67,13 +67,13 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_site_has_child_site',
-            'SiteIfCommentsOpen?' =>
-                '$Core::MT::Template::Tags::Comment::_hdlr_blog_if_comments_open',
             'SitesLocalSite' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_local_site',
             'SitesIfLocalSite?' =>
                 '$Core::MT::Template::Tags::Site::_hdlr_sites_if_local_site',
             'SiteIfCommentsOpen?' => sub {''},
+            'SiteIfCCLicense?' =>
+                '$Core::MT::Template::Tags::Blog::_hdlr_blog_if_cc_license',
 
             ## Blog
             Blogs     => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
@@ -481,7 +481,6 @@ sub core_tags {
 
             CommentSiteID    => sub {''},
             SiteCommentCount => sub {''},
-            PingSiteName     => sub {''},
             SitePingCount    => sub {''},
 
             SiteCategoryCount =>
@@ -913,7 +912,7 @@ sub core_tags {
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
             CommentRank => sub {''},
-            PingRank    => sub {''},
+            PingRank => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
@@ -3308,8 +3307,19 @@ EOT
         $widget_class = "mt-widget--panel";
     }
 
+    my $bootstrap_display_class = '';
+    my $widget_mobile           = $ctx->var('widget_mobile');
+    if ( defined $widget_mobile ) {
+        if ($widget_mobile) {
+            $bootstrap_display_class = 'd-md-none';
+        }
+        else {
+            $bootstrap_display_class = 'd-none d-md-block';
+        }
+    }
+
     my $widget = <<"EOT";
-<div id="$id" class="$widget_class $class">
+<div id="$id" class="$widget_class $class $bootstrap_display_class">
   <h2 class="mt-widget__title">
     $widget_header
     $header_action
@@ -5826,8 +5836,9 @@ sub _hdlr_static_path {
         # relative path, prepend blog domain
         my $blog = $ctx->stash('blog');
         if ($blog) {
-            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+            if ( my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)| ) {
+                $path = $blog_domain . $path;
+            }
         }
     }
     $path .= '/' unless $path =~ m!/$!;

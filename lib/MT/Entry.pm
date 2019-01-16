@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -299,7 +299,8 @@ sub list_props {
                 my $view_link_text
                     = MT->translate( 'View [_1]', $class_label );
                 my $static_uri = MT->static_path;
-                my $view_link  = $obj->status == MT::Entry::RELEASE()
+                my $view_link
+                    = ( $obj->status == MT::Entry::RELEASE() && $permalink )
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" class="d-inline-block" target="_blank">
@@ -738,6 +739,27 @@ sub list_props {
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
         },
+        __mobile => {
+            alternative_label => 'No Name',
+            col               => 'title',
+            date_col          => 'authored_on',
+            display           => 'force',
+            filter_editable   => 0,
+            html              => sub {
+                my $prop = shift;
+                my ( $obj, $app ) = @_;
+                my $title       = $prop->common_label_html(@_);
+                my $status_icon = $obj->status_icon;
+                my $date_col    = $prop->date_col;
+                my $date
+                    = MT::Util::date_for_listing( $obj->$date_col, $app );
+                return qq{
+                    <div class="title mb-2">$title</div>
+                    <span class="status mr-3">$status_icon</span>
+                    <span class="date font-weight-light">$date</span>
+                };
+            },
+        },
     };
 }
 
@@ -874,7 +896,7 @@ sub _nextprev {
         direction => $direction,
         terms => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args  => $args,
-        by    => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
+        by => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
     );
     weaken( $obj->{$label} = $o ) if $o;
     return $o;
@@ -1016,6 +1038,7 @@ sub archive_file {
         my %at = map { $_ => 1 } split /,/, $at;
 
         # FIXME: should draw from list of registered archive types
+        $at = '';
         for my $tat (
             qw( Individual Daily Weekly Author-Monthly Category-Monthly Monthly Category )
             )

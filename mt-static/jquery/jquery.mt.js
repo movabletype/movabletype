@@ -776,14 +776,14 @@ $.fn.mtEditInput = function(options) {
             $input = $('input#'+id);
         if ($input.val() && !$input.hasClass('show-input')) {
             $input
-                .before('<span class="'+id+'-text"></span>')
+                .before('<span class="'+id+'-text text-wrap mr-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
             $('span.'+id+'-text').text($input.val());
         }
         if (!$input.val() && $input.hasClass('hide-input')) {
             $input
-                .before('<span class="'+id+'-text"></span>')
+                .before('<span class="'+id+'-text text-wrap mr-3"></span>')
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
@@ -1609,7 +1609,7 @@ $.fn.mtModal.close = function (url) {
 
 function getModalHtml() {
   return '<style>iframe.embed-response-item:not(:last-child) { display: none; }</style>'
-    + '<div class="modal fade mt-modal">'
+    + '<div class="modal fade mt-modal" data-backdrop="static">'
     + '<div class="modal-dialog">'
     + '<div class="modal-content embed-responsive">'
     + '</div>'
@@ -1658,7 +1658,9 @@ function initModal() {
     $iframe.remove();
   });
 
-  window.top.jQuery(window.top).on('resize', resizeModal);
+  window.top.jQuery(window.top).on('resize scroll', function () {
+    setTimeout(resizeModal, 100);
+  });
 }
 
 function openModal(href, opts) {
@@ -1745,16 +1747,57 @@ function openModalWithoutForm(href, opts) {
 
 function resizeModal() {
   var modalHeight;
+  var modalBodyHeight;
   var $iframeContents = window.top.jQuery('iframe.embed-responsive-item:visible').contents();
-  if ($iframeContents.find('body .modal-body').length > 0) {
-    modalHeight = $iframeContents.find('body').outerHeight(true);
+  var $modalBody = $iframeContents.find('body .modal-body');
+  if ( MT.Util.isMobileView() ) {
+    var mobileScreenHeight = window.top.jQuery(window.top).height();
+    if (top.jQuery(top).width() < top.jQuery(top).height()) {
+      modalHeight = mobileScreenHeight - 10;
+    } else {
+      if (MT.Util.isIos()) {
+        modalHeight = mobileScreenHeight;
+      } else {
+        modalHeight = mobileScreenHeight + 50;
+      }
+    }
+    modalBodyHeight = (modalHeight - 130) + 'px';
   } else {
-    modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
-  }
-  if ( modalHeight < 500 ) {
-    modalHeight = 500;
+    if ($modalBody.length > 0) {
+      modalHeight = $iframeContents.find('body').outerHeight(true);
+    } else {
+      modalHeight = $iframeContents.find('body > *:first').outerHeight(true);
+    }
+    if ( modalHeight < 500 ) {
+      modalHeight = 500;
+    }
+    modalBodyHeight = '34rem';
   }
   $('.mt-modal .modal-content').css('padding-bottom', modalHeight);
+  $modalBody.css('max-height', modalBodyHeight);
 }
+
+var previousView;
+jQuery.setViewTrigger = function () {
+  jQuery(window).on('resize', function () {
+    if (MT.Util.isMobileView()) {
+      if (previousView && previousView == 'mobile') {
+        return;
+      }
+      if (previousView) {
+        jQuery(window).trigger('change_to_mobile_view');
+      }
+      previousView = 'mobile';
+    } else {
+      if (previousView && previousView == 'pc') {
+        return;
+      }
+      if (previousView) {
+        jQuery(window).trigger('change_to_pc_view');
+      }
+      previousView = 'pc';
+    }
+  });
+};
 
 })(jQuery);

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,23 +14,26 @@ use MT::ContentType;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value} || [];
-    $value = [$value] unless ref $value eq 'ARRAY';
+    my $raw_value = $field_data->{value} || [];
+    my @value = ref $raw_value eq 'ARRAY' ? @$raw_value : ($raw_value);
 
-    my %tmp_cd;
-    my $iter = MT::ContentData->load_iter( { id => $value } );
-    while ( my $cd = $iter->() ) {
-        $tmp_cd{ $cd->id } = $cd;
-    }
-    my @content_data = grep {$_} map { $tmp_cd{$_} } @{$value};
-    my @content_data_loop = map {
-        {   cd_id              => $_->id,
-            cd_blog_id         => $_->blog_id,
-            cd_content_type_id => $_->content_type_id,
-            cd_data            => $_->preview_data,
-            cd_label => $_->label || MT->translate('No Label (ID:[_1]'),
+    my @content_data_loop;
+    if (@value) {
+        my %tmp_cd;
+        my $iter = MT::ContentData->load_iter( { id => \@value } );
+        while ( my $cd = $iter->() ) {
+            $tmp_cd{ $cd->id } = $cd;
         }
-    } @content_data;
+        my @content_data = grep {$_} map { $tmp_cd{$_} } @value;
+        @content_data_loop = map {
+            {   cd_id              => $_->id,
+                cd_blog_id         => $_->blog_id,
+                cd_content_type_id => $_->content_type_id,
+                cd_data            => $_->preview_data,
+                cd_label => $_->label || MT->translate('No Label (ID:[_1]'),
+            }
+        } @content_data;
+    }
 
     my $content_field_id = $field_data->{content_field_id} || 0;
     my $content_field = MT::ContentField->load($content_field_id);
@@ -69,11 +72,17 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $child_cd_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $raw_child_cd_ids = $content_data->data->{ $prop->content_field_id };
+    return '' unless $raw_child_cd_ids;
+    my @child_cd_ids
+        = ref $raw_child_cd_ids eq 'ARRAY'
+        ? @$raw_child_cd_ids
+        : ($raw_child_cd_ids);
+    return '' unless @child_cd_ids;
 
     my %child_cd;
     my $iter = MT::ContentData->load_iter(
-        { id => $child_cd_ids },
+        { id => \@child_cd_ids },
         {   fetchonly => {
                 id              => 1,
                 blog_id         => 1,
@@ -83,10 +92,11 @@ sub html {
             }
         },
     );
+
     while ( my $cd = $iter->() ) {
         $child_cd{ $cd->id } = $cd;
     }
-    my @child_cd = map { $child_cd{$_} } @$child_cd_ids;
+    my @child_cd = grep {$_} map { $child_cd{$_} } @child_cd_ids;
 
     my @cd_links;
     for my $cd (@child_cd) {
@@ -126,7 +136,7 @@ sub ss_validator {
     my $field_label     = $options->{label};
 
     my $iter = MT::ContentData->load_iter(
-        {   id              => $data,
+        {   id => @$data ? $data : 0,
             blog_id         => $app->blog->id,
             content_type_id => $content_type_id,
         },
@@ -161,11 +171,7 @@ sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
-        my $ct = MT::ContentType->load(
-            {   blog_id   => $blog->id,
-                unique_id => $name_or_unique_id,
-            }
-        );
+        my $ct = MT::ContentType->load( { unique_id => $name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name    => $name_or_unique_id,
@@ -264,7 +270,16 @@ sub field_value_handler {
 
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
-    my $contents = join '', map {"<li>(ID:$_)</li>"} @$values;
+    my @cd_ids;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            @cd_ids = @$values;
+        }
+        else {
+            @cd_ids = ($values);
+        }
+    }
+    my $contents = join '', map {"<li>(ID:$_)</li>"} @cd_ids;
     return "<ul>$contents</ul>";
 }
 
@@ -318,9 +333,8 @@ sub preview_handler {
 
 sub search_handler {
     my ( $search_regex, $field_data, $content_data_ids, $content_data ) = @_;
-    return 0 unless defined $content_data_ids;
-    $content_data_ids = [$content_data_ids]
-        unless ref $content_data_ids eq 'ARRAY';
+    return 0 unless $content_data_ids;
+    return 0 if ref $content_data_ids eq 'ARRAY' && !@$content_data_ids;
     my $iter
         = MT->model('content_data')->load_iter( { id => $content_data_ids } );
     while ( my $cd = $iter->() ) {
@@ -376,6 +390,36 @@ sub site_data_import_handler {
         grep {$_}
         map  { $all_objects->{"MT::ContentData#$_"} } @old_content_data_ids;
     @new_content_data_ids ? \@new_content_data_ids : undef;
+}
+
+sub tag_handler {
+    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
+
+    my $options = $field_data->{options} || {};
+    my $source_content_type
+        = MT->model('content_type')->load( $options->{source} || 0 )
+        or return $ctx->_no_content_type_error;
+    my $content_data = $ctx->stash('content')
+        or return $ctx->_no_content_error;
+
+    my $raw_ids = $content_data->data->{ $field_data->{id} } || 0;
+    my @ids = ref $raw_ids eq 'ARRAY' ? @$raw_ids : ($raw_ids);
+    my $iter
+        = MT->model('content_data')->load_iter( { id => @ids ? \@ids : 0 } );
+    my %contents;
+    while ( my $cd = $iter->() ) {
+        $contents{ $cd->id } = $cd;
+    }
+    my @ordered_contents = map { $contents{$_} } @ids;
+
+    local $ctx->{__stash}{parent_content}      = $ctx->stash('content');
+    local $ctx->{__stash}{parent_content_type} = $ctx->stash('content_type');
+
+    local $ctx->{__stash}{content};
+    local $ctx->{__stash}{content_type} = $source_content_type;
+    local $ctx->{__stash}{contents}     = \@ordered_contents;
+
+    $ctx->invoke_handler( 'contents', $args, $cond );
 }
 
 1;

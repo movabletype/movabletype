@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,6 +24,7 @@ use MT::Mail;
 
 use Cwd qw( abs_path );
 use URI;
+use URI::Escape;
 use URI::QueryParam;
 
 # Speed-up tests on Windows.
@@ -1811,16 +1812,16 @@ sub _run_app {
 
     # is the response a redirect
     if (   $out
-        && $out =~ /^Status: 302 Moved\s*$/smi
         && $follow_redirects
-        && $level < $max_redirects )
+        && (   $out =~ /^Status: 302 (?:Moved|Found)\s*$/smi
+            || $out =~ /window\.location=/ )
+        && $level < $max_redirects
+        )
     {
-        if ( $out =~ /^Location: \/cgi-bin\/mt\.cgi\?(.*)$/smi ) {
-            my $location = $1;
-            $location =~ s/\s*$//g;
-            my @params = split( /&/, $location );
-            my %params = map { my ( $k, $v ) = split( /=/, $_, 2 ); $k => $v }
-                @params;
+        if (   $out =~ /^Location: \/cgi-bin\/mt\.cgi\?(.+)$/m
+            || $out =~ /window\.location='\/cgi-bin\/mt\.cgi\?([^']+)'/ )
+        {
+            my %params = _parse_query($1);
 
             # carry over the test parameters
             $params{$_} = $params->{$_}
@@ -1832,13 +1833,24 @@ sub _run_app {
             $app->request->reset;
 
             # anything else here??
+            delete $app->{__test_output};
             undef $app;
 
-            $app = _run_app( $class, \%params, $level++ );
+            $app = _run_app( $class, \%params, $level + 1 );
         }
     }
 
     return $app;
+}
+
+sub _parse_query {
+    my ($query) = @_;
+    $query =~ s/\s*$//g;
+    my @params = split( /&/, $query );
+    my %params
+        = map { my ( $k, $v ) = split( /=/, $_, 2 ); $k => uri_unescape($v) }
+        @params;
+    return %params;
 }
 
 sub out_like {

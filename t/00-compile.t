@@ -54,6 +54,7 @@ use_ok('MT::CMS::Website');
 use_ok('MT::CMS::Theme');
 use_ok('MT::CMS::Filter');
 use_ok('MT::CMS::RebuildTrigger');
+use_ok('MT::CMS::Group');
 
 # Supporting applications
 use_ok('MT::App::ActivityFeeds');
@@ -110,6 +111,7 @@ use_ok('MT::Filter');
 use_ok('MT::Page');
 use_ok('MT::Folder');
 use_ok('MT::RebuildTrigger');
+use_ok('MT::Group');
 
 # Utility modules
 use_ok('MT::Builder');
@@ -147,6 +149,7 @@ use_ok('MT::BackupRestore::ContentTypePermission');
 use_ok('MT::CMS::CategorySet');
 use_ok('MT::CMS::ContentData');
 use_ok('MT::CMS::ContentType');
+use_ok('MT::CMS::Mobile');
 use_ok('MT::CategorySet');
 use_ok('MT::ContentData');
 use_ok('MT::ContentField');
@@ -192,6 +195,7 @@ use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::ContentType');
+use_ok('MT::Template::Tags::Common');
 
 SKIP: {
 
@@ -511,6 +515,7 @@ use_ok('MT::DataAPI::Callback::Blog');
 use_ok('MT::DataAPI::Callback::Log');
 use_ok('MT::DataAPI::Callback::Website');
 use_ok('MT::DataAPI::Callback::Plugin');
+use_ok('MT::DataAPI::Callback::Group');
 
 use_ok('MT::DataAPI::Resource::v2::Asset');
 use_ok('MT::DataAPI::Resource::v2::Template');
@@ -527,6 +532,7 @@ use_ok('MT::DataAPI::Resource::v2::Blog');
 use_ok('MT::DataAPI::Resource::v2::Log');
 use_ok('MT::DataAPI::Resource::v2::Website');
 use_ok('MT::DataAPI::Resource::v2::User');
+use_ok('MT::DataAPI::Resource::v2::Group');
 
 use_ok('MT::DataAPI::Resource::Util');
 
@@ -549,6 +555,7 @@ use_ok('MT::DataAPI::Endpoint::v2::Log');
 use_ok('MT::DataAPI::Endpoint::v2::BackupRestore');
 use_ok('MT::DataAPI::Endpoint::v2::Plugin');
 use_ok('MT::DataAPI::Endpoint::v2::User');
+use_ok('MT::DataAPI::Endpoint::v2::Group');
 
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');

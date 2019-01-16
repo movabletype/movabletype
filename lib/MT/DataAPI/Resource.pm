@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -173,6 +173,12 @@ sub core_resources {
             },
         ],
         'content_data' => 'cd',
+        'group'        => [
+            {   version          => 2,
+                fields           => "${pkg}v2::Group::fields",
+                updatable_fields => "${pkg}v2::Group::updatable_fields",
+            },
+        ],
     };
 }
 

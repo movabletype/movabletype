@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -47,7 +47,13 @@ $test_env->prepare_fixture('db');
 
 my @ts = MT::Util::offset_time_list( time, $blog_id );
 my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
-my $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+my $next_month;
+if ( $ts[4] + 2 > 12 ) {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900 + 1, 1;
+}
+else {
+    $next_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 2;
+}
 
 my $ct = MT::Test::Permission->make_content_type(
     name    => 'test content data',
@@ -58,6 +64,10 @@ my $cf_datetime = MT::Test::Permission->make_content_field(
     content_type_id => $ct->id,
     name            => 'date and time',
     type            => 'date_and_time',
+);
+my $category_set0 = MT::Test::Permission->make_category_set(
+    blog_id => $ct->blog_id,
+    name    => 'test category set0',
 );
 my $category_set = MT::Test::Permission->make_category_set(
     blog_id => $ct->blog_id,
@@ -122,17 +132,18 @@ my $cd4 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct->id,
     authored_on     => '20170615000000',
-    data => { $cf_category->id => [ $category1->id ], },
+    data            => { $cf_category->id => [ $category1->id ], },
 );
 
-$vars->{ct_uid}    = $ct->unique_id;
-$vars->{ct_name}   = $ct->name;
-$vars->{ct_id}     = $ct->id;
-$vars->{cat_label} = $category2->label;
+$vars->{ct_uid}          = $ct->unique_id;
+$vars->{ct_name}         = $ct->name;
+$vars->{ct_id}           = $ct->id;
+$vars->{cat_label}       = $category2->label;
+$vars->{category_set_id} = $category_set->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -263,6 +274,43 @@ __END__
 === MT::ContentCalendar with category_set
 --- template
 <mt:ContentCalendar month="201706" content_type="test content data" category_set="test category set">
+<mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
+--- expected
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+
+30
+
+
+=== MT::ContentCalendar with category_set
+--- template
+<mt:ContentCalendar month="201706" content_type="test content data" category_set="[% category_set_id %]">
 <mt:CalendarIfNoContents><mt:CalendarDay></mt:CalendarIfNoContents></mt:ContentCalendar>
 --- expected
 1

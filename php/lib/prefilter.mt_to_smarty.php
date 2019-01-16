@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -155,7 +155,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 preg_match('!^MTHas!i', $mttag) ||
                 (preg_match('![a-z]If[A-Z]!i', $mttag) &&
                 !preg_match('![a-z]Modified[A-Z]!i', $mttag) &&
-                !preg_match('![a-z]Notify[A-Z]!i', $mttag)) ||
+                !preg_match('![a-z]Notify[A-Z]!i', $mttag) &&
+                !preg_match('![a-z]Identifier!i', $mttag)) ||
                 isset($ctx->conditionals[$mttag])) {
                 $conditional = 1;
             } elseif (($mttag == 'mtentries') ||
@@ -164,7 +165,8 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 ($mttag == 'mtassets') ||
                 ($mttag == 'mtentryassets') ||
                 ($mttag == 'mtpageassets') ||
-                ($mttag == 'mtcommentreplies')) {
+                ($mttag == 'mtcommentreplies') ||
+                ($mttag == 'mtcontents')) {
                 $conditional = 1;
             } else {
                 $conditional = 0;
