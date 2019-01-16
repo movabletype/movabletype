@@ -1,0 +1,31 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: masiuchi/docker-mt-test:trusty-full
+    steps:
+      - checkout
+      - run:
+          name: Install CPAN modules
+          command: |
+            cpm install --global --cpanfile=t/cpanfile
+      - run:
+          name: Remove skip tests
+          command: |
+            rm t/34-sqlite.t
+            rm t/90-podcoverage.t
+            rm plugins/MultiBlog/t/02.tags.t
+      - run:
+          name: Copy mt-config.cgi
+          command: |
+            cp t/mysql-test.cfg mt-config.cgi
+      - run:
+          name: Run test
+          command: |
+            find /var/lib/mysql -type f | xargs touch
+            service mysql start
+            service memcached start
+
+            PERL_JSON_BACKEND=0 prove t plugins/*/t
+            phpunit
+

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1184,8 +1184,10 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     if ( !$args->{force} ) {
-        delete $arg{Width}  if ( $arg{Width} && $arg{Width} > $a->image_width );
-        delete $arg{Height} if ( $arg{Height} && $arg{Height} > $a->image_height );
+        delete $arg{Width}
+            if ( $arg{Width} && $arg{Width} > $a->image_width );
+        delete $arg{Height}
+            if ( $arg{Height} && $arg{Height} > $a->image_height );
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);

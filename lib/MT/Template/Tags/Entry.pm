@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -352,7 +352,8 @@ sub _hdlr_entries {
             'id',                    'days',
             'recently_commented_on', 'include_subcategories',
             'include_blogs',         'exclude_blogs',
-            'blog_ids'
+            'blog_ids',              'include_websites',
+            'exclude_websites',      'site_ids'
             )
         {
             if ( exists( $args->{$args_key} ) ) {

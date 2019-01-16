@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -12,7 +12,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $ctx->localize($localvars);
         $args['sort_by'] = 'label';
-        $args['sort_order'] = 'ascend';
+        $args['sort_order'] or $args['sort_order'] = 'ascend';
         $categories = $ctx->mt->db()->fetch_categories($args);
         $glue = $args['glue'];
         $ctx->stash('_categories_glue', $glue);

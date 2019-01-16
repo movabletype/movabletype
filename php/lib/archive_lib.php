@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -867,7 +867,7 @@ class AuthorBasedArchiver implements ArchiveType {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
-        $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
+        $order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $sql = "
             select count(*) as entry_count,
                    entry_author_id,

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1660,14 +1660,19 @@ sub restore {
                     'Please use xml, tar.gz, zip, or manifest as a file extension.'
                     );
             }
-            unless ($arc) {
+            if ( !$arc or !$arc->is_safe_to_extract ) {
                 $result = 0;
                 $param->{restore_success} = 0;
                 if ($error) {
                     $param->{error} = $error;
                 }
                 else {
-                    $error = MT->translate('Unknown file format');
+                    $error = MT->translate(
+                          !$arc                     ? 'Unknown file format'
+                        : !$arc->is_safe_to_extract ? 'Unsafe archive'
+                        :                             ''
+                    );
+
                     $app->log(
                         {   message  => $error . ":$uploaded_filename",
                             level    => MT::Log::WARNING(),

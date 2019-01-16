@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.7',              '__PRODUCT_VERSION_ID__',
+        '6.3.8',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 7;
+        $RELEASE_NUMBER = 8;
     }
 
     $DebugMode = 0;
@@ -634,10 +634,10 @@ sub remove_callback {
 }
 
 sub is_callback_registered {
-    my $class    = shift;
-    my ( $meth ) = @_;
+    my $class = shift;
+    my ($meth) = @_;
 
-    foreach my $list ( @Callbacks ) {
+    foreach my $list (@Callbacks) {
         return 1 if exists $list->{$meth};
     }
     return 0;
@@ -4380,7 +4380,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2018 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2019 Six Apart.
 All rights reserved.
 
 =cut

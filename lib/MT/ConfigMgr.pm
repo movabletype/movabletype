@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -370,7 +370,7 @@ sub read_config_db {
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
         my $data      = $config->data;
-        my @data      = split /[\r?\n]/, $data;
+        my @data      = split /[\r\n]/, $data;
         my $line      = 0;
         foreach (@data) {
             $line++;
