@@ -18,7 +18,6 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
         }
         $args_at = $args['type'];
         $args_at or $args_at = $args['archive_type'];
-        $args_at or $args_at = $blog->blog_archive_type_preferred;
         if ($args_at) {
             $at = $args_at;
         } else if ($blog->blog_archive_type_preferred) {
