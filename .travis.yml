@@ -5,10 +5,8 @@ services:
 
 before_script:
   - rm t/34-sqlite.t
-  - rm t/90-podcoverage.t
   - rm plugins/MultiBlog/t/02.tags.t
-
-  - cp t/mysql-test.cfg mt-config.cgi
+  - rm t/dangling-symlinks.t
 
 script:
   - docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && PERL_JSON_BACKEND=0 prove t plugins/*/t"
