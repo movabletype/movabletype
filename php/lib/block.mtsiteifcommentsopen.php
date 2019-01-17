@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtsiteifcommentsopen($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsiteifcommentsopen($args, $content, &$ctx, &$repeat)
+{
     return smarty_block_mtblogifcommentsopen($args, $content, $ctx, $repeat);
 }
-?>

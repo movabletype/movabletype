@@ -110,66 +110,81 @@ abstract class BaseObject extends ADOdb_Active_Record
     protected $_has_meta = false;
 
     // Override functions
-    public function __get( $name ) {
-        if (is_null($this->_prefix))
+    public function __get($name)
+    {
+        if (is_null($this->_prefix)) {
             return;
+        }
 
         $pattern = '/^' . $this->_prefix . "/i";
-        if (!preg_match($pattern, $name))
+        if (!preg_match($pattern, $name)) {
             $name = $this->_prefix . $name;
+        }
 
         return $this->$name;
     }
 
-    public function __set($name, $value) {
-        if (is_null($this->_prefix))
+    public function __set($name, $value)
+    {
+        if (is_null($this->_prefix)) {
             return;
+        }
 
         $pattern = '/^' . $this->_prefix . "/i";
-        if (!preg_match($pattern, $name))
+        if (!preg_match($pattern, $name)) {
             $name = $this->_prefix . $name;
+        }
 
         parent::__set($name, $value);
     }
 
-    public function __isset( $name ){
-        if (is_null($this->_prefix))
+    public function __isset($name)
+    {
+        if (is_null($this->_prefix)) {
             return false;
+        }
 
         $pattern = '/^' . $this->_prefix . "/i";
-        if (!preg_match($pattern, $name))
+        if (!preg_match($pattern, $name)) {
             $name = $this->_prefix . $name;
+        }
 
         $value = $this->$name;
-        return isset( $value );
+        return isset($value);
     }
 
-    public function Load( $where = null, $bindarr = false, $lock = false ) {
-       if ( is_numeric( $where ) )
+    public function Load($where = null, $bindarr = false, $lock = false)
+    {
+        if (is_numeric($where)) {
             $where = $this->_prefix . "id = " . $where;
+        }
 
         $ret = parent::Load($where, $bindarr, $lock);
-        if ($ret && $this->has_meta())
+        if ($ret && $this->has_meta()) {
             $this->load_meta($this);
+        }
 
         return $ret;
     }
 
-	public function Find($whereOrderBy, $bindarr = false, $pkeysArr = false, $extra = array()) {
+    public function Find($whereOrderBy, $bindarr = false, $pkeysArr = false, $extra = array())
+    {
         $db = $this->DB();
-        if (!$db || empty($this->_table))
+        if (!$db || empty($this->_table)) {
             return false;
+        }
 
         $join = '';
         if (isset($extra['join'])) {
             $joins = $extra['join'];
             $keys = array_keys($joins);
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
                 $table = $key;
                 $cond = $joins[$key]['condition'];
                 $type = '';
-                if (isset($joins[$key]['type']))
+                if (isset($joins[$key]['type'])) {
                     $type = $joins[$key]['type'];
+                }
                 $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
             }
         }
@@ -177,38 +192,41 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (isset($extra['distinct'])) {
             $mt = MT::get_instance();
             $mtdb = $mt->db();
-            if ( !$mtdb->has_distinct_support ) {
+            if (!$mtdb->has_distinct_support) {
                 $unique_myself = true;
                 $extra['distinct'] = null;
             }
         }
 
-        $objs = $db->GetActiveRecordsClass(get_class($this),
+        $objs = $db->GetActiveRecordsClass(
+            get_class($this),
                                           $this->_table . $join,
                                           $whereOrderBy,
                                           $bindarr,
                                           $pkeysArr,
-                                          $extra);
+                                          $extra
+        );
         $ret_objs;
         $unique_arr = array();
         if ($objs) {
-            if ( $unique_myself ) {
+            if ($unique_myself) {
                 $pkeys = empty($pkeysArr)
-                    ? $db->MetaPrimaryKeys( $this->_table )
+                    ? $db->MetaPrimaryKeys($this->_table)
                     : $pKeysArr;
             }
             $count = count($objs);
-            for($i = 0; $i < $count; $i++) {
-                if ( $unique_myself ) {
+            for ($i = 0; $i < $count; $i++) {
+                if ($unique_myself) {
                     $key = "";
-                    foreach ( $pkeys as $p ) {
+                    foreach ($pkeys as $p) {
                         $p = strtolower($p);
                         $key .= $objs[$i]->$p.":";
                     }
-                    if (array_key_exists($key, $unique_arr))
+                    if (array_key_exists($key, $unique_arr)) {
                         continue;
-                    else
+                    } else {
                         $unique_arr[$key] = 1;
+                    }
                 }
                 if ($this->has_meta()) {
                     $objs[$i] = $this->load_meta($objs[$i]);
@@ -221,67 +239,80 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
     // Member functions
-    public static function install_meta($class, $name, $type) {
-        if (empty($name) or empty($type) or empty($class))
+    public static function install_meta($class, $name, $type)
+    {
+        if (empty($name) or empty($type) or empty($class)) {
             return;
+        }
 
         self::$_meta_info[$class][$name] = $type;
         return true;
     }
 
-    public static function get_meta_info($class = null) {
-        if (empty($class))
+    public static function get_meta_info($class = null)
+    {
+        if (empty($class)) {
             return self::$_meta_info;
+        }
 
         return self::$_meta_info[$class];
     }
 
-    public function has_meta() {
+    public function has_meta()
+    {
         return $this->_has_meta;
     }
 
-    public function object_type() {
+    public function object_type()
+    {
         if (isset($this->{$this->_prefix . 'class'})) {
             return $this->{$this->_prefix . 'class'};
-        }
-        else {
+        } else {
             return trim($this->_prefix, '_');
         }
     }
 
-    public function has_column($col_name) {
-        if ( empty($col_name)) return false;
+    public function has_column($col_name)
+    {
+        if (empty($col_name)) {
+            return false;
+        }
 
         // Retrieve from MetaInfo
         $col = $col_name;
-        if ( preg_match('/^field[:\.](.+)$/', $col, $match) ) {
+        if (preg_match('/^field[:\.](.+)$/', $col, $match)) {
             $col = $match[1];
         }
         $cls = strtolower(get_class($this));
         $meta_info = BaseObject::get_meta_info($cls);
-        if ( !empty($meta_info) ) {
-            if ( array_key_exists($col, $meta_info) )
+        if (!empty($meta_info)) {
+            if (array_key_exists($col, $meta_info)) {
                 return true;
+            }
         }
 
         // Retrieve from column
         $pattern = '/^' . $this->_prefix . "/i";
-        if (!preg_match($pattern, $col))
+        if (!preg_match($pattern, $col)) {
             $col = $this->_prefix . $col;
+        }
 
         $flds = $this->GetAttributeNames();
-        return in_array( strtolower($col), $flds );
+        return in_array(strtolower($col), $flds);
     }
 
-    public function load_meta($obj) {
-        if (!$obj->id)
+    public function load_meta($obj)
+    {
+        if (!$obj->id) {
             return null;
+        }
 
         // Load meta info
         $meta_table = $obj->_table . '_meta';
         $meta_info = $obj->LoadRelations($meta_table);
-        if (!isset($meta_info) || count($meta_info) === 0)
+        if (!isset($meta_info) || count($meta_info) === 0) {
             return $obj;
+        }
 
         $obj_type = $obj->object_type();
 
@@ -321,7 +352,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $obj;
     }
 
-    public static function bulk_load_meta(&$objs) {
+    public static function bulk_load_meta(&$objs)
+    {
         if (empty($objs)) {
             return;
         }
@@ -332,7 +364,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         $table = $obj->TableInfo();
         $meta_table = $obj->_table . '_meta';
 
-        if(empty($table->_hasMany[$meta_table])) {
+        if (empty($table->_hasMany[$meta_table])) {
             return;
         }
 
@@ -355,8 +387,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         $limit  = $mt->config('BulkLoadMetaObjectsLimit');
         $length = sizeof($obj_hash);
 
-        for ( $from = 0; $from < $length; $from += $limit ) {
-            $children = $child_class->Find($foreign_key.' IN ('.join(',', array_slice(array_keys($obj_hash), $from, $limit)). ')',false,false);
+        for ($from = 0; $from < $length; $from += $limit) {
+            $children = $child_class->Find($foreign_key.' IN ('.join(',', array_slice(array_keys($obj_hash), $from, $limit)). ')', false, false);
             $meta_hash = array();
             if ($children) {
                 foreach ($children as &$child) {
@@ -418,29 +450,33 @@ abstract class BaseObject extends ADOdb_Active_Record
         }
     }
 
-    public function count($args = null) {
+    public function count($args = null)
+    {
         $join = '';
         if (isset($args['join'])) {
             $joins = $args['join'];
             $keys = array_keys($joins);
-            foreach($keys as $key) {
+            foreach ($keys as $key) {
                 $table = $key;
                 $cond = $joins[$key]['condition'];
                 $type = '';
-                if (isset($jo[$key]['type']))
+                if (isset($jo[$key]['type'])) {
                     $type = $jo[$key]['type'];
+                }
                 $join .= ' ' . strtolower($type) . ' JOIN ' . $table . ' ON ' . $cond;
             }
         }
 
         $where = '';
-        if (isset($args['where']))
+        if (isset($args['where'])) {
             $where = $args['where'];
+        }
 
         $sql = "select count(*) " .
             "from " . $this->_table . $join;
-        if (!empty($where))
+        if (!empty($where)) {
             $sql = $sql . " where $where";
+        }
 
         $db = $this->db();
         $saved = $db->SetFetchMode(ADODB_FETCH_NUM);
@@ -450,23 +486,27 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $cnt;
     }
 
-    public function set_values($args) {
+    public function set_values($args)
+    {
         $keys = array_keys($args);
-        foreach($keys as $key) {
+        foreach ($keys as $key) {
             $this->$key = $args[$key];
         }
     }
 
-    public function GetArray() {
+    public function GetArray()
+    {
         $columns = $this->GetAttributeNames();
         $row = array();
-        foreach($columns as $col)
+        foreach ($columns as $col) {
             $row[$col] = $this->$col;
+        }
         return $row;
     }
 
     // Related table loader
-    public function blog () {
+    public function blog()
+    {
         $col_name = $this->_prefix . "blog_id";
         $blog = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -484,13 +524,15 @@ abstract class BaseObject extends ADOdb_Active_Record
             $blog = new Website;
             $blog->Load("blog_id = $blog_id");
         }
-        if (!empty($blog))
+        if (!empty($blog)) {
             $this->cache($this->_prefix . ":" . $this->id . ":blog:" . $blog->id, $blog);
+        }
 
         return $blog;
     }
 
-    public function author () {
+    public function author()
+    {
         $col_name = $this->_prefix . "author_id";
         $author = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -508,7 +550,8 @@ abstract class BaseObject extends ADOdb_Active_Record
         return $author;
     }
 
-    public function entry () {
+    public function entry()
+    {
         $col_name = $this->_prefix . "entry_id";
         $entry = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name) && $this->$col_name > 0) {
@@ -527,9 +570,11 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
     // Objcet cache
-    protected function cache($key, $obj) {
-        if (empty($key))
+    protected function cache($key, $obj)
+    {
+        if (empty($key)) {
             return;
+        }
 
         $meta_table = $obj->_table . '_meta';
         $obj->$meta_table = array();
@@ -537,13 +582,16 @@ abstract class BaseObject extends ADOdb_Active_Record
         $this->cache_driver()->set($key, $obj);
     }
 
-    protected function load_cache($key) {
-        if (empty($key))
+    protected function load_cache($key)
+    {
+        if (empty($key)) {
             return null;
+        }
         $this->cache_driver()->get($key);
     }
 
-    protected function cache_driver() {
+    protected function cache_driver()
+    {
         if (empty(self::$_cache_driver)) {
             require_once("class.basecache.php");
             try {
@@ -556,4 +604,3 @@ abstract class BaseObject extends ADOdb_Active_Record
         return self::$_cache_driver;
     }
 }
-?>

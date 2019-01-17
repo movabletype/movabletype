@@ -16,7 +16,8 @@ class TBPing extends BaseObject
     protected $_prefix = "tbping_";
     protected $_has_meta = true;
 
-    public function trackback() {
+    public function trackback()
+    {
         $col_name = "tbping_tb_id";
         $$tb = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -32,5 +33,4 @@ class TBPing extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('TBPing', 'mt_tbping_meta','tbping_meta_tbping_id');	
-?>
+ADODB_Active_Record::ClassHasMany('TBPing', 'mt_tbping_meta', 'tbping_meta_tbping_id');

@@ -7,7 +7,8 @@
 
 require_once("MTUtil.php");
 
-function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat)
+{
     $local_vars = array('cal_entries','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfEntries','CalendarIfNoEntries','CalendarIfToday','CalendarIfBlank','entries','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber');
     // arguments supported: month, category
     // arguments implemented:
@@ -31,8 +32,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             );
             if (isset($start_with_offsets[$start_with])) {
                 $start_with_offset = $start_with_offsets[$start_with];
-            }
-            else {
+            } else {
                 // error: Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat
             }
         }
@@ -47,8 +47,9 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
                         $ts = $entry->entry_authored_on;
                     } else {
                         return $ctx->error($ctx->mt->translate(
-                            'You used an [_1] tag without establishing a date context.', 
-                            '<MTCalendar month="this">') );
+                            'You used an [_1] tag without establishing a date context.',
+                            '<MTCalendar month="this">'
+                        ));
                     }
                 }
                 $prefix = substr($ts, 0, 6);
@@ -67,8 +68,9 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             $prefix = $today;
         }
         // gather category name...
-        if (isset($args['category']))
+        if (isset($args['category'])) {
             $cat_name = $args['category'];
+        }
 
         // caching isn't necessary since we're not building
         // entire site-- just one page
@@ -82,8 +84,9 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $pad_end = 6 - ((wday_from_ts($y, $m, $days_in_month) + $start_with_offset) % 7);
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
         $args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend');
-        if (isset($cat_name))
+        if (isset($cat_name)) {
             $args['category'] = $cat_name;
+        }
         $iter = $ctx->mt->db()->fetch_entries($args);
         $ctx->stash('cal_entries', $iter);
         $ctx->stash('cal_pad_start', $pad_start);
@@ -152,4 +155,3 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

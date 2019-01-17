@@ -15,4 +15,3 @@ class Role extends BaseObject
     public $_table = 'mt_role';
     protected $_prefix = "role_";
 }
-?>

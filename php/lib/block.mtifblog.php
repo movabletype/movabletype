@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifblog($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifblog($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         $ok = empty($blog)
@@ -18,4 +19,3 @@ function smarty_block_mtifblog($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

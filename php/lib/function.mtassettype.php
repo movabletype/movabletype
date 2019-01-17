@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtassettype($args, &$ctx) {
+function smarty_function_mtassettype($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
 
     $mt = MT::get_instance();
     return $mt->translate($asset->asset_class);
@@ -22,4 +25,3 @@ function smarty_function_mtassettype($args, &$ctx) {
  * translate('video')
  * translate('Video')
  */
-?>

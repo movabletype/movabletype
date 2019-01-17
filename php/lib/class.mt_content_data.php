@@ -16,12 +16,13 @@ class ContentData extends BaseObject
     protected $_prefix = "cd_";
     protected $_has_meta = true;
 
-    public function label() {
-        if ( $this->id ){
+    public function label()
+    {
+        if ($this->id) {
             $ct = $this->content_type();
-            if ( $ct->data_label ) {
-                $field = $this->get_content_field( $ct->data_label );
-                if( empty( $field ) ) {
+            if ($ct->data_label) {
+                $field = $this->get_content_field($ct->data_label);
+                if (empty($field)) {
                     return $ctx->error("Cannot load content field (UniqueID:'$ct->data_label').");
                 }
                 $data_array = $this->data();
@@ -32,41 +33,45 @@ class ContentData extends BaseObject
         }
         return '';
     }
-    public function data() {
+    public function data()
+    {
         $raw_data = $this->data;
-        if ( empty($raw_data) ) return array();
-        if ( preg_match( '/^SERG/', $raw_data, $matches ) ) {
-          require_once('MTSerialize.php');
-          $serializer = MTSerialize::get_instance();
-          $this->_data = $serializer->unserialize( $raw_data );
-          return $this->_data;
+        if (empty($raw_data)) {
+            return array();
+        }
+        if (preg_match('/^SERG/', $raw_data, $matches)) {
+            require_once('MTSerialize.php');
+            $serializer = MTSerialize::get_instance();
+            $this->_data = $serializer->unserialize($raw_data);
+            return $this->_data;
         } else {
-          if (function_exists('json_encode')) {
-              return json_encode( $raw_data );
-          }
+            if (function_exists('json_encode')) {
+                return json_encode($raw_data);
+            }
         }
         return array();
     }
-    public function content_type() {
-      $where = "content_type_id = " . $this->content_type_id;
+    public function content_type()
+    {
+        $where = "content_type_id = " . $this->content_type_id;
 
-      require_once('class.mt_content_type.php');
-      $ct = new ContentType();
-      $ct->Load($where);
-      return $ct;
+        require_once('class.mt_content_type.php');
+        $ct = new ContentType();
+        $ct->Load($where);
+        return $ct;
     }
 
-    private function get_content_field( $unique_id ) {
-      $where = "cf_content_type_id = " . $this->content_type_id;
-      $where .= " and cf_unique_id = '$unique_id'";
+    private function get_content_field($unique_id)
+    {
+        $where = "cf_content_type_id = " . $this->content_type_id;
+        $where .= " and cf_unique_id = '$unique_id'";
 
-      require_once('class.mt_content_field.php');
-      $cf = new ContentField();
-      $cf->Load($where);
-      return $cf;
+        require_once('class.mt_content_field.php');
+        $cf = new ContentField();
+        $cf->Load($where);
+        return $cf;
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('ContentData', 'mt_cd_meta','cd_meta_cd_id');
-?>
+ADODB_Active_Record::ClassHasMany('ContentData', 'mt_cd_meta', 'cd_meta_cd_id');

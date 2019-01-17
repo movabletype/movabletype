@@ -5,23 +5,25 @@
 #
 # $Id$
 
-function smarty_function_mtpagerlink($args, &$ctx) {
+function smarty_function_mtpagerlink($args, &$ctx)
+{
     $page = $ctx->__stash['vars']['__value__'];
-    if ( !$page ) return '';
+    if (!$page) {
+        return '';
+    }
 
     $limit = $ctx->stash('__pager_limit');
-    $offset = ( $page - 1 ) * $limit;
+    $offset = ($page - 1) * $limit;
 
-    if ( strpos($link, '?') ) {
+    if (strpos($link, '?')) {
         $link .= '&';
-    }
-    else {
+    } else {
         $link .= '?';
     }
 
     $link .= "limit=$limit";
-    if ( $offset )
+    if ($offset) {
         $link .= "&offset=$offset";
+    }
     return $link;
 }
-?>

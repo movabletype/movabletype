@@ -5,9 +5,9 @@
 #
 # $Id$
 
-function smarty_function_mtentrycreateddate($args, &$ctx) {
+function smarty_function_mtentrycreateddate($args, &$ctx)
+{
     $e = $ctx->stash('entry');
     $args['ts'] = $e->created_on;
     return $ctx->_hdlr_date($args, $ctx);
 }
-?>

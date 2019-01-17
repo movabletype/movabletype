@@ -1,9 +1,9 @@
 <?php
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 
-/** 
+/**
  * Converts to and from JSON format.
- * 
+ *
  * JSON (JavaScript Object Notation) is a lightweight data-interchange
  * format. It is easy for humans to read and write. It is easy for machines
  * to parse and generate. It is based on a subset of the JavaScript
@@ -13,7 +13,7 @@
  * to programmers of the C-family of languages, including C, C++, C#, Java,
  * JavaScript, Perl, TCL, and many others. These properties make JSON an
  * ideal data-interchange language.
- * 
+ *
  * This package provides a simple encoder and decoder for JSON notation. It
  * is intended for use with client-side Javascript applications that make
  * use of HTTPRequest to perform server communication functions - data can
@@ -34,7 +34,7 @@
  * copyright notice, this list of conditions and the following disclaimer
  * in the documentation and/or other materials provided with the
  * distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND ANY EXPRESS OR IMPLIED
  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN
@@ -46,9 +46,9 @@
  * TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
- * 
- * @category   
- * @package    
+ *
+ * @category
+ * @package
  * @author      Michal Migurski <mike-json@teczno.com>
  * @author      Matt Knapp <mdknapp[at]gmail[dot]com>
  * @author      Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
@@ -60,22 +60,22 @@
 /**
  * Marker constant for JSON::decode(), used to flag stack state
  */
-define('JSON_SLICE',   1);
+define('JSON_SLICE', 1);
 
 /**
  * Marker constant for JSON::decode(), used to flag stack state
  */
-define('JSON_IN_STR',  2);
+define('JSON_IN_STR', 2);
 
 /**
  * Marker constant for JSON::decode(), used to flag stack state
  */
-define('JSON_IN_ARR',  4);
+define('JSON_IN_ARR', 4);
 
 /**
  * Marker constant for JSON::decode(), used to flag stack state
  */
-define('JSON_IN_OBJ',  8);
+define('JSON_IN_OBJ', 8);
 
 /**
  * Marker constant for JSON::decode(), used to flag stack state
@@ -92,53 +92,53 @@ define('JSON_LOOSE_TYPE', 10);
  */
 define('JSON_STRICT_TYPE', 11);
 
-/** 
+/**
  * Converts to and from JSON format.
  *
- * @category   
- * @package    
+ * @category
+ * @package
  * @author     Michal Migurski <mike-json@teczno.com>
  * @author     Matt Knapp <mdknapp[at]gmail[dot]com>
  * @author     Brett Stimmerman <brettstimmerman[at]gmail[dot]com>
  * @copyright  2005 Michal Migurski
  * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
- * @version    
- * @link       
- * @see        
- * @since      
- * @deprecated 
+ * @version
+ * @link
+ * @see
+ * @since
+ * @deprecated
  */
 class JSON
 {
-   /**
-    * constructs a new JSON instance
-    *
-    * @param    int     $use    object behavior: when encoding or decoding,
-    *                           be loose or strict about object/array usage
-    *
-    *                           possible values:
-    *                              JSON_STRICT_TYPE - strict typing, default
-    *                                                 "{...}" syntax creates objects in decode.
-    *                               JSON_LOOSE_TYPE - loose typing
-    *                                                 "{...}" syntax creates associative arrays in decode.
-    */
-    function __construct($use=JSON_STRICT_TYPE)
+    /**
+     * constructs a new JSON instance
+     *
+     * @param    int     $use    object behavior: when encoding or decoding,
+     *                           be loose or strict about object/array usage
+     *
+     *                           possible values:
+     *                              JSON_STRICT_TYPE - strict typing, default
+     *                                                 "{...}" syntax creates objects in decode.
+     *                               JSON_LOOSE_TYPE - loose typing
+     *                                                 "{...}" syntax creates associative arrays in decode.
+     */
+    public function __construct($use=JSON_STRICT_TYPE)
     {
         $this->use = $use;
     }
 
-   /**
-    * encodes an arbitrary variable into JSON format
-    *
-    * @param    mixed   $var    any number, boolean, string, array, or object to be encoded.
-    *                           see argument 1 to JSON() above for array-parsing behavior.
-    *                           if var is a strng, note that encode() always expects it
-    *                           to be in ASCII or UTF-8 format!
-    *
-    * @return   string  JSON string representation of input var
-    * @access   public
-    */
-    function encode($var)
+    /**
+     * encodes an arbitrary variable into JSON format
+     *
+     * @param    mixed   $var    any number, boolean, string, array, or object to be encoded.
+     *                           see argument 1 to JSON() above for array-parsing behavior.
+     *                           if var is a strng, note that encode() always expects it
+     *                           to be in ASCII or UTF-8 format!
+     *
+     * @return   string  JSON string representation of input var
+     * @access   public
+     */
+    public function encode($var)
     {
         switch (gettype($var)) {
             case 'boolean':
@@ -164,7 +164,6 @@ class JSON
                 * escaping with a slash or encoding to UTF-8 where necessary
                 */
                 for ($c = 0; $c < $strlen_var; ++$c) {
-                    
                     $ord_var_c = ord($var{$c});
                     
                     switch ($ord_var_c) {
@@ -198,9 +197,12 @@ class JSON
                         case (($ord_var_c & 0xF0) == 0xE0):
                             // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                            $char = pack('C*', $ord_var_c,
+                            $char = pack(
+                                'C*',
+                                $ord_var_c,
                                          ord($var{$c+1}),
-                                         ord($var{$c+2}));
+                                         ord($var{$c+2})
+                            );
                             $c+=2;
                             $utf16 = mb_convert_encoding($char, 'UTF-16', 'UTF-8');
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
@@ -209,10 +211,13 @@ class JSON
                         case (($ord_var_c & 0xF8) == 0xF0):
                             // characters U-00010000 - U-001FFFFF, mask 11110XXX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                            $char = pack('C*', $ord_var_c,
+                            $char = pack(
+                                'C*',
+                                $ord_var_c,
                                          ord($var{$c+1}),
                                          ord($var{$c+2}),
-                                         ord($var{$c+3}));
+                                         ord($var{$c+3})
+                            );
                             $c+=3;
                             $utf16 = mb_convert_encoding($char, 'UTF-16', 'UTF-8');
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
@@ -221,11 +226,14 @@ class JSON
                         case (($ord_var_c & 0xFC) == 0xF8):
                             // characters U-00200000 - U-03FFFFFF, mask 111110XX
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                            $char = pack('C*', $ord_var_c,
+                            $char = pack(
+                                'C*',
+                                $ord_var_c,
                                          ord($var{$c+1}),
                                          ord($var{$c+2}),
                                          ord($var{$c+3}),
-                                         ord($var{$c+4}));
+                                         ord($var{$c+4})
+                            );
                             $c+=4;
                             $utf16 = mb_convert_encoding($char, 'UTF-16', 'UTF-8');
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
@@ -234,12 +242,15 @@ class JSON
                         case (($ord_var_c & 0xFE) == 0xFC):
                             // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                             // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                            $char = pack('C*', $ord_var_c,
+                            $char = pack(
+                                'C*',
+                                $ord_var_c,
                                          ord($var{$c+1}),
                                          ord($var{$c+2}),
                                          ord($var{$c+3}),
                                          ord($var{$c+4}),
-                                         ord($var{$c+5}));
+                                         ord($var{$c+5})
+                            );
                             $c+=5;
                             $utf16 = mb_convert_encoding($char, 'UTF-16', 'UTF-8');
                             $ascii .= sprintf('\u%04s', bin2hex($utf16));
@@ -259,7 +270,7 @@ class JSON
                 * max_index which can cause memory issues and because
                 * the keys, which may be relevant, will be remapped
                 * otherwise.
-                * 
+                *
                 * As per the ECMA and JSON specification an object may
                 * have any string as a property. Unfortunately due to
                 * a hole in the ECMA specification if the key is a
@@ -268,11 +279,13 @@ class JSON
                 * bracket notation.
                 */
                 
-                // treat as a JSON object  
+                // treat as a JSON object
                 if (is_array($var) && count($var) && (array_keys($var) !== range(0, sizeof($var) - 1))) {
-                    return sprintf('{%s}', join(',', array_map(array($this, 'name_value'),
+                    return sprintf('{%s}', join(',', array_map(
+                        array($this, 'name_value'),
                                                                array_keys($var),
-                                                               array_values($var))));
+                                                               array_values($var)
+                    )));
                 }
 
                 // treat it like a regular array
@@ -280,46 +293,48 @@ class JSON
                 
             case 'object':
                 $vars = get_object_vars($var);
-                return sprintf('{%s}', join(',', array_map(array($this, 'name_value'),
+                return sprintf('{%s}', join(',', array_map(
+                    array($this, 'name_value'),
                                                            array_keys($vars),
-                                                           array_values($vars))));                    
+                                                           array_values($vars)
+                )));
 
             default:
                 return '';
         }
     }
     
-   /**
-    * encodes an arbitrary variable into JSON format, alias for encode()
-    */
-    function enc($var)
+    /**
+     * encodes an arbitrary variable into JSON format, alias for encode()
+     */
+    public function enc($var)
     {
         return $this->encode($var);
     }
     
-   /** function name_value
-    * array-walking function for use in generating JSON-formatted name-value pairs
-    *
-    * @param    string  $name   name of key to use
-    * @param    mixed   $value  reference to an array element to be encoded
-    *
-    * @return   string  JSON-formatted name-value pair, like '"name":value'
-    * @access   private
-    */
-    function name_value($name, $value)
+    /** function name_value
+     * array-walking function for use in generating JSON-formatted name-value pairs
+     *
+     * @param    string  $name   name of key to use
+     * @param    mixed   $value  reference to an array element to be encoded
+     *
+     * @return   string  JSON-formatted name-value pair, like '"name":value'
+     * @access   private
+     */
+    public function name_value($name, $value)
     {
         return (sprintf("%s:%s", $this->encode(strval($name)), $this->encode($value)));
-    }        
+    }
 
-   /**
-    * reduce a string by removing leading and trailing comments and whitespace
-    *
-    * @param    $str    string      string value to strip of comments and whitespace
-    *
-    * @return   string  string value stripped of comments and whitespace
-    * @access   private
-    */
-    function reduce_string($str)
+    /**
+     * reduce a string by removing leading and trailing comments and whitespace
+     *
+     * @param    $str    string      string value to strip of comments and whitespace
+     *
+     * @return   string  string value stripped of comments and whitespace
+     * @access   private
+     */
+    public function reduce_string($str)
     {
         $str = preg_replace(array(
         
@@ -338,19 +353,19 @@ class JSON
         return trim($str);
     }
 
-   /**
-    * decodes a JSON string into appropriate variable
-    *
-    * @param    string  $str    JSON-formatted string
-    *
-    * @return   mixed   number, boolean, string, array, or object
-    *                   corresponding to given JSON input string.
-    *                   See argument 1 to JSON() above for object-output behavior.
-    *                   Note that decode() always returns strings
-    *                   in ASCII or UTF-8 format!
-    * @access   public
-    */
-    function decode($str)
+    /**
+     * decodes a JSON string into appropriate variable
+     *
+     * @param    string  $str    JSON-formatted string
+     *
+     * @return   mixed   number, boolean, string, array, or object
+     *                   corresponding to given JSON input string.
+     *                   See argument 1 to JSON() above for object-output behavior.
+     *                   Note that decode() always returns strings
+     *                   in ASCII or UTF-8 format!
+     * @access   public
+     */
+    public function decode($str)
     {
         $str = $this->reduce_string($str);
     
@@ -376,7 +391,6 @@ class JSON
                     return ((float)$str == (integer)$str)
                         ? (integer)$str
                         : (float)$str;
-                    
                 } elseif (preg_match('/^("|\').+("|\')$/s', $str, $m) && $m[1] == $m[2]) {
                     // STRINGS RETURNED IN UTF-8 FORMAT
                     $delim = substr($str, 0, 1);
@@ -385,7 +399,6 @@ class JSON
                     $strlen_chrs = strlen($chrs);
                     
                     for ($c = 0; $c < $strlen_chrs; ++$c) {
-                    
                         $substr_chrs_c_2 = substr($chrs, $c, 2);
                         $ord_chrs_c = ord($chrs{$c});
                         
@@ -413,46 +426,42 @@ class JSON
                                            . chr(hexdec(substr($chrs, ($c+4), 2)));
                                     $utf8 .= mb_convert_encoding($utf16, 'UTF-8', 'UTF-16');
                                     $c+=5;
-        
-                                } elseif(($ord_chrs_c == 0x0A)) {
+                                } elseif (($ord_chrs_c == 0x0A)) {
                                     $utf8 .= $chrs{$c};
-                                } elseif(($ord_chrs_c >= 0x20) && ($ord_chrs_c <= 0x7F)) {
+                                } elseif (($ord_chrs_c >= 0x20) && ($ord_chrs_c <= 0x7F)) {
                                     $utf8 .= $chrs{$c};
-        
-                                } elseif(($ord_chrs_c & 0xE0) == 0xC0) {
+                                } elseif (($ord_chrs_c & 0xE0) == 0xC0) {
                                     // characters U-00000080 - U-000007FF, mask 110XXXXX
                                     //see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                                    $utf8 .= substr($chrs, $c, 2); $c += 1;
-    
-                                } elseif(($ord_chrs_c & 0xF0) == 0xE0) {
+                                    $utf8 .= substr($chrs, $c, 2);
+                                    $c += 1;
+                                } elseif (($ord_chrs_c & 0xF0) == 0xE0) {
                                     // characters U-00000800 - U-0000FFFF, mask 1110XXXX
                                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                                    $utf8 .= substr($chrs, $c, 3); $c += 2;
-    
-                                } elseif(($ord_chrs_c & 0xF8) == 0xF0) {
+                                    $utf8 .= substr($chrs, $c, 3);
+                                    $c += 2;
+                                } elseif (($ord_chrs_c & 0xF8) == 0xF0) {
                                     // characters U-00010000 - U-001FFFFF, mask 11110XXX
                                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                                    $utf8 .= substr($chrs, $c, 4); $c += 3;
-    
-                                } elseif(($ord_chrs_c & 0xFC) == 0xF8) {
+                                    $utf8 .= substr($chrs, $c, 4);
+                                    $c += 3;
+                                } elseif (($ord_chrs_c & 0xFC) == 0xF8) {
                                     // characters U-00200000 - U-03FFFFFF, mask 111110XX
                                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                                    $utf8 .= substr($chrs, $c, 5); $c += 4;
-    
-                                } elseif(($ord_chrs_c & 0xFE) == 0xFC) {
+                                    $utf8 .= substr($chrs, $c, 5);
+                                    $c += 4;
+                                } elseif (($ord_chrs_c & 0xFE) == 0xFC) {
                                     // characters U-04000000 - U-7FFFFFFF, mask 1111110X
                                     // see http://www.cl.cam.ac.uk/~mgk25/unicode.html#utf-8
-                                    $utf8 .= substr($chrs, $c, 6); $c += 5;
-
+                                    $utf8 .= substr($chrs, $c, 6);
+                                    $c += 5;
                                 }
                                 break;
 
                         }
-
                     }
                     
                     return $utf8;
-                
                 } elseif (preg_match('/^\[.*\]$/s', $str) || preg_match('/^\{.*\}$/s', $str)) {
                     // array, or object notation
 
@@ -479,10 +488,8 @@ class JSON
                     if ($chrs == '') {
                         if (reset($stk) == JSON_IN_ARR) {
                             return $arr;
-
                         } else {
                             return $obj;
-
                         }
                     }
 
@@ -491,7 +498,6 @@ class JSON
                     $strlen_chrs = strlen($chrs);
                     
                     for ($c = 0; $c <= $strlen_chrs; ++$c) {
-                    
                         $top = end($stk);
                         $substr_chrs_c_2 = substr($chrs, $c, 2);
                     
@@ -505,7 +511,6 @@ class JSON
                             if (reset($stk) == JSON_IN_ARR) {
                                 // we are in an array, so just push an element onto the stack
                                 array_push($arr, $this->decode($slice));
-
                             } elseif (reset($stk) == JSON_IN_OBJ) {
                                 // we are in an object, so figure
                                 // out the property name and set an
@@ -532,86 +537,70 @@ class JSON
                                         $obj->$key = $val;
                                     }
                                 }
-
                             }
-
                         } elseif ((($chrs{$c} == '"') || ($chrs{$c} == "'")) &&
                                  in_array($top['what'], array(JSON_SLICE, JSON_IN_ARR, JSON_IN_OBJ))) {
                             // found a quote, and we are not inside a string
                             array_push($stk, array('what' => JSON_IN_STR, 'where' => $c, 'delim' => $chrs{$c}));
-                            //print("Found start of string at {$c}\n");
-
+                        //print("Found start of string at {$c}\n");
                         } elseif (($chrs{$c} == $top['delim']) &&
                                  ($top['what'] == JSON_IN_STR) &&
                                  (($chrs{$c - 1} != "\\") ||
                                  ($chrs{$c - 1} == "\\" && $chrs{$c - 2} == "\\"))) {
                             // found a quote, we're in a string, and it's not escaped
                             array_pop($stk);
-                            //print("Found end of string at {$c}: ".substr($chrs, $top['where'], (1 + 1 + $c - $top['where']))."\n");
-
+                        //print("Found end of string at {$c}: ".substr($chrs, $top['where'], (1 + 1 + $c - $top['where']))."\n");
                         } elseif (($chrs{$c} == '[') &&
                                  in_array($top['what'], array(JSON_SLICE, JSON_IN_ARR, JSON_IN_OBJ))) {
                             // found a left-bracket, and we are in an array, object, or slice
                             array_push($stk, array('what' => JSON_IN_ARR, 'where' => $c, 'delim' => false));
-                            //print("Found start of array at {$c}\n");
-
+                        //print("Found start of array at {$c}\n");
                         } elseif (($chrs{$c} == ']') && ($top['what'] == JSON_IN_ARR)) {
                             // found a right-bracket, and we're in an array
                             array_pop($stk);
-                            //print("Found end of array at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
-
+                        //print("Found end of array at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
                         } elseif (($chrs{$c} == '{') &&
                                  in_array($top['what'], array(JSON_SLICE, JSON_IN_ARR, JSON_IN_OBJ))) {
                             // found a left-brace, and we are in an array, object, or slice
                             array_push($stk, array('what' => JSON_IN_OBJ, 'where' => $c, 'delim' => false));
-                            //print("Found start of object at {$c}\n");
-
+                        //print("Found start of object at {$c}\n");
                         } elseif (($chrs{$c} == '}') && ($top['what'] == JSON_IN_OBJ)) {
                             // found a right-brace, and we're in an object
                             array_pop($stk);
-                            //print("Found end of object at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
-
+                        //print("Found end of object at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
                         } elseif (($substr_chrs_c_2 == '/*') &&
                                  in_array($top['what'], array(JSON_SLICE, JSON_IN_ARR, JSON_IN_OBJ))) {
                             // found a comment start, and we are in an array, object, or slice
                             array_push($stk, array('what' => JSON_IN_CMT, 'where' => $c, 'delim' => false));
                             $c++;
-                            //print("Found start of comment at {$c}\n");
-
+                        //print("Found start of comment at {$c}\n");
                         } elseif (($substr_chrs_c_2 == '*/') && ($top['what'] == JSON_IN_CMT)) {
                             // found a comment end, and we're in one now
                             array_pop($stk);
                             $c++;
                             
-                            for ($i = $top['where']; $i <= $c; ++$i)
+                            for ($i = $top['where']; $i <= $c; ++$i) {
                                 $chrs = substr_replace($chrs, ' ', $i, 1);
+                            }
                             
                             //print("Found end of comment at {$c}: ".substr($chrs, $top['where'], (1 + $c - $top['where']))."\n");
-
                         }
-                    
                     }
                     
                     if (reset($stk) == JSON_IN_ARR) {
                         return $arr;
-
                     } elseif (reset($stk) == JSON_IN_OBJ) {
                         return $obj;
-
                     }
-                
                 }
         }
     }
     
-   /**
-    * decodes a JSON string into appropriate variable; alias for decode()
-    */
-    function dec($var)
+    /**
+     * decodes a JSON string into appropriate variable; alias for decode()
+     */
+    public function dec($var)
     {
         return $this->decode($var);
     }
-    
 }
-    
-?>

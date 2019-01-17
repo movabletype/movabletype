@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtsetvars($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsetvars($args, $content, &$ctx, &$repeat)
+{
     // parameters: name, value
     if (isset($content)) {
         $vars =& $ctx->__stash['vars'];
@@ -23,4 +24,3 @@ function smarty_block_mtsetvars($args, $content, &$ctx, &$repeat) {
     }
     return '';
 }
-?>

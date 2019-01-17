@@ -5,21 +5,25 @@
 #
 # $Id$
 
-function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category') {
+function get_parent_categories(&$cat, &$ctx, &$list, $class = 'category')
+{
     if ($cat->category_parent) {
-        if ($class == 'folder')
+        if ($class == 'folder') {
             $parent = $ctx->mt->db()->fetch_folder($cat->category_parent);
-        else
+        } else {
             $parent = $ctx->mt->db()->fetch_category($cat->category_parent);
+        }
         if ($parent) {
             $cat->parent_category = $parent;
-            array_unshift($list, 0); $list[0] =& $parent;
+            array_unshift($list, 0);
+            $list[0] =& $parent;
             get_parent_categories($parent, $ctx, $list, $class);
         }
     }
 }
 
-function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat)
+{
     $localvars = array('_categories', 'category', '_categories_counter','glue', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -52,18 +56,19 @@ function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_categories_counter', $counter + 1);
         $repeat = true;
         if (!empty($glue) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $glue . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
     } else {
-        if (!empty($glue) && $out && !empty($content))
+        if (!empty($glue) && $out && !empty($content)) {
             $content = $glue . $content;
+        }
         $repeat = false;
         $glue = '';
         $ctx->restore($localvars);
     }
     return $content;
 }
-?>

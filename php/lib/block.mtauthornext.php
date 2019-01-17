@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat)
+{
     static $_next_cache = array();
     if (!isset($content)) {
         $next_author = null;
@@ -27,10 +28,11 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                 list($next_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($next_author) {
-              $_next_cache[$author_id] = $next_author;
-              $ctx->stash('author', $next_author);
-            } else
-              $repeat = false;
+                $_next_cache[$author_id] = $next_author;
+                $ctx->stash('author', $next_author);
+            } else {
+                $repeat = false;
+            }
         } else {
             $repeat = false;
         }
@@ -39,4 +41,3 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorentrycount($args, &$ctx) {
+function smarty_function_mtauthorentrycount($args, &$ctx)
+{
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');
@@ -23,4 +24,3 @@ function smarty_function_mtauthorentrycount($args, &$ctx) {
     $count = $ctx->mt->db()->blog_entry_count($args);
     return $ctx->count_format($count, $args);
 }
-?>

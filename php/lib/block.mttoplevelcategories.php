@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mttoplevelcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mttoplevelcategories($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $ctx->localize(array('category', 'archive_category'));
         $ctx->stash('category', null);
@@ -19,4 +20,3 @@ function smarty_block_mttoplevelcategories($args, $content, &$ctx, &$repeat) {
     }
     return $result;
 }
-?>

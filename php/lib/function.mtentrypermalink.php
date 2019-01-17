@@ -5,10 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtentrypermalink($args, &$ctx) {
+function smarty_function_mtentrypermalink($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
-    if (!$entry)
+    if (!$entry) {
         return '';
+    }
     $blog = $ctx->stash('blog');
     $at = $args['type'];
     $at or $at = $args['archive_type'];
@@ -20,5 +22,4 @@ function smarty_function_mtentrypermalink($args, &$ctx) {
     }
     $args['blog_id'] = $blog->blog_id;
     return $ctx->mt->db()->entry_link($entry->entry_id, $at, $args);
-} 
-?>
+}

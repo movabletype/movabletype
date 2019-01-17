@@ -16,21 +16,21 @@ class PluginData extends BaseObject
     protected $_prefix = "plugindata_";
     private $_data = null;
 
-    public function data($name = null) {
+    public function data($name = null)
+    {
         if (empty($this->_data)) {
             $mt = MT::get_instance();
             $this->_data = $mt->db()->unserialize($this->data);
         }
 
-        if (!empty($name))
-            if (isset($this->_data[$name]))
+        if (!empty($name)) {
+            if (isset($this->_data[$name])) {
                 return $this->_data[$name];
-            else
+            } else {
                 return null;
-        else
+            }
+        } else {
             return $this->_data;
-
+        }
     }
-
 }
-?>

@@ -5,17 +5,22 @@
 #
 # $Id: function.mtwebsitelabel.php 4196 2009-09-04 07:46:50Z takayama $
 
-function smarty_function_mtwebsitethemeid($args, &$ctx) {
+function smarty_function_mtwebsitethemeid($args, &$ctx)
+{
     // status: complete
     // parameters: raw
     $blog = $ctx->stash('blog');
-    if (empty($blog)) return '';
+    if (empty($blog)) {
+        return '';
+    }
     $website = $blog->is_blog() ? $blog->website() : $blog;
-    if (empty($website)) return '';
+    if (empty($website)) {
+        return '';
+    }
     $id = $website->blog_theme_id;
     $raw = isset($args['raw']) ? $args['raw'] : 0;
-    if (!$raw)
-        $id = str_replace ('_', '-', $id);
+    if (!$raw) {
+        $id = str_replace('_', '-', $id);
+    }
     return $id;
 }
-?>

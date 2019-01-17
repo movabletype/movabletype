@@ -5,32 +5,40 @@
 #
 # $Id$
 
-class MTCacheBase {
-    var $_ttl = 0;
+class MTCacheBase
+{
+    public $_ttl = 0;
 
-    function MTCacheBase ($ttl = 0) {
+    public function MTCacheBase($ttl = 0)
+    {
         $this->ttl = $ttl;
     }
 
-    function get ($key, $ttl = null) {
+    public function get($key, $ttl = null)
+    {
     }
 
-    function get_multi ($keys, $ttl = null) {
+    public function get_multi($keys, $ttl = null)
+    {
     }
 
-    function delete ($key) {
+    public function delete($key)
+    {
     }
 
-    function add ($key, $val, $ttl = null) {
+    public function add($key, $val, $ttl = null)
+    {
     }
 
-    function replace ($key, $val, $ttl = null) {
+    public function replace($key, $val, $ttl = null)
+    {
     }
 
-    function set ($key, $val, $ttl = null) {
+    public function set($key, $val, $ttl = null)
+    {
     }
 
-    function flush_all() {
+    public function flush_all()
+    {
     }
 }
-?>

@@ -7,18 +7,22 @@
 
 require_once('mtdb.base.php');
 
-class MTDatabasepostgres extends MTDatabase {
-
-    public function unserialize($data) {
+class MTDatabasepostgres extends MTDatabase
+{
+    public function unserialize($data)
+    {
         $data = stream_get_contents($data);
-        if (substr($data, 0, 4) != 'SERG')
+        if (substr($data, 0, 4) != 'SERG') {
             return $data;
-        if (!$this->pdo_enabled)
+        }
+        if (!$this->pdo_enabled) {
             $data = pg_unescape_bytea($data);
+        }
         return parent::unserialize($data);
     }
 
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '')
+    {
         if (extension_loaded('pdo') && extension_loaded('pdo_pgsql')) {
             $prefix = 'pdo_pgsql';
             $this->pdo_enabled = true;
@@ -26,23 +30,27 @@ class MTDatabasepostgres extends MTDatabase {
             $prefix = 'postgres';
         }
 
-        if (!empty($port))
+        if (!empty($port)) {
             $host .= ":$port";
+        }
 
         $dsn = "$prefix://$user:$password@$host/$dbname?persist";
         $this->conn = NewADOConnection($dsn);
         return true;
     }
 
-    function apply_extract_date($part, $column) {
+    public function apply_extract_date($part, $column)
+    {
         return "extract('" .strtolower($part) . "' from $column)";
     }
 
-    function limit_by_day_sql($column, $days) {
+    public function limit_by_day_sql($column, $days)
+    {
         return '(' . $column . '+\'' . $days . ' days\' >= current_timestamp)';
     }
 
-    function entries_recently_commented_on_sql($subsql) {
+    public function entries_recently_commented_on_sql($subsql)
+    {
         $sql = "
             select main.* from (
                 select distinct on (entry_id)
@@ -55,10 +63,12 @@ class MTDatabasepostgres extends MTDatabase {
         return $sql;
     }
 
-    function set_names($mt) {
+    public function set_names($mt)
+    {
         $conf = $mt->config('sqlsetnames');
-        if (isset($conf) && $conf == 0)
+        if (isset($conf) && $conf == 0) {
             return;
+        }
 
         $Charset = array(
             'utf-8' => 'UNICODE',
@@ -73,4 +83,3 @@ class MTDatabasepostgres extends MTDatabase {
         }
     }
 }
-?>

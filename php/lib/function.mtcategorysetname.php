@@ -5,11 +5,11 @@
 #
 # $Id$
 
-function smarty_function_mtcategorysetname($args, &$ctx) {
+function smarty_function_mtcategorysetname($args, &$ctx)
+{
     $category_set = $ctx->stash('category_set');
     if (!$category_set) {
         return $ctx->error("No Category Set could be found.");
     }
     return $category_set->name;
 }
-

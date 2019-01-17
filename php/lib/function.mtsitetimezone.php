@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitetimezone($args, &$ctx) {
+function smarty_function_mtsitetimezone($args, &$ctx)
+{
     return smarty_function_mtblogtimezone($args, $ctx);
 }
-?>

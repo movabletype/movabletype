@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_modifier_encode_sha1($text) {
+function smarty_modifier_encode_sha1($text)
+{
     return sha1($text);
 }
-?>

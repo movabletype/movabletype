@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
+function smarty_function_mtusersessioncookiedomain($args, &$ctx)
+{
     $domain = $ctx->mt->config('UserSessionCookieDomain');
     if ($domain == '<$MTBlogHost exclude_port="1"$>') {
         # optimize for the default case
@@ -34,8 +35,8 @@ function smarty_function_mtusersessioncookiedomain($args, &$ctx) {
         }
     }
     $domain = preg_replace('/^www\./', '', $domain);
-    if (! preg_match('/^\./', $domain))
+    if (! preg_match('/^\./', $domain)) {
         $domain = '.' . $domain;
+    }
     return $domain;
 }
-?>

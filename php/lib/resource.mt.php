@@ -4,10 +4,12 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-class smarty_resource_mt extends Smarty_Resource_Custom {
+class smarty_resource_mt extends Smarty_Resource_Custom
+{
     protected $ctx;
     protected $mt;
-    public function __construct() {
+    public function __construct()
+    {
         $this->mt = MT::get_instance();
         $this->ctx =& $this->mt->context();
     }
@@ -21,7 +23,8 @@ class smarty_resource_mt extends Smarty_Resource_Custom {
      *
      * @return void
      */
-    protected function fetch($tpl_name, &$tpl_source, &$mtime) {
+    protected function fetch($tpl_name, &$tpl_source, &$mtime)
+    {
         $blog_id = $this->ctx->stash('blog_id');
         if (intval($tpl_name) > 0) {
             $query = "template_blog_id = $blog_id
@@ -44,13 +47,15 @@ class smarty_resource_mt extends Smarty_Resource_Custom {
             if ($file) {
                 if (!file_exists($file)) {
                     $path = $blog->site_path();
-                    if (!preg_match('![\\/]$!', $path))
+                    if (!preg_match('![\\/]$!', $path)) {
                         $path .= '/';
+                    }
                     $path .= $file;
-                    if (is_file($path) && is_readable($path))
+                    if (is_file($path) && is_readable($path)) {
                         $file = $path;
-                    else
+                    } else {
                         $file = '';
+                    }
                 }
                 if ($file) {
                     $mtime = $tmpl->linked_file_mtime;
@@ -79,13 +84,11 @@ class smarty_resource_mt extends Smarty_Resource_Custom {
      *
      * @return integer timestamp (epoch) the template was modified
      */
-    protected function fetchTimestamp($name) {
+    protected function fetchTimestamp($name)
+    {
         require_once('MTUtil.php');
         $blog = $this->ctx->stash('blog');
 
         return datetime_to_timestamp($blog->blog_children_modified_on);
     }
 }
-
-
-?>

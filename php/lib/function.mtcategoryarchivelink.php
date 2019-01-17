@@ -5,10 +5,13 @@
 #
 # $Id$
 
-function smarty_function_mtcategoryarchivelink($args, &$ctx) {
+function smarty_function_mtcategoryarchivelink($args, &$ctx)
+{
     require_once('MTUtil.php');
     $category = get_category_context($ctx);
-    if (!$category) return '';
+    if (!$category) {
+        return '';
+    }
 
     if ($ctx->stash('content') || $category->category_category_set_id) {
         $cat_at_label = 'ContentType-Category';
@@ -49,10 +52,11 @@ function smarty_function_mtcategoryarchivelink($args, &$ctx) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;
-        if ($ext) $ext = '.' . $ext; 
+        if ($ext) {
+            $ext = '.' . $ext;
+        }
         $index .= $ext;
         $link = preg_replace('/\/(#.*)?$/', "/$index\$1", $link);
     }
     return $link;
 }
-?>

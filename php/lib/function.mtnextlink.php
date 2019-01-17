@@ -5,22 +5,21 @@
 #
 # $Id$
 
-function smarty_function_mtnextlink($args, &$ctx) {
-
+function smarty_function_mtnextlink($args, &$ctx)
+{
     $limit = $ctx->stash('__pager_limit');
     $offset = $ctx->stash('__pager_offset');
     $offset += $limit;
 
-    if ( strpos($link, '?') ) {
+    if (strpos($link, '?')) {
         $link .= '&';
-    }
-    else {
+    } else {
         $link .= '?';
     }
 
     $link .= "limit=$limit";
-    if ( $offset )
+    if ($offset) {
         $link .= "&offset=$offset";
+    }
     return $link;
 }
-?>

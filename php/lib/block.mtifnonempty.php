@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat)
+{
     // status: complete
     // parameters: tag
     if (!isset($content)) {
@@ -31,4 +32,3 @@ function smarty_block_mtifnonempty($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

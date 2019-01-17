@@ -5,8 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtotherblog($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtotherblog($args, $content, &$ctx, &$repeat)
+{
     require_once('block.mtblogs.php');
     return smarty_block_mtblogs($args, $content, $ctx, $repeat);
 }
-?>

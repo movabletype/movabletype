@@ -5,13 +5,15 @@
 #
 # $Id$
 
-function smarty_function_mtbloghost($args, &$ctx) {
+function smarty_function_mtbloghost($args, &$ctx)
+{
     // status: complete
     // parameters: exclude_port, signature
     $blog = $ctx->stash('blog');
     $host = $blog->site_url();
-    if (!preg_match('!/$!', $host))
+    if (!preg_match('!/$!', $host)) {
         $host .= '/';
+    }
 
     if (preg_match('!^https?://([^/:]+)(:\d+)?/?!', $host, $matches)) {
         if ($args['signature']) {
@@ -24,4 +26,3 @@ function smarty_function_mtbloghost($args, &$ctx) {
         return '';
     }
 }
-?>

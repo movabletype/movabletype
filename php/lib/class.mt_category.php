@@ -17,22 +17,27 @@ class Category extends BaseObject
     protected $_has_meta = true;
     private $_children = null;
 
-    public function children($val = null) {
-        if (!empty($val))
+    public function children($val = null)
+    {
+        if (!empty($val)) {
             $this->_children[] = $val;
+        }
         return $val;
     }
 
-    public function trackback() {
+    public function trackback()
+    {
         require_once('class.mt_trackback.php');
         $trackback = new Trackback();
         $loaded = $trackback->Load("trackback_category_id = " . $this->category_id);
-        if (!$loaded)
+        if (!$loaded) {
             $trackback = null;
+        }
         return $trackback;
     }
 
-    public function pings() {
+    public function pings()
+    {
         $pings = array();
         
         $tb = $this->trackback();
@@ -46,13 +51,16 @@ class Category extends BaseObject
         return $pings;
     }
 
-    public function Save() {
-        if (empty($this->category_class))
+    public function Save()
+    {
+        if (empty($this->category_class)) {
             $this->class = 'category';
+        }
         parent::Save();
     }
 
-    public function entry_count () {
+    public function entry_count()
+    {
         $child_class = $this->class === 'category' ? 'entry' : 'page';
         $blog_id = $this->blog_id;
         $cat_id = $this->id;
@@ -68,11 +76,12 @@ class Category extends BaseObject
 
         require_once('class.mt_entry.php');
         $entry = new Entry();
-        $cnt = $entry->count( array( 'where' => $where, 'join' => $join ) );
+        $cnt = $entry->count(array( 'where' => $where, 'join' => $join ));
         return $cnt;
     }
 
-    public function content_data_count($terms = array()) {
+    public function content_data_count($terms = array())
+    {
         $blog_id = $this->blog_id;
         $cat_id = $this->id;
 
@@ -142,5 +151,4 @@ class Category extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Category', 'mt_category_meta','category_meta_category_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Category', 'mt_category_meta', 'category_meta_category_id');

@@ -5,15 +5,15 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthordisplayname($args, &$ctx) {
+function smarty_function_mtentryauthordisplayname($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');
-    if ( !empty($entry) ) {
+    if (!empty($entry)) {
         $author = $entry->author()->nickname;
         return $author;
     } else {
         return '';
     }
 }
-?>

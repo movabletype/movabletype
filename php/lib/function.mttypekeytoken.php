@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mttypekeytoken($args, &$ctx) {
+function smarty_function_mttypekeytoken($args, &$ctx)
+{
     return '';
 }
-?>

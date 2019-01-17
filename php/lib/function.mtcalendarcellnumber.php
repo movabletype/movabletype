@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcalendarcellnumber($args, &$ctx) {
+function smarty_function_mtcalendarcellnumber($args, &$ctx)
+{
     return $ctx->stash('CalendarCellNumber');
 }
-?>

@@ -8,25 +8,30 @@
 global $SERIALIZE_VERSION;
 $SERIALIZE_VERSION = 2;
 
-class MTSerialize {
+class MTSerialize
+{
     private static $_instance = null;
 
-    public static function get_instance() {
+    public static function get_instance()
+    {
         if (is_null(self::$_instance)) {
             self::$_instance = new self;
         }
         return self::$_instance;
     }
 
-    function unserialize($frozen) {
+    public function unserialize($frozen)
+    {
         return $this->_thaw_mt_2($frozen);
     }
 
-    function serialize($data) {
+    public function serialize($data)
+    {
         return $this->_freeze_mt_2($data);
     }
 
-    function _freeze_mt_2($ref) {
+    public function _freeze_mt_2($ref)
+    {
         # version 2 signature: 'SERG' + packed long 0 + packed long protocol
         $freezer = create_function('$i, $v, $f', '
             if (is_array($v)) {
@@ -49,7 +54,7 @@ class MTSerialize {
                     $cube .= pack("N", strlen($k)) . $k . $f($i, $kv, $f);
                 return $cube;
             '),
-            'ARRAY' => create_function('$i, $v, $f','
+            'ARRAY' => create_function('$i, $v, $f', '
                 $cube = "A" . pack("N", count($v));
                 foreach ($v as $k) {
                     $cube .= $f($i, $k, $f);
@@ -62,17 +67,18 @@ class MTSerialize {
             $freezer($ice_tray, $ref, $freezer);
     }
 
-    function _thaw_mt_2($frozen) {
+    public function _thaw_mt_2($frozen)
+    {
         if (substr($frozen, 0, 4) != 'SERG') {
-            return NULL;
+            return null;
         }
     
-        $thawed = NULL;
+        $thawed = null;
         $refs = array(&$thawed);
     
         # The microwave thaws and pops out an element
         $microwave = array(
-            'H' => create_function('&$s','   # hashref
+            'H' => create_function('&$s', '   # hashref
                 $keys = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $s["pos"] += 4;
                 $values = array();
@@ -147,10 +153,13 @@ class MTSerialize {
     }
 }
 
-function perl_array_type(&$v) {
+function perl_array_type(&$v)
+{
     $keys = array_keys($v);
-    foreach ($keys as $i)
-        if (!is_int($i)) return 'HASH';
+    foreach ($keys as $i) {
+        if (!is_int($i)) {
+            return 'HASH';
+        }
+    }
     return 'ARRAY';
 }
-?>

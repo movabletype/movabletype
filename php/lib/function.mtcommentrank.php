@@ -7,7 +7,7 @@
 
 require_once('rating_lib.php');
 
-function smarty_function_mtcommentrank($args, &$ctx) {
+function smarty_function_mtcommentrank($args, &$ctx)
+{
     return '';
 }
-?>

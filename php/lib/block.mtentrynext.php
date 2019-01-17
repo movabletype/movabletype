@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat)
+{
     static $_next_cache = array();
     if (!isset($content)) {
         # save all values, to be restored when we're done...
@@ -32,7 +33,8 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                 } else {
                     $class = 'entry';
                 }
-                $ts = $mt->db()->db2ts( ($class == 'entry')
+                $ts = $mt->db()->db2ts(
+                    ($class == 'entry')
                     ? $entry->entry_authored_on
                     : $entry->entry_modified_on
                 );
@@ -50,7 +52,9 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
                 }
                 
                 list($next_entry) = $ctx->mt->db()->fetch_entries($eargs);
-                if ($next_entry) $_next_cache[$label] = $next_entry;
+                if ($next_entry) {
+                    $_next_cache[$label] = $next_entry;
+                }
             }
             $ctx->stash('entry', $next_entry);
         }
@@ -64,4 +68,3 @@ function smarty_block_mtentrynext($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

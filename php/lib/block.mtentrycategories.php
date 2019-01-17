@@ -5,16 +5,18 @@
 #
 # $Id$
 
-function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
-  $localvars = array('_categories', 'category', '_categories_counter', '__out');
+function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat)
+{
+    $localvars = array('_categories', 'category', '_categories_counter', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
-        if ( isset( $args['type'] ) && 'primary' == strtolower( $args['type'] ) ) {
+        if (isset($args['type']) && 'primary' == strtolower($args['type'])) {
             $categories = array();
             $cat = $entry->category();
-            if ( !empty( $cat ) )
+            if (!empty($cat)) {
                 $categories[] = $cat;
+            }
         } else {
             $args['entry_id'] = $entry->entry_id;
             $categories = $ctx->mt->db()->fetch_categories($args);
@@ -33,17 +35,18 @@ function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_categories_counter', $counter + 1);
         $repeat = true;
         if (isset($args['glue']) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $args['glue'] . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && $out && !empty($content)) {
             $content = $args['glue'] . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

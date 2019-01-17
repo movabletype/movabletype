@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsiterelativeurl($args, &$ctx) {
+function smarty_function_mtsiterelativeurl($args, &$ctx)
+{
     return smarty_function_mtblogrelativeurl($args, $ctx);
 }
-?>

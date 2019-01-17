@@ -5,22 +5,27 @@
 #
 # $Id$
 
-interface CaptchaProvider {
+interface CaptchaProvider
+{
     public function get_name();
     public function get_classname();
     public function form_fields($blog_id);
 }
 
-class MTUtilCaptcha implements CaptchaProvider {
-    public function get_name() {
+class MTUtilCaptcha implements CaptchaProvider
+{
+    public function get_name()
+    {
         return 'Movable Type default';
     }
 
-    public function get_classname() {
+    public function get_classname()
+    {
         return 'MTUtilCaptcha';
     }
 
-    public function form_fields($blog_id) {
+    public function form_fields($blog_id)
+    {
         $mt = MT::get_instance();
         $token = '';
         $token = sha1(rand(0, 65535));
@@ -43,17 +48,22 @@ class MTUtilCaptcha implements CaptchaProvider {
     }
 }
 
-class CaptchaFactory {
+class CaptchaFactory
+{
     private static $_captcha_providers = array(
         'mt_default' => 'MTUtilCaptcha',
     );
     private static $_providers = array();
 
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
-    public static function get_provider($provider) {
-        if ( empty($provider) || 'none' == strtolower($provider) )
+    public static function get_provider($provider)
+    {
+        if (empty($provider) || 'none' == strtolower($provider)) {
             return null;
+        }
         if (!isset(CaptchaFactory::$_captcha_providers[$provider])) {
             require_once('class.exception.php');
             throw new MTException('Undefined captcha provider. (' . $provider . ')');
@@ -61,20 +71,21 @@ class CaptchaFactory {
 
         $class = CaptchaFactory::$_captcha_providers[$provider];
         $instance = new $class;
-        if (!empty($instance) and $instance instanceof CaptchaProvider)
+        if (!empty($instance) and $instance instanceof CaptchaProvider) {
             CaptchaFactory::$_providers[$provider] = $instance;
+        }
 
 
-        return CaptchaFactory::$_providers[$provider]; 
+        return CaptchaFactory::$_providers[$provider];
     }
 
-    public static function add_provider($provider, $class) {
-        if (empty($provider) or empty($class))
+    public static function add_provider($provider, $class)
+    {
+        if (empty($provider) or empty($class)) {
             return null;
+        }
 
         CaptchaFactory::$_captcha_providers[$provider] = $class;
         return true;
     }
 }
-
-?>

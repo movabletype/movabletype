@@ -5,7 +5,8 @@
 #
 # $Id$
 require_once('block.mtblogs.php');
-function smarty_block_mtwebsites($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtwebsites($args, $content, &$ctx, &$repeat)
+{
     $args['class'] = 'website';
     if (isset($args['site_ids'])) {
         $args['blog_ids'] = $args['site_ids'];
@@ -13,4 +14,3 @@ function smarty_block_mtwebsites($args, $content, &$ctx, &$repeat) {
     }
     return smarty_block_mtblogs($args, $content, $ctx, $repeat);
 }
-?>

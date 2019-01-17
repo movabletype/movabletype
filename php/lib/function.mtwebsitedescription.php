@@ -5,13 +5,17 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitedescription($args, &$ctx) {
+function smarty_function_mtwebsitedescription($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');
-    if (empty($blog)) return '';
+    if (empty($blog)) {
+        return '';
+    }
     $website = $blog->is_blog() ? $blog->website() : $blog;
-    if (empty($website)) return '';
+    if (empty($website)) {
+        return '';
+    }
     return $website->blog_description;
 }
-?>

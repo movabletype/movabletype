@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
     } else {
         require_once("function.mtinclude.php");
@@ -24,4 +25,3 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

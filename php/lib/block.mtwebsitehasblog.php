@@ -5,12 +5,13 @@
 #
 # $Id$
 
-function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
         if (empty($blog)) {
             $ret = false;
-        } else if($blog->class == 'blog') {
+        } elseif ($blog->class == 'blog') {
             $website = $blog->website();
             $ret = empty($website)
                 ? false
@@ -26,4 +27,3 @@ function smarty_block_mtwebsitehasblog($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

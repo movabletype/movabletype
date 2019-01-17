@@ -4,7 +4,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-function smarty_function_mtcanonicalurl($args, &$ctx) {
+function smarty_function_mtcanonicalurl($args, &$ctx)
+{
     $blog = $ctx->stash('blog');
 
     if (empty($args['current_mapping'])) {

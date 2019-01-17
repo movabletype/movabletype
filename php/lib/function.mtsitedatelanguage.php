@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitedatelanguage($args, &$ctx) {
+function smarty_function_mtsitedatelanguage($args, &$ctx)
+{
     return smarty_function_mtblogdatelanguage($args, $ctx);
 }
-?>

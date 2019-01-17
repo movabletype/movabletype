@@ -4,7 +4,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-function smarty_function_mtcanonicallink($args, &$ctx) {
+function smarty_function_mtcanonicallink($args, &$ctx)
+{
     $url = $ctx->tag('canonicalurl', $args);
     if (empty($url)) {
         return '';

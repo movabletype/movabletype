@@ -5,10 +5,12 @@
 #
 # $Id$
 
-class Stats {
+class Stats
+{
     public static $providers = array();
 
-    public static function readied_provider($blog) {
+    public static function readied_provider($blog)
+    {
         foreach (Stats::$providers as $id => $provider) {
             if (! class_exists($provider)) {
                 require_once($provider . '.php');
@@ -23,16 +25,19 @@ class Stats {
         return null;
     }
 
-    public static function register_provider($id, $provider) {
+    public static function register_provider($id, $provider)
+    {
         Stats::$providers[$id] = $provider;
     }
 }
 
-class StatsBaseProvider {
+class StatsBaseProvider
+{
     public $id;
     public $blog;
 
-    public function __construct ($id, $blog) {
+    public function __construct($id, $blog)
+    {
         $this->id   = $id;
         $this->blog = $blog;
     }

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $entry = $ctx->stash('entry');
         if ($entry) {
@@ -18,7 +19,7 @@ function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
             $targs = array('entry_id' => $entry_id, 'blog_id' => $blog_id, 'class' => $class, 'include_private' => $include_private);
             if ($tag) {
                 $targs['tags'] = $tag;
-                if (substr($tag,0,1) == '@') {
+                if (substr($tag, 0, 1) == '@') {
                     $targs['include_private'] = 1;
                 }
             }
@@ -30,4 +31,3 @@ function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

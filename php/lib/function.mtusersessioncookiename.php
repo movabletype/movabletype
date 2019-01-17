@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiename($args, &$ctx) {
+function smarty_function_mtusersessioncookiename($args, &$ctx)
+{
     $name = $ctx->mt->config('UserSessionCookieName');
     if ($name == 'DEFAULT') {
         if ($ctx->mt->config('SingleCommunity')) {
@@ -20,4 +21,3 @@ function smarty_function_mtusersessioncookiename($args, &$ctx) {
     }
     return $name;
 }
-?>

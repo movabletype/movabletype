@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
+function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat)
+{
     $localvars = array(array('content_field_data', '_content_fields_counter','_content_fields_counter_max', '_content_fields_unserialized', 'ContentFieldsHeader','ContentFieldsFooter'), common_loop_vars());
 
     if (!isset($res)) {
@@ -20,8 +21,9 @@ function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
         $ctx->stash('_content_fields_counter', $counter);
 
         $content_type = $ctx->stash('content_type');
-        if (!is_object($content_type))
-            return $ctx->error($ctx->mt->translate('No Content Type could be found.') );
+        if (!is_object($content_type)) {
+            return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+        }
 
         $content_fields = $content_type->fields;
         if (isset($content_fields)) {
@@ -70,4 +72,3 @@ function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
     }
     return $res;
 }
-?>

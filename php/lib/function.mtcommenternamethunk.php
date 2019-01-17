@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenternamethunk($args, &$ctx) {
+function smarty_function_mtcommenternamethunk($args, &$ctx)
+{
     return '';
 }
-?>

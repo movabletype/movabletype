@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtremotesignoutlink($args, &$ctx) {
+function smarty_function_mtremotesignoutlink($args, &$ctx)
+{
     return '';
 }
-?>

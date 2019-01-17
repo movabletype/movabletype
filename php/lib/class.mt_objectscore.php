@@ -15,13 +15,12 @@ class ObjectScore extends BaseObject
     public $_table = 'mt_objectscore';
     protected $_prefix = "objectscore_";
 
-    public function related_object() {
+    public function related_object()
+    {
         require_once("class.mt_" . $this->object_ds . ".php");
         $class = $this->object_ds;
         $obj = new $class;
         $obj->Load($this->object_ds . "_id = " . $this->object_id);
         return $obj;
     }
-
 }
-?>

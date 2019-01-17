@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentries($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('entry', '_entries_counter','entries','current_timestamp','modification_timestamp','_entries_lastn', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_entries_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
 
     if (isset($args['sort_by']) && $args['sort_by'] == 'score' && !isset($args['namespace'])) {
@@ -26,17 +27,17 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             if ($ctx->stash('entries') &&
                 (isset($args['category']) || isset($args['categories']) ||
                  isset($args['tag']) || isset($args['tags']) ||
-                 isset($args['author']) ))
+                 isset($args['author']))) {
                 $ctx->__stash['entries'] = null;
+            }
         }
         if ($ctx->__stash['entries']) {
             if (isset($args['id']) ||
                 isset($args['recently_commented_on']) ||
                 isset($args['include_subcategories']) ||
-                isset($args['days']) ) {
+                isset($args['days'])) {
                 $ctx->__stash['entries'] = null;
-            }
-            else if (isset($args['sort_by'])) {
+            } elseif (isset($args['sort_by'])) {
                 $ids = array();
                 foreach ($ctx->__stash['entries'] as $e) {
                     $ids[] = $e->entry_id;
@@ -55,32 +56,34 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('_entries_counter');
         $out = $ctx->stash('__out');
     }
-    if ( isset($args['class_type']) ) {
+    if (isset($args['class_type'])) {
         $args['class'] = $args['class_type'];
     } else {
         $args['class'] = 'entry';
     }
 
-    if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
+    if (isset($args['offset']) && ($args['offset'] == 'auto')) {
         $l = 0;
-        if ( $args['limit'] ) {
-            if ( $args['limit'] == 'auto' ) {
-                if ( $_REQUEST['limit'] )
+        if ($args['limit']) {
+            if ($args['limit'] == 'auto') {
+                if ($_REQUEST['limit']) {
                     $l = $_REQUEST['limit'];
-                else {
+                } else {
                     $blog_id = intval($ctx->stash('blog_id'));
                     $blog = $ctx->mt->db()->fetch_blog($blog_id);
                     $l = $blog->blog_entries_on_index;
                 }
-            }
-            else
+            } else {
                 $l = $args['limit'];
+            }
         }
-        if ( !$l )
+        if (!$l) {
             $l = 20;
+        }
         $ctx->stash('__pager_limit', $l);
-        if ( $_REQUEST['offset'] )
+        if ($_REQUEST['offset']) {
             $ctx->stash('__pager_offset', $_REQUEST['offset']);
+        }
     }
 
     $entries = $ctx->stash('entries');
@@ -90,7 +93,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         $at = $ctx->stash('current_archive_type');
         try {
             $archiver = ArchiverFactory::get_archiver($at);
-        } catch (Exception $e ) {
+        } catch (Exception $e) {
         }
         if (isset($args['id'])) {
             $args['entry_id'] = $args['id'];
@@ -123,19 +126,22 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         if ($tag = $ctx->stash('Tag')) {
             $args['tag'] or $args['tags'] or $args['tags'] = is_object($tag) ? $tag->tag_name : $tag;
         }
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+        if (isset($args['offset']) && ($args['offset'] == 'auto')) {
             $total_count = 0;
+        }
         $entries = $ctx->mt->db()->fetch_entries($args, $total_count);
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+        if (isset($args['offset']) && ($args['offset'] == 'auto')) {
             $ctx->stash('__pager_total_count', $total_count);
+        }
         $ctx->stash('entries', $entries);
     }
 
     $ctx->stash('conditional', empty($entries) ? 0 : 1);
     if (empty($entries)) {
         $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
-        if (!$repeat)
-              $ctx->restore($localvars);
+        if (!$repeat) {
+            $ctx->restore($localvars);
+        }
         return $ret;
     }
 
@@ -174,10 +180,11 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
             $_REQUEST['entry_ids_published'][$entry->entry_id] = 1;
             $glue = $ctx->stash('_entries_glue');
             if (isset($glue) && !empty($content)) {
-                if ($out)
+                if ($out) {
                     $content = $glue . $content;
-                else
+                } else {
                     $ctx->stash('__out', true);
+                }
             }
             $count = $counter + 1;
             $ctx->__stash['vars']['__counter__'] = $count;
@@ -189,11 +196,11 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         }
     } else {
         $glue = $ctx->stash('_entries_glue');
-        if (isset($glue) && $out && !empty($content))
+        if (isset($glue) && $out && !empty($content)) {
             $content = $glue . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

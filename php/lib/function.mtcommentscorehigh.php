@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentscorehigh($args, &$ctx) {
+function smarty_function_mtcommentscorehigh($args, &$ctx)
+{
     return '';
 }
-?>

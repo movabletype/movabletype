@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpingssent($args, $content, &$ctx, &$repeat)
+{
     return '';
 }
-?>

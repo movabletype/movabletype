@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_modifier_encode_html($text) {
+function smarty_modifier_encode_html($text)
+{
     return encode_html_entities($text, ENT_QUOTES);
 }
-?>

@@ -5,10 +5,10 @@
 #
 # $Id$
 
-function smarty_function_mtentryauthorusername($args, &$ctx) {
+function smarty_function_mtentryauthorusername($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $entry = $ctx->stash('entry');
     return $entry->author()->name;
 }
-?>

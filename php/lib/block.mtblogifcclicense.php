@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtblogifcclicense($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtblogifcclicense($args, $content, &$ctx, &$repeat)
+{
     // status: complete
     // parameters: none
     if (!isset($content)) {
@@ -15,4 +16,3 @@ function smarty_block_mtblogifcclicense($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

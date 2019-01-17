@@ -5,11 +5,13 @@
 #
 # $Id$
 
-function smarty_function_mttotalpages($args, &$ctx) {
+function smarty_function_mttotalpages($args, &$ctx)
+{
     $limit = $ctx->stash('__pager_limit');
-    if (!$limit) return 1;
+    if (!$limit) {
+        return 1;
+    }
     $offset = $ctx->stash('__pager_offset');
     $count = $ctx->stash('__pager_total_count');
-    return ceil( $count / $limit );
+    return ceil($count / $limit);
 }
-?>

@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtremotesigninlink($args, &$ctx) {
+function smarty_function_mtremotesigninlink($args, &$ctx)
+{
     return '';
 }
-?>

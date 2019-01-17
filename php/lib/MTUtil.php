@@ -5,14 +5,16 @@
 #
 # $Id$
 
-function datetime_to_timestamp($dt, $type = 'local') {
+function datetime_to_timestamp($dt, $type = 'local')
+{
     $mktime = (isset($type) && $type == 'gmt') ? 'gmmktime' : 'mktime';
     $dt = preg_replace('/[^0-9]/', '', $dt);
     $ts = $mktime(substr($dt, 8, 2), substr($dt, 10, 2), substr($dt, 12, 2), substr($dt, 4, 2), substr($dt, 6, 2), substr($dt, 0, 4));
     return $ts;
 }
 
-function start_end_ts($ts) {
+function start_end_ts($ts)
+{
     if ($ts) {
         if (strlen($ts) == 4) {
             $ts_start = $ts . '0101';
@@ -28,7 +30,8 @@ function start_end_ts($ts) {
     return array($ts_start . '000000', $ts_end . '235959');
 }
 
-function start_end_month($ts) {
+function start_end_month($ts)
+{
     $y = substr($ts, 0, 4);
     $mo = substr($ts, 4, 2);
     $start = sprintf("%04d%02d01000000", $y, $mo);
@@ -36,21 +39,25 @@ function start_end_month($ts) {
     return array($start, $end);
 }
 
-function days_in($m, $y) {
+function days_in($m, $y)
+{
     return date('t', mktime(0, 0, 0, $m, 1, $y));
 }
 
-function start_end_day($ts) {
+function start_end_day($ts)
+{
     $day = substr($ts, 0, 8);
     return array($day . "000000", $day . "235959");
 }
 
-function start_end_year($ts) {
+function start_end_year($ts)
+{
     $year = substr($ts, 0, 4);
     return array($year . "0101000000", $year . "1231235959");
 }
 
-function start_end_week($ts) {
+function start_end_week($ts)
+{
     $y = substr($ts, 0, 4);
     $mo = substr($ts, 4, 2);
     $d = substr($ts, 6, 2);
@@ -61,7 +68,8 @@ function start_end_week($ts) {
     if ($sd < 1) {
         $sm--;
         if ($sm < 1) {
-            $sm = 12; $sy--;
+            $sm = 12;
+            $sy--;
         }
         $sd += days_in($sm, $sy);
     }
@@ -71,7 +79,8 @@ function start_end_week($ts) {
         $ed -= days_in($em, $ey);
         $em++;
         if ($em > 12) {
-            $em = 1; $ey++;
+            $em = 1;
+            $ey++;
         }
     }
     $end = sprintf("%04d%02d%02d%s", $ey, $em, $ed, "235959");
@@ -83,10 +92,13 @@ $In_Year = array(
     array( 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365 ),
     array( 0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366 ),
 );
-function week2ymd($y, $week) {
+function week2ymd($y, $week)
+{
     $jan_one_dow_m1 = (ymd2rd($y, 1, 1) + 6) % 7;
 
-    if ($jan_one_dow_m1 < 4) $week--;
+    if ($jan_one_dow_m1 < 4) {
+        $week--;
+    }
     $day_of_year = $week * 7 - $jan_one_dow_m1;
     $leap_year = is_leap_year($y);
     if ($day_of_year < 1) {
@@ -108,30 +120,29 @@ function week2ymd($y, $week) {
     return array($y, $m, $day_of_year - $ref[$m-1]);
 }
 
-function is_leap_year($y) {
+function is_leap_year($y)
+{
     return (!($y % 4) && ($y % 100)) || !($y % 400) ? true : false;
 }
 
-function ymd2rd($y,$m,$d) {
+function ymd2rd($y, $m, $d)
+{
     # make month in range 3..14 (treat Jan & Feb as months 13..14 of
     # prev year)
-    if ( $m <= 2 ) {
-        $adj = (int)(( 14 - $m ) / 12);
+    if ($m <= 2) {
+        $adj = (int)((14 - $m) / 12);
         $y -= $adj;
         $m += 12 * $adj;
-    }
-    elseif ( $m > 14 )
-    {
-        $adj = (int)(( $m - 3 ) / 12);
+    } elseif ($m > 14) {
+        $adj = (int)(($m - 3) / 12);
         $y += $adj;
         $m -= 12 * $adj;
     }
 
     # make year positive (oh, for a use integer 'sane_div'!)
-    if ( $y < 0 )
-    {
-        $adj = (int)(( 399 - $y ) / 400);
-        $d -= 146097 * $adj; 
+    if ($y < 0) {
+        $adj = (int)((399 - $y) / 400);
+        $d -= 146097 * $adj;
         $y += 400 * $adj;
     }
 
@@ -140,12 +151,13 @@ function ymd2rd($y,$m,$d) {
     # of a 400-multiple year), days of any 400-year periods before
     # that, and 306 days to adjust from Mar 1, year 0-relative to Jan
     # 1, year 1-relative (whew)
-    $d += (int)(( $m * 367 - 1094 ) / 12) + (int)((($y % 100) * 1461) / 4) +
-          ( (int)($y / 100) * 36524 + (int)($y / 400) ) - 306;
+    $d += (int)(($m * 367 - 1094) / 12) + (int)((($y % 100) * 1461) / 4) +
+          ((int)($y / 100) * 36524 + (int)($y / 400)) - 306;
     return $d;
 }
 
-function wday_from_ts($y, $m, $d) {
+function wday_from_ts($y, $m, $d)
+{
     global $In_Year;
     $leap = $y % 4 == 0 && ($y % 100 != 0 || $y % 400 == 0) ? 1 : 0;
     $y--;
@@ -159,13 +171,15 @@ function wday_from_ts($y, $m, $d) {
     return $days % 7;
 }
 
-function yday_from_ts($y, $m, $d) {
+function yday_from_ts($y, $m, $d)
+{
     global $In_Year;
     $leap = $y % 4 == 0 && ($y % 100 != 0 || $y % 400 == 0) ? 1 : 0;
     return $In_Year[$leap][$m-1] + $d;
 }
 
-function substr_wref($str, $start, $length) {
+function substr_wref($str, $start, $length)
+{
     if (preg_match_all('/(&[^;]*;|.)/', $str, $character_entities)) {
         return implode('', array_slice($character_entities[0], $start, $length));
     } else {
@@ -173,9 +187,10 @@ function substr_wref($str, $start, $length) {
     }
 }
 
-function format_ts($format, $ts, $blog, $lang = null) {
+function format_ts($format, $ts, $blog, $lang = null)
+{
     global $Languages;
-    if (!isset($lang) || empty($lang)) { 
+    if (!isset($lang) || empty($lang)) {
         $mt = MT::get_instance();
         $lang = (
               $blog && $blog->blog_date_language
@@ -188,14 +203,15 @@ function format_ts($format, $ts, $blog, $lang = null) {
     }
     $lang = strtolower(substr($lang, 0, 2));
     if (!isset($format) || empty($format)) {
-        if (count($Languages[$lang]) >= 4)
+        if (count($Languages[$lang]) >= 4) {
             $format = $Languages[$lang][3];
+        }
         $format or $format = "%B %e, %Y %l:%M %p";
     }
     global $_format_ts_cache;
     if (!isset($_format_ts_cache)) {
         $_format_ts_cache = array();
-    }   
+    }
     if (isset($_format_ts_cache[$ts.$lang])) {
         $f = $_format_ts_cache[$ts.$lang];
     } else {
@@ -203,8 +219,8 @@ function format_ts($format, $ts, $blog, $lang = null) {
         $tsa = array(substr($ts, 0, 4), substr($ts, 4, 2), substr($ts, 6, 2),
                      substr($ts, 8, 2), substr($ts, 10, 2), substr($ts, 12, 2));
         list($f['Y'], $f['m'], $f['d'], $f['H'], $f['M'], $f['S']) = $tsa;
-        $f['w'] = wday_from_ts($tsa[0],$tsa[1],$tsa[2]);
-        $f['j'] = yday_from_ts($tsa[0],$tsa[1],$tsa[2]);
+        $f['w'] = wday_from_ts($tsa[0], $tsa[1], $tsa[2]);
+        $f['j'] = yday_from_ts($tsa[0], $tsa[1], $tsa[2]);
         $f['y'] = substr($f['Y'], 2);
         $f['b'] = substr_wref($L[1][$f['m']-1], 0, 3);
         $f['B'] = $L[1][$f['m']-1];
@@ -238,12 +254,14 @@ function format_ts($format, $ts, $blog, $lang = null) {
         $_format_ts_cache[$ts . $lang] = $f;
     }
     $date_format = null;
-    if (count($Languages[$lang]) >= 5)
+    if (count($Languages[$lang]) >= 5) {
         $date_format = $Languages[$lang][4];
+    }
     $date_format or $date_format = "%B %e, %Y";
     $time_format = null;
-    if (count($Languages[$lang]) >= 6)
+    if (count($Languages[$lang]) >= 6) {
         $time_format = $Languages[$lang][5];
+    }
     $time_format or $time_format = "%l:%M %p";
     $format = preg_replace('!%x!', $date_format, $format);
     $format = preg_replace('!%X!', $time_format, $format);
@@ -256,8 +274,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
             $format = preg_replace('!%B %E,? %Y!i', $Languages[$lang][4], $format);
             $format = preg_replace('!%B %E!', $Languages[$lang][7], $format);
         }
-    }
-    elseif ( $lang == 'it' ) {
+    } elseif ($lang == 'it') {
         ## Hack for the Italian dates
         ## In Italian, the date always come before the month.
         $format = preg_replace('!%b %e!', '%e %b', $format);
@@ -274,7 +291,8 @@ function format_ts($format, $ts, $blog, $lang = null) {
     return $format;
 }
 
-function dirify($s, $sep = '_') {
+function dirify($s, $sep = '_')
+{
     $mt = MT::get_instance();
     $charset = $mt->config('PublishCharset');
     $charset or $charset = 'utf-8';
@@ -285,14 +303,17 @@ function dirify($s, $sep = '_') {
     }
 }
 
-function utf8_dirify($s, $sep = '_') {
-    if ($sep == '1') $sep = '_';
+function utf8_dirify($s, $sep = '_')
+{
+    if ($sep == '1') {
+        $sep = '_';
+    }
     $s = xliterate_utf8($s);  ## convert high-ASCII chars to 7bit.
     $s = strtolower($s);                   ## lower-case.
     $s = strip_tags($s);          ## remove HTML tags.
     $s = preg_replace('!&[^;\s]+;!', '', $s); ## remove HTML entities.
     $s = preg_replace('![^\w\s]!', '', $s);   ## remove non-word/space chars.
-    $s = preg_replace('/\s+/',$sep,$s);         ## change space chars to underscores.
+    $s = preg_replace('/\s+/', $sep, $s);         ## change space chars to underscores.
     return($s);
 }
 
@@ -489,19 +510,23 @@ $Utf8_ASCII = array(
     "\xc5\xb9" => 'Z',    # latin capital letter z with acute
     "\xc5\xba" => 'z',    # latin small letter z with acute
 );
-function xliterate_utf8($s) {
+function xliterate_utf8($s)
+{
     global $Utf8_ASCII;
     return strtr($s, $Utf8_ASCII);
 }
 
-function iso_dirify($s, $sep = '_') {
-    if ($sep == '1') $sep = '_';
+function iso_dirify($s, $sep = '_')
+{
+    if ($sep == '1') {
+        $sep = '_';
+    }
     $s = convert_high_ascii($s);  ## convert high-ASCII chars to 7bit.
     $s = strtolower($s);                   ## lower-case.
     $s = strip_tags($s);          ## remove HTML tags.
     $s = preg_replace('!&[^;\s]+;!', '', $s); ## remove HTML entities.
     $s = preg_replace('![^\w\s]!', '', $s);   ## remove non-word/space chars.
-    $s = preg_replace('/\s+/',$sep,$s);         ## change space chars to underscores.
+    $s = preg_replace('/\s+/', $sep, $s);         ## change space chars to underscores.
     return($s);
 }
 
@@ -566,7 +591,8 @@ $Latin1_ASCII = array(
     "\xdf" => 'ss',   # szlig
     "\xff" => 'y'     # yuml
 );
-function convert_high_ascii($s) {
+function convert_high_ascii($s)
+{
     $mt = MT::get_instance();
     $lang = $mt->config('DefaultLanguage');
     if ($lang == 'ja') {
@@ -698,7 +724,7 @@ $Languages = array(
                "Mi&#xf0;vikudagur", 'Fimmtudagur', "F&#xf6;studagur",
                'Laugardagur'),
             array("jan&#xfa;ar", "febr&#xfa;ar", 'mars', "apr&#xed;l", "ma&#xed;",
-               "j&#xfa;n&#xed;", "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st", 'september',             
+               "j&#xfa;n&#xed;", "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st", 'september',
                "okt&#xf3;ber", "n&#xf3;vember", 'desember'),
             array('FH','EH'),
             "%d.%m.%y %H:%M",
@@ -783,27 +809,28 @@ $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
                          '\'' => '&apos;');
 
-function __check_xml_char($matches) {
+function __check_xml_char($matches)
+{
     $val = $matches[2];
     $is_hex = $matches[1];
-    if ($is_hex)
+    if ($is_hex) {
         $val = hexdec($val);
-    $val = 0 + $val;
-    if (   ($val == 9) 
-        || ($val == 0xA) 
-        || ($val == 0xD) 
-        || (($val >= 0x20) and ($val <= 0xD7FF)) 
-        || (($val >= 0xE000) and ($val <= 0xFFFD)) 
-        || (($val >= 0x10000) and ($val <= 0x10FFFF))) 
-    {
-        return "&#" . $is_hex . $matches[2] . ";";
     }
-    else {
+    $val = 0 + $val;
+    if (($val == 9)
+        || ($val == 0xA)
+        || ($val == 0xD)
+        || (($val >= 0x20) and ($val <= 0xD7FF))
+        || (($val >= 0xE000) and ($val <= 0xFFFD))
+        || (($val >= 0x10000) and ($val <= 0x10FFFF))) {
+        return "&#" . $is_hex . $matches[2] . ";";
+    } else {
         return "&amp;#"  . $is_hex . $matches[2] . ";";
     }
 }
 
-function encode_xml($str, $nocdata = 0) {
+function encode_xml($str, $nocdata = 0)
+{
     $mt = MT::get_instance();
     global $_encode_xml_Map;
     $cfg_nocdata = $mt->config('NoCDATA');
@@ -824,7 +851,8 @@ function encode_xml($str, $nocdata = 0) {
     return $str;
 }
 
-function decode_xml($str) {
+function decode_xml($str)
+{
     if (preg_match('/<!\[CDATA\[(.*?)]]>/', $str)) {
         $str = preg_replace('/<!\[CDATA\[(.*?)]]>/', '\1', $str);
         ## Decode encoded ]]&gt;
@@ -836,8 +864,11 @@ function decode_xml($str) {
     return $str;
 }
 
-function encode_js($str) {
-    if (!isset($str)) return '';
+function encode_js($str)
+{
+    if (!isset($str)) {
+        return '';
+    }
     $str = preg_replace('!\\\\!', '\\\\', $str);
     $str = preg_replace('!>!', '\\>', $str);
     $str = preg_replace('!<!', '\\<', $str);
@@ -852,8 +883,11 @@ function encode_js($str) {
     return $str;
 }
 
-function encode_json($str) {
-    if (!isset($str)) return '';
+function encode_json($str)
+{
+    if (!isset($str)) {
+        return '';
+    }
     // Do not use JSON_UNESCAPED_UNICODE with json_encode for supporting PHP 5.3.x and before.
     // Do not use closure for supporting PHP 5.2.x and before.
     $callback = create_function(
@@ -871,7 +905,8 @@ function encode_json($str) {
     return preg_replace('/^"(.+)"$/', '$1', $encoded_str);
 }
 
-function gmtime($ts = null) {
+function gmtime($ts = null)
+{
     if (!isset($ts)) {
         $ts = time();
     }
@@ -882,9 +917,10 @@ function gmtime($ts = null) {
     return $tsa;
 }
 
-function is_hash($array) {
-    if ( is_array($array) ) {
-        if ( array_keys($array) === range(0, count($array) - 1) ) {
+function is_hash($array)
+{
+    if (is_array($array)) {
+        if (array_keys($array) === range(0, count($array) - 1)) {
             // 0,1,2,3... must be an array
             return false;
         }
@@ -893,22 +929,26 @@ function is_hash($array) {
     return false;
 }
 
-function offset_time_list($ts, $blog = null, $dir = null) {
+function offset_time_list($ts, $blog = null, $dir = null)
+{
     return gmtime(offset_time($ts, $blog, $dir));
 }
 
-function strip_hyphen($s) {
+function strip_hyphen($s)
+{
     return preg_replace('/-+/', '-', $s);
 }
 
-function first_n_words($text, $n) {
+function first_n_words($text, $n)
+{
     $text = strip_tags($text);
     $words = preg_split('/\s+/', $text);
     $max = count($words) > $n ? $n : count($words);
     return join(' ', array_slice($words, 0, $max));
 }
 
-function html_text_transform($str = '') {
+function html_text_transform($str = '')
+{
     $paras = preg_split('/\r?\n\r?\n/', $str);
     if ($str == '') {
         return '';
@@ -923,16 +963,20 @@ function html_text_transform($str = '') {
     return implode("\n\n", $paras);
 }
 
-function encode_html($str, $quote_style = ENT_QUOTES) {
-    if (!isset($str)) return '';
+function encode_html($str, $quote_style = ENT_QUOTES)
+{
+    if (!isset($str)) {
+        return '';
+    }
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
-    if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;
+    if ($trans_table["'"] != '&#039;') { # some versions of PHP match single quotes to &#39;
         $trans_table["'"] = '&#039;';
     }
     return (strtr($str, $trans_table));
 }
 
-function encode_html_entities($str, $quote_style = ENT_QUOTES) {
+function encode_html_entities($str, $quote_style = ENT_QUOTES)
+{
     if (!$str) {
         return '';
     }
@@ -969,16 +1013,20 @@ function encode_html_entities($str, $quote_style = ENT_QUOTES) {
         htmlentities($str, $quote_style, $encoding);
 }
 
-function decode_html($str, $quote_style = ENT_QUOTES) {
-    if (!isset($str)) return '';
+function decode_html($str, $quote_style = ENT_QUOTES)
+{
+    if (!isset($str)) {
+        return '';
+    }
     $trans_table = get_html_translation_table(HTML_SPECIALCHARS, $quote_style);
-    if( $trans_table["'"] != '&#039;' ) { # some versions of PHP match single quotes to &#39;
+    if ($trans_table["'"] != '&#039;') { # some versions of PHP match single quotes to &#39;
         $trans_table["'"] = '&#039;';
     }
     return (strtr($str, array_flip($trans_table)));
 }
 
-function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) {
+function get_category_context(&$ctx, $class = 'category', $error_avoid = false)
+{
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template
     # Or the category for the current entry
@@ -989,8 +1037,9 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
         if ($ctx->stash('entry')) {
             $entry = $ctx->stash('entry');
             $place = $entry->placement();
-            if (empty($place))
+            if (empty($place)) {
                 return null;
+            }
             $cat = $place[0]->category();
 
             # Return empty string if entry has no category
@@ -999,7 +1048,7 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
             if (!isset($cat)) {
                 return null;
             }
-        } else if ($ctx->stash('content')) {
+        } elseif ($ctx->stash('content')) {
             $content_data = $ctx->stash('content');
             if ($ctx->stash('_fileinfo') && $ctx->stash('_fileinfo')->templatemap()) {
                 $maps = array($ctx->stash('_fileinfo')->templatemap());
@@ -1032,8 +1081,9 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
             }
             $cat = $ctx->mt->db()->fetch_category($objectcategory->objectcategory_category_id);
         } else {
-            if($error_avoid)
+            if ($error_avoid) {
                 return null;
+            }
 
             $tag = $ctx->this_tag();
             return $ctx->error("$tag must be used in a category context");
@@ -1042,7 +1092,8 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
     return $cat;
 }
 
-function munge_comment($text, $blog) {
+function munge_comment($text, $blog)
+{
     if (!$blog->blog_allow_comment_html) {
         $text = strip_tags($text);
     }
@@ -1052,7 +1103,8 @@ function munge_comment($text, $blog) {
     return $text;
 }
 
-function length_text($text) {
+function length_text($text)
+{
     if (!extension_loaded('mbstring')) {
         $len = strlen($text);
     } else {
@@ -1061,7 +1113,8 @@ function length_text($text) {
     return $len;
 }
 
-function substr_text($text, $startpos, $length) {
+function substr_text($text, $startpos, $length)
+{
     if (!extension_loaded('mbstring')) {
         $text = substr($text, $startpos, $length);
     } else {
@@ -1070,10 +1123,11 @@ function substr_text($text, $startpos, $length) {
     return $text;
 }
 
-function first_n_text($text, $n) {
-    if (!isset($lang) || empty($lang)) { 
+function first_n_text($text, $n)
+{
+    if (!isset($lang) || empty($lang)) {
         $mt = MT::get_instance();
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
+        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
                      $mt->config('DefaultLanguage'));
     }
     if ($lang == 'jp') {
@@ -1084,12 +1138,13 @@ function first_n_text($text, $n) {
         $text = strip_tags($text);
         $text = preg_replace('/\r?\n/', " ", $text);
         return substr_text($text, 0, $n);
-    }else{
+    } else {
         return first_n_words($text, $n);
     }
 }
 
-function tag_split_delim($delim, $str) {
+function tag_split_delim($delim, $str)
+{
     $delim = quotemeta($delim);
     $tags = array();
     $str = trim($str);
@@ -1099,37 +1154,46 @@ function tag_split_delim($delim, $str) {
         $tag = trim($tag);
         $tag = preg_replace('/\s+/', ' ', $tag);
         $n8d_tag = tag_normalize($tag);
-        if ($n8d_tag != '')
-            if ($tag != '') $tags[] = $tag;
+        if ($n8d_tag != '') {
+            if ($tag != '') {
+                $tags[] = $tag;
+            }
+        }
     }
     return $tags;
 }
 
-function tag_split($str) {
+function tag_split($str)
+{
     return tag_split_delim(',', $str);
 }
 
-function catarray_path_length_sort($a, $b) {
-	$al = strlen($a->category_label_path);
-	$bl = strlen($b->category_label_path);
+function catarray_path_length_sort($a, $b)
+{
+    $al = strlen($a->category_label_path);
+    $bl = strlen($b->category_label_path);
     return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
 # sorts by length of category label, from longest to shortest
-function catarray_length_sort($a, $b) {
-	$al = strlen($a->category_label);
-	$bl = strlen($b->category_label);
-	return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
+function catarray_length_sort($a, $b)
+{
+    $al = strlen($a->category_label);
+    $bl = strlen($b->category_label);
+    return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
-function create_expr_exception($m) {
-    if ($m[2])
+function create_expr_exception($m)
+{
+    if ($m[2]) {
         return '(0)';
-    else
+    } else {
         return $m[1];
+    }
 }
 
-function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) {
+function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param)
+{
     $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
@@ -1157,8 +1221,9 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
             $catl = $cat->$col;
             $catid = $cat->category_id;
             $catre = preg_quote($catl, "/");
-            if (!preg_match("/(?:(?<![#\d])\[$catre\]|$catre)|(?:#$catid\b)/", $expr))
+            if (!preg_match("/(?:(?<![#\d])\[$catre\]|$catre)|(?:#$catid\b)/", $expr)) {
                 continue;
+            }
             if ($include_children) {
                 $kids = array($cat);
                 $child_cats = array();
@@ -1175,7 +1240,9 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
                 foreach ($child_cats as $ccid => $cc) {
                     $repl .= ' OR #' . $ccid;
                 }
-                if (strlen($repl)) $repl = substr($repl, 4);
+                if (strlen($repl)) {
+                    $repl = substr($repl, 4);
+                }
                 $repl = " $repl ";
             } else {
                 $repl = " #$catid ";
@@ -1184,13 +1251,17 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
                 $last_catid = $cats_replaced[$catl];
                 $expr = preg_replace("/(#$last_catid\b)/", '($1 OR #' . $catid . ')', $expr);
             } else {
-        	    $expr = preg_replace("/(?:(?<!#)(?:\[$catre\]|$catre))|#$catid\b/", $repl,
-                    $expr);
+                $expr = preg_replace(
+                    "/(?:(?<!#)(?:\[$catre\]|$catre))|#$catid\b/",
+                    $repl,
+                    $expr
+                );
                 $cats_replaced[$catl] = $catid;
             }
             if ($include_children) {
-                foreach ($child_cats as $ccid => $cc)
+                foreach ($child_cats as $ccid => $cc) {
                     $cats_used[$ccid] = $cc;
+                }
             } else {
                 $cats_used[$catid] = $cat;
             }
@@ -1200,8 +1271,7 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
     # when $expr not containing AND, OR or NOT, parenthesis is invalid token.
     if (preg_match('/\b(AND|OR|NOT)\b/i', $expr)) {
         $regexp = '#\d+|&&|\|\||!|\(|\)';
-    }
-    else {
+    } else {
         $regexp = '#\d+';
     }
 
@@ -1210,7 +1280,7 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
     $expr = preg_replace('/\bNOT\b/i', '!', $expr);
 
     # replace any other 'thing' with '(0)' since it's a category that doesn't even exist.
-    $cat_expr = preg_split("/($regexp)/", $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $cat_expr = preg_split("/($regexp)/", $expr, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $new_cat_expr = array();
     foreach ($cat_expr as $token) {
         if (preg_match("/^(\s+|$regexp)$/", $token, $matches)) {
@@ -1228,29 +1298,33 @@ function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) 
         echo "Invalid category filter: $orig_expr";
         return;
     }
-	if (!preg_match('/!/', $expr))
-	    $cats = array_values($cats_used);
+    if (!preg_match('/!/', $expr)) {
+        $cats = array_values($cats_used);
+    }
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
     $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
     $fn = create_function('&$o,&$c', $expr);
-    if ($fn === FALSE) {
+    if ($fn === false) {
         echo "Invalid category filter: $orig_expr";
         return;
     }
     return $fn;
 }
 
-function category_label_path($cat) {
+function category_label_path($cat)
+{
     $mt = MT::get_instance();
     $mtdb =& $mt->db();
-    if (isset($cat->__label_path))
+    if (isset($cat->__label_path)) {
         return $cat->__label_path;
+    }
     $result = preg_match('/\//', $cat->category_label) ? '[' . $cat->category_label . ']' : $cat->category_label;
     while ($cat) {
         $cat = $cat->category_parent ? $mtdb->fetch_category($cat->category_parent) : null;
-        if ($cat)
+        if ($cat) {
             $result = (preg_match('/\//', $cat->category_label) ? '[' . $cat->category_label . ']' : $cat->category_label) . '/' . $result;
+        }
     }
     # caching this information may be problematic IF
     # parent category labels are changed.
@@ -1258,14 +1332,16 @@ function category_label_path($cat) {
     return $result;
 }
 
-function cat_path_to_category($path, $blogs = null, $class = 'category', $category_set_id = 0) {
+function cat_path_to_category($path, $blogs = null, $class = 'category', $category_set_id = 0)
+{
     $mt = MT::get_instance();
     if (!$blogs) {
         $ctx = $mt->context();
         $blogs = array('include_blogs' => $ctx->stash('blog_id'));
     }
-    if (!is_array($blogs))
+    if (!is_array($blogs)) {
         $blogs = array($blogs);
+    }
     $mtdb =& $mt->db();
     if (preg_match_all('/(\[[^]]+?\]|[^]\/]+)/', $path, $matches)) {
         # split on slashes, fields quoted by []
@@ -1276,29 +1352,35 @@ function cat_path_to_category($path, $blogs = null, $class = 'category', $catego
         $last_cat_ids = array(0);
         foreach ($cat_path as $label) {
             $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $label, 'parent' => $last_cat_ids, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
-            if (!$cats)
+            if (!$cats) {
                 break;
+            }
             $last_cat_ids = array();
-            foreach ($cats as $cat)
+            foreach ($cats as $cat) {
                 $last_cat_ids[] = $cat->category_id;
+            }
         }
     }
-    if ($cats)
+    if ($cats) {
         return $cats;
+    }
     if (!$cats && $path) {
         $cats = $mtdb->fetch_categories(array_merge($blogs, array('label' => $path, 'show_empty' => 1, 'class' => $class, 'category_set_id' => $category_set_id)));
-        if ($cats)
+        if ($cats) {
             return $cats;
+        }
     }
     return null;
 }
 
 # sorts by length of tag name, from longest to shortest
-function tagarray_name_sort($a, $b) {
+function tagarray_name_sort($a, $b)
+{
     return strcmp(strtolower($a->tag_name), strtolower($b->tag_name));
 }
 
-function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
+function create_tag_expr_function($expr, &$tags, $datasource = 'entry')
+{
     $tags_used = array();
     $orig_expr = $expr;
 
@@ -1306,21 +1388,25 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     foreach ($tags as $tag) {
         $tags_dict[$tag->tag_name] = $tag;
     }
-    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, NULL, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+    $tokens = preg_split('/\b(AND|NOT|OR|\(\))\b/i', $expr, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
     $result = '';
     foreach ($tokens as $t) {
-        $upperToken = strtoupper( $t );
-        if ( ($t === ')') || ($t === '(') || preg_match('/^\s+$/', $t) ) {
-            $result .= $t; continue;
+        $upperToken = strtoupper($t);
+        if (($t === ')') || ($t === '(') || preg_match('/^\s+$/', $t)) {
+            $result .= $t;
+            continue;
         }
         if ($upperToken === 'AND') {
-            $result .= '&&'; continue;
+            $result .= '&&';
+            continue;
         }
         if ($upperToken === 'OR') {
-            $result .= '||'; continue;
+            $result .= '||';
+            continue;
         }
         if ($upperToken === 'NOT') {
-            $result .= '!'; continue;
+            $result .= '!';
+            continue;
         }
         $t = trim($t);
         if (!array_key_exists($t, $tags_dict)) {
@@ -1337,81 +1423,92 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $tags = array_values($tags_used);
 
     # Create a PHP-blessed function of that code and return it
-    # if all is well.  This function will be used later to 
+    # if all is well.  This function will be used later to
     # test for existence of specified tags in entries.
     $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
     $fn = create_function('&$o,&$c', $expr);
-    if ($fn === FALSE) {
+    if ($fn === false) {
         echo "Invalid tag filter: $orig_expr";
         return;
     }
     return $fn;
 }
 
-function tag_normalize($str) {
+function tag_normalize($str)
+{
     # FIXME: character set issues here...
     $private = preg_match('/^@/', $str) ? 1 : 0;
     $str = preg_replace('/[@!`\\<>\*&#\/~\?\'"\.\,=\(\)\${}\[\];:\ \+\-\r\n]+/', '', $str);
     $str = strtolower($str);
-    if ($private) $str = '@' . $str;
+    if ($private) {
+        $str = '@' . $str;
+    }
     return $str;
 }
 
-function static_path($host) {
+function static_path($host)
+{
     $mt = MT::get_instance();
     $path = $mt->config('StaticWebPath');
     if (!$path) {
         $path = $mt->config('CGIPath');
         if (substr($path, 0, 1) == '/') {  # relative
-            if (!preg_match('!/$!', $host))
+            if (!preg_match('!/$!', $host)) {
                 $host .= '/';
+            }
             if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
                 $path = $matches[1] . $path;
             }
         }
-        if (substr($path, strlen($path) - 1, 1) != '/')
+        if (substr($path, strlen($path) - 1, 1) != '/') {
             $path .= '/';
+        }
         $path .= 'mt-static/';
     } elseif (substr($path, 0, 1) == '/') {
-        if (!preg_match('!/$!', $host))
+        if (!preg_match('!/$!', $host)) {
             $host .= '/';
+        }
         if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
             $path = $matches[1] . $path;
-        }        
+        }
     }
-    if (substr($path, strlen($path) - 1, 1) != '/')
+    if (substr($path, strlen($path) - 1, 1) != '/') {
         $path .= '/';
+    }
 
     return $path;
 }
 
-function static_file_path() {
+function static_file_path()
+{
     $mt = MT::get_instance();
     $path = $mt->config('StaticFilePath');
     if (!$path) {
         $path = dirname(dirname(dirname(__FILE__)));
         $path .= DIRECTORY_SEPARATOR . 'mt-static' . DIRECTORY_SEPARATOR;
     }
-    if (substr($path, strlen($path) - 1, 1) != DIRECTORY_SEPARATOR)
+    if (substr($path, strlen($path) - 1, 1) != DIRECTORY_SEPARATOR) {
         $path .= DIRECTORY_SEPARATOR;
+    }
 
     return $path;
 }
 
-function support_directory_url() {
+function support_directory_url()
+{
     $mt = MT::get_instance();
     $url = $mt->config('SupportDirectoryURL');
     if (!$url) {
         $url = static_path('');
         $url .= 'support/';
-    }
-    elseif (!preg_match('!/$!', $url) ) {
+    } elseif (!preg_match('!/$!', $url)) {
         $url .= '/';
     }
     return $url;
 }
 
-function support_directory_path() {
+function support_directory_path()
+{
     $mt = MT::get_instance();
     $path = $mt->config('SupportDirectoryPath');
     if (!$path) {
@@ -1422,7 +1519,8 @@ function support_directory_path() {
     return $path;
 }
 
-function asset_path($path, $blog) {
+function asset_path($path, $blog)
+{
     $site_path = $blog->site_path();
     $site_path = preg_replace('/\/$/', '', $site_path);
     $path = preg_replace('/^%r/', $site_path, $path);
@@ -1440,7 +1538,8 @@ function asset_path($path, $blog) {
     return $path;
 }
 
-function userpic_url($asset, $blog, $author) {
+function userpic_url($asset, $blog, $author)
+{
     $mt = MT::get_instance();
     $format = $mt->translate('userpic-[_1]-%wx%h%x', array($author->author_id));
     $max_dim = $mt->config('UserpicThumbnailSize');
@@ -1458,7 +1557,7 @@ function userpic_url($asset, $blog, $author) {
     $thumb->height($max_dim);
     $thumb->format($support_directory_path.DIRECTORY_SEPARATOR .$image_path.DIRECTORY_SEPARATOR.$format);
     $thumb->type('png');
-    $thumb->square( true );
+    $thumb->square(true);
     $thumb->id($asset->asset_id);
     if (!$thumb->get_thumbnail()) {
         return '';
@@ -1473,11 +1572,13 @@ function userpic_url($asset, $blog, $author) {
     return $url;
 }
 
-function get_thumbnail_file($asset, $blog, $args) {
+function get_thumbnail_file($asset, $blog, $args)
+{
     # Parse args
     $format = '%f-thumb-%wx%h-%i%x';
-    if (isset($args['format']))
+    if (isset($args['format'])) {
         $format = $args['format'];
+    }
 
     # Get parameter
     $site_path = $blog->site_path();
@@ -1507,14 +1608,18 @@ function get_thumbnail_file($asset, $blog, $args) {
     $thumb->id($asset->id);
     $thumb->format($thumb_name);
     $thumb->type('auto');
-    if (isset($args['width']))
+    if (isset($args['width'])) {
         $thumb->width($args['width']);
-    if (isset($args['height']))
+    }
+    if (isset($args['height'])) {
         $thumb->height($args['height']);
-    if (isset($args['scale']))
+    }
+    if (isset($args['scale'])) {
         $thumb->scale($args['scale']);
-    if (isset($args['square']))
+    }
+    if (isset($args['square'])) {
         $thumb->square($args['square'] ? true : false);
+    }
     if (!$thumb->get_thumbnail()) {
         return '';
     }
@@ -1523,10 +1628,12 @@ function get_thumbnail_file($asset, $blog, $args) {
     $basename = basename($thumb->dest());
     $base_url = $blog->site_url();
     $archive_url = $blog->archive_url();
-    if (preg_match('/^%a/', $asset->asset_file_path) && !empty($archive_url))
+    if (preg_match('/^%a/', $asset->asset_file_path) && !empty($archive_url)) {
         $base_url = $blog->archive_url();
-    if (!preg_match('!/$!', $base_url))
+    }
+    if (!preg_match('!/$!', $base_url)) {
         $base_url .= '/';
+    }
 
     if (DIRECTORY_SEPARATOR != '/') {
         $cache_path = str_replace(DIRECTORY_SEPARATOR, '/', $cache_path);
@@ -1536,12 +1643,14 @@ function get_thumbnail_file($asset, $blog, $args) {
     return array($thumb_url, $thumb->width(), $thumb->height(), $thumb->dest());
 }
 
-function asset_cleanup($str) {
+function asset_cleanup($str)
+{
     $str = preg_replace_callback('/<(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])([^>]*?)\smt:asset-id="\d+"([^>]+?>)(.*?)<\/(?:[Ff][Oo][Rr][Mm]|[Ss][Pp][Aa][Nn])>/s', 'asset_cleanup_cb', $str);
     return $str;
 }
 
-function asset_cleanup_cb($matches) {
+function asset_cleanup_cb($matches)
+{
     $attr = $matches[1] . $matches[2];
     $inner = $matches[3];
     $attr = preg_replace('/\s[Cc][Oo][Nn][Tt][Ee][Nn][Tt][Ee][Dd][Ii][Tt][Aa][Bb][Ll][Ee]=([\'"][^\'"]*?[\'"]|[Ff][Aa][Ll][Ss][Ee])/', '', $attr);
@@ -1549,13 +1658,15 @@ function asset_cleanup_cb($matches) {
 }
 
 # sorts by length of category label, from longest to shortest
-function rolearray_length_sort(&$a, &$b) {
+function rolearray_length_sort(&$a, &$b)
+{
     $al = strlen($a->name);
     $bl = strlen($b->name);
     return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
 }
 
-function create_role_expr_function($expr, &$roles, $datasource = 'author') {
+function create_role_expr_function($expr, &$roles, $datasource = 'author')
+{
     $roles_used = array();
     $orig_expr = $expr;
 
@@ -1567,8 +1678,9 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
         $roleid = $role->role_id;
         $oldexpr = $expr;
         $expr = preg_replace("!(?:\Q[$rolen]\E|\Q$rolen\E)!", "#$roleid", $expr);
-        if ($oldexpr != $expr)
+        if ($oldexpr != $expr) {
             $roles_used[$roleid] = $role;
+        }
     }
 
     $expr = preg_replace('/\bOR\b/i', '||', $expr);
@@ -1582,22 +1694,24 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
         return;
     }
 
-    if (!preg_match('/!/', $expr))
+    if (!preg_match('/!/', $expr)) {
         $roles = array_values($roles_used);
+    }
 
     $column_name = $datasource . '_id';
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$tm)", $expr);
 
     $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["r"]) ? $c["r"][$e->'.$datasource.'_id] : array(); return ' . $expr . ';';
     $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    if ($fn === false) {
         echo "Invalid role filter: $orig_expr";
         return;
     }
     return $fn;
 }
 
-function create_status_expr_function($expr, &$status, $datasource = 'author') {
+function create_status_expr_function($expr, &$status, $datasource = 'author')
+{
     $orig_expr = $expr;
 
     foreach ($status as $s) {
@@ -1619,14 +1733,15 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     $expr = preg_replace('/#(\d+)/', '$e->status == $1', $expr);
     $expr = 'return ' . $expr . ';';
     $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    if ($fn === false) {
         echo "Invalid status filter: $orig_expr";
         return;
     }
     return $fn;
 }
 
-function create_rating_expr_function($expr, $filter, $namespace, $datasource = 'entry') {
+function create_rating_expr_function($expr, $filter, $namespace, $datasource = 'entry')
+{
     $orig_expr = $expr;
 
     require_once 'rating_lib.php';
@@ -1649,54 +1764,57 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
     $expr .= ' return $ret;';
 
     $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    if ($fn === false) {
         echo "Invalid rating filter: $orig_expr";
         return;
     }
     return $fn;
 }
 
-function _math_operation($op, $lvalue, $rvalue) {
-    if (!preg_match('/^\-?[\d\.]+$/', $lvalue))
+function _math_operation($op, $lvalue, $rvalue)
+{
+    if (!preg_match('/^\-?[\d\.]+$/', $lvalue)) {
         return;
-    if ( isset($rvalue) && !preg_match('/^\-?[\d\.]+$/', $rvalue))
+    }
+    if (isset($rvalue) && !preg_match('/^\-?[\d\.]+$/', $rvalue)) {
         return;
-    if ( !isset($rvalue)
-      && $op != 'inc' && $op != 'dec' && $op != '++' && $op != '--' )
+    }
+    if (!isset($rvalue)
+      && $op != 'inc' && $op != 'dec' && $op != '++' && $op != '--') {
         return;
-    if ( ( '+' == $op ) || ( 'add' == $op ) ) {
+    }
+    if (('+' == $op) || ('add' == $op)) {
         return $lvalue + $rvalue;
-    }
-    elseif ( ( '++' == $op ) || ( 'inc' == $op ) ) {
+    } elseif (('++' == $op) || ('inc' == $op)) {
         return $lvalue + 1;
-    }
-    elseif ( ( '-' == $op ) || ( 'sub' == $op ) ) {
+    } elseif (('-' == $op) || ('sub' == $op)) {
         return $lvalue - $rvalue;
-    }
-    elseif ( ( '--' == $op ) || ( 'dec' == $op ) ) {
+    } elseif (('--' == $op) || ('dec' == $op)) {
         return $lvalue - 1;
-    }
-    elseif ( ( '*' == $op ) || ( 'mul' == $op ) ) {
+    } elseif (('*' == $op) || ('mul' == $op)) {
         return $lvalue * $rvalue;
-    }
-    elseif ( ( '/' == $op ) || ( 'div' == $op ) ) {
-        if ( $rvalue == 0 )
+    } elseif (('/' == $op) || ('div' == $op)) {
+        if ($rvalue == 0) {
             return;
+        }
         return $lvalue / $rvalue;
-    }
-    elseif ( ( '%' == $op ) || ( 'mod' == $op ) ) {
+    } elseif (('%' == $op) || ('mod' == $op)) {
         // to be in line with perl equivalent
         $lvalue = floor($lvalue);
         $rvalue = floor($rvalue);
-        if ( $rvalue == 0 )
+        if ($rvalue == 0) {
             return;
+        }
         return $lvalue % $rvalue;
     }
     return;
 }
 
-function apply_text_filter ($ctx, $text, $filters) {
-    if ($text == '' || $filters == '') return $text;
+function apply_text_filter($ctx, $text, $filters)
+{
+    if ($text == '' || $filters == '') {
+        return $text;
+    }
 
     $f = preg_split('/\s*,\s*/', $filters);
     if (is_array($f) && count($f) > 0) {
@@ -1718,9 +1836,12 @@ function apply_text_filter ($ctx, $text, $filters) {
     return $text;
 }
 
-function get_page_column ($layout) {
+function get_page_column($layout)
+{
     $columns = 0;
-    if (empty($layout)) return $columns;
+    if (empty($layout)) {
+        return $columns;
+    }
 
     $columns_map = array(
         'layout-wt'  => 2,
@@ -1730,30 +1851,37 @@ function get_page_column ($layout) {
         'layout-wtt' => 3,
         'layout-twt' => 3);
 
-    if(array_key_exists($layout, $columns_map))
-         $columns = $columns_map[$layout];
+    if (array_key_exists($layout, $columns_map)) {
+        $columns = $columns_map[$layout];
+    }
 
     return $columns;
 }
 
-function mkpath($path, $mode = 0777) {
+function mkpath($path, $mode = 0777)
+{
     return mkdir($path, $mode, true);
 }
 
-function _strip_index($url, $blog) {
+function _strip_index($url, $blog)
+{
     $mt = MT::get_instance();
     $index = $mt->config('IndexBasename');
-    if (is_array($blog))
+    if (is_array($blog)) {
         $ext = $blog['blog_file_extension'];
-    else
+    } else {
         $ext = $blog->file_extension;
-    if ($ext != '') $ext = '.' . $ext;
+    }
+    if ($ext != '') {
+        $ext = '.' . $ext;
+    }
     $index = preg_quote($index . $ext);
     $url = preg_replace("/\/$index(#.*)?$/", '/$1', $url);
     return $url;
 }
 
-function common_loop_vars() {
+function common_loop_vars()
+{
     return array(
         '__counter__',
         '__odd__',
@@ -1765,7 +1893,8 @@ function common_loop_vars() {
     );
 }
 
-function normalize_language($language, $locale, $ietf) {
+function normalize_language($language, $locale, $ietf)
+{
     $real_lang = array('cz' => 'cs', 'dk' => 'da', 'jp' => 'ja', 'si' => 'sl');
 
     if ($real_lang[$language]) {
@@ -1773,7 +1902,7 @@ function normalize_language($language, $locale, $ietf) {
     }
     if ($locale) {
         if (preg_match('/^([A-Za-z][A-Za-z])([-_]([A-Za-z][A-Za-z]))?$/', $language, $matches)) {
-            $language = $matches[1] . '_' . strtoupper( $matches[3] ? $matches[3] : $matches[1] );
+            $language = $matches[1] . '_' . strtoupper($matches[3] ? $matches[3] : $matches[1]);
         }
     } elseif ($ietf) {
         # http://www.ietf.org/rfc/rfc3066.txt
@@ -1782,23 +1911,26 @@ function normalize_language($language, $locale, $ietf) {
     return $language;
 }
 
-function caturl($paths){
-    if (!is_array($paths)) return '';
+function caturl($paths)
+{
+    if (!is_array($paths)) {
+        return '';
+    }
 
     $url = array_shift($paths);
     foreach ($paths as $u) {
-        if(!$u) continue;
-        if(!$url){
+        if (!$u) {
+            continue;
+        }
+        if (!$url) {
             $url = $u;
             continue;
         }
-        $u = preg_replace( '/^\//', '', $u );
-        if(!preg_match('/\/$/', $url, $matches))
+        $u = preg_replace('/^\//', '', $u);
+        if (!preg_match('/\/$/', $url, $matches)) {
             $url .= '/';
+        }
         $url .= $u;
     }
     return $url;
 }
-
-
-?>

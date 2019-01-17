@@ -6,22 +6,23 @@
 # $Id$
 
 include_once("SmartyBC.class.php");
-class MTViewer extends SmartyBC {
-    var $varstack = array();
-    var $stash_var_stack = array();
-    var $__stash;
-    var $mt;
-    var $last_ts = 0;
-    var $id;
-    var $_handlers = array();
-    var $smarty;
-    var $_tag_stack = array();
-    var $_override = array();
-    var $_is_override_context = false;
+class MTViewer extends SmartyBC
+{
+    public $varstack = array();
+    public $stash_var_stack = array();
+    public $__stash;
+    public $mt;
+    public $last_ts = 0;
+    public $id;
+    public $_handlers = array();
+    public $smarty;
+    public $_tag_stack = array();
+    public $_override = array();
+    public $_is_override_context = false;
 
-    var $path_sep;
+    public $path_sep;
 
-    var $conditionals = array(
+    public $conditionals = array(
         'mtparentcategory' => 1,
         'mttoplevelparent' => 1,
         'mtunless' => 1,
@@ -64,7 +65,7 @@ class MTViewer extends SmartyBC {
         'mtcontentfieldfooter' => 1,
         'mtcontentfield' => 1,
     );
-    var $sanitized = array(
+    public $sanitized = array(
         'mtcommentauthor' => 1,
         'mtcommentemail' => 1,
         'mtcommenturl' => 1,
@@ -74,13 +75,13 @@ class MTViewer extends SmartyBC {
         'mtpingexcerpt' => 1,
         'mtpingblogname' => 1,
     );
-    var $nofollowed = array(
+    public $nofollowed = array(
         'mtcommentauthorlink' => 1,
         'mtcommenturl' => 1,
         'mtcommentbody' => 1,
         'mtpings' => 1,
     );
-    var $global_attr = array(
+    public $global_attr = array(
         'filters' => 1,
         'trim_to' => 1,
         'trim' => 1,
@@ -126,7 +127,7 @@ class MTViewer extends SmartyBC {
         'truncate' => 1,
         'wordwrap' => 1,
     );
-    var $needs_tokens = array(
+    public $needs_tokens = array(
         'mtsubcategories' => 1,
         'mttoplevelcategories' => 1,
         'mtsubfolders' => 1,
@@ -136,10 +137,11 @@ class MTViewer extends SmartyBC {
         'mtincludeblock' => 1,
     );
 
-    function __construct(&$mt) {
+    public function __construct(&$mt)
+    {
         // prevents an unknown index error within Smarty.class.php
         parent::__construct();
-        $this->id = md5(uniqid('MTViewer',true));
+        $this->id = md5(uniqid('MTViewer', true));
         $_COOKIE['SMARTY_DEBUG'] = 0;
         $GLOBALS['HTTP_COOKIE_VARS']['SMARTY_DEBUG'] = 0;
         $this->path_sep = (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN') ? ';' : ':';
@@ -150,18 +152,18 @@ class MTViewer extends SmartyBC {
         $this->setLeftDelimiter("{{");
         $this->setRightDelimiter("}}");
 
-        if(!is_callable('smarty_prefilter_mt_to_smarty')){
+        if (!is_callable('smarty_prefilter_mt_to_smarty')) {
             require_once 'prefilter.mt_to_smarty.php';
         }
         $this->registerFilter('pre', 'smarty_prefilter_mt_to_smarty');
 
-        if(!is_callable('smarty_postfilter_mt_to_smarty')){
+        if (!is_callable('smarty_postfilter_mt_to_smarty')) {
             require_once 'postfilter.mt_to_smarty.php';
         }
         $this->registerFilter('post', 'smarty_postfilter_mt_to_smarty');
 
-        $this->register_tag_handler('mtelse', '','block');
-        $this->register_tag_handler('mtelseif', '','block');
+        $this->register_tag_handler('mtelse', '', 'block');
+        $this->register_tag_handler('mtelseif', '', 'block');
 
         # Unregister the 'core' regex_replace so we can replace it
         $this->register_modifier('regex_replace', array(&$this, 'regex_replace'));
@@ -169,49 +171,56 @@ class MTViewer extends SmartyBC {
         $this->setDefaultResourceType('mt');
 
         $this->smarty = $this;
-
     }
 
-    function add_plugin_dir($plugin_dir) {
+    public function add_plugin_dir($plugin_dir)
+    {
         ini_set('include_path', $plugin_dir . $this->path_sep . ini_get('include_path'));
         $this->addPluginsDir($plugin_dir);
     }
 
-    function regex_replace($string, $search, $replace) {
+    public function regex_replace($string, $search, $replace)
+    {
         if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (preg_match('/[eg]/', $match[1]))) {
-            if (strpos($match[1], "g") !== false)
+            if (strpos($match[1], "g") !== false) {
                 $global = 1;
+            }
             /* remove eval-modifier from $search */
             $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
         }
         return preg_replace($search, $replace, $string, $global ? -1 : 1);
     }
 
-    function add_token_tag($name) {
+    public function add_token_tag($name)
+    {
         $this->needs_tokens[$name] = 1;
     }
 
-    function add_conditional_tag($name, $code = null, $cacheable = null, $cache_attrs = null) {
+    public function add_conditional_tag($name, $code = null, $cacheable = null, $cache_attrs = null)
+    {
         $this->conditionals[$name] = 1;
         if (isset($code)) {
             return $this->register_tag_handler($name, $code, 'block');
         }
     }
 
-    function add_global_filter($name, $code = null) {
+    public function add_global_filter($name, $code = null)
+    {
         $this->global_attr[$name] = 1;
         if (isset($code)) {
             $this->register_modifier($name, $code);
         }
     }
 
-    function error($err, $error_type = E_USER_ERROR) {
+    public function error($err, $error_type = E_USER_ERROR)
+    {
         trigger_error($err, $error_type);
         return '';
     }
 
-    function this_tag() {
-        if(count($this->_tag_stack) > 0){
+    public function this_tag()
+    {
+        if (count($this->_tag_stack) > 0) {
             $ts = $this->_tag_stack[count($this->_tag_stack)-1];
         }
 
@@ -222,34 +231,42 @@ class MTViewer extends SmartyBC {
         }
     }
 
-    function &stash($name,$value=null) {
-        if(isset($this->__stash[$name]))
+    public function &stash($name, $value=null)
+    {
+        if (isset($this->__stash[$name])) {
             $old_val =& $this->__stash[$name];
-        else
+        } else {
             $old_val = null;
-        if(func_num_args() > 1) {
+        }
+        if (func_num_args() > 1) {
             $copy = $value;
             $this->__stash[$name] =& $copy;
         }
         return $old_val;
     }
 
-    function localize($vars, $stash_vars_vars = array()) {
+    public function localize($vars, $stash_vars_vars = array())
+    {
         if (! empty($vars) && is_array($vars[0])) {
             list($vars, $stash_vars_vars) = $vars;
         }
 
         foreach ($vars as $v) {
-            if (!isset($this->varstack[$v])) $this->varstack[$v] = array();
+            if (!isset($this->varstack[$v])) {
+                $this->varstack[$v] = array();
+            }
             $this->varstack[$v][] = isset($this->__stash[$v]) ? $this->__stash[$v] : null;
         }
         foreach ($stash_vars_vars as $v) {
-            if (!isset($this->stash_var_stack[$v])) $this->stash_var_stack[$v] = array();
+            if (!isset($this->stash_var_stack[$v])) {
+                $this->stash_var_stack[$v] = array();
+            }
             $this->stash_var_stack[$v][] = isset($this->__stash['vars'][$v]) ? $this->__stash['vars'][$v] : null;
         }
     }
 
-    function restore($vars, $stash_vars_vars = array()) {
+    public function restore($vars, $stash_vars_vars = array())
+    {
         if (! empty($vars) && is_array($vars[0])) {
             list($vars, $stash_vars_vars) = $vars;
         }
@@ -262,7 +279,8 @@ class MTViewer extends SmartyBC {
         }
     }
 
-    function last_ts($ts = 0) {
+    public function last_ts($ts = 0)
+    {
         if ($ts > 0) {
             $ts = preg_replace('/[ :-]/', '', $ts);
             if ($ts > $this->last_ts) {
@@ -272,11 +290,13 @@ class MTViewer extends SmartyBC {
         return $this->last_ts;
     }
 
-    function smarty_block_dynamic($param, $content, &$smarty) {
+    public function smarty_block_dynamic($param, $content, &$smarty)
+    {
         return $content;
     }
 
-    function _hdlr_if($args, $content, &$ctx, &$repeat, $cond_tag = 1) {
+    public function _hdlr_if($args, $content, &$ctx, &$repeat, $cond_tag = 1)
+    {
         if (!isset($content)) {
             if (!isset($args['elseif'])) {
                 $ctx->localize(array('conditional', 'else_content', 'elseif_content', 'elseif_conditional', '__cond_name__', '__cond_value__', '__cond_tag__'));
@@ -298,8 +318,7 @@ class MTViewer extends SmartyBC {
                 } else {
                     $content = '';
                 }
-            }
-            else {
+            } else {
                 if (isset($ctx->__stash['elseif_content'])) {
                     $content = $ctx->__stash['elseif_content'];
                 }
@@ -312,11 +331,13 @@ class MTViewer extends SmartyBC {
         return $content;
     }
 
-    function smarty_block_elseif($args, $content, &$ctx, &$repeat) {
+    public function smarty_block_elseif($args, $content, &$ctx, &$repeat)
+    {
         return $this->smarty_block_else($args, $content, $ctx, $repeat);
     }
 
-    function smarty_block_else($args, $content, &$ctx, &$repeat) {
+    public function smarty_block_else($args, $content, &$ctx, &$repeat)
+    {
         if (isset($ctx->__stash['elseif_content'])
             or $ctx->__stash['conditional']) {
             $repeat = false;
@@ -324,20 +345,22 @@ class MTViewer extends SmartyBC {
         }
         if ((count($args) > 0) && (!isset($args['name']) && !isset($args['var']) && !isset($args['tag']))) {
             $stash =& $ctx->__stash;
-            if ( array_key_exists('__cond_tag__', $stash) ) {
+            if (array_key_exists('__cond_tag__', $stash)) {
                 $tag = $stash['__cond_tag__'];
-                if ( isset($tag) && $tag )
+                if (isset($tag) && $tag) {
                     $args['tag'] = $tag;
-            }
-            else if ( array_key_exists('__cond_name__', $stash) ) {
+                }
+            } elseif (array_key_exists('__cond_name__', $stash)) {
                 $name = $stash['__cond_name__'];
-                if ( isset($name) && $name )
+                if (isset($name) && $name) {
                     $args['name'] = $name;
+                }
             }
-            if ( array_key_exists('__cond_value__', $stash) ) {
+            if (array_key_exists('__cond_value__', $stash)) {
                 $value = $stash['__cond_value__'];
-                if ( isset($value) && $value )
+                if (isset($value) && $value) {
                     $args['value'] = $value;
+                }
             }
         }
         if (count($args) >= 1) { # else-if case
@@ -359,8 +382,9 @@ class MTViewer extends SmartyBC {
             return '';
         }
         if (!isset($content)) {
-            if ($ctx->__stash['conditional'])
+            if ($ctx->__stash['conditional']) {
                 $repeat = false;
+            }
         } else {
             $else_content = $ctx->__stash['else_content'];
             $else_content .= $content;
@@ -370,7 +394,7 @@ class MTViewer extends SmartyBC {
         return '';
     }
 
-    var $date_languages = array(
+    public $date_languages = array(
         'de' => array(
             'moments from now' => 'in einem Augenblick',
             '[quant,_1,hour,hours] from now' => 'in [quant,_1,Stunde,Stunden]',
@@ -498,7 +522,8 @@ class MTViewer extends SmartyBC {
         ),
     );
 
-    function rd_trans($blog, $phrase, $params) {
+    public function rd_trans($blog, $phrase, $params)
+    {
         $mt = $this->mt;
         $lang = (
               $blog && $blog->blog_date_language
@@ -518,7 +543,8 @@ class MTViewer extends SmartyBC {
         return $mt->translate($phrase, $params);
     }
 
-    function relative_date($ts1, $ts2, $style, $blog) {
+    public function relative_date($ts1, $ts2, $style, $blog)
+    {
         // $ts1 and $ts2 (now) should be timestamps
         // $style is a number 1..3, or false, which will default to 1
         $style or $style = 1;
@@ -526,96 +552,102 @@ class MTViewer extends SmartyBC {
         $future = 0;
         $delta = $ts2 - $ts1;
 
-        if ( ($delta >= 0) && ($delta <= 60) ) { # last minute
-            return 
+        if (($delta >= 0) && ($delta <= 60)) { # last minute
+            return
                 $style == 1 ? $this->rd_trans($blog, "moments ago") :
-                ( $style == 2 ? $this->rd_trans($blog, "less than 1 minute ago") :
-                $this->rd_trans($blog,  "[quant,_1,second,seconds]", $delta ) );
+                ($style == 2 ? $this->rd_trans($blog, "less than 1 minute ago") :
+                $this->rd_trans($blog, "[quant,_1,second,seconds]", $delta));
         }
-        if ( ($delta < 0) && ($delta >= -60) ) { # next minute
-            return 
+        if (($delta < 0) && ($delta >= -60)) { # next minute
+            return
                 $style == 1 ? $this->rd_trans($blog, "moments from now") :
-                ( $style == 2 ? $this->rd_trans($blog, "less than 1 minute from now") :
-                $this->rd_trans($blog,  "[quant,_1,second,seconds] from now", -$delta ) );
+                ($style == 2 ? $this->rd_trans($blog, "less than 1 minute from now") :
+                $this->rd_trans($blog, "[quant,_1,second,seconds] from now", -$delta));
         }
-        if ( ($delta > 60) && ($delta <= 3600) ) { # last hour
-            $min = (int) ( $delta / 60 );
+        if (($delta > 60) && ($delta <= 3600)) { # last hour
+            $min = (int) ($delta / 60);
             $sec = $delta % 60;
-            return 
+            return
                 $style == 1 ?   $this->rd_trans($blog, "[quant,_1,minute,minutes] ago", $min) :
-                ( $style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] ago", $min) :
-                ( $sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes]", $min ) :
-                $this->rd_trans($blog,  "[quant,_1,minute,minutes], [quant,_2,second,seconds]", array($min, $sec) ) ) );
+                ($style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] ago", $min) :
+                ($sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes]", $min) :
+                $this->rd_trans($blog, "[quant,_1,minute,minutes], [quant,_2,second,seconds]", array($min, $sec))));
         }
-        if ( ($delta < -60) && ($delta >= -3600) ) { # next hour
+        if (($delta < -60) && ($delta >= -3600)) { # next hour
             $delta = -$delta;
-            $min = (int) ( $delta / 60 );
+            $min = (int) ($delta / 60);
             $sec = $delta % 60;
-            return 
+            return
                 $style == 1 ?   $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
-                ( $style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
-                ( $sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min ) :
-                $this->rd_trans($blog,  "[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", array($min, $sec) ) ) );
+                ($style == 2 ? $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
+                ($sec === 0 ?  $this->rd_trans($blog, "[quant,_1,minute,minutes] from now", $min) :
+                $this->rd_trans($blog, "[quant,_1,minute,minutes], [quant,_2,second,seconds] from now", array($min, $sec))));
         }
-        if ( ($delta > 3600) && ($delta <= 86400) ) { # last day
-            $hours = (int) ( $delta / 3600 );
-            $min = (int) ( ( $delta % 3600 ) / 60 );
-            return 
+        if (($delta > 3600) && ($delta <= 86400)) { # last day
+            $hours = (int) ($delta / 3600);
+            $min = (int) (($delta % 3600) / 60);
+            return
                 $style == 1 ? $this->rd_trans($blog, "[quant,_1,hour,hours] ago", $hours) :
-                ( $style == 2 ? ( 
-                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] ago", $hours) : 
-                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", array($hours, $min) ) ) :
-                ( $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours]", $hours) :
-                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes]", array($hours, $min) ) ) );
+                ($style == 2 ? (
+                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] ago", $hours) :
+                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] ago", array($hours, $min))
+                ) :
+                ($min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours]", $hours) :
+                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes]", array($hours, $min))));
         }
-        if ( ($delta < -3600) && ($delta >= -86400) ) { # next day
+        if (($delta < -3600) && ($delta >= -86400)) { # next day
             $delta = -$delta;
-            $hours = (int) ( $delta / 3600 );
-            $min = (int) ( ( $delta % 3600 ) / 60 );
-            return 
+            $hours = (int) ($delta / 3600);
+            $min = (int) (($delta % 3600) / 60);
+            return
                 $style == 1 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
-                ( $style == 2 ? ( 
-                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) : 
-                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) :
-                ( $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
-                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min) ) ) );
+                ($style == 2 ? (
+                    $min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
+                    $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min))
+                ) :
+                ($min === 0 ? $this->rd_trans($blog, "[quant,_1,hour,hours] from now", $hours) :
+                $this->rd_trans($blog, "[quant,_1,hour,hours], [quant,_2,minute,minutes] from now", array($hours, $min))));
         }
-        if ( ($delta > 86400) && ($delta <= 604800) ) { # last week
-            $days = (int) ( $delta / 86400 );
-            $hours = (int) ( ( $delta % 86400 ) / 3600 );
-            return 
+        if (($delta > 86400) && ($delta <= 604800)) { # last week
+            $days = (int) ($delta / 86400);
+            $hours = (int) (($delta % 86400) / 3600);
+            return
                 $style == 1 ? $this->rd_trans($blog, "[quant,_1,day,days] ago", $days) :
-                ( $style == 2 ? ( 
-                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] ago", $days) : 
-                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] ago", array($days, $hours) ) ) :
-                ( $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days]", $days) :
-                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours]", array($days, $hours) ) ) );
+                ($style == 2 ? (
+                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] ago", $days) :
+                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] ago", array($days, $hours))
+                ) :
+                ($hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days]", $days) :
+                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours]", array($days, $hours))));
         }
-        if ( ($delta < -86400) && ($delta >= -604800) ) { # next week
+        if (($delta < -86400) && ($delta >= -604800)) { # next week
             $delta = -$delta;
-            $days = (int) ( $delta / 86400 );
-            $hours = (int) ( ( $delta % 86400 ) / 3600 );
-            return 
+            $days = (int) ($delta / 86400);
+            $hours = (int) (($delta % 86400) / 3600);
+            return
                 $style == 1 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
-                ( $style == 2 ? ( 
-                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) : 
-                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) :
-                ( $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
-                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours) ) ) );
+                ($style == 2 ? (
+                    $hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
+                    $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours))
+                ) :
+                ($hours === 0 ? $this->rd_trans($blog, "[quant,_1,day,days] from now", $days) :
+                $this->rd_trans($blog, "[quant,_1,day,days], [quant,_2,hour,hours] from now", array($days, $hours))));
         }
-        if ( $style > 1 ) return '';
+        if ($style > 1) {
+            return '';
+        }
         $ts1_d = getdate($ts1);
         $ts2_d = getdate($ts2);
-        if ( $ts1_d['year'] === $ts2_d['year'] ) {
+        if ($ts1_d['year'] === $ts2_d['year']) {
             $fmt = "%b %e";
-        }
-        else {
+        } else {
             $fmt = "%b %e %Y";
         }
         return array('format' => $fmt);
     }
 
-    function _hdlr_date($args, &$ctx) {
+    public function _hdlr_date($args, &$ctx)
+    {
         $ts = null;
         if (isset($args['ts'])) {
             $ts = $args['ts'];
@@ -630,8 +662,15 @@ class MTViewer extends SmartyBC {
             } else {
                 $ts = offset_time_list($t, $blog);
             }
-            $ts = sprintf("%04d%02d%02d%02d%02d%02d",
-                $ts[5]+1900, $ts[4]+1, $ts[3], $ts[2], $ts[1], $ts[0]);
+            $ts = sprintf(
+                "%04d%02d%02d%02d%02d%02d",
+                $ts[5]+1900,
+                $ts[4]+1,
+                $ts[3],
+                $ts[2],
+                $ts[1],
+                $ts[0]
+            );
         }
         if (isset($args['utc'])) {
             if (!is_object($blog)) {
@@ -642,11 +681,16 @@ class MTViewer extends SmartyBC {
             $so = $blog->blog_server_offset;
             $timelocal = mktime($h, $m, $s, $mo, $d, $y);
             $localtime = localtime($timelocal);
-            if ($localtime[8])
+            if ($localtime[8]) {
                 $so += 1;
+            }
             $partial_hour_offset = 60 * abs($so - intval($so));
-            $four_digit_offset = sprintf('%s%02d%02d', $so < 0 ? '-' : '+',
-                                         abs($so), $partial_hour_offset);
+            $four_digit_offset = sprintf(
+                '%s%02d%02d',
+                $so < 0 ? '-' : '+',
+                                         abs($so),
+                $partial_hour_offset
+            );
             $ts = gmdate('YmdHis', strtotime("$y-$mo-$d $h:$m:$s $four_digit_offset"));
         }
         if (isset($args['format_name'])) {
@@ -660,24 +704,32 @@ class MTViewer extends SmartyBC {
                     $so = $blog->blog_server_offset;
                     $partial_hour_offset = 60 * abs($so - intval($so));
                     if ($format == 'rfc822') {
-                        $tz = sprintf("%s%02d%02d", $so < 0 ? '-' : '+',
-                                  abs($so), $partial_hour_offset);
-                    }
-                    elseif ($format == 'iso8601') {
-                        $tz = sprintf("%s%02d:%02d", $so < 0 ? '-' : '+',
-                                  abs($so), $partial_hour_offset);
+                        $tz = sprintf(
+                            "%s%02d%02d",
+                            $so < 0 ? '-' : '+',
+                                  abs($so),
+                            $partial_hour_offset
+                        );
+                    } elseif ($format == 'iso8601') {
+                        $tz = sprintf(
+                            "%s%02d:%02d",
+                            $so < 0 ? '-' : '+',
+                                  abs($so),
+                            $partial_hour_offset
+                        );
                     }
                 }
                 if ($format == 'rfc822') {
                     $args['format'] = '%a, %d %b %Y %H:%M:%S ' . $tz;
                     $args['language'] = 'en';
-                }
-                elseif ($format == 'iso8601') {
+                } elseif ($format == 'iso8601') {
                     $args['format'] = '%Y-%m-%dT%H:%M:%S'. $tz;
                 }
             }
         }
-        if (!isset($args['format'])) $args['format'] = null;
+        if (!isset($args['format'])) {
+            $args['format'] = null;
+        }
         require_once("MTUtil.php");
         $fds = format_ts($args['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
         if (isset($args['relative'])) {
@@ -693,8 +745,7 @@ document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
 </script><noscript>$fds</noscript>
 EOT;
                 return $js;
-            }
-            else {
+            } else {
                 preg_match('/(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)/', $ts, $matches);
                 list($all, $y, $mo, $d, $h, $m, $s) = $matches;
                 $unix_ts = offset_time(gmmktime($h, $m, $s, $mo, $d, $y), $blog, '-');
@@ -702,8 +753,7 @@ EOT;
                 $relative = $this->relative_date($unix_ts, $now_ts, $args['relative'], $blog);
                 if (is_array($relative)) {
                     return format_ts($relate['format'], $ts, $blog, isset($args['language']) ? $args['language'] : null);
-                }
-                elseif ($relative) {
+                } elseif ($relative) {
                     return $relative;
                 }
             }
@@ -711,21 +761,24 @@ EOT;
         return $fds;
     }
 
-    function tag($tag, $args = array()) {
+    public function tag($tag, $args = array())
+    {
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
         if ((array_key_exists('mt' . $tag, $this->conditionals)) || (preg_match('/^if/i', $tag) || preg_match('/^has/', $tag) || preg_match('/[a-z](header|footer|previous|next)$/i', $tag))) {
             list($hdlr) = $this->handler_for("mt" . $tag);
             if (!$hdlr) {
                 $fntag = 'smarty_block_mt' . $tag;
-                if (!function_exists($fntag))
+                if (!function_exists($fntag)) {
                     @include_once("block.mt$tag.php");
-                if (function_exists($fntag))
+                }
+                if (function_exists($fntag)) {
                     $hdlr = $fntag;
+                }
             }
             if ($hdlr) {
                 $this->_tag_stack[] = array("mt$tag", $args);
                 $repeat = true;
-                call_user_func_array($hdlr, array($args, NULL, &$this, &$repeat));
+                call_user_func_array($hdlr, array($args, null, &$this, &$repeat));
                 if ($repeat) {
                     $content = 'true';
                     $repeat = false;
@@ -739,20 +792,27 @@ EOT;
             }
         } else {
             list($hdlr, $type) = $this->handler_for("mt" . $tag);
-            if ($hdlr) $block_tag = $type == 'block';
+            if ($hdlr) {
+                $block_tag = $type == 'block';
+            }
             if (!$hdlr) {
                 $fntag = 'smarty_function_mt'.$tag;
-                if (!function_exists($fntag))
-                    if (file_exists($this->mt->config('phplibdir')."/function.mt$tag.php"))
+                if (!function_exists($fntag)) {
+                    if (file_exists($this->mt->config('phplibdir')."/function.mt$tag.php")) {
                         @include_once("function.mt$tag.php");
-                if (function_exists($fntag))
+                    }
+                }
+                if (function_exists($fntag)) {
                     $hdlr = $fntag;
+                }
             }
             if (!$hdlr) { // try block tags
                 $fntag = 'smarty_block_mt'.$tag;
-                if (!function_exists($fntag))
-                    if (file_exists($this->mt->config('phplibdir')."/block.mt$tag.php"))
+                if (!function_exists($fntag)) {
+                    if (file_exists($this->mt->config('phplibdir')."/block.mt$tag.php")) {
                         @include_once("block.mt$tag.php");
+                    }
+                }
                 if (function_exists($fntag)) {
                     $hdlr = $fntag;
                     $block_tag = true;
@@ -762,21 +822,20 @@ EOT;
                 if ($block_tag) {
                     // block tag is true if it runs atleast one iteration
                     // So we call it twice - one for init, and one iteration
-                    // If the tag still not finished, we clean whatever 
+                    // If the tag still not finished, we clean whatever
                     // it localized from the stash
                     $this->_tag_stack[] = array("mt$tag", $args);
                     $old_varstack =& $this->varstack;
                     $new_varstack = array();
                     $this->varstack =& $new_varstack;
                     $repeat = true;
-                    call_user_func_array($hdlr, array($args, NULL, &$this, &$repeat));
+                    call_user_func_array($hdlr, array($args, null, &$this, &$repeat));
                     if ($repeat) {
                         $content = 'true';
                         $repeat = false;
                         $content = call_user_func_array($hdlr, array($args, $content, &$this, &$repeat));
                         $result = isset($content) && ($content === 'true');
-                    }
-                    else {
+                    } else {
                         $result = false;
                     }
                     if ($repeat && count($new_varstack)) {
@@ -791,10 +850,12 @@ EOT;
                 foreach ($args as $k => $v) {
                     if (array_key_exists($k, $this->global_attr)) {
                         $fnmod = 'smarty_modifier_' . $k;
-                        if (!function_exists($fnmod))
+                        if (!function_exists($fnmod)) {
                             $this->load_modifier($k);
-                        if (function_exists($fnmod))
+                        }
+                        if (function_exists($fnmod)) {
                             $content = $fnmod($content, $v);
+                        }
                     }
                 }
                 array_pop($this->_tag_stack);
@@ -804,25 +865,27 @@ EOT;
         return $this->error("Tag &lt;mt$tag&gt; does not exist.");
     }
 
-    function load_modifier($name) {
+    public function load_modifier($name)
+    {
         $params = array('plugins' => array(array('modifier', $name, null, null, false)));
         require_once 'modifier.'.$name.'.php';
         return true;
     }
 
-    function register_tag_handler($tag, $fn, $type) {
+    public function register_tag_handler($tag, $fn, $type)
+    {
         if (substr($tag, 0, 2) != 'mt') {
             $tag = 'mt' . $tag;
         }
 
         if ($type == 'block') {
             $this->register_block($tag, $fn);
-            if($fn == ''){
+            if ($fn == '') {
                 $fn = array($this, 'block_wrapper');
             }
         } elseif ($type == 'function') {
             $this->register_function($tag, $fn);
-            if($fn == ''){
+            if ($fn == '') {
                 $fn = array($this, 'function_wrapper');
             }
         }
@@ -833,14 +896,13 @@ EOT;
         } else {
             if ($type == 'block') {
                 $func = 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
-                if ( $fn ) {
+                if ($fn) {
                     $func = 'if (!isset($content)) { return ' . $fn . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
                 }
                 $fn = create_function('$args, $content, &$ctx, &$repeat', $func);
-            }
-            elseif ($type == 'function') {
+            } elseif ($type == 'function') {
                 $func = '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";';
-                if ( $fn ) {
+                if ($fn) {
                     $func = 'return ' . $fn . '($args, $ctx); return "";';
                 }
                 $fn = create_function('$args, &$ctx', $func);
@@ -849,19 +911,21 @@ EOT;
         return $fn;
     }
 
-    function set_override_context( $state ) {
+    public function set_override_context($state)
+    {
         $this->_is_override_context = $state;
     }
 
-    function add_override_tag( $type, $tag, $fn ) {
+    public function add_override_tag($type, $tag, $fn)
+    {
         $handler = $this->handler_for('mt' . $tag);
-        if ( !empty($handler) ) {
+        if (!empty($handler)) {
             $this->_override[$tag] = $fn;
             return $handler[0];
         } else {
-            if ( $type == 'block') {
+            if ($type == 'block') {
                 return $this->add_container_tag($tag, $fn);
-            } elseif( $type == 'function' ) {
+            } elseif ($type == 'function') {
                 return $this->add_tag($tag, $fn);
             } else {
                 return null;
@@ -869,20 +933,25 @@ EOT;
         }
     }
 
-    function add_container_tag($tag, $fn = null) {
+    public function add_container_tag($tag, $fn = null)
+    {
         return $this->register_tag_handler($tag, $fn, 'block');
     }
-    function add_tag($tag, $fn) {
+    public function add_tag($tag, $fn)
+    {
         return $this->register_tag_handler($tag, $fn, 'function');
     }
-    function handler_for($tag) {
-        if (isset($this->_handlers[$tag]))
+    public function handler_for($tag)
+    {
+        if (isset($this->_handlers[$tag])) {
             return $this->_handlers[$tag];
-        else
+        } else {
             return null;
+        }
     }
 
-    function count_format($count, $args) {
+    public function count_format($count, $args)
+    {
         $phrase = '';
         if (! empty($args)) {
             if ($count == 0) {
@@ -894,9 +963,9 @@ EOT;
                 $phrase = array_key_exists('plural', $args) ? $args['plural'] : '';
             }
         }
-        if ($phrase == '')
-
+        if ($phrase == '') {
             return $count;
+        }
 
         // \# of entries: #  --> # of entries: 10
         $phrase = preg_replace('/(?<!\\\\)#/', $count, $phrase);
@@ -905,18 +974,19 @@ EOT;
         return $phrase;
     }
 
-    function block_wrapper($args, $content, &$_smarty_tpl, &$repeat){
+    public function block_wrapper($args, $content, &$_smarty_tpl, &$repeat)
+    {
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
 
-        if($tag == 'else'){
+        if ($tag == 'else') {
             $fntag = array($this, 'smarty_block_else');
-        }elseif($tag == 'elseif'){
+        } elseif ($tag == 'elseif') {
             $fntag = array($this, 'smarty_block_elseif');
-        } elseif(!empty($this->_override[$tag]) && is_callable($this->_override[$tag]) && !$this->_is_override_context ) {
+        } elseif (!empty($this->_override[$tag]) && is_callable($this->_override[$tag]) && !$this->_is_override_context) {
             $fntag = $this->_override[$tag];
-        } elseif( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_block_mt' . $tag) ) {
+        } elseif (!empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_block_mt' . $tag)) {
             $fntag = $this->_handlers['mt'.$tag][0];
         } else {
             $fntag = 'smarty_block_mt' . $tag;
@@ -924,18 +994,18 @@ EOT;
 
         $variables = array('conditional','elseif_conditional');
         foreach ($variables as $value) {
-            if(isset($ctx->__stash[$value]) && is_object($ctx->__stash[$value])){
+            if (isset($ctx->__stash[$value]) && is_object($ctx->__stash[$value])) {
                 $ctx->__stash[$value] = $ctx->__stash[$value]->value;
             }
         }
 
-        if(is_callable($fntag)){
+        if (is_callable($fntag)) {
             $result = call_user_func_array($fntag, array($args, $content, &$ctx, &$repeat));
         }
 
         $variables = array('conditional','elseif_conditional');
         foreach ($variables as $value) {
-            if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
+            if (isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])) {
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
             }
             $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
@@ -945,87 +1015,92 @@ EOT;
         foreach ($args as $k => $v) {
             if (array_key_exists($k, $this->global_attr)) {
                 $fnmod = 'smarty_modifier_' . $k;
-                if (!function_exists($fnmod))
+                if (!function_exists($fnmod)) {
                     $this->load_modifier($k);
-                if (function_exists($fnmod))
+                }
+                if (function_exists($fnmod)) {
                     $result = call_user_func_array($fnmod, array($result, $v));
+                }
             }
         }
 
-        if(isset($content)){
+        if (isset($content)) {
             if ($tag == 'else') {
                 return $content;
             }
             return $result;
         }
-
     }
 
-    function function_wrapper($args, &$_smarty_tpl){
+    public function function_wrapper($args, &$_smarty_tpl)
+    {
         $ctx =& $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
-        if( !empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_function_mt' . $tag) ) {
-          $fntag = $this->_handlers['mt'.$tag][0];
-        }
-        else {
+        if (!empty($this->_handlers['mt'.$tag][0]) && is_scalar($this->_handlers['mt'.$tag][0]) && !is_callable('smarty_function_mt' . $tag)) {
+            $fntag = $this->_handlers['mt'.$tag][0];
+        } else {
             $fntag = 'smarty_function_mt' . $tag;
         }
-        if(is_callable($fntag)){
+        if (is_callable($fntag)) {
             $result = call_user_func_array($fntag, array($args, &$ctx));
         }
 
         foreach ($args as $k => $v) {
             if (array_key_exists($k, $this->global_attr)) {
                 $fnmod = 'smarty_modifier_' . $k;
-                if (!function_exists($fnmod))
+                if (!function_exists($fnmod)) {
                     $this->load_modifier($k);
-                if (function_exists($fnmod))
+                }
+                if (function_exists($fnmod)) {
                     $result = call_user_func_array($fnmod, array($result, $v));
+                }
             }
         }
 
         return $result;
-
     }
-    function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null) {
-
-        if(isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ]) && $block_impl == '') return;
+    public function register_block($block, $block_impl, $cacheable = true, $cache_attrs = null)
+    {
+        if (isset($this->registered_plugins[ Smarty::PLUGIN_BLOCK ][ $block ]) && $block_impl == '') {
+            return;
+        }
         $this->unregisterPlugin('block', $block);
 
-        if($block_impl == ''){
+        if ($block_impl == '') {
             @include_once 'block.' . $block . '.php';
             $block_impl = array($this,'block_wrapper');
-        }
-        else {
+        } else {
             $block_impl = array($this, 'block_wrapper');
         }
 
         $this->registerPlugin('block', $block, $block_impl, $cacheable, $cache_attrs);
     }
 
-    function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null) {
-
-        if(isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ]) && $function_impl == '') return;
+    public function register_function($function, $function_impl, $cacheable = true, $cache_attrs = null)
+    {
+        if (isset($this->registered_plugins[ Smarty::PLUGIN_FUNCTION ][ $function ]) && $function_impl == '') {
+            return;
+        }
         $this->unregisterPlugin('function', $function);
 
-        if($function_impl == ''){
+        if ($function_impl == '') {
             @include_once 'function.' . $function . '.php';
             $function_impl = array($this,'function_wrapper');
-        }
-        else {
+        } else {
             $function_impl = array($this, 'function_wrapper');
         }
 
         $this->registerPlugin('function', $function, $function_impl, $cacheable, $cache_attrs);
     }
-    function _compile_source($resource_name, &$source_content, &$compiled_content, $cache_include_path=null) {
+    public function _compile_source($resource_name, &$source_content, &$compiled_content, $cache_include_path=null)
+    {
         $local_tag_stack = $this->_tag_stack;
         $compiled = $this->fetch("eval:$source_content");
         $this->_tag_stack = $local_tag_stack;
         $compiled_content = $compiled;
-        if(!is_null($compiled)){
+        if (!is_null($compiled)) {
             return true;
         }
         return false;
@@ -1035,9 +1110,8 @@ EOT;
      * wrapper for eval() retaining $this
      * @return mixed
      */
-    function _eval($code, $params=null) {
+    public function _eval($code, $params=null)
+    {
         return eval($code);
     }
-
 }
-?>

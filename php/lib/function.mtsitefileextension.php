@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitefileextension($args, &$ctx) {
+function smarty_function_mtsitefileextension($args, &$ctx)
+{
     return smarty_function_mtblogfileextension($args, $ctx);
 }
-?>

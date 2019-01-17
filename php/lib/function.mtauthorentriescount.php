@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorentriescount($args, &$ctx) {
+function smarty_function_mtauthorentriescount($args, &$ctx)
+{
     $mt = MT::get_instance();
     $author = $ctx->stash('author');
 
@@ -27,4 +28,3 @@ function smarty_function_mtauthorentriescount($args, &$ctx) {
 
     return $ctx->count_format($row[0], $args);
 }
-?>

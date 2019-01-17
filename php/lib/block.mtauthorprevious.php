@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat)
+{
     static $_prev_cache = array();
     if (!isset($content)) {
         $prev_author = null;
@@ -27,10 +28,11 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                 list($prev_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($prev_author) {
-              $_prev_cache[$author_id] = $prev_author;
-              $ctx->stash('author', $prev_author);
-            } else
-              $repeat = false;
+                $_prev_cache[$author_id] = $prev_author;
+                $ctx->stash('author', $prev_author);
+            } else {
+                $repeat = false;
+            }
         } else {
             $repeat = false;
         }
@@ -39,4 +41,3 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

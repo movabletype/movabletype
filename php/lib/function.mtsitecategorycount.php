@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitecategorycount($args, &$ctx) {
+function smarty_function_mtsitecategorycount($args, &$ctx)
+{
     return smarty_function_mtblogcategorycount($args, $ctx);
 }
-?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorauthiconurl($args, &$ctx) {
+function smarty_function_mtauthorauthiconurl($args, &$ctx)
+{
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');
@@ -22,4 +23,3 @@ function smarty_function_mtauthorauthiconurl($args, &$ctx) {
     require_once "commenter_auth_lib.php";
     return _auth_icon_url($static_path, $author);
 }
-?>

@@ -5,9 +5,9 @@
 #
 # $Id$
 
-function smarty_function_mtentrydate($args, &$ctx) {
+function smarty_function_mtentrydate($args, &$ctx)
+{
     $e = $ctx->stash('entry');
     $args['ts'] = $e->authored_on;
     return $ctx->_hdlr_date($args, $ctx);
 }
-?>

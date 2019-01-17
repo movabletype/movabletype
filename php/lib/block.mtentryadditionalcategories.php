@@ -5,13 +5,14 @@
 #
 # $Id$
 
-function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repeat)
+{
     $localvars = array('_categories', 'category', '_categories_counter', '__out');
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
         $args['entry_id'] = $entry->entry_id;
-        $categories = $entry->categories( false );
+        $categories = $entry->categories(false);
         $ctx->stash('_categories', $categories);
         $ctx->stash('__out', false);
         $counter = 0;
@@ -26,17 +27,18 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
         $ctx->stash('_categories_counter', $counter + 1);
         $repeat = true;
         if (isset($args['glue']) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $args['glue'] . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && $out && !empty($content)) {
             $content = $args['glue'] . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

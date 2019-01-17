@@ -5,18 +5,27 @@
 #
 # $Id$
 
-function smarty_function_mtassetthumbnailurl($args, &$ctx) {
+function smarty_function_mtassetthumbnailurl($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
-    if ($asset->asset_class != 'image') return '';
+    if (!$asset) {
+        return '';
+    }
+    if ($asset->asset_class != 'image') {
+        return '';
+    }
     $blog = $ctx->stash('blog');
-    if (!$blog) return '';
+    if (!$blog) {
+        return '';
+    }
 
-    if( !isset($args['force']) || !$args['force'] ){
-        if ( isset($args['width']) && $args['width'] > $asset->asset_image_width )
+    if (!isset($args['force']) || !$args['force']) {
+        if (isset($args['width']) && $args['width'] > $asset->asset_image_width) {
             unset($args['width']);
-        if ( isset($args['height']) && $args['height'] > $asset->asset_image_height )
+        }
+        if (isset($args['height']) && $args['height'] > $asset->asset_image_height) {
             unset($args['height']);
+        }
     }
 
     require_once('MTUtil.php');
@@ -25,4 +34,3 @@ function smarty_function_mtassetthumbnailurl($args, &$ctx) {
 
     return $thumb;
 }
-?>

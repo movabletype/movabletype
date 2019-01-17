@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_modifier_setvar($text, $name) {
+function smarty_modifier_setvar($text, $name)
+{
     $mt = MT::get_instance();
     $ctx =& $mt->context();
     if (array_key_exists('__inside_set_hashvar', $ctx->__stash)) {
@@ -16,4 +17,3 @@ function smarty_modifier_setvar($text, $name) {
     $vars[$name] = $text;
     return '';
 }
-?>

@@ -5,25 +5,29 @@
 #
 # $Id$
 
-function smarty_function_mtblogarchiveurl($args, &$ctx) {
+function smarty_function_mtblogarchiveurl($args, &$ctx)
+{
     if (isset($args['id']) && is_numeric($args['id'])) {
         require_once('class.mt_blog.php');
         $blog = new Blog();
         $ret = $blog->Load('blog_id = '.$args['id']);
-        if (!$ret)
+        if (!$ret) {
             $blog = null;
+        }
     }
     if (empty($blog)) {
         $blog = $ctx->stash('blog');
     }
-    if (empty($blog))
+    if (empty($blog)) {
         return '';
+    }
 
     $url = $blog->archive_url();
     if ($url == '') {
         $url = $blog->site_url();
     }
-    if (!preg_match('/\/$/', $url)) $url .= '/';
+    if (!preg_match('/\/$/', $url)) {
+        $url .= '/';
+    }
     return $url;
 }
-?>

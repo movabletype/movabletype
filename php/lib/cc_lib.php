@@ -73,14 +73,17 @@ $_cc_Data = array(
           'permits' => array('Reproduction', 'Distribution', 'DerivativeWorks'),
      ),
 );
-function cc_url($code) {
-    if (preg_match('/(\S+) (\S+) (\S+)/', $code, $matches))
-        return $matches[2];  # the license URL
+function cc_url($code)
+{
+    if (preg_match('/(\S+) (\S+) (\S+)/', $code, $matches)) {
+        return $matches[2];
+    }  # the license URL
     return $code == 'pd' ?
         "http://web.resource.org/cc/PublicDomain" :
         "http://creativecommons.org/licenses/$code/1.0/";
 }
-function cc_rdf($code) {
+function cc_rdf($code)
+{
     global $_cc_Data;
     $url = cc_url($code);
     $rdf = <<<RDF
@@ -89,8 +92,9 @@ function cc_rdf($code) {
 RDF;
     foreach (array('requires', 'permits', 'prohibits') as $type) {
         if (isset($_cc_Data[$code])) {
-            if (!isset($_cc_Data[$code][$type]))
+            if (!isset($_cc_Data[$code][$type])) {
                 continue;
+            }
             foreach ($_cc_Data[$code][$type] as $item) {
                 $rdf .= <<<RDF
 <$type rdf:resource="http://web.resource.org/cc/$item" />
@@ -101,14 +105,15 @@ RDF;
     }
     return $rdf . "</License>\n";
 }
-function cc_name($code) {
+function cc_name($code)
+{
     global $_cc_Data;
-    if (preg_match('/(\S+) (\S+) (\S+)/', $code, $matches))
+    if (preg_match('/(\S+) (\S+) (\S+)/', $code, $matches)) {
         $code = $matches[1];
+    }
     if (isset($_cc_Data[$code])) {
         return $_cc_Data[$code]['name'];
     } else {
         return '';
     }
 }
-?>

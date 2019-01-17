@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenterauthtype($args, &$ctx) {
+function smarty_function_mtcommenterauthtype($args, &$ctx)
+{
     return '';
 }
-?>

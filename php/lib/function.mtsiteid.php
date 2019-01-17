@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsiteid($args, &$ctx) {
+function smarty_function_mtsiteid($args, &$ctx)
+{
     return smarty_function_mtblogid($args, $ctx);
 }
-?>

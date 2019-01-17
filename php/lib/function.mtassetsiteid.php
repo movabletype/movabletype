@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtassetsiteid($args, &$ctx) {
+function smarty_function_mtassetsiteid($args, &$ctx)
+{
     return smarty_function_mtassetblogid($args, $ctx);
 }
-?>

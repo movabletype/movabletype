@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingdate($args, &$ctx) {
+function smarty_function_mtpingdate($args, &$ctx)
+{
     return '';
 }
-?>

@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsignonurl($args, &$ctx) {
+function smarty_function_mtsignonurl($args, &$ctx)
+{
     return '';
 }
-?>

@@ -16,14 +16,15 @@ class Author extends BaseObject
     protected $_prefix = "author_";
     protected $_has_meta = true;
 
-    public function permissions( $blog_id = null ) {
+    public function permissions($blog_id = null)
+    {
         require_once('class.mt_permission.php');
 
         $whereOrder = "permission_author_id = " . $this->id;
-        if ( !is_null( $blog_id ) ) {
+        if (!is_null($blog_id)) {
             if (is_array($blog_id)) {
                 $ids = join(',', $blog_id);
-                 $whereOrder = $whereOrder . " and permission_blog_id in ( $ids )";
+                $whereOrder = $whereOrder . " and permission_blog_id in ( $ids )";
             } else {
                 $whereOrder= $whereOrder . " and permission_blog_id = $blog_id";
             }
@@ -34,11 +35,13 @@ class Author extends BaseObject
         return $permission->Find($whereOrder);
     }
 
-    public function userpic() {
+    public function userpic()
+    {
         $userpic_id = $this->author_userpic_asset_id;
 
-        if (empty($userpic_id) || !is_numeric($userpic_id))
+        if (empty($userpic_id) || !is_numeric($userpic_id)) {
             return;
+        }
 
         require_once('class.mt_asset.php');
         $asset = new Asset;
@@ -48,5 +51,4 @@ class Author extends BaseObject
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Author', 'mt_author_meta','author_meta_author_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Author', 'mt_author_meta', 'author_meta_author_id');

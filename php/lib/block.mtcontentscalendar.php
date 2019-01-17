@@ -7,7 +7,8 @@
 
 require_once("MTUtil.php");
 
-function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat)
+{
     $local_vars = array('cal_contents','cal_day','cal_pad_start','cal_pad_end','cal_days_in_month','cal_prefix','cal_left','CalendarDay','CalendarWeekHeader','CalendarWeekFooter','CalendarIfContents','CalendarIfNoContents','CalendarIfToday','CalendarIfBlank','contents','current_timestamp','current_timestamp_end','cal_today','CalendarCellNumber', 'cal_date_field_id');
     // arguments supported: month, category
     // arguments implemented:
@@ -31,8 +32,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             );
             if (isset($start_with_offsets[$start_with])) {
                 $start_with_offset = $start_with_offsets[$start_with];
-            }
-            else {
+            } else {
                 // error: Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat
                 return $ctx->error(
                     $ctx->mt->translate(
@@ -52,8 +52,9 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                         $ts = $cd->cd_authored_on;
                     } else {
                         return $ctx->error($ctx->mt->translate(
-                            'You used an [_1] tag without a date context set up.', 
-                            '<MTContentCalendar month="this">') );
+                            'You used an [_1] tag without a date context set up.',
+                            '<MTContentCalendar month="this">'
+                        ));
                     }
                 }
                 $prefix = substr($ts, 0, 6);
@@ -68,15 +69,14 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             } elseif ($prefix == 'next') {
                 $year  = substr($today, 0, 4);
                 $month = substr($today, 4, 2);
-                if ( $month + 1 == 13 ) {
+                if ($month + 1 == 13) {
                     $prefix = $year + 1 . "01";
-                }
-                else {
+                } else {
                     $prefix = $year . $month + 1;
                 }
             } else {
                 // error: Invalid month format: must be YYYYMM
-                if( strlen($prefix) != 6 ){
+                if (strlen($prefix) != 6) {
                     return $ctx->error($ctx->mt->translate(
                         "Invalid month format: must be YYYYMM"
                     ));
@@ -86,21 +86,23 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             $prefix = $today;
         }
         $cat_field_id = 0;
-        if(isset($args['category_set'])){
+        if (isset($args['category_set'])) {
             $id = $args['category_set'];
 
-            if(preg_match('/^[0-9]+$/',$id))
+            if (preg_match('/^[0-9]+$/', $id)) {
                 $category_set = $ctx->mt->db()->fetch_category_set($id);
-            if(!$category_set){
+            }
+            if (!$category_set) {
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
                     'name' => $id,
                     'limit' => 1,
                 ));
-                if($category_sets)
+                if ($category_sets) {
                     $category_set = $category_sets[0];
+                }
             }
-            if(isset($category_set)){
+            if (isset($category_set)) {
                 $cat_set_name    = $category_set->name;
                 $category_set_id = $category_set->id;
                 
@@ -108,25 +110,25 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                   'blog_id' => $blog_id,
                   'related_cat_set_id' => $category_set_id,
                 ));
-                if($cat_fields){
-                  $cat_field = $cat_fields[0];
-                  $cat_field_unique_id = $cat_field->unique_id;
-                  $cat_field_id = $cat_field->id;
+                if ($cat_fields) {
+                    $cat_field = $cat_fields[0];
+                    $cat_field_unique_id = $cat_field->unique_id;
+                    $cat_field_id = $cat_field->id;
                 }
             }
         }
         // gather category name...
-        if (isset($args['category'])){
+        if (isset($args['category'])) {
             $cat_name = $args['category'];
             $category_param = array(
               'label'   => $cat_name,
               'blog_id' => $blog_id,
             );
-            if(isset($category_set_id)){
+            if (isset($category_set_id)) {
                 $category_param['category_set_id'] = $category_set_id;
             }
             $cats = $ctx->mt->db()->fetch_categories($category_param);
-            if(!$cats){
+            if (!$cats) {
                 return $ctx->error($ctx->mt->translate(
                     "No such category '[_1]'",
                     $cat_name
@@ -148,7 +150,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         $this_day = $prefix . sprintf("%02d", $day - $pad_start);
 
         $content_type = $ctx->stash('content_type');
-        if(isset($args['content_type'])){
+        if (isset($args['content_type'])) {
             $content_types = $ctx->mt->db()->fetch_content_types(array('content_type' => $args['content_type']));
             if (isset($content_types)) {
                 $content_type = $content_types[0];
@@ -156,30 +158,34 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         }
 
         $contents_args = array('current_timestamp' => $start, 'current_timestamp_end' => $end, 'blog_id' => $blog_id, 'lastn' => -1, 'sort_order' => 'ascend');
-        if(isset($args['date_field']))
-          $contents_args['date_field'] = $args['date_field'];
-        if(isset($args['category_set']))
-          $contents_args['category_set'] = $args['category_set'];
-        if(isset($args['category']))
-          $contents_args['category'] = $args['category'];
+        if (isset($args['date_field'])) {
+            $contents_args['date_field'] = $args['date_field'];
+        }
+        if (isset($args['category_set'])) {
+            $contents_args['category_set'] = $args['category_set'];
+        }
+        if (isset($args['category'])) {
+            $contents_args['category'] = $args['category'];
+        }
 
         $iter = $ctx->mt->db()->fetch_contents($contents_args, $content_type_id);
         $dt_field    = 'cd_authored_on';
         $dt_field_id = 0;
-        if ( $arg = $args['date_field'] ) {
-            if (   $arg === 'authored_on'
+        if ($arg = $args['date_field']) {
+            if ($arg === 'authored_on'
                 || $arg === 'modified_on'
-                || $arg === 'created_on' )
-            {
+                || $arg === 'created_on') {
                 $dt_field = 'cd_' . $arg;
-            }
-            else {
-                if (preg_match('/^[0-9]+$/', $arg))
+            } else {
+                if (preg_match('/^[0-9]+$/', $arg)) {
                     $date_cfs = $ctx->mt->db()->fetch_content_fields(array('id' => $arg));
-                if (!isset($date_cfs))
+                }
+                if (!isset($date_cfs)) {
                     $date_cfs = $ctx->mt->db()->fetch_content_fields(array('unique_id' => $arg));
-                if (!isset($date_cfs))
+                }
+                if (!isset($date_cfs)) {
                     $date_cfs = $ctx->mt->db()->fetch_content_fields(array('name' => $arg));
+                }
                 if (isset($date_cfs)) {
                     $date_cf = $date_cfs[0];
                     $dt_field_id = $date_cf->id;
@@ -220,12 +226,12 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             if (count($left)) {
                 $data = $left[0]->data();
                 $datetime = '';
-                if(isset($data[$dt_field_id])){
+                if (isset($data[$dt_field_id])) {
                     $datetime = $data[$dt_field_id];
                 } else {
                     $datetime = $ctx->mt->db()->db2ts($left[0]->authored_on);
                 }
-                if ( $datetime && substr($datetime, 0, 8) == $this_day) {
+                if ($datetime && substr($datetime, 0, 8) == $this_day) {
                     $cds = $left;
                     $left = array();
                 } else {
@@ -235,13 +241,13 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             if (!$no_loop && count($iter)) {
                 while ($cd = array_shift($iter)) {
                     $data = $cd->data();
-                    if(isset($data[$dt_field_id])){
+                    if (isset($data[$dt_field_id])) {
                         $datetime = $data[$dt_field_id];
                     } else {
                         $datetime = $ctx->mt->db()->db2ts($cd->authored_on);
                     }
                     $cd_day = '';
-                    if($datetime){
+                    if ($datetime) {
                         $cd_day = substr($datetime, 0, 8);
                     }
                     if ($cd_day != $this_day) {
@@ -273,4 +279,3 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

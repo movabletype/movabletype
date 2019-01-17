@@ -5,10 +5,13 @@
 #
 # $Id$
 
-function smarty_function_mtcategorycount($args, &$ctx) {
+function smarty_function_mtcategorycount($args, &$ctx)
+{
     require_once("MTUtil.php");
     $category = get_category_context($ctx);
-    if (!$category) return '';
+    if (!$category) {
+        return '';
+    }
     if (!$category->category_category_set_id) {
         $count = $category->entry_count();
     } else {
@@ -27,7 +30,7 @@ function smarty_function_mtcategorycount($args, &$ctx) {
                     $terms['content_field_name'] = $args['content_field'];
                 }
             }
-        } else if ($ctx->stash('content_field')) {
+        } elseif ($ctx->stash('content_field')) {
             $terms['content_field_id'] = $ctx->stash('content_field')->id;
         }
         if (isset($args['content_type']) && $args['content_type']) {
@@ -39,11 +42,10 @@ function smarty_function_mtcategorycount($args, &$ctx) {
                     $terms['content_type_id'] = $content_type->id;
                 }
             }
-        } else if ($ctx->stash('content_type')) {
+        } elseif ($ctx->stash('content_type')) {
             $terms['content_type_id'] = $ctx->stash('content_type')->id;
         }
         $count = $category->content_data_count($terms);
     }
     return $ctx->count_format($count, $args);
 }
-?>

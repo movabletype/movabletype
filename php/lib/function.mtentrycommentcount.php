@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentrycommentcount($args, &$ctx) {
+function smarty_function_mtentrycommentcount($args, &$ctx)
+{
     return '';
 }
-?>

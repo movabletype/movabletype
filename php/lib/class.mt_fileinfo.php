@@ -15,7 +15,8 @@ class FileInfo extends BaseObject
     public $_table = 'mt_fileinfo';
     protected $_prefix = "fileinfo_";
 
-    public function category () {
+    public function category()
+    {
         $col_name = "fileinfo_category_id";
         $category = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -29,7 +30,8 @@ class FileInfo extends BaseObject
         return $category;
     }
 
-    public function template () {
+    public function template()
+    {
         $col_name = $this->_prefix . "template_id";
         $template = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -43,7 +45,8 @@ class FileInfo extends BaseObject
         return $template;
     }
 
-    public function templatemap () {
+    public function templatemap()
+    {
         $col_name = $this->_prefix . "templatemap_id";
         $templatemap = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name) && $this->$col_name > 0) {
@@ -61,4 +64,3 @@ class FileInfo extends BaseObject
         return $templatemap;
     }
 }
-?>

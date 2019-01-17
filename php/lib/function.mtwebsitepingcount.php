@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitepingcount($args, &$ctx) {
+function smarty_function_mtwebsitepingcount($args, &$ctx)
+{
     return '';
 }
-?>

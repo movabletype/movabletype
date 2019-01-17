@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingtitle($args, &$ctx) {
+function smarty_function_mtpingtitle($args, &$ctx)
+{
     return '';
 }
-?>

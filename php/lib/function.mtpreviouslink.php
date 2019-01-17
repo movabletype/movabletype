@@ -5,25 +5,26 @@
 #
 # $Id$
 
-function smarty_function_mtpreviouslink($args, &$ctx) {
+function smarty_function_mtpreviouslink($args, &$ctx)
+{
     $limit = $ctx->stash('__pager_limit');
     $offset = $ctx->stash('__pager_offset');
 
-    if ( $offset <= $limit )
+    if ($offset <= $limit) {
         $offset = 0;
-    else
+    } else {
         $offset -= $limit;
-
-    if ( strpos($link, '?') ) {
-        $link .= '&';
     }
-    else {
+
+    if (strpos($link, '?')) {
+        $link .= '&';
+    } else {
         $link .= '?';
     }
 
     $link .= "limit=$limit";
-    if ( $offset )
+    if ($offset) {
         $link .= "&offset=$offset";
+    }
     return $link;
 }
-?>

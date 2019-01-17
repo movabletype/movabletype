@@ -15,7 +15,8 @@ class ObjectAsset extends BaseObject
     public $_table = 'mt_objectasset';
     protected $_prefix = "objectasset_";
 
-    public function asset () {
+    public function asset()
+    {
         $col_name = "objectasset_asset_id";
         $asset = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -29,7 +30,8 @@ class ObjectAsset extends BaseObject
         return $asset;
     }
 
-    public function related_object() {
+    public function related_object()
+    {
         require_once("class.mt_" . $this->object_ds . ".php");
         $class = $this->object_ds;
         $obj = new $class;
@@ -37,4 +39,3 @@ class ObjectAsset extends BaseObject
         return $obj;
     }
 }
-?>

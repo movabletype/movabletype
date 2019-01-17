@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrybody($args, &$ctx) {
+function smarty_function_mtentrybody($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     $text = $entry->entry_text;
 
@@ -36,4 +37,3 @@ function smarty_function_mtentrybody($args, &$ctx) {
         return $text;
     }
 }
-?>

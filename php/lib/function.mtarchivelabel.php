@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("archive_lib.php");
-function smarty_function_mtarchivelabel($args, &$ctx) {
+function smarty_function_mtarchivelabel($args, &$ctx)
+{
     $at = $ctx->stash('current_archive_type');
     if (isset($args['type'])) {
         $at = $args['type'];
@@ -21,4 +22,3 @@ function smarty_function_mtarchivelabel($args, &$ctx) {
         return $mt->translate($at);
     }
 }
-?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrymore($args, &$ctx) {
+function smarty_function_mtentrymore($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     $text = $entry->entry_text_more;
 
@@ -36,4 +37,3 @@ function smarty_function_mtentrymore($args, &$ctx) {
         return $text;
     }
 }
-?>

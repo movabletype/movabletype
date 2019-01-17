@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitepath($args, &$ctx) {
+function smarty_function_mtsitepath($args, &$ctx)
+{
     return smarty_function_mtblogsitepath($args, $ctx);
 }
-?>

@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenterurl($args, &$ctx) {
+function smarty_function_mtcommenterurl($args, &$ctx)
+{
     return '';
 }
-?>

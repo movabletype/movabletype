@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mttagsearchlink($args, &$ctx) {
+function smarty_function_mttagsearchlink($args, &$ctx)
+{
     require_once('multiblog.php');
     multiblog_function_wrapper('mttagsearchlink', $args, $ctx);
 
@@ -13,7 +14,9 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $blog = $ctx->stash('blog');
 
     $tag = $ctx->stash('Tag');
-    if (!$tag) return '';
+    if (!$tag) {
+        return '';
+    }
     if (is_object($tag)) {
         $name = $tag->tag_name;
     } else {
@@ -23,34 +26,34 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $param = '';
     $include_blogs = $args['include_blogs'] ? $args['include_blogs'] : $ctx->stash('include_blogs');
     $include_blogs or $include_blogs = $args['blog_ids'] ? $args['blog_ids'] : $ctx->stash('blog_ids');
-    if ( $include_blogs ) {
+    if ($include_blogs) {
         if ($include_blogs != 'all') {
-            $incl = $mt->db()->parse_blog_ids( $include_blogs, $include_with_website );
-            if ( !$blog->is_blog )
-                array_unshift( $incl, $blog->id );
+            $incl = $mt->db()->parse_blog_ids($include_blogs, $include_with_website);
+            if (!$blog->is_blog) {
+                array_unshift($incl, $blog->id);
+            }
             $param = 'IncludeBlogs=' . implode(',', $incl);
         }
-    }  else {
+    } else {
         $blog_id = $ctx->stash('blog_id');
         $param = 'IncludeBlogs=' . $blog_id;
     }
     if ($exclude_blogs = $args['exclude_blogs'] ? $args['exclude_blogs'] : $ctx->stash('exclude_blogs')) {
-        $excl = $mt->db()->parse_blog_ids( $exclude_blogs );
+        $excl = $mt->db()->parse_blog_ids($exclude_blogs);
         $param = 'ExcludeBlogs=' . implode(',', $excl);
     }
     $tmpl_blog_id = null;
-    if ( isset( $args['tmpl_blog_id'] ) ) {
+    if (isset($args['tmpl_blog_id'])) {
         $tmpl_blog_id = $args['tmpl_blog_id'];
-        if ( 'parent' == strtolower( $tmpl_blog_id ) ) {
-            if ( $blog->is_blog ) {
+        if ('parent' == strtolower($tmpl_blog_id)) {
+            if ($blog->is_blog) {
                 $blog = $blog->website();
             }
             $tmpl_blog_id = $blog->id;
-        }
-        else {
-            if ( !preg_match( '/^\d+$/', $tmpl_blog_id ) || $tmpl_blog_id < 1 ) {
+        } else {
+            if (!preg_match('/^\d+$/', $tmpl_blog_id) || $tmpl_blog_id < 1) {
                 $mt = MT::get_instance();
-                $ctx->error( $mt->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) );
+                $ctx->error($mt->translate('Invalid [_1] parameter.', 'tmpl_blog_id'));
             }
         }
     }
@@ -61,8 +64,8 @@ function smarty_function_mttagsearchlink($args, &$ctx) {
     $link = $search . '?' . $param . ($param ? '&amp;' : '')
         . 'tag=' . urlencode($name);
     $link .= '&amp;limit=' . $ctx->mt->config('MaxResults');
-    if ( $tmpl_blog_id )
+    if ($tmpl_blog_id) {
         $link .= '&amp;blog_id=' . $tmpl_blog_id;
+    }
     return $link;
 }
-?>

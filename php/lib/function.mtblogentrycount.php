@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtblogentrycount($args, &$ctx) {
+function smarty_function_mtblogentrycount($args, &$ctx)
+{
     require_once('multiblog.php');
     multiblog_function_wrapper('mtblogentrycount', $args, $ctx);
 
@@ -15,4 +16,3 @@ function smarty_function_mtblogentrycount($args, &$ctx) {
     $count = $ctx->mt->db()->blog_entry_count($args);
     return $ctx->count_format($count, $args);
 }
-?>

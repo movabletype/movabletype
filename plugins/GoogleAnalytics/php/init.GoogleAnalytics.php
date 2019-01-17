@@ -7,10 +7,12 @@
 
 require_once('stats_lib.php');
 
-class GoogleAnalyticsProvider extends StatsBaseProvider {
+class GoogleAnalyticsProvider extends StatsBaseProvider
+{
     public static $plugindata_cache = array();
 
-    public static function _find_current_plugindata($blog) {
+    public static function _find_current_plugindata($blog)
+    {
         $keys = array('configuration:blog:' . $blog->id);
         if ($blog->parent_id) {
             array_push($keys, 'configuration:blog:' . $blog->parent_id);
@@ -44,8 +46,7 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
             if ($data && $data['profile_id']) {
                 if ($data['client_id'] && $data['client_secret']) {
                     return $o;
-                }
-                else if ($data['parent_client_id']) {
+                } elseif ($data['parent_client_id']) {
                     for ($j = 0; $j < sizeof($objs); $j++) {
                         $parent_data = $objs[$j]->data();
                         if ($parent_data &&
@@ -60,25 +61,29 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
         }
     }
 
-    public static function current_plugindata($blog) {
+    public static function current_plugindata($blog)
+    {
         return array_key_exists($blog->id, GoogleAnalyticsProvider::$plugindata_cache)
             ? GoogleAnalyticsProvider::$plugindata_cache[$blog->id]
             : (GoogleAnalyticsProvider::$plugindata_cache[$blog->id]
                 = GoogleAnalyticsProvider::_find_current_plugindata($blog));
     }
 
-    public static function current_plugin_config($blog) {
+    public static function current_plugin_config($blog)
+    {
         $plugindata = GoogleAnalyticsProvider::current_plugindata($blog);
         return $plugindata ? $plugindata->data() : null;
     }
 
-    public static function is_ready($blog) {
+    public static function is_ready($blog)
+    {
         return GoogleAnalyticsProvider::current_plugindata($blog)
             ? true
             : false;
     }
 
-    public function snippet($args, &$ctx) {
+    public function snippet($args, &$ctx)
+    {
         $config = GoogleAnalyticsProvider::current_plugin_config($this->blog);
         if (empty($config)) {
             return '';

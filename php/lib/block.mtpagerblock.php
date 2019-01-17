@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('__out', '__pager_limit', '__pager_count', '__pager_pages'), common_loop_vars());
 
     if (!isset($content)) {
@@ -14,7 +15,7 @@ function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
         $limit = $ctx->stash('__pager_limit');
         $offset = $ctx->stash('__pager_offset');
         $count = $ctx->stash('__pager_total_count');
-        $pages = $limit ? ceil( $count / $limit ) : 1;
+        $pages = $limit ? ceil($count / $limit) : 1;
         $counter = 1;
         $ctx->stash('__pager_pages', $pages);
         $ctx->stash('__out', false);
@@ -35,19 +36,20 @@ function smarty_block_mtpagerblock($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__first__'] = $counter == 1;
         $ctx->__stash['vars']['__last__'] = $counter == $pages;
         if (isset($args['glue']) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $args['glue'] . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
         $repeat = true;
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && $out && !empty($content)) {
             $content = $args['glue'] . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
 
     return $content;
 }
-?>

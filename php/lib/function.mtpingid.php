@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingid($args, &$ctx) {
+function smarty_function_mtpingid($args, &$ctx)
+{
     return '';
 }
-?>

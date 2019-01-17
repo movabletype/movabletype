@@ -5,13 +5,15 @@
 #
 # $Id$
 
-function smarty_function_mtsubcategorypath($args, &$ctx) {
+function smarty_function_mtsubcategorypath($args, &$ctx)
+{
     require_once("block.mtparentcategories.php");
     require_once("function.mtcategorybasename.php");
 
     $bargs = array();
-    if (isset($args['separator']))
+    if (isset($args['separator'])) {
         $bargs['separator'] = $args['separator'];
+    }
 
     $args = array('glue' => '/');
     $content = null;
@@ -25,4 +27,3 @@ function smarty_function_mtsubcategorypath($args, &$ctx) {
     }
     return $res;
 }
-?>

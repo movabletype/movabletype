@@ -5,12 +5,15 @@
 #
 # $Id$
 
-function smarty_function_mtcclicenserdf($args, &$ctx) {
+function smarty_function_mtcclicenserdf($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');
     $cc = $blog->blog_cc_license;
-    if (empty($cc)) return '';
+    if (empty($cc)) {
+        return '';
+    }
 
     require_once("cc_lib.php");
     require_once("MTUtil.php");
@@ -43,8 +46,9 @@ RDF;
 RDF;
     } else {
         $site_url = $blog->site_url();
-        if (!preg_match('!/$!', $site_url))
+        if (!preg_match('!/$!', $site_url)) {
             $site_url .= '/';
+        }
 
         $title = encode_xml(strip_hyphen($blog->blog_name));
         $desc = encode_xml(strip_hyphen($blog->blog_description));
@@ -60,4 +64,3 @@ RDF;
     $rdf .= cc_rdf($cc) . "</rdf:RDF>\n-->\n";
     return $rdf;
 }
-?>

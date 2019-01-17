@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthordisplayname($args, &$ctx) {
+function smarty_function_mtauthordisplayname($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $author = $ctx->stash('author');
@@ -23,4 +24,3 @@ function smarty_function_mtauthordisplayname($args, &$ctx) {
         $ctx->mt->translate('(Display Name not set)');
     return $author_name;
 }
-?>

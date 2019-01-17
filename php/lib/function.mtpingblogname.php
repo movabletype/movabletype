@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingblogname($args, &$ctx) {
+function smarty_function_mtpingblogname($args, &$ctx)
+{
     return '';
 }
-?>

@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentblogid($args, &$ctx) {
+function smarty_function_mtcommentblogid($args, &$ctx)
+{
     return '';
 }
-?>

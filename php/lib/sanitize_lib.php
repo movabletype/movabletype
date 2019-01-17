@@ -6,9 +6,11 @@
 # $Id$
 
 require_once("MTUtil.php");
-function sanitize($s, $arg) {
-    if (($arg) && (!is_array($arg)))
+function sanitize($s, $arg)
+{
+    if (($arg) && (!is_array($arg))) {
         $arg = sanitize_parse_spec($arg);
+    }
     $ok_tags = $arg['ok'];
     $tag_attr = $arg['tag_attr'];
     $s = preg_replace('/\x00/', '', $s);
@@ -34,13 +36,15 @@ function sanitize($s, $arg) {
                 $closure = 1;
             }
             if (isset($ok_tags[$name])) {
-                if ($tag_attr[$name] == '/')
+                if ($tag_attr[$name] == '/') {
                     $closure = 2;
+                }
 
                 # process attribute list...
                 $inside = sanitize_output_tokens($tokens, $start + 1, $end - 1);
-                if (preg_match('!/>$!', $inside))
+                if (preg_match('!/>$!', $inside)) {
                     $closure = 2;
+                }
                 $inside = preg_replace('!/?>$!', '', $inside);
                 $attrs = '';
                 if (preg_match_all('/\s*(\w+)\s*=(?:([\'"])(.*?)\2|([^\s]+))\s*/s', $inside, $matches, PREG_SET_ORDER)) {
@@ -66,15 +70,17 @@ function sanitize($s, $arg) {
                                         $safe = 0;
                                     } else {
                                         $proto = preg_replace('/\s+/s', '', $proto);
-                                        if (preg_match('/[^a-zA-Z0-9\\+]/', $proto))
+                                        if (preg_match('/[^a-zA-Z0-9\\+]/', $proto)) {
                                             $safe = 0;
-                                        elseif (preg_match('/script$/i', $proto))
+                                        } elseif (preg_match('/script$/i', $proto)) {
                                             $safe = 0;
+                                        }
                                     }
                                 }
                             }
-                            if ($safe)
+                            if ($safe) {
                                 $attrs .= ' ' . $attr . '=' . $value;
+                            }
                         }
                     }
                 }
@@ -83,7 +89,7 @@ function sanitize($s, $arg) {
                     if ($closure == 1) {
                         $result .= sanitize_expel_up_to($open_tag_a, $open_tag_h, $name);
                     } elseif (!$closure) {
-                        if(!preg_match('/br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/', $name)){
+                        if (!preg_match('/br|wbr|hr|img|col|base|link|meta|input|keygen|area|param|embed|source|track|command/', $name)) {
                             $open_tag_a[] = $name;
                             $open_tag_h[$name]++;
                         }
@@ -94,12 +100,14 @@ function sanitize($s, $arg) {
                            $name .
                            $attrs .
                            ($closure == 2 ? ' /' : '') . '>';
-                if ($closure == 1)
+                if ($closure == 1) {
                     $open_tag_h[$name]--;
+                }
             }
         } else {
-            if (strlen($token) > 0)
+            if (strlen($token) > 0) {
                 $result .= $token;
+            }
             $toknum++;
         }
     }
@@ -107,7 +115,8 @@ function sanitize($s, $arg) {
     return $result;
 }
 
-function sanitize_parse_spec($a) {
+function sanitize_parse_spec($a)
+{
     $ok_tags = array();
     $tag_attr = array();
     $rules = preg_split('/\s*,\s*/', $a);
@@ -132,13 +141,16 @@ function sanitize_parse_spec($a) {
                 $style = '/';
             }
         }
-        if ($style) $tag_attr[$tag] = $style;
+        if ($style) {
+            $tag_attr[$tag] = $style;
+        }
         $ok_tags[$tag] = count($ok_attr) ? $ok_attr : 1;
     }
     return array('ok' => $ok_tags, 'tag_attr' => $tag_attr);
 }
 
-function sanitize_expel_up_to(&$open_tag_a, &$open_tag_h, $stop_tag) {
+function sanitize_expel_up_to(&$open_tag_a, &$open_tag_h, $stop_tag)
+{
     $out = '';
     while (count($open_tag_a) &&
            (empty($stop_tag) || $open_tag_a[count($open_tag_a)-1] != $stop_tag)) {
@@ -146,23 +158,27 @@ function sanitize_expel_up_to(&$open_tag_a, &$open_tag_h, $stop_tag) {
         $open_tag_h[$t]--;
         $out .= '</' . $t . '>';
     }
-    if (count($open_tag_a))
+    if (count($open_tag_a)) {
         $t = array_pop($open_tag_a);
+    }
     return $out;
 }
 
-function sanitize_tokens_up_to($tokens, $i, $closure) {
+function sanitize_tokens_up_to($tokens, $i, $closure)
+{
     while ($i < count($tokens)) {
-        if ($tokens[$i++] == $closure)
+        if ($tokens[$i++] == $closure) {
             break;
+        }
     }
     return $i;
 }
 
-function sanitize_output_tokens($tokens, $start, $end) {
+function sanitize_output_tokens($tokens, $start, $end)
+{
     $out = '';
-    for ($i = $start; $i <= $end; $i++)
+    for ($i = $start; $i <= $end; $i++) {
         $out .= $tokens[$i];
+    }
     return $out;
 }
-?>

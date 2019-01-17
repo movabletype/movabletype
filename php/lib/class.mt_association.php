@@ -15,7 +15,8 @@ class Association extends BaseObject
     public $_table = 'mt_association';
     protected $_prefix = "association_";
 
-    public function role () {
+    public function role()
+    {
         $col_name = "association_role_id";
         $role = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -29,7 +30,8 @@ class Association extends BaseObject
         return $role;
     }
 
-    public function group () {
+    public function group()
+    {
         $col_name = "association_group_id";
         $group = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
@@ -42,6 +44,4 @@ class Association extends BaseObject
 
         return $group;
     }
-
 }
-?>

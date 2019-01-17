@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsearchtemplateblogid($args, &$ctx) {
+function smarty_function_mtsearchtemplateblogid($args, &$ctx)
+{
     return '';
 }
-?>

@@ -1,5 +1,6 @@
 <?php
-function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat)
+{
     $localvars = array('subCatTokens', 'subCatsSortOrder', 'subCatsSortBy', 'subCatsSortMethod', '__categories', 'inside_mt_categories', '_subcats_counter', 'entries', 'subCatIsFirst', 'subCatIsLast', 'category','current_archive_type', 'subFolderHead', 'subFolderFoot');
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -37,15 +38,16 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('subCatTokens', $token_fn);
         $ctx->stash('current_archive_type', 'Category');
 
-        # If we find ourselves in a category context 
+        # If we find ourselves in a category context
         if (!$top) {
             if ($args['category']) {
                 require_once("MTUtil.php");
                 $current_cat = cat_path_to_category($args['category'], $blog_id, $class, $category_set_id);
-                if ( is_array( $current_cat ) )
+                if (is_array($current_cat)) {
                     $current_cat = $current_cat[0];
+                }
             }
-            if ($current_cat == NULL) {
+            if ($current_cat == null) {
                 $current_cat = $ctx->stash('category') or $ctx->stash('archive_category');
             }
         }
@@ -115,4 +117,3 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

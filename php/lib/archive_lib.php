@@ -7,7 +7,8 @@
 
 require_once('MTUtil.php');
 
-function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
+function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag)
+{
     $at = $args['archive_type'];
     $at or $at = $ctx->stash('current_archive_type');
     try {
@@ -21,7 +22,8 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     return $archiver->archive_prev_next($args, $content, $repeat, $tag, $at);
 }
 
-function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
+function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id)
+{
     $maps = $ctx->mt->db()->fetch_templatemap(array(
         'blog_id' => $blog_id,
         'content_type_id' => $ctx->stash('content_type')->id,
@@ -31,8 +33,9 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
     if (isset($maps)) {
         $map = $maps[0];
         $dt_field_id = $map->templatemap_dt_field_id;
-        if ($cat)
+        if ($cat) {
             $cat_field_id = $map->templatemap_cat_field_id;
+        }
     }
 
     $join_on = '';
@@ -58,13 +61,15 @@ function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
         $cat_target_col = 'cat_cf_idx.cf_idx_value_integer';
     }
 
-    if (!isset($dt_target_col))
+    if (!isset($dt_target_col)) {
         $dt_target_col = 'cd_authored_on';
+    }
 
-    return array ($dt_target_col, $cat_target_col, $join_on, $dt_field_id);
+    return array($dt_target_col, $cat_target_col, $join_on, $dt_field_id);
 }
 
-function _get_content_type_filter($args) {
+function _get_content_type_filter($args)
+{
     $mt = MT::get_instance();
     $ctx =& $mt->context();
     if (isset($args['content_type']) && $args['content_type']) {
@@ -73,22 +78,21 @@ function _get_content_type_filter($args) {
         }
         if (isset($content_type)) {
             $content_type_filter = 'and cd_content_type_id = ' . $args['content_type'];
-        }
-        else {
+        } else {
             $content_types = $mt->db()->fetch_content_types($args);
             if (isset($content_types)) {
                 $content_type = $content_types[0];
                 $content_type_filter = 'and cd_content_type_id = ' . $content_type->id;
             }
         }
-    }
-    elseif ($ctx->stash('content_type')) {
+    } elseif ($ctx->stash('content_type')) {
         $content_type_filter = 'and cd_content_type_id = ' . $ctx->stash('content_type')->id;
     }
     return $content_type_filter;
 }
 
-interface ArchiveType {
+interface ArchiveType
+{
     public function get_label($args = null);
     public function get_title($args);
     public function get_archive_list($args);
@@ -102,7 +106,8 @@ interface ArchiveType {
     public function is_date_based();
 }
 
-class ArchiverFactory {
+class ArchiverFactory
+{
     private static $_archive_types = array(
         'Yearly' => 'YearlyArchiver',
         'Monthly' => 'MonthlyArchiver',
@@ -142,9 +147,12 @@ class ArchiverFactory {
     );
     private static $_archivers = array();
 
-    private function __construct() { }
+    private function __construct()
+    {
+    }
 
-    public static function get_archiver($at) {
+    public static function get_archiver($at)
+    {
         if (empty($at)) {
             require_once('class.exception.php');
             throw new MTException('Illegal archive type');
@@ -157,44 +165,52 @@ class ArchiverFactory {
         $class = ArchiverFactory::$_archive_types[$at];
         if (!empty($class)) {
             $instance = new $class;
-            if (!empty($instance) and $instance instanceof ArchiveType)
+            if (!empty($instance) and $instance instanceof ArchiveType) {
                 ArchiverFactory::$_archivers[$at] = $instance;
+            }
         } else {
             ArchiverFactory::$_archivers[$at] = null;
         }
         
-        return ArchiverFactory::$_archivers[$at]; 
+        return ArchiverFactory::$_archivers[$at];
     }
 
-    public static function add_archiver($at, $class) {
-        if (empty($at) or empty($class))
+    public static function add_archiver($at, $class)
+    {
+        if (empty($at) or empty($class)) {
             return null;
+        }
 
         ArchiverFactory::$_archive_types[$at] = $class;
         return true;
     }
 }
 
-class IndividualArchiver implements ArchiveType {
-    public function get_label($args = null) {
+class IndividualArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate("Individual");
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        return encode_html( strip_tags( $ctx->tag('EntryTitle', $args) ) );
+        return encode_html(strip_tags($ctx->tag('EntryTitle', $args)));
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $period_start = preg_replace('/[^0-9]/', '', $period_start);
         return start_end_day($period_start, $ctx->stash('blog'));
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -202,7 +218,8 @@ class IndividualArchiver implements ArchiveType {
         return $results;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -222,7 +239,8 @@ class IndividualArchiver implements ArchiveType {
         return empty($results) ? null : array($results, null, null);
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $tag = $ctx->this_tag();
@@ -235,14 +253,16 @@ class IndividualArchiver implements ArchiveType {
         }
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $ctx->stash('entry', $row);
         $ctx->stash('entries', array($row));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'entry_archive'     => 1,
             'archive_template'  => 1,
@@ -253,33 +273,40 @@ class IndividualArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += IndividualArchiver::get_template_params();
     }
 
-    public function setup_args(&$args) {
+    public function setup_args(&$args)
+    {
         return true;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         return '';
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 }
 
-class PageArchiver extends IndividualArchiver {
-    public function get_label($args = null) {
+class PageArchiver extends IndividualArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate("Page");
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'ascend' ? 'asc' : 'desc';
@@ -299,7 +326,8 @@ class PageArchiver extends IndividualArchiver {
         return empty($results) ? null : array($results, null, null);
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $tag = $ctx->this_tag();
@@ -312,7 +340,8 @@ class PageArchiver extends IndividualArchiver {
         }
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_template'  => 1,
             'page_template'     => 1,
@@ -323,7 +352,8 @@ class PageArchiver extends IndividualArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
@@ -331,20 +361,33 @@ class PageArchiver extends IndividualArchiver {
     }
 }
 
-abstract class DateBasedArchiver implements ArchiveType {
-
+abstract class DateBasedArchiver implements ArchiveType
+{
     abstract protected function get_update_link_args($results);
     abstract protected function get_helper();
 
-    public function is_date_based() { return true; }
+    public function is_date_based()
+    {
+        return true;
+    }
 
-    public function prepare_list($row) { return true; }
+    public function prepare_list($row)
+    {
+        return true;
+    }
 
-    public function setup_args(&$args) { return true; }
+    public function setup_args(&$args)
+    {
+        return true;
+    }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args)
+    {
+        return '';
+    }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $localvars = array('current_timestamp', 'current_timestamp_end', 'entries');
@@ -354,7 +397,8 @@ abstract class DateBasedArchiver implements ArchiveType {
             $ts = $ctx->stash('current_timestamp');
             if (!$ts) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without a date context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
             $helper = $this->get_helper();
@@ -373,7 +417,8 @@ abstract class DateBasedArchiver implements ArchiveType {
         return $content;
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
 
         $ctx =& $mt->context();
@@ -381,20 +426,22 @@ abstract class DateBasedArchiver implements ArchiveType {
         $results = $this->get_archive_list_data($args);
 
         if (!empty($results)) {
-                $update_args = $this->get_update_link_args($results);
-                $args = array_merge($args, $update_args);
+            $update_args = $this->get_update_link_args($results);
+            $args = array_merge($args, $update_args);
 
-                $mt->db()->update_archive_link_cache($args);
+            $mt->db()->update_archive_link_cache($args);
         }
 
         return $results;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         return array();
     }
 
-    protected function get_entry($ts, $blog_id, $at, $order) {
+    protected function get_entry($ts, $blog_id, $at, $order)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -411,7 +458,8 @@ abstract class DateBasedArchiver implements ArchiveType {
         return $entry;
     }
 
-    protected function dec_ts($ts) {
+    protected function dec_ts($ts)
+    {
         $y = substr($ts, 0, 4);
         $mo = substr($ts, 4, 2);
         $d = substr($ts, 6, 2);
@@ -420,15 +468,19 @@ abstract class DateBasedArchiver implements ArchiveType {
         $s = substr($ts, 12, 2);
         $s--;
         if ($s == -1) {
-            $s = 59; $m--;
+            $s = 59;
+            $m--;
             if ($m == -1) {
-                $m = 59; $h--;
+                $m = 59;
+                $h--;
                 if ($h == -1) {
-                    $h = 23; $d--;
+                    $h = 23;
+                    $d--;
                     if ($d == 0) {
                         $mo--;
                         if ($mo == 0) {
-                            $mo = 12; $y--;
+                            $mo = 12;
+                            $y--;
                         }
                         $d = days_in($mo, $y);
                     }
@@ -438,7 +490,8 @@ abstract class DateBasedArchiver implements ArchiveType {
         return sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
     }
 
-    protected function inc_ts($ts) {
+    protected function inc_ts($ts)
+    {
         $y = substr($ts, 0, 4);
         $mo = substr($ts, 4, 2);
         $d = substr($ts, 6, 2);
@@ -447,16 +500,21 @@ abstract class DateBasedArchiver implements ArchiveType {
         $s = substr($ts, 12, 2);
         $s++;
         if ($s == 60) {
-            $s = 0; $m++;
+            $s = 0;
+            $m++;
             if ($m == 60) {
-                $m = 0; $h++;
+                $m = 0;
+                $h++;
                 if ($h == 24) {
-                    $h = 0; $d++;
+                    $h = 0;
+                    $d++;
                     $days = days_in($mo, $y);
                     if ($d > $days) {
-                        $d = 1; $mo++;
+                        $d = 1;
+                        $mo++;
                         if ($mo == 13) {
-                            $mo = 1; $y++;
+                            $mo = 1;
+                            $y++;
                         }
                     }
                 }
@@ -465,7 +523,8 @@ abstract class DateBasedArchiver implements ArchiveType {
         return sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_listing'   => 1,
             'archive_template'  => 1,
@@ -474,7 +533,8 @@ abstract class DateBasedArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
@@ -482,15 +542,18 @@ abstract class DateBasedArchiver implements ArchiveType {
     }
 }
 
-class YearlyArchiver extends DateBasedArchiver {
+class YearlyArchiver extends DateBasedArchiver
+{
 
     // Override Method
-    public function get_label($args = null) {
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Yearly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -499,7 +562,7 @@ class YearlyArchiver extends DateBasedArchiver {
         $blog = $ctx->stash('blog');
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
@@ -508,16 +571,19 @@ class YearlyArchiver extends DateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d", $period_start['y']);
+        }
 
         return start_end_year($period_start, $ctx->stash('blog'));
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -527,7 +593,8 @@ class YearlyArchiver extends DateBasedArchiver {
         return $args;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']   = 1;
         $array['datebased_yearly_archive'] = 1;
@@ -535,14 +602,16 @@ class YearlyArchiver extends DateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += YearlyArchiver::get_template_params();
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
 
         $blog_id = $args['blog_id'];
@@ -569,19 +638,22 @@ class YearlyArchiver extends DateBasedArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 }
 
-class MonthlyArchiver extends DateBasedArchiver {
-
-    public function get_label($args = null) {
+class MonthlyArchiver extends DateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Monthly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -591,15 +663,18 @@ class MonthlyArchiver extends DateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']    = 1;
         $array['datebased_monthly_archive'] = 1;
@@ -607,18 +682,21 @@ class MonthlyArchiver extends DateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += MonthlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -628,7 +706,8 @@ class MonthlyArchiver extends DateBasedArchiver {
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -672,13 +751,16 @@ class MonthlyArchiver extends DateBasedArchiver {
     }
 }
 
-class DailyArchiver extends DateBasedArchiver {
-    public function get_label($args = null) {
+class DailyArchiver extends DateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Daily');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -688,15 +770,18 @@ class DailyArchiver extends DateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']  = 1;
         $array['datebased_daily_archive'] = 1;
@@ -704,18 +789,21 @@ class DailyArchiver extends DateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += DailyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -725,7 +813,8 @@ class DailyArchiver extends DateBasedArchiver {
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -775,14 +864,16 @@ class DailyArchiver extends DateBasedArchiver {
     }
 }
 
-class WeeklyArchiver extends DateBasedArchiver {
-
-    public function get_label($args = null) {
+class WeeklyArchiver extends DateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Weekly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -794,7 +885,8 @@ class WeeklyArchiver extends DateBasedArchiver {
             $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -802,14 +894,15 @@ class WeeklyArchiver extends DateBasedArchiver {
             require_once('MTUtil.php');
             $week_yr = substr($period_start['entry_week_number'], 0, 4);
             $week_num = substr($period_start['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']   = 1;
         $array['datebased_weekly_archive'] = 1;
@@ -817,18 +910,21 @@ class WeeklyArchiver extends DateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += WeeklyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -836,18 +932,19 @@ class WeeklyArchiver extends DateBasedArchiver {
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['entry_week_number'], 0, 4);
             $week_num = substr($results[0]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['entry_week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -885,14 +982,16 @@ class WeeklyArchiver extends DateBasedArchiver {
     }
 }
 
-class AuthorBasedArchiver implements ArchiveType {
-
-    public function get_label($args = null) {
+class AuthorBasedArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Author');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = '';
@@ -905,15 +1004,16 @@ class AuthorBasedArchiver implements ArchiveType {
                     $mt->translate('(Display Name not set)');
             }
         }
-        return encode_html( strip_tags( $author_name ) );
+        return encode_html(strip_tags($author_name));
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $results = $this->get_archive_list_data($args);
 
-        if(!empty($results)) {
+        if (!empty($results)) {
             $update_args['blog_id'] = $args['blog_id'];
             $update_args['archive_type'] = $ctx->stash('current_archive_type');
             $mt->db()->update_archive_link_cache($update_args);
@@ -921,19 +1021,20 @@ class AuthorBasedArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
         $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
-        if ( empty( $author ) ) {
+        if (empty($author)) {
             $entry = $ctx->stash('entry');
-            if ( !empty( $entry ) ) {
+            if (!empty($entry)) {
                 $author = $entry->author();
             }
             $content = $ctx->stash('content');
-            if ( !empty( $content ) ) {
+            if (!empty($content)) {
                 $author = $content->author();
             }
         }
@@ -947,7 +1048,8 @@ class AuthorBasedArchiver implements ArchiveType {
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -962,7 +1064,8 @@ class AuthorBasedArchiver implements ArchiveType {
         return $ctx->error("Error in tag: $tag");
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -971,7 +1074,8 @@ class AuthorBasedArchiver implements ArchiveType {
         $ctx->stash('author', $author);
     }
 
-    public function setup_args(&$args) {
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($auth = $ctx->stash('author')) {
@@ -979,7 +1083,8 @@ class AuthorBasedArchiver implements ArchiveType {
         }
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
         $order = $args['sort_order'] == 'descend' ? 'desc' : 'asc';
@@ -1003,7 +1108,8 @@ class AuthorBasedArchiver implements ArchiveType {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_template'     => 1,
             'author_archive'       => 1,
@@ -1014,7 +1120,8 @@ class AuthorBasedArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1022,18 +1129,21 @@ class AuthorBasedArchiver implements ArchiveType {
         $vars += AuthorBasedArchiver::get_template_params();
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         return null;
     }
 }
 
-abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
-
-    public function setup_args(&$args) {
+abstract class DateBasedAuthorArchiver extends DateBasedArchiver
+{
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($auth = $ctx->stash('author')) {
@@ -1041,7 +1151,8 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1073,7 +1184,8 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1085,7 +1197,8 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
             $author = $ctx->stash('author');
             if (!$ts || !$author) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without a date context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
 
@@ -1106,7 +1219,8 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         return $content;
     }
 
-    public function get_author_entry($ts, $blog_id, $auth_name, $order) {
+    public function get_author_entry($ts, $blog_id, $auth_name, $order)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -1125,18 +1239,21 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         return $entry;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_based_archive'] = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         AuthorBasedArchiver::template_params();
         parent::template_params();
     }
 
-    protected function get_author_name () {
+    protected function get_author_name()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1148,8 +1265,7 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         if ($ctx->stash('index_archive')
             || !isset($archiver)
             || (isset($archiver) && !isset($auth))
-            || !$ctx->stash('inside_archive_list'))
-        {
+            || !$ctx->stash('inside_archive_list')) {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
@@ -1162,7 +1278,8 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
         return $author_name;
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1172,14 +1289,16 @@ abstract class DateBasedAuthorArchiver extends DateBasedArchiver {
     }
 }
 
-class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Author Yearly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1191,23 +1310,26 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
         }
 
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_year($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1217,11 +1339,11 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $year_ext = $mt->db()->apply_extract_date('year', 'entry_authored_on');
         $index = $ctx->stash('index_archive');
         #if (!$index) {
-            $author = $ctx->stash('archive_author');
-            $author or $author = $ctx->stash('author');
-            if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
-            }
+        $author = $ctx->stash('archive_author');
+        $author or $author = $ctx->stash('author');
+        if (isset($author)) {
+            $author_filter = " and entry_author_id=".$author->author_id;
+        }
         #}
 
         $sql = "
@@ -1249,25 +1371,29 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_yearly_archive'] = 1;
         $array['archive_class']         = 'author-yearly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += YearlyAuthorBasedArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -1279,14 +1405,16 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     }
 }
 
-class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Author Monthly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1295,17 +1423,20 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1317,15 +1448,15 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $index = $ctx->stash('index_archive');
 
         #if (!$index) {
-            $author = $ctx->stash('archive_author');
-            $author or $author = $ctx->stash('author');
-            if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
-            }
+        $author = $ctx->stash('archive_author');
+        $author or $author = $ctx->stash('author');
+        if (isset($author)) {
+            $author_filter = " and entry_author_id=".$author->author_id;
+        }
         #}
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -1366,25 +1497,29 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']                  = 'author-monthly-archive';
         $array['author_monthly_archive']         = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += MonthlyAuthorBasedArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -1395,14 +1530,16 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     }
 }
 
-class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Author Daily');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = parent::get_author_name($ctx);
@@ -1410,17 +1547,20 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1433,15 +1573,15 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
         $index = $ctx->stash('index_archive');
         #if (!$index) {
-            $author = $ctx->stash('archive_author');
-            $author or $author = $ctx->stash('author');
-            if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author['author_id'];
-            }
+        $author = $ctx->stash('archive_author');
+        $author or $author = $ctx->stash('author');
+        if (isset($author)) {
+            $author_filter = " and entry_author_id=".$author['author_id'];
+        }
         #}
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -1485,25 +1625,29 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_daily_archive'] = 1;
         $array['archive_class']        = 'author-daily-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += DailyAuthorBasedArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -1515,14 +1659,16 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
     }
 }
 
-class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Author Weekly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = parent::get_author_name($ctx);
@@ -1530,24 +1676,26 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
             . ' - ' . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         if (is_array($period_start)) {
             require_once('MTUtil.php');
             $week_yr = substr($period_start['entry_week_number'], 0, 4);
             $week_num = substr($period_start['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1560,15 +1708,15 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
         $index = $ctx->stash('index_archive');
         #if (!$index) {
-            $author = $ctx->stash('archive_author');
-            $author or $author = $ctx->stash('author');
-            if (isset($author)) {
-                $author_filter = " and entry_author_id=".$author->author_id;
-            }
+        $author = $ctx->stash('archive_author');
+        $author or $author = $ctx->stash('author');
+        if (isset($author)) {
+            $author_filter = " and entry_author_id=".$author->author_id;
+        }
         #}
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -1605,25 +1753,29 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_weekly_archive'] = 1;
         $array['archive_class']         = 'author-weekly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += WeeklyAuthorBasedArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -1631,38 +1783,41 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['entry_week_number'], 0, 4);
             $week_num = substr($results[0]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['entry_week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
     }
 }
 
-class CategoryArchiver implements ArchiveType {
-
-    public function get_label($args = null) {
+class CategoryArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Category');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $cat_name = parent::get_category_name();
-        return encode_html( strip_tags( $cat_name ) );
+        return encode_html(strip_tags($cat_name));
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $results = $this->get_archive_list_data($args);
 
-        if(!empty($results)) {
+        if (!empty($results)) {
             $update_args['blog_id'] = $args['blog_id'];
             $update_args['archive_type'] = $ctx->stash('current_archive_type');
             $mt->db()->update_archive_link_cache($update_args);
@@ -1670,9 +1825,13 @@ class CategoryArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args)
+    {
+        return '';
+    }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1687,13 +1846,23 @@ class CategoryArchiver implements ArchiveType {
         return $ctx->error("Error in tag: $tag");
     }
 
-    public function prepare_list($row) { return true; }
+    public function prepare_list($row)
+    {
+        return true;
+    }
 
-    public function setup_args(&$args) { return true; }
+    public function setup_args(&$args)
+    {
+        return true;
+    }
 
-    protected function get_archive_list_data($args) { return true; }
+    protected function get_archive_list_data($args)
+    {
+        return true;
+    }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_template'       => 1,
             'category_archive'       => 1,
@@ -1704,7 +1873,8 @@ class CategoryArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1712,18 +1882,21 @@ class CategoryArchiver implements ArchiveType {
         $vars += CategoryArchiver::get_template_params();
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         return null;
     }
 }
 
-abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
-
-    public function setup_args(&$args) {
+abstract class DateBasedCategoryArchiver extends DateBasedArchiver
+{
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($cat = $ctx->stash('category')) {
@@ -1731,7 +1904,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1766,7 +1940,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1778,7 +1953,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
             $category = $ctx->stash('category');
             if (!$ts || !$category) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without a date context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
 
@@ -1799,7 +1975,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $content;
     }
 
-    protected function get_categorized_entry($ts, $blog_id, $cat_id, $at, $order) {
+    protected function get_categorized_entry($ts, $blog_id, $cat_id, $at, $order)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -1818,7 +1995,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $entry;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']            = 'category-archive';
         $array['category_based_archive']   = 1;
@@ -1827,14 +2005,16 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += DateBasedCategoryArchiver::get_template_params();
     }
 
-    protected function get_category_name () {
+    protected function get_category_name()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1846,8 +2026,7 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         if ($ctx->stash('index_archive')
             || !isset($archiver)
             || (isset($archiver) && !isset($cat))
-            || !$ctx->stash('inside_archive_list'))
-        {
+            || !$ctx->stash('inside_archive_list')) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if (isset($cat)) {
@@ -1857,7 +2036,8 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         return $cat_name;
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1865,17 +2045,18 @@ abstract class DateBasedCategoryArchiver extends DateBasedArchiver {
         $category = $mt->db()->fetch_category($category_id);
         $ctx->stash('category', $category);
     }
-
 }
 
-class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class YearlyCategoryArchiver extends DateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Category Yearly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1887,22 +2068,25 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
         }
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d", $period_start['y']);
+        }
         return start_end_year($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -1914,7 +2098,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $index = $ctx->stash('index_archive');
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -1926,12 +2110,11 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
             }
         }
         #if (!$index) {
-            $cat = $ctx->stash('archive_category');
-            $cat or $cat = $ctx->stash('category');
-            if (isset($cat)){
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
-            }
+        $cat = $ctx->stash('archive_category');
+        $cat or $cat = $ctx->stash('category');
+        if (isset($cat)) {
+            $cat_filter = " and placement_category_id=".$cat->category_id;
+        }
         #}
         $sql = "
             select count(*) as entry_count,
@@ -1958,25 +2141,29 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_yearly_archive'] = 1;
         $array['archive_class']           = 'category-yearly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += YearlyCategoryArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -1988,14 +2175,16 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
     }
 }
 
-class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class MonthlyCategoryArchiver extends DateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Category Monthly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2004,17 +2193,20 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2027,7 +2219,7 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         $index = $ctx->stash('index_archive');
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -2039,12 +2231,11 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
             }
         }
         #if (!$index) {
-            $cat = $ctx->stash('archive_category');
-            $cat or $cat = $ctx->stash('category');
-            if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
-            }
+        $cat = $ctx->stash('archive_category');
+        $cat or $cat = $ctx->stash('category');
+        if (isset($cat)) {
+            $cat_filter = " and placement_category_id=".$cat->category_id;
+        }
         #}
         $sql = "
             select count(*) as entry_count,
@@ -2074,25 +2265,29 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']                    = 'category-monthly-archive';
         $array['category_monthly_archive']         = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += MonthlyCategoryArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -2103,14 +2298,16 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
     }
 }
 
-class DailyCategoryArchiver extends DateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class DailyCategoryArchiver extends DateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Category Daily');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2119,17 +2316,20 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2155,12 +2355,11 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
             }
         }
         #if (!$index) {
-            $cat = $ctx->stash('archive_category');
-            $cat or $cat = $ctx->stash('category');
-            if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
-            }
+        $cat = $ctx->stash('archive_category');
+        $cat or $cat = $ctx->stash('category');
+        if (isset($cat)) {
+            $cat_filter = " and placement_category_id=".$cat->category_id;
+        }
         #}
         $sql = "
             select count(*) as entry_count,
@@ -2191,27 +2390,31 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
         $offset = isset($args['offset']) ? $args['offset'] : -1;
         $results = $mt->db()->SelectLimit($sql, $limit, $offset);
         return empty($results) ? null : $results->GetArray();
-    }    
+    }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_daily_archive'] = 1;
         $array['archive_class']          = 'category-daily-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += DailyCategoryArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -2223,14 +2426,16 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
     }
 }
 
-class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class WeeklyCategoryArchiver extends DateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('Category Weekly');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $cat_name = parent::get_category_name();
@@ -2238,12 +2443,13 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
             . " - " . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2251,14 +2457,15 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             require_once('MTUtil.php');
             $week_yr = substr($period_start['entry_week_number'], 0, 4);
             $week_num = substr($period_start['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start, $ctx->stash('blog'));
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2269,7 +2476,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         $index = $ctx->stash('index_archive');
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -2281,12 +2488,11 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             }
         }
         #if (!$index) {
-            $cat = $ctx->stash('archive_category');
-            $cat or $cat = $ctx->stash('category');
-            if(isset($cat)) {
-                $cat_filter = " and placement_category_id=".$cat->category_id;
-
-            }
+        $cat = $ctx->stash('archive_category');
+        $cat or $cat = $ctx->stash('category');
+        if (isset($cat)) {
+            $cat_filter = " and placement_category_id=".$cat->category_id;
+        }
         #}
         $sql = "
             select count(*) as entry_count,
@@ -2313,25 +2519,29 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_weekly_archive'] = 1;
         $array['archive_class']           = 'category-weekly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += WeeklyCategoryArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -2339,38 +2549,43 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['entry_week_number'], 0, 4);
             $week_num = substr($results[0]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['entry_week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['entry_week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
     }
 }
 
-class ContentTypeArchiver implements ArchiveType {
-    public function get_label($args = null) {
+class ContentTypeArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate("CONTENTTYPE_ADV");
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        return encode_html( strip_tags( $ctx->tag('ContentLabel', $args) ) );
+        return encode_html(strip_tags($ctx->tag('ContentLabel', $args)));
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $period_start = preg_replace('/[^0-9]/', '', $period_start);
         return start_end_day($period_start, $ctx->stash('blog'));
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2378,7 +2593,8 @@ class ContentTypeArchiver implements ArchiveType {
         return $results;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
@@ -2416,7 +2632,8 @@ class ContentTypeArchiver implements ArchiveType {
         return empty($results) ? null : array($results, null, null);
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $tag = $ctx->this_tag();
@@ -2429,14 +2646,16 @@ class ContentTypeArchiver implements ArchiveType {
         }
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $ctx->stash('content', $row);
         $ctx->stash('contents', array($row));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'contenttype_archive' => 1,
             'archive_template'    => 1,
@@ -2445,40 +2664,57 @@ class ContentTypeArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeArchiver::get_template_params();
     }
 
-    public function setup_args(&$args) {
+    public function setup_args(&$args)
+    {
         return true;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         return '';
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 }
 
-abstract class ContentTypeDateBasedArchiver implements ArchiveType {
-
+abstract class ContentTypeDateBasedArchiver implements ArchiveType
+{
     abstract protected function get_update_link_args($results);
     abstract protected function get_helper();
 
-    public function is_date_based() { return true; }
+    public function is_date_based()
+    {
+        return true;
+    }
 
-    public function prepare_list($row) { return true; }
+    public function prepare_list($row)
+    {
+        return true;
+    }
 
-    public function setup_args(&$args) { return true; }
+    public function setup_args(&$args)
+    {
+        return true;
+    }
 
-    public function get_archive_link_sql($ts, $at, $args) { return ''; }
+    public function get_archive_link_sql($ts, $at, $args)
+    {
+        return '';
+    }
 
-    public function archive_prev_next($args, $res, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $res, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $localvars = array('current_timestamp', 'current_timestamp_end', 'contents');
@@ -2488,7 +2724,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
             $ts = $ctx->stash('current_timestamp');
             if (!$ts) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without a date context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
             $helper = $this->get_helper();
@@ -2508,8 +2745,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
                     if ($dt_field_id) {
                         $data = $cd->data();
                         $ts = $data[$dt_field_id];
-                    }
-                    else {
+                    } else {
                         $ts = $cd->authored_on;
                     }
                 }
@@ -2526,7 +2762,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return $res;
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
 
         $ctx =& $mt->context();
@@ -2534,20 +2771,22 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         $results = $this->get_archive_list_data($args);
 
         if (!empty($results)) {
-                $update_args = $this->get_update_link_args($results);
-                $args = array_merge($args, $update_args);
+            $update_args = $this->get_update_link_args($results);
+            $args = array_merge($args, $update_args);
 
-                $mt->db()->update_archive_link_cache($args);
+            $mt->db()->update_archive_link_cache($args);
         }
 
         return $results;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         return array();
     }
 
-    protected function get_content($ts, $blog_id, $at, $order, $content_type_id) {
+    protected function get_content($ts, $blog_id, $at, $order, $content_type_id)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -2565,7 +2804,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return $content;
     }
 
-    protected function dec_ts($ts) {
+    protected function dec_ts($ts)
+    {
         $y = substr($ts, 0, 4);
         $mo = substr($ts, 4, 2);
         $d = substr($ts, 6, 2);
@@ -2574,15 +2814,19 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         $s = substr($ts, 12, 2);
         $s--;
         if ($s == -1) {
-            $s = 59; $m--;
+            $s = 59;
+            $m--;
             if ($m == -1) {
-                $m = 59; $h--;
+                $m = 59;
+                $h--;
                 if ($h == -1) {
-                    $h = 23; $d--;
+                    $h = 23;
+                    $d--;
                     if ($d == 0) {
                         $mo--;
                         if ($mo == 0) {
-                            $mo = 12; $y--;
+                            $mo = 12;
+                            $y--;
                         }
                         $d = days_in($mo, $y);
                     }
@@ -2592,7 +2836,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
     }
 
-    protected function inc_ts($ts) {
+    protected function inc_ts($ts)
+    {
         $y = substr($ts, 0, 4);
         $mo = substr($ts, 4, 2);
         $d = substr($ts, 6, 2);
@@ -2601,16 +2846,21 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         $s = substr($ts, 12, 2);
         $s++;
         if ($s == 60) {
-            $s = 0; $m++;
+            $s = 0;
+            $m++;
             if ($m == 60) {
-                $m = 0; $h++;
+                $m = 0;
+                $h++;
                 if ($h == 24) {
-                    $h = 0; $d++;
+                    $h = 0;
+                    $d++;
                     $days = days_in($mo, $y);
                     if ($d > $days) {
-                        $d = 1; $mo++;
+                        $d = 1;
+                        $mo++;
                         if ($mo == 13) {
-                            $mo = 1; $y++;
+                            $mo = 1;
+                            $y++;
                         }
                     }
                 }
@@ -2619,7 +2869,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return sprintf("%04d%02d%02d%02d%02d%02d", $y, $mo, $d, $h, $m, $s);
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_listing'             => 1,
             'contenttype_archive_listing' => 1,
@@ -2629,7 +2880,8 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
@@ -2637,13 +2889,16 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
     }
 }
 
-class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
-    public function get_label($args = null) {
+class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-DAILY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -2653,15 +2908,18 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']  = 1;
         $array['datebased_daily_archive'] = 1;
@@ -2669,7 +2927,8 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2677,11 +2936,13 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         $vars += ContentTypeDailyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -2691,7 +2952,8 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2746,14 +3008,16 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
     }
 }
 
-class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-WEEKLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -2765,7 +3029,8 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
             $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2773,14 +3038,15 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
             require_once('MTUtil.php');
             $week_yr = substr($period_start['week_number'], 0, 4);
             $week_num = substr($period_start['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']   = 1;
         $array['datebased_weekly_archive'] = 1;
@@ -2788,18 +3054,21 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeWeeklyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -2807,18 +3076,19 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['week_number'], 0, 4);
             $week_num = substr($results[0]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2862,14 +3132,16 @@ class ContentTypeWeeklyArchiver extends ContentTypeDateBasedArchiver {
     }
 }
 
-class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-MONTHLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -2879,15 +3151,18 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start, $ctx->stash('blog'));
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']    = 1;
         $array['datebased_monthly_archive'] = 1;
@@ -2895,18 +3170,21 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeMonthlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -2916,7 +3194,8 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
         return $args;
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -2966,14 +3245,16 @@ class ContentTypeMonthlyArchiver extends ContentTypeDateBasedArchiver {
     }
 }
 
-class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-YEARLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
@@ -2982,7 +3263,7 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         $blog = $ctx->stash('blog');
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
@@ -2991,16 +3272,19 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         return $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        if (is_array($period_start))
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d", $period_start['y']);
+        }
 
         return start_end_year($period_start, $ctx->stash('blog'));
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -3010,7 +3294,8 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         return $args;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['datebased_only_archive']   = 1;
         $array['datebased_yearly_archive'] = 1;
@@ -3018,14 +3303,16 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeYearlyArchiver::get_template_params();
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3058,19 +3345,22 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         return empty($results) ? null : $results->GetArray();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 }
 
-class ContentTypeAuthorArchiver implements ArchiveType {
-
-    public function get_label($args = null) {
+class ContentTypeAuthorArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-AUTHOR_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = '';
@@ -3083,15 +3373,16 @@ class ContentTypeAuthorArchiver implements ArchiveType {
                     $mt->translate('(Display Name not set)');
             }
         }
-        return encode_html( strip_tags( $author_name ) );
+        return encode_html(strip_tags($author_name));
     }
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $results = $this->get_archive_list_data($args);
 
-        if(!empty($results)) {
+        if (!empty($results)) {
             $update_args['blog_id'] = $args['blog_id'];
             $update_args['archive_type'] = $ctx->stash('current_archive_type');
             $mt->db()->update_archive_link_cache($update_args);
@@ -3099,19 +3390,20 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
         $blog_id = intval($args['blog_id']);
         $author = $ctx->stash('author');
-        if ( empty( $author ) ) {
+        if (empty($author)) {
             $entry = $ctx->stash('entry');
-            if ( !empty( $entry ) ) {
+            if (!empty($entry)) {
                 $author = $entry->author();
             }
             $content = $ctx->stash('content');
-            if ( !empty( $content ) ) {
+            if (!empty($content)) {
                 $author = $content->author();
             }
         }
@@ -3125,7 +3417,8 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3140,7 +3433,8 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $ctx->error("Error in tag: $tag");
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3149,7 +3443,8 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         $ctx->stash('author', $author);
     }
 
-    public function setup_args(&$args) {
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($auth = $ctx->stash('author')) {
@@ -3157,7 +3452,8 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         }
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
@@ -3185,7 +3481,8 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = array(
             'archive_template'            => 1,
             'author_archive'              => 1,
@@ -3197,25 +3494,29 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorArchiver::get_template_params();
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         return null;
     }
 }
 
-abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedArchiver {
-
-    public function setup_args(&$args) {
+abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedArchiver
+{
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($auth = $ctx->stash('author')) {
@@ -3223,7 +3524,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3255,7 +3557,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3267,7 +3570,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
             $author = $ctx->stash('author');
             if (!$ts || !$author) {
                 return $ctx->error(
-                   "You used an <mt$tag> without a date context set up.");
+                   "You used an <mt$tag> without a date context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
             $blog_id = $ctx->stash('blog_id');
@@ -3307,7 +3611,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $content;
     }
 
-    public function get_author_content($ts, $blog_id, $auth_name, $order, $content_type_id) {
+    public function get_author_content($ts, $blog_id, $auth_name, $order, $content_type_id)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -3327,18 +3632,21 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $content;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_based_archive'] = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         ContentTypeAuthorArchiver::template_params();
         parent::template_params();
     }
 
-    protected function get_author_name () {
+    protected function get_author_name()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3350,8 +3658,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         if ($ctx->stash('index_archive')
             || !isset($archiver)
             || (isset($archiver) && !isset($auth))
-            || !$ctx->stash('inside_archive_list'))
-        {
+            || !$ctx->stash('inside_archive_list')) {
             $author = $ctx->stash('archive_author');
             $author or $author = $ctx->stash('author');
             if (isset($author)) {
@@ -3364,7 +3671,8 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
         return $author_name;
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3374,14 +3682,16 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
     }
 }
 
-class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-AUTHOR-YEARLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3393,23 +3703,26 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
         }
 
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_year($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3456,25 +3769,29 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_yearly_archive'] = 1;
         $array['archive_class']         = 'contenttype-author-yearly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorYearlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -3486,14 +3803,16 @@ class ContentTypeAuthorYearlyArchiver extends ContentTypeDateBasedAuthorArchiver
     }
 }
 
-class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-AUTHOR-MONTHLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3502,17 +3821,20 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3536,7 +3858,7 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
 
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -3578,25 +3900,29 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']                  = 'contenttype-author-monthly-archive';
         $array['author_monthly_archive']         = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorMonthlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -3607,14 +3933,16 @@ class ContentTypeAuthorMonthlyArchiver extends ContentTypeDateBasedAuthorArchive
     }
 }
 
-class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-AUTHOR-DAILY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = parent::get_author_name($ctx);
@@ -3622,17 +3950,20 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3657,7 +3988,7 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
 
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -3702,25 +4033,29 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_daily_archive'] = 1;
         $array['archive_class']        = 'contenttype-author-daily-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorDailyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -3732,14 +4067,16 @@ class ContentTypeAuthorDailyArchiver extends ContentTypeDateBasedAuthorArchiver 
     }
 }
 
-class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-AUTHOR-WEEKLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $author_name = parent::get_author_name($ctx);
@@ -3747,24 +4084,26 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $author_name ) )
+        return encode_html(strip_tags($author_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
             . ' - ' . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         if (is_array($period_start)) {
             require_once('MTUtil.php');
             $week_yr = substr($period_start['week_number'], 0, 4);
             $week_num = substr($period_start['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3789,7 +4128,7 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
 
         $inside = $ctx->stash('inside_archive_list');
         if (!isset($inside)) {
-          $inside = false;
+            $inside = false;
         }
         if ($inside) {
             $ts = $ctx->stash('current_timestamp');
@@ -3828,25 +4167,29 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
         return empty($results) ? null : $results->GetArray();
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['author_weekly_archive'] = 1;
         $array['archive_class']         = 'contenttype-author-weekly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeAuthorWeeklyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -3854,39 +4197,42 @@ class ContentTypeAuthorWeeklyArchiver extends ContentTypeDateBasedAuthorArchiver
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['week_number'], 0, 4);
             $week_num = substr($results[0]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
     }
 }
 
-class ContentTypeCategoryArchiver implements ArchiveType {
-
-    public function get_label($args = null) {
+class ContentTypeCategoryArchiver implements ArchiveType
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-CATEGORY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $cat_name = parent::get_category_name();
-        return encode_html( strip_tags( $cat_name ) );
+        return encode_html(strip_tags($cat_name));
     }
 
 
-    public function get_archive_list($args) {
+    public function get_archive_list($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $results = $this->get_archive_list_data($args);
 
-        if(!empty($results)) {
+        if (!empty($results)) {
             $update_args['blog_id'] = $args['blog_id'];
             $update_args['archive_type'] = $ctx->stash('current_archive_type');
             $mt->db()->update_archive_link_cache($update_args);
@@ -3894,11 +4240,13 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return $results;
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         return '';
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3913,15 +4261,23 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return $ctx->error("Error in tag: $tag");
     }
 
-    public function prepare_list($row) { return true; }
-
-    public function setup_args(&$args) {
+    public function prepare_list($row)
+    {
         return true;
     }
 
-    protected function get_archive_list_data($args) { return true; }
+    public function setup_args(&$args)
+    {
+        return true;
+    }
 
-    public function get_template_params() {
+    protected function get_archive_list_data($args)
+    {
+        return true;
+    }
+
+    public function get_template_params()
+    {
         $array = array(
             'archive_template'            => 1,
             'category_archive'            => 1,
@@ -3934,25 +4290,29 @@ class ContentTypeCategoryArchiver implements ArchiveType {
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryArchiver::get_template_params();
     }
 
-    public function is_date_based() {
+    public function is_date_based()
+    {
         return false;
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         return null;
     }
 }
 
-abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBasedArchiver {
-
-    public function setup_args(&$args) {
+abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBasedArchiver
+{
+    public function setup_args(&$args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         if ($cat = $ctx->stash('category')) {
@@ -3960,7 +4320,8 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         }
     }
 
-    public function get_archive_link_sql($ts, $at, $args) {
+    public function get_archive_link_sql($ts, $at, $args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -3995,7 +4356,8 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $sql;
     }
 
-    public function archive_prev_next($args, $content, &$repeat, $tag, $at) {
+    public function archive_prev_next($args, $content, &$repeat, $tag, $at)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4019,7 +4381,8 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
             $category = $ctx->stash('category');
             if (!(isset($ts) && $ts) || !(isset($cat_field) && $cat_field) || !(isset($category) && $category)) {
                 return $ctx->error(
-                   "You used an <mt$tag> without context set up.");
+                   "You used an <mt$tag> without context set up."
+                );
             }
             $order = $is_prev ? 'previous' : 'next';
 
@@ -4029,8 +4392,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                 if (preg_match('/^[0-9]+$/', $dt_field_id) && $dt_field_id) {
                     $data = $cd->data();
                     $ts = $data[$dt_field_id];
-                }
-                else {
+                } else {
                     $ts = $cd->authored_on;
                 }
                 list($start, $end) = $helper($ts);
@@ -4046,7 +4408,8 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $content;
     }
 
-    protected function get_categorized_content($ts, $blog_id, $cat_field, $cat_id, $at, $order) {
+    protected function get_categorized_content($ts, $blog_id, $cat_field, $cat_id, $at, $order)
+    {
         $helper = $this->get_helper();
         list($start, $end) = $helper($ts);
         $args = array();
@@ -4065,13 +4428,16 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $content_type = $ctx->stash('content_type');
-        if (isset($content_type)) $content_type_id = $content_type->content_type_id;
+        if (isset($content_type)) {
+            $content_type_id = $content_type->content_type_id;
+        }
         $mt = MT::get_instance();
         list($cd) = $mt->db()->fetch_contents($args, $content_type_id);
         return $cd;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']                = 'contenttype-category-archive';
         $array['category_based_archive']       = 1;
@@ -4082,14 +4448,16 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeDateBasedCategoryArchiver::get_template_params();
     }
 
-    protected function get_category_name () {
+    protected function get_category_name()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4101,8 +4469,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         if ($ctx->stash('index_archive')
             || !isset($archiver)
             || (isset($archiver) && !isset($cat))
-            || !$ctx->stash('inside_archive_list'))
-        {
+            || !$ctx->stash('inside_archive_list')) {
             $cat = $ctx->stash('archive_category');
             $cat or $cat = $ctx->stash('category');
             if (isset($cat)) {
@@ -4112,7 +4479,8 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         return $cat_name;
     }
 
-    public function prepare_list($row) {
+    public function prepare_list($row)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4120,17 +4488,18 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         $category = $mt->db()->fetch_category($category_id);
         $ctx->stash('category', $category);
     }
-
 }
 
-class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-CATEGORY-YEARLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4142,22 +4511,25 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
         }
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d", $period_start['y']);
+        }
         return start_end_year($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4171,8 +4543,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         $cat or $cat = $ctx->stash('category');
         if ($cat) {
             $cats = array($cat);
-        }
-        else {
+        } else {
             $cat_set_id = $args['category_set_id'];
             if (!isset($cat_set_id)) {
                 $category_set = $ctx->stash('category_set');
@@ -4192,24 +4563,26 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
 
         $categories = array();
         $seen_join_on = array();
-        foreach ( $cats as $cat ) {
+        foreach ($cats as $cat) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
-            foreach ( $objectcategories as $objectcategory ) {
+            foreach ($objectcategories as $objectcategory) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+            foreach ($cat_field_ids as $cat_field_id => $count) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                if (array_key_exists($join_on, $seen_join_on)) {
+                    continue;
+                }
                 $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
 
                 $inside = $ctx->stash('inside_archive_list');
                 if (!isset($inside)) {
-                  $inside = false;
+                    $inside = false;
                 }
                 if ($inside) {
                     $ts = $ctx->stash('current_timestamp');
@@ -4250,25 +4623,29 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         return $categories;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_yearly_archive'] = 1;
         $array['archive_class']           = 'contenttype-category-yearly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryYearlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_year';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -4280,14 +4657,16 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
     }
 }
 
-class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-CATEGORY-MONTHLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4296,17 +4675,20 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         list($start) = start_end_month($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%B %Y";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d", $period_start['y'], $period_start['m']);
+        }
         return start_end_month($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4320,8 +4702,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         $cat or $cat = $ctx->stash('category');
         if ($cat) {
             $cats = array($cat);
-        }
-        else {
+        } else {
             $cat_set_id = $args['category_set_id'];
             if (!isset($cat_set_id)) {
                 $category_set = $ctx->stash('category_set');
@@ -4341,17 +4722,19 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
 
         $categories = array();
         $seen_join_on = array();
-        foreach ( $cats as $cat ) {
+        foreach ($cats as $cat) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
-            foreach ( $objectcategories as $objectcategory ) {
+            foreach ($objectcategories as $objectcategory) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+            foreach ($cat_field_ids as $cat_field_id => $count) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                if (array_key_exists($join_on, $seen_join_on)) {
+                    continue;
+                }
                 $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -4360,7 +4743,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                 $index = $ctx->stash('index_archive');
                 $inside = $ctx->stash('inside_archive_list');
                 if (!isset($inside)) {
-                  $inside = false;
+                    $inside = false;
                 }
                 if ($inside) {
                     $ts = $ctx->stash('current_timestamp');
@@ -4403,25 +4786,29 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         return $categories;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['archive_class']                    = 'contenttype-category-monthly-archive';
         $array['category_monthly_archive']         = 1;
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryMonthlyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_month';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -4432,14 +4819,16 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
     }
 }
 
-class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-CATEGORY-DAILY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4448,17 +4837,20 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         list($start) = start_end_day($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
-        if (is_array($period_start))
+    public function get_range($period_start)
+    {
+        if (is_array($period_start)) {
             $period_start = sprintf("%04d%02d%02d", $period_start['y'], $period_start['m'], $period_start['d']);
+        }
         return start_end_day($period_start);
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4472,8 +4864,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         $cat or $cat = $ctx->stash('category');
         if ($cat) {
             $cats = array($cat);
-        }
-        else {
+        } else {
             $cat_set_id = $args['category_set_id'];
             if (!isset($cat_set_id)) {
                 $category_set = $ctx->stash('category_set');
@@ -4493,17 +4884,19 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
 
         $categories = array();
         $seen_join_on = array();
-        foreach ( $cats as $cat ) {
+        foreach ($cats as $cat) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
-            foreach ( $objectcategories as $objectcategory ) {
+            foreach ($objectcategories as $objectcategory) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+            foreach ($cat_field_ids as $cat_field_id => $count) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                if (array_key_exists($join_on, $seen_join_on)) {
+                    continue;
+                }
                 $seen_join_on[$join_on] = 1;
 
                 $year_ext = $mt->db()->apply_extract_date('year', $dt_target_col);
@@ -4556,27 +4949,31 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
             }
         }
         return $categories;
-    }    
+    }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_daily_archive'] = 1;
         $array['archive_class']          = 'contenttype-category-daily-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryDailyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_day';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($result)) {
             $count = count($results);
@@ -4588,14 +4985,16 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
     }
 }
 
-class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArchiver {
-
-    public function get_label($args = null) {
+class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArchiver
+{
+    public function get_label($args = null)
+    {
         $mt = MT::get_instance();
         return $mt->translate('CONTENTTYPE-CATEGORY-WEEKLY_ADV');
     }
 
-    public function get_title($args) {
+    public function get_title($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $cat_name = parent::get_category_name();
@@ -4603,12 +5002,13 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         list($start, $end) = start_end_week($stamp, $ctx->stash('blog'));
         $format = $args['format'];
         $format or $format = "%x";
-        return encode_html( strip_tags( $cat_name ) )
+        return encode_html(strip_tags($cat_name))
             . $ctx->_hdlr_date(array('ts' => $start, 'format' => $format), $ctx)
             . " - " . $ctx->_hdlr_date(array('ts' => $end, 'format' => $format), $ctx);
     }
 
-    public function get_range($period_start) {
+    public function get_range($period_start)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4616,14 +5016,15 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
             require_once('MTUtil.php');
             $week_yr = substr($period_start['week_number'], 0, 4);
             $week_num = substr($period_start['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
 
             $period_start = sprintf("%04d%02d%02d000000", $y, $m, $d);
         }
         return start_end_week($period_start, $ctx->stash('blog'));
     }
 
-    protected function get_archive_list_data($args) {
+    protected function get_archive_list_data($args)
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
 
@@ -4637,8 +5038,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         $cat or $cat = $ctx->stash('category');
         if ($cat) {
             $cats = array($cat);
-        }
-        else {
+        } else {
             $cat_set_id = $args['category_set_id'];
             if (!isset($cat_set_id)) {
                 $category_set = $ctx->stash('category_set');
@@ -4658,22 +5058,24 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
 
         $categories = array();
         $seen_join_on = array();
-        foreach ( $cats as $cat ) {
+        foreach ($cats as $cat) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
             $cat_field_ids = array();
-            foreach ( $objectcategories as $objectcategory ) {
+            foreach ($objectcategories as $objectcategory) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
             }
-            foreach ( $cat_field_ids as $cat_field_id => $count ) {
+            foreach ($cat_field_ids as $cat_field_id => $count) {
                 list($dt_target_col, $cat_target_col, $join_on) = _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id);
 
                 # When a preferred template map exists, $cat_field_id is overridden and $join_on becomes the same
-                if ( array_key_exists($join_on, $seen_join_on) ) continue;
+                if (array_key_exists($join_on, $seen_join_on)) {
+                    continue;
+                }
                 $seen_join_on[$join_on] = 1;
 
                 $inside = $ctx->stash('inside_archive_list');
                 if (!isset($inside)) {
-                  $inside = false;
+                    $inside = false;
                 }
                 if ($inside) {
                     $ts = $ctx->stash('current_timestamp');
@@ -4714,25 +5116,29 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         return $categories;
     }
 
-    public function get_template_params() {
+    public function get_template_params()
+    {
         $array = parent::get_template_params();
         $array['category_weekly_archive'] = 1;
         $array['archive_class']           = 'contenttype-category-weekly-archive';
         return $array;
     }
 
-    public function template_params() {
+    public function template_params()
+    {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $vars =& $ctx->__stash['vars'];
         $vars += ContentTypeCategoryWeeklyArchiver::get_template_params();
     }
 
-    protected function get_helper() {
+    protected function get_helper()
+    {
         return 'start_end_week';
     }
 
-    protected function get_update_link_args($results) {
+    protected function get_update_link_args($results)
+    {
         $args = array();
         if (!empty($results)) {
             $count = count($results);
@@ -4740,12 +5146,12 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
             require_once("MTUtil.php");
             $week_yr = substr($results[0]['week_number'], 0, 4);
             $week_num = substr($results[0]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['hi'] = sprintf("%04d%02d%02d", $y, $m, $d);
 
             $week_yr = substr($results[$count - 1]['week_number'], 0, 4);
             $week_num = substr($results[$count - 1]['week_number'], 4);
-            list($y,$m,$d) = week2ymd($week_yr, $week_num);
+            list($y, $m, $d) = week2ymd($week_yr, $week_num);
             $args['low'] = sprintf("%04d%02d%02d", $y, $m, $d);
         }
         return $args;
@@ -4753,4 +5159,3 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
 }
 
 # fake for L10N translate("Category")
-?>

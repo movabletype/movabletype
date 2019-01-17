@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtarchives($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('current_archive_type', 'archive_types', 'archive_type_index', 'old_preferred_archive_type'), common_loop_vars());
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
@@ -37,8 +38,9 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         } catch (Exception $e) {
             return $ctx->error($this->translate("ArchiveType not found - [_1]", $at), E_USER_ERROR);
         }
-        if ($archiver)
+        if ($archiver) {
             $ctx->__stash['vars']['template_params'] = $archiver->get_template_params();
+        }
 
         $ctx->stash('current_archive_type', $curr_at);
         $ctx->stash('archive_type_index', $i);
@@ -59,4 +61,3 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

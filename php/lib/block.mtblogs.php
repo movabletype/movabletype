@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtblogs($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('_blogs', '_blogs_counter', 'blog', 'blog_id'), common_loop_vars());
 
     if (!isset($content)) {
@@ -13,24 +14,24 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
         $ctx =& $mt->context();
         $tag = $ctx->this_tag();
 
-        # If MTMultiBlog was called with no arguments, we check the 
+        # If MTMultiBlog was called with no arguments, we check the
         # blog-level settings for the default includes/excludes.
-        if ( !( $args['blog_ids']
-                or $args['include_sites'] 
+        if (!($args['blog_ids']
+                or $args['include_sites']
                 or $args['exclude_sites']
-                or $args['include_blogs'] 
+                or $args['include_blogs']
                 or $args['exclude_blogs']
-                or $args['include_websites'] 
+                or $args['include_websites']
                 or $args['exclude_websites']
-                or $args['site_ids']  )) {
+                or $args['site_ids'])) {
             $blog = $ctx->stash('blog');
-            $is_include = isset( $blog->default_mt_sites_action )
+            $is_include = isset($blog->default_mt_sites_action)
                 ? $blog->default_mt_sites_actio : 1;
             $blogs = $blog->default_mtsites_blogs || '';
 
             if ($blogs && isset($is_include)) {
                 $args[$is_include ? 'include_blogs' : 'exclude_blogs'] = $blogs;
-            } 
+            }
             # No blog-level config set
             # Set mode to context as this will mimic no MTMultiBlog tag
             else {
@@ -58,7 +59,8 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
 
 # Multiblog's "context" mode:
 # The container's contents are evaluated once with a multi-blog context
-function multiblog_context($args, $content, &$ctx, &$repeat) {
+function multiblog_context($args, $content, &$ctx, &$repeat)
+{
     $prefix = _context_prefix($ctx->this_tag());
     $localvars = array($prefix . 'context', $prefix . 'blog_ids', 'local_blog_id');
 
@@ -92,7 +94,8 @@ function multiblog_context($args, $content, &$ctx, &$repeat) {
 
 # Multiblog's "loop" mode:
 # The container's contents are evaluated once per specified blog
-function multiblog_loop($args, $content, &$ctx, &$repeat) {
+function multiblog_loop($args, $content, &$ctx, &$repeat)
+{
     $prefix = _context_prefix($ctx->this_tag());
     $localvars = array('entries', 'current_timestamp', 'current_timestamp_end', 'category', 'archive_category', '_blogs', '_blogs_counter', 'blog', 'blog_id', $prefix . 'context', $prefix . 'blog_ids', 'local_blog_id');
     if (!isset($content)) {
@@ -101,12 +104,11 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
-        if ( (  isset($args['include_sites'])   && $args['include_sites'] === 'all' )
-            || (isset($args['include_blogs'])   && $args['include_blogs'] === 'all' )
-            || (isset($args['include_website']) && $args['include_website'] === 'all' )
-            || (isset($args['blog_ids'])        && $args['blog_ids'] === 'all' )
-            || (isset($args['site_ids'])        && $args['site_ids'] === 'all' ) )
-        {
+        if ((isset($args['include_sites'])   && $args['include_sites'] === 'all')
+            || (isset($args['include_blogs'])   && $args['include_blogs'] === 'all')
+            || (isset($args['include_website']) && $args['include_website'] === 'all')
+            || (isset($args['blog_ids'])        && $args['blog_ids'] === 'all')
+            || (isset($args['site_ids'])        && $args['site_ids'] === 'all')) {
             $args['class'] = '*';
         }
 
@@ -121,10 +123,11 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
 
         # Load multiblog access control list
         $acl = multiblog_load_acl($ctx);
-        if ( !empty($acl) && !empty($acl['allow']) )
+        if (!empty($acl) && !empty($acl['allow'])) {
             $args['allows'] = $acl['allow'];
-        elseif ( !empty($acl) && !empty($acl['deny']) )
+        } elseif (!empty($acl) && !empty($acl['deny'])) {
             $args['denies'] = $acl['deny'];
+        }
 
         if (!(
             isset($args['include_sites']) ||
@@ -167,7 +170,7 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = ($count == count($blogs));
         $repeat = true;
     } else {
-        # Restore localized variables once we're 
+        # Restore localized variables once we're
         # finished with all blogs in scope
         $ctx->restore($localvars);
         $repeat = false;
@@ -175,10 +178,10 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 
-function _context_prefix($tag) {
+function _context_prefix($tag)
+{
     $prefix = $tag === 'mtsites'      ? 'sites_'
             : $tag === 'mtchildsites' ? 'childsites_'
             : 'multiblog_';
     return $prefix;
 }
-?>

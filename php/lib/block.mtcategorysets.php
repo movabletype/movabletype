@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('_category_sets_counter', '_category_sets_glue', 'blog_id', 'blog', 'category_sets', 'category_set', 'content_type', '__out'), common_loop_vars());
 
     if (!isset($content)) {
@@ -38,22 +39,22 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                 $repeat = false;
                 return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
             }
-        } else { 
-            if( isset($args['content_type']) && !empty($args['content_type']) ) {
+        } else {
+            if (isset($args['content_type']) && !empty($args['content_type'])) {
                 $content_types = $ctx->mt->db()->fetch_content_types($args);
-                if(!$content_types || count($content_types) == 0) {
+                if (!$content_types || count($content_types) == 0) {
                     $repeat = false;
                     return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
                 }
                 $content_type = $content_types[0];
             }
-            if($content_type){
+            if ($content_type) {
                 $content_fields = $content_type->fields;
                 if (isset($content_fields)) {
                     $content_fields = $ctx->mt->db()->unserialize($content_fields);
                 }
-                foreach($content_fields as $f){
-                    if ( $f['type'] == 'categories' ) {
+                foreach ($content_fields as $f) {
+                    if ($f['type'] == 'categories') {
                         $cs = $ctx->mt->db()->fetch_category_set($f['options']['category_set']);
                         if ($cs) {
                             $category_sets[] = $cs;
@@ -61,10 +62,10 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
                     }
                 }
             }
-            if( !isset($category_sets) && $blog_id ){
+            if (!isset($category_sets) && $blog_id) {
                 $category_sets = $ctx->mt->db()->fetch_category_sets(array(
                     'blog_id' => $blog_id,
-                )); 
+                ));
             }
         }
         $ctx->stash('category_sets', $category_sets);
@@ -92,8 +93,9 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $ctx->stash('category_set', $cs);
         $ctx->stash('blog', $cs->blog());
         $ctx->stash('blog_id', $cs->blog_id);
-        if($content_type)
+        if ($content_type) {
             $ctx->stash('content_type', $content_type);
+        }
 
         if (!empty($glue) && !empty($content)) {
             if ($out) {
@@ -113,4 +115,3 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
 
     return $content;
 }
-

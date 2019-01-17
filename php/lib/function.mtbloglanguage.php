@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtbloglanguage($args, &$ctx) {
+function smarty_function_mtbloglanguage($args, &$ctx)
+{
     $blog = $ctx->stash('blog');
-    return normalize_language( $blog->blog_language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language(
+        $blog->blog_language,
+        $args['locale'],
+        $args['ietf']
+    );
 }
-?>

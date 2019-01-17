@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifcurrentpage($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifcurrentpage($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $limit = $ctx->stash('__pager_limit');
         $offset = $ctx->stash('__pager_offset');
@@ -16,4 +17,3 @@ function smarty_block_mtifcurrentpage($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

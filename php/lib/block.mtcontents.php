@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
+function smarty_block_mtcontents($args, $res, &$ctx, &$repeat)
+{
     $localvars = array(array('content', 'content_type', '_contents_counter','contents','current_timestamp','modification_timestamp','_contents_limit', 'current_timestamp_end', 'DateHeader', 'DateFooter', '_contents_glue', 'blog', 'blog_id', 'conditional', 'else_content', '__out'), common_loop_vars());
 
     $blog_id = $args['site_id'];
@@ -19,16 +20,18 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
     if (!isset($res)) {
         $ctx->localize($localvars);
 
-        $content_type = _get_content_type( $ctx, $args, $blog_terms );
-        if (!is_object($content_type))
+        $content_type = _get_content_type($ctx, $args, $blog_terms);
+        if (!is_object($content_type)) {
             $ctx->error($content_type);
-        foreach ( $content_type as $c ) {
+        }
+        foreach ($content_type as $c) {
             $content_type_id[] = $c->content_type_id;
         }
 
         $tag = $ctx->this_tag();
-        if ($tag == 'mtcontents' && isset($args['author']) )
+        if ($tag == 'mtcontents' && isset($args['author'])) {
             $ctx->__stash['contents'] = null;
+        }
         if ($ctx->__stash['contents']) {
             if (isset($args['id']) ||
                 isset($args['blog_id']) ||
@@ -62,17 +65,20 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
         $counter = 0;
         $limit = $args['limit'];
-        if (!ctype_digit($limit) && $limit === 'none')
+        if (!ctype_digit($limit) && $limit === 'none') {
             $limit = 0;
+        }
         $ctx->stash('__out', false);
 
-        if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
+        if (isset($args['offset']) && ($args['offset'] == 'auto')) {
             $l = 0;
-            if ( $args['limit'] )
+            if ($args['limit']) {
                 $l = $args['limit'];
+            }
             $ctx->stash('__pager_limit', $l);
-            if ( $_REQUEST['offset'] )
+            if ($_REQUEST['offset']) {
                 $ctx->stash('__pager_offset', $_REQUEST['offset']);
+            }
         }
 
         $contents = $ctx->stash('contents');
@@ -82,7 +88,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             $at = $ctx->stash('current_archive_type');
             try {
                 $archiver = ArchiverFactory::get_archiver($at);
-            } catch (Exception $e ) {
+            } catch (Exception $e) {
             }
             if (isset($args['id'])) {
                 $args['content_id'] = $args['id'];
@@ -114,13 +120,14 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                 }
             }
 
-            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+            if (isset($args['offset']) && ($args['offset'] == 'auto')) {
                 $total_count = 0;
+            }
             $contents = $ctx->mt->db()->fetch_contents($args, $content_type_id, $total_count);
-            if ( isset($args['offset']) && ($args['offset'] == 'auto') )
+            if (isset($args['offset']) && ($args['offset'] == 'auto')) {
                 $ctx->stash('__pager_total_count', $total_count);
+            }
             $ctx->stash('contents', $contents);
-
         }
 
         $ctx->stash('_contents_glue', $args['glue']);
@@ -138,8 +145,9 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
     $ctx->stash('conditional', empty($contents) ? 0 : 1);
     if (empty($contents)) {
         $ret = $ctx->_hdlr_if($args, $res, $ctx, $repeat, 0);
-        if (!$repeat)
-              $ctx->restore($localvars);
+        if (!$repeat) {
+            $ctx->restore($localvars);
+        }
         return $ret;
     }
 
@@ -172,10 +180,11 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
             $_REQUEST['content_ids_published'][$content->cd_id] = 1;
             $glue = $ctx->stash('_contents_glue');
             if (isset($glue) && !empty($res)) {
-                if ($out)
+                if ($out) {
                     $res = $glue . $res;
-                else
+                } else {
                     $ctx->stash('__out', true);
+                }
             }
             $count = $counter + 1;
             $ctx->__stash['vars']['__counter__'] = $count;
@@ -187,16 +196,17 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
     } else {
         $glue = $ctx->stash('_contents_glue');
-        if (isset($glue) && $out && !empty($res))
+        if (isset($glue) && $out && !empty($res)) {
             $res = $glue . $res;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $res;
 }
 
-function _get_content_type( $ctx, $args, $blog_terms ) {
-
+function _get_content_type($ctx, $args, $blog_terms)
+{
     $content_types = array();
     $not_found_blog_ids = array();
     $blog_ids = $blog_terms['blog_id'];
@@ -208,25 +218,28 @@ function _get_content_type( $ctx, $args, $blog_terms ) {
         foreach ($blog_ids as $blog_id) {
             $args['blog_id'] = $blog_id;
             $content_types = $ctx->mt->db()->fetch_content_types(array_merge($args, $blog_terms));
-            if (!isset($content_types))
+            if (!isset($content_types)) {
                 $not_found_blog_ids[] = $blog_id;
+            }
         }
     } else {
         $ct = $ctx->stash('content_type');
         if (!$ct) {
             $tmpl = $ctx->stash('template');
             if ($tmpl && $tmpl->template_content_type_id) {
-                $ct = $ctx->mt->db()->fetch_content_type( $tmpl->template_content_type_id );
-                if (!$ct)
+                $ct = $ctx->mt->db()->fetch_content_type($tmpl->template_content_type_id);
+                if (!$ct) {
                     return $ctx->mt->translate('No Content Type could be found.');
+                }
             }
         }
         if ($ct) {
             $content_types[] = $ct;
         } else {
             $content_types = $ctx->mt->db()->fetch_content_types($blog_terms);
-            if (!isset($content_types))
+            if (!isset($content_types)) {
                 $not_found_blog_ids[] = $blog_id;
+            }
         }
     }
 
@@ -243,4 +256,3 @@ function _get_content_type( $ctx, $args, $blog_terms ) {
 
     return $content_types;
 }
-?>

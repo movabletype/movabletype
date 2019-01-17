@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentrytitle($args, &$ctx) {
+function smarty_function_mtentrytitle($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     $title = $entry->entry_title;
     if (empty($title)) {
@@ -16,4 +17,3 @@ function smarty_function_mtentrytitle($args, &$ctx) {
     }
     return $title;
 }
-?>

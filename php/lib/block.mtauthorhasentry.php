@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtauthorhasentry($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtauthorhasentry($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $author = $ctx->stash('author');
         if (!$author) {
@@ -20,4 +21,3 @@ function smarty_block_mtauthorhasentry($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

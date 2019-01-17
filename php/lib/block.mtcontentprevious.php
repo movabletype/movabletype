@@ -6,7 +6,8 @@
 # $Id$
 
 require_once("archive_lib.php");
-function smarty_block_mtcontentprevious($args, $res, &$ctx, &$repeat) {
+function smarty_block_mtcontentprevious($args, $res, &$ctx, &$repeat)
+{
     $localvars = array('content', 'conditional', 'else_content');
 
     if (!isset($res)) {
@@ -31,4 +32,3 @@ function smarty_block_mtcontentprevious($args, $res, &$ctx, &$repeat) {
     }
     return $res;
 }
-?>

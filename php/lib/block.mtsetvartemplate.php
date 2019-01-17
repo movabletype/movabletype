@@ -5,12 +5,15 @@
 #
 # $Id$
 
-function smarty_block_mtsetvartemplate($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsetvartemplate($args, $content, &$ctx, &$repeat)
+{
     // parameters: name, value
     if (!isset($content)) {
         $name = $args['name'];
         $name or $name = $args['var'];
-        if (!$name) return '';
+        if (!$name) {
+            return '';
+        }
         $value = $args['token_fn'];
         $vars =& $ctx->__stash['vars'];
 
@@ -20,17 +23,17 @@ function smarty_block_mtsetvartemplate($args, $content, &$ctx, &$repeat) {
             $ref = $matches[3];
             if (preg_match('/^\$(.+)/', $ref, $ref_matches)) {
                 $ref = $vars[$ref_matches[1]];
-                if (!isset($ref))
+                if (!isset($ref)) {
                     $ref = chr(0);
+                }
             }
             if (array_key_exists($name, $vars)) {
                 $new_value =& $vars[$name];
-            }
-            else {
+            } else {
                 $new_value = array();
             }
             if ($br == '[') {
-                $new_value = array_pad($new_value, $ref, NULL);
+                $new_value = array_pad($new_value, $ref, null);
             }
             $new_value[$ref] = $value;
             $value =& $new_value;
@@ -46,4 +49,3 @@ function smarty_block_mtsetvartemplate($args, $content, &$ctx, &$repeat) {
     }
     return '';
 }
-?>

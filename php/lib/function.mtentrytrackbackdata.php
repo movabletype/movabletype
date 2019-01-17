@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtentrytrackbackdata($args, &$ctx) {
+function smarty_function_mtentrytrackbackdata($args, &$ctx)
+{
     return '';
 }
-?>

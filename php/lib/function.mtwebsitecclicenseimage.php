@@ -5,18 +5,25 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitecclicenseimage($args, &$ctx) {
+function smarty_function_mtwebsitecclicenseimage($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');
-    if (empty($blog)) return '';
+    if (empty($blog)) {
+        return '';
+    }
     $website = $blog->is_blog() ? $blog->website() : $blog;
-    if (empty($website)) return '';
+    if (empty($website)) {
+        return '';
+    }
     $cc = $website->blog_cc_license;
-    if (empty($cc)) return '';
-    if (preg_match('/(\S+) (\S+) (\S+)/', $cc, $matches))
-        return $matches[3];  # the third element is the image
+    if (empty($cc)) {
+        return '';
+    }
+    if (preg_match('/(\S+) (\S+) (\S+)/', $cc, $matches)) {
+        return $matches[3];
+    }  # the third element is the image
     return 'http://creativecommons.org/images/public/' .
         ($cc == 'pd' ? 'norights' : 'somerights');
 }
-?>

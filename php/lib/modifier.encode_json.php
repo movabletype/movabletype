@@ -5,8 +5,8 @@
 #
 # $Id$
 
-function smarty_modifier_encode_json($text) {
+function smarty_modifier_encode_json($text)
+{
     require_once("MTUtil.php");
     return encode_json($text);
 }
-?>

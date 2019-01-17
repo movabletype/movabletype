@@ -12,13 +12,16 @@ require_once("class.baseobject.php");
  */
 class Website extends Blog
 {
-    function Save() {
-        if (empty($this->blog_class))
+    public function Save()
+    {
+        if (empty($this->blog_class)) {
             $this->blog_class = 'website';
+        }
         return parent::Save();
     }
 
-    function blogs() {
+    public function blogs()
+    {
         $where = "blog_parent_id = " . $this->id;
 
         require_once('class.mt_blog.php');
@@ -27,15 +30,16 @@ class Website extends Blog
         return $blogs;
     }
 
-    function site_path() {
+    public function site_path()
+    {
         return $this->blog_site_path;
     }
 
-    function site_url() {
+    public function site_url()
+    {
         return $this->blog_site_url;
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Website', 'mt_blog_meta','blog_meta_blog_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Website', 'mt_blog_meta', 'blog_meta_blog_id');

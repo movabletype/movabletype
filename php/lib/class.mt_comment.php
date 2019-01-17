@@ -16,21 +16,23 @@ class Comment extends BaseObject
     protected $_prefix = "comment_";
     protected $_has_meta = true;
 
-    public function commenter() {
+    public function commenter()
+    {
         $commenter_id = $this->comment_commenter_id;
 
-        if (empty($commenter_id) || !is_numeric($commenter_id))
+        if (empty($commenter_id) || !is_numeric($commenter_id)) {
             return;
+        }
 
         require_once('class.mt_author.php');
         $author = new Author;
-        if ( $author->Load("author_id = $commenter_id") )
+        if ($author->Load("author_id = $commenter_id")) {
             return $author;
+        }
 
         return null;
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Comment', 'mt_comment_meta','comment_meta_comment_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Comment', 'mt_comment_meta', 'comment_meta_comment_id');

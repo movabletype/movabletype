@@ -15,4 +15,3 @@ class IPBanList extends BaseObject
     public $_table = 'mt_ipbanlist';
     protected $_prefix = "ipbanlist_";
 }
-?>

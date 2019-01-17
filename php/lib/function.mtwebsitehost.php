@@ -5,16 +5,22 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitehost($args, &$ctx) {
+function smarty_function_mtwebsitehost($args, &$ctx)
+{
     // status: complete
     // parameters: exclude_port, signature
     $blog = $ctx->stash('blog');
-    if (empty($blog)) return '';
+    if (empty($blog)) {
+        return '';
+    }
     $website = $blog->is_blog() ? $blog->website() : $blog;
-    if (empty($website)) return '';
+    if (empty($website)) {
+        return '';
+    }
     $host = $website->site_url();
-    if (!preg_match('!/$!', $host))
+    if (!preg_match('!/$!', $host)) {
         $host .= '/';
+    }
 
     if (preg_match('!^https?://([^/:]+)(:\d+)?/?!', $host, $matches)) {
         if ($args['signature']) {
@@ -27,4 +33,3 @@ function smarty_function_mtwebsitehost($args, &$ctx) {
         return '';
     }
 }
-?>

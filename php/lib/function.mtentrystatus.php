@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function status_text($s) {
+function status_text($s)
+{
     $status = array(
         1 => "Draft",    # STATUS_HOLD
         2 => "Publish",  # STATUS_RELEASE
@@ -17,8 +18,8 @@ function status_text($s) {
     return $mt->translate($status[$s]);
 }
 
-function smarty_function_mtentrystatus($args, &$ctx) {
+function smarty_function_mtentrystatus($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     return status_text($entry->entry_status);
 }
-?>

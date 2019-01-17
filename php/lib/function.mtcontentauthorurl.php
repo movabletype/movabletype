@@ -5,14 +5,19 @@
 #
 # $Id$
 
-function smarty_function_mtcontentauthorurl($args, &$ctx) {
+function smarty_function_mtcontentauthorurl($args, &$ctx)
+{
     $content = $ctx->stash('content');
-    if (!isset($content))
+    if (!isset($content)) {
         return $ctx->error($ctx->mt->translate(
-            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentAuthorURL" ));
+            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?",
+            "mtContentAuthorURL"
+        ));
+    }
 
     $author = $content->author();
-    if (!$author) return '';
+    if (!$author) {
+        return '';
+    }
     return $author->url;
 }
-?>

@@ -7,9 +7,10 @@
 
 require_once('mtdb.base.php');
 
-class MTDatabasesqlite extends MTDatabase {
-
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+class MTDatabasesqlite extends MTDatabase
+{
+    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '')
+    {
         if (extension_loaded('pdo') && extension_loaded('pdo_sqlite')) {
             $prefix = 'pdo_sqlite';
             $this->pdo_enabled = true;
@@ -22,21 +23,25 @@ class MTDatabasesqlite extends MTDatabase {
         return true;
     }
 
-    function limit_by_day_sql($column, $days) {
+    public function limit_by_day_sql($column, $days)
+    {
         return 'datetime(' . $column . ', \'+' .
             $days . ' days\') >= date(\'now\', \'localtime\')';
     }
 
-    function set_names($mt) {
+    public function set_names($mt)
+    {
         return;
     }
 
-    function unserialize($data) {
+    public function unserialize($data)
+    {
         $data = stripslashes($data);  #SQLite uses addslashes for binary data
         return parent::unserialize($data);
     }
 
-    function apply_extract_date($part, $column) {
+    public function apply_extract_date($part, $column)
+    {
         $lowPart = strtolower($part);
         if ($lowPart == 'year') {
             $part = "'%Y'";
@@ -51,4 +56,3 @@ class MTDatabasesqlite extends MTDatabase {
         return "strftime($part, $column)";
     }
 }
-?>

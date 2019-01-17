@@ -5,8 +5,11 @@
 #
 # $Id$
 
-function smarty_modifier_mteval($text, $arg) {
-    if (!$arg) return $text;
+function smarty_modifier_mteval($text, $arg)
+{
+    if (!$arg) {
+        return $text;
+    }
 
     $mt = MT::get_instance();
     $ctx =& $mt->context();
@@ -20,4 +23,3 @@ function smarty_modifier_mteval($text, $arg) {
     ob_end_clean();
     return $_contents;
 }
-?>

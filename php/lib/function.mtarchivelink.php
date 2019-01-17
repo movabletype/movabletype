@@ -5,22 +5,23 @@
 #
 # $Id$
 require_once('archive_lib.php');
-function smarty_function_mtarchivelink($args, &$ctx) {
+function smarty_function_mtarchivelink($args, &$ctx)
+{
     $blog = $ctx->stash('blog');
     $at = $args['type'];
     $at or $at = $args['archive_type'];
     $at or $at = $ctx->stash('current_archive_type');
     $ts = $ctx->stash('current_timestamp');
     if ($at == 'Monthly') {
-         $ts = substr($ts, 0, 6) . '01000000';
+        $ts = substr($ts, 0, 6) . '01000000';
     } elseif ($at == 'Daily') {
-         $ts = substr($ts, 0, 8) . '000000';
+        $ts = substr($ts, 0, 8) . '000000';
     } elseif ($at == 'Weekly') {
-         require_once("MTUtil.php");
-         list($ws, $we) = start_end_week($ts);
-         $ts = $ws;
+        require_once("MTUtil.php");
+        list($ws, $we) = start_end_week($ts);
+        $ts = $ws;
     } elseif ($at == 'Yearly') {
-         $ts = substr($ts, 0, 4) . '0101000000';
+        $ts = substr($ts, 0, 4) . '0101000000';
     } elseif ($at == 'Individual' || $at == 'Page') {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('EntryPermalink', $args);
@@ -28,7 +29,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('ContentPermalink', $args);
     } elseif ($at == 'Category' || $at == 'ContentType-Category') {
-        if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
+        if ($at == 'ContentType-Category' && !$ctx->stash('category_set')) {
             return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
         }
         return $ctx->tag('CategoryArchiveLink', $args);
@@ -43,10 +44,11 @@ function smarty_function_mtarchivelink($args, &$ctx) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;
-        if ($ext) $ext = '.' . $ext;
+        if ($ext) {
+            $ext = '.' . $ext;
+        }
         $index .= $ext;
         $link = preg_replace('/\/(#.*)?$/', "/$index\$1", $link);
     }
     return $link;
 }
-?>

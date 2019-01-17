@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcontentfieldfooter($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcontentfieldfooter($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $ctx->localize(array('conditional', 'else_content'));
         $ctx->stash('conditional', $ctx->stash('ContentFieldFooter') == 1);
@@ -18,4 +19,3 @@ function smarty_block_mtcontentfieldfooter($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

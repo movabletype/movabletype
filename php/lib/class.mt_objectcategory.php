@@ -15,4 +15,3 @@ class ObjectCategory extends BaseObject
     public $_table = 'mt_objectcategory';
     protected $_prefix = "objectcategory_";
 }
-?>

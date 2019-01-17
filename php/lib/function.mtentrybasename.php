@@ -5,13 +5,16 @@
 #
 # $Id$
 
-function smarty_function_mtentrybasename($args, &$ctx) {
+function smarty_function_mtentrybasename($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     if (!$entry && $ctx->stash('content')) {
         require_once('function.mtcontentidentifier.php');
         return smarty_function_mtcontentidentifier($args, $ctx);
     }
-    if (!$entry) return '';
+    if (!$entry) {
+        return '';
+    }
     $basename = $entry->entry_basename;
     if ($sep = $args['separator']) {
         if ($sep == '-') {
@@ -22,4 +25,3 @@ function smarty_function_mtentrybasename($args, &$ctx) {
     }
     return $basename;
 }
-?>

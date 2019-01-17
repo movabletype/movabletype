@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function _file_template_format($m) {
+function _file_template_format($m)
+{
     static $f = array(
         'a' => "<MTAuthorBasename DIR>",
         '-a' => "<MTAuthorBasename separator='-'>",
@@ -42,7 +43,8 @@ function _file_template_format($m) {
     return isset($f[$m[1]]) ? $f[$m[1]] : $m[1];
 }
 
-function smarty_function_mtfiletemplate($args, &$ctx) {
+function smarty_function_mtfiletemplate($args, &$ctx)
+{
     static $_file_template_cache = array();
     $at = $ctx->stash('archive_type');
     $at or $at = $ctx->stash('current_archive_type');
@@ -57,7 +59,9 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
         );
         $format = $formats[ $at ];
     }
-    if (!$format) return '';
+    if (!$format) {
+        return '';
+    }
 
     #my ($dir, $sep);
     if ($args['separator']) {
@@ -68,8 +72,11 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
         $sep = "";
     }
     $orig_format = $format;
-    $format = preg_replace_callback('/%([_-]?[A-Za-z])/',
-        '_file_template_format', $format);
+    $format = preg_replace_callback(
+        '/%([_-]?[A-Za-z])/',
+        '_file_template_format',
+        $format
+    );
     $format = preg_replace('/SEP/', $sep, $format);
     $format = preg_replace('/DIR/', $dir, $format);
 
@@ -93,4 +100,3 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
     $file = preg_replace('/(^\/|\/$)/', '', $file);
     return $file;
 }
-?>

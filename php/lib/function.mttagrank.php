@@ -5,13 +5,16 @@
 #
 # $Id$
 
-function smarty_function_mttagrank($args, &$ctx) {
+function smarty_function_mttagrank($args, &$ctx)
+{
     $blog_id = $ctx->stash('blog_id');
     $max_level = $args['max'];
     $max_level or $max_level = 6;
 
     $tag = $ctx->stash('Tag');
-    if (!$tag) return '';
+    if (!$tag) {
+        return '';
+    }
 
     $class = $ctx->stash('class_type');
     $ntags = $ctx->stash('all_tag_count');
@@ -30,15 +33,22 @@ function smarty_function_mttagrank($args, &$ctx) {
                 return '';
             }
         }
-        if (!is_array($tags)) $tags = array();
+        if (!is_array($tags)) {
+            $tags = array();
+        }
 
-        $min = 0; $max = 0;
+        $min = 0;
+        $max = 0;
         $ntags = 0;
         $tagnames = '';
         foreach ($tags as $_tag) {
             $count = $_tag->tag_count;
-            if ($count > $max) $max = $count;
-            if ($count < $min or $min == 0) $min = $count;
+            if ($count > $max) {
+                $max = $count;
+            }
+            if ($count < $min or $min == 0) {
+                $min = $count;
+            }
             $ntags += $count;
         }
         $ctx->stash('tag_min_count', $min);
@@ -60,11 +70,10 @@ function smarty_function_mttagrank($args, &$ctx) {
     }
 
     $count = $tag->tag_count;
-    if($count == ''){
+    if ($count == '') {
         $count = $ctx->mt->db()->tags_entry_count($tag->tag_id, $class);
     }
     $level = intval(log($count - $min + 1) * $factor);
 
     return $max_level - $level;
 }
-?>

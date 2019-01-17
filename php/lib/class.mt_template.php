@@ -16,14 +16,15 @@ class Template extends BaseObject
     protected $_prefix = "template_";
     protected $_has_meta = true;
 
-    public function blog() {
-        if ($this->template_blog_id === 0)
+    public function blog()
+    {
+        if ($this->template_blog_id === 0) {
             return null;
+        }
 
         return parent::blog();
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Template', 'mt_template_meta','template_meta_template_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Template', 'mt_template_meta', 'template_meta_template_id');

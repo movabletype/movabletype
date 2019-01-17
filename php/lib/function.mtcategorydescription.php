@@ -5,10 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtcategorydescription($args, &$ctx) {
+function smarty_function_mtcategorydescription($args, &$ctx)
+{
     require_once("MTUtil.php");
     $cat = get_category_context($ctx);
-    if (!$cat) return '';
+    if (!$cat) {
+        return '';
+    }
     return $cat->category_description;
 }
-?>

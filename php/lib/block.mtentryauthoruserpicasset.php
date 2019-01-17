@@ -5,20 +5,24 @@
 #
 # $Id$
 
-function smarty_block_mtentryauthoruserpicasset($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryauthoruserpicasset($args, $content, &$ctx, &$repeat)
+{
     $entry = $ctx->stash('entry');
     if (!$entry) {
         return $ctx->error("No entry available");
     }
 
     $author = $entry->author();
-    if (!$author) return '';
+    if (!$author) {
+        return '';
+    }
 
     $asset = $author->userpic();
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
 
-    $ctx->stash('asset',  $asset);
+    $ctx->stash('asset', $asset);
 
     return $content;
 }
-?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_modifier_spam_protect($text, $value) {
+function smarty_modifier_spam_protect($text, $value)
+{
     # defined in mt.php itself
     if (isset($value) && $value) {
         return spam_protect($text);
@@ -13,4 +14,3 @@ function smarty_modifier_spam_protect($text, $value) {
         return $text;
     }
 }
-?>

@@ -12,13 +12,14 @@ require_once("class.mt_category.php");
  */
 class Folder extends Category
 {
-    public function Save() {
-        if (empty($this->category_class))
+    public function Save()
+    {
+        if (empty($this->category_class)) {
             $this->class = 'folder';
+        }
         parent::Save();
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Folder', 'mt_category_meta','category_meta_category_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Folder', 'mt_category_meta', 'category_meta_category_id');

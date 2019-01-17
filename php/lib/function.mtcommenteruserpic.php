@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommenteruserpic($args, &$ctx) {
+function smarty_function_mtcommenteruserpic($args, &$ctx)
+{
     return '';
 }
-?>

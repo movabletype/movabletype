@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtblogcategorycount($args, &$ctx) {
+function smarty_function_mtblogcategorycount($args, &$ctx)
+{
     require_once('multiblog.php');
     multiblog_function_wrapper('mtblogcategorycount', $args, $ctx);
 
@@ -15,4 +16,3 @@ function smarty_function_mtblogcategorycount($args, &$ctx) {
     $count = $ctx->mt->db()->blog_category_count($args);
     return $ctx->count_format($count, $args);
 }
-?>

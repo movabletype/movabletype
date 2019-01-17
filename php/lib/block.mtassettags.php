@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassettags($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count','all_tag_count', '__out', 'class_type'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -15,7 +16,9 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         $include_private = empty($args['include_private']) ? 0 : 1;
 
         $tags = $ctx->mt->db()->fetch_asset_tags(array('asset_id' => $asset->asset_id, 'blog_id' => $blog_id, 'include_private' => $include_private));
-        if (!is_array($tags)) $tags = array();
+        if (!is_array($tags)) {
+            $tags = array();
+        }
         $ctx->stash('_tags', $tags);
         $ctx->stash('__out', false);
         $ctx->stash('class_type', 'asset');
@@ -37,17 +40,18 @@ function smarty_block_mtassettags($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = count($tags) == $counter + 1;
         $repeat = true;
         if (isset($args['glue']) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $args['glue'] . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && $out && !empty($content)) {
             $content = $args['glue'] . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

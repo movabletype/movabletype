@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_modifier_filters($text,$filters) {
+function smarty_modifier_filters($text, $filters)
+{
     // status: complete
     $mt = MT::get_instance();
     $ctx =& $mt->context();
@@ -14,4 +15,3 @@ function smarty_modifier_filters($text,$filters) {
 
     return $text;
 }
-?>

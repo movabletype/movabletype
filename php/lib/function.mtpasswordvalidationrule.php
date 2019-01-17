@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtpasswordvalidationrule($args, &$ctx) {
+function smarty_function_mtpasswordvalidationrule($args, &$ctx)
+{
     $app =  $ctx->mt;
 
     $constrains = $app->config('UserPasswordValidation');
@@ -25,5 +26,3 @@ function smarty_function_mtpasswordvalidationrule($args, &$ctx) {
     }
     return $msg;
 }
-    
-?>

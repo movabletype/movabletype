@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentriescount($args, &$ctx) {
+function smarty_function_mtentriescount($args, &$ctx)
+{
     if ($ctx->stash('inside_with_subcategories')) {
         $entries = $ctx->stash('entries');
         if (empty($entries)) {
@@ -18,18 +19,18 @@ function smarty_function_mtentriescount($args, &$ctx) {
         # $count is set
     } else {
         $entries = $ctx->stash('entries');
-        if (empty($entries) || !is_array($entries)){
+        if (empty($entries) || !is_array($entries)) {
             $blog = $ctx->stash('blog');
             $args['blog_id'] = $blog->blog_id;
             $entries = $ctx->mt->db()->fetch_entries($args);
         }
     
         $lastn = $ctx->stash('_entries_lastn');
-        if ($lastn && $lastn <= count($entries))
+        if ($lastn && $lastn <= count($entries)) {
             $count = $lastn;
-        else
+        } else {
             $count = count($entries);
+        }
     }
     return $ctx->count_format($count, $args);
 }
-?>

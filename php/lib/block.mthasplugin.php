@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mthasplugin($args, $content, &$ctx, &$repeat) {
+function smarty_block_mthasplugin($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $name = $args['name'];
         if (!isset($name)) {
@@ -22,4 +23,3 @@ function smarty_block_mthasplugin($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

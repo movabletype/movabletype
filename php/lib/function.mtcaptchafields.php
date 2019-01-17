@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('captcha_lib.php');
-function smarty_function_mtcaptchafields($args, &$ctx) {
+function smarty_function_mtcaptchafields($args, &$ctx)
+{
     // status: complete
     // parameters: none
     $blog = $ctx->stash('blog');
@@ -25,4 +26,3 @@ function smarty_function_mtcaptchafields($args, &$ctx) {
         return '';
     }
 }
-?>

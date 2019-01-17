@@ -4,7 +4,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-function smarty_function_mtcontentlabel($args, &$ctx) {
+function smarty_function_mtcontentlabel($args, &$ctx)
+{
     $cd = $ctx->stash('content');
 
     return isset($cd) ? $cd->label() : '';

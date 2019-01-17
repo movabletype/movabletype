@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsiteentrycount($args, &$ctx) {
+function smarty_function_mtsiteentrycount($args, &$ctx)
+{
     return smarty_function_mtblogentrycount($args, $ctx);
 }
-?>

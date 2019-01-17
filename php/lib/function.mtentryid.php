@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtentryid($args, &$ctx) {
+function smarty_function_mtentryid($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
     if (!$entry && $ctx->stash('content')) {
         require_once('function.mtcontentid.php');
@@ -13,4 +14,3 @@ function smarty_function_mtentryid($args, &$ctx) {
     }
     return (isset($args['pad']) && $args['pad']) ? sprintf("%06d", $entry->entry_id) : $entry->entry_id;
 }
-?>

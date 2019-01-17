@@ -15,4 +15,3 @@ class Notification extends BaseObject
     public $_table = 'mt_notification';
     protected $_prefix = "notification_";
 }
-?>

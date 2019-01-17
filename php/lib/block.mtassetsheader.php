@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassetsheader($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassetsheader($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $counter = $ctx->stash('_assets_counter');
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $counter == 1);
@@ -13,4 +14,3 @@ function smarty_block_mtassetsheader($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

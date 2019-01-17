@@ -6,7 +6,8 @@
 # $Id$
 
 require_once('block.mttoplevelcategories.php');
-function smarty_block_mttoplevelfolders($args, $content, &$ctx, &$repeat) {
+function smarty_block_mttoplevelfolders($args, $content, &$ctx, &$repeat)
+{
     $localvars = array('category_set');
 
     if (!isset($content)) {
@@ -25,4 +26,3 @@ function smarty_block_mttoplevelfolders($args, $content, &$ctx, &$repeat) {
 
     return $ret;
 }
-?>

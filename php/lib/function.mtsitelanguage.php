@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitelanguage($args, &$ctx) {
+function smarty_function_mtsitelanguage($args, &$ctx)
+{
     return smarty_function_mtbloglanguage($args, $ctx);
 }
-?>

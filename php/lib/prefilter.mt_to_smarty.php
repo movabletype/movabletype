@@ -6,17 +6,17 @@
 # $Id$
 
 /* Movable Type template -> Smarty template
-  
+
     <$MTVariable$> -> {Variable}
-  
+
     <MTVariable> -> {Variable}
-  
+
     <MTVariable this="that"> -> {Variable this="that"}
-  
+
     <MTVariable dirify="1"> -> {Variable|dirify:"1"}
-  
+
     <MTEntries>...</MTEntries> -> {Entries}...{/Entries}
-  
+
     <MTIfNonEmpty var="MTVariable">
       ...
     <MTElse>...</MTElse>
@@ -42,7 +42,8 @@ $conditional, the block function must return $content either way.
 This allows the inner 'if' statements to do their work. See above
 for how the '$conditional' variable is used.
 */
-function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
+function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2)
+{
     // used to serialize attributes when creating tag stack for
     // function tags.
     $var_export = function_exists('var_export');
@@ -58,13 +59,17 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     # special tag step for stripping any conditional 'static' code.
     $tpl_source = preg_replace('/<MT:?IfStatic[^>]*?>.*?<\/MT:?IfStatic>/is', '', $tpl_source);
 
-    while(preg_match('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', $tpl_source)){
+    while (preg_match('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', $tpl_source)) {
         $tpl_source = preg_replace('/<MT:?Ignore\b[^>]*?>((?!<MT:?Ignore\b[^>]*?>).)*?<\/MT:?Ignore>/is', '', $tpl_source);
     }
 
 
-    if ($parts = preg_split('!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is', $tpl_source, -1,
-                       PREG_SPLIT_DELIM_CAPTURE)) {
+    if ($parts = preg_split(
+        '!(<(?:\$?|/)MT(?:(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(?:\$?|/)>)!is',
+        $tpl_source,
+        -1,
+                       PREG_SPLIT_DELIM_CAPTURE
+    )) {
         foreach ($parts as $part) {
             if (!preg_match('!<(\$?|/)(MT:?(?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)+?)(\$?|/)>!is', $part, $matches)) {
                 $smart_source .= $part;
@@ -82,9 +87,12 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
             $mttag = preg_replace('/:/', '', strtolower($mttag));
             $attrs = array();
 
-            if (preg_match_all('!(?:((?:\w|:)+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s', $args,
-                               $arglist, PREG_SET_ORDER)) {
-
+            if (preg_match_all(
+                '!(?:((?:\w|:)+)\s*=\s*(["\'])((?:<[^>]*?>|\'[^\']*?\'|"[^"]*?"|.)*?)?\2((?:[,:](["\'])((?:<[^>]*?>|.)*?)?\5)*)?|(\w+))!s',
+                $args,
+                               $arglist,
+                PREG_SET_ORDER
+            )) {
                 for ($a = 0; $a < count($arglist); $a++) {
                     if (isset($arglist[$a][7])) {
                         $attr = 'name';
@@ -98,10 +106,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                     }
                     if (preg_match('/^\$([A-Za-z_](\w|\.)*)$/', $attrs[$attr], $matches)) {
                         if (preg_match('/^(config|request)\.(.+)$/i', $matches[1], $m)) {
-                            if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2]) ) {
+                            if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2])) {
                                 $attrs[$attr] = $mt->config(strtolower($m[2]));
-                            }
-                            elseif (strtolower($m[1]) == 'request') {
+                            } elseif (strtolower($m[1]) == 'request') {
                                 $attrs[$attr] = '$smarty.request.' . $m[2];
                             }
                         } else {
@@ -110,11 +117,12 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         $quote = '';
                     }
                     if ($ctx->global_attr[$attr]) {
-                        if( (preg_match('!^MTVar!i', $mttag ) || preg_match('!^MTGetVar!i', $mttag ) )
+                        if ((preg_match('!^MTVar!i', $mttag) || preg_match('!^MTGetVar!i', $mttag))
                             && (
-                                (isset($attrs['name']) && preg_match('/\[.*\]/i', $attrs['name'] ))
-                                || (isset($attrs['index']) || isset($attrs['key']) ))
-                            && $attr == 'setvar'){
+                                (isset($attrs['name']) && preg_match('/\[.*\]/i', $attrs['name']))
+                                || (isset($attrs['index']) || isset($attrs['key']))
+                            )
+                            && $attr == 'setvar') {
                             $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
                         } else {
                             $modargs .= '|';
@@ -125,14 +133,15 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                             }
                             $modargs .= ':' . $quote . $attrs[$attr] . $quote;
                             if (isset($arglist[$a][4])) {
-                               $modargs .= _parse_modifier($arglist[$a][4]);
+                                $modargs .= _parse_modifier($arglist[$a][4]);
                             }
                         }
                     } else {
                         // reconstruct attribute in case we modified
                         // the attribute to handle variable references
-                        if($attrs[$attr] == '\\')
+                        if ($attrs[$attr] == '\\') {
                             $attrs[$attr] = addslashes($attrs[$attr]);
+                        }
                         $attrargs .= ' ' . $attr . '=' . $quote . $attrs[$attr] . $quote;
                         if (isset($arglist[$a][4])) {
                             $attrargs .= _parse_modifier($arglist[$a][4]);
@@ -181,7 +190,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                  ($mttag == 'mtelse' || $mttag == 'mtelseif')) &&
                 $close != '/') {
                 $smart_source .= $ldelim.'/if'.$rdelim;
-
             }
 
             $tokname = null;
@@ -196,7 +204,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                 }
             }
 
-            $open_mod_args = false; $close_mod_args = ''; $uniqid = '';
+            $open_mod_args = false;
+            $close_mod_args = '';
+            $uniqid = '';
             $fn_tag = 0;
             if (_block_handler_exists($ctx2, $mttag)) {
                 if ($open == '/') {
@@ -232,7 +242,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                     }
                 }
             } else {
-                if ($close == '/') $close = '';
+                if ($close == '/') {
+                    $close = '';
+                }
                 $fn_tag = 1;
             }
 
@@ -299,7 +311,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
 
             // extra newline is eaten by PHP but will cause any actual
             // newline from user to be preserved:
-            if($open != '/' && ( $fn_tag || $conditional ) ){
+            if ($open != '/' && ($fn_tag || $conditional)) {
                 $smart_source .= "\n";
             }
         }
@@ -309,13 +321,17 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
 
     // allow normal php markers to work-- change them to
     // smarty php blocks...
-    $smart_source = preg_replace('/<\?php(\s*.*?)\?>/s',
-                                 $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
-#    echo $smart_source;
+    $smart_source = preg_replace(
+        '/<\?php(\s*.*?)\?>/s',
+                                 $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim,
+        $smart_source
+    );
+    #    echo $smart_source;
     return $smart_source;
 }
 
-function _parse_modifier($str) {
+function _parse_modifier($str)
+{
     if (!preg_match('/,/', $str)) {
         return $str;
     }
@@ -328,10 +344,9 @@ function _parse_modifier($str) {
                 if (preg_match('/^([\'"])\$([A-Za-z_](\w|\.)*)\1$/', $val, $second_matches)) {
                     $quote = $second_matches[1];
                     if (preg_match('/^(config|request)\.(.+)$/i', $second_matches[2], $m)) {
-                        if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2]) ) {
+                        if (strtolower($m[1]) == 'config' && !preg_match('/(password|secret)/i', $m[2])) {
                             $val = $quote . $mt->config(strtolower($m[2])) . $quote;
-                        }
-                        elseif (strtolower($m[1]) == 'request') {
+                        } elseif (strtolower($m[1]) == 'request') {
                             $val = '$smarty.request.' . $m[2];
                         }
                     } else {
@@ -347,15 +362,17 @@ function _parse_modifier($str) {
     }
 }
 
-function _block_handler_exists(&$smarty, $name) {
-    if (!is_null($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
+function _block_handler_exists(&$smarty, $name)
+{
+    if (!is_null($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) {
+        return true;
+    }
     $_plugin_filename = 'block.' . $name . '.php';
-    foreach ($smarty->smarty->plugins_dir as $value) { 
-        $filepath = $value .$_plugin_filename; 
-        if (file_exists($filepath)) { 
-            return true; 
-        } 
-    } 
+    foreach ($smarty->smarty->plugins_dir as $value) {
+        $filepath = $value .$_plugin_filename;
+        if (file_exists($filepath)) {
+            return true;
+        }
+    }
     return false;
 }
-?>

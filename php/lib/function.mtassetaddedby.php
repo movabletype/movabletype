@@ -5,16 +5,19 @@
 #
 # $Id$
 
-function smarty_function_mtassetaddedby($args, &$ctx) {
+function smarty_function_mtassetaddedby($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
 
     require_once('class.mt_author.php');
     $author = new Author();
     $author->Load("author_id = " . $asset->created_by);
-    if ($author->nickname != '')
+    if ($author->nickname != '') {
         return $author->nickname;
+    }
 
     return $author->name;
 }
-?>

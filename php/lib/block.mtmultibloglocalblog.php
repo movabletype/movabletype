@@ -5,8 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtmultibloglocalblog($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtmultibloglocalblog($args, $content, &$ctx, &$repeat)
+{
     require_once('block.mtsiteslocalsite.php');
     return smarty_block_mtsiteslocalsite($args, $content, $ctx, $repeat);
 }
-?>

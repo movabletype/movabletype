@@ -5,13 +5,17 @@
 #
 # $Id$
 
-function smarty_block_mtentryprimarycategory($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryprimarycategory($args, $content, &$ctx, &$repeat)
+{
     $localvars = array( 'category' );
     if (!isset($content)) {
         $ctx->localize($localvars);
         $entry = $ctx->stash('entry');
         $cat = $entry->category();
-        if ( empty( $cat ) ) { $repeat = false; return ''; }
+        if (empty($cat)) {
+            $repeat = false;
+            return '';
+        }
         $ctx->stash('category', $cat);
     } else {
         $ctx->restore($localvars);
@@ -19,4 +23,3 @@ function smarty_block_mtentryprimarycategory($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

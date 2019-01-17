@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcontentsfooter($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcontentsfooter($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $contents = $ctx->stash('contents');
         $counter = $ctx->stash('_contents_counter');
@@ -14,4 +15,3 @@ function smarty_block_mtcontentsfooter($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

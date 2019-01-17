@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtsitepagecount($args, &$ctx) {
+function smarty_function_mtsitepagecount($args, &$ctx)
+{
     return smarty_function_mtblogpagecount($args, $ctx);
 }
-?>

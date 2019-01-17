@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentreplytolink($args, &$ctx) {
+function smarty_function_mtcommentreplytolink($args, &$ctx)
+{
     return '';
 }
-?>

@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorcontentcount($args, &$ctx) {
+function smarty_function_mtauthorcontentcount($args, &$ctx)
+{
     $author = $ctx->stash('author');
     if (empty($author)) {
         $content = $ctx->stash('content');
@@ -34,4 +35,3 @@ function smarty_function_mtauthorcontentcount($args, &$ctx) {
     $count = $ctx->mt->db()->author_content_count($args);
     return $ctx->count_format($count, $args);
 }
-?>

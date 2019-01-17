@@ -5,11 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtpasswordvalidation($args, &$ctx) {
+function smarty_function_mtpasswordvalidation($args, &$ctx)
+{
     $app =  $ctx->mt;
 
     if (!isset($args['form'])) {
-        return $ctx->error($ctx->mt->translate('You used an [_1] tag without a valid [_2] attribute.', array( "<MTPasswordValidation>", "form") ));
+        return $ctx->error($ctx->mt->translate('You used an [_1] tag without a valid [_2] attribute.', array( "<MTPasswordValidation>", "form")));
     }
     if (!isset($args['password'])) {
         return $ctx->error($ctx->mt->translate('You used an [_1] tag without a valid [_2] attribute.', array( "<MTPasswordValidation>", "password")));
@@ -25,7 +26,7 @@ function smarty_function_mtpasswordvalidation($args, &$ctx) {
 
     $constrains = $app->config('UserPasswordValidation');
     $min_length = $app->config('UserPasswordMinLength');
-    if (preg_match("/\D/", $min_length) || ($min_length < 1) ) {
+    if (preg_match("/\D/", $min_length) || ($min_length < 1)) {
         $min_length = 8;
     }
 
@@ -49,7 +50,6 @@ JSCRIPT;
                 return "<__trans phrase="Password should include letters and numbers">";
             }
 JSCRIPT;
-
     }
     if (array_search("upperlower", $constrains) !== false) {
         $vs .= <<< JSCRIPT
@@ -57,7 +57,6 @@ JSCRIPT;
                 return "<__trans phrase="Password should include lowercase and uppercase letters">";
             }
 JSCRIPT;
-
     }
     if (array_search("symbol", $constrains) !== false) {
         $vs .= <<< JSCRIPT
@@ -65,7 +64,6 @@ JSCRIPT;
                 return "<__trans phrase="Password should contain symbols such as #!$%">";
             }
 JSCRIPT;
-
     }
     $vs .= <<< JSCRIPT
           return "";
@@ -93,7 +91,4 @@ JSCRIPT;
 JSCRIPT;
 
     return $vs;
-
 }
-
-?>

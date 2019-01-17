@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtarchivefile($args, &$ctx) {
+function smarty_function_mtarchivefile($args, &$ctx)
+{
     $at = $ctx->stash('archive_type');
     $at or $at = $ctx->stash('current_archive_type');
     if (!$at or $at == 'Individual' or $at == 'Page') {
@@ -14,16 +15,19 @@ function smarty_function_mtarchivefile($args, &$ctx) {
             $entries = $ctx->stash('entries');
             $e = $entries[0];
         }
-        if (!$e) return $ctx->error("Could not determine entry");
+        if (!$e) {
+            return $ctx->error("Could not determine entry");
+        }
         $f = $e->entry_basename;
-    }
-    elseif (!$at or $at == 'ContentType') {
+    } elseif (!$at or $at == 'ContentType') {
         $c = $ctx->stash('content');
         if (!$c) {
             $contents = $ctx->stash('contents');
             $c = $entries[0];
         }
-        if (!$c) return $ctx->error("Could not determine content");
+        if (!$c) {
+            return $ctx->error("Could not determine content");
+        }
         $f = $c->identifier;
     } else {
         $f = $ctx->stash('_basename')
@@ -38,9 +42,9 @@ function smarty_function_mtarchivefile($args, &$ctx) {
         }
     }
     if ($args['separator']) {
-        if ($args['separator'] == '-')
+        if ($args['separator'] == '-') {
             $f = preg_replace('/_/', '-', $f);
+        }
     }
     return $f;
 }
-?>

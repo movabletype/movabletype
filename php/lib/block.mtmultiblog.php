@@ -4,7 +4,8 @@
 # For more information, consult your Movable Type license.
 #
 # $Id$
-function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat)
+{
     $args['class'] = '*';
     if (isset($args['site_ids'])) {
         $args['blog_ids'] = $args['site_ids'];
@@ -13,4 +14,3 @@ function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
     require_once('block.mtblogs.php');
     return smarty_block_mtblogs($args, $content, $ctx, $repeat);
 }
-?>

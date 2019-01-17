@@ -5,10 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtassetlabel($args, &$ctx) {
+function smarty_function_mtassetlabel($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
 
     return $asset->asset_label;
 }
-?>

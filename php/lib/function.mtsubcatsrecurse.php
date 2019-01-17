@@ -5,8 +5,9 @@
 #
 # $Id$
 
-function smarty_function_mtsubcatsrecurse($args, &$ctx) {
-  $localvars = array('subCatsDepth', 'category', 'subCatIsFirst', 'subCatIsLast', 'subFolderHead', 'subFolderFoot');
+function smarty_function_mtsubcatsrecurse($args, &$ctx)
+{
+    $localvars = array('subCatsDepth', 'category', 'subCatIsFirst', 'subCatIsLast', 'subFolderHead', 'subFolderFoot');
     $fn = $ctx->stash('subCatTokens');
     #if (!method_exists($ctx,$fn)) {
     #    return $ctx->error("Called SubCatsRecurse outside of SubCategories tag!");
@@ -19,7 +20,7 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $depth = $ctx->stash('subCatsDepth') or 0;
 
     # If we're too deep, return an emtry string because we're done
-    if ( $max_depth && $depth >= $max_depth ) {
+    if ($max_depth && $depth >= $max_depth) {
         return '';
     }
 
@@ -73,4 +74,3 @@ function smarty_function_mtsubcatsrecurse($args, &$ctx) {
     $ctx->restore($localvars);
     return $res;
 }
-?>

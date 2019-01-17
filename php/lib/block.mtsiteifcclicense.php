@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_block_mtsiteifcclicense($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtsiteifcclicense($args, $content, &$ctx, &$repeat)
+{
     return smarty_block_mtblogifcclicense($args, $content, $ctx, $repeat);
 }
-?>

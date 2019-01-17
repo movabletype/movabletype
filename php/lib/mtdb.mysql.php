@@ -7,41 +7,45 @@
 
 require_once('mtdb.base.php');
 
-class MTDatabasemysql extends MTDatabase {
-
-    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '') {
+class MTDatabasemysql extends MTDatabase
+{
+    protected function connect($user, $password = '', $dbname = '', $host = '', $port = '', $sock = '')
+    {
         if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
             $this->pdo_enabled = true;
             $this->conn = ADONewConnection('pdo');
-            if ( !empty($sock) ) {
+            if (!empty($sock)) {
                 // Connection by unix socket
                 $dsn = "unix_socket=$sock";
             } else {
-                if (!empty($port))
+                if (!empty($port)) {
                     $host .= ";port=$port";
+                }
                 $dsn = "host=$host";
             }
             $dsn = "mysql:$dsn";
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } elseif (extension_loaded('mysqli')) {
             $this->conn = ADONewConnection('mysqli');
-            if ( !empty($sock) ) {
+            if (!empty($sock)) {
                 // Connection by unix socket
                 $dsn = ":$sock";
             } else {
                 $dsn = "$host";
-                if (!empty($port))
+                if (!empty($port)) {
                     $host .= ":$port";
+                }
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
         } else {
             $this->conn = ADONewConnection('mysql');
-            if ( !empty($sock) ) {
+            if (!empty($sock)) {
                 // Connection by unix socket
                 $dsn = ":$sock";
             } else {
-                if (!empty($port))
+                if (!empty($port)) {
                     $host .= ":$port";
+                }
                 $dsn = "$host";
             }
             $this->conn->Connect($dsn, $user, $password, $dbname);
@@ -50,26 +54,34 @@ class MTDatabasemysql extends MTDatabase {
         return true;
     }
 
-    function limit_by_day_sql($column, $days) {
-        return 'date_add(' . $column .', interval ' . 
+    public function limit_by_day_sql($column, $days)
+    {
+        return 'date_add(' . $column .', interval ' .
             $days . ' day) >= current_timestamp';
     }
 
-    function entries_recently_commented_on_sql($subsql) {
+    public function entries_recently_commented_on_sql($subsql)
+    {
         $sql = $subsql;
-        $sql = preg_replace("/from mt_entry/i",
+        $sql = preg_replace(
+            "/from mt_entry/i",
                     ",MAX(comment_created_on) as cco from mt_entry\ninner join mt_comment on comment_entry_id = entry_id and comment_visible = 1\n",
-                    $sql);
-        $sql = preg_replace("/order by(.+)/i",
+                    $sql
+        );
+        $sql = preg_replace(
+            "/order by(.+)/i",
                     "group by entry_id order by cco desc, \$1",
-                   $sql);
+                   $sql
+        );
         return $sql;
     }
 
-    function set_names($mt) {
+    public function set_names($mt)
+    {
         $conf = $mt->config('sqlsetnames');
-        if (isset($conf) && $conf == 0)
+        if (isset($conf) && $conf == 0) {
             return;
+        }
 
         $ret = $this->Execute('show variables like "character_set_database"');
         $val = $ret->fields[1];
@@ -86,8 +98,8 @@ class MTDatabasemysql extends MTDatabase {
         }
     }
 
-    function binary_column($column) {
+    public function binary_column($column)
+    {
         return 'binary(' . $column .')';
     }
 }
-?>

@@ -5,14 +5,20 @@
 #
 # $Id$
 
-function smarty_function_mtcontentauthoremail($args, &$ctx) {
+function smarty_function_mtcontentauthoremail($args, &$ctx)
+{
     $content = $ctx->stash('content');
-    if (!isset($content))
+    if (!isset($content)) {
         return $ctx->error($ctx->mt->translate(
-            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?", "mtContentAuthorEmail" ));
+            "You used an '[_1]' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?",
+            "mtContentAuthorEmail"
+        ));
+    }
 
     $author = $content->author();
-    if (!$author) return '';
+    if (!$author) {
+        return '';
+    }
 
     if (isset($args['spam_protect']) && $args['spam_protect']) {
         return spam_protect($author->author_email);
@@ -20,4 +26,3 @@ function smarty_function_mtcontentauthoremail($args, &$ctx) {
         return $author->author_email;
     }
 }
-?>

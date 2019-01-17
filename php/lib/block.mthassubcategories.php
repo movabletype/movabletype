@@ -5,10 +5,11 @@
 #
 # $Id$
 
-function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $class = 'category';
-        if (isset($args['class'])){
+        if (isset($args['class'])) {
             $class = $args['class'];
         }
         $has_sub_cats = _has_sub_categories($ctx, $class);
@@ -18,7 +19,8 @@ function smarty_block_mthassubcategories($args, $content, &$ctx, &$repeat) {
     }
 }
 
-function _has_sub_categories(&$ctx, $class = 'category') {
+function _has_sub_categories(&$ctx, $class = 'category')
+{
     require_once("MTUtil.php");
     $cat = get_category_context($ctx, $class);
     $has_sub_cats = 0;
@@ -34,4 +36,3 @@ function _has_sub_categories(&$ctx, $class = 'category') {
     }
     return $has_sub_cats;
 }
-?>

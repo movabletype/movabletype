@@ -15,6 +15,3 @@ class ContentField extends BaseObject
     public $_table = 'mt_cf';
     protected $_prefix = "cf_";
 }
-
-
-?>

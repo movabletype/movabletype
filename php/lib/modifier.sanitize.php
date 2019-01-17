@@ -5,11 +5,11 @@
 #
 # $Id$
 
-function smarty_modifier_sanitize($text, $spec = '1') {
+function smarty_modifier_sanitize($text, $spec = '1')
+{
     if (! $spec) {
         return $text;
-    }
-    else if ($spec == '1') {
+    } elseif ($spec == '1') {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog = $ctx->stash('blog');
@@ -19,4 +19,3 @@ function smarty_modifier_sanitize($text, $spec = '1') {
     require_once("sanitize_lib.php");
     return sanitize($text, $spec);
 }
-?>

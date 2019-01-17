@@ -5,10 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtassetblogid($args, &$ctx) {
+function smarty_function_mtassetblogid($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
 
     return (isset($args['pad']) && $args['pad']) ? sprintf("%06d", $asset->asset_blog_id) : $asset->asset_blog_id;
 }
-?>

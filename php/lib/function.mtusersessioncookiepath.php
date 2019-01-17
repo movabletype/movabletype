@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtusersessioncookiepath($args, &$ctx) {
+function smarty_function_mtusersessioncookiepath($args, &$ctx)
+{
     $path = $ctx->mt->config('UserSessionCookiePath');
     if ($path == 'DEFAULT') {
         if ($ctx->mt->config('SingleCommunity')) {
@@ -18,10 +19,12 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
         # optimize for the default case
         $blog = $ctx->stash('blog');
         $host = $blog->site_url();
-        if (!preg_match('!/$!', $host))
+        if (!preg_match('!/$!', $host)) {
             $host .= '/';
-        if (preg_match('!^https?://[^/]+(/.*)$!', $host, $matches))
+        }
+        if (preg_match('!^https?://[^/]+(/.*)$!', $host, $matches)) {
             return $matches[1];
+        }
     } else {
         if (preg_match('/<\$?mt/i', $path)) {
             # evaluate expression
@@ -43,4 +46,3 @@ function smarty_function_mtusersessioncookiepath($args, &$ctx) {
     }
     return '';
 }
-?>

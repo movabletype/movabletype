@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mttagid($args, &$ctx) {
+function smarty_function_mttagid($args, &$ctx)
+{
     $tag = $ctx->stash('Tag');
-    if (!$tag) return '';
+    if (!$tag) {
+        return '';
+    }
     if (is_object($tag)) {
         return $tag->tag_id;
     } else {
@@ -19,4 +22,3 @@ function smarty_function_mttagid($args, &$ctx) {
         return '';
     }
 }
-?>

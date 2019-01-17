@@ -5,10 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtentrycategory($args, &$ctx) {
+function smarty_function_mtentrycategory($args, &$ctx)
+{
     $entry = $ctx->stash('entry');
-    if (empty($entry))
+    if (empty($entry)) {
         return '';
+    }
 
     $cat = $entry->category();
     if ($cat) {
@@ -17,4 +19,3 @@ function smarty_function_mtentrycategory($args, &$ctx) {
 
     return '';
 }
-?>

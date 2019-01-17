@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat)
+{
     # status: complete
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
@@ -26,14 +27,15 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         $at_exists = preg_match("/,$at,/", $blog_at);
         if ($at_exists) {
             $params = array('type' => $at, 'blog_id' => $blog->blog_id);
-            if ( preg_match('/ContentType/i', $at) ){
+            if (preg_match('/ContentType/i', $at)) {
                 $params['content_type'] = $args['content_type'];
             }
             $maps = $ctx->mt->db()->fetch_templatemap($params);
             if (!empty($maps)) {
                 foreach ($maps as $map) {
-                    if ($map->templatemap_build_type != 0 )
-                        $enabled = 1; /* was $enabled++; */
+                    if ($map->templatemap_build_type != 0) {
+                        $enabled = 1;
+                    } /* was $enabled++; */
                 }
             }
         }
@@ -42,4 +44,3 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

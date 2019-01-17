@@ -16,12 +16,13 @@ class RebuildTrigger extends BaseObject
     protected $_prefix = "rebuild_trigger_";
     private $_data = array();
 
-    public function data($name = null) {
+    public function data($name = null)
+    {
         if (!empty($name)) {
             $name = strtolower($name);
             return isset($this->_data[$name]) ? $this->_data[$name] : null;
-        } else
+        } else {
             return $this->_data;
+        }
     }
 }
-?>

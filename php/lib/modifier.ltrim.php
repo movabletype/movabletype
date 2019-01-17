@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_modifier_ltrim($text) {
+function smarty_modifier_ltrim($text)
+{
     return ltrim($text);
 }
-?>

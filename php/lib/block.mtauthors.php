@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtauthors($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('authors', 'author', 'authors_counter', 'blog_id'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -15,9 +16,9 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
 
         $args['blog_id'] = $ctx->stash('blog_id');
 
-        if ( isset( $args['id'] ) ) {
+        if (isset($args['id'])) {
             $args['author_id'] = $args['id'];
-        } elseif ( isset( $args['username'] ) ) {
+        } elseif (isset($args['username'])) {
             $args['author_name'] = $args['username'];
         } elseif (isset($args['display_name'])) {
             $args['author_nickname'] = $args['display_name'];
@@ -69,4 +70,3 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

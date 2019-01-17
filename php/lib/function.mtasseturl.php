@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mtasseturl($args, &$ctx) {
+function smarty_function_mtasseturl($args, &$ctx)
+{
     $asset = $ctx->stash('asset');
-    if (!$asset) return '';
+    if (!$asset) {
+        return '';
+    }
     $blog = $ctx->stash('blog');
 
     $url = $asset->asset_url;
@@ -28,4 +31,3 @@ function smarty_function_mtasseturl($args, &$ctx) {
 
     return $url;
 }
-?>

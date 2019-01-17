@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingscore($args, &$ctx) {
+function smarty_function_mtpingscore($args, &$ctx)
+{
     return '';
 }
-?>

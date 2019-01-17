@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
+function smarty_block_mttags($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -13,7 +14,9 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         if (isset($args['content_type']) && isset($args['type']) && $args['type'] != 'content_type') {
             $repeat = 0;
             return $ctx->error($ctx->mt->translate(
-                'content_type modifier cannot be used with type "[_1]".', $args['type'] ));
+                'content_type modifier cannot be used with type "[_1]".',
+                $args['type']
+            ));
         }
 
         require_once('multiblog.php');
@@ -38,7 +41,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                 $args['sort_by'] = 'count';
                 $args['sort_order'] or $args['sort_order'] = 'descend'; // Inverted default
             } elseif (($s != 'name') && ($s != 'id')) {
-                $args['sort_by'] = NULL;
+                $args['sort_by'] = null;
             }
         }
         $type = 'entry';
@@ -55,7 +58,9 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         } elseif ('content_type' == $type) {
             $ctypes = $ctx->mt->db()->fetch_content_types($args);
             if ($ctypes) {
-                $mapper = function ($ct) { return $ct->id; };
+                $mapper = function ($ct) {
+                    return $ct->id;
+                };
                 $args['content_type_id'] = array_map($mapper, $ctypes);
             } else {
                 $repeat = 0;
@@ -66,13 +71,18 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
             $args['class'] = 'entry';
             $tags = $ctx->mt->db()->fetch_entry_tags($args);
         }
-        $min = 0; $max = 0;
+        $min = 0;
+        $max = 0;
         $all_count = 0;
         if ($tags) {
             foreach ($tags as $tag) {
                 $count = $tag->tag_count;
-                if ($count > $max) $max = $count;
-                if ($count < $min or $min == 0) $min = $count;
+                if ($count > $max) {
+                    $max = $count;
+                }
+                if ($count < $min or $min == 0) {
+                    $min = $count;
+                }
                 $all_count += $count;
             }
             if (isset($args['limit'])) {
@@ -102,12 +112,14 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                     }
                 }
             } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
-                $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
+                $fn = create_function('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
                 usort($tags, $fn);
-                if ( !isset($args['sort_order']) )
+                if (!isset($args['sort_order'])) {
                     $sort_order = 'descend';
-                if ($sort_order && $sort_order == 'descend')
+                }
+                if ($sort_order && $sort_order == 'descend') {
                     $tags = array_reverse($tags);
+                }
             }
         }
         $ctx->stash('tag_min_count', $min);
@@ -128,10 +140,12 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_tags_counter', $counter + 1);
         $repeat = true;
         if (isset($args['glue'])) {
-            if ($out && !empty($content))
+            if ($out && !empty($content)) {
                 $content = $args['glue'] . $content;
-            if (!$out && !empty($content))
-              $ctx->stash('__out', true);
+            }
+            if (!$out && !empty($content)) {
+                $ctx->stash('__out', true);
+            }
         }
         $count = $counter + 1;
         $ctx->__stash['vars']['__counter__'] = $count;
@@ -141,12 +155,12 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = ($count == count($tags));
     } else {
         if (isset($args['glue'])) {
-            if ($out && !empty($content))
+            if ($out && !empty($content)) {
                 $content = $args['glue'] . $content;
+            }
         }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

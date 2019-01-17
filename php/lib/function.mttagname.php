@@ -5,9 +5,12 @@
 #
 # $Id$
 
-function smarty_function_mttagname($args, &$ctx) {
+function smarty_function_mttagname($args, &$ctx)
+{
     $tag = $ctx->stash('Tag');
-    if (!$tag) return '';
+    if (!$tag) {
+        return '';
+    }
     if (is_object($tag)) {
         $tag_name = $tag->tag_name;
     } else {
@@ -21,4 +24,3 @@ function smarty_function_mttagname($args, &$ctx) {
     }
     return $tag_name;
 }
-?>

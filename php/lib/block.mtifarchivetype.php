@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat)
+{
     # status: complete
     if (!isset($content)) {
         $at = $args['type'];
@@ -13,28 +14,26 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
         $cat = $ctx->stash('current_archive_type');
         $cat or $at = $ctx->stash('archive_type');
         $same = ($at && $cat) && ($at == $cat);
-        if(!$same){
-          return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
+        if (!$same) {
+            return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $same);
         }
 
         $content_type_doesnt_match = 0;
         if (preg_match('/ContentType/i', $at)) {
-            if (isset($args['content_type']) && $args['content_type'] !== '' ) {
+            if (isset($args['content_type']) && $args['content_type'] !== '') {
                 $content_type = $ctx->stash('content_type');
                 if (isset($content_type)
-                    && (   $args['content_type'] === $content_type->content_type_unique_id
+                    && ($args['content_type'] === $content_type->content_type_unique_id
                         || $args['content_type'] === $content_type->content_type_id
-                        || $args['content_type'] === $content_type->content_type_name )
-                    )
-                {
+                        || $args['content_type'] === $content_type->content_type_name)
+                    ) {
                     $same = true;
-                }
-                else {
+                } else {
                     $same = false;
                 }
             } else {
-              $repeat = false;
-              return $ctx->error(
+                $repeat = false;
+                return $ctx->error(
                 $ctx->mt->translate(
                   "You used an [_1] tag without a valid [_2] attribute.",
                   array("<MTIfArchiveType>", "content_type")
@@ -47,4 +46,3 @@ function smarty_block_mtifarchivetype($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

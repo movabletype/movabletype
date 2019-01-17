@@ -6,18 +6,18 @@
 # $Id$
 
 require_once('block.mtentries.php');
-function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtpages($args, $content, &$ctx, &$repeat)
+{
     $args['class_type'] = 'page';
     if (isset($args['include_subfolders']) &&
-        $args['include_subfolders'] == 1)
-    {
+        $args['include_subfolders'] == 1) {
         $args['include_subcategories'] = 1;
     }
     if (isset($args['folder'])) {
         $args['category'] = $args['folder'];
     }
 
-    if(isset($args['no_folder']) && $args['no_folder']) {
+    if (isset($args['no_folder']) && $args['no_folder']) {
         $folders = $ctx->mt->db()->fetch_folders(array("blog_id" => $ctx->stash('blog_id')));
         $not_folder = '';
         if (isset($folders)) {
@@ -45,4 +45,3 @@ function smarty_block_mtpages($args, $content, &$ctx, &$repeat) {
 
     return $out;
 }
-?>

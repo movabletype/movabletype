@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat)
+{
     static $_prev_cache = array();
     if (!isset($content)) {
         $ctx->localize(array('entry', 'conditional', 'else_content'));
@@ -31,7 +32,8 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 } else {
                     $class = 'entry';
                 }
-                $ts = $mt->db()->db2ts( ($class == 'entry')
+                $ts = $mt->db()->db2ts(
+                    ($class == 'entry')
                     ? $entry->entry_authored_on
                     : $entry->entry_modified_on
                 );
@@ -47,7 +49,9 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                     $eargs['category_id'] = $cat_id;
                 }
                 list($prev_entry) = $ctx->mt->db()->fetch_entries($eargs);
-                if ($prev_entry) $_prev_cache[$label] = $prev_entry;
+                if ($prev_entry) {
+                    $_prev_cache[$label] = $prev_entry;
+                }
             }
             $ctx->stash('entry', $prev_entry);
         }
@@ -61,4 +65,3 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
     }
     return $content;
 }
-?>

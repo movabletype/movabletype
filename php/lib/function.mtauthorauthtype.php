@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_function_mtauthorauthtype($args, &$ctx) {
+function smarty_function_mtauthorauthtype($args, &$ctx)
+{
     $author = $ctx->stash('author');
     if (empty($author)) {
         $entry = $ctx->stash('entry');
@@ -19,4 +20,3 @@ function smarty_function_mtauthorauthtype($args, &$ctx) {
     }
     return isset($author->author_auth_type) ? $author->author_auth_type : '';
 }
-?>

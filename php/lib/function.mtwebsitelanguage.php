@@ -5,16 +5,21 @@
 #
 # $Id$
 
-function smarty_function_mtwebsitelanguage($args, &$ctx) {
+function smarty_function_mtwebsitelanguage($args, &$ctx)
+{
     $blog = $ctx->stash('blog');
     if (!empty($blog)) {
         $website = $blog->is_blog() ? $blog->website() : $blog;
-        if (empty($website)) return '';
+        if (empty($website)) {
+            return '';
+        }
     }
     $language = empty($website)
         ? $ctx->mt->config('DefaultLanguage')
         : $website->blog_language;
-    return normalize_language( $language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language(
+        $language,
+        $args['locale'],
+        $args['ietf']
+    );
 }
-?>

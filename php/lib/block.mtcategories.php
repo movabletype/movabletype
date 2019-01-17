@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtcategories($args, $content, &$ctx, &$repeat)
+{
     // status: incomplete
     // parameters: show_empty
     $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', 'contents', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
@@ -48,13 +49,16 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $ctx->stash('blog_id', $category->category_blog_id);
         $ctx->stash('ArchiveListHeader', $counter == 0);
         $ctx->stash('ArchiveListFooter', $counter+1 == count($categories));
-        $ctx->stash('blog',
-                    $category->blog());
+        $ctx->stash(
+            'blog',
+                    $category->blog()
+        );
         if (!empty($glue) && !empty($content)) {
-            if ($out)
+            if ($out) {
                 $content = $glue . $content;
-            else
+            } else {
                 $ctx->stash('__out', true);
+            }
         }
         $count = $counter + 1;
         $ctx->__stash['vars']['__counter__'] = $count;
@@ -64,11 +68,11 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $ctx->__stash['vars']['__last__'] = ($count == count($categories));
         $repeat = true;
     } else {
-        if (!empty($glue) && $out && !empty($content))
+        if (!empty($glue) && $out && !empty($content)) {
             $content = $glue . $content;
+        }
         $ctx->restore($localvars);
         $repeat = false;
     }
     return $content;
 }
-?>

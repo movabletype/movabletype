@@ -12,17 +12,19 @@ require_once("class.mt_entry.php");
  */
 class Page extends Entry
 {
-	function Save() {
-        if (empty($this->entry_class))
+    public function Save()
+    {
+        if (empty($this->entry_class)) {
             $this->entry_class = 'page';
+        }
         return parent::Save();
     }
 
-    public function folder() {
+    public function folder()
+    {
         return $this->category();
     }
 }
 
 // Relations
-ADODB_Active_Record::ClassHasMany('Page', 'mt_entry_meta','entry_meta_entry_id');	
-?>
+ADODB_Active_Record::ClassHasMany('Page', 'mt_entry_meta', 'entry_meta_entry_id');

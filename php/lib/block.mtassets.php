@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtassets($args, $content, &$ctx, &$repeat)
+{
     $localvars = array(array('_assets', 'asset', 'asset_first_in_row', 'asset_last_in_row', 'conditional', 'else_content', 'blog', 'blog_id'), common_loop_vars());
     $counter = 0;
 
@@ -24,7 +25,9 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         $tag = $ctx->this_tag();
         if (($tag == 'mtentryassets') || ($tag == 'mtpageassets')) {
             $entry = $ctx->stash('entry');
-            if ($entry) $args['entry_id'] = $entry->entry_id;
+            if ($entry) {
+                $args['entry_id'] = $entry->entry_id;
+            }
         }
         $args['exclude_thumb'] = 1;
 
@@ -45,27 +48,30 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
     $ctx->stash('conditional', empty($assets) ? 0 : 1);
     if (empty($assets)) {
         $ret = $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
-        if (!$repeat)
-              $ctx->restore($localvars);
+        if (!$repeat) {
+            $ctx->restore($localvars);
+        }
         return $ret;
     }
 
     if ($counter < count($assets)) {
         $blog_id = $ctx->stash('blog_id');
         $per_row = 1;
-        if (isset($args['assets_per_row']))
+        if (isset($args['assets_per_row'])) {
             $per_row = $args['assets_per_row'];
+        }
         $asset = $assets[$counter];
-        $ctx->stash('asset',  $asset);
+        $ctx->stash('asset', $asset);
         $ctx->stash('_assets_counter', $counter + 1);
         $ctx->stash('asset_first_in_row', ($counter % $per_row) == 0);
         $ctx->stash('asset_last_in_row', (($counter + 1) % $per_row) == 0);
-        if ( $asset->asset_blog_id != $blog_id) {
+        if ($asset->asset_blog_id != $blog_id) {
             $ctx->stash('blog_id', $asset->asset_blog_id);
-            $ctx->stash('blog', $asset->blog() );
+            $ctx->stash('blog', $asset->blog());
         }
-        if (($counter + 1) >= count($assets))
+        if (($counter + 1) >= count($assets)) {
             $ctx->stash('asset_last_in_row', true);
+        }
 
         $repeat = true;
         $count = $counter + 1;
@@ -81,4 +87,3 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
 
     return $content;
 }
-?>

@@ -6,10 +6,12 @@
 # $Id$
 require_once('class.basecache.php');
 
-class CacheMemcached extends BaseCache {
+class CacheMemcached extends BaseCache
+{
     private static $_server = null;
 
-    public function __construct($ttl = 0) {
+    public function __construct($ttl = 0)
+    {
         parent::__construct($ttl);
 
         if (empty(self::$_server)) {
@@ -30,30 +32,35 @@ class CacheMemcached extends BaseCache {
         }
     }
 
-    private function connect ($servers) {
+    private function connect($servers)
+    {
         if (is_array($servers)) {
             foreach ($servers as $server) {
                 $this->_connect($server);
             }
-        } else
+        } else {
             $this->_connect($servers);
+        }
     }
 
     # param: $server = hostname:portno
-    private function _connect($server) {
-        list ($host, $port) = explode(":", $server);
+    private function _connect($server)
+    {
+        list($host, $port) = explode(":", $server);
         if ($host == '') {
             require_once('class.exception.php');
             throw new MTConfigException("Cannot connect to memcached server. (" . $server . ")");
         }
-        if ($port == '')
-            $port = 11211; # Assigns default port.
+        if ($port == '') {
+            $port = 11211;
+        } # Assigns default port.
         else {
             if (!is_numeric($port)) {
                 require_once('class.exception.php');
                 throw new MTConfigException("Cannot connect to memcached server. (" . $server . ")");
-            } else
+            } else {
                 $port = intval($port);
+            }
         }
 
         # Connect to memcached server
@@ -64,41 +71,47 @@ class CacheMemcached extends BaseCache {
         }
     }
 
-    public function get ($key, $ttl = null) {
+    public function get($key, $ttl = null)
+    {
         return self::$_server->get($key);
     }
 
-    public function get_multi ($keys, $ttl = null) {
+    public function get_multi($keys, $ttl = null)
+    {
         return self::$_server->get($key);
     }
 
-    public function delete ($key) {
+    public function delete($key)
+    {
         return self::$_server->delete($key);
     }
 
-    public function add ($key, $val, $ttl = null) {
+    public function add($key, $val, $ttl = null)
+    {
         $expire = empty($ttl)
             ? $this->ttl
             : $ttl;
         return self::$_server->add($key, $val, false, $expire);
     }
 
-    public function replace ($key, $val, $ttl = null) {
+    public function replace($key, $val, $ttl = null)
+    {
         $expire = empty($ttl)
             ? $this->ttl
             : $ttl;
         return self::$_server->replace($key, $val, false, $expire);
     }
 
-    public function set ($key, $val, $ttl = null) {
+    public function set($key, $val, $ttl = null)
+    {
         $expire = empty($ttl)
             ? $this->ttl
             : $ttl;
         return self::$_server->set($key, $val, false, $expire);
     }
 
-    public function flush_all() {
+    public function flush_all()
+    {
         return self::$_server->flush();
     }
 }
-?>

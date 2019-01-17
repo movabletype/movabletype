@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtpingrank($args, &$ctx) {
+function smarty_function_mtpingrank($args, &$ctx)
+{
     return '';
 }
-?>

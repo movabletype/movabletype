@@ -5,7 +5,8 @@
 #
 # $Id$
 
-function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
+function smarty_block_mtunless($args, $content, &$ctx, &$repeat)
+{
     if (!isset($content)) {
         $result = 0;
         if (isset($args['var'])) {
@@ -53,8 +54,9 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
             $opt = "";
             if (preg_match("/^\/.+\/([si]+)?$/", $patt, $matches)) {
                 $patt = preg_replace("/^\/|\/([si]+)?$/", "", $patt);
-                if ($matches[1])
+                if ($matches[1]) {
                     $opt = $matches[1];
+                }
             } else {
                 $patt = preg_replace("!/!", "\\/", $patt);
             }
@@ -64,7 +66,7 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
             // export vars into local variable namespace, then eval expr
             extract($ctx->__stash['vars']);
             $result = eval($expr);
-            if ($result === FALSE) {
+            if ($result === false) {
                 die("error in expression [" . $args['test'] . "]");
             }
         } else {
@@ -75,4 +77,3 @@ function smarty_block_mtunless($args, $content, &$ctx, &$repeat) {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
 }
-?>

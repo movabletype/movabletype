@@ -15,4 +15,3 @@ class CategorySet extends BaseObject
     public $_table = 'mt_category_set';
     protected $_prefix = "category_set_";
 }
-?>

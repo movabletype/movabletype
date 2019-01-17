@@ -5,7 +5,7 @@
 #
 # $Id$
 
-function smarty_function_mtcommentrepliesrecurse($args, &$ctx) {
+function smarty_function_mtcommentrepliesrecurse($args, &$ctx)
+{
     return '';
 }
-?>
