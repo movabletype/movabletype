@@ -383,3 +383,10 @@ yarn.lock
 # Composer
 ^composer.json
 ^composer.lock
+
+# PHP
+\.php-version
+\.php_cs.dist
+\.php_cs.cache
+vendor
+

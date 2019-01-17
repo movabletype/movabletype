@@ -1,0 +1,11 @@
+<?php
+
+$finder = PhpCsFixer\Finder::create()
+    ->exclude('php/extlib')
+    ->in('.')
+;
+
+return PhpCsFixer\Config::create()
+    ->setFinder($finder)
+;
+

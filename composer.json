@@ -8,14 +8,16 @@
             "rm -rf php/extlib/adodb5/replicate/",
             "rm -rf php/extlib/adodb5/scripts/"
         ],
-        "test": "phpunit"
+        "test": "phpunit",
+        "php-cs-fixer": "php-cs-fixer fix"
     },
     "require-dev": {
         "oomphinc/composer-installers-extender": "^1.1",
         "phpunit/phpunit": "^5.7.27"
     },
     "require": {
-        "adodb/adodb-php": "5.20.12"
+        "adodb/adodb-php": "5.20.12",
+        "friendsofphp/php-cs-fixer": "^2.14"
     },
     "extra": {
         "installer-types": ["library"],

@@ -60,6 +60,9 @@ yarn-error.log
 .perl-version
 perltidy.LOG
 
+.php-version
+.php_cs.cache
+
 cover_db/
 
 .vstags
