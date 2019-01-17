@@ -25,8 +25,10 @@ is( MT->handler_to_coderef( \@subs ),
 );
 
 my @coderefs = MT->handler_to_coderef( \@subs );
-is_deeply( \@coderefs, \@subs,
-    'returns all arguments when arguments are multiple coderefs for list context'
+is_deeply(
+    \@coderefs,
+    [ $subs[2] ],
+    'returns last argument when arguments are multiple coderefs for list context'
 );
 
 done_testing;

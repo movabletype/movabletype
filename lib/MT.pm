@@ -2660,12 +2660,7 @@ sub handler_to_coderef {
     # $name may be an array of coderefs, when handlers of the same key
     # from multiple sources (core, plugins, addons) are merged
     if ( ref $name eq 'ARRAY' ) {
-        if (wantarray) {
-            return map { $pkg->handler_to_coderef( $_, $delayed ) } @$name;
-        }
-        else {
-            return $pkg->handler_to_coderef( $name->[-1], $delayed );
-        }
+        return $pkg->handler_to_coderef( $name->[-1], $delayed );
     }
 
     my $code;
@@ -3431,11 +3426,7 @@ a package method.
 When the handler is a string that starts with 'sub {', it is eval'd
 to compile it, and the resulting coderef is returned.
 
-When the handler is arrayref and the context is looking for a scalar,
-it returns the result for last handler.
-
-When the handler is arrayref and the context is looking for a list value,
-it returns all results for the handler.
+When the handler is arrayref, it returns the result for last handler.
 
 The coderef that is returned can be passed any parameters you wish.
 
