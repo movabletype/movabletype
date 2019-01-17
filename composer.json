@@ -13,11 +13,11 @@
     },
     "require-dev": {
         "oomphinc/composer-installers-extender": "^1.1",
-        "phpunit/phpunit": "^5.7.27"
+        "phpunit/phpunit": "^5.7.27",
+        "friendsofphp/php-cs-fixer": "^2.14"
     },
     "require": {
-        "adodb/adodb-php": "5.20.12",
-        "friendsofphp/php-cs-fixer": "^2.14"
+        "adodb/adodb-php": "5.20.12"
     },
     "extra": {
         "installer-types": ["library"],
