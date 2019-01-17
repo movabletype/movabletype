@@ -41,3 +41,6 @@ PHP_DOCKER_IMAGE ?= php:5.3
 docker-test-php-lint:
 	docker run --rm -it -v $$PWD:/php -w /php $(PHP_DOCKER_IMAGE) bash -c "PHP_LINT_DIR=\"$(PHP_LINT_DIR)\" make test-php-lint"
 
+docker-test-php-cs-fixer:
+	docker run --rm -it -v $$PWD:/php -w /php composer bash -c "composer install && composer php-cs-fixer"
+
