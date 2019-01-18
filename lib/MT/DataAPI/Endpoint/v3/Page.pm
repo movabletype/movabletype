@@ -1,0 +1,226 @@
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# This code cannot be redistributed without permission from www.sixapart.com.
+# For more information, consult your Movable Type license.
+#
+# $Id$
+
+package MT::DataAPI::Endpoint::v3::Page;
+
+use strict;
+use warnings;
+
+use MT::Entry;
+use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Endpoint::Entry;
+use MT::DataAPI::Resource;
+
+sub create {
+    my ( $app, $endpoint ) = @_;
+
+    my ($blog) = context_objects(@_);
+    return $app->error( $app->translate('Site not found'), 404 )
+        unless $blog && $blog->id;
+
+    my $author = $app->user;
+
+    my $orig_page = $app->model('page')->new;
+    $orig_page->set_values(
+        {   blog_id        => $blog->id,
+            author_id      => $author->id,
+            allow_comments => $blog->allow_comments_default,
+            allow_pings    => $blog->allow_pings_default,
+            convert_breaks => $blog->convert_paras,
+            status         => (
+                (          $app->can_do('publish_own_entry')
+                        || $app->can_do('publish_all_entry')
+                )
+                ? MT::Entry::RELEASE()
+                : MT::Entry::HOLD()
+            )
+        }
+    );
+
+    my $new_page = $app->resource_object( 'page', $orig_page )
+        or return;
+
+    if (  !$new_page->basename
+        || $app->model('page')
+        ->exist( { blog_id => $blog->id, basename => $new_page->basename } )
+        )
+    {
+        $new_page->basename( MT::Util::make_unique_basename($new_page) );
+    }
+    MT::Util::translate_naughty_words($new_page);
+
+    my $post_save
+        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        $new_page, $orig_page );
+
+    # Check whether or not assets can attach.
+    my $page_json = $app->param('page');
+    my $page_hash = $app->current_format->{unserialize}->($page_json);
+
+    my $attach_folder;
+    if ( exists $page_hash->{folder}
+        && ref $page_hash->{folder} eq 'HASH'
+        && exists $page_hash->{folder}{id} )
+    {
+        my $folder_hash = $page_hash->{folder};
+
+        $attach_folder = MT->model('folder')->load(
+            {   id      => $page_hash->{folder}{id},
+                blog_id => $blog->id,
+                class   => 'folder',
+            }
+        );
+
+        return $app->error( "'folder' parameter is invalid.", 400 )
+            if !$attach_folder;
+    }
+
+    my @attach_assets;
+    if ( exists $page_hash->{assets} ) {
+        my $assets_hash = $page_hash->{assets};
+        $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
+
+        if ( scalar @$assets_hash > 0 ) {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
+            }
+            @attach_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
+
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @attach_assets;
+        }
+    }
+
+    save_object( $app, 'page', $new_page )
+        or return;
+
+    # Attach folder and assets.
+    if ($attach_folder) {
+        $new_page->attach_categories($attach_folder)
+            or return $app->error( $new_page->errstr );
+    }
+    if (@attach_assets) {
+        $new_page->attach_assets(@attach_assets)
+            or return $app->error( $new_page->errstr );
+    }
+
+    my $do_publish = $app->param('publish');
+    $post_save->()
+        if !defined $do_publish || $do_publish;
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class );
+
+    $new_page;
+}
+
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $blog, $orig_page ) = context_objects(@_)
+        or return;
+    my $new_page = $app->resource_object( 'page', $orig_page )
+        or return;
+
+    my $post_save
+        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        $new_page, $orig_page );
+
+    # Check whether or not assets can attach/detach.
+    my $page_json = $app->param('page');
+    my $page_hash = $app->current_format->{unserialize}->($page_json);
+
+    my $update_folder;
+    if ( exists $page_hash->{folder} ) {
+        my $folder_hash = $page_hash->{folder};
+
+        if ( exists $folder_hash->{id} ) {
+            $update_folder = MT->model('folder')->load(
+                {   id      => $folder_hash->{id},
+                    blog_id => $blog->id,
+                    class   => 'folder',
+                }
+            );
+
+            return $app->error( "'folder' parameter is invalid.", 400 )
+                if !$update_folder;
+        }
+    }
+
+    my @update_assets;
+    my $do_update_assets;
+    if ( exists $page_hash->{assets} ) {
+        my $assets_hash = $page_hash->{assets};
+        $assets_hash = [$assets_hash] if ref $assets_hash ne 'ARRAY';
+
+        if ( scalar @$assets_hash == 0 ) {
+            $do_update_assets = 1;
+        }
+        else {
+            my @asset_ids = map { $_->{id} }
+                grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
+            my @blog_ids = ( $blog->id );
+            if ( !$blog->is_blog ) {
+                my @child_blogs = @{ $blog->blogs };
+                my @child_blog_ids = map { $_->id } @child_blogs;
+                push @blog_ids, @child_blog_ids;
+            }
+            @update_assets = MT->model('asset')->load(
+                {   id      => \@asset_ids,
+                    blog_id => \@blog_ids,
+                }
+            );
+
+            return $app->error( "'assets' parameter is invalid.", 400 )
+                if scalar @$assets_hash == 0
+                || scalar @$assets_hash != scalar @update_assets;
+
+            $do_update_assets = 1;
+        }
+    }
+
+    save_object(
+        $app, 'page',
+        $new_page,
+        $orig_page,
+        sub {
+          # Setting modified_by updates modified_on which we want to do before
+          # a save but after pre_save callbacks fire.
+            $new_page->modified_by( $app->user->id );
+
+            $_[0]->();
+        }
+    ) or return;
+
+    # Update categories and assets.
+    $new_page->update_categories( $update_folder ? $update_folder : () )
+        or return $app->error( $new_page->errstr );
+    if ($do_update_assets) {
+        $new_page->update_assets(@update_assets)
+            or return $app->error( $new_page->errstr );
+    }
+
+    my $do_publish = $app->param('publish');
+    $post_save->()
+        if !defined $do_publish || $do_publish;
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, $new_page->class, $new_page->id );
+
+    $new_page;
+}
+
+1;
