@@ -9,7 +9,7 @@ before_script:
   - rm t/dangling-symlinks.t
 
 script:
-  - docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && PERL_JSON_BACKEND=0 prove t plugins/*/t"
+  - docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && PERL_JSON_BACKEND=0 prove -j4 -It/lib -PMySQLPool=MT::Test::Env t plugins/*/t"
 
 notifications:
   slack:
