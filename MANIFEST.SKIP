@@ -213,6 +213,17 @@ themes/broken_blog_theme
 #?pacakge=MTP ^mt-static/plugins/mixiComment
 #?package=MTP ^plugins/P-M-SizeLimit
 
+#?package=MTPCLOUD ^COPYING
+#?package=MTPCLOUD ^COPYRIGHT
+#?package=MTPCLOUD ^addons/Enterprise.pack
+#?package=MTPCLOUD ^mt-static/addons/Enterprise.pack
+#?package=MTPCLOUD ^tools/migrate-mssql
+#?package=MTPCLOUD ^addons/Sync.pack
+#?package=MTPCLOUD ^addons/AWS.pack
+#?package=MTPCLOUD ^mt-cp.cgi
+#?package=MTPCLOUD ^addons/Community.pack
+#?package=MTPCLOUD ^mt-static/addons/Community.pack
+
 #?language=ja ^plugins/zemanta
 
 ^schemas
