@@ -1020,8 +1020,14 @@ sub _no_content_error {
 }
 
 sub _no_content_field_error {
-    my ($ctx) = @_;
-    $ctx->error( MT->translate('No Content Field could be found.') );
+    my ( $ctx, $args_content_field ) = @_;
+    if ( defined $args_content_field && $args_content_field ne '' ) {
+        $ctx->error( MT->translate('No Content Field could be found: "[_1]"'),
+            $args_content_field );
+    }
+    else {
+        $ctx->error( MT->translate('No Content Field could be found.') );
+    }
 }
 
 sub _no_website_error {
