@@ -422,14 +422,14 @@ function renderFilterList() {
     if ( parseInt(filter.can_save) ) {
       var line = '<span class="filter-label unit size3of5"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
-        + '">'+filter.label+'</a></span>'
+        + '" data-mt-list-filter-id="'+filter.id+'">'+filter.label+'</a></span>'
         + '<span class="item-ctrl unit size2of5"><a href="#'+i+'" class="rename-link tool-link"><__trans phrase="Rename" escape="js"></a><a href="#'+i+'" class="delete-link action-icon icon16 icon-delete"><__trans phrase="Delete" escape="js"></a></span>';
       jQuery('<li class="filter line" />').append(line).prependTo('#user-filters');
     }
     else {
       var line = '<span class="filter-label"><a href="#'+i+'" class="apply-link '
         + ( filter.can_save ? 'user-filter' : 'system-filter' )
-        + '">'+filter.label+'</a></span>';
+        + '" data-mt-list-filter-id="'+filter.id+'">'+filter.label+'</a></span>';
       jQuery('<li class="filter line" />').append(line).appendTo('#built-in-filters');
     }
   }
@@ -451,9 +451,8 @@ function renderFilterList() {
   });
   jQuery('#dialog_filter .filter-label a:not(#new_filter)').click(function() {
     jQuery('#dialog_filter').dialog('close');
-    jQuery(this).attr('href').match(/#(.*)/);
-    var index = RegExp.$1;
-    applyFilter(index);
+    var filterId = jQuery(this).attr('data-mt-list-filter-id');
+    applyFilterById(filterId);
     updateFilterSaveButtons();
     return false;
   });
@@ -1484,6 +1483,15 @@ function applyFilter(index, no_render) {
   if (index >= 0 && filters[index].items) {
     var filter = filters[index];
     doApplyFilter(filter, no_render);
+    allPass = 0;
+  }
+}
+function applyFilterById(filterId, no_render) {
+  var selectedFilters = filters.filter(function (filter) {
+    return filter.id == filterId;
+  });
+  if (selectedFilters.length > 0) {
+    doApplyFilter(selectedFilters[0], no_render);
     allPass = 0;
   }
 }
