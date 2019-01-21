@@ -82,7 +82,11 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
                 $field_data = $content_fields[0];
             }
             if (!$field_data) {
-                return $ctx->error($ctx->mt->translate("No Content Field could be found."));
+                if (isset($args['content_field'])) {
+                    return $ctx->error($ctx->mt->translate("No Content Field could be found: \"[_1]\"", $args['content_field']));
+                } else {
+                    return $ctx->error($ctx->mt->translate("No Content Field could be found."));
+                }
             }
         }
 
