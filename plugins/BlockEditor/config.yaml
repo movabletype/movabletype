@@ -12,7 +12,8 @@ text_filters:
         condition: |
           sub {
             my $app = MT->instance;
-            if( $app->param('_type') eq 'content_data' ){
+            my $type = $app->param('_type') or return 0;
+            if( $type eq 'content_data' ){
               return 1;
             }
             return 0;
