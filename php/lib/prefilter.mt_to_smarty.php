@@ -338,6 +338,11 @@ function _parse_modifier($str) {
                         $val = '$vars.' . $second_matches[2];
                     }
                 }
+                elseif (preg_match('/^([\'"])(.*(?<!\\\\)\1.*)\1$/', $val, $second_matches)) {
+                    $quote = $second_matches[1];
+                    $val = preg_replace("/(?<!\\\\)$quote/", "\\$quote", $second_matches[2]);
+                    $val = $quote . $val . $quote;
+                }
                 $result .= ':' . $val;
             }
         }
