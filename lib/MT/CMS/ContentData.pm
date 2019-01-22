@@ -1868,7 +1868,7 @@ sub _update_content_data_status {
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_entry_status.');
+    MT::Util::Log->info('--- End   update_content_data_status.');
 
     $tmpl;
 }
