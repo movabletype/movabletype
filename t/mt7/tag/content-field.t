@@ -510,9 +510,9 @@ Footer
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected_error
-Error in <mtContentField> tag: No Content Field could be found.
+Error in <mtContentField> tag: No Content Field could be found: "no_data"
 --- expected_php_error
-No Content Field could be found.
+No Content Field could be found: "no_data"
 
 === mt:ContentField content_field="multi line text"
 --- template
