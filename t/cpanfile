@@ -23,13 +23,16 @@ requires 'DBD::mysql';
 #    requires 'DBD::Oracle', '1.25';
 #};
 
+feature 'psgi', 'PSGI support' => sub {
+    requires 'CGI::PSGI';
+    requires 'CGI::Parse::PSGI';
+    requires 'Plack';
+    requires 'XMLRPC::Transport::HTTP::Plack';
+};
+
 ## recommends
 
 requires 'Digest::SHA';
-requires 'Plack';
-requires 'CGI::PSGI';
-requires 'CGI::Parse::PSGI';
-requires 'XMLRPC::Transport::HTTP::Plack';
 requires 'HTML::Entities';
 requires 'HTML::Parser';
 requires 'SOAP::Lite', '0.5';
