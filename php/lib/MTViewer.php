@@ -805,9 +805,11 @@ EOT;
     }
 
     function load_modifier($name) {
-        $params = array('plugins' => array(array('modifier', $name, null, null, false)));
-        require_once 'modifier.'.$name.'.php';
-        return true;
+        include_once('modifier.'.$name.'.php');
+        if ( function_exists('smarty_modifier_' . $name) )
+            return true;
+        else
+            return false;
     }
 
     function register_tag_handler($tag, $fn, $type) {
