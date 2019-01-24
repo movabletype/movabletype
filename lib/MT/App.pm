@@ -4297,10 +4297,10 @@ sub log {
     }
     $log->ip( $app->remote_ip );
     if ( my $blog = $app->blog ) {
-        $log->blog_id( $blog->id );
+        $log->blog_id( $blog->id ) if !defined $log->blog_id;
     }
     if ( my $user = $app->user ) {
-        $log->author_id( $user->id );
+        $log->author_id( $user->id ) if !defined $log->author_id;
     }
     $log->level( MT::Log::INFO() )
         unless defined $log->level;
