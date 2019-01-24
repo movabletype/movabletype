@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,12 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
     $localvars = array(array('_tags', 'Tag', '_tags_counter', 'tag_min_count', 'tag_max_count', 'all_tag_count', 'include_blogs', 'exclude_blogs', 'blog_ids', '__out'), common_loop_vars());
     if (!isset($content)) {
         $ctx->localize($localvars);
+
+        if (isset($args['content_type']) && isset($args['type']) && $args['type'] != 'content_type') {
+            $repeat = 0;
+            return $ctx->error($ctx->mt->translate(
+                'content_type modifier cannot be used with type "[_1]".', $args['type'] ));
+        }
 
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
@@ -38,12 +44,24 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $type = 'entry';
         if (isset($args['type'])) {
             $type = strtolower($args['type']);
+        } elseif (isset($args['content_type'])) {
+            $type = 'content_type';
         }
         if ('page' == $type) {
             $args['class'] = 'page';
             $tags = $ctx->mt->db()->fetch_entry_tags($args);
         } elseif ('asset' == $type) {
             $tags = $ctx->mt->db()->fetch_asset_tags($args);
+        } elseif ('content_type' == $type) {
+            $ctypes = $ctx->mt->db()->fetch_content_types($args);
+            if ($ctypes) {
+                $mapper = function ($ct) { return $ct->id; };
+                $args['content_type_id'] = array_map($mapper, $ctypes);
+            } else {
+                $repeat = 0;
+                return $ctx->error($ctx->mt->translate('No Content Type could be found.'));
+            }
+            $tags = $ctx->mt->db()->fetch_content_tags($args);
         } else {
             $args['class'] = 'entry';
             $tags = $ctx->mt->db()->fetch_entry_tags($args);

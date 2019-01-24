@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -269,6 +269,69 @@ sub edit {
         $param->{unpublished_on_time} = $app->param('unpublished_on_time');
     }
 
+    if (   $app->param('mobile_view')
+        || $app->param('authored_on_year')
+        || $app->param('authored_on_month')
+        || $app->param('authored_on_day') )
+    {
+        $param->{authored_on_year}  = $app->param('authored_on_year');
+        $param->{authored_on_month} = $app->param('authored_on_month');
+        $param->{authored_on_day}   = $app->param('authored_on_day');
+    }
+    elsif ( $param->{authored_on_date} ) {
+        (   $param->{authored_on_year},
+            $param->{authored_on_month},
+            $param->{authored_on_day}
+        ) = split '-', $param->{authored_on_date};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('authored_on_hour')
+        || $app->param('authored_on_minute')
+        || $app->param('authored_on_second') )
+    {
+        $param->{authored_on_hour}   = $app->param('authored_on_hour');
+        $param->{authored_on_minute} = $app->param('authored_on_minute');
+        $param->{authored_on_second} = $app->param('authored_on_second');
+    }
+    elsif ( $param->{authored_on_time} ) {
+        (   $param->{authored_on_hour},
+            $param->{authored_on_minute},
+            $param->{authored_on_second}
+        ) = split ':', $param->{authored_on_time};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('unpublished_on_year')
+        || $app->param('unpublished_on_month')
+        || $app->param('unpublished_on_day') )
+    {
+        $param->{unpublished_on_year}  = $app->param('unpublished_on_year');
+        $param->{unpublished_on_month} = $app->param('unpublished_on_month');
+        $param->{unpublished_on_day}   = $app->param('unpublished_on_day');
+    }
+    elsif ( $param->{unpublished_on_date} ) {
+        (   $param->{unpublished_on_year},
+            $param->{unpublished_on_month},
+            $param->{unpublished_on_day}
+        ) = split '-', $param->{unpublished_on_date};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('unpublished_on_hour')
+        || $app->param('unpublished_on_minute')
+        || $app->param('unpublished_on_second') )
+    {
+        $param->{unpublished_on_hour} = $app->param('unpublished_on_hour');
+        $param->{unpublished_on_minute}
+            = $app->param('unpublished_on_minute');
+        $param->{unpublished_on_second}
+            = $app->param('unpublished_on_second');
+    }
+    elsif ( $param->{unpublished_on_time} ) {
+        (   $param->{unpublished_on_hour},
+            $param->{unpublished_on_minute},
+            $param->{unpublished_on_second}
+        ) = split ':', $param->{unpublished_on_time};
+    }
+
     ## show the necessary associated assets
     if ( $type eq 'entry' || $type eq 'page' ) {
         require MT::Asset;
@@ -481,7 +544,11 @@ sub edit {
 
     ## Load text filters if user displays them
     my %entry_filters;
-    if ( defined( my $filter = $app->param('convert_breaks') ) ) {
+    my $filter
+        = $app->param('mobile_view')
+        ? $app->param('convert_breaks_for_mobile')
+        : $app->param('convert_breaks');
+    if ( defined $filter ) {
         my @filters = split /\s*,\s*/, $filter;
         $entry_filters{$_} = 1 for @filters;
     }
@@ -756,13 +823,43 @@ sub _build_entry_preview {
 
     my $ao_date = $app->param('authored_on_date') || '';
     my $ao_time = $app->param('authored_on_time') || '';
-    my $ao_ts   = $ao_date . $ao_time;
+    if ( $app->param('mobile_view') ) {
+        my $ao_year  = $app->param('authored_on_year')  || '';
+        my $ao_month = $app->param('authored_on_month') || '';
+        my $ao_day   = $app->param('authored_on_day')   || '';
+        if ( $ao_year || $ao_month || $ao_day ) {
+            $ao_date = join '-', $ao_year, $ao_month, $ao_day;
+        }
+
+        my $ao_hour   = $app->param('authored_on_hour')   || '';
+        my $ao_minute = $app->param('authored_on_minute') || '';
+        my $ao_second = $app->param('authored_on_second') || '';
+        if ( $ao_hour || $ao_minute || $ao_second ) {
+            $ao_time = join ':', $ao_hour, $ao_minute, $ao_second;
+        }
+    }
+    my $ao_ts = $ao_date . $ao_time;
     $ao_ts =~ s/\D//g;
     $entry->authored_on($ao_ts);
 
     my $uo_date = $app->param('unpublished_on_date') || '';
     my $uo_time = $app->param('unpublished_on_time') || '';
-    my $uo_ts   = $uo_date . $uo_time;
+    if ( $app->param('mobile_view') ) {
+        my $uo_year  = $app->param('unpublished_on_year')  || '';
+        my $uo_month = $app->param('unpublished_on_month') || '';
+        my $uo_day   = $app->param('unpublished_on_day')   || '';
+        if ( $uo_year || $uo_month || $uo_day ) {
+            $uo_date = join '-', $uo_year, $uo_month, $uo_day;
+        }
+
+        my $uo_hour   = $app->param('unpublished_on_hour')   || '';
+        my $uo_minute = $app->param('unpublished_on_minute') || '';
+        my $uo_second = $app->param('unpublished_on_second') || '';
+        if ( $uo_hour || $uo_minute || $uo_second ) {
+            $uo_time = join ':', $uo_hour, $uo_minute, $uo_second;
+        }
+    }
+    my $uo_ts = $uo_date . $uo_time;
     $uo_ts =~ s/\D//g;
     $entry->unpublished_on($uo_ts);
 
@@ -773,8 +870,15 @@ sub _build_entry_preview {
     # translates naughty words when PublishCharset is NOT UTF-8
     MT::Util::translate_naughty_words($entry);
 
-    my $convert_breaks = $app->param('convert_breaks');
-    $entry->convert_breaks($convert_breaks);
+    my $convert_breaks
+        = $app->param('mobile_view')
+        ? $app->param('convert_breaks_for_mobile')
+        : $app->param('convert_breaks');
+    $entry->convert_breaks(
+        ( $convert_breaks || '' ) eq '_richtext'
+        ? 'richtext'
+        : $convert_breaks
+    );
 
     my @data = ( { data_name => 'author_id', data_value => $user_id } );
     $app->run_callbacks( 'cms_pre_preview', $app, $entry, \@data );
@@ -1169,6 +1273,11 @@ sub save {
         unless $perms->can_do("edit_${type}_basename");
     require MT::Entry;
     $values{status} = MT::Entry::FUTURE() if $app->param('scheduled');
+    if ( $app->param('mobile_view') ) {
+        $values{convert_breaks} = $app->param('convert_breaks_for_mobile');
+    }
+    $values{convert_breaks} = 'richtext'
+        if ( $values{convert_breaks} || '' ) eq '_richtext';
     $obj->set_values( \%values );
     $obj->allow_pings(0)
         if !defined $app->param('allow_pings')
@@ -1177,6 +1286,36 @@ sub save {
     my $ao_t = $app->param('authored_on_time');
     my $uo_d = $app->param('unpublished_on_date');
     my $uo_t = $app->param('unpublished_on_time');
+
+    if ( $app->param('mobile_view') ) {
+        my $ao_year  = $app->param('authored_on_year')  || '';
+        my $ao_month = $app->param('authored_on_month') || '';
+        my $ao_day   = $app->param('authored_on_day')   || '';
+        if ( $ao_year || $ao_month || $ao_day ) {
+            $ao_d = join '-', $ao_year, $ao_month, $ao_day;
+        }
+
+        my $ao_hour   = $app->param('authored_on_hour')   || '';
+        my $ao_minute = $app->param('authored_on_minute') || '';
+        my $ao_second = $app->param('authored_on_second') || '';
+        if ( $ao_hour || $ao_minute || $ao_second ) {
+            $ao_t = join ':', $ao_hour, $ao_minute, $ao_second;
+        }
+
+        my $uo_year  = $app->param('unpublished_on_year')  || '';
+        my $uo_month = $app->param('unpublished_on_month') || '';
+        my $uo_day   = $app->param('unpublished_on_day')   || '';
+        if ( $uo_year || $uo_month || $uo_day ) {
+            $uo_d = join '-', $uo_year, $uo_month, $uo_day;
+        }
+
+        my $uo_hour   = $app->param('unpublished_on_hour')   || '';
+        my $uo_minute = $app->param('unpublished_on_minute') || '';
+        my $uo_second = $app->param('unpublished_on_second') || '';
+        if ( $uo_hour || $uo_minute || $uo_second ) {
+            $uo_t = join ':', $uo_hour, $uo_minute, $uo_second;
+        }
+    }
 
     if ( !$id ) {
 

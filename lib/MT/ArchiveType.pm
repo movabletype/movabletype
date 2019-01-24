@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,7 +8,6 @@ package MT::ArchiveType;
 
 use strict;
 use warnings;
-use MT::WeblogPublisher;
 
 sub new {
     my $pkg  = shift;
@@ -318,6 +317,73 @@ sub previous_archive_content_data {
 
 sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
+}
+
+sub _get_preferred_map {
+    my $self = shift;
+    my ($args) = @_;
+    $args ||= {};
+    my $map             = $args->{map};
+    my $content_type_id = $args->{content_type_id};
+
+    return $map if $self->_is_valid_map( $map, $content_type_id );
+
+    return $self->_search_preferred_map($args);
+}
+
+sub _is_valid_map {
+    my $self = shift;
+    my ( $map, $content_type_id ) = @_;
+
+    return unless $map;
+
+    return 1 unless $self->_is_contenttype_archiver;
+
+    my $tmpl = $map->template or return;
+
+    if (   $tmpl->content_type
+        && $content_type_id
+        && $tmpl->content_type_id eq $content_type_id )
+    {
+        return 1;
+    }
+
+    return;
+}
+
+sub _search_preferred_map {
+    my $self = shift;
+    my ($args) = @_;
+    $args ||= {};
+    my $archive_type    = $args->{archive_type} || $self->name;
+    my $blog_id         = $args->{blog_id};
+    my $content_type_id = $args->{content_type_id};
+
+    my $map_args
+        = ( $self->_is_contenttype_archiver && $content_type_id )
+        ? +{
+        join => MT->model('template')->join_on(
+            undef,
+            {   id              => \'= templatemap_template_id',
+                content_type_id => $content_type_id,
+            },
+        ),
+        }
+        : undef;
+
+    my $map = MT->model('templatemap')->load(
+        {   archive_type => $archive_type,
+            blog_id      => $blog_id,
+            is_preferred => 1,
+        },
+        $map_args || (),
+    );
+    return $map;
+}
+
+sub _is_contenttype_archiver {
+    my $self = shift;
+    return $self->contenttype_based || $self->contenttype_group_based;
 }
 
 1;

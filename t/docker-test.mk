@@ -39,5 +39,5 @@ docker_clean:
 PHP_DOCKER_IMAGE ?= php:5.3
 
 docker-test-php-lint:
-	docker run --rm -it -v $$PWD:/php -w /php $(PHP_DOCKER_IMAGE) bash -c "PHP_LINT_DIR=$(PHP_LINT_DIR) make test-php-lint"
+	docker run --rm -it -v $$PWD:/php -w /php $(PHP_DOCKER_IMAGE) bash -c "PHP_LINT_DIR=\"$(PHP_LINT_DIR)\" make test-php-lint"
 

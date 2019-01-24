@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -106,10 +106,12 @@ sub ss_validator {
 
     my $options = $field_data->{options} || {};
 
-    my $iter
-        = MT::Category->load_iter(
-        { id => $data, category_set_id => $options->{category_set} },
-        { fetchonly => { id => 1 } } );
+    my $iter = MT::Category->load_iter(
+        {   id => @$data ? $data : 0,
+            category_set_id => $options->{category_set}
+        },
+        { fetchonly => { id => 1 } }
+    );
     my %valid_cats;
     while ( my $cat = $iter->() ) {
         $valid_cats{ $cat->id } = 1;
@@ -131,15 +133,19 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $cat_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $raw_cat_ids = $content_data->data->{ $prop->content_field_id };
+    return '' unless $raw_cat_ids;
+    my @cat_ids
+        = ref $raw_cat_ids eq 'ARRAY' ? @$raw_cat_ids : ($raw_cat_ids);
+    return '' unless @cat_ids;
 
     my %cats;
-    my $iter = MT::Category->load_iter( { id => $cat_ids },
+    my $iter = MT::Category->load_iter( { id => \@cat_ids },
         { fetchonly => { id => 1, blog_id => 1, label => 1 } } );
     while ( my $cat = $iter->() ) {
         $cats{ $cat->id } = $cat;
     }
-    my @cats = grep {$_} map { $cats{$_} } @$cat_ids;
+    my @cats = grep {$_} map { $cats{$_} } @cat_ids;
 
     my $can_double_encode = 1;
 
@@ -219,7 +225,7 @@ sub tag_handler {
         MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id              => $value,
+        id => @$value ? $value : 0,
         category_set_id => $category_set_id,
     };
     my $cat_args = {};
@@ -263,7 +269,7 @@ sub tag_handler {
         else {
             @category_ids = @{$value};
         }
-        @ordered_categories = map { $categories{$_} } @category_ids;
+        @ordered_categories = grep {$_} map { $categories{$_} } @category_ids;
     }
 
     my $res     = '';
@@ -410,10 +416,19 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @categories
-        = MT->model('category')
-        ->load( { id => $values },
-        { fetchonly => { id => 1, label => 1 } }, );
+    my $cat_ids = 0;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            $cat_ids = @$values ? $values : 0;
+        }
+        else {
+            $cat_ids = $values || 0;
+        }
+    }
+    my @categories = MT->model('category')->load(
+        { id        => $cat_ids },
+        { fetchonly => { id => 1, label => 1 } },
+    );
     my %label_hash = map { $_->id => $_->label } @categories;
 
     my $contents = '';

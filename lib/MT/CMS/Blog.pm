@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}      = $app->param('no_writedir');
-    $param{no_cachedir}      = $app->param('no_cachedir');
-    $param{no_writecache}    = $app->param('no_writecache');
+    $param{no_writedir}    = $app->param('no_writedir');
+    $param{no_cachedir}    = $app->param('no_cachedir');
+    $param{no_writecache}  = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -1157,7 +1157,7 @@ sub rebuild_pages {
             my $type            = $order;
             my $is_one_index    = $order =~ /index template/;
             my $is_entry        = $order =~ /entry/;
-            my $is_content_data = $order =~ /cotnent data/;
+            my $is_content_data = $order =~ /content data/;
             my $built_type;
             if ( $is_entry || $is_content_data || $is_one_index ) {
                 ( $built_type = $type )
@@ -2041,7 +2041,6 @@ sub post_save {
 
         # permission granted - need to update commenting cookie
         my %cookies = $app->cookies();
-        $app->cookie_val();
         my ( $x, $y, $remember )
             = split( /::/, $cookies{ $app->user_cookie() }->value );
         my $cookie = $cookies{'commenter_id'};
@@ -2420,6 +2419,9 @@ sub update_publishing_profile {
     require MT::TemplateMap;
 
     if ( ( $dcty eq 'none' ) || ( $dcty =~ m/^async/ ) ) {
+
+        # none, async_all or async_partial
+
         my @templates = MT::Template->load(
             {   blog_id => $blog->id,
 
@@ -2439,6 +2441,8 @@ sub update_publishing_profile {
             next if $bt == MT::PublishOption::MANUALLY();
             next if $bt == MT::PublishOption::SCHEDULED();
 
+            # ONDEMAND, DYNAMIC and ASYNC remains
+
             if ( $dcty eq 'async_partial' ) {
 
                 # these should be build synchronously
@@ -2448,14 +2452,15 @@ sub update_publishing_profile {
                     $tmpl->build_type( MT::PublishOption::ONDEMAND() );
                 }
                 else {
-                    if (   ( $tmpl->type eq 'individual' )
-                        || ( $tmpl->type eq 'page' ) )
+                    if (   $tmpl->type eq 'individual'
+                        || $tmpl->type eq 'page'
+                        || $tmpl->type eq 'ct' )
                     {
                         my @tmpl_maps = MT::TemplateMap->load(
                             { template_id => $tmpl->id } );
                         foreach my $tmpl_map (@tmpl_maps) {
                             if ((   $tmpl_map->archive_type
-                                    =~ m/^(Individual|Page)$/
+                                    =~ m/^(Individual|Page|ContentType)$/
                                 )
                                 && ( $tmpl_map->is_preferred )
                                 )
@@ -2490,7 +2495,7 @@ sub update_publishing_profile {
             $tmpl->save();
         }
         if ( $dcty eq 'none' ) {
-            if ( $ENV{SERVER_SOFTWARE} =~ /Microsoft-IIS/
+            if ( ( $ENV{SERVER_SOFTWARE} || '' ) =~ /Microsoft-IIS/
                 && MT->config->EnableAutoRewriteOnIIS )
             {
 
@@ -2566,8 +2571,10 @@ sub update_publishing_profile {
             {   blog_id => $blog->id,
 
                 # FIXME: enumeration of types
-                type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category' ],
+                type => [
+                    'index',    'archive', 'individual', 'page',
+                    'category', 'ct',      'ct_archive'
+                ],
             }
         );
         for my $tmpl (@templates) {
@@ -2589,8 +2596,10 @@ sub update_publishing_profile {
             {   blog_id => $blog->id,
 
                 # FIXME: enumeration of types
-                type =>
-                    [ 'index', 'archive', 'individual', 'page', 'category' ],
+                type => [
+                    'index',    'archive', 'individual', 'page',
+                    'category', 'ct',      'ct_archive'
+                ],
             }
         );
         for my $tmpl (@templates) {
@@ -2598,6 +2607,8 @@ sub update_publishing_profile {
             next if $bt == MT::PublishOption::DISABLED();
             next if $bt == MT::PublishOption::MANUALLY();
             next if $bt == MT::PublishOption::SCHEDULED();
+
+            # ONDEMAND, DYNAMIC and ASYNC remains
 
             $tmpl->build_type( MT::PublishOption::DYNAMIC() );
             $tmpl->save();
@@ -2607,6 +2618,7 @@ sub update_publishing_profile {
 }
 
 sub update_dynamicity {
+
     my $app = shift;
     my ($blog) = @_;
 
@@ -3625,17 +3637,19 @@ sub _determine_total {
     }
     elsif ( $archiver->author_based ) {
         require MT::Author;
-        my $obj_class
-            = $archiver->contenttype_author_based ? 'content_data' : 'entry';
         my $terms = {
             blog_id => $blog_id,
             status  => MT::Entry::RELEASE(),
-            class   => $obj_class,
+            (   $archiver->contenttype_author_based ? ()
+                : ( class => 'entry' )
+            ),
             (   $archiver->contenttype_author_based && $content_type_id
                 ? ( content_type_id => $content_type_id )
                 : ()
             ),
         };
+        my $obj_class
+            = $archiver->contenttype_author_based ? 'content_data' : 'entry';
         $total = MT::Author->count(
             { status => MT::Author::ACTIVE() },
             {   join => MT->model($obj_class)

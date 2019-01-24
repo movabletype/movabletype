@@ -52,15 +52,15 @@
      label='<__trans phrase="Display [_1]" params="<mt:var name="class_label">">'>
       <div class="form-group">
         <div class="custom-control custom-checkbox">
-          <input type="checkbox" name="include" id="display_asset_prefs-<mt:var name="id">" class="custom-control-input" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
-          <label class="custom-control-label" for="display_asset_prefs-<mt:var name="id" escape="html">">
+          <input type="checkbox" name="include" id="display_asset_prefs_toggle-<mt:var name="id">" class="custom-control-input" value="1" data-target="#include_prefs-<mt:var name="id" escape="html">" data-toggle="collapse" checked="checked" aria-expanded="true" aria-controls="include_prefs-<mt:var name="id" escape="html">" />
+          <label class="custom-control-label" for="display_asset_prefs_toggle-<mt:var name="id" escape="html">">
             <__trans phrase="Display [_1]" params="<mt:var name="class_label">">
           </label>
         </div>
       </div>
   </mtapp:setting>
       </div>
-      <div id="include_prefs-<mt:var name="id">" class="mod">
+      <div id="include_prefs-<mt:var name="id">" class="mod collapse show">
         <mt:var name="options">
       </div>
     </div>
@@ -102,11 +102,6 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery('input[name="include"]').click(function() {
-    var id = jQuery(this).parents('.asset-detail-panel').attr('data-asset-id');
-    jQuery('#include_prefs-' + id).toggle();
-  });
-
   jQuery('div.toggle-selector').click(function() {
     var $parent = jQuery(this).parent('.asset-detail-panel');
     if ($parent.hasClass('excepr')) {
@@ -176,6 +171,16 @@
   });
   jQuery.mtValidateAddMessages({
       '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
+  });
+
+  jQuery('input[type=checkbox], input[type=radio]').on('change', function () {
+    MT.Util.refreshModalBodyOnIos();
+  });
+
+  jQuery('input[id^=display_asset_prefs_toggle-]').on('show.bs.collapse', function () {
+    jQuery(this).attr('checked', 'checked');
+  }).on('hide.bs.collapse', function () {
+    jQuery(this).removeAttr('checked');
   });
 </mt:setvarblock>
 

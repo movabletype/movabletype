@@ -34,6 +34,12 @@ $ MT_TEST_UPDATE_FIXTURE=1 prove ./t ./plugins/**/t
 $ MT_TEST_IGNORE_FIXTURE=1 prove ./t ./plugins/**/t
 ```
 
+### update fixture schema
+
+```sh
+$ perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+```
+
 ## Test files
 
 There are test files in ./t and ./plugins/**/t directories.

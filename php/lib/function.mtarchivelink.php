@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,7 +24,13 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     } elseif ($at == 'Individual' || $at == 'Page') {
         $args['archive_type'] or $args['archive_type'] = $at;
         return $ctx->tag('EntryPermalink', $args);
-    } elseif ($at == 'Category') {
+    } elseif ($at == 'ContentType') {
+        $args['archive_type'] or $args['archive_type'] = $at;
+        return $ctx->tag('ContentPermalink', $args);
+    } elseif ($at == 'Category' || $at == 'ContentType-Category') {
+        if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
+            return $ctx->error($ctx->mt->translate('No Category Set could be found.'));
+        }
         return $ctx->tag('CategoryArchiveLink', $args);
     }
     $args['blog_id'] = $blog->blog_id;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -573,7 +573,7 @@ sub _bulk_author_name_html {
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
             <div class="row">
-                <div class="col-1 pl-0 userpic">
+                <div class="col-auto px-0 userpic">
                     <div class="mt-user">
                         <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
                         <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
@@ -1495,12 +1495,14 @@ sub userpic_html {
     my %param  = @_;
     my ( $thumb_url, $w, $h ) = $author->userpic_url(%param) or return;
     return unless $thumb_url;
+    my $asset = $author->userpic(@_);
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="" />};
+        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" />}
+        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" />};
     sprintf $format,
-        MT::Util::encode_html($thumb_url), $author->userpic(@_)->id, $w, $h;
+        MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
+        MT::Util::encode_html( $asset->label );
 }
 
 sub can_do {

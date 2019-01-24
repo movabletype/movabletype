@@ -265,6 +265,8 @@ test single line text 4
 test single line text 3
 test single line text 2
 test single line text 1
+--- skip
+1
 
 === mt:ChildSites mode="loop"
 --- template
@@ -297,6 +299,8 @@ test single line text 14
 test single line text 13
 test single line text 12
 test single line text 11
+--- skip
+1
 
 === mt:MultiBlog mode="loop"
 --- template
@@ -329,6 +333,8 @@ test single line text 4
 test single line text 3
 test single line text 2
 test single line text 1
+--- skip
+1
 
 === mt:SitesLocalSite
 --- template

@@ -244,15 +244,15 @@ my %html = (
     'Category-Yearly' =>
         'archive_template,archive_listing,datebased_archive,category_based_archive,category_yearly_archive,category-yearly-archive,',
     'ContentType' =>
-        'archive_template,archive_listing,contenttype-archive,contenttype_archive,',
+        'archive_template,contenttype-archive,contenttype_archive,',
     'ContentType-Daily' =>
-        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_daily_archive,contenttype-datebased-daily-archive,contenttype_archive_listing,',
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_daily_archive,contenttype-daily-archive,contenttype_archive_listing,',
     'ContentType-Weekly' =>
-        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_weekly_archive,contenttype-datebased-weekly-archive,contenttype_archive_listing,',
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_weekly_archive,contenttype-weekly-archive,contenttype_archive_listing,',
     'ContentType-Monthly' =>
-        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_monthly_archive,contenttype-datebased-monthly-archive,contenttype_archive_listing,',
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_monthly_archive,contenttype-monthly-archive,contenttype_archive_listing,',
     'ContentType-Yearly' =>
-        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_yearly_archive,contenttype-datebased-yearly-archive,contenttype_archive_listing,',
+        'archive_template,archive_listing,datebased_archive,datebased_only_archive,datebased_yearly_archive,contenttype-yearly-archive,contenttype_archive_listing,',
     'ContentType-Author' =>
         'archive_template,archive_listing,author_archive,author_based_archive,contenttype-author-archive,contenttype_archive_listing,',
     'ContentType-Author-Daily' =>

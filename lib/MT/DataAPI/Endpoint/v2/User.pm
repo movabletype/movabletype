@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -32,7 +32,8 @@ sub create {
     my $orig_user = $app->model('author')->new;
 
     $orig_user->set_values(
-        {   nickname    => '',
+        {   auth_type   => $app->config->AuthenticationModule,
+            nickname    => '',
             text_format => 0,
         }
     );

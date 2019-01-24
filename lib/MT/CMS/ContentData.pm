@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2007-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -94,12 +94,13 @@ sub edit {
 
     if ( $app->param('reedit') ) {
         $data = $app->param('serialized_data');
-        unless ( ref $data ) {
+        if ( $data && !ref $data ) {
             $data = JSON::decode_json($data);
         }
-        if ($data) {
+        if ( $data && ref $data eq 'HASH' ) {
             $app->param( $_, $data->{$_} ) for keys %$data;
         }
+        $app->param( had_error => 1 ) if $param->{err_msg};
     }
     else {
         $app->param( '_type', 'content_data' );
@@ -207,6 +208,69 @@ sub edit {
             || POSIX::strftime( '%H:%M:%S', @now );
         $param->{unpublished_on_date} = $app->param('unpublished_on_date');
         $param->{unpublished_on_time} = $app->param('unpublished_on_time');
+    }
+
+    if (   $app->param('mobile_view')
+        || $app->param('authored_on_year')
+        || $app->param('authored_on_month')
+        || $app->param('authored_on_day') )
+    {
+        $param->{authored_on_year}  = $app->param('authored_on_year');
+        $param->{authored_on_month} = $app->param('authored_on_month');
+        $param->{authored_on_day}   = $app->param('authored_on_day');
+    }
+    elsif ( $param->{authored_on_date} ) {
+        (   $param->{authored_on_year},
+            $param->{authored_on_month},
+            $param->{authored_on_day}
+        ) = split '-', $param->{authored_on_date};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('authored_on_hour')
+        || $app->param('authored_on_minute')
+        || $app->param('authored_on_second') )
+    {
+        $param->{authored_on_hour}   = $app->param('authored_on_hour');
+        $param->{authored_on_minute} = $app->param('authored_on_minute');
+        $param->{authored_on_second} = $app->param('authored_on_second');
+    }
+    elsif ( $param->{authored_on_time} ) {
+        (   $param->{authored_on_hour},
+            $param->{authored_on_minute},
+            $param->{authored_on_second}
+        ) = split ':', $param->{authored_on_time};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('unpublished_on_year')
+        || $app->param('unpublished_on_month')
+        || $app->param('unpublished_on_day') )
+    {
+        $param->{unpublished_on_year}  = $app->param('unpublished_on_year');
+        $param->{unpublished_on_month} = $app->param('unpublished_on_month');
+        $param->{unpublished_on_day}   = $app->param('unpublished_on_day');
+    }
+    elsif ( $param->{unpublished_on_date} ) {
+        (   $param->{unpublished_on_year},
+            $param->{unpublished_on_month},
+            $param->{unpublished_on_day}
+        ) = split '-', $param->{unpublished_on_date};
+    }
+    if (   $app->param('mobile_view')
+        || $app->param('unpublished_on_hour')
+        || $app->param('unpublished_on_minute')
+        || $app->param('unpublished_on_second') )
+    {
+        $param->{unpublished_on_hour} = $app->param('unpublished_on_hour');
+        $param->{unpublished_on_minute}
+            = $app->param('unpublished_on_minute');
+        $param->{unpublished_on_second}
+            = $app->param('unpublished_on_second');
+    }
+    elsif ( $param->{unpublished_on_time} ) {
+        (   $param->{unpublished_on_hour},
+            $param->{unpublished_on_minute},
+            $param->{unpublished_on_second}
+        ) = split ':', $param->{unpublished_on_time};
     }
 
     $data = $content_data->data if $content_data && !$data;
@@ -431,7 +495,11 @@ sub save {
     my $convert_breaks = {};
     my $data           = {};
     if ( $app->param('from_preview') ) {
-        $data = JSON::decode_json( scalar $app->param('serialized_data') );
+        $data = $app->param('serialized_data');
+        if ( $data && !ref $data ) {
+            $data = JSON::decode_json($data);
+        }
+        $data ||= {};
     }
     else {
         foreach my $f (@$field_data) {
@@ -470,13 +538,8 @@ sub save {
 
     my $archive_type = '';
 
-    my $orig      = $content_data->clone;
-    my $orig_file = '';
-    if ( $content_data->id ) {
-        $archive_type = 'ContentType';
-        $orig_file
-            = MT::Util::archive_file_for( $orig, $blog, $archive_type );
-    }
+    my $orig       = $content_data->clone;
+    my $orig_file  = '';
     my $status_old = $content_data_id ? $content_data->status : 0;
 
     if ( $content_data->id ) {
@@ -502,6 +565,28 @@ sub save {
         my $status = $app->param('status');
         $content_data->status($status);
     }
+
+    my %categories_old;
+    if ( $orig->id ) {
+        my $orig_data = $orig->data;
+        my @cat_field_ids
+            = map { $_->{id} } @{ $content_type->categories_fields };
+        %categories_old = map { $_ => $orig_data->{$_} || [] } @cat_field_ids;
+    }
+
+    my $filter_result
+        = $app->run_callbacks( 'cms_save_filter.content_data', $app );
+
+    if ( !$filter_result ) {
+        my %param = ();
+        $param{err_msg}     = $app->errstr;
+        $param{return_args} = $app->param('return_args');
+        $app->param( '_type',           'content_data' );
+        $app->param( 'reedit',          1 );
+        $app->param( 'serialized_data', $data );
+        return $app->forward( "view_content_data", \%param );
+    }
+
     if ( ( $content_data->status || 0 ) != MT::ContentStatus::HOLD() ) {
         if ( !$blog->site_path || !$blog->site_url ) {
             return $app->error(
@@ -516,6 +601,36 @@ sub save {
     my $ao_t = $app->param('authored_on_time');
     my $uo_d = $app->param('unpublished_on_date');
     my $uo_t = $app->param('unpublished_on_time');
+
+    if ( $app->param('mobile_view') ) {
+        my $ao_year  = $app->param('authored_on_year')  || '';
+        my $ao_month = $app->param('authored_on_month') || '';
+        my $ao_day   = $app->param('authored_on_day')   || '';
+        if ( $ao_year || $ao_month || $ao_day ) {
+            $ao_d = join '-', $ao_year, $ao_month, $ao_day;
+        }
+
+        my $ao_hour   = $app->param('authored_on_hour')   || '';
+        my $ao_minute = $app->param('authored_on_minute') || '';
+        my $ao_second = $app->param('authored_on_second') || '';
+        if ( $ao_hour || $ao_minute || $ao_second ) {
+            $ao_t = join ':', $ao_hour, $ao_minute, $ao_second;
+        }
+
+        my $uo_year  = $app->param('unpublished_on_year')  || '';
+        my $uo_month = $app->param('unpublished_on_month') || '';
+        my $uo_day   = $app->param('unpublished_on_day')   || '';
+        if ( $uo_year || $uo_month || $uo_day ) {
+            $uo_d = join '-', $uo_year, $uo_month, $uo_day;
+        }
+
+        my $uo_hour   = $app->param('unpublished_on_hour')   || '';
+        my $uo_minute = $app->param('unpublished_on_minute') || '';
+        my $uo_second = $app->param('unpublished_on_second') || '';
+        if ( $uo_hour || $uo_minute || $uo_second ) {
+            $uo_t = join ':', $uo_hour, $uo_minute, $uo_second;
+        }
+    }
 
     my ( $previous_old, $next_old );
 
@@ -603,6 +718,10 @@ sub save {
 
     my $is_new = $content_data->id ? 0 : 1;
 
+    for my $key ( keys %$convert_breaks ) {
+        $convert_breaks->{$key} = 'richtext'
+            if ( $convert_breaks->{$key} || '' ) eq '_richtext';
+    }
     $content_data->convert_breaks(
         MT::Serialize->serialize( \$convert_breaks ) );
 
@@ -670,6 +789,10 @@ sub save {
             return unless $res;
         }
         else {
+            my $old_categories
+                = %categories_old
+                ? MT::Util::to_json( \%categories_old )
+                : undef;
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
@@ -680,6 +803,7 @@ sub save {
                         content_data_id => $content_data->id,
                         is_new          => $is_new,
                         old_status      => $status_old,
+                        old_categories  => $old_categories,
                         $previous_old
                         ? ( old_previous => $previous_old->id )
                         : (),
@@ -725,8 +849,7 @@ sub delete {
     }
     my $content_type;
     if ($content_type_id) {
-        $content_type = MT::ContentType->load(
-            { id => $content_type_id, blog_id => $blog->id } );
+        $content_type = MT::ContentType->load( { id => $content_type_id } );
     }
     unless ($content_type) {
         return $app->errtrans(
@@ -932,15 +1055,15 @@ sub make_content_actions {
     $content_actions;
 }
 
-sub make_list_actions {
-    my $common_actions = {
-        'publish' => {
+sub list_actions {
+    {   'publish' => {
             label      => 'Publish',
             code       => '$Core::MT::CMS::Blog::rebuild_new_phase',
             mode       => 'rebuild_new_phase',
             order      => 100,
             js_message => 'publish',
             button     => 1,
+            mobile     => 1,
             condition  => sub {
                 return 0 if MT->app->mode eq 'view';
                 _check_permission(
@@ -956,11 +1079,13 @@ sub make_list_actions {
             code       => '$Core::MT::CMS::ContentData::delete',
             button     => 1,
             js_message => 'delete',
+            mobile     => 1,
         },
         'set_draft' => {
             label     => "Unpublish Contents",
             order     => 200,
             code      => '$Core::MT::CMS::ContentData::draft_content_data',
+            mobile    => 1,
             condition => sub {
                 return 0 if MT->app->mode eq 'view';
                 return _check_permission(
@@ -970,13 +1095,6 @@ sub make_list_actions {
             },
         },
     };
-    my $iter = MT::ContentType->load_iter;
-    my $list_actions = +{ content_data => $common_actions };
-    while ( my $ct = $iter->() ) {
-        my $key = 'content_data.content_data_' . $ct->id;
-        $list_actions->{$key} = $common_actions;
-    }
-    $list_actions;
 }
 
 sub _check_permission {
@@ -996,7 +1114,7 @@ sub _check_permission {
     my $terms = {
         author_id   => $app->user->id,
         permissions => \'IS NOT NULL',
-        $app->blog ? ( blog_id => $app->blog->id ) : (),
+        $app->blog ? ( blog_id => [ 0, $app->blog->id ] ) : (),
     };
 
     return 0 unless MT->model('permission')->count($terms);
@@ -1037,6 +1155,7 @@ sub make_menus {
             },
             order => $blog->is_blog ? $blog_order : $website_order,
             view  => $blog->is_blog ? 'blog'      : 'website',
+            mobile    => 1,
             condition => sub {
 
                 return 0 if $ct->blog_id != MT->app->blog->id;
@@ -1150,8 +1269,7 @@ sub validate_content_fields {
 
     my $blog_id = $app->blog ? $app->blog->id : undef;
     my $content_type_id = $app->param('content_type_id') || 0;
-    my $content_type = MT::ContentType->load(
-        { id => $content_type_id, blog_id => $blog_id } );
+    my $content_type = MT::ContentType->load( { id => $content_type_id } );
 
     return $app->json_error( $app->translate('Invalid request.') )
         unless $blog_id && $content_type;
@@ -1287,6 +1405,7 @@ sub _create_temp_content_data {
     my $id              = $app->param('id');
     my $blog_id         = $app->param('blog_id');
     my $content_type_id = $app->param('content_type_id');
+    my $label           = $app->param('data_label');
 
     return $app->errtrans('Invalid request.')
         unless $blog_id && $content_type_id;
@@ -1316,6 +1435,7 @@ sub _create_temp_content_data {
         $app->user );
 
     $content_data->status( scalar $app->param('status') );
+    $content_data->label($label);
 
     my $content_field_types = $app->registry('content_field_types');
     my $content_type        = $content_data->content_type;
@@ -1340,6 +1460,48 @@ sub _build_content_data_preview {
     my $id           = $app->param('id');
     my $user_id      = $app->user->id;
 
+    my $ao_date = $app->param('authored_on_date') || '';
+    my $ao_time = $app->param('authored_on_time') || '';
+    if ( $app->param('mobile_view') ) {
+        my $ao_year  = $app->param('authored_on_year')  || '';
+        my $ao_month = $app->param('authored_on_month') || '';
+        my $ao_day   = $app->param('authored_on_day')   || '';
+        if ( $ao_year || $ao_month || $ao_day ) {
+            $ao_date = join '-', $ao_year, $ao_month, $ao_day;
+        }
+
+        my $ao_hour   = $app->param('authored_on_hour')   || '';
+        my $ao_minute = $app->param('authored_on_minute') || '';
+        my $ao_second = $app->param('authored_on_second') || '';
+        if ( $ao_hour || $ao_minute || $ao_second ) {
+            $ao_time = join ':', $ao_hour, $ao_minute, $ao_second;
+        }
+    }
+    my $ao_ts = $ao_date . $ao_time;
+    $ao_ts =~ s/\D//g;
+    $content_data->authored_on($ao_ts);
+
+    my $uo_date = $app->param('unpublished_on_date') || '';
+    my $uo_time = $app->param('unpublished_on_time') || '';
+    if ( $app->param('mobile_view') ) {
+        my $uo_year  = $app->param('unpublished_on_year')  || '';
+        my $uo_month = $app->param('unpublished_on_month') || '';
+        my $uo_day   = $app->param('unpublished_on_day')   || '';
+        if ( $uo_year || $uo_month || $uo_day ) {
+            $uo_date = join '-', $uo_year, $uo_month, $uo_day;
+        }
+
+        my $uo_hour   = $app->param('unpublished_on_hour')   || '';
+        my $uo_minute = $app->param('unpublished_on_minute') || '';
+        my $uo_second = $app->param('unpublished_on_second') || '';
+        if ( $uo_hour || $uo_minute || $uo_second ) {
+            $uo_time = join ':', $uo_hour, $uo_minute, $uo_second;
+        }
+    }
+    my $uo_ts = $uo_date . $uo_time;
+    $uo_ts =~ s/\D//g;
+    $content_data->unpublished_on($uo_ts);
+
     my $basename         = $app->param('identifier');
     my $preview_basename = $app->preview_object_basename;
     $content_data->identifier( $basename || $preview_basename );
@@ -1353,7 +1515,15 @@ sub _build_content_data_preview {
         {   archive_type => $at,
             is_preferred => 1,
             blog_id      => $blog_id,
-        }
+        },
+        {   join => MT->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $content_type->id,
+                    type            => 'ct',
+                },
+            ),
+        },
     );
 
     my $tmpl;
@@ -1385,6 +1555,7 @@ sub _build_content_data_preview {
     $ctx->stash( 'content',      $content_data );
     $ctx->stash( 'content_type', $content_type );
     $ctx->stash( 'blog',         $blog );
+    $ctx->stash( 'blog_id',      $blog->id ) if $blog;
     $ctx->{current_timestamp}    = $content_data->authored_on;
     $ctx->{curernt_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
@@ -1494,11 +1665,11 @@ sub _build_content_data_preview {
     $param{status} = $content_data->status;
 
     my @cols = qw(
-        author_id
         blog_id
         content_type_id
         convert_breaks
         ct_unique_id
+        data_label
         id
         identifier
         status
@@ -1515,17 +1686,22 @@ sub _build_content_data_preview {
     );
 
     for my $col (@cols) {
+        my $data_value = $app->param($col);
+        $data_value = 'richtext'
+            if $col eq 'convert_breaks'
+            && ( $data_value || '' ) eq '_richtext';
         push @data,
             {
             data_name  => $col,
-            data_value => scalar $app->param($col),
+            data_value => $data_value,
             };
     }
 
+    my $serialized_data = JSON::encode_json( $content_data->data );
     push @data,
         {
         data_name  => 'serialized_data',
-        data_value => $content_data->column('data'),
+        data_value => $serialized_data,
         };
 
     $param{content_data_loop} = \@data;
@@ -1557,6 +1733,7 @@ sub _build_content_data_preview {
 
     $param{object_type}  = 'content_data';
     $param{object_label} = $content_type->name;
+    $param{title}        = $content_data->label;
 
     my $rev_numbers = $app->param('rev_numbers') || '';
     my $collision = $app->param('collision');

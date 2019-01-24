@@ -1,0 +1,37 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved_deleted">
+        <mtapp:statusmsg
+            id="status-deleted"
+            class="success">
+           <__trans phrase="You successfully deleted the users.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved">
+        <mtapp:statusmsg
+            id="status-added"
+            class="success">
+            <__trans phrase="You successfully added new users to this group.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.synchronized">
+        <mtapp:statusmsg
+            id="status-sync"
+            class="success">
+            <__trans phrase="You successfully synchronized users' information with the external directory.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.unchanged">
+        <mtapp:statusmsg
+            id="status-unchanged"
+            class="info">
+            <__trans phrase="Some ([_1]) of the selected users could not be re-enabled because they are no longer found in LDAP." params="<mt:var name="unchanged">" escape="html">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_removed">
+        <mtapp:statusmsg
+            id="status-removed"
+            class="success">
+            <__trans phrase="You successfully removed the users from this group.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>

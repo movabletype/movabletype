@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -9,6 +9,15 @@ global $SERIALIZE_VERSION;
 $SERIALIZE_VERSION = 2;
 
 class MTSerialize {
+    private static $_instance = null;
+
+    public static function get_instance() {
+        if (is_null(self::$_instance)) {
+            self::$_instance = new self;
+        }
+        return self::$_instance;
+    }
+
     function unserialize($frozen) {
         return $this->_thaw_mt_2($frozen);
     }

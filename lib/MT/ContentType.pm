@@ -123,7 +123,7 @@ sub _cs_terms {
     my ( $args, $db_terms, $db_args ) = @_;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type               => 'category',
+        {   type               => 'categories',
             related_cat_set_id => $args->{value},
         },
     );
@@ -504,11 +504,20 @@ sub permission_groups {
     return \@groups;
 }
 
+sub _eval_if_mssql_server_or_oracle {
+    my ($sub) = @_;
+    my $using_mssql_server_or_oracle
+        = lc( MT->config->ObjectDriver ) =~ /mssqlserver|oracle/;
+    $using_mssql_server_or_oracle ? eval { $sub->() } : $sub->();
+}
+
 # class method
 sub all_permissions {
     my $class = shift;
     my @all_permissions;
-    for my $content_type ( @{ $class->load_all } ) {
+    my @content_types
+        = _eval_if_mssql_server_or_oracle( sub { @{ $class->load_all } } );
+    for my $content_type (@content_types) {
         push( @all_permissions, $content_type->permissions )
             if $content_type->blog;
     }
@@ -717,7 +726,7 @@ sub _make_tag_list_prop_count {
                     {   $blog_id ? ( blog_id => $blog_id ) : (),
                         tag_id            => $obj->id,
                         object_datasource => 'content_data',
-                        cf_id             => \@tags_field_ids,
+                        cf_id => @tags_field_ids ? \@tags_field_ids : 0,
                     },
                     {   sort      => 'cnt',
                         direction => 'descend',
@@ -797,7 +806,7 @@ sub _make_tag_list_prop_filter {
                     MT->model('objecttag')->join_on(
                     'tag_id',
                     {   object_datasource => 'content_data',
-                        cf_id             => \@tags_field_ids,
+                        cf_id => @tags_field_ids ? \@tags_field_ids : 0,
                     },
                     {   group  => ['tag_id'],
                         unique => 1,
@@ -854,6 +863,19 @@ sub _get_tag_field_ids {
             @ids ? \@ids : undef;
         },
     );
+}
+
+sub categories_fields {
+    my $self = shift;
+    my @fields;
+    for my $field_hash ( @{ $self->fields } ) {
+        next
+            unless $field_hash
+            && %$field_hash
+            && ( $field_hash->{type} || '' ) eq 'categories';
+        push @fields, $field_hash;
+    }
+    return \@fields;
 }
 
 1;

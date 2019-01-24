@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -15,9 +15,12 @@ sub apply {
     if ( !ref $set ) {
         $set = MT->registry( 'template_sets', $set );
     }
+    require Clone::PP;
+    $set = Clone::PP::clone($set);
 
     ## deep localize for labels
     $theme->__deep_localize_labels($set);
+    $theme->__deep_localize_templatized_values($set);
     $set->{templates}{plugin} = $theme
         if $set->{templates} && 'HASH' eq ref $set->{templates};
     ## taken from MT::CMS::Template

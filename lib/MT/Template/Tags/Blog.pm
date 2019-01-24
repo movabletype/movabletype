@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -261,6 +261,15 @@ A conditional tag that is true when the current blog in context has
 been assigned a Creative Commons License.
 
 =for tags blogs, creativecommons
+
+=cut
+
+=head2 SiteIfCCLicense
+
+A conditional tag that is true when the current site in context has
+been assigned a Creative Commons License.
+
+=for tags sites, creativecommons
 
 =cut
 

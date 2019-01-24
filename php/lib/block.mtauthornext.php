@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -23,7 +23,7 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'start_string' => $name,
                               'lastn' => 1,
                               'blog_id' => $blog_id,
-                              'need_entry' => 1);
+                              'need_content' => 1);
                 list($next_author) = $ctx->mt->db()->fetch_authors($args);
             }
             if ($next_author) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -580,6 +580,40 @@ sub core_search_apis {
                 $args->{direction} = 'ascend';
             }
         },
+        'group' => {
+            'order'             => 850,
+            'system_permission' => 'administer,manage_users_groups',
+            'label'             => 'Groups',
+            'perm_check'        => sub {
+                return 1 if $author->is_superuser;
+                return 1 if $author->can_manage_users_groups;
+                if ($blog_id) {
+                    my $perm = $author->permissions($blog_id);
+                    return $perm->can_administer_site;
+                }
+                return 0;
+            },
+            'search_cols' => {
+                'name'         => sub { $app->translate('Group Name') },
+                'display_name' => sub { $app->translate('Display Name') },
+                'description'  => sub { $app->translate('Description') },
+            },
+            'replace_cols'       => [],
+            'can_replace'        => 0,
+            'can_search_by_date' => 0,
+            'setup_terms_args'   => sub {
+                my ( $terms, $args, $blog_id ) = @_;
+                if ($blog_id) {
+                    $args->{'join'} = MT->model('association')
+                        ->join_on( 'group_id', { blog_id => $blog_id } );
+                }
+            },
+            'handler' => '$Core::MT::CMS::Group::build_group_table',
+            'results_table_template' =>
+                '<mt:include name="include/group_table.tmpl">',
+            'view' => 'system',
+        },
+
     };
     return $types;
 }
@@ -991,12 +1025,13 @@ sub do_search_replace {
                     {
                         my @blogs
                             = MT::Blog->load( { parent_id => $blog->id } );
-                        my @blog_ids;
+                        my @blog_ids = ( $blog->id );
                         foreach my $b (@blogs) {
                             push @blog_ids, $b->id
                                 if $author->permissions( $b->id )
                                 ->has('administer_site');
                         }
+                        $terms{blog_id} = \@blog_ids;
                     }
                     else {
                         $terms{blog_id} = $blog_id;
@@ -1015,12 +1050,13 @@ sub do_search_replace {
                     )
                 {
                     my @blogs = MT::Blog->load( { parent_id => $blog->id } );
-                    my @blog_ids;
+                    my @blog_ids = ( $blog->id );
                     foreach my $b (@blogs) {
                         push @blog_ids, $b->id
                             if $author->permissions( $b->id )
                             ->has('administer_site');
                     }
+                    %terms = ( blog_id => \@blog_ids );
                 }
                 else {
                     %terms = ( blog_id => $blog_id );

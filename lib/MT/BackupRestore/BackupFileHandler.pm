@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -355,6 +355,14 @@ sub start_element {
                 {
                     $objects->{ "$class#uid:" . $column_data{unique_id} }
                         = $obj = $class->new;
+                }
+                elsif ( 'cd' eq $name || 'content_data' eq $name ) {
+                    $obj = $class->new;
+                    require MT::ContentType::UniqueID;
+                    MT::ContentType::UniqueID::set_unique_id($obj);
+                    my $new_ct = $objects->{ 'MT::ContentType#uid:'
+                            . $column_data{ct_unique_id} };
+                    $obj->column( 'ct_unique_id', $new_ct->unique_id );
                 }
 
                 unless ($obj) {

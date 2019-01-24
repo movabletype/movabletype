@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -171,6 +171,10 @@ sub list_props {
             col             => 'blog_id',
             display         => 'none',
             filter_editable => 0,
+        },
+        __mobile => {
+            base     => 'entry.__mobile',
+            date_col => 'modified_on',
         },
     };
 }

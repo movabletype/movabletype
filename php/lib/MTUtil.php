@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -999,6 +999,38 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
             if (!isset($cat)) {
                 return null;
             }
+        } else if ($ctx->stash('content')) {
+            $content_data = $ctx->stash('content');
+            if ($ctx->stash('_fileinfo') && $ctx->stash('_fileinfo')->templatemap()) {
+                $maps = array($ctx->stash('_fileinfo')->templatemap());
+            }
+            if (!isset($maps)) {
+                $maps = $ctx->mt->db()->fetch_templatemap(array(
+                    'content_type_id' => $content_data->cd_content_type_id,
+                    'preferred' => 1,
+                    'type' => 'ContentType'
+                ));
+            }
+            if (!isset($maps) || !is_array($maps) || !$maps[0]->templatemap_cat_field_id) {
+                return null;
+            }
+            $objcats = $ctx->mt->db()->fetch_objectcategories(array(
+                'category_field_id' => $maps[0]->templatemap_cat_field_id,
+                'object_id' => $content_data->cd_id
+            ));
+            if (!isset($objcats) || !is_array($objcats)) {
+                return null;
+            }
+            foreach ($objcats as $objcat) {
+                if ($objcat->objectcategory_is_primary) {
+                    $objectcategory = $objcat;
+                    break;
+                }
+            }
+            if (!isset($objectcategory)) {
+                return null;
+            }
+            $cat = $ctx->mt->db()->fetch_category($objectcategory->objectcategory_category_id);
         } else {
             if($error_avoid)
                 return null;
@@ -1097,7 +1129,7 @@ function create_expr_exception($m) {
         return $m[1];
 }
 
-function create_cat_expr_function($expr, &$cats, $param) {
+function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) {
     $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
@@ -1200,8 +1232,8 @@ function create_cat_expr_function($expr, &$cats, $param) {
 	    $cats = array_values($cats_used);
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
-    $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
-    $fn = create_function('&$e,&$c', $expr);
+    $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
+    $fn = create_function('&$o,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
@@ -1307,8 +1339,8 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # Create a PHP-blessed function of that code and return it
     # if all is well.  This function will be used later to 
     # test for existence of specified tags in entries.
-    $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return (' . $result . ');';
-    $fn = create_function('&$e,&$c', $expr);
+    $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
+    $fn = create_function('&$o,&$c', $expr);
     if ($fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;
@@ -1749,5 +1781,24 @@ function normalize_language($language, $locale, $ietf) {
     }
     return $language;
 }
+
+function caturl($paths){
+    if (!is_array($paths)) return '';
+
+    $url = array_shift($paths);
+    foreach ($paths as $u) {
+        if(!$u) continue;
+        if(!$url){
+            $url = $u;
+            continue;
+        }
+        $u = preg_replace( '/^\//', '', $u );
+        if(!preg_match('/\/$/', $url, $matches))
+            $url .= '/';
+        $url .= $u;
+    }
+    return $url;
+}
+
 
 ?>

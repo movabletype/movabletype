@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -34,14 +34,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.0', '7.0042' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.1', '7.0045' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.0.4',                '__PRODUCT_VERSION_ID__',
+        '7.1',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -59,11 +59,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 4;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4211';
+        $RELEASE_VERSION_ID = 'r.4502';
     }
 
     $DebugMode = 0;
@@ -2134,6 +2134,7 @@ sub set_default_tmpl_params {
         if ( my $author = $mt->user ) {
             $param->{author_id}   = $author->id;
             $param->{author_name} = $author->name;
+            $param->{pc_view}     = $mt->session('pc_view') ? 1 : 0;
         }
         ## We do this in load_tmpl because show_error and login don't call
         ## build_page; so we need to set these variables here.
@@ -3920,7 +3921,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2018 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2019 Six Apart.
 All rights reserved.
 
 =cut

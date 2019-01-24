@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.3  01-Jan-2016
+@version   v5.20.12  30-Mar-2018
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -1741,8 +1741,11 @@ if (sizeof($_GET) == 0) $testmysql = true;
 
 
 foreach($_GET as $k=>$v)  {
-	//global $$k;
-	$$k = $v;
+	// XSS protection (see Github issue #274) - only set variables for
+	// expected get parameters used in testdatabases.inc.php
+	if(preg_match('/^(test|no)\w+$/', $k)) {
+		$$k = $v;
+	}
 }
 
 ?>

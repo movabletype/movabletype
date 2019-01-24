@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -7,6 +7,10 @@
 
 function smarty_function_mtentrybasename($args, &$ctx) {
     $entry = $ctx->stash('entry');
+    if (!$entry && $ctx->stash('content')) {
+        require_once('function.mtcontentidentifier.php');
+        return smarty_function_mtcontentidentifier($args, $ctx);
+    }
     if (!$entry) return '';
     $basename = $entry->entry_basename;
     if ($sep = $args['separator']) {

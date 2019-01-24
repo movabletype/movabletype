@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -296,7 +296,6 @@ sub core_methods {
         'dialog_adjust_sitepath'   => "${pkg}Tools::dialog_adjust_sitepath",
         'dialog_select_weblog'     => "${pkg}Blog::dialog_select_weblog",
         'dialog_select_website'    => "${pkg}Website::dialog_select_website",
-        'dialog_select_theme'      => "${pkg}Theme::dialog_select_theme",
         'dialog_select_sysadmin'   => "${pkg}User::dialog_select_sysadmin",
         'dialog_grant_role'        => "${pkg}User::dialog_grant_role",
         'dialog_select_assoc_type' => "${pkg}User::dialog_select_assoc_type",
@@ -383,6 +382,23 @@ sub core_methods {
             code      => "${pkg}RebuildTrigger::save",
             no_direct => 1,
         },
+
+        ## Groups
+        'delete_group'             => "${pkg}Group::delete_group",
+        'edit_group_members'       => "${pkg}Group::edit_group_members",
+        'add_group_members'        => "${pkg}Group::add_group_members",
+        'remove_member'            => "${pkg}Group::remove_member",
+        'remove_group'             => "${pkg}Group::remove_group",
+        'add_member'               => "${pkg}Group::add_member",
+        'add_group'                => "${pkg}Group::add_group",
+        'dialog_select_group_user' => "${pkg}Group::dialog_select_group_user",
+        'view_group'               => "${pkg}Group::view_group",
+        'edit_group'               => "${pkg}Group::view_group",
+
+        'change_to_pc_view' => {
+            code     => "${pkg}Mobile::change_to_pc_view",
+            app_mode => 'JSON',
+        },
     };
 }
 
@@ -463,6 +479,17 @@ sub core_widgets {
             view     => [ 'user', 'website', 'blog' ],
             order    => 100,
             default  => 1,
+        },
+        site_list_for_mobile => {
+            label    => 'Site List for Mobile',
+            template => 'widget/site_list_for_mobile.tmpl',
+            handler  => "${pkg}Dashboard::site_list_widget",
+            singular => 1,
+            set      => 'main',
+            view     => [ 'user', 'website', 'blog' ],
+            order    => 50,
+            default  => 1,
+            mobile   => 1,
         },
     };
 
@@ -597,6 +624,25 @@ sub init_plugins {
                 "${pfx}ContentData::cms_pre_load_filtered_list",
             "${pkg}list_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_list",
+
+            # group
+            $pkg . 'pre_load_filtered_list.group_member' => sub {
+                my ( $cb, $app, $filter, $opts, $cols ) = @_;
+                $filter->append_item( { type => '_type', } );
+            },
+            'list_template_param.group' => sub {
+                my $cb = shift;
+                my ( $app, $param, $tmpl ) = @_;
+                $param->{object_type_for_table_class} = 'grp';
+                return if $app->can_do('access_to_permission_list');
+                $param->{use_filters}      = 0;
+                $param->{use_actions}      = 0;
+                $param->{has_list_actions} = 0;
+                my $author_name = $app->user->name;
+                $param->{page_title}
+                    = MT->translate( q{[_1]'s Group}, $author_name );
+            },
+            $pkg . 'save_filter.group' => "${pfx}Group::CMSSaveFilter_group",
         }
     );
 
@@ -816,6 +862,19 @@ sub core_content_actions {
                 }
             },
         },
+        'group_member' => {
+            'add_member' => {
+                class             => 'icon-action',
+                label             => 'Add user to group',
+                mode              => 'dialog_select_group_user',
+                system_permission => 'administer,manage_users_groups',
+                condition         => sub {
+                    my $app = MT->instance;
+                    $app->config->ExternalGroupManagement ? 0 : 1;
+                },
+                dialog => 1,
+            },
+        },
 
         # TODO: FogBugz:114491
         # Hide create link temporarily and will fix in new UI.
@@ -835,6 +894,7 @@ sub core_list_actions {
                 label         => "Unpublish Entries",
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
+                mobile        => 1,
                 permit_action => {
                     permit_action => 'set_entry_draft_via_list',
                     include_all   => 1,
@@ -901,6 +961,7 @@ sub core_list_actions {
                 order         => 100,
                 js_message    => 'publish',
                 button        => 1,
+                mobile        => 1,
                 permit_action => {
                     permit_action =>
                         'publish_entry_via_list,publish_all_entry',
@@ -918,6 +979,7 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                mobile     => 1,
             },
         },
         'page' => {
@@ -925,6 +987,7 @@ sub core_list_actions {
                 label         => "Unpublish Pages",
                 order         => 200,
                 code          => "${pkg}Entry::draft_entries",
+                mobile        => 1,
                 permit_action => {
                     permit_action => 'set_page_draft_via_list',
                     include_all   => 1,
@@ -988,6 +1051,7 @@ sub core_list_actions {
                 order         => 100,
                 js_message    => 'publish',
                 button        => 1,
+                mobile        => 1,
                 permit_action => {
                     permit_action => 'publish_page_via_list',
                     include_all   => 1,
@@ -1004,6 +1068,7 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                mobile     => 1,
             },
         },
         'asset' => {
@@ -1036,6 +1101,7 @@ sub core_list_actions {
                 order      => 110,
                 js_message => 'delete',
                 button     => 1,
+                mobile     => 1,
             },
         },
         'author' => {
@@ -1441,7 +1507,68 @@ sub core_list_actions {
         },
         'category_set' => '$Core::MT::CMS::CategorySet::list_actions',
         'content_type' => '$Core::MT::CMS::ContentType::list_actions',
-        %{ MT::CMS::ContentData::make_list_actions() },
+        'content_data' => '$Core::MT::CMS::ContentData::list_actions',
+        'group'        => {
+            'delete_group' => {
+                label                   => 'Delete',
+                order                   => 100,
+                continue_prompt_handler => sub {
+                    MT->translate(
+                        'Are you sure you want to delete the selected group(s)?'
+                    );
+                },
+                handler   => '$Core::MT::CMS::Group::delete_group',
+                condition => sub {
+                    my $app = MT->instance;
+                    $app->user->can_manage_users_groups()
+                        && ( !$app->config->ExternalGroupManagement )
+                        && ( !$app->param('author_id') );
+                },
+            },
+            'enable_group' => {
+                label      => 'Enable',
+                mode       => 'enable_object',
+                order      => 100,
+                js_message => 'enable',
+                button     => 1,
+                condition  => sub {
+                    my $app = MT->instance;
+                    $app->user->can_manage_users_groups()
+                        && ( !$app->param('author_id') );
+                },
+            },
+            'disable_group' => {
+                label      => 'Disable',
+                mode       => 'disable_object',
+                order      => 200,
+                js_message => 'disable',
+                button     => 1,
+                condition  => sub {
+                    my $app = MT->instance;
+                    $app->user->can_manage_users_groups()
+                        && ( !$app->param('author_id') );
+                },
+            },
+        },
+        'group_member' => {
+            'remove_member' => {
+                label                   => 'Remove',
+                button                  => 1,
+                order                   => 100,
+                continue_prompt_handler => sub {
+                    MT->translate(
+                        'Are you sure you want to remove the selected member(s) from the group?'
+                    );
+                },
+                mode      => 'remove_member',
+                condition => sub {
+                    my $app = MT->instance;
+                    $app->user->can_manage_users_groups()
+                        && ( !$app->config->ExternalGroupManagement );
+                },
+            },
+        },
+
     };
 }
 
@@ -1572,6 +1699,11 @@ sub core_menus {
             icon  => 'ic_user',
             order => 900,
         },
+        'group' => {
+            icon  => 'ic_member',
+            label => 'Groups',
+            order => 1000,
+        },
         'feedback' => {
             label => "Feedbacks",
             icon  => 'ic_feedback',
@@ -1629,6 +1761,7 @@ sub core_menus {
             mode      => "list",
             args      => { _type => "blog" },
             view      => ["website"],
+            mobile    => 1,
             condition => sub {
                 require MT::CMS::Blog;
                 return MT::CMS::Blog::can_view_blog_list($app);
@@ -1660,7 +1793,36 @@ sub core_menus {
             system_permission => "administer,manage_users_groups",
             view              => "system",
         },
+        'group:manage' => {
 
+            label             => 'Manage',
+            order             => 100,
+            mode              => 'list',
+            args              => { _type => 'group' },
+            view              => 'system',
+            system_permission => "administer,manage_users_groups",
+        },
+        'group:create' => {
+
+            label             => 'New',
+            order             => 200,
+            mode              => 'view',
+            args              => { _type => 'group' },
+            view              => 'system',
+            system_permission => "administer,manage_users_groups",
+            condition         => sub {
+                my $app = MT->instance;
+                $app->config->ExternalGroupManagement ? 0 : 1;
+            }
+        },
+        'group:manage_members' => {
+            label             => 'Manage Members',
+            order             => 300,
+            mode              => 'list',
+            args              => { _type => 'group_member' },
+            view              => 'system',
+            system_permission => "administer,manage_users_groups",
+        },
         'role:manage' => {
             label             => "Manage",
             order             => 100,
@@ -1705,6 +1867,7 @@ sub core_menus {
             mode      => 'list',
             args      => { _type => 'entry' },
             view      => [ "blog", "website" ],
+            mobile    => 1,
             condition => sub {
                 return 1 if $app->user->is_superuser;
 
@@ -1739,6 +1902,7 @@ sub core_menus {
             args       => { _type => 'entry' },
             permission => 'create_post',
             view       => [ "blog", "website" ],
+            mobile     => 1,
         },
         'entry:category' => {
             label      => "Categories",
@@ -1747,6 +1911,7 @@ sub core_menus {
             args       => { _type => 'category' },
             permission => 'edit_categories',
             view       => [ "blog", "website" ],
+            mobile     => 1,
         },
         'entry:import' => {
             label      => "Import",
@@ -1769,6 +1934,7 @@ sub core_menus {
             mode      => 'list',
             args      => { _type => 'page' },
             view      => [ "blog", 'website' ],
+            mobile    => 1,
             condition => sub {
                 return 1 if $app->user->is_superuser;
 
@@ -1803,6 +1969,7 @@ sub core_menus {
             args       => { _type => 'page' },
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
+            mobile     => 1,
         },
         'page:folder' => {
             label      => "Folders",
@@ -1811,6 +1978,7 @@ sub core_menus {
             args       => { _type => 'folder' },
             permission => 'manage_pages',
             view       => [ "blog", 'website' ],
+            mobile     => 1,
         },
 
         'asset:manage' => {
@@ -1820,6 +1988,7 @@ sub core_menus {
             args       => { _type => 'asset' },
             permission => '',
             view       => [ "system", "blog", 'website' ],
+            mobile     => 1,
             condition  => sub {
                 return 1
                     if ( $app->user->is_superuser
@@ -1856,6 +2025,7 @@ sub core_menus {
             mode       => 'start_upload',
             permission => 'upload,edit_assets',
             view       => [ "blog", 'website' ],
+            mobile     => 1,
         },
         'asset:edit' => {
             order   => 10000,
@@ -2168,6 +2338,7 @@ sub core_menus {
             permission => 'manage_category_set',
             args       => { _type => 'category_set' },
             view       => [ 'website', 'blog' ],
+            mobile     => 1,
         },
         'category_set:create' => {
             label      => 'New',
@@ -2192,7 +2363,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view       => [ "blog", "website" ],
+            view => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2201,7 +2372,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view       => [ "blog", 'website' ],
+            view => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -2294,6 +2465,51 @@ sub core_user_menus {
                     : $app->can_do('view_other_user_permissions');
             },
         },
+        'group' => {
+            label_handler => sub {
+                my ( $app, $param ) = @_;
+                my $aid        = $param->{user_menu_id};
+                my $asso_class = MT->model('association');
+                my $gcount     = $asso_class->count(
+                    {   type      => $asso_class->USER_GROUP(),
+                        author_id => $aid,
+                        group_id  => \' is not null',
+                    },
+                );
+                return MT->translate( 'Groups ([_1])', $gcount );
+            },
+            order => 1000,
+            link  => sub {
+                my ( $app, $param ) = @_;
+                if ( $app->can_do('access_to_group_list') ) {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            blog_id    => 0,
+                            _type      => 'group',
+                            filter     => 'author_id',
+                            filter_val => $param->{user_menu_id},
+                        },
+                    );
+                }
+                else {
+                    return $app->uri(
+                        mode => 'list',
+                        args => {
+                            blog_id => 0,
+                            _type   => 'group',
+                        },
+                    );
+                }
+            },
+            user_param => 'filter_val',
+            condition  => sub {
+                my ( $app, $param ) = @_;
+                $param->{is_me}
+                    ? 1
+                    : $app->can_do('manage_groups');
+            }
+        },
     };
 }
 
@@ -2354,6 +2570,10 @@ sub core_enable_object_methods {
             edit   => 1,
             save   => 1,
         },
+        group => {
+            delete => 1,
+            save   => 1,
+        }
     };
 }
 
@@ -3095,6 +3315,9 @@ sub build_menus {
                     }
                 }
             }
+            unless ( exists $sub->{mobile} ) {
+                $sub->{mobile} = 0;
+            }
             push @sub, $sub;
         }
 
@@ -3212,6 +3435,9 @@ sub build_menus {
             if ( $menu->{allowed} ) {
                 $menu->{allowed} = 0 unless $has_sub;
             }
+            unless ( exists $menu->{mobile} ) {
+                $menu->{mobile} = ( grep { $_->{mobile} } @sub ) ? 1 : 0;
+            }
         }
     }
 
@@ -3299,6 +3525,7 @@ sub build_user_menus {
     $param->{user_menu_id} ||= $user_id;
     $param->{user_menu_user} = $menu_user;
     my $active = $param->{active_user_menu};
+    $active = '' unless defined $active;
     $param->{is_me} ||= $login_user->id == $user_id;
     my $reg_menus = $app->registry('user_menus');
     my $menus = $app->filter_conditional_list( $reg_menus, $app, $param );
@@ -4350,8 +4577,6 @@ sub rebuild_these_content_data {
                 unless $perms
                 && $perms->can_republish_content_data( $cd, $app->user );
 
-            my $type = $cd->class;
-
             $blogs{ $cd->blog_id } = ();
             $app->rebuild_content_data(
                 ContentData       => $cd,
@@ -4694,13 +4919,17 @@ sub setup_filtered_ids {
         blog_ids => $blog_ids,
     };
 
-    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $ds,
+    my $callback_ds = $ds;
+    if ( $ds =~ m/(.*)\./ ) {
+        $callback_ds = $1;
+    }
+    MT->run_callbacks( 'cms_pre_load_filtered_list.' . $callback_ds,
         $app, $filter, $opts, [] );
     my $objs = $filter->load_objects(%$opts)
         or die $filter->errstr;
     my %data = ( objects => [ map( [ $_->id ], @$objs ) ] );
-    MT->run_callbacks( 'cms_filtered_list_param.' . $ds, $app, \%data,
-        $objs );
+    MT->run_callbacks( 'cms_filtered_list_param.' . $callback_ds,
+        $app, \%data, $objs );
     $app->param( 'id', map( $_->[0], @{ $data{objects} } ) );
 }
 

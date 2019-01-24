@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -155,7 +155,9 @@ sub data_load_handler_asset {
 sub ss_validator_datetime {
     my ( $app, $field_data, $data ) = @_;
 
-    unless ( !defined $data || $data eq '' || MT::Util::is_valid_date($data) )
+    unless ( !defined $data
+        || $data eq ''
+        || ( MT::Util::is_valid_date($data) && length($data) == 14 ) )
     {
         my $field_type  = $field_data->{type};
         my $field_label = $field_data->{options}{label};
@@ -383,7 +385,7 @@ sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $asset_terms = {
-        id     => $value,
+        id => @$value ? $value : 0,
         class  => '*',
         parent => \'IS NULL',
     };
@@ -401,22 +403,6 @@ sub tag_handler_asset {
         if !exists $args->{sort_by} && !exists $args->{sort_order};
 
     $ctx->invoke_handler( 'assets', $args, $cond );
-}
-
-sub tag_handler_content_type {
-    my ( $ctx, $args, $cond, $field_data, $value ) = @_;
-
-    my $content_type = $ctx->stash('content_type')
-        or return $ctx->_no_content_type_error;
-    my $content_data = $ctx->stash('content')
-        or return $ctx->_no_content_error;
-
-    my $ids = $content_data->data->{ $field_data->{id} };
-    my @contents
-        = MT->model('content_data')->load( { id => $ids } );
-    local $ctx->{__stash}{contents} = \@contents;
-
-    $ctx->invoke_handler( 'contents', $args, $cond );
 }
 
 sub field_value_handler_datetime {
@@ -454,6 +440,7 @@ sub feed_value_handler_multiple {
 
     my $contents = '';
     for my $v (@$values) {
+        next unless defined $v && $v ne '';
         my $encoded_v     = MT::Util::encode_html($v);
         my $encoded_label = MT::Util::encode_html( $value_label_hash{$v} );
         $contents .= "<li>$encoded_label($encoded_v)</li>";
@@ -497,13 +484,17 @@ sub search_handler_multiple {
 }
 
 sub search_handler_reference {
-    my ( $search_regex, $field_data, $object_ids, $content_data ) = @_;
-    return 0 unless defined $object_ids;
-    $object_ids = [$object_ids] unless ref $object_ids eq 'ARRAY';
+    my ( $search_regex, $field_data, $raw_object_ids, $content_data ) = @_;
+    return 0 unless $raw_object_ids;
+    my @object_ids
+        = ref $raw_object_ids eq 'ARRAY'
+        ? @$raw_object_ids
+        : ($raw_object_ids);
+    return 0 unless @object_ids;
     my $field_registry
         = MT->registry( 'content_field_types', $field_data->{type} );
     my $iter = MT->model( $field_registry->{search_class} )
-        ->load_iter( { id => $object_ids } );
+        ->load_iter( { id => \@object_ids } );
     while ( my $obj = $iter->() ) {
         for my $col ( @{ $field_registry->{search_columns} } ) {
             my $text = defined $obj->$col ? $obj->$col : '';

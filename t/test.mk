@@ -38,6 +38,9 @@ test-parallel:
 test-update-fixture:
 	MT_TEST_UPDATE_FIXTURE=1 prove
 
+test-update-fixture-schema:
+	perl -It/lib -MMT::Test::Env -E 'MT::Test::Env->save_schema'
+
 test-ignore-fixture:
 	MT_TEST_IGNORE_FIXTURE=1 prove
 
@@ -45,7 +48,7 @@ test-phpunit:
 	php -v
 	phpunit
 
-PHP_LINT_DIR ?= .
+PHP_LINT_DIR ?= php plugins
 
 test-php-lint:
 	php -v

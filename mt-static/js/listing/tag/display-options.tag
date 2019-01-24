@@ -70,10 +70,7 @@
 
   <script>
     this.mixin('listTop')
-
-    changeLimit(e) {
-      this.store.trigger('update_limit', this.refs.limit.value)
-    }
+    this.mixin('displayOptions')
   </script>
 </display-options-limit>
 

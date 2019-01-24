@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -249,7 +249,9 @@ sub permalink {
     my $id    = $self->id;
     my $entry = $self->entry;
     if ( $id && $entry ) {
-        $entry->archive_url . '#comment-' . $id;
+        my $archive_url = $entry->archive_url;
+        $archive_url = '' unless defined $archive_url;
+        $archive_url . '#comment-' . $id;
     }
     else {
         '#';

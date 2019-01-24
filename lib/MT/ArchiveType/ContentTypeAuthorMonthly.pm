@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -70,7 +70,6 @@ sub archive_group_iter {
     my $order = ( $sort_order eq 'ascend' ) ? 'asc' : 'desc';
     my $limit = exists $args->{lastn} ? delete $args->{lastn} : undef;
 
-    my $tmpl  = $ctx->stash('template');
     my @data  = ();
     my $count = 0;
 
@@ -79,10 +78,15 @@ sub archive_group_iter {
     my $ts    = $ctx->{current_timestamp};
     my $tsend = $ctx->{current_timestamp_end};
 
-    my $map = $ctx->stash('template_map');
-    my $dt_field_id = defined $map && $map ? $map->dt_field_id : '';
-    my $content_type_id
-        = $ctx->stash('content_type') ? $ctx->stash('content_type')->id : '';
+    my $content_type_id = $ctx->stash('content_type')->id;
+    my $map             = $obj->_get_preferred_map(
+        {   blog_id         => $blog->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $dt_field_id = $map ? $map->dt_field_id : '';
+
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
@@ -178,11 +182,11 @@ sub archive_group_contents {
     my $ts
         = $param->{year}
         ? sprintf( "%04d%02d%02d000000", $param->{year}, $param->{month}, 1 )
-        : $ctx->stash('current_timestamp');
+        : $ctx->{current_timestamp};
     my $author = $param->{author} || $ctx->stash('author');
     my $limit = $param->{limit};
-    $obj->dated_author_contents( $ctx, 'Author-Monthly', $author, $ts,
-        $limit, $content_type_id );
+    $obj->dated_author_contents( $ctx, $obj->name, $author,
+        $ts, $limit, $content_type_id );
 }
 
 *date_range    = \&MT::ArchiveType::Monthly::date_range;

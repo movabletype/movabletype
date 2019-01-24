@@ -15,7 +15,7 @@ BEGIN {
 
 use MT::Test::Tag;
 
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -38,9 +38,9 @@ sub var {
 }
 
 filters {
-    template => [qw( var chomp )],
-    expected => [qw( var chomp )],
-    error    => [qw( chomp )],
+    template       => [qw( var chomp )],
+    expected       => [qw( var chomp )],
+    expected_error => [qw( chomp )],
 };
 
 $test_env->prepare_fixture(
@@ -50,6 +50,16 @@ $test_env->prepare_fixture(
         my $ct = MT::Test::Permission->make_content_type(
             name    => 'test content data',
             blog_id => $blog_id,
+        );
+        my $ct2 = MT::Test::Permission->make_content_type(
+            name    => 'Content Type',
+            blog_id => $blog_id,
+        );
+        my $cf_content_type = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct2->id,
+            name            => 'content type',
+            type            => 'content_type',
         );
         my $cf_single_line_text = MT::Test::Permission->make_content_field(
             blog_id         => $ct->blog_id,
@@ -353,9 +363,51 @@ $test_env->prepare_fixture(
                 },
                 unique_id => $cf_image->unique_id,
             },
+            {   id      => $cf_content_type->id,
+                order   => 17,
+                type    => $cf_content_type->type,
+                options => {
+                    label  => $cf_content_type->name,
+                    source => $ct2->id,
+                },
+                unique_id => $cf_content_type->unique_id,
+            },
         ];
         $ct->fields($fields);
         $ct->save or die $ct->errstr;
+        $ct2->fields(
+            [   {   id        => $cf_single_line_text->id,
+                    order     => 1,
+                    type      => $cf_single_line_text->type,
+                    options   => { label => $cf_single_line_text->name },
+                    unique_id => $cf_single_line_text->unique_id,
+                },
+                {   id    => $cf_single_line_text_no_data->id,
+                    order => 2,
+                    type  => $cf_single_line_text_no_data->type,
+                    options =>
+                        { label => $cf_single_line_text_no_data->name },
+                    unique_id => $cf_single_line_text_no_data->unique_id,
+                },
+                {   id        => $cf_number->id,
+                    order     => 3,
+                    type      => $cf_number->type,
+                    options   => { label => $cf_number->name },
+                    unique_id => $cf_number->unique_id,
+                },
+            ]
+        );
+        $ct2->save or die $ct2->errstr;
+        my $cd2 = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct2->id,
+            author_id       => 1,
+            data            => {
+                $cf_single_line_text->id         => 'test single line text2',
+                $cf_single_line_text_no_data->id => '',
+                $cf_number->id                   => '12345',
+            },
+        );
         my $cd = MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -377,9 +429,10 @@ $test_env->prepare_fixture(
                 $cf_table->id => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
-                $cf_tag->id      => [ $tag2->id,      $tag1->id ],
-                $cf_category->id => [ $category2->id, $category1->id ],
-                $cf_image->id    => [ $image1->id,    $image2->id ],
+                $cf_tag->id          => [ $tag2->id,      $tag1->id ],
+                $cf_category->id     => [ $category2->id, $category1->id ],
+                $cf_image->id        => [ $image1->id,    $image2->id ],
+                $cf_content_type->id => [ $cd2->id ],
             },
         );
     }
@@ -393,14 +446,14 @@ $vars->{cf_id}        = $cf->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
 === mt:ContentField without contents context
 --- template
 <mt:ContentField content_field="single line text"><mt:var name="__value__"></mt:ContentField>
---- error
+--- expected_error
 No Content Type could be found.
 
 === mt:ContentField content_field="single line text" (unique_id)
@@ -452,13 +505,13 @@ test single line text
 Footer
 
 === mt:ContentField no data
---- skip
-1
 --- template
 <mt:Contents content_type="test content data"><mt:ContentField content_field="no_data"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
 <mt:var name="__value__">
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
---- error
+--- expected_error
+Error in <mtContentField> tag: No Content Field could be found.
+--- expected_php_error
 No Content Field could be found.
 
 === mt:ContentField content_field="multi line text"
@@ -651,6 +704,20 @@ Sample Image 1
 Sample Image 2
 Footer
 
+=== mt:ContentField content_field="content_type"
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="content type"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:ContentFields><mt:ContentField><mt:ContentFieldLabel>: <mt:ContentFieldValue></mt:ContentField>
+</mt:ContentFields>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+Header
+single line text: test single line text2
+
+number: 12345
+
+Footer
+
 === mt:ContentFieldLabel
 --- template
 <mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
@@ -673,6 +740,7 @@ tables
 tags
 categories
 asset_image
+content type
 
 === mt:ContentFieldType
 --- template
@@ -696,3 +764,4 @@ tables
 tags
 categories
 asset_image
+content_type

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2640,9 +2640,13 @@ BLOG: for my $blog_id (@id) {
                 my @elements = $theme->elements;
                 my ($set)
                     = grep { $_->{importer} eq 'template_set' } @elements;
-                $set = $set->{data};
-                $set->{envelope} = $theme->path if ref $set;
-                $theme->__deep_localize_labels($set) if ref $set;
+                require Clone::PP;
+                $set = Clone::PP::clone( $set->{data} );
+                if ( ref $set ) {
+                    $set->{envelope} = $theme->path;
+                    $theme->__deep_localize_labels($set);
+                    $theme->__deep_localize_templatized_values($set);
+                }
                 $tmpl_list = MT::DefaultTemplates->templates($set);
             }
             else {
@@ -2885,9 +2889,13 @@ sub refresh_individual_templates {
         if ( my $theme = $blog->theme ) {
             my @elements = $theme->elements;
             my ($set) = grep { $_->{importer} eq 'template_set' } @elements;
-            $set = $set->{data};
-            $set->{envelope} = $theme->path if ref $set;
-            $theme->__deep_localize_labels($set) if ref $set;
+            require Clone::PP;
+            $set = Clone::PP::clone( $set->{data} );
+            if ( ref $set ) {
+                $set->{envelope} = $theme->path;
+                $theme->__deep_localize_labels($set);
+                $theme->__deep_localize_templatized_values($set);
+            }
             $tmpl_list = MT::DefaultTemplates->templates($set);
         }
         else {
@@ -3224,8 +3232,14 @@ sub publish_archive_templates {
     $app->return_args($return_args);
     return $app->call_return unless %ats;
 
-    $app->param( 'template_id',     $tmpl_id );
-    $app->param( 'single_template', 1 );          # forces fullscreen mode
+    $app->param( 'template_id', $tmpl_id );
+    if ($tmpl_id) {
+        my $tmpl = $app->model('template')->load($tmpl_id);
+        if ( $tmpl && $tmpl->content_type_id ) {
+            $app->param( 'content_type_id', $tmpl->content_type_id );
+        }
+    }
+    $app->param( 'single_template', 1 );    # forces fullscreen mode
     $app->param( 'type', join( ",", keys %ats ) );
     return MT::CMS::Blog::start_rebuild_pages($app);
 }

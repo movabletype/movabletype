@@ -137,46 +137,6 @@ subtest 'mode = apply_theme' => sub {
     done_testing();
 };
 
-subtest 'mode = dialog_select_theme' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_theme',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_theme" );
-    ok( $out !~ m!permission=1!i, "dialog_select_theme by admin" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_theme',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_theme" );
-    ok( $out =~ m!permission=1!i, "dialog_select_theme by other blog" );
-
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_select_theme',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_select_theme" );
-    ok( $out =~ m!permission=1!i, "dialog_select_theme by other permission" );
-
-    done_testing();
-};
-
 subtest 'mode = do_export_theme' => sub {
     if ( $^O eq 'MSWin32' ) {
         $app->config->TempDir( File::Spec->tmpdir );

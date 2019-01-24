@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -3119,6 +3119,10 @@ sub dialog_insert_options {
     # Make a insert option loop
     my $options_loop;
     foreach my $a (@$assets) {
+        my $thumb_type
+            = $a->class_type eq 'file'  ? 'default'
+            : $a->class_type eq 'video' ? 'movie'
+            :                             $a->class_type;
         my $param = {
             id        => $a->id,
             filename  => $a->file_name,
@@ -3127,8 +3131,8 @@ sub dialog_insert_options {
             thumbnail => _make_thumbnail_url(
                 $a, { size => $default_thumbnail_size }
             ),
-            thumbnail_type => $a->class eq 'video' ? 'movie' : $a->class,
-            class_label => $a->class_label,
+            thumbnail_type => $thumb_type,
+            class_label    => $a->class_label,
         };
         my $html = $a->insert_options($param) || '';
         $param->{options} = $html;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -333,30 +333,6 @@ sub _mk_term {
     local $stmt->{column_mutator} = undef;
 
     $stmt->SUPER::_mk_term( $col, $val );
-}
-
-sub make_subselect {
-    my $stmt  = shift;
-    my $class = ref $stmt;
-
-    my $subselect = $class->new();
-    for my $field (qw( bind distinct )) {
-        $subselect->$field( $stmt->$field() );
-    }
-
-    my @new_selects = map {s{ \A \w+\. }{}xms} @{ $stmt->select };
-    $subselect->select( \@new_selects );
-
-    my %new_select_map;
-    my $sel_map = $stmt->select_map;
-    for my $select_field ( keys %$sel_map ) {
-        my $new_select_field = $select_field;
-        $new_select_field =~ s{ \A \w+\. }{}xms;
-        $new_select_map{$new_select_field} = $sel_map->{$select_field};
-    }
-
-    $subselect->from_stmt($stmt);
-    return $subselect;
 }
 
 sub field_decorator {

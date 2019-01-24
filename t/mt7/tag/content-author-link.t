@@ -17,8 +17,7 @@ use utf8;
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -87,13 +86,23 @@ $test_env->prepare_fixture(
             file_template => 'author/%-a/%f',
             is_preferred  => 1,
         );
-
     }
+);
+
+my $blog = MT::Blog->load($blog_id);
+$blog->archive_path(join "/", $test_env->root, "site/archive");
+$blog->save;
+
+require MT::ContentPublisher;
+my $publisher = MT::ContentPublisher->new;
+$publisher->rebuild(
+    BlogID => $blog_id,
+    ArchiveType => 'ContentType-Author',
 );
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -140,8 +149,6 @@ Abby
 <a href="mailto:test@example.com">Birman</a>
 
 === MT::ContentAuthorLink with type="archive"
---- skip
-1
 --- template
 <mt:Contents content_type="test content type"><mt:ContentAuthorLink type="archive"></mt:Contents>
 --- expected

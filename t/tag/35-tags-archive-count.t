@@ -63,5 +63,5 @@ __END__
 </MTArchiveList>
 </MTCategories>
 --- expected
-2015: 1
-2013: 1
+foo: 2015: 1
+foo: 2013: 1
