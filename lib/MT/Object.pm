@@ -1554,6 +1554,12 @@ sub set_values {
             # there's no point in croaking here; just set the
             # values that are defined; ignore any others
             next unless defined $values->{$col};
+
+            # MTC-25999: Avoid storing an empty string into a datetime column
+            my $col_type = $obj->column_def($col)->{type};
+            if ($col_type and $col_type =~ /date|time/ and $values->{$col} eq '') {
+                $values->{$col} = undef;
+            }
             if (   $args
                 && exists( $args->{no_changed_flag} )
                 && $args->{no_changed_flag} )

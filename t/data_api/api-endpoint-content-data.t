@@ -514,6 +514,44 @@ sub normal_tests_for_create {
     );
 
     test_data_api(
+        {   note => 'unpublished_on',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method       => 'POST',
+            params       => { content_data => { unpublishedDate => '2020-01-01 00:00:00' }, },
+            complete => sub {
+                my $cd = MT->model('content_data')->load(
+                    { content_type_id => $content_type_id, },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                        limit     => 1,
+                    },
+                );
+                is( $cd->unpublished_on => '20200101000000' );
+            },
+        }
+    );
+
+    test_data_api(
+        {   note => 'empty unpublished_on',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method       => 'POST',
+            params       => { content_data => { unpublishedDate => '' }, },
+            complete => sub {
+                my $cd = MT->model('content_data')->load(
+                    { content_type_id => $content_type_id, },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                        limit     => 1,
+                    },
+                );
+                is( $cd->unpublished_on => undef );
+            },
+        }
+    );
+
+    test_data_api(
         {   note => 'superuser',
             path =>
                 "/v4/sites/$site_id/contentTypes/$content_type_id/data",
@@ -1358,6 +1396,34 @@ sub normal_tests_for_update {
             ],
             result => sub {
                 $cd = MT->model('content_data')->load( $cd->id );
+            },
+        }
+    );
+
+    test_data_api(
+        {   note => 'empty unpublished_on',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'PUT',
+            params       => { content_data => { unpublishedDate => '' }, },
+            complete=> sub {
+                $cd = MT->model('content_data')->load( $cd->id );
+                is( $cd->unpublished_on => undef );
+            },
+        }
+    );
+
+    test_data_api(
+        {   note => 'unpublished_on',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'PUT',
+            params       => { content_data => { unpublishedDate => '2020-01-01 00:00:00' }, },
+            complete=> sub {
+                $cd = MT->model('content_data')->load( $cd->id );
+                is( $cd->unpublished_on => '20200101000000' );
             },
         }
     );
