@@ -67,24 +67,24 @@ sub suite {
                 is( $page->unpublished_on => undef );
             },
         },
-        {   path   => '/v2/sites/1/pages/1',
+        {   path   => '/v2/sites/1/pages/26',
             method => 'PUT',
             params => {
                 page => { unpublishedDate => '2038-01-01 00:00:00' },
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( MT->model('page')->load(1)->unpublished_on => '20380101000000' );
+                is( MT->model('page')->load(26)->unpublished_on => '20380101000000' );
             },
         },
-        {   path   => '/v2/sites/1/pages/1',
+        {   path   => '/v2/sites/1/pages/26',
             method => 'PUT',
             params => {
                 page => { unpublishedDate => '' },
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( MT->model('page')->load(1)->unpublished_on => undef );
+                is( MT->model('page')->load(26)->unpublished_on => undef );
             },
         },
     ];
