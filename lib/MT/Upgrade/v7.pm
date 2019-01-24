@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -150,6 +150,28 @@ sub upgrade_functions {
             code => \&_v7_migrate_max_length_option_of_single_line_text,
             version_limit => 7.0042,
             priority      => 3,
+        },
+        'v7_rebuild_ct_count_of_category_sets' => {
+            version_limit => 7.0044,
+            priority      => 3.3,
+            condition     => sub {
+                my ( $self, %param ) = @_;
+                $param{from} && $param{from} >= 7;
+            },
+            updater => {
+                type  => 'category_set',
+                label => "Rebuilding Content Type count of Category Sets...",
+                code => sub { },    # It's OK only to save category_set.
+            },
+        },
+        'v7_add_mobile_site_list_dashboard_widget' => {
+            version_limit => '7.0045',
+            priority      => 5.1,
+            updater       => {
+                type  => 'author',
+                label => 'Adding site list dashboard widget for mobile...',
+                code  => \&_v7_add_mobile_site_list_dashboard_widget,
+            },
         },
     };
 }
@@ -354,9 +376,13 @@ sub _v7_migrate_privileges {
             = $assoc_class->load_iter(
             { role_id => $website_admin_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
         }
     }
@@ -374,14 +400,22 @@ sub _v7_migrate_privileges {
         my $assoc_iter
             = $assoc_class->load_iter( { role_id => $member_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
             if ( $blog && !$blog->is_blog ) {
                 my @child_blogs = @{ $blog->blogs };
                 foreach my $child_blog (@child_blogs) {
-                    my $author = $assoc->user;
-                    $author->add_role( $site_admin_role, $child_blog );
+                    if ( my $author = $assoc->user ) {
+                        $author->add_role( $site_admin_role, $child_blog );
+                    }
+                    elsif ( my $group = $assoc->group ) {
+                        $group->add_role( $site_admin_role, $child_blog );
+                    }
                 }
             }
         }
@@ -405,9 +439,13 @@ sub _v7_migrate_privileges {
         my $assoc_iter
             = $assoc_class->load_iter( { role_id => $blog_admin_role->id } );
         while ( my $assoc = $assoc_iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
         }
 
@@ -512,9 +550,13 @@ sub _v7_migrate_child_site_role {
             = $assoc_class->load_iter(
             { role_id => $child_site_admin_role->id } );
         while ( my $assoc = $iter->() ) {
-            my $blog   = $assoc->blog;
-            my $author = $assoc->user;
-            $author->add_role( $site_admin_role, $blog );
+            my $blog = $assoc->blog;
+            if ( my $author = $assoc->user ) {
+                $author->add_role( $site_admin_role, $blog );
+            }
+            elsif ( my $group = $assoc->group ) {
+                $group->add_role( $site_admin_role, $blog );
+            }
 
             # Child Site Administrator is remove
             $assoc->remove();
@@ -1386,6 +1428,21 @@ sub _v7_migrate_max_length_option_of_single_line_text {
         $ct->fields($fields);
         $ct->save;
     }
+}
+
+sub _v7_add_mobile_site_list_dashboard_widget {
+    my $user    = shift;
+    my $widgets = $user->widgets;
+    return 1 unless $widgets;
+    for my $key ( keys %$widgets ) {
+        next unless $key =~ /^dashboard:(?:user|blog):/;
+        $widgets->{$key}{site_list_for_mobile} = {
+            order => 50,
+            set   => 'main',
+        };
+    }
+    $user->widgets($widgets);
+    $user->save;
 }
 
 1;

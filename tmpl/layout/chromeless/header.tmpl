@@ -12,7 +12,7 @@
   </mt:unless>
   <mt:unless name="screen_type" eq="popup-screen">
     <mt:unless name="screen_type" eq="chromeless-screen">
-  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css" />
+  <link rel="stylesheet" href="<mt:var name="static_uri">css/chromeless.css?v=<mt:var name="mt_version_id" escape="URL">" />
     </mt:unless>
   </mt:unless>
   <mt:var name="css_include">
@@ -22,6 +22,8 @@
   <mt:include name="include/chromeless_libjs.tmpl">
 
   <mt:var name="html_head">
+
+  <script type="text/javascript" src="<mt:var name="static_uri">js/mt/util.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </head>
 <body>
 
@@ -29,7 +31,7 @@
 
     <mt:unless name="no_brand">
     <div class="row">
-      <div id="brand" class="col-12">
+      <div id="brand" class="col-12<mt:unless name="screen_type" eq="popup-screen"> text-center text-md-left</mt:unless>">
         <img alt="Movable Type" src="<mt:var name="static_uri">images/logo-fullname-color.svg" width="238" height="52" />
       </div>
     </div>
@@ -49,4 +51,4 @@
   </mt:if>
     </div>
 
-    <mt:include name="include/page_title.tmpl">
+    <mt:include name="include/page_title.tmpl" chromeless_layout="1">

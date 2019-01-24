@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -305,7 +305,15 @@ sub _preview_common {
         {   archive_type => $at,
             is_preferred => 1,
             blog_id      => $content_data->blog_id,
-        }
+        },
+        {   join => $app->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $content_data->content_type_id,
+                    type            => 'ct',
+                },
+            ),
+        },
     );
     if ( !$tmpl_map ) {
         return $app->error(

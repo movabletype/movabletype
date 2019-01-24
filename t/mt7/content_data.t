@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -15,46 +16,47 @@ use MT::Test::Permission;
 
 use MT::ContentFieldIndex;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $ct = MT::Test::Permission->make_content_type(
-        blog_id => 1,
-        name    => 'test content type',
-    );
+        my $ct = MT::Test::Permission->make_content_type(
+            blog_id => 1,
+            name    => 'test content type',
+        );
 
-    my $cf = MT::Test::Permission->make_content_field(
-        blog_id         => $ct->blog_id,
-        content_type_id => $ct->id,
-        name            => 'single text',
-        type            => 'single_line_text',
-    );
+        my $cf = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'single text',
+            type            => 'single_line_text',
+        );
 
-    my $fields = [
-        {   id        => $cf->id,
-            label     => 1,
-            name      => $cf->name,
-            order     => 1,
-            type      => $cf->type,
-            unique_id => $cf->unique_id,
-        }
-    ];
-    $ct->fields($fields);
-    $ct->save or die $ct->errstr;
+        my $fields = [
+            {   id        => $cf->id,
+                label     => 1,
+                name      => $cf->name,
+                order     => 1,
+                type      => $cf->type,
+                unique_id => $cf->unique_id,
+            }
+        ];
+        $ct->fields($fields);
+        $ct->save or die $ct->errstr;
 
-    my $cd = MT::Test::Permission->make_content_data(
-        blog_id         => $ct->blog_id,
-        author_id       => 1,
-        content_type_id => $ct->id,
-        data            => { $cf->id => 'test text' },
-    );
-});
+        my $cd = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            author_id       => 1,
+            content_type_id => $ct->id,
+            data            => { $cf->id => 'test text' },
+        );
+    }
+);
 
 my $ct = MT::ContentType->load( { name => 'test content type' } );
 my $cf = MT::ContentField->load( { name => 'single text' } );
 my $cd = MT::ContentData->load(
-    {
-        blog_id         => $ct->blog_id,
+    {   blog_id         => $ct->blog_id,
         author_id       => 1,
         content_type_id => $ct->id,
     }
@@ -165,7 +167,7 @@ subtest 'gather_changed_cols' => sub {
     my $cd_orig = $cd->clone;
 
     $cd->gather_changed_cols($cd_orig);
-    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+    is_deeply( $cd->{changed_revisioned_cols}, [], 'same data column' );
 
     $cd->data( { abc => 1 } );
 
@@ -176,7 +178,7 @@ subtest 'gather_changed_cols' => sub {
     $cd_orig->data( { abc => 1 } );
 
     $cd->gather_changed_cols($cd_orig);
-    is( $cd->{changed_revisioned_cols}, undef, 'same data column' );
+    is_deeply( $cd->{changed_revisioned_cols}, [], 'same data column' );
 };
 
 done_testing;

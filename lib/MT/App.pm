@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -282,6 +282,8 @@ sub page_actions {
 sub list_actions {
     my $app = shift;
     my ( $type, @param ) = @_;
+
+    $type = 'content_data' if $type =~ /^content_data\.content_data_[0-9]+$/;
 
     my $actions = $app->registry( "list_actions", $type ) or return;
     my @actions;
@@ -3630,15 +3632,17 @@ sub build_widgets {
         $tmpl_name =~ s/\.tmpl$//;
 
         my $set = $widget->{set} || $widget_cfg->{set} || 'main';
-        local $widget_param->{blog_id}             = $blog_id;
-        local $widget_param->{widget_block}        = $set;
-        local $widget_param->{widget_id}           = $widget_inst;
-        local $widget_param->{widget_scope}        = $widget_set;
-        local $widget_param->{widget_singular}     = $widget->{singular} || 0;
-        local $widget_param->{magic_token}         = $app->current_magic;
-        local $widget_param->{build_menus}         = 0;
+        local $widget_param->{blog_id}         = $blog_id;
+        local $widget_param->{widget_block}    = $set;
+        local $widget_param->{widget_id}       = $widget_inst;
+        local $widget_param->{widget_mobile}   = $widget->{mobile} ? 1 : 0;
+        local $widget_param->{widget_scope}    = $widget_set;
+        local $widget_param->{widget_singular} = $widget->{singular} || 0;
+        local $widget_param->{magic_token}     = $app->current_magic;
+        local $widget_param->{build_menus}     = 0;
         local $widget_param->{build_blog_selector} = 0;
         local $widget_param->{build_compose_menus} = 0;
+
         if ( my $h = $widget->{code} || $widget->{handler} ) {
             $h = $app->handler_to_coderef($h);
             $h->( $app, $tmpl, $widget_param );
@@ -3874,8 +3878,11 @@ sub load_list_actions {
         $param->{all_actions}       = $all_actions;
         $param->{has_pulldown_actions}
             = ( @plugin_actions || @core_actions ) ? 1 : 0;
+        $param->{has_mobile_pulldown_actions}
+            = ( grep { $_->{mobile} } @$all_actions )
+            ? 1
+            : 0;
         $param->{has_list_actions} = scalar @$all_actions;
-
     }
     my $filters = $app->list_filters( $type, @p );
     $param->{list_filters} = $filters if $filters;

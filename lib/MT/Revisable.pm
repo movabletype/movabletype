@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -213,17 +213,17 @@ sub gather_changed_cols {
 sub pack_revision {
     my $obj    = shift;
     my $class  = ref $obj || $obj;
-    my $values = $obj->column_values;
+    my %values = %{ $obj->column_values };
 
     my $meta_values = $obj->meta;
     foreach my $key ( keys %$meta_values ) {
         next if $key eq 'current_revision';
-        $values->{$key} = $meta_values->{$key};
+        $values{$key} = $meta_values->{$key};
     }
 
-    MT->run_callbacks( $class . '::pack_revision', $obj, $values );
+    MT->run_callbacks( $class . '::pack_revision', $obj, \%values );
 
-    return $values;
+    return \%values;
 }
 
 sub unpack_revision {

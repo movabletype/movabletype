@@ -3,29 +3,80 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use Test::Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
+use MT::Test::Permission;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture('db');
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+
+        my $ct = MT::Test::Permission->make_content_type(
+            blog_id => 1,
+            name    => 'test content type',
+        );
+
+        my $cf = MT::Test::Permission->make_content_field(
+            blog_id         => $ct->blog_id,
+            content_type_id => $ct->id,
+            name            => 'multi line text',
+            type            => 'multi_line_text',
+        );
+
+        my $fields = [
+            {   id        => $cf->id,
+                label     => 1,
+                name      => $cf->name,
+                order     => 1,
+                type      => $cf->type,
+                unique_id => $cf->unique_id,
+            }
+        ];
+        $ct->fields($fields);
+        $ct->save or die $ct->errstr;
+
+        my $cd = MT::Test::Permission->make_content_data(
+            blog_id         => $ct->blog_id,
+            author_id       => 1,
+            content_type_id => $ct->id,
+            data            => { $cf->id => 'test text', },
+        );
+        my $convert_breaks = {};
+        $convert_breaks->{ $cf->id } = 'textile_2';
+        $cd->convert_breaks( MT::Serialize->serialize( \$convert_breaks ) );
+
+        $cd->save or die $cd->errstr;
+
+        my $tmpl_text = << "TMPL";
+        <mt:Contents content_type="test content type" limit="1"><mt:ContentField content_field="multi line text"><mt:ContentFieldValue language="ja"></mt:ContentField></mt:Contents>
+TMPL
+
+        my $tmpl = MT::Test::Permission->make_template(
+            name            => 'test content type template',
+            text            => $tmpl_text,
+            content_type_id => $ct->id,
+        );
+    }
+);
 
 use IPC::Open2;
-
-plan tests => 2 * blocks;
 
 use MT;
 my $app = MT->instance;
@@ -34,7 +85,11 @@ filters {
     text      => [qw( chomp )],
     textile_2 => [qw( chomp )],
 };
-
+my $ct = $app->model('content_type')->load( { name => 'test content type' } );
+my $cf = $app->model('content_field')->load( { name => 'multi line text' } );
+my $cd = $app->model('content_data')->load( { content_type_id => $ct->id } );
+my $ct_tmpl = $app->model('template')
+    ->load( { name => 'test content type template' } );
 run {
     my $block = shift;
 
@@ -50,6 +105,16 @@ run {
     my $result = $tmpl->build;
     $result =~ s/(\r\n|\r|\n)+\z//g;
     is( $result, $block->textile_2, $block->name );
+
+    $cd->data( { $cf->id => $block->text } );
+    $cd->save or die $cd->errstr;
+    my $ctx2 = $ct_tmpl->context;
+    $ctx2->stash( 'content', $cd );
+
+    my $result2 = $ct_tmpl->build;
+    $result2 =~ s/(\r\n|\r|\n)+\z//g;
+    is( $result2, $block->textile_2, "content data " . $block->name );
+
 };
 
 sub php_test_script {
@@ -108,6 +173,8 @@ SKIP:
         is( $php_result, $block->textile_2, $block->name . ' - dynamic' );
     };
 }
+done_testing;
+
 
 __END__
 

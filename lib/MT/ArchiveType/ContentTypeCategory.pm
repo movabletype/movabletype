@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -143,8 +143,14 @@ sub archive_group_iter {
         { 'sort'  => 'label',  direction       => 'ascend' },
     );
 
-    my $map = $ctx->stash('template_map');
-    my $cat_field_id = defined $map && $map ? $map->cat_field_id : '';
+    my $content_type_id = $ctx->stash('content_type')->id;
+    my $map             = $obj->_get_preferred_map(
+        {   blog_id         => $blog_id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
+    my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     require MT::ContentFieldIndex;
 
@@ -157,11 +163,9 @@ sub archive_group_iter {
                 {   id      => \'= cf_idx_content_data_id',
                     blog_id => $blog_id,
                     status  => MT::ContentStatus::RELEASE(),
-                    (   $ctx->stash('content_type')
-                        ? ( content_type_id =>
-                                $ctx->stash('content_type')->id )
-                        : ()
-                    ),
+                    $content_type_id
+                    ? ( content_type_id => $content_type_id )
+                    : (),
                 }
             ),
         }
@@ -209,12 +213,14 @@ sub archive_group_contents {
         : undef;
 
     my $limit = $param->{limit};
-    if ( $limit && ( $limit eq 'auto' ) ) {
-        my $blog = $ctx->stash('blog');
-        $limit = $blog->entries_on_index if $blog;
-    }
+    $limit = 0 if defined $limit && $limit eq 'none';
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
-    my $map = $ctx->stash('template_map');
+    my $map = $obj->_get_preferred_map(
+        {   blog_id         => $ctx->stash('blog')->id,
+            content_type_id => $content_type_id,
+            map             => $ctx->stash('template_map'),
+        }
+    );
     my $cat_field_id = $map ? $map->cat_field_id : '';
     require MT::ContentData;
     my @contents = MT::ContentData->load(

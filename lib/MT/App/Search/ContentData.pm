@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -574,6 +574,10 @@ sub _get_normal_ids_for_actual_fields {
                     [   { value_varchar => { like => "%$value%" } },
                         '-or',
                         { value_text => { like => "%$value%" } },
+                        '-or',
+                        { value_float => { like => "%$value%" } },
+                        '-or',
+                        { value_double => { like => "%$value%" } },
                     ],
                 ],
                 {   join => MT->model('content_field')->join_on(

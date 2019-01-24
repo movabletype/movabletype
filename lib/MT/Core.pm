@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -186,6 +186,9 @@ BEGIN {
             'ts_error'      => 'MT::TheSchwartz::Error',
             'ts_exitstatus' => 'MT::TheSchwartz::ExitStatus',
             'ts_funcmap'    => 'MT::TheSchwartz::FuncMap',
+
+            # group
+            'group' => 'MT::Group',
         },
         list_properties => {
             __virtual => {
@@ -1303,15 +1306,21 @@ BEGIN {
             content_type  => '$Core::MT::ContentType::list_props',
             content_field => '$Core::MT::ContentField::list_props',
             content_data => '$Core::MT::ContentData::list_props_for_data_api',
+            group        => '$Core::MT::Group::list_props',
+            group_member => '$Core::MT::Group::member_list_props',
         },
         system_filters => {
-            entry  => '$Core::MT::Entry::system_filters',
-            page   => '$Core::MT::Page::system_filters',
-            tag    => '$Core::MT::Tag::system_filters',
-            asset  => '$Core::MT::Asset::system_filters',
-            author => '$Core::MT::Author::system_filters',
-            member => '$Core::MT::Author::member_system_filters',
-            log    => '$Core::MT::Log::system_filters',
+            entry        => '$Core::MT::Entry::system_filters',
+            page         => '$Core::MT::Page::system_filters',
+            tag          => '$Core::MT::Tag::system_filters',
+            asset        => '$Core::MT::Asset::system_filters',
+            author       => '$Core::MT::Author::system_filters',
+            member       => '$Core::MT::Author::member_system_filters',
+            log          => '$Core::MT::Log::system_filters',
+            association  => '$Core::MT::Association::system_filters',
+            group        => '$Core::MT::Group::system_filters',
+            group_member => '$Core::MT::Group::member_system_filters',
+
         },
         listing_screens => {
             website => {
@@ -1660,17 +1669,24 @@ BEGIN {
                 view                => [ 'website', 'blog' ],
                 primary             => 'name',
             },
-            content_data => {
-                object_label        => 'Content Data',
-                object_label_plural => 'Content Data',
-                object_type         => 'content_data',
-                condition           => sub {0},
-                data_api_condition  => sub {1},
-                scope_mode          => 'this',
-                use_filters         => 0,
-                view                => [ 'website', 'blog' ],
-                primary             => 'id',
-                default_sort_key    => 'modified_on',
+            group => {
+                object_label     => 'Group',
+                default_sort_key => 'name',
+                primary          => 'name',
+                permission       => 'administer,manage_users_groups',
+                view             => 'system',
+            },
+            group_member => {
+                screen_label        => 'Manage Group Members',
+                object_label_plural => 'Group Members',
+                object_label        => 'Group Member',
+                object_type         => 'association',
+                default_sort_key    => 'name',
+                permission          => 'administer,manage_users_groups',
+                primary             => 'name',
+                view                => 'system',
+                search_label        => 'User',
+                search_type         => 'author',
             },
         },
         summaries => {
@@ -2045,9 +2061,9 @@ BEGIN {
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
-            'NewUserBlogTheme'        => { default => 'rainier' },
-            'NewUserDefaultWebsiteId' => undef,
-            'NewUserTemplateBlogId'   => undef,
+            'NewUserBlogTheme'        => undef,                  ## DEPRECATED
+            'NewUserDefaultWebsiteId' => undef,                  ## DEPRECATED
+            'NewUserTemplateBlogId'   => undef,                  ## DEPRECATED
             'DefaultSiteURL'          => undef,                  ## DEPRECATED
             'DefaultSiteRoot'         => undef,                  ## DEPRECATED
             'DefaultUserLanguage'     => undef,
@@ -2622,7 +2638,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
@@ -3205,7 +3221,6 @@ sub load_core_permissions {
                 'open_system_check_screen'   => 1,
                 'use_tools:system_info_menu' => 1,
                 'delete_any_filters'         => 1,
-                'open_dialog_select_theme'   => 1,
             }
         },
         'system.create_blog' => {
@@ -3338,6 +3353,7 @@ sub load_core_permissions {
                 'create_any_association'         => 1,
                 'access_to_any_permission_list'  => 1,
                 'edit_authors'                   => 1,
+                'edit_groups'                    => 1,
                 'edit_other_profile'             => 1,
                 'access_to_website_list'         => 1,
                 'access_to_blog_list'            => 1,
@@ -3706,13 +3722,6 @@ future use.
 A L<MT::ConfigMgr> get/set method for the C<DefaultUserTagDelimiter>
 configuration setting. Translates the keyword values 'comma' and
 'space' to the ASCII code for those characters.
-
-=head2 MT::Core::NewUserAutoProvisioning
-
-A L<MT::ConfigMgr> get/set method for the C<NewUserAutoProvisioning>
-configuration setting. Even if the user has enabled this setting,
-it will force a value of '0' unless the C<DefaultSiteRoot> and
-C<DefaultSiteURL> configuration settings are also assigned.
 
 =head2 MT::Core::UserSessionCookieName
 

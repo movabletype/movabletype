@@ -75,7 +75,7 @@ my @removed_from_core = qw(
     EntryTrackbackID EntryTrackbackLink
     PingBlogName PingDate PingExcerpt PingID PingIP
     PingRank PingScore PingScoreAvg PingScoreCount
-    PingScoreHigh PingScoreLow PingSiteName PingTitle
+    PingScoreHigh PingScoreLow PingTitle
     PingURL PingsSentURL RemoteSignInLink RemoteSignOutLink
     SignInLink SignOnURL SignOutLink SiteCommentCount SitePingCount
     TypeKeyToken UserSessionCookieDomain UserSessionCookieName

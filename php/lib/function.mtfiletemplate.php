@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -17,7 +17,7 @@ function _file_template_format($m) {
         '-c' => "<MTSubCategoryPath separator='-'>",
         '_c' => "<MTSubCategoryPath separator='_'>",
         'C' => "<MTCategoryBasename DIR>",
-        '-C' => "<MTCategoryBasename dirify='-'>",
+        '-C' => "<MTCategoryBasename separator='-'>",
         'd' => "<MTArchiveDate format='%d'>",
         'D' => "<MTArchiveDate format='%e' trim='1'>",
         'e' => "<MTEntryID pad='1'>",

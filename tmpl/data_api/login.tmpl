@@ -8,6 +8,13 @@
 </mt:setvarblock>
 
 <mt:SetVarBlock name="js_include" append="1">
+<mt:unless name="optimize_ui">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">data-api/v4/js/mt-data-api.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+<mt:else>
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">data-api/v4/js/mt-data-api.min.js?v=<mt:var name="mt_version_id" escape="url">">"></script>
+</mt:unless>
 <script type="text/javascript" src="<$mt:var name="static_uri"$>js-cookie-2.1.4/js.cookie.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -152,20 +159,20 @@ jQuery(function($) {
 <mt:unless name="delegate_auth">
   <mt:var name="login_fields">
   <div class="row align-items-center actions-bar actions-bar-login">
-    <div id="forget-password" class="col-8">
+    <div id="forget-password" class="col order-last order-md-first">
     <mt:if name="can_recover_password">
       <a href="<mt:var name="mt_url">?__mode=start_recover">
         <__trans phrase="Forgot your password?">
       </a>
     </mt:if>
     </div>
-    <div class="col-4 text-right">
+    <div class="col-12 col-md-auto order-first order-md-last mb-4 mb-md-0 text-right">
       <button
          type="submit"
          id="sign-in-button"
          accesskey="s"
          title="<__trans phrase="Sign In (s)">"
-         class="sign-in action primary button btn btn-primary">
+         class="sign-in action primary button btn__mobile btn-primary">
         <__trans phrase="Sign In">
       </button>
     </div>

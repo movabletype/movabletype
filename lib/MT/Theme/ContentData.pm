@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -27,11 +27,8 @@ sub apply {
 
     for my $ct_name_or_unique_id ( keys %{$data} ) {
 
-        my $ct = MT::ContentType->load(
-            {   blog_id   => $blog->id,
-                unique_id => $ct_name_or_unique_id
-            }
-        );
+        my $ct
+            = MT::ContentType->load( { unique_id => $ct_name_or_unique_id } );
         $ct ||= MT::ContentType->load(
             {   blog_id => $blog->id,
                 name => $theme->translate_templatized($ct_name_or_unique_id),

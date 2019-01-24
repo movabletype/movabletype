@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,7 +8,7 @@
 function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
     // status: incomplete
     // parameters: show_empty
-    $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
+    $localvars = array(array('_categories', '_categories_counter', 'category', 'inside_mt_categories', 'entries', 'contents', '_categories_glue', 'blog_id', 'blog', '__out'), common_loop_vars());
 
     if (!isset($content)) {
         $ctx->localize($localvars);
@@ -16,13 +16,15 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
-        if ($ctx->stash('category_set')) {
-            $args['category_set_id'] = $ctx->stash('category_set')->id;
-        } elseif (!isset($args['category_set_id'])) {
-            $args['category_set_id'] = 0;
+        if (!(isset($args['category_set_id']) && $args['category_set_id'])) {
+            if ($ctx->stash('category_set')) {
+                $args['category_set_id'] = $ctx->stash('category_set')->id;
+            } else {
+                $args['category_set_id'] = 0;
+            }
         }
         $args['sort_by'] = 'label';
-        $args['sort_order'] = 'ascend';
+        $args['sort_order'] or $args['sort_order'] = 'ascend';
         $categories = $ctx->mt->db()->fetch_categories($args);
         $glue = $args['glue'];
         $ctx->stash('_categories_glue', $glue);
@@ -41,6 +43,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $category = $categories[$counter];
         $ctx->stash('category', $category);
         $ctx->stash('entries', null);
+        $ctx->stash('contents', null);
         $ctx->stash('_categories_counter', $counter + 1);
         $ctx->stash('blog_id', $category->category_blog_id);
         $ctx->stash('ArchiveListHeader', $counter == 0);

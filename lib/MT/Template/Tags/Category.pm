@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -63,8 +63,9 @@ sub _get_category_context {
             my $map = $ctx->stash('template_map');
             unless ($map) {
                 my $content_type_id = $content_data->content_type_id;
+                my $at = $ctx->{archive_type} || 'ContentType';
                 ($map) = MT->model('templatemap')->load(
-                    { archive_type => 'ContentType', is_preferred => 1 },
+                    { archive_type => $at, is_preferred => 1 },
                     {   join => MT->model('template')->join_on(
                             undef,
                             {   id => \'= templatemap_template_id',
@@ -77,7 +78,7 @@ sub _get_category_context {
             return '' if ( !$map || !$map->cat_field_id );
             my ($objectcategory) = MT->model('objectcategory')->load(
                 {   object_ds  => 'content_data',
-                    object_id  => $content_data->content_type_id,
+                    object_id  => $content_data->id,
                     cf_id      => $map->cat_field_id,
                     is_primary => 1,
                 }
@@ -263,7 +264,11 @@ sub _hdlr_categories {
     if ( !$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i ) {
         $count_all = 1;
     }
-
+    my $content_type_id;
+    if ( $args->{content_type} ) {
+        my $content_type = $ctx->get_content_type_context( $args, $cond );
+        $content_type_id = $content_type->id if $content_type;
+    }
     ## Supplies a routine that will yield the number of entries associated
     ## with the category in context in the most efficient manner.
     ## If we can determine counts will be gathered for all categories,
@@ -310,7 +315,11 @@ sub _hdlr_categories {
             unless $count_all;
         return $cat->content_data_count(
             {   count =>
-                    ( defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 )
+                    ( defined $counts{ $cat->id } ? $counts{ $cat->id } : 0 ),
+                $content_type_id
+                ? ( content_type_id => $content_type_id )
+                : (),
+
             }
         ) if $counts_fetched;
         return $cat->cache_property(
@@ -323,7 +332,11 @@ sub _hdlr_categories {
                 my @content_field_ids = map { $_->id } @category_fields;
 
                 my $cnt_iter = MT::ContentFieldIndex->count_group_by(
-                    { content_field_id => [@content_field_ids] },
+                    {   content_field_id => [@content_field_ids],
+                        $content_type_id
+                        ? ( content_type_id => $content_type_id )
+                        : (),
+                    },
                     {   group => ['value_integer'],
                         join  => MT->model('content_data')->join_on(
                             undef,
@@ -717,10 +730,10 @@ sub _hdlr_sub_categories {
     $sort_by = 'user_custom'
         if !$sort_by || !$class->has_column($sort_by);
 
-    my $category_set_id
-        = $ctx->stash('category_set')
-        ? $ctx->stash('category_set')->id
-        : $args->{category_set_id} || 0;
+    my $category_set_id = $args->{category_set_id} || 0;
+    if ( !$category_set_id && $ctx->stash('category_set') ) {
+        $category_set_id = $ctx->stash('category_set')->id;
+    }
 
     # Store the tokens for recursion
     local $ctx->{__stash}{subCatTokens} = $tokens;
@@ -1682,7 +1695,7 @@ sub _hdlr_category_archive {
 
     my $cat_at_label
         = $ctx->stash('content')
-        || $args->{category_set_id}
+        || $cat->category_set_id
         ? 'ContentType-Category'
         : 'Category';
 

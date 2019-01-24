@@ -29,7 +29,7 @@ Lexicon['Select a Boilerplate'] = '<__trans phrase="Select a Boilerplate" encode
 
 })(jQuery);
 </script>
-<script type="text/javascript" src="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/extension.js"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">plugins/FormattedTextForTinyMCE/extension.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
 </mt:setvarblock>
 <mt:setvarblock name="html_head" append="1">
 <style type="text/css">
@@ -40,6 +40,16 @@ Lexicon['Select a Boilerplate'] = '<__trans phrase="Select a Boilerplate" encode
     text-indent: 100%;
     white-space: nowrap;
 }
+[aria-label="Insert template"] {
+    max-width: 100%!important;
+}
+[aria-label="Insert template"] span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 95%;
+}
+
 </style>
 </mt:setvarblock>
 </mt:if>

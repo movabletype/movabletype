@@ -12,12 +12,16 @@ jQuery(document).ready(function () {
 
   var html;
   <mt:loop name="assets">
-    html = '<div class="mt-draggable" doraggable="true" aria-grabbed="false">'
+    html = '<div class="mt-draggable"<mt:if name="can_multi"> draggable="true" aria-grabbed="false"</mt:if>>'
          +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html" escape="js">" value="<mt:var name="asset_id" escape="html" escape="js">">'
          +   '<div class="col-auto">'
+    <mt:if name="can_multi">
          +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1" escape="js">'
+    <mt:else>
+         +     '<mtapp:svgicon id="ic_blank" title="Blank" strip_linefeeds="1" escape="js">'
+    </mt:if>
          +   '</div>'
-         +   '<div class="col">'
+         +   '<div class="col-auto">'
     <mt:if name="asset_type" eq="audio">
          +     '<mtapp:svgicon id="ic_audio" title="Audio" color="secondary" strip_linefeeds="1" escape="js">'
     <mt:elseif name="asset_type" eq="image">
@@ -33,24 +37,26 @@ jQuery(document).ready(function () {
     <mt:else>
          +     '<mtapp:svgicon id="ic_file" title="Asset" color="secondary" strip_linefeeds="1" escape="js">'
     </mt:if>
+         +   '</div>'
+         +   '<div class="col text-wrap">'
          +     '<span class="align-top">'
          +       '<mt:var name="asset_label" escape="html" escape="js">'
          +     '</span>'
          +   '</div>'
-         +   '<div class="col-auto mr-3">'
+         +   '<div class="col-auto mr-3 d-none d-md-block">'
          +     '<a href="javascript:void(0)" class="remove">'
          +       '<__trans phrase="Remove">'
          +     '</a>'
          +   '</div>'
          +   '<div class="col-auto">'
-         +     '<a data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
+         +     '<a class="d-inline-block" data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
          +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1" escape="js">'
          +     '</a>'
          +   '</div>'
          +   '<div class="mt-flexBreak"></div>'
-         +   '<div class="collapse mt-collapse__content" id="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
-         +     '<div class="row">'
-         +       '<div class="col">'
+         +   '<div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html" escape="js">-<mt:var name="asset_id" escape="html" escape="js">">'
+         +     '<div class="row py-5 py-md-0">'
+         +       '<div class="col text-wrap">'
          +         '<ul class="list-unstyled">'
          +           '<li class="asset-prview-title">'
          +             '<strong><__trans phrase="File Name"></strong>: <mt:var name="asset_file_name" escape="html" escape="js">'
@@ -63,9 +69,19 @@ jQuery(document).ready(function () {
          +         '</ul>'
          +       '</div>'
          +     '</div>'
+         +     '<div class="row border-top pt-4 d-md-none">'
+         +       '<div class="col-auto mx-auto">'
+         +         '<a href="javascript:void(0)" class="remove">'
+         +           '<__trans phrase="Remove">'
+         +         '</a>'
+         +       '</div>'
+         +     '</div>'
          +   '</div>'
          + '</div>';
-    $alert.before(html);
+
+    if ($alert.parent().has('input[value=<mt:var name="asset_id" escape="js">]').length == 0) {
+      $alert.before(html);
+    }
   </mt:loop>
 
   if ($container.data('mtValidator')) {

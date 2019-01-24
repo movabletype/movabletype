@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -452,7 +452,9 @@ sub set_object_status {
         next unless $obj;
         next if ( $obj->id == $app->user->id ) && ( $type eq 'author' );
         next if $new_status == $obj->status;
-        next if !$app->user->is_superuser      && $obj->is_superuser;
+        next
+            if !$app->user->is_superuser
+            && ( $type eq 'author' && $obj->is_superuser );
 
         $obj->status($new_status);
         if ( $type ne 'group' and $new_status == MT::Author::ACTIVE() ) {
@@ -691,7 +693,7 @@ sub cfg_system_users {
 
     my @readonly_configs
         = qw( CommenterRegistration DefaultTimeZone DefaultUserLanguage DefaultUserTagDelimiter
-        NewUserBlogTheme NewUserDefaultWebsiteId UserPasswordValidation UserPasswordMinLength );
+        UserPasswordValidation UserPasswordMinLength );
 
     my @config_warnings;
     for my $config_directive (@readonly_configs) {
@@ -755,7 +757,6 @@ sub save_cfg_system_users {
     my $cfg              = $app->config;
     my $tz               = $app->param('default_time_zone');
     my $default_language = $app->param('default_language');
-    my $personal_weblog  = $app->param('personal_weblog');
     my $default_user_tag_delimiter
         = $app->param('default_user_tag_delimiter');
     $app->config( 'DefaultTimezone',         $tz,                         1 );
@@ -800,24 +801,10 @@ sub save_cfg_system_users {
 
     $cfg->save_config();
 
-    my $args = ();
-
-    if ( $personal_weblog
-        && !$app->config('NewUserDefaultWebsiteId') )
-    {
-        $args->{error}
-            = $app->translate(
-            'If personal blog is set, the personal blog location are required.'
-            );
-    }
-    else {
-        $args->{saved} = 1;
-    }
-
     $app->redirect(
         $app->uri(
             'mode' => 'cfg_system_users',
-            args   => $args
+            args   => { saved => 1 },
         )
     );
 }
@@ -979,7 +966,8 @@ sub grant_role {
     }
 
     _grant_role_for_group( $app, \@blogs, \@roles )
-        if ( $app->model("group") && $app->param('group') );
+        if ( $app->model("group")
+        && ( $app->param('group') || $app->param('group_id') ) );
 
     $app->add_return_arg( saved => 1 );
     $app->call_return;
@@ -1331,7 +1319,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args         => { sort => 'name' },
+                {   args => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
@@ -1344,14 +1332,14 @@ PERMCHECK: {
         }
         else {
             $app->listing(
-                {   terms     => $terms,
-                    args      => { sort => 'name' },
-                    type      => $type,
-                    code      => $hasher,
-                    params    => $params,
-                    template  => 'include/listing_panel.tmpl',
-                    pre_build => $type eq 'site' ? $pre_build : (),
-                    $app->param('search') ? ( no_limit => 1 ) : (),
+                {   terms    => $terms,
+                    args     => { sort => 'name' },
+                    type     => $type,
+                    code     => $hasher,
+                    params   => $params,
+                    template => 'include/listing_panel.tmpl',
+                    $type eq 'site'       ? ( pre_build => $pre_build ) : (),
+                    $app->param('search') ? ( no_limit  => 1 )          : (),
                 }
             );
         }

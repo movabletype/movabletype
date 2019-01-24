@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -287,6 +287,10 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '_CONTENT_TYPE_BOILERPLATES' => 'Boilerplates',
 
     '__TEXT_BLOCK__' => 'Text',
+
+    '__GROUP_MEMBER_COUNT' => 'Members',
+
+    '__LIST_FIELD_LABEL' => 'List',
 );
 
 1;

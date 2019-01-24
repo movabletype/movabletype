@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2007-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -45,13 +45,14 @@ sub edit {
     my $field_data;
     if ( $param->{error} ) {
         $field_data = delete $param->{data};
-        if ( $field_data ) {
+        if ($field_data) {
             if ( $field_data =~ /^".*"$/ ) {
-            	$field_data =~ s/^"//;
+                $field_data =~ s/^"//;
                 $field_data =~ s/"$//;
                 $field_data = MT::Util::decode_js($field_data);
             }
-            $field_data = JSON::decode_json( MT::Util::decode_url($field_data) );
+            $field_data
+                = JSON::decode_json( MT::Util::decode_url($field_data) );
         }
     }
     else {
@@ -847,6 +848,13 @@ sub list_actions {
 
 sub init_content_type {
     my ( $cb, $app ) = @_;
+
+    require MT::Object;
+    my $driver = MT::Object->driver;
+    return
+        unless $driver
+        && $driver->table_exists( $app->model('content_type') );
+
     my $core = $app->component('core');
 
     my $core_listing_screens         = $core->registry('listing_screens');
@@ -859,6 +867,12 @@ sub init_content_type {
     my $content_data_list_props = MT::ContentData::make_list_props();
     for my $key ( keys %{$content_data_list_props} ) {
         $core_list_props->{$key} = $content_data_list_props->{$key};
+    }
+
+    my $core_system_filters         = $core->registry('system_filters');
+    my $content_data_system_filters = _make_content_data_system_filters($app);
+    for my $key ( keys %{$content_data_system_filters} ) {
+        $core_system_filters->{$key} = $content_data_system_filters->{$key};
     }
 
     my $core_tag_list_props = $core->registry( 'list_properties', 'tag' );
@@ -875,6 +889,27 @@ sub init_content_type {
     }
 }
 
+sub _make_content_data_system_filters {
+    my ($app) = @_;
+    my $common_system_filters
+        = $app->registry( 'system_filters', 'content_data' );
+    return {}
+        unless $common_system_filters
+        && ref $common_system_filters eq 'HASH'
+        && %$common_system_filters;
+
+    my $system_filters = {};
+    for my $content_type ( @{ $app->model('content_type')->load_all } ) {
+        my $key = 'content_data.content_data_' . $content_type->id;
+        $system_filters->{$key} = {};
+        for my $common_sf_key ( keys %$common_system_filters ) {
+            $system_filters->{$key}{$common_sf_key}
+                = $common_system_filters->{$common_sf_key};
+        }
+    }
+    $system_filters;
+}
+
 sub _make_content_data_listing_screens {
     my $props = {};
 
@@ -882,7 +917,7 @@ sub _make_content_data_listing_screens {
     while ( my $ct = $iter->() ) {
         my $key = 'content_data.content_data_' . $ct->id;
         $props->{$key} = {
-            primary          => 'id',
+            primary          => 'label',
             default_sort_key => 'modified_on',
             screen_label     => sub {
                 MT->translate( 'Manage [_1]', $ct->name );

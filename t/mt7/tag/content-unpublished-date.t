@@ -17,8 +17,7 @@ use utf8;
 
 use MT::Test::Tag;
 
-# plan tests => 2 * blocks;
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -56,7 +55,7 @@ $test_env->prepare_fixture(
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
-# MT::Test::Tag->run_php_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 
@@ -91,22 +90,7 @@ May 30, 2017  7:01 PM
 <mt:ContentUnpublishedDate format="%X">
 <mt:ContentUnpublishedDate format_name="iso8601">
 <mt:ContentUnpublishedDate format_name="rfc822">
-<mt:ContentUnpublishedDate language="cz">
-<mt:ContentUnpublishedDate language="dk">
-<mt:ContentUnpublishedDate language="nl">
 <mt:ContentUnpublishedDate language="en">
-<mt:ContentUnpublishedDate language="fr">
-<mt:ContentUnpublishedDate language="de">
-<mt:ContentUnpublishedDate language="is">
-<mt:ContentUnpublishedDate language="ja">
-<mt:ContentUnpublishedDate language="it">
-<mt:ContentUnpublishedDate language="no">
-<mt:ContentUnpublishedDate language="pl">
-<mt:ContentUnpublishedDate language="pt">
-<mt:ContentUnpublishedDate language="si">
-<mt:ContentUnpublishedDate language="es">
-<mt:ContentUnpublishedDate language="fi">
-<mt:ContentUnpublishedDate language="se">
 <mt:ContentUnpublishedDate utc="1">
 </mt:Contents>
 --- expected
@@ -132,21 +116,6 @@ May 30, 2017
  7:01 PM
 2017-05-30T19:01:00+00:00
 Tue, 30 May 2017 19:01:00 +0000
-30. Kv&#283;ten 2017 19:01
-30.05.2017 19:01
-30 mei 2017 19:01
 May 30, 2017  7:01 PM
-30 mai 2017 19h01
-30.05.17 19:01
-30.05.17 19:01
-2017年5月30日 19:01
-30.05.17 19:01
-Mai 30, 2017  7:01 EM
-30 maja 2017 19:01
-maio 30, 2017  7:01 PM
-30.05.17 19:01
-30 de Mayo 2017 a las 07:01 PM
-30.05.17 19:01
-maj 30, 2017  7:01 EM
 May 30, 2017  7:01 PM
 

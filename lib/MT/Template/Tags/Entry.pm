@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,9 +10,10 @@ use warnings;
 
 use MT;
 use MT::Util
-    qw( offset_time_list encode_html remove_html spam_protect asset_cleanup );
+    qw( offset_time_list spam_protect asset_cleanup encode_html remove_html );
 use MT::Entry;
 use MT::I18N qw( first_n_text const );
+use MT::Template::Tags::Common;
 
 # returns an iterator that supplies entries, in the order of last comment
 # date (descending)
@@ -297,10 +298,11 @@ sub _hdlr_entries {
         && ( 'score' eq $args->{sort_by} )
         && ( !exists $args->{namespace} ) );
 
-    my $cfg     = $ctx->{config};
-    my $at      = $ctx->{current_archive_type} || $ctx->{archive_type};
-    my $blog_id = $ctx->stash('blog_id');
-    my $blog    = $ctx->stash('blog');
+    my $cfg      = $ctx->{config};
+    my $at       = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $archiver = MT->publisher->archiver($at);
+    my $blog_id  = $ctx->stash('blog_id');
+    my $blog     = $ctx->stash('blog');
     my ( @filters, %blog_terms, %blog_args, %terms, %args );
 
     # for the case that we want to use mt:Entries with mt-search
@@ -353,7 +355,9 @@ sub _hdlr_entries {
             'id',                    'days',
             'recently_commented_on', 'include_subcategories',
             'include_blogs',         'exclude_blogs',
-            'blog_ids'
+            'blog_ids',              'include_websites',
+            'exclude_websites',      'site_ids',
+            'include_sites',         'exclude_sites'
             )
         {
             if ( exists( $args->{$args_key} ) ) {
@@ -369,11 +373,12 @@ sub _hdlr_entries {
     my $entries;
     if ($use_stash) {
         $entries = $ctx->stash('entries');
-        if ( !$entries && $at ) {
-            my $archiver = MT->publisher->archiver($at);
-            if ( $archiver && $archiver->group_based ) {
-                $entries = $archiver->archive_group_entries( $ctx, %$args );
-            }
+        if (  !$entries
+            && $archiver
+            && $archiver->group_based
+            && !$archiver->contenttype_group_based )
+        {
+            $entries = $archiver->archive_group_entries( $ctx, %$args );
         }
     }
     if ( $entries && scalar @$entries ) {
@@ -434,15 +439,15 @@ sub _hdlr_entries {
     $terms{status} = MT::Entry::RELEASE();
 
     if ( !$entries ) {
-        if ( $ctx->{inside_mt_categories} ) {
-            if ( my $cat = $ctx->stash('category') ) {
-                $args->{category} ||= [ 'OR', [$cat] ]
-                    if $cat->class eq $cat_class_type;
-            }
-        }
-        elsif ( my $cat = $ctx->stash('archive_category') ) {
-            $args->{category} ||= [ 'OR', [$cat] ]
-                if $cat->class eq $cat_class_type;
+        my $cat
+            = $ctx->{inside_mt_categories}
+            ? $ctx->stash('category')
+            : $ctx->stash('archive_category');
+        if (   $cat
+            && $cat->class eq $cat_class_type
+            && !$cat->category_set_id )
+        {
+            $args->{category} ||= [ 'OR', [$cat] ];
         }
     }
 
@@ -758,7 +763,13 @@ sub _hdlr_entries {
     if ( !$entries ) {
         my ( $start, $end )
             = ( $ctx->{current_timestamp}, $ctx->{current_timestamp_end} );
-        if ( $start && $end ) {
+        if ((   !$archiver || ( !$archiver->contenttype_based
+                    && !$archiver->contenttype_group_based )
+            )
+            && $start
+            && $end
+            )
+        {
             $terms{authored_on} = [ $start, $end ];
             $args{range_incl}{authored_on} = 1;
         }
@@ -1484,8 +1495,13 @@ Adds leading zeros to create a 6 character string. The default is 0 (false). Thi
 
 sub _hdlr_entry_id {
     my ( $ctx, $args ) = @_;
-    my $e = $ctx->stash('entry')
-        or return $ctx->_no_entry_error();
+    my $e = $ctx->stash('entry');
+    if ( !$e && $ctx->stash('content') ) {
+        return $ctx->invoke_handler( 'contentid', $args );
+    }
+    if ( !$e ) {
+        return $ctx->_no_entry_error();
+    }
     return $args && $args->{pad} ? ( sprintf "%06d", $e->id ) : $e->id;
 }
 
@@ -2237,14 +2253,19 @@ sub _hdlr_entry_author_link {
                     'archivelink', { type => 'Author' }, $cond
                 )
                 )
-            {
+            {    
+                my $target = $args->{new_window} ? ' target="_blank"' : '';
+                my $displayname
+                    = encode_html( remove_html( $a->nickname || '' ) );
+
                 $link = MT::Util::strip_protocol($a->url, $args);
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
         }
     }
-    return $displayname;
+
+    return MT::Template::Tags::Common::hdlr_author_link( @_, $a );
 }
 
 ###########################################################################

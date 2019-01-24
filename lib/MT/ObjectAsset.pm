@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -42,5 +42,29 @@ __PACKAGE__->install_properties(
 sub class_label {
     MT->translate("Asset Placement");
 }
+
+__PACKAGE__->add_callback(
+    'post_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $obj, $orig ) = @_;
+        MT->model('content_data')->remove_asset_from_asset_field($obj);
+    },
+);
+
+__PACKAGE__->add_callback(
+    'pre_direct_remove',
+    5,
+    MT->component('core'),
+    sub {
+        my ( $cb, $class, $terms, $args ) = @_;
+        my @objassets = $class->load( $terms, $args );
+        for my $objasset (@objassets) {
+            MT->model('content_data')
+                ->remove_asset_from_asset_field($objasset);
+        }
+    },
+);
 
 1;

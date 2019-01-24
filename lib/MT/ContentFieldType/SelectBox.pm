@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -51,7 +51,7 @@ sub field_html_params {
     if ( $options->{multiple} ) {
         my $max = $options->{max};
         my $min = $options->{min};
-        $multiple = 'multiple style="min-width: 10em; min-height: 10em"';
+        $multiple = 'multiple';
         $multiple .= qq{ data-mt-max-select="${max}"} if $max;
         $multiple .= qq{ data-mt-min-select="${min}"} if $min;
         $multiple_class = 'multiple-select';

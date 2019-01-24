@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -202,10 +202,27 @@ sub list_props {
                 );
                 my @options;
                 while ( my ( $count, $class ) = $iter->() ) {
+                    my $label = $class;
+                    if ( my ($content_type_id)
+                        = $class =~ /^content_data_([0-9]+)$/ )
+                    {
+                        my $content_type = MT->model('content_type')
+                            ->load($content_type_id);
+                        my $site
+                            = $content_type ? $content_type->blog : undef;
+                        my $site_name
+                            = $site
+                            ? defined $site->name
+                                ? $site->name
+                                : 'blog_id: ' . $site->id
+                            : MT->translate('*Site/Child Site deleted*');
+                        $label = $content_type->name . " ($site_name)"
+                            if $content_type;
+                    }
                     push @options,
                         {
-                          label => $class
-                        ? MT->translate($class)
+                          label => $label
+                        ? MT->translate($label)
                         : MT->translate('none'),
                         value => $class ? $class : '',
                         };

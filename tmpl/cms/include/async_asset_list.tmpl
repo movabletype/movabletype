@@ -2,10 +2,10 @@
 <mt:setvar name="screen_type" value="dialog-screen insert-asset-dialog">
 
 <mt:unless name="filter" eq="userpic">
-<div style="float: left; margin-right: 15px;">
+<div class="float-md-left mr-4 mb-3">
   <form action="" method="get" id="modal-type-filter" class="form-inline">
-    <span><__trans phrase="Asset Type: "></span>
-    <select name="asset-class" id="asset-class" class="custom-select form-control">
+    <span class="mr-3"><__trans phrase="Asset Type: "></span>
+    <select name="asset-class" id="asset-class" class="custom-select form-control w-50">
       <option value="">
         <__trans phrase="All Types">
       </option>
@@ -28,33 +28,39 @@
         <__trans phrase="Search">
       </span>
     </button>
-    <a href="javascript:void(0)" class="search-reset hidden"><__trans phrase="Reset"></a>
+    <a href="javascript:void(0)" class="search-reset hidden ml-4" style="display: none;"><__trans phrase="Reset"></a>
   </form>
 </div>
 </mt:unless>
 
 <mt:setvarblock name="list_actions">
-        <div class="indicator">
+        <div class="col indicator">
           <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" width="16" height="16" />
           <__trans phrase="Loading...">
         </div>
-        <nav aria-label="Asset List">
-          <ul class="pagination"></ul>
-        </nav>
+        <div class="col-auto mx-auto mt-5 mt-md-3">
+          <nav aria-label="Asset List">
+            <ul class="pagination d-none d-md-flex"></ul>
+            <ul class="pagination__mobile d-md-none"></ul>
+          </nav>
+        </div>
 </mt:setvarblock>
 
-<div id="listing" class="listing line has-filter mt-3">
+<div id="listing" class="listing line has-filter mt-5 mt-md-3">
   <div class="unit size1of1">
     <div id="listing-table" class="listing-table-block">
       <div id="listing-table-overlay" class="overlay"></div>
-      <div class="mt-table--outline">
+      <div class="mt-table--outline w-100">
         <table id="asset-table" class="table mt-table listing-table">
           <thead>
             <th class="head cb mt-table__control">&nbsp;</th>
             <th class="head si file-status" scope="col">
               <mtapp:svgicon id="ic_flag" size="sm" title="<__trans phrase="Status">">
             </th>
-            <th class="head primary string" scope="col"><span class="col-label"><__trans phrase="label"></span></th>
+            <th class="head primary string" scope="col">
+              <span class="col-label"><__trans phrase="label"></span>
+              <span id="page-status" class="float-right d-md-none"></span>
+            </th>
           </thead>
 </mt:unless>
           <tbody>
@@ -73,7 +79,7 @@
               <td class="cb">
                 <input type="hidden" id="asset-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
                 <div class="custom-control custom-radio">
-                  <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" />
+                  <input type="radio" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" id="asset-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" />
                   <label class="custom-control-label" for="asset-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
                 </div>
               </td>
@@ -109,18 +115,30 @@
         </table>
       </div>
     </div>
-    <div id="actions-bar" class="float-right line">
+    <div id="actions-bar" class="row line">
   <mt:var name="list_actions">
     </div>
   </div>
 </div>
 
 <mt:setvarblock name="js_include" append="1">
-<script src="<mt:var name="static_uri">js/list_table.js"></script>
+<script src="<mt:var name="static_uri">js/list_table.js?v=<mt:var name="mt_version_id" escape="url">"></script>
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
 isModal = getByID("list-assets-dialog");
+
+function toggleClassOfPaginationContainer() {
+  var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+  var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
+  if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
+    $paginationContainer.addClass('w-100');
+    $pageItems.addClass('mr-auto');
+  } else {
+    $paginationContainer.removeClass('w-100');
+    $pageItems.removeClass('mr-auto');
+  }
+}
 
 var checked = [];
 var currentPage = 1;
@@ -128,6 +146,7 @@ var currentPage = 1;
 function loadAssetList(offset) {
   jQuery('.indicator, #listing-table-overlay').show();
   jQuery('ul.pagination').hide();
+  jQuery('ul.pagination__mobile').hide();
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
@@ -182,6 +201,7 @@ function loadAssetList(offset) {
         jQuery('#asset-table').append(data.html);
         if (data.pager) {
           renderPagination(data.pager);
+          renderPaginationForMobile(data.pager);
         }
         else {
           canPaginate = false;
@@ -192,12 +212,13 @@ function loadAssetList(offset) {
       jQuery('.indicator, #listing-table-overlay').hide();
       if (canPaginate) {
         jQuery('ul.pagination').show();
+        jQuery('ul.pagination__mobile').show();
       }
       jQuery('#asset-class').removeAttr("disabled");
       jQuery('#search').removeAttr("disabled");
       jQuery('#search-button').removeAttr("disabled");
 
-      jQuery('table.listing-table tbody tr input[name="id"]').on('click', function(){
+      jQuery('table.listing-table tbody tr input[name="id"]').on('change', function(){
         if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
           // Enable submit button
           jQuery('.actions-bar button.primary')
@@ -211,7 +232,9 @@ function loadAssetList(offset) {
             .addClass('disabled');
         }
         saveChecked(currentPage);
-      })
+      });
+
+      toggleClassOfPaginationContainer();
     },
     error: function(xhr, status, error) {
       console.log('error: ' + status + ":" + error);
@@ -220,7 +243,7 @@ function loadAssetList(offset) {
 }
 
 function renderPagination(pager) {
-  var $e = jQuery('.pagination').empty();
+  var $pagination = jQuery('.pagination').empty();
 
   if ( pager.rows == 0 ) {
     return;
@@ -258,33 +281,31 @@ function renderPagination(pager) {
     last = (maxPage-1) * pager.limit;
   }
 
-  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
-
-  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
 
   if (page - 2 >= 1) {
-    $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
-    $e.append('<li class="page-item" aria-hidden="true">...</li>');
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
   if (page - 1 >= 1) {
     var firstLastClass = page - 1 == 1 ? ' first-last' : '';
-    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
   }
 
-  $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+  $pagination.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>');
 
   if (page + 1 <= maxPage) {
     var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
-    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+    $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
   }
 
   if (page + 2 <= maxPage) {
-    $e.append('<li class="page-item" aria-hidden="true">...</li>');
-    $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+    $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+    $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
   }
 
-  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
+  $pagination.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
 
   jQuery('a.start').click(function() {
     saveChecked(page);
@@ -312,6 +333,98 @@ function renderPagination(pager) {
     loadAssetList(last);
     return false;
   });
+}
+
+function renderPaginationForMobile(pager) {
+  var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  var start = page > 1 ? pager.offset + 1 : 1;
+  var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
+
+  var setMrAuto = jQuery(window).width() < 400 && maxPage >= 5;
+
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
+  );
+  if (page - 4 >= 1 && maxPage - page < 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 4, setMrAuto)
+    );
+  }
+  if (page - 3 >= 1 && maxPage - page < 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 3, setMrAuto)
+    );
+  }
+  if (page - 2 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 2, setMrAuto)
+    );
+  }
+  if (page - 1 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 1, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLink(page, setMrAuto, true)
+  );
+  if (page + 1 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 1, setMrAuto)
+    );
+  }
+  if (page + 2 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 2, setMrAuto)
+    );
+  }
+  if (page + 3 <= maxPage && page <= 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 3, setMrAuto)
+    );
+  }
+  if (page + 4 <= maxPage && page <= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 4, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page + 1, false, true)
+  );
+
+  jQuery('.pagination__mobile a.page-link').on('click', function () {
+    var nextPage = this.dataset.mtNextPage || this.text;
+    if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+      saveChecked(page);
+      loadAssetList((nextPage - 1) * pager.limit);
+    }
+    return false;
+  });
+}
+
+function generateMobilePageLink(page, setMrAuto, current) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  if (current) {
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+  } else {
+    return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
+  }
+}
+
+function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }
 
 function saveChecked(page) {
@@ -361,7 +474,42 @@ jQuery('.actions-bar button.primary').click(function() {
   jQuery('#select_asset input[name="id"]').val(ids.join(','));
 })
 
-// Initial laoading
+jQuery('#asset-table').on('click', 'td.cb', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
+    return;
+  }
+  var $input = jQuery(this).find('div.custom-control input');
+  $input.click();
+
+  MT.Util.refreshModalBodyOnIos();
+
+  return false;
+});
+
+jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'A') {
+    return;
+  }
+  var $link = jQuery(this).parents('tr').find('a');
+  if ($link.length > 0) {
+    $link.get(0).click();
+    return false;
+  }
+});
+
+if (MT.Util.isIos()) {
+  jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
+} else {
+  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+}
+
+// Initial loading
 loadAssetList(0);
 
 </mt:setvarblock>

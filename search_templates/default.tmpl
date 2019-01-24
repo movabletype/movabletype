@@ -8,11 +8,11 @@
     <mt:IfNonEmpty tag="Link" template="styles">
     <link rel="stylesheet" href="<$MTLink template="styles"$>" type="text/css" />
     <mt:else>
-    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTBlogURL$>styles-site.css?v=<mt:var name="mt_version_id" escape="URL">" type="text/css" />
     </mt:IfNonEmpty>
 <mt:else>
-    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css" type="text/css" />
-    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes-base/blog.css?v=<mt:var name="mt_version_id" escape="URL">" type="text/css" />
+    <link rel="stylesheet" href="<$MTStaticWebPath$>themes/minimalist-red/screen.css?v=<mt:var name="mt_version_id" escape="URL">" type="text/css" />
 </mt:IfBlog>
 <MTIgnore>
  ##########  <MT_TRANS phrase="SEARCH FEED AUTODISCOVERY LINK IS PUBLISHED ONLY WHEN A SEARCH HAS BEEN EXECUTED">

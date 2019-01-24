@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -274,7 +274,7 @@ sub _calculate_ct_count {
     return unless $self->id;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type               => 'category',
+        {   type               => 'categories',
             related_cat_set_id => $self->id,
         },
     );

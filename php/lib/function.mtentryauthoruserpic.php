@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -29,7 +29,7 @@ function smarty_function_mtentryauthoruserpic($args, &$ctx) {
     $dimensions = sprintf('width="%s" height="%s"', $mt->config('UserpicThumbnailSize'), $mt->config('UserpicThumbnailSize'));
 
     $link =sprintf('<img src="%s?%d" %s alt="%s" />',
-                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset->label));
+                   encode_html($userpic_url), $asset_id, $dimensions, encode_html($asset[0]->label));
 
     return $link;
 }

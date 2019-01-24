@@ -37,10 +37,11 @@
     }
     var data = {
       __mode: 'delete_filter',
-      datasource: this.datasource,
       blog_id: this.siteId,
+      datasource: this.datasource,
       id: args.id,
-      magic_token: this.magicToken
+      magic_token: this.magicToken,
+      not_encode_result: 1
     };
     if (args.changed) {
       data = $.extend(data, {
@@ -89,10 +90,11 @@
       __mode: 'save_filter',
       blog_id: this.siteId,
       datasource: this.datasource,
-      label: args.filter.label,
       items: JSON.stringify(args.filter.items),
+      label: args.filter.label,
       list: 0,
-      magic_token: this.magicToken
+      magic_token: this.magicToken,
+      not_encode_result: 1
     };
     if (args.filter.id) {
       data.fid = args.filter.id;
@@ -113,6 +115,7 @@
       items: JSON.stringify(args.filter.items),
       limit: args.limit,
       magic_token: this.magicToken,
+      not_encode_result: 1,
       page: args.page,
       sort_by: args.sortBy,
       sort_order: args.sortOrder

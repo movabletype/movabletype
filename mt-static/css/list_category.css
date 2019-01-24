@@ -46,10 +46,47 @@
     display: none;
     margin-left: 10px;
 }
-.sortable-item.on .item-ctrl {
-    display: inline-block;
+
+.sortable-item .item-label,
+.sortable-item .item-basename {
+    display: block;
+}
+
+@media (min-width: 768px) {
+    .sortable-item.on .item-ctrl {
+        display: inline-block;
+    }
+
+    .sortable-item .item-label,
+    .sortable-item .item-basename {
+        display: inline-block;
+    }
 }
 
 .highlight {
   background-color: #e6f2f4;
+}
+
+#itemlist {
+    max-width: 100px;
+}
+
+#area-action .category-label {
+    font-size: 16px;
+    max-width: 130px;
+    padding-bottom: 0.3rem;
+    padding-top: 0.3rem;
+}
+
+@media (min-width: 768px) {
+    #itemlist {
+        max-width: 200px;
+    }
+
+    #area-action .category-label {
+        font-size: 1rem;
+        max-width: 200px;
+        padding-bottom: 0.4rem;
+        padding-top: 0.4rem;
+    }
 }

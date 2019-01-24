@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2004-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2004-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.0');
-define('PRODUCT_VERSION', '7.0.4');
+define('VERSION', '7.1');
+define('PRODUCT_VERSION', '7.1');
 define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 4;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -576,6 +576,7 @@ class MT {
             header("HTTP/1.1 404 Not found");
             return $ctx->error($this->translate("Page not found - [_1]", $path), E_USER_ERROR);
         }
+        $ctx->stash('_fileinfo', $data);
 
         $fi_path = $data->fileinfo_url;
         $fid = $data->fileinfo_id;
@@ -585,6 +586,7 @@ class MT {
         $cat = $data->fileinfo_category_id;
         $auth = $data->fileinfo_author_id;
         $entry_id = $data->fileinfo_entry_id;
+        $cd_id = $data->fileinfo_cd_id;
         $blog_id = $data->fileinfo_blog_id;
         $blog = $data->blog();
         if ($at == 'index') {
@@ -633,7 +635,7 @@ class MT {
 
         $cache_id = $blog_id.';'.$fi_path;
         if (!$ctx->is_cached('mt:'.$tpl_id, $cache_id)) {
-            if (isset($at) && ($at != 'Category')) {
+            if (isset($at) && $at) {
                 require_once("archive_lib.php");
                 try {
                     $archiver = ArchiverFactory::get_archiver($at);
@@ -657,7 +659,7 @@ class MT {
                 $ctx->stash('archive_author', $archive_author);
             }
             if (isset($at)) {
-                if (($at != 'Category') && isset($ts)) {
+                if ($at != 'Category' && $at != 'ContentType-Category' && isset($ts)) {
                     list($ts_start, $ts_end) = $archiver->get_range($ts);
                     $ctx->stash('current_timestamp', $ts_start);
                     $ctx->stash('current_timestamp_end', $ts_end);
@@ -674,14 +676,25 @@ class MT {
                 $ctx->stash('entry', $entry);
                 $ctx->stash('current_timestamp', $entry->entry_authored_on);
             }
-
-            if ($at == 'Category') {
-                $vars =& $ctx->__stash['vars'];
-                $vars['archive_class']            = "category-archive";
-                $vars['category_archive']         = 1;
-                $vars['archive_template']         = 1;
-                $vars['archive_listing']          = 1;
-                $vars['module_category_archives'] = 1;
+            if (isset($cd_id) && ($cd_id) && $at == 'ContentType') {
+                $cd = $mtdb->fetch_content($cd_id);
+                $ct = $mtdb->fetch_content_type($cd->content_type_id);
+                $ctx->stash('content', $cd);
+                $ctx->stash('content_type', $ct);
+                $ctx->stash('current_timestamp', $cd->cd_authored_on);
+            }
+            if (preg_match('/^ContentType/', $at) && !$ctx->stash('content_type') && $tmpl && $tmpl->content_type_id) {
+                $ct = $mtdb->fetch_content_type($tmpl->content_type_id);
+                if ($ct) {
+                    $ctx->stash('content_type', $ct);
+                }
+            }
+            if(preg_match('/ContentType-Category/', $at)){
+                if($archive_category){
+                    $category_set = $ctx->mt->db()->fetch_category_set($archive_category->category_category_set_id);
+                    if($category_set)
+                        $ctx->stash('category_set', $category_set);
+                }
             }
         }
 
@@ -746,18 +759,31 @@ class MT {
 
     function resolve_url($path, $build_type = 3) {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
-        if ( isset($data)
-            && isset($data->fileinfo_entry_id)
-            && is_numeric($data->fileinfo_entry_id)
-        ) {
+        if (isset($data)) {
             $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
-                $entry = $this->db->fetch_page($data->fileinfo_entry_id);
-            } else {
-                $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
+            if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
+                if ( isset($data->fileinfo_cd_id)
+                    && is_numeric($data->fileinfo_cd_id)
+                ) {
+                    $tmpl_map = $data->templatemap();
+                    $cd = $this->db->fetch_content($data->fileinfo_cd_id);
+                    if (!isset($cd) || $cd->cd_status != 2)
+                        return;
+                }
             }
-            if (!isset($entry) || $entry->entry_status != 2)
-                return;
+            else {
+                if ( isset($data->fileinfo_entry_id)
+                    && is_numeric($data->fileinfo_entry_id)
+                ) {
+                    if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
+                        $entry = $this->db->fetch_page($data->fileinfo_entry_id);
+                    } else {
+                        $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
+                    }
+                    if (!isset($entry) || $entry->entry_status != 2)
+                        return;
+                }
+            }
         }
         return $data;
     }
@@ -961,6 +987,13 @@ class MT {
 
     function get_current_blog_id() {
         return $this->blog_id;
+    }
+
+    function mode() {
+        $mode = $_GET['__mode'];
+        if (!isset($mode)) $mode = 'default';
+        preg_replace('/[<>"\']/', '', $mode);
+        return $mode;
     }
 }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -14,26 +14,27 @@ use MT::Util;
 
 sub field_html_params {
     my ( $app, $field_data ) = @_;
-    my $value = $field_data->{value};
-    $value = []       unless $value;
-    $value = [$value] unless ref $value eq 'ARRAY';
+    my $raw_value = $field_data->{value} || [];
+    my @value = ref $raw_value eq 'ARRAY' ? @$raw_value : ($raw_value);
 
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
     $tag_delim .= ' ' if $tag_delim eq ',';
 
     my $tag_names;
-    if ( $app->param('reedit') ) {
-        $tag_names = join $tag_delim, @$value;
-    }
-    else {
-        my %tag_hash;    # id => name
-        my $iter = MT::Tag->load_iter( { id => $value },
-            { fetchonly => [ 'id', 'name' ] } );
-        while ( my $tag = $iter->() ) {
-            $tag_hash{ $tag->id } = $tag->name;
+    if (@value) {
+        if ( $app->param('reedit') && !$app->param('had_error') ) {
+            $tag_names = join $tag_delim, @value;
         }
-        my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @$value;
-        $tag_names = join $tag_delim, @tag_names;
+        else {
+            my %tag_hash;    # id => name
+            my $iter = MT::Tag->load_iter( { id => \@value },
+                { fetchonly => [ 'id', 'name' ] } );
+            while ( my $tag = $iter->() ) {
+                $tag_hash{ $tag->id } = $tag->name;
+            }
+            my @tag_names = grep { defined $_ } map { $tag_hash{$_} } @value;
+            $tag_names = join $tag_delim, @tag_names;
+        }
     }
 
     my $options = $field_data->{options};
@@ -102,10 +103,14 @@ sub html {
     my $prop = shift;
     my ( $content_data, $app, $opts ) = @_;
 
-    my $tag_ids = $content_data->data->{ $prop->content_field_id } || [];
+    my $raw_tag_ids = $content_data->data->{ $prop->content_field_id };
+    return '' unless $raw_tag_ids;
+    my @tag_ids
+        = ref $raw_tag_ids eq 'ARRAY' ? @$raw_tag_ids : ($raw_tag_ids);
+    return '' unless @tag_ids;
 
     my %tag_names;
-    my $iter = MT::Tag->load_iter( { id => $tag_ids },
+    my $iter = MT::Tag->load_iter( { id => \@tag_ids },
         { fetchonly => { id => 1, name => 1 } } );
     while ( my $tag = $iter->() ) {
         $tag_names{ $tag->id } = $tag->name;
@@ -114,7 +119,7 @@ sub html {
     my $can_double_encode = 1;
 
     my @links;
-    for my $id (@$tag_ids) {
+    for my $id (@tag_ids) {
         my $tag_name
             = MT::Util::encode_html( $tag_names{$id}, $can_double_encode );
         my $link = _link( $app, $tag_name );
@@ -133,7 +138,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
     my $field_label = $options->{label};
 
-    my $iter = MT::Tag->load_iter( { name => $data },
+    my $iter = MT::Tag->load_iter( { name => @$data ? $data : 0 },
         { binary => { name => 1 }, fetchonly => [ 'id', 'name' ] } );
     my %valid_tag_hash;    # name => id
     while ( my $tag = $iter->() ) {
@@ -190,11 +195,11 @@ sub tag_handler {
 
     my $iter;
     if ($is_preview) {
-        $iter = MT::Tag->load_iter( { name => $value },
+        $iter = MT::Tag->load_iter( { name => @$value ? $value : 0 },
             { binary => { name => 1 } } );
     }
     else {
-        $iter = MT::Tag->load_iter( { id => $value } );
+        $iter = MT::Tag->load_iter( { id => @$value ? $value : 0 } );
     }
 
     my %tags;
@@ -292,8 +297,19 @@ sub field_value_handler {
 sub feed_value_handler {
     my ( $app, $field_data, $values ) = @_;
 
-    my @tags = MT->model('tag')
-        ->load( { id => $values }, { fetchonly => { id => 1, name => 1 } }, );
+    my $tag_ids = 0;
+    if ($values) {
+        if ( ref $values eq 'ARRAY' ) {
+            $tag_ids = @$values ? $values : 0;
+        }
+        else {
+            $tag_ids = $values || 0;
+        }
+    }
+    my @tags
+        = MT->model('tag')
+        ->load( { id => $tag_ids }, { fetchonly => { id => 1, name => 1 } },
+        );
     my %name_hash = map { $_->id => $_->name } @tags;
 
     my $contents = '';

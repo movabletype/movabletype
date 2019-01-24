@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -116,7 +116,7 @@ sub start_recover {
     $param->{'blog_id'} = $blog_id;
     my $tmpl = $app->load_global_tmpl(
         { identifier => 'new_password_reset_form', }, $blog_id );
-    if ( !$tmpl ) {
+    if ( !$tmpl || !_exists_system_tmpl($tmpl) ) {
         $tmpl = $app->load_tmpl('cms/dialog/recover.tmpl');
     }
     $param->{system_template} = 1;
@@ -329,7 +329,7 @@ sub new_password {
     $param->{'blog_id'} = $blog_id if $blog_id;
     my $tmpl = $app->load_global_tmpl( { identifier => 'new_password', },
         $blog_id );
-    if ( !$tmpl ) {
+    if ( !$tmpl || !_exists_system_tmpl($tmpl) ) {
         $tmpl = $app->load_tmpl('cms/dialog/new_password.tmpl');
     }
     $param->{system_template} = 1;
@@ -344,7 +344,10 @@ sub do_list_action {
     # plugin_action_selector should always (?) be in the query; use it?
     my $action_name = $app->param('action_name');
     my $type        = $app->param('_type');
-    my $subtype     = $app->param('type') ? '.' . $app->param('type') : '';
+    my $subtype
+        = ( $type eq 'content_data' && $app->param('type') )
+        ? '.' . $app->param('type')
+        : '';
     my ($the_action)
         = ( grep { $_->{key} eq $action_name }
             @{ $app->list_actions( $type . $subtype ) } );
@@ -1656,14 +1659,18 @@ sub restore {
                     'Please use xml, tar.gz, zip, or manifest as a file extension.'
                     );
             }
-            unless ($arc) {
+            if ( !$arc or !$arc->is_safe_to_extract ) {
                 $result = 0;
                 $param->{restore_success} = 0;
                 if ($error) {
                     $param->{error} = $error;
                 }
                 else {
-                    $error = MT->translate('Unknown file format');
+                    $error = MT->translate(
+                          !$arc                     ? 'Unknown file format'
+                        : !$arc->is_safe_to_extract ? 'Unsafe archive'
+                        :                             ''
+                    );
                     $app->log(
                         {   message  => $error . ":$uploaded_filename",
                             level    => MT::Log::WARNING(),
@@ -3090,6 +3097,13 @@ sub _log_dirty_restore {
 sub login_json {
     my $app = shift;
     return $app->json_result( { magic_token => $app->current_magic, } );
+}
+
+sub _exists_system_tmpl {
+    my ($tmpl) = @_;
+    my $set = MT->registry('default_templates');
+    my $scope = $tmpl->blog_id ? 'system' : 'global:system';
+    return $set->{$scope}{ $tmpl->identifier } ? 1 : 0;
 }
 
 1;

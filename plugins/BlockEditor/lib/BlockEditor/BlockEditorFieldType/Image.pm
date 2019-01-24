@@ -145,8 +145,8 @@ sub dialog_list_asset {
                 ),
                 dir_separator => MT::Util::dir_separator,
                 %carry_params,
-                asset_id => $app->param('asset_id') ? $app->param('asset_id') : '',
-                edit => $app->param('edit') ? 1 : 0,
+                asset_id => scalar( $app->param('asset_id') ) || '',
+                edit     => $app->param('edit') ? 1 : 0,
             },
         }
     );
@@ -186,7 +186,7 @@ sub dialog_asset_modal {
     $param{next_mode}    = $app->param('next_mode');
     $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
     $param{asset_select} = $app->param('asset_select');
-    $param{require_type} = $app->param('require_type');
+    $param{require_type} = 'image';
 
     if ($blog_id) {
         $param{blog_id}      = $blog_id;
@@ -223,8 +223,10 @@ sub dialog_asset_modal {
     if ($asset_upload_panel) {
         $param{asset_upload_panel} = $asset_upload_panel;
     }
-    $param{options} = $app->param('options') if defined $app->param('options');
-    $param{asset_id} = $app->param('asset_id') if defined $app->param('asset_id');
+    $param{options} = $app->param('options')
+        if defined $app->param('options');
+    $param{asset_id} = $app->param('asset_id')
+        if defined $app->param('asset_id');
     $param{edit} = $app->param('edit') if defined $app->param('edit');
 
     return plugin()->load_tmpl( 'cms/dialog/asset_modal.tmpl', \%param );
@@ -298,8 +300,8 @@ sub dialog_insert_options {
             }
             $param->{$_} = $options->{$_} for keys %$options;
         }
-        if( defined $app->param('edit') ){
-          $param->{edit} = 1;
+        if ( defined $app->param('edit') ) {
+            $param->{edit} = 1;
         }
         my $html = _insert_options( $a, $param ) || '';
         $param->{options} = $html;
@@ -368,7 +370,7 @@ sub dialog_insert_asset {
                 my $name = $k;
                 if ( $k =~ m/(.*)[-|_]$id/ig ) {
                     $param{$1} = $item->{$k};
-                    $param{$1.'-'.$asset->id} = $item->{$k};
+                    $param{ $1 . '-' . $asset->id } = $item->{$k};
                 }
             }
 
@@ -390,31 +392,35 @@ sub _insert_options {
     $param->{do_thumb}
         = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
-    if(!$param->{edit}){
-      $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-    } else {
-      $param->{make_thumb} = 0;
+    if ( !$param->{edit} ) {
+        $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
+    }
+    else {
+        $param->{make_thumb} = 0;
     }
 
-    if(!$param->{align}){
-      $param->{ 'align'} =  $blog->image_default_align ? $blog->image_default_align : 'none';
+    if ( !$param->{align} ) {
+        $param->{'align'}
+            = $blog->image_default_align
+            ? $blog->image_default_align
+            : 'none';
     }
-    if(!$param->{width}){
-      $param->{width}
-          = $blog->image_default_width
-          || $asset->image_width
-          || 0;
+    if ( !$param->{width} ) {
+        $param->{width}
+            = $blog->image_default_width
+            || $asset->image_width
+            || 0;
     }
 
     return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }
 
 sub delete {
-  my $app = MT->instance;
+    my $app = MT->instance;
 
-  $app->param('xhr', 1);
-  my $return_arg = MT::CMS::Common::delete($app);
-  return $app->json_result($return_arg);
+    $app->param( 'xhr', 1 );
+    my $return_arg = MT::CMS::Common::delete($app);
+    return $app->json_result($return_arg);
 
 }
 

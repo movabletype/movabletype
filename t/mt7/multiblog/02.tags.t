@@ -297,11 +297,13 @@ A Rainy Day,Verse 5
 --- expected
 
 
-=== mt:Comments
+=== mt:Comments (for core)
 --- template
+<mt:HasPlugin name="Comments"><mt:Else>
 <mt:Comments include_sites="1,2,3">
 <mt:CommentBody />
 </mt:Comments>
+</mt:HasPlugin>
 --- expected
 
 
@@ -329,11 +331,13 @@ A Rainy Day,Verse 5
 --- expected
 
 
-=== mt:Pings
+=== mt:Pings (for core)
 --- template
+<mt:HasPlugin name="Trackback"><mt:Else>
 <mt:Pings include_sites="1,2,3">
 <mt:PingURL />
 </mt:Pings>
+</mt:HasPlugin>
 --- expected
 
 

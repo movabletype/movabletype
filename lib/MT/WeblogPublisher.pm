@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,22 +8,12 @@ package MT::WeblogPublisher;
 
 use strict;
 use warnings;
-use base qw( MT::ErrorHandler Exporter );
-our @EXPORT = qw(ArchiveFileTemplate ArchiveType);
+use base qw( MT::ErrorHandler );
 
 use MT::ArchiveType;
 use File::Basename;
 
 our %ArchiveTypes;
-
-sub ArchiveFileTemplate {
-    my %param = @_;
-    \%param;
-}
-
-sub ArchiveType {
-    new MT::ArchiveType(@_);
-}
 
 sub new {
     my $class = shift;
@@ -1202,7 +1192,8 @@ sub rebuild_file {
 
     if ( $archiver->category_based ) {
         $category = $args{Category};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Category')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Category' )
             unless $args{Category};
         $category = MT::Category->load($category)
             unless ref $category;
@@ -1211,7 +1202,8 @@ sub rebuild_file {
     }
     if ( $archiver->entry_based ) {
         $entry = $args{Entry};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Entry')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
@@ -1223,7 +1215,8 @@ sub rebuild_file {
         # Date-based archive type
         $start = $args{StartDate};
         $end   = $args{EndDate};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'StartDate')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'StartDate' )
             unless $args{StartDate};
         $ctx->var( 'datebased_archive', 1 );
     }
@@ -1231,7 +1224,8 @@ sub rebuild_file {
 
         # author based archive type
         $author = $args{Author};
-        die MT->translate("[_1] archive type requires [_2] parameter", $archiver->archive_label, 'Author')
+        die MT->translate( "[_1] archive type requires [_2] parameter",
+            $archiver->archive_label, 'Author' )
             unless $args{Author};
         require MT::Author;
         $author = MT::Author->load($author)
@@ -1300,10 +1294,11 @@ sub rebuild_file {
     unless ($finfo) {
         my %terms;
         $terms{blog_id}     = $blog->id;
-        $terms{category_id} = $category->id if $archiver->category_based;
-        $terms{author_id}   = $author->id if $archiver->author_based;
-        $terms{entry_id}    = $entry->id if $archiver->entry_based;
-        $terms{startdate}   = $start
+        $terms{category_id} = $category->id
+            if $archiver->category_based;
+        $terms{author_id} = $author->id if $archiver->author_based;
+        $terms{entry_id}  = $entry->id  if $archiver->entry_based;
+        $terms{startdate} = $start
             if $archiver->date_based && ( !$archiver->entry_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
@@ -1321,7 +1316,19 @@ sub rebuild_file {
         else {
 
          # if the shoe don't fit, remove all shoes and create the perfect shoe
-            foreach (@finfos) { $_->remove(); }
+            foreach (@finfos) {
+                $_->remove();
+                if ( MT->config('DeleteFilesAtRebuild') ) {
+                    $mt->_delete_archive_file(
+                        Blog        => $blog,
+                        File        => $_->file_path,
+                        ArchiveType => $at,
+                        ( $archiver->entry_based && $entry )
+                        ? ( Entry => $entry->id )
+                        : (),
+                    );
+                }
+            }
 
             $finfo = MT::FileInfo->set_info_for_url(
                 $rel_url, $file, $at,
@@ -1910,6 +1917,10 @@ sub rebuild_indexes {
 }
 
 sub rebuild_from_fileinfo {
+    shift->rebuild_entry_from_fileinfo(@_);
+}
+
+sub rebuild_entry_from_fileinfo {
     my $pub = shift;
     my ($fi) = @_;
 
