@@ -1369,7 +1369,7 @@ TODO: This tag has not been implemented yet.
 sub _hdlr_content_permalink {
     my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('content')
-        or return $ctx->_no_entry_error();
+        or return $ctx->_no_content_error();
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
