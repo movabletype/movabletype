@@ -718,3 +718,9 @@ https://localhost/category/2017/09/#000004
 </mt:Contents></mt:Sites>
 --- expected
 https://localhost/category/2017/#000004
+
+=== Used outside of MTContents
+--- template
+<MTContentPermalink>
+--- expected
+You used an 'mtContentPermalink' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an 'MTContents' container tag?
