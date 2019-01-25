@@ -7,6 +7,7 @@ package MT::CMS::Dashboard;
 
 use strict;
 use warnings;
+use MT::version;
 use MT::Util
     qw( ts2epoch epoch2ts encode_html relative_date offset_time format_ts );
 use MT::Stats qw(readied_provider);
@@ -1143,12 +1144,11 @@ sub updates_widget {
     }
 
     if ($version_info) {
-        require version;
         my $mt_version;
         my $latest_version;
         eval {
-            $mt_version     = version->parse( MT->version_id );
-            $latest_version = version->parse( $version_info->{version} );
+            $mt_version     = MT::version->parse( MT->version_id );
+            $latest_version = MT::version->parse( $version_info->{version} );
         };
         if ( !$@ ) {
             if ( $latest_version > $mt_version ) {
