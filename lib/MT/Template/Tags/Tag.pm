@@ -916,7 +916,7 @@ sub _hdlr_tag_search_link {
     $param .= '&amp;limit=' . $ctx->{config}->MaxResults;
     $param .= '&amp;blog_id=' . $template_blog_id if $template_blog_id;
     my $path = $ctx->cgi_path;
-    MT::Util::strip_protocol($path . $ctx->{config}->SearchScript . '?' . $param, $args);
+    $path . $ctx->{config}->SearchScript . '?' . $param;
 }
 
 ###########################################################################

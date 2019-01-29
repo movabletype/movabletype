@@ -50,7 +50,7 @@ If the author has no userpic, this will output an empty string.
 =cut
 
 sub _hdlr_author_userpic_url {
-    my ($ctx, $args) = @_;
+    my ($ctx) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
         my $e = $ctx->stash('entry');
@@ -58,8 +58,6 @@ sub _hdlr_author_userpic_url {
     }
     return $ctx->_no_author_error() unless $author;
     my $url = $author->userpic_url() || '';
-
-    $url = MT::Util::strip_protocol($url, $args);
 
     return $url;
 }
@@ -131,15 +129,11 @@ in context.
 =cut
 
 sub _hdlr_entry_author_userpic_url {
-    my ($ctx, $args) = @_;
+    my ($ctx) = @_;
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author or return '';
-    my $url = $a->userpic_url() || '';
-
-    $url = MT::Util::strip_protocol($url, $args);
-
-    return $url;
+    return $a->userpic_url() || '';
 }
 
 ###########################################################################

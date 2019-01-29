@@ -1739,7 +1739,6 @@ sub _hdlr_category_archive {
         $content_type_id );
     $arch = MT::Util::strip_index( $arch, $blog )
         unless $args->{with_index};
-    $arch = MT::Util::strip_protocol($arch, $args);
     $arch;
 }
 

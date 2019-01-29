@@ -940,7 +940,6 @@ sub _hdlr_archive_link {
     $arch = $blog->site_url
         if $content && $content->can('class') && $content->class eq 'page';
     $arch .= '/' unless $arch =~ m!/$!;
-
     $arch
         .= archive_file_for( $content, $blog, $at, $cat, undef,
         $ctx->{current_timestamp},
@@ -948,7 +947,6 @@ sub _hdlr_archive_link {
     $arch = MT::Util::strip_index( $arch, $blog )
         unless $args->{with_index};
 
-    $arch = MT::Util::strip_protocol($arch, $args);
     return $arch;
 }
 
@@ -1386,7 +1384,6 @@ sub _hdlr_index_link {
     $path .= $idx->outfile;
     $path = MT::Util::strip_index( $path, $blog )
         unless $args->{with_index};
-    $path = MT::Util::strip_protocol($path, $args);
     $path;
 }
 

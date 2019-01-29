@@ -1841,9 +1841,7 @@ sub _hdlr_entry_link {
     my $blog = $ctx->stash('blog');
     my $arch = $blog->archive_url || '';
     $arch = $blog->site_url if $e->class eq 'page';
-    $arch = MT::Util::strip_protocol($arch, $args);
     $arch .= '/' unless $arch =~ m!/$!;
-
 
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
@@ -1979,7 +1977,6 @@ sub _hdlr_entry_permalink {
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $e->errstr );
     $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
-    $link = MT::Util::strip_protocol($link, $args);
     $link;
 }
 
@@ -2153,8 +2150,7 @@ sub _hdlr_entry_author_url {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $a = $e->author;
-    return "" unless $a && $a->url;
-    return MT::Util::strip_protocol($a->url, $args);
+    return $a ? $a->url || "" : "";
 }
 
 ###########################################################################
@@ -2206,45 +2202,7 @@ sub _hdlr_entry_author_link {
     return '' unless $a;
 
     my $type = $args->{type} || '';
-
-    my $displayname = encode_html( remove_html( $a->nickname || '' ) );
-    my $show_email = $args->{show_email} ? 1 : 0;
-    my $show_url;
-    $show_url = 1 unless exists $args->{show_url} && !$args->{show_url};
-
-    # Open the link in a new window if requested (with new_window="1").
-    my $target = $args->{new_window} ? ' target="_blank"' : '';
-    unless ($type) {
-        if ( $show_url && $a->url && ( $displayname ne '' ) ) {
-            $type = 'url';
-        }
-        elsif ( $show_email && $a->email && ( $displayname ne '' ) ) {
-            $type = 'email';
-        }
-    }
-    if ( $type eq 'url' ) {
-        if ( $a->url && ( $displayname ne '' ) ) {
-
-            # Add vcard properties to link if requested (with hcard="1")
-            my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
-            my $link = MT::Util::strip_protocol($a->url, $args);
-
-            return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
-                encode_html( $link ), $target, $displayname;
-        }
-    }
-    elsif ( $type eq 'email' ) {
-        if ( $a->email && ( $displayname ne '' ) ) {
-
-            # Add vcard properties to email if requested (with hcard="1")
-            my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
-            my $str = "mailto:" . encode_html( $a->email );
-            $str = spam_protect($str) if $args->{'spam_protect'};
-            return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str,
-                $displayname;
-        }
-    }
-    elsif ( $type eq 'archive' ) {
+    if ( $type && $type eq 'archive' ) {
         require MT::Author;
         if ( $a->type == MT::Author::AUTHOR() ) {
             local $ctx->{__stash}{author} = $a;
@@ -2253,12 +2211,11 @@ sub _hdlr_entry_author_link {
                     'archivelink', { type => 'Author' }, $cond
                 )
                 )
-            {    
+            {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
                     = encode_html( remove_html( $a->nickname || '' ) );
 
-                $link = MT::Util::strip_protocol($a->url, $args);
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
@@ -2517,7 +2474,7 @@ sub _hdlr_entry_blog_url {
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
         MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
-    return MT::Util::strip_protocol($b->site_url, $args);
+    return $b->site_url;
 }
 
 ###########################################################################

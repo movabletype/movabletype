@@ -162,8 +162,6 @@ sub _hdlr_pager_link {
     $link .= "&page=" . encode_url($page) if $page;
     $link .= "&Template=" . encode_url($template) if $template;
 
-    $link = MT::Util::strip_protocol($link, $args);
-
     return $link;
 }
 

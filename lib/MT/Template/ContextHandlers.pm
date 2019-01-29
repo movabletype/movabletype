@@ -5290,9 +5290,6 @@ sub _hdlr_link {
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
 
-        # add support for relative URLS
-        $site_url = MT::Util::strip_protocol($site_url, $arg);
-
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5303,8 +5300,6 @@ sub _hdlr_link {
             or return $ctx->error(
             MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
-
-        $link = MT::Util::strip_protocol($link, $arg);
 
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5716,7 +5711,7 @@ name is unnecessary):
 
 =cut
 
-sub _hdlr_cgi_path { MT::Util::strip_protocol(shift->cgi_path, shift) }
+sub _hdlr_cgi_path { shift->cgi_path }
 
 ###########################################################################
 
@@ -5834,7 +5829,7 @@ B<Example:>
 =cut
 
 sub _hdlr_static_path {
-    my ($ctx, $args) = @_;
+    my ($ctx) = @_;
     my $cfg   = $ctx->{config};
     my $path  = $cfg->StaticWebPath;
     if ( !$path ) {
@@ -5853,7 +5848,7 @@ sub _hdlr_static_path {
         }
     }
     $path .= '/' unless $path =~ m!/$!;
-    return MT::Util::strip_protocol($path, $args);
+    return $path;
 }
 
 ###########################################################################

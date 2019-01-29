@@ -833,7 +833,7 @@ sub _hdlr_asset_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return MT::Util::strip_protocol($a->url, $args);
+    return $a->url;
 }
 
 ###########################################################################
@@ -1201,7 +1201,6 @@ sub _hdlr_asset_thumbnail_url {
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
 
-    $url = MT::Util::strip_protocol($url, $args);
     return $url || '';
 }
 
@@ -1236,10 +1235,8 @@ sub _hdlr_asset_link {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    my $url = MT::Util::strip_protocol($a->url, $args);
 
-
-    my $ret = sprintf qq(<a href="%s"), $url;
+    my $ret = sprintf qq(<a href="%s"), $a->url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
@@ -1311,10 +1308,8 @@ sub _hdlr_asset_thumbnail_link {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
-    $url = MT::Util::strip_protocol($url, $args);
-    my $aurl = MT::Util::strip_protocol($a->url, $args);
 
-    my $ret = sprintf qq(<a href="%s"), $aurl;
+    my $ret = sprintf qq(<a href="%s"), $a->url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
@@ -1351,7 +1346,6 @@ B<Example:>
 sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
-
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{parent}  = \'is NULL';
     $terms{class}   = $args->{type} || '*';
@@ -1383,7 +1377,7 @@ B<Example:>
 =cut
 
 # Page Asset Count is an Alias for EntryAssetCount
-  
+
 =head2 PageAssetCount
 
 Returns the number of assets associated with the current page context.

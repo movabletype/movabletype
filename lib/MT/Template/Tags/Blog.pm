@@ -537,7 +537,7 @@ sub _hdlr_blog_url {
     my $url = $blog->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
-    return MT::Util::strip_protocol($url, $args);
+    return $url;
 }
 
 ###########################################################################
@@ -574,7 +574,7 @@ sub _hdlr_blog_archive_url {
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
 
-    return MT::Util::strip_protocol($url, $args);
+    return $url;
 }
 
 ###########################################################################
@@ -1007,7 +1007,7 @@ If specified, the raw theme ID is returned.
 
 =head2 SiteThemeID
 
-Outputs applied theme's ID for the site currently in context.  The 
+Outputs applied theme's ID for the site currently in context.  The
 identifier is modified such that underscores are changed to dashes.
 
 B<Attributes:>

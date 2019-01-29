@@ -471,8 +471,7 @@ sub _hdlr_website_url {
     my $url = $website->site_url;
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
-
-    return MT::Util::strip_protocol($url, $args);
+    $url;
 }
 
 ###########################################################################
