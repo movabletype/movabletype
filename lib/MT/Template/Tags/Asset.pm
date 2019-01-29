@@ -833,7 +833,7 @@ sub _hdlr_asset_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return MT::Util::strip_protocol($a->url, $args);
+    return MT::Util::strip_absolutes($a->url, $args);
 }
 
 ###########################################################################
@@ -1201,7 +1201,7 @@ sub _hdlr_asset_thumbnail_url {
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
 
-    $url = MT::Util::strip_protocol($url, $args);
+    $url = MT::Util::strip_absolutes($url, $args);
     return $url || '';
 }
 
@@ -1236,7 +1236,7 @@ sub _hdlr_asset_link {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    my $url = MT::Util::strip_protocol($a->url, $args);
+    my $url = MT::Util::strip_absolutes($a->url, $args);
 
 
     my $ret = sprintf qq(<a href="%s"), $url;
@@ -1311,8 +1311,8 @@ sub _hdlr_asset_thumbnail_link {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
-    $url = MT::Util::strip_protocol($url, $args);
-    my $aurl = MT::Util::strip_protocol($a->url, $args);
+    $url = MT::Util::strip_absolutes($url, $args);
+    my $aurl = MT::Util::strip_absolutes($a->url, $args);
 
     my $ret = sprintf qq(<a href="%s"), $aurl;
     if ( $args->{new_window} ) {

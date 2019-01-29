@@ -1362,7 +1362,7 @@ sub strip_index {
     $link;
 }
 
-sub strip_protocol {
+sub strip_absolutes {
     my ( $link, $args ) = @_;
     if ($args->{relative} && $args->{relative} eq 'protocol') {
         $link =~ s/https?://;

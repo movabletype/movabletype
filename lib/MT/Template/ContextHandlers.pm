@@ -5287,7 +5287,7 @@ sub _hdlr_link {
         $site_url .= '/' unless $site_url =~ m!/$!;
 
         # add support for relative URLS
-        $site_url = MT::Util::strip_protocol($site_url, $arg);
+        $site_url = MT::Util::strip_absolutes($site_url, $arg);
 
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
@@ -5300,7 +5300,7 @@ sub _hdlr_link {
             MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
 
-        $link = MT::Util::strip_protocol($link, $arg);
+        $link = MT::Util::strip_absolutes($link, $arg);
 
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5712,7 +5712,7 @@ name is unnecessary):
 
 =cut
 
-sub _hdlr_cgi_path { MT::Util::strip_protocol(shift->cgi_path, shift) }
+sub _hdlr_cgi_path { MT::Util::strip_absolutes(shift->cgi_path, shift) }
 
 ###########################################################################
 
@@ -5849,7 +5849,7 @@ sub _hdlr_static_path {
         }
     }
     $path .= '/' unless $path =~ m!/$!;
-    return MT::Util::strip_protocol($path, $args);
+    return MT::Util::strip_absolutes($path, $args);
 }
 
 ###########################################################################

@@ -1841,7 +1841,7 @@ sub _hdlr_entry_link {
     my $blog = $ctx->stash('blog');
     my $arch = $blog->archive_url || '';
     $arch = $blog->site_url if $e->class eq 'page';
-    $arch = MT::Util::strip_protocol($arch, $args);
+    $arch = MT::Util::strip_absolutes($arch, $args);
     $arch .= '/' unless $arch =~ m!/$!;
 
 
@@ -1860,6 +1860,7 @@ sub _hdlr_entry_link {
         my $link = $arch . $archive_filename;
         $link = MT::Util::strip_index( $link, $blog )
             unless $args->{with_index};
+        $link = MT::Util::strip_absolutes($link, $args);
         $link;
     }
     else { return "" }
@@ -1979,7 +1980,7 @@ sub _hdlr_entry_permalink {
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $e->errstr );
     $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};
-    $link = MT::Util::strip_protocol($link, $args);
+    $link = MT::Util::strip_absolutes($link, $args);
     $link;
 }
 
@@ -2154,7 +2155,7 @@ sub _hdlr_entry_author_url {
         or return $ctx->_no_entry_error();
     my $a = $e->author;
     return "" unless $a && $a->url;
-    return MT::Util::strip_protocol($a->url, $args);
+    return MT::Util::strip_absolutes($a->url, $args);
 }
 
 ###########################################################################
@@ -2227,7 +2228,7 @@ sub _hdlr_entry_author_link {
 
             # Add vcard properties to link if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
-            my $link = MT::Util::strip_protocol($a->url, $args);
+            my $link = MT::Util::strip_absolutes($a->url, $args);
 
             return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
                 encode_html( $link ), $target, $displayname;
@@ -2253,12 +2254,12 @@ sub _hdlr_entry_author_link {
                     'archivelink', { type => 'Author' }, $cond
                 )
                 )
-            {    
+            {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
                     = encode_html( remove_html( $a->nickname || '' ) );
 
-                $link = MT::Util::strip_protocol($a->url, $args);
+                $link = MT::Util::strip_absolutes($a->url, $args);
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }
@@ -2517,7 +2518,7 @@ sub _hdlr_entry_blog_url {
     my $b = MT::Blog->load( $e->blog_id )
         or return $ctx->error(
         MT->translate( 'Cannot load blog #[_1].', $e->blog_id ) );
-    return MT::Util::strip_protocol($b->site_url, $args);
+    return MT::Util::strip_absolutes($b->site_url, $args);
 }
 
 ###########################################################################

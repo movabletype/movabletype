@@ -59,7 +59,7 @@ sub _hdlr_author_userpic_url {
     return $ctx->_no_author_error() unless $author;
     my $url = $author->userpic_url() || '';
 
-    $url = MT::Util::strip_protocol($url, $args);
+    $url = MT::Util::strip_absolutes($url, $args);
 
     return $url;
 }
@@ -137,7 +137,7 @@ sub _hdlr_entry_author_userpic_url {
     my $a = $e->author or return '';
     my $url = $a->userpic_url() || '';
 
-    $url = MT::Util::strip_protocol($url, $args);
+    $url = MT::Util::strip_absolutes($url, $args);
 
     return $url;
 }

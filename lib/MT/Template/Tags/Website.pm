@@ -472,7 +472,7 @@ sub _hdlr_website_url {
     return '' unless defined $url;
     $url .= '/' unless $url =~ m!/$!;
 
-    return MT::Util::strip_protocol($url, $args);
+    return MT::Util::strip_absolutes($url, $args);
 }
 
 ###########################################################################
