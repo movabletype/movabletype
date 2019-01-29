@@ -166,4 +166,14 @@ sub cleanup {
     }
 }
 
+__PACKAGE__->add_trigger( 'post_remove' => \&post_remove );
+
+sub post_remove {
+    my $obj  = shift;
+    my $file = $obj->file_path;
+    my $fmgr = MT::FileMgr->new('Local') or return;
+    $fmgr->delete($file) or return
+        if $fmgr->exists($file);
+}
+
 1;
