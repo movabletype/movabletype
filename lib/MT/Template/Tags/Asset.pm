@@ -1238,7 +1238,6 @@ sub _hdlr_asset_link {
         or return $ctx->_no_asset_error();
     my $url = MT::Util::strip_absolutes($a->url, $args);
 
-
     my $ret = sprintf qq(<a href="%s"), $url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
