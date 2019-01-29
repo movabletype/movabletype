@@ -57,9 +57,7 @@ sub _hdlr_author_userpic_url {
         $author = $e->author if $e;
     }
     return $ctx->_no_author_error() unless $author;
-    my $url = $author->userpic_url() || '';
-
-    return $url;
+    return $author->userpic_url() || '';
 }
 
 ###########################################################################
