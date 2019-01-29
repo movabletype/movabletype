@@ -56,7 +56,7 @@ $fmgr->rename( $filename, $filename );
 ok( -f $filename, '$file should not remove' );
 
 SKIP: {
-    skip 'not for Win32', 5 if $^O eq 'Win32';
+    skip 'not for Win32', 5 if $^O eq 'MSWin32';
 
     my $dir         = File::Temp::tempdir;
     my $symlink_dir = "${dir}_link";
