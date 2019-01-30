@@ -16,10 +16,13 @@ sub upgrade_functions {
             priority      => 3.3,
             updater       => {
                 type      => 'blog',
-                condition => sub { $_[0]->class eq 'blog' },
-                code      => sub { $_[0]->class('website') },
-                label     => "Migrating current blog to a website...",
-                sql       => <<__SQL__,
+                condition => sub {
+                    my $blog = $_[0];
+                    $blog->class eq 'blog' && !$blog->parent_id;
+                },
+                code  => sub { $_[0]->class('website') },
+                label => "Migrating current blog to a website...",
+                sql   => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
