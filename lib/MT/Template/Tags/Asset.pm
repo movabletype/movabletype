@@ -1404,39 +1404,26 @@ B<Example:>
 sub _hdlr_entry_asset_count {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $e = $ctx->stash("entry")
-        or return $ctx->_no_entry_error();;
+    my $entry = $ctx->stash("entry")
+        or return $ctx->_no_entry_error();
 
-    my $assets = $e->assets;
+    my $assets = $entry->assets;
 
     return 0 unless $assets && @$assets[0];
     return scalar @$assets unless ($args->{type} || $args->{file_ext});
 
-    my @filters;
-    my @result;
-    if ( my $type = $args->{type} ) {
-        my @types = split( ',', $args->{type} );
-        push @filters,
-            sub { my $a = $_[0]->class; grep( m/$a/, @types ) };
-    }
+    my $type     = $args->{type} || '';
+    my $file_ext = $args->{file_ext} || '';
+    my $result   = 0;
 
-    # Added a file_ext filter to the filters list.
-    if ( my $ext = $args->{file_ext} ) {
-        my @exts = split( ',', $args->{file_ext} );
-        push @filters,
-            sub { my $a = $_[0]->file_ext; grep( m/$a/, @exts ) };
-    }
-
-    @result = ();
-
-    ASSET2: foreach my $e (@$assets) {
-        for (@filters) {
-            next ASSET2 unless $_->($e);
+    foreach my $asset (@$assets) {
+        if ( ( length $types && $asset->class =~ m/$types/ ) ||
+             ( length $file_ext && $asset->file_ext =~ m/$file_ext/ ) ) {
+            $result += 1;
         }
-        push @result, $e;
     }
 
-    return scalar @result;
+    return $result;
 }
 
 ###########################################################################
