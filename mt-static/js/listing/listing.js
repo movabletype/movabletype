@@ -135,6 +135,7 @@ riot.tag2('list-actions', '<div data-is="list-actions-for-pc" class="col d-none 
           action: this.selectedAction,
           actionName: this.selectedActionId,
           allSelected: this.store.checkedAllRows,
+          filter: this.store.currentFilter,
           ids: this.store.getCheckedRowIds()
         }, args)
       },

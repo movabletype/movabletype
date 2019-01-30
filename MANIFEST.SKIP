@@ -172,6 +172,9 @@ themes/broken_blog_theme
 #?package=MTAAWS ^VERSIONS
 #?package=MTAAWS ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTAAWS ^plugins/P-M-SizeLimit
+#?package=MTAAWS ^mt-cp.cgi
+#?package=MTAAWS ^addons/Community.pack
+#?package=MTAAWS ^mt-static/addons/Community.pack
 
 #?package=MTCLOUD ^COPYING
 #?package=MTCLOUD ^COPYRIGHT
