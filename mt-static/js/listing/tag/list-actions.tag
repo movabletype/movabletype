@@ -69,6 +69,7 @@
           action: this.selectedAction,
           actionName: this.selectedActionId,
           allSelected: this.store.checkedAllRows,
+          filter: this.store.currentFilter,
           ids: this.store.getCheckedRowIds()
         }, args)
       },
