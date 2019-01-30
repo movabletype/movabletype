@@ -276,7 +276,7 @@ sub _HashHTMLBlocks {
                     ^                   # start of line  (with /m)
                     <($block_tags_a)    # start tag = $2
                     \b                  # word break
-                    (.*\n)*?            # any number of lines, minimally matching
+                    (.*\n)*             # any number of lines
                     </\2>               # the matching end tag
                     [ \t]*              # trailing spaces/tabs
                     (?=\n+|\Z)  # followed by a newline or end of document

@@ -330,3 +330,83 @@ __foo__
 <p><a href="mailto:address@example.com">address@example.com</a></p>
 --- decode_entities
 address@example.com
+
+@@@ NoIndent
+--- text
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+--- markdown
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+--- markdown_with_smartypants
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+
+@@@ TabIndent
+--- text
+<div>
+	<div>
+		<p>foo</p>
+	</div>
+</div>
+--- markdown
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown_with_smartypants
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+
+@@@ Space4Indent
+--- text
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown_with_smartypants
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+
+@@@ Space2Indent
+--- text
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>
+--- markdown
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>
+--- markdown_with_smartypants
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>
