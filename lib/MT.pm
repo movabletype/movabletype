@@ -12,6 +12,7 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
+use Term::Encoding;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
 
@@ -386,9 +387,9 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode_utf8(
+    print STDERR Encode::encode( Term::Encoding::get_encoding() || 'utf8',
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode && ( $^O ne "MSWin32" );
+        if $MT::DebugMode;
 
     require MT::Util::Log;
     MT::Util::Log::init();
