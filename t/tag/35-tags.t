@@ -169,7 +169,7 @@ $ctx =& $mt->context();
 $db = $mt->db();
 
 $db->db()->Execute( "SET time_zone = '-7:00'" );
-date_default_timezone_set('US/Mountain');
+date_default_timezone_set('America/Denver');
 
 $ctx->stash('blog_id', 1);
 $blog = $db->fetch_blog(1);
