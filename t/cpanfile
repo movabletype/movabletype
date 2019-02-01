@@ -94,6 +94,7 @@ on 'test' => sub {
     requires 'HTTP::Request::Common';
     requires 'IO::String';
     requires 'IPC::Run3';
+    requires 'Log::Minimal';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
