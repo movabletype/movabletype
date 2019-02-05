@@ -105,5 +105,6 @@ on 'test' => sub {
     requires 'Test::MockObject';
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
+    requires 'URI::Escape';
     requires 'Wight';
 };
