@@ -92,6 +92,7 @@ on 'test' => sub {
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
+    requires 'Log::Minimal';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
