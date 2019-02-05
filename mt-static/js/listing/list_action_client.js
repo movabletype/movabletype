@@ -55,6 +55,7 @@
     }
     if (args.allSelected) {
       data.all_selected = 1;
+      data.items = JSON.stringify(args.filter.items);
     } else {
       data.id = args.ids;
     }
