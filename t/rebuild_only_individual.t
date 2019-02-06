@@ -58,7 +58,7 @@ my $template = MT::Test::Permission->make_template(
     name    => 'Category Test',
     type    => 'categories',
     text =>
-        '<MTEntryNext><MTENtryID></MTEntryNext><MTENtryPrevious><MTENtryID></MTENtryPrevious>',
+        '<MTEntryNext><MTEntryID></MTEntryNext><MTEntryPrevious><MTEntryID></MTEntryPrevious>',
 );
 my $template_map = MT::Test::Permission->make_templatemap(
     template_id   => $template->id,
@@ -70,6 +70,7 @@ my $template_map = MT::Test::Permission->make_templatemap(
 
 my $blog = MT::Blog->load($blog_id);
 $blog->archive_path( join "/", $test_env->root, "site/archive" );
+$blog->archive_type('Individual');
 $blog->save;
 
 require MT::WeblogPublisher;
