@@ -81,6 +81,8 @@ $publisher->rebuild(
     TemplateMap => $template_map,
 );
 
+sleep 1;
+
 my $fmgr = MT::FileMgr->new('Local');
 
 my $filename1 = $entry1->title;
