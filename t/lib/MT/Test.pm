@@ -1998,7 +1998,7 @@ sub has_php {
     my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
     my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
     $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
-    if (MTM->config->ObjectDriver eq 'DBD::MSSQLServer') {
+    if (MT->config->ObjectDriver eq 'DBD::MSSQLServer') {
         my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
         $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
     }
