@@ -1264,11 +1264,10 @@ sub rebuild_file {
     unless ($finfo) {
         my %terms;
         $terms{blog_id}     = $blog->id;
-        $terms{category_id} = $category->id
-            if $archiver->category_based && !$archiver->date_based;
-        $terms{author_id} = $author->id if $archiver->author_based;
-        $terms{entry_id}  = $entry->id if $archiver->entry_based;
-        $terms{startdate} = $start
+        $terms{category_id} = $category->id if $archiver->category_based;
+        $terms{author_id}   = $author->id if $archiver->author_based;
+        $terms{entry_id}    = $entry->id if $archiver->entry_based;
+        $terms{startdate}   = $start
             if $archiver->date_based && ( !$archiver->entry_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
@@ -1285,7 +1284,7 @@ sub rebuild_file {
         }
         else {
 
-            # if the shoe don't fit, remove all shoes and create the perfect shoe
+         # if the shoe don't fit, remove all shoes and create the perfect shoe
             foreach (@finfos) {
                 $_->remove();
                 if ( MT->config('DeleteFilesAtRebuild') ) {
