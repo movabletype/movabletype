@@ -441,7 +441,7 @@ sub rebuild_deleted_entry {
     my @at;
     if ( $at && $at ne 'None' ) {
         my @at_orig = split( /,/, $at );
-        @at = grep { $_ ne 'Individual' && $_ ne 'Page' } @at_orig;
+        @at = grep { $_ ne 'Page' } @at_orig;
     }
 
     # Remove Individual archive file.
@@ -520,7 +520,19 @@ sub rebuild_deleted_entry {
             }
         }
         else {
-            if (( $archiver->can('archive_entries_count') )
+            if ( $at eq 'Individual' ) {
+                next unless $app->config('RebuildAtDelete');
+                if ( my $prev = $entry->previous(1) ) {
+                    $rebuild_recipe{Individual}{ $prev->id }{id}
+                        = $prev->id;
+                }
+                if ( my $next = $entry->next(1) ) {
+                    $rebuild_recipe{Individual}{ $next->id }{id}
+                        = $next->id;
+                }
+            }
+            elsif (
+                ( $archiver->can('archive_entries_count') )
                 && ( $archiver->archive_entries_count( $blog, $at, $entry )
                     == 1 )
                 )
