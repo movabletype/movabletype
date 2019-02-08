@@ -14,28 +14,22 @@ BEGIN {
         RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+    $ENV{MT_APP}    = 'MT::App::CMS';
 }
+
+use File::Find ();
 
 use MT;
 use MT::Test;
 use MT::Test::Permission;
-my $app = MT->instance;
+
+MT::Test->init_app;
 
 my $blog_id = 1;
 
 $test_env->prepare_fixture('db');
 
-my $author = MT::Test::Permission->make_author(
-    name     => 'author',
-    nickname => 'author',
-);
-
-my $page1 = MT::Test::Permission->make_page(
-    blog_id     => $blog_id,
-    author_id   => $author->id,
-    authored_on => '20180831000000',
-    title       => 'page1',
-);
+my $author = MT->model('author')->load(1) or die;
 
 my $folder1 = MT::Test::Permission->make_folder(
     blog_id => $blog_id,
@@ -45,13 +39,6 @@ my $folder1 = MT::Test::Permission->make_folder(
 my $folder2 = MT::Test::Permission->make_folder(
     blog_id => $blog_id,
     label   => 'folder2',
-);
-
-my $placement1 = MT::Test::Permission->make_placement(
-    blog_id     => $blog_id,
-    entry_id    => $page1->id,
-    category_id => $folder1->id,
-    is_primary  => 1,
 );
 
 # Mapping
@@ -70,103 +57,145 @@ my $template_map = MT::Test::Permission->make_templatemap(
 );
 
 my $blog = MT::Blog->load($blog_id);
-$blog->site_path( join "/", $test_env->root, "site/archive" );
+$blog->site_path( $test_env->root . '/site' );
 $blog->save;
 
-require MT::WeblogPublisher;
-my $publisher = MT::WeblogPublisher->new;
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'Page',
-    TemplateMap => $template_map,
-);
-
-my $filename1 = $page1->title;
-my $archive   = File::Spec->catfile( $test_env->root,
-    "site/archive/folder1/$filename1.html" );
-ok -e $archive;
-
-my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
-is @finfos => 1, "only one FileInfo";
-
-require File::Find;
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+subtest 'create page' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save_entry',
+            _type                   => 'page',
+            author_id               => $author->id,
+            blog_id                 => $blog_id,
+            return_args      => "__mode=view&_type=page&blog_id=$blog_id",
+            save_revision    => 1,
+            entry_prefs      => 'Default',
+            custom_prefs     => [qw( tags category feedback assets )],
+            title            => 'page1',
+            convert_breaks   => 'richtext',
+            text             => '<p>test page</p>',
+            text_more        => '',
+            status           => 2,
+            authored_on_date => '2018-08-31',
+            authored_on_time => '00:00:00',
+            basename         => 'page1',
+            category_ids     => $folder1->id,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+    );
+    delete $app->{__test_output};
 
-$placement1->category_id( $folder2->id );
-$placement1->save or die $placement1->error;
+    ok -e File::Spec->catfile( $blog->site_path, "folder1/page1.html" );
 
-$app->request->reset;
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'Page',
-    TemplateMap => $template_map,
-);
+    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @finfos => 1, "1 FileInfo";
 
-ok !-e $archive;
-
-my $updated_archive = File::Spec->catfile( $test_env->root,
-    "site/archive/folder2/$filename1.html" );
-ok -e $updated_archive;
-
-my @updated_finfos = MT::FileInfo->load( { blog_id => $blog_id } );
-is @updated_finfos => 1, "only one FileInfo";
-
-require File::Find;
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+        $blog->site_path
+    );
+};
 
-my $page2 = MT::Test::Permission->make_page(
-    blog_id     => $blog_id,
-    author_id   => $author->id,
-    authored_on => '20181031000000',
-    title       => 'page2',
-);
-
-my $placement2 = MT::Test::Permission->make_placement(
-    blog_id     => $blog_id,
-    entry_id    => $page2->id,
-    category_id => $folder2->id,
-    is_primary  => 1,
-);
-
-$app->request->reset;
-$publisher->rebuild(
-    BlogID      => $blog_id,
-    ArchiveType => 'Page',
-    TemplateMap => $template_map,
-);
-
-ok !-e $archive;
-ok -e $updated_archive;
-
-my $filename2   = $page2->title;
-my $new_archive = File::Spec->catfile( $test_env->root,
-    "site/archive/folder2/$filename2.html" );
-ok -e $new_archive;
-
-my @new_finfos = MT::FileInfo->load( { blog_id => $blog_id } );
-is @new_finfos => 2, "two FileInfo";
-
-File::Find::find(
-    {   wanted => sub {
-            note $File::Find::name;
+subtest 'update page (change folder)' => sub {
+    my $page1
+        = MT->model('page')->load( { blog_id => $blog_id, title => 'page1' } )
+        or die;
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save_entry',
+            _type                   => 'page',
+            id                      => $page1->id,
+            author_id               => $author->id,
+            blog_id                 => $blog_id,
+            return_args => "__mode=view&_type=page&blog_id=$blog_id&id="
+                . $page1->id,
+            save_revision    => 1,
+            entry_prefs      => 'Default',
+            custom_prefs     => [qw( tags category feedback assets )],
+            title            => 'page1',
+            convert_breaks   => 'richtext',
+            text             => '<p>test page</p>',
+            text_more        => '',
+            old_status       => 2,
+            status           => 2,
+            authored_on_date => '2018-08-31',
+            authored_on_time => '00:00:00',
+            basename         => 'page1',
+            category_ids     => $folder2->id,
         },
-        no_chdir => 1,
-    },
-    $test_env->root
-);
+    );
+    delete $app->{__test_output};
+
+    ok !-e File::Spec->catfile( $blog->site_path, 'folder1/page1.html' );
+    ok -e File::Spec->catfile( $blog->site_path, 'folder2/page1.html' );
+
+    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @finfos => 1, "1 FileInfo";
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
+        },
+        $blog->site_path
+    );
+};
+
+subtest 'create other page' => sub {
+    my $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user             => $author,
+            __test_follow_redirects => 1,
+            __mode                  => 'save_entry',
+            _type                   => 'page',
+            author_id               => $author->id,
+            blog_id                 => $blog_id,
+            return_args      => "__mode=view&_type=page&blog_id=$blog_id",
+            save_revision    => 1,
+            entry_prefs      => 'Default',
+            custom_prefs     => [qw( tags category feedback assets )],
+            title            => 'page2',
+            convert_breaks   => 'richtext',
+            text             => '<p>test page</p>',
+            text_more        => '',
+            status           => 2,
+            authored_on_date => '2018-10-31',
+            authored_on_time => '00:00:00',
+            basename         => 'page2',
+            category_ids     => $folder2->id,
+        },
+    );
+    delete $app->{__test_output};
+
+    ok !-e File::Spec->catfile( $blog->site_path, 'folder1/page1.html' );
+    ok -e File::Spec->catfile( $blog->site_path, 'folder2/page1.html' );
+    ok -e File::Spec->catfile( $blog->site_path, 'folder2/page2.html' );
+
+    my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+    is @finfos => 2, "2 FileInfo";
+
+    File::Find::find(
+        {   wanted => sub {
+                if ( -f $File::Find::name ) {
+                    note $File::Find::name;
+                }
+            },
+            no_chdir => 1,
+        },
+        $blog->site_path
+    );
+};
 
 done_testing;
