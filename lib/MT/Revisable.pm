@@ -120,7 +120,7 @@ sub mt_presave_obj {
 
     # Collision Checking
     my $changed_cols = $obj->{changed_revisioned_cols};
-    my $modified_by = $obj->can('author') ? $obj->author : $app->user;
+    my $modified_by  = $obj->can('author') ? $obj->author : $app->user;
 
     if ( scalar @$changed_cols ) {
         my $current_revision = $app->param('current_revision') || 0;
@@ -240,7 +240,7 @@ sub unpack_revision {
 }
 
 sub save_revision {
-    my $obj = shift;
+    my $obj   = shift;
     my $class = ref $obj || $obj;
 
     my $filter_result
@@ -329,7 +329,7 @@ sub diff_revision {
 sub _diff_string {
     my ( $str_a, $str_b, $diff_args ) = @_;
     $diff_args ||= {};
-    my $diff_method = $diff_args->{method} || 'html_word_diff';
+    my $diff_method     = $diff_args->{method} || 'html_word_diff';
     my $limit_unchanged = $diff_args->{limit_unchanged};
 
     require HTML::Diff;
