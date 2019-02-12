@@ -1297,7 +1297,19 @@ sub rebuild_file {
         else {
 
          # if the shoe don't fit, remove all shoes and create the perfect shoe
-            foreach (@finfos) { $_->remove(); }
+            foreach (@finfos) {
+                $_->remove();
+                if ( MT->config('DeleteFilesAtRebuild') ) {
+                    $mt->_delete_archive_file(
+                        Blog        => $blog,
+                        File        => $_->file_path,
+                        ArchiveType => $at,
+                        ( $archiver->entry_based && $entry )
+                        ? ( Entry => $entry->id )
+                        : (),
+                    );
+                }
+            }
 
             $finfo = MT::FileInfo->set_info_for_url(
                 $rel_url, $file, $at,
