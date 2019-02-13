@@ -584,7 +584,9 @@ sub save {
     }
     $tmpl->needs_db_sync(0);
 
-    $tmpl->SUPER::save;
+    unless ($tmpl->is_revision) {
+        $tmpl->SUPER::save;
+    }
 }
 
 sub build_dynamic {
