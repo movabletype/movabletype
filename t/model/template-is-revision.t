@@ -47,5 +47,10 @@ ok( $rev_tmpl->is_revision, q{revision mt_template's is_revision is true } );
 ok( !$rev_tmpl->clone->is_revision,
     q{cloned revision mt_template's is_revision is false} );
 
+$rev_tmpl->needs_db_sync(1);
+$rev_tmpl->_resync_to_db;
+ok( scalar( $rev_tmpl->changed_cols ),
+    q{revision mt_template is not saved after called needs_db_sync} );
+
 done_testing;
 
