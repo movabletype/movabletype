@@ -584,9 +584,7 @@ sub save {
     }
     $tmpl->needs_db_sync(0);
 
-    unless ($tmpl->is_revision) {
-        $tmpl->SUPER::save;
-    }
+    $tmpl->SUPER::save;
 }
 
 sub build_dynamic {
@@ -673,6 +671,7 @@ sub text {
 
     sub needs_db_sync {
         my $tmpl = shift;
+        return if $tmpl->is_revision;
         if ( scalar @_ > 0 && $tmpl->id ) {
             ## We used to save the template here; now we don't, because
             ## it causes deadlock (the DB is locked from loading the
