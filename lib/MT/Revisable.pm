@@ -231,6 +231,8 @@ sub unpack_revision {
     delete $packed_obj->{current_revision}
         if exists $packed_obj->{current_revision};
 
+    $obj->{is_revision} = 1;
+
     $obj->set_values($packed_obj);
 
     MT->run_callbacks( $class . '::unpack_revision', $obj, $packed_obj );
@@ -358,6 +360,11 @@ sub _diff_string {
         }
     }
     return \@result;
+}
+
+sub is_revision {
+    my $obj = shift;
+    return $obj->{is_revision};
 }
 
 1;
