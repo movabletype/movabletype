@@ -136,7 +136,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta->{Location},
-        "$ENV{MT_HOME}/t/images/test.jpg",
+        File::Spec->canonpath("$ENV{MT_HOME}/t/images/test.jpg"),
         'metadata - Location'
     );
     is( $meta->{name},      "test.jpg",   'metadata - name' );
@@ -217,7 +217,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta_f->{Location},
-        "$ENV{MT_HOME}/t/test.tmpl",
+        File::Spec->canonpath("$ENV{MT_HOME}/t/test.tmpl"),
         'metadata - Location'
     );
     is( $meta_f->{name},      "test.tmpl",  'metadata - name' );
