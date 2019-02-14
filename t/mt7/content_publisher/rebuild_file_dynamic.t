@@ -17,6 +17,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::Test 'has_php';
+BEGIN { plan skip_all => "Can't find executable file: php" unless has_php(); }
+
 use IPC::Run3 'run3';
 
 use MT::Test::ArchiveType;
