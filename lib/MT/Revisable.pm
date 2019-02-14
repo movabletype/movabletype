@@ -506,6 +506,10 @@ of the diff:
 with the flag being C<'u', '+', '-', 'c'>. See the C<HTML::Diff> POD for more
 information.
 
+=head2 $obj->is_revision()
+
+Returns 1 if C<$obj> is revisioned object.
+
 =head1 CALLBACKS
 
 =head2 <package>::pack_revision
