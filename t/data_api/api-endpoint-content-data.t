@@ -148,6 +148,62 @@ sub irregular_tests_for_create {
             code => 403,
         }
     );
+    test_data_api(
+        {   note => 'basename is too long (ascii)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
+            params => {
+                content_data => {
+                    data => [
+                        {   id   => $single_field->id,
+                            data => 'single',
+                        },
+                    ],
+                    basename => 'a' x 247,
+                },
+            },
+            restrictions => {
+                $site_id => [
+                    'create_new_content_data',
+                    'create_new_content_data_' . $content_type->unique_id,
+                    'publish_all_content_data',
+                    'publish_all_content_data_' . $content_type->unique_id,
+                    'publish_own_content_data_' . $content_type->unique_id,
+                ],
+            },
+            code => 500,
+            error => qr/basename is too long./,
+        }
+    );
+    test_data_api(
+        {   note => 'basename is too long (utf8)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
+            params => {
+                content_data => {
+                    data => [
+                        {   id   => $single_field->id,
+                            data => 'single',
+                        },
+                    ],
+                    basename => chr(0x3042) x 83,
+                },
+            },
+            restrictions => {
+                $site_id => [
+                    'create_new_content_data',
+                    'create_new_content_data_' . $content_type->unique_id,
+                    'publish_all_content_data',
+                    'publish_all_content_data_' . $content_type->unique_id,
+                    'publish_own_content_data_' . $content_type->unique_id,
+                ],
+            },
+            code => 500,
+            error => qr/basename is too long./,
+        }
+    );
 }
 
 sub normal_tests_for_create {
@@ -1050,6 +1106,56 @@ sub irregular_tests_for_update {
                 ],
             },
             code => 403,
+        }
+    );
+    test_data_api(
+        {   note => 'basename is too long (ascii)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'PUT',
+            params       => { content_data => { basename => 'a' x 247 }, },
+            restrictions => {
+                $site_id => [
+                    'edit_all_content_data',
+                    'edit_all_content_data_' . $content_type->unique_id,
+                    'edit_own_published_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_published_content_data_'
+                        . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
+                ],
+            },
+            code => 500,
+            error => qr/basename is too long/,
+        }
+    );
+    test_data_api(
+        {   note => 'basename is too long (utf8)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data/"
+                . $cd->id,
+            method       => 'PUT',
+            params       => { content_data => { basename => chr(0x3042) x 83 }, },
+            restrictions => {
+                $site_id => [
+                    'edit_all_content_data',
+                    'edit_all_content_data_' . $content_type->unique_id,
+                    'edit_own_published_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_published_content_data_'
+                        . $content_type->unique_id,
+                    'edit_own_unpublished_content_data_'
+                        . $content_type->unique_id,
+                    'edit_all_unpublished_content_data_'
+                        . $content_type->unique_id,
+                ],
+            },
+            code => 500,
+            error => qr/basename is too long/,
         }
     );
 }
