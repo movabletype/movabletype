@@ -741,6 +741,8 @@ Template.templates.autoSave = '<mt:section encode_js="1">
             </mt:if>
           <mt:elseif name="options{max}">
     <__trans phrase="(Max tags: [_2])", params="<mt:var name="options{max}" escape="html">">
+          <mt:else>
+            <mt:var name="new_line" value="0">
           </mt:if>
         <mt:else>
     <__trans phrase="One tag only">
