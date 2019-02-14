@@ -42,6 +42,7 @@ my $default_access_overrides = { 1 => 1 };
 filters {
     template => [qw( chomp )],
     expected => [qw( chomp )],
+    blog_id  => [qw( chomp )],
 };
 
 sub undef_to_empty_string {

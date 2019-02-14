@@ -782,7 +782,7 @@ sub _nextprev {
         $by );
     if ( my $id = delete $terms->{category_field} ) {
         my $cf = MT->model('cf')->load( { unique_id => $id } );
-        $cf = MT->model('cf')->load($id) unless $cf;
+        $cf = MT->model('cf')->load($id) if !$cf and $id =~ /^[0-9]+$/;
         $cf = MT->model('cf')->load(
             {   name            => $id,
                 content_type_id => $obj->content_type_id

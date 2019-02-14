@@ -783,9 +783,8 @@ sub _hdlr_archive_type_enabled {
             )
         ) unless $ct_arg;
         my $ct_class = MT->model('content_type');
-        $ct
-            = $ct_class->load($ct_arg)
-            || $ct_class->load( { unique_id => $ct_arg } )
+        $ct = $ct_class->load($ct_arg) if $ct_arg =~ /^[0-9]+$/;
+        $ct ||= $ct_class->load( { unique_id => $ct_arg } )
             || $ct_class->load( { blog_id => $blog->id, name => $ct_arg } );
         return unless $ct;
     }
