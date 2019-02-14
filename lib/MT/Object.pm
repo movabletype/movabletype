@@ -951,7 +951,8 @@ sub _get_date_translator {
             my $value = $obj->column($field);
             next FIELD if !defined $value;
             my $new_val = $translator->($value);
-            if ( ( defined $new_val ) && ( $new_val ne $value ) ) {
+            $new_val = undef if defined $new_val && $new_val eq '';
+            if ( ( !defined $new_val ) || ( $new_val ne $value ) ) {
                 $obj->column( $field, $new_val,
                     { no_changed_flag => !$change } );
             }
@@ -967,7 +968,8 @@ sub _get_date_translator {
                 my $value = $obj->$field;
                 next META_FIELD if !defined $value;
                 my $new_val = $translator->($value);
-                if ( ( defined $new_val ) && ( $new_val ne $value ) ) {
+                $new_val = undef if defined $new_val && $new_val eq '';
+                if ( ( !defined $new_val ) || ( $new_val ne $value ) ) {
                     $obj->$field($new_val);
                 }
             }
@@ -1555,14 +1557,6 @@ sub set_values {
             # values that are defined; ignore any others
             next unless defined $values->{$col};
 
-            # MTC-25999: Avoid storing an empty string into a datetime column
-            if ( $values->{$col} eq '' ) {
-                my $col_def  = $obj->column_def($col) || {};
-                my $col_type = $col_def->{type}       || '';
-                if ( $col_type =~ /date|time/ ) {
-                    $values->{$col} = undef;
-                }
-            }
             if (   $args
                 && exists( $args->{no_changed_flag} )
                 && $args->{no_changed_flag} )
