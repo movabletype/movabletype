@@ -3485,7 +3485,7 @@ sub takedown {
 
     $app->request->finish;
     delete $app->{request};
-    $app->do_reboot if delete $app->{do_reboot};
+    $app->do_reboot if $app->{do_reboot};
 
 }
 
