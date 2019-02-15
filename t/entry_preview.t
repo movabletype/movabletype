@@ -22,6 +22,8 @@ use MT::Test::Permission;
 
 $test_env->prepare_fixture('db');
 
+plan tests => 3;
+
 my $blog_id = 1;
 my $blog    = MT::Blog->load($blog_id);
 
@@ -54,7 +56,7 @@ my $template_map = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
-my $run_app = _run_app(
+my $app = _run_app(
     'MT::App::CMS',
     {   __test_user         => $admin,
         __request_method    => 'POST',
