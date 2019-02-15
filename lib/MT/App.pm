@@ -3033,6 +3033,10 @@ sub reboot {
 
 sub do_reboot {
     my $app = shift;
+
+    return unless $app->{do_reboot};
+    delete $app->{do_reboot};
+
     if ( $ENV{FAST_CGI} ) {
         require MT::Touch;
         MT::Touch->touch( 0, 'config' );
@@ -3484,7 +3488,7 @@ sub takedown {
 
     $app->request->finish;
     delete $app->{request};
-    $app->do_reboot if delete $app->{do_reboot};
+    $app->do_reboot if $app->{do_reboot};
 
 }
 

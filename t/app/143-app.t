@@ -54,4 +54,11 @@ subtest 'If Content-Type has multi paramters' => sub {
     is( scalar(@_), 0, 'No error occurs in validate_request_params().' );
 };
 
+subtest 'do_reboot' => sub {
+    my $app = MT->app;
+    $app->reboot;
+    ok( $app->do_reboot,  'ran do_reboot' );
+    ok( !$app->do_reboot, 'do not run do_reboot twice' );
+};
+
 done_testing;
