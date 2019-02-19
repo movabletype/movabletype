@@ -56,6 +56,21 @@ my $template_map = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
+my $mt = MT::Test::init_cms;
+$mt->add_callback(
+    'cms_pre_preview',
+    1, undef,
+    sub {
+        my ( $cb, $app, $obj, $data ) = @_;
+        if ( my $class = ref($obj) ) {
+            my $ds = $class->datasource;
+            my $data;
+            $data = MT->model($ds)->load( $obj->id );
+            $data->save or $cb->error( $data->errstr );
+        }
+    }
+);
+
 my $app = _run_app(
     'MT::App::CMS',
     {   __test_user         => $admin,
