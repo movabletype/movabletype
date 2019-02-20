@@ -314,4 +314,23 @@ sub data_type {
     $type_registry->{data_type};
 }
 
+sub load_by_id_or_name {
+    my ( $class, $id_or_name, $ct_id ) = @_;
+
+    my $cf;
+    if ( $id_or_name =~ /\A[0-9]+\z/ ) {
+        $cf = $class->load($id_or_name);
+        return $cf if $cf;
+    }
+    if ( $id_or_name =~ /\A[a-zA-Z0-9]{40}\z/ ) {
+        $cf = $class->load( { unique_id => $id_or_name } );
+        return $cf if $cf;
+    }
+    if ( defined $ct_id ) {
+        $cf = $class->load(
+            { name => $id_or_name, content_type_id => $ct_id } );
+    }
+    $cf;
+}
+
 1;

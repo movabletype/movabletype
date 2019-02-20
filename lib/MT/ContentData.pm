@@ -2187,4 +2187,22 @@ sub remove_child_junction_table_records {
         { object_datasource => 'content_data', object_id => $self->id } );
 }
 
+sub load_by_id_or_name {
+    my ( $class, $id_or_name, $blog_id ) = @_;
+
+    my $cd;
+    if ( $id_or_name =~ /\A[0-9]+\z/ ) {
+        $cd = $class->load($id_or_name);
+        return $cd if $cd;
+    }
+    if ( $id_or_name =~ /\A[a-zA-Z0-9]{40}\z/ ) {
+        $cd = $class->load( { unique_id => $id_or_name } );
+        return $cd if $cd;
+    }
+    if ( defined $blog_id ) {
+        $cd = $class->load( { name => $id_or_name, blog_id => $blog_id } );
+    }
+    $cd;
+}
+
 1;
