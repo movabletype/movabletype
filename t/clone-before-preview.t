@@ -109,7 +109,8 @@ MT->add_callback(
             my $data;
             $data = MT->model($ds)->load( $obj->id );
             my $saved = $data->save;
-            ok( $saved, 'saving ' . ref($obj) . ' succeeded' );
+            ok( $saved,
+                "saving $class succeeded in cms_pre_preview callback" );
             warn $data->errstr unless $saved;
         }
     }
@@ -117,8 +118,7 @@ MT->add_callback(
 
 my ( $app, $out );
 
-# Entry
-subtest 'mode = preview_entry' => sub {
+subtest 'entry' => sub {
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user         => $admin,
@@ -136,15 +136,17 @@ subtest 'mode = preview_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: preview_entry" );
-    ok( $out !~ m!permission=1!i, "preview_entry by admin" );
+    ok( $out && $out !~ m!permission=1!i, "preview_entry method succeeded" );
 
     my $entry2 = MT->model('entry')->load( $entry1->id );
-    ok( $entry2->title eq 'entry', 'Cache is not rewritten.' );
+    ok( $entry2->title eq 'entry',
+        'original entry has not been changed (maybe cache)' );
+    $entry2->refresh;
+    ok( $entry2->title eq 'entry',
+        'original entry has not been changed (not cache)' );
 };
 
-# Content Data
-subtest 'mode = preview_content_data' => sub {
+subtest 'content_data' => sub {
     my $field_name = 'content-field-' . $cf_single->id;
     $app = _run_app(
         'MT::App::CMS',
@@ -164,12 +166,18 @@ subtest 'mode = preview_content_data' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out, "Request: preview_content_data" );
-    ok( $out !~ m!permission=1!i, "preview_content_data by admin" );
+    ok( $out && $out !~ m!permission=1!i,
+        "preview_content_data method succeeded"
+    );
 
     my $cd2 = MT->model('cd')->load( $cd1->id );
     ok( $cd2->data->{ $cf_single->id } eq 'single line text',
-        'Cache is not rewritten.' );
+        'original content_data has not been changed (maybe cache)'
+    );
+    $cd2->refresh;
+    ok( $cd2->data->{ $cf_single->id } eq 'single line text',
+        'original content_data has not been changed (not cache)'
+    );
 };
 
 done_testing();
