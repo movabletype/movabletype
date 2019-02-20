@@ -9,16 +9,15 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DeleteFilesAtRebuild => 1,
-        RebuildAtDelete      => 1,
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT;
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
+
+MT::Test->init_app;
 
 $test_env->prepare_fixture('db');
 
@@ -100,8 +99,7 @@ my $template_map2 = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
-my $mt = MT::Test::init_cms;
-$mt->add_callback(
+MT->add_callback(
     'cms_pre_preview',
     1, undef,
     sub {
