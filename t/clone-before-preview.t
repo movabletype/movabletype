@@ -110,7 +110,9 @@ $mt->add_callback(
             my $ds = $class->datasource;
             my $data;
             $data = MT->model($ds)->load( $obj->id );
-            $data->save or $cb->error( $data->errstr );
+            my $saved = $data->save;
+            ok( $saved, 'saving ' . ref($obj) . ' succeeded' );
+            warn $data->errstr unless $saved;
         }
     }
 );
