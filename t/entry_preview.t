@@ -88,7 +88,7 @@ my $app = _run_app(
     }
 );
 my $out = delete $app->{__test_output};
-ok( $out,                     "Request: preview_entry" );
+ok( $out, "Request: preview_entry" );
 ok( $out !~ m!permission=1!i, "preview_entry by admin" );
 
 my $entry2 = MT->model('entry')->load( $entry1->id );
