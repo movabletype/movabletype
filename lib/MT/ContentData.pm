@@ -781,13 +781,8 @@ sub _nextprev {
     my ( $category_field_id, $category_id, $date_field_id, $date_field_value,
         $by );
     if ( my $id = delete $terms->{category_field} ) {
-        my $cf = MT->model('cf')->load( { unique_id => $id } );
-        $cf = MT->model('cf')->load($id) if !$cf and $id =~ /^[0-9]+$/;
-        $cf = MT->model('cf')->load(
-            {   name            => $id,
-                content_type_id => $obj->content_type_id
-            }
-        ) unless $cf;
+        my $cf = MT->model('cf')
+            ->load_by_id_or_name( $id, $obj->content_type_id );
         $category_field_id = $cf->id if $cf;
         my @obj_cats = MT->model('objectcategory')->load(
             {   cf_id     => $category_field_id,
@@ -808,13 +803,7 @@ sub _nextprev {
             $by = $id;
         }
         else {
-            my $df = MT->model('cf')->load( { unique_id => $id } );
-            $df = MT->model('cf')->load($id) unless $df;
-            $df = MT->model('cf')->load(
-                {   name            => $id,
-                    content_type_id => $obj->content_type_id
-                }
-            ) unless $df;
+            my $df = MT->model('cf')->load( $id, $obj->content_type_id );
             $date_field_id = $df->id if $df;
         }
     }
