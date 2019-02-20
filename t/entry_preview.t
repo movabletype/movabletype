@@ -87,10 +87,13 @@ my $app = _run_app(
     }
 );
 my $out = delete $app->{__test_output};
-ok( $out, "Request: preview_entry" );
-ok( $out !~ m!permission=1!i, "preview_entry by admin" );
+ok( $out && $out !~ m!permission=1!i, "preview_entry method succeeded" );
 
 my $entry2 = MT->model('entry')->load( $entry1->id );
-ok( $entry2->title eq 'entry', 'Cache is not rewritten.' );
+ok( $entry2->title eq 'entry',
+    'original entry has not been changed (maybe cache)' );
+$entry2->refresh;
+ok( $entry2->title eq 'entry',
+    'original entry has not been changed (not cache)' );
 
 done_testing();
