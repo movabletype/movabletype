@@ -22,8 +22,6 @@ use MT::Test::Permission;
 
 $test_env->prepare_fixture('db');
 
-plan tests => 3;
-
 my $blog_id = 1;
 my $blog    = MT::Blog->load($blog_id);
 
@@ -66,7 +64,10 @@ $mt->add_callback(
             my $ds = $class->datasource;
             my $data;
             $data = MT->model($ds)->load( $obj->id );
-            $data->save or $cb->error( $data->errstr );
+            my $saved = $data->save;
+            ok( $saved,
+                "saving $class succeeded in cms_pre_preview callback" );
+            warn $data->errstr unless $saved;
         }
     }
 );
