@@ -136,7 +136,7 @@ subtest 'mode = preview_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: preview_entry" );
+    ok( $out, "Request: preview_entry" );
     ok( $out !~ m!permission=1!i, "preview_entry by admin" );
 
     my $entry2 = MT->model('entry')->load( $entry1->id );
@@ -164,7 +164,7 @@ subtest 'mode = preview_content_data' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: preview_content_data" );
+    ok( $out, "Request: preview_content_data" );
     ok( $out !~ m!permission=1!i, "preview_content_data by admin" );
 
     my $cd2 = MT->model('cd')->load( $cd1->id );
