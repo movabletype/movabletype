@@ -9,20 +9,17 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DeleteFilesAtRebuild => 1,
-        RebuildAtDelete      => 1,
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT;
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
 
-$test_env->prepare_fixture('db');
+MT::Test->init_app;
 
-plan tests => 3;
+$test_env->prepare_fixture('db');
 
 my $blog_id = 1;
 my $blog    = MT::Blog->load($blog_id);
@@ -56,8 +53,7 @@ my $template_map = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
-my $mt = MT::Test::init_cms;
-$mt->add_callback(
+MT->add_callback(
     'cms_pre_preview',
     1, undef,
     sub {
@@ -66,7 +62,10 @@ $mt->add_callback(
             my $ds = $class->datasource;
             my $data;
             $data = MT->model($ds)->load( $obj->id );
-            $data->save or $cb->error( $data->errstr );
+            my $saved = $data->save;
+            ok( $saved,
+                "saving $class succeeded in cms_pre_preview callback" );
+            warn $data->errstr unless $saved;
         }
     }
 );
@@ -88,10 +87,13 @@ my $app = _run_app(
     }
 );
 my $out = delete $app->{__test_output};
-ok( $out,                     "Request: preview_entry" );
-ok( $out !~ m!permission=1!i, "preview_entry by admin" );
+ok( $out && $out !~ m!permission=1!i, "preview_entry method succeeded" );
 
 my $entry2 = MT->model('entry')->load( $entry1->id );
-ok( $entry2->title eq 'entry', 'Cache is not rewritten.' );
+ok( $entry2->title eq 'entry',
+    'original entry has not been changed (maybe cache)' );
+$entry2->refresh;
+ok( $entry2->title eq 'entry',
+    'original entry has not been changed (not cache)' );
 
 done_testing();
