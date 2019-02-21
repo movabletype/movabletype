@@ -1097,8 +1097,10 @@ sub preview {
 
     require MT::Template;
     if ($id) {
-        $tmpl = MT::Template->load( { id => $id, blog_id => $blog_id } )
+        my $org_tmpl
+            = MT::Template->load( { id => $id, blog_id => $blog_id } )
             or return $app->errtrans("Invalid request.");
+        $tmpl = $org_tmpl->clone();
     }
     else {
         $tmpl = MT::Template->new;

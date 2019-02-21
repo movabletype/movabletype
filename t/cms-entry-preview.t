@@ -70,30 +70,58 @@ MT->add_callback(
     }
 );
 
-my $app = _run_app(
-    'MT::App::CMS',
-    {   __test_user         => $admin,
-        __request_method    => 'POST',
-        __mode              => 'preview_entry',
-        blog_id             => $blog->id,
-        id                  => $entry1->id,
-        title               => 'The rewritten title',
-        tags                => 'tag1,tag2',
-        authored_on_date    => '20190215',
-        authored_on_time    => '000000',
-        unpublished_on_date => '20190216',
-        unpublished_on_time => '000000',
-        rev_numbers         => '0,0',
-    }
-);
-my $out = delete $app->{__test_output};
-ok( $out && $out !~ m!permission=1!i, "preview_entry method succeeded" );
+my ( $app, $out );
 
-my $entry2 = MT->model('entry')->load( $entry1->id );
-ok( $entry2->title eq 'entry',
-    'original entry has not been changed (maybe cache)' );
-$entry2->refresh;
-ok( $entry2->title eq 'entry',
-    'original entry has not been changed (not cache)' );
+subtest 'entry' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user         => $admin,
+            __request_method    => 'POST',
+            __mode              => 'preview_entry',
+            blog_id             => $blog->id,
+            id                  => $entry1->id,
+            title               => 'The rewritten title',
+            tags                => 'tag1,tag2',
+            authored_on_date    => '20190215',
+            authored_on_time    => '000000',
+            unpublished_on_date => '20190216',
+            unpublished_on_time => '000000',
+            rev_numbers         => '0,0',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out && $out !~ m!permission=1!i, "preview_entry method succeeded" );
+
+    my $entry2 = MT->model('entry')->load( $entry1->id );
+    ok( $entry2->title eq 'entry',
+        'original entry has not been changed (maybe cache)' );
+    $entry2->refresh;
+    ok( $entry2->title eq 'entry',
+        'original entry has not been changed (not cache)' );
+};
+
+subtest 'template' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'preview_template',
+            blog_id          => $blog->id,
+            id               => $template->id,
+            name             => 'The rewritten name',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out && $out !~ m!permission=1!i,
+        "preview_template method succeeded"
+    );
+
+    my $template2 = MT->model('template')->load( $template->id );
+    ok( $template2->name eq 'Test template',
+        'original template has not been changed (maybe cache)' );
+    $template2->refresh;
+    ok( $template2->name eq 'Test template',
+        'original template has not been changed (not cache)' );
+};
 
 done_testing();
