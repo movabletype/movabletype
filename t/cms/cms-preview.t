@@ -180,4 +180,28 @@ subtest 'content_data' => sub {
     );
 };
 
+subtest 'template' => sub {
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'preview_template',
+            blog_id          => $blog->id,
+            id               => $template1->id,
+            name             => 'The rewritten name',
+        }
+    );
+    $out = delete $app->{__test_output};
+    ok( $out && $out !~ m!permission=1!i,
+        "preview_template method succeeded"
+    );
+
+    my $template2 = MT->model('template')->load( $template1->id );
+    ok( $template2->name eq 'Test template',
+        'original template has not been changed (maybe cache)' );
+    $template2->refresh;
+    ok( $template2->name eq 'Test template',
+        'original template has not been changed (not cache)' );
+};
+
 done_testing();
