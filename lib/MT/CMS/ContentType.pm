@@ -1178,15 +1178,58 @@ sub build_content_type_table {
     my $is_power_edit = $args{is_power_edit} || 0;
     my $param         = $args{param} || {};
 
+    my $date_format     = MT::App::CMS::LISTING_DATE_FORMAT();
+    my $datetime_format = MT::App::CMS::LISTING_DATETIME_FORMAT();
+
     my @data;
     while ( my $content_type = $iter->() ) {
-        my $row = {
+        my $blog = $content_type->blog;
+        my $row  = {
             id          => $content_type->id,
             blog_id     => $content_type->blog_id,
             name        => $content_type->name,
             description => $content_type->description,
         };
         $row->{object} = $content_type;
+
+        my $unique_id = $content_type->unique_id;
+        $row->{has_edit_access} = $app->user->is_superuser
+            || $app->permissions->can_do(
+            'manage_content_type:' . $unique_id )
+            || $app->permissions->can_do('edit_all_content_types');
+
+        if ( my $ts = $content_type->created_on ) {
+            $row->{created_on_formatted}
+                = MT::Util::format_ts( $date_format, $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_time_formatted}
+                = MT::Util::format_ts( $datetime_format, $ts, $blog,
+                $app->user ? $app->user->preferred_language : undef );
+            $row->{created_on_relative}
+                = MT::Util::relative_date( $ts, time, $blog );
+        }
+
+        if ($blog) {
+            $row->{blog_name} = $blog->name;
+        }
+
+        my $content_field_types = MT->registry('content_field_types');
+        my $fields              = $content_type->fields;
+        my $field_labels        = '';
+        foreach my $f (@$fields) {
+            my $field_label = ( $f->{options} || +{} )->{label}
+                || MT->translate('(No label)');
+
+            my $escaped_field_label = MT::Util::encode_html($field_label);
+            my $content_field_type_label
+                = $content_field_types->{ $f->{type} }->{label};
+            $content_field_type_label = $content_field_type_label->()
+                if 'CODE' eq ref $content_field_type_label;
+            $field_labels
+                .= qq{<div class="mb-3"><b>$escaped_field_label</b> ($content_field_type_label)</div>};
+        }
+        $row->{preview_field} = $field_labels;
+
         push @data, $row;
     }
 
