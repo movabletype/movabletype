@@ -50,7 +50,10 @@ sub _find_module {
     if ( !$logger_path ) {
         ## if MT was not yet instantiated, ignore the config directive.
         eval { $logger_path = MT->config->LoggerPath || '' };
-        return unless $logger_path;
+        unless ($logger_path) {
+            $Cannot_use = 1;
+            return;
+        }
     }
 
     if ( !$logger_module ) {
