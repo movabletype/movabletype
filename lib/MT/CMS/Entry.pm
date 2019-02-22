@@ -742,8 +742,10 @@ sub _create_temp_entry {
     my $user_id = $app->user->id;
 
     if ($id) {
-        $entry = $entry_class->load( { id => $id, blog_id => $blog_id } )
+        my $org_entry
+            = $entry_class->load( { id => $id, blog_id => $blog_id } )
             or return $app->errtrans("Invalid request.");
+        $entry   = $org_entry->clone();
         $user_id = $entry->author_id;
     }
     else {

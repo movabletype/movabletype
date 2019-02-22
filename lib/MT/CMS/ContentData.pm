@@ -1412,12 +1412,13 @@ sub _create_temp_content_data {
 
     my $content_data;
     if ($id) {
-        $content_data = MT::ContentData->load(
+        my $org_cd = MT::ContentData->load(
             {   id              => $id,
                 blog_id         => $blog_id,
                 content_type_id => $content_type_id
             }
         ) or return $app->errtrans('Invalid request.');
+        $content_data = $org_cd->clone();
     }
     else {
         $content_data = MT::ContentData->new;
