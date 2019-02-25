@@ -1,40 +1,30 @@
-<mt:setvarblock name="save_button_title"><__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
-<mt:setvarblock name="republish_button_title"><__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 <mt:setvarblock name="delete_button_title"><__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
 
 <mt:setvarblock name="css_include" append="1">
 <style>
-#content_type-listing-table td.data table td,
-#content_type-listing-table td.data table th {
+#content_type-listing-table td.content-field table td,
+#content_type-listing-table td.content-field table th {
   border: 1px solid #000000;
 }
 
-tr.preview-data {
+tr.preview-field {
   background-color: #f4f4f4;
 }
 
-td.data .mt-icon--secondary{
+td.content-field .mt-icon--secondary{
   margin: 0 .5rem 0 0;
   transition: 0.2s ease-in-out;
 }
-td.data a[aria-expanded="false"] .mt-icon--secondary{
+td.content-field a[aria-expanded="false"] .mt-icon--secondary{
   transform: rotate(180deg);
 }
-td.data a[aria-expanded="true"] .mt-icon--secondary{
+td.content-field a[aria-expanded="true"] .mt-icon--secondary{
   transform: rotate(0deg);
 }
 </style>
 </mt:setvarblock>
 
 <mt:setvarblock name="action_buttons">
-  <mt:if name="can_republish">
-<button
-   accesskey="r"
-   title="<$mt:var name="republish_button_title"$>"
-   class="button mt-publish-items btn btn-default">
-  <__trans phrase="Publish">
-</button>
-  </mt:if>
 <button
    accesskey="x"
    title="<$mt:var name="delete_button_title"$>"
@@ -97,7 +87,7 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
   <mt:unless name="blog_view">
     <mt:unless name="scope_type" eq="blog">
       <td class="blog">
-        <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="blog_id"$>&amp;type=content_data_<mt:var name="content_type_id" escape="html">">
+        <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="blog_id"$>&amp;type=content_type_<mt:var name="content_type_id" escape="html">">
           <$mt:var name="blog_name" escape="html"$>
         </a>
       </td>
@@ -134,3 +124,28 @@ td.data a[aria-expanded="true"] .mt-icon--secondary{
 </mt:if>
 
 </mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+    });
+
+    jQuery('#content_type-listing-table tr.preview-field').hide();
+    jQuery('#content_type-listing-table tr.preview-field div')
+        .on('show.bs.collapse', function () {
+            jQuery(this).parents('tr').show();
+        })
+        .on('hidden.bs.collapse', function () {
+            jQuery(this).parents('tr').hide();
+        });
+
+  <mt:if name="error">
+    <mt:if name="replace">
+    $('#search-replace-toggle-replace').click();
+    </mt:if>
+  </mt:if>
+</mt:setvarblock>
+
