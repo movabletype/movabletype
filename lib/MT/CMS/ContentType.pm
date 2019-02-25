@@ -1226,7 +1226,7 @@ sub build_content_type_table {
             $content_field_type_label = $content_field_type_label->()
                 if 'CODE' eq ref $content_field_type_label;
             $field_labels
-                .= qq{<div class="mb-3"><b>$escaped_field_label</b> ($content_field_type_label)</div>};
+                .= qq{<div class="mb-3"><b>$escaped_field_label</b> [$content_field_type_label]</div>};
         }
         $row->{preview_field} = $field_labels;
 
