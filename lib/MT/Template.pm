@@ -671,7 +671,7 @@ sub text {
 
     sub needs_db_sync {
         my $tmpl = shift;
-        return if $tmpl->is_revision;
+        return if $tmpl->is_revisioned;
         if ( scalar @_ > 0 && $tmpl->id ) {
             ## We used to save the template here; now we don't, because
             ## it causes deadlock (the DB is locked from loading the

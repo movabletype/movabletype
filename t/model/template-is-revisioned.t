@@ -24,7 +24,7 @@ my $blog_id = $website->id;
 
 my $tmpl = MT::Test::Permission->make_template( blog_id => $blog_id );
 
-ok( !$tmpl->is_revision, q{created mt_template's is_revision is false} );
+ok( !$tmpl->is_revisioned, q{created mt_template's is_revisioned is false} );
 is( $tmpl->current_revision, 0, 'current_revision is 0' );
 
 my $orig = $tmpl->clone;
@@ -37,15 +37,16 @@ $tmpl->current_revision($revision);
 $tmpl->update or die $tmpl->errstr;
 $tmpl->refresh;
 
-ok( !$tmpl->is_revision, q{updated mt_template's is_revision is false} );
+ok( !$tmpl->is_revisioned, q{updated mt_template's is_revisioned is false} );
 is( $tmpl->current_revision, 1, 'current_revision is 1' );
 
 my $rev      = $tmpl->load_revision( { rev_number => 1 } );
 my $rev_tmpl = $rev->[0];
-ok( !$tmpl->is_revision,    q{original mt_template's is_revision is false} );
-ok( $rev_tmpl->is_revision, q{revision mt_template's is_revision is true } );
-ok( !$rev_tmpl->clone->is_revision,
-    q{cloned revision mt_template's is_revision is false} );
+ok( !$tmpl->is_revisioned, q{original mt_template's is_revisioned is false} );
+ok( $rev_tmpl->is_revisioned,
+    q{revision mt_template's is_revisioned is true } );
+ok( !$rev_tmpl->clone->is_revisioned,
+    q{cloned revision mt_template's is_revisioned is false} );
 
 $rev_tmpl->needs_db_sync(1);
 $rev_tmpl->_resync_to_db;
