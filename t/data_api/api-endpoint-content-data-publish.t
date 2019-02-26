@@ -16,6 +16,7 @@ BEGIN {
 use MT::Test;
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+use MT::Test::Fixture::ArchiveType;
 use File::Path 'remove_tree';
 
 $test_env->prepare_fixture('archive_type');
