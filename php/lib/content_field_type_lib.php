@@ -134,7 +134,9 @@ class ContentFieldTypeTagHandler {
             }
             $values = array();
             foreach($bind_values as $v) {
-                array_push($values, $map[$v]);
+                if ($map[$v]) {
+                    array_push($values, $map[$v]);
+                }
             }
 
             $ctx->stash('_assets', $values);
@@ -213,7 +215,9 @@ class ContentTypeRegistry implements ContentFieldType {
             }
             $values = array();
             foreach ($ids as $id) {
-                $values[] = $map[$id];
+                if ($map[$id]) {
+                    $values[] = $map[$id];
+                }
             }
 
             $counter = 0;
@@ -588,7 +592,9 @@ class CategoriesRegistry implements ContentFieldType {
                     $map[$cat->id] = $cat;
                 }
                 foreach($bind_values as $v) {
-                    array_push($values, $map[$v]);
+                    if ($map[$v]) {
+                        array_push($values, $map[$v]);
+                    }
                 }
             }
 
