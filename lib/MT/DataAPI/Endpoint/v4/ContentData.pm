@@ -66,7 +66,8 @@ sub create {
 
     save_object( $app, 'content_data', $new_content_data ) or return;
 
-    $post_save->();
+    my $do_publish = $app->param('publish');
+    $post_save->() if !defined $do_publish || $do_publish;
 
     $new_content_data;
 }
