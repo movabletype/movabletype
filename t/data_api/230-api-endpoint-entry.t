@@ -210,6 +210,30 @@ sub suite {
             code  => 400,
             error => "'categories' parameter is invalid.",
         },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title    => 'test-api-basename-is-too-long',
+                    basename => 'a' x 247,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title    => 'test-api-basename-is-too-long-utf8',
+                    basename => chr(0x3042) x 83,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
         {    # Attach category of other site.
             path   => '/v2/sites/1/entries',
             method => 'POST',
@@ -590,6 +614,20 @@ __BODY__
             params => { entry => { categories => [ id => 20 ] } },
             code   => 400,
             error  => "'categories' parameter is invalid.",
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { basename => 'a' x 247 } },
+            code   => 500,
+            error  => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { basename => chr(0x3042) x 83 } },
+            code   => 500,
+            error  => qr/basename is too long./,
         },
 
         # update_entry - normal tests.
