@@ -234,7 +234,7 @@ sub unpack_revision {
     delete $packed_obj->{current_revision}
         if exists $packed_obj->{current_revision};
 
-    $obj->{is_revision} = 1;
+    $obj->{is_revisioned} = 1;
 
     $obj->set_values($packed_obj);
 
@@ -365,9 +365,9 @@ sub _diff_string {
     return \@result;
 }
 
-sub is_revision {
+sub is_revisioned {
     my $obj = shift;
-    return $obj->{is_revision};
+    return $obj->{is_revisioned};
 }
 
 1;
@@ -509,7 +509,7 @@ of the diff:
 with the flag being C<'u', '+', '-', 'c'>. See the C<HTML::Diff> POD for more
 information.
 
-=head2 $obj->is_revision()
+=head2 $obj->is_revisioned()
 
 Returns 1 if C<$obj> is revisioned object.
 
