@@ -90,7 +90,7 @@ sub terms_text {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $join_terms = $prop->super(@_);
-    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    my $cd_ids     = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
 }
 
@@ -99,7 +99,7 @@ sub terms_datetime {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $join_terms = $prop->super(@_);
-    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    my $cd_ids     = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
 }
 
@@ -215,7 +215,7 @@ sub ss_validator_values {
     return undef unless defined $data && $data ne '';
     $data = [$data] unless ref $data eq 'ARRAY';
 
-    my $options = $field_data->{options} || {};
+    my $options      = $field_data->{options} || {};
     my @valid_values = map { $_->{value} }
         grep { $_ && ref $_ eq 'HASH' } @{ $options->{values} || [] };
 
@@ -228,7 +228,7 @@ sub ss_validator_values {
 
     if (@invalid_values) {
         my $invalid_values = join ', ', sort(@invalid_values);
-        my $field_label = $options->{label};
+        my $field_label    = $options->{label};
         return $app->translate( 'Invalid values in "[_1]" field: [_2]',
             $field_label, $invalid_values );
     }
@@ -322,7 +322,7 @@ sub html_text {
 
 sub single_select_options_multiple {
     my $prop = shift;
-    my $app = shift || MT->app;
+    my $app  = shift || MT->app;
 
     my $content_field_id = $prop->{content_field_id};
     my $content_field = MT->model('content_field')->load($content_field_id);
@@ -385,7 +385,7 @@ sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $asset_terms = {
-        id => @$value ? $value : 0,
+        id     => @$value ? $value : 0,
         class  => '*',
         parent => \'IS NULL',
     };
@@ -424,7 +424,7 @@ sub field_value_handler_datetime {
 }
 
 sub _has_some_modifier {
-    my $args = shift;
+    my $args     = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
     delete $arg_keys{$_} for qw( convert_breaks words @ );
     %arg_keys ? 1 : 0;
