@@ -184,7 +184,9 @@ sub query_parser {
     [ grep $_, ( $_[0] =~ /\s*"([^"]+)"|\s*([^"\s]+)|\s*"([^"]+)/sg ) ];
 }
 
-sub query_builder {
+sub query_builder { return sub { _query_builder(@_) } }
+
+sub _query_builder {
     my ( $app, $search, $fields, $filter ) = @_;
     $fields = join ',', @$fields;
 
@@ -341,12 +343,14 @@ sub filtered_list {
             } split ',', $specified;
         }
 
-        my $handler
-            = $app->registry( 'applications', 'data_api' )->{query_builder};
-        if ( ref $handler eq 'ARRAY' ) {
-            $handler = $handler->[$#$handler];
+        if (!$query_builder) {
+            my $handler
+                = $app->registry( 'applications', 'data_api', 'query_builder' );
+            if ( ref $handler eq 'ARRAY' ) {
+                $handler = $handler->[$#$handler];
+            }
+            $query_builder = MT->handler_to_coderef($handler);
         }
-        $query_builder ||= MT->handler_to_coderef($handler);
         $query_builder->( $app, $search, \@fields, $filter );
     }
 
