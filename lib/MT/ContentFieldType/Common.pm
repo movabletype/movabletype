@@ -396,7 +396,7 @@ sub tag_handler_asset {
     while ( my $asset = $iter->() ) {
         $assets{ $asset->id } = $asset;
     }
-    my @ordered_assets = map { $assets{$_} } @{$value};
+    my @ordered_assets = grep {$_} map { $assets{$_} } @{$value};
 
     local $ctx->{__stash}{assets} = \@ordered_assets;
     local $args->{sort_order} = 'none'

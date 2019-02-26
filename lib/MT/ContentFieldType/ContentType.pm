@@ -410,7 +410,7 @@ sub tag_handler {
     while ( my $cd = $iter->() ) {
         $contents{ $cd->id } = $cd;
     }
-    my @ordered_contents = map { $contents{$_} } @ids;
+    my @ordered_contents = grep {$_} map { $contents{$_} } @ids;
 
     local $ctx->{__stash}{parent_content}      = $ctx->stash('content');
     local $ctx->{__stash}{parent_content_type} = $ctx->stash('content_type');
