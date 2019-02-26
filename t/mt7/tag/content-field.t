@@ -408,6 +408,7 @@ $test_env->prepare_fixture(
                 $cf_number->id                   => '12345',
             },
         );
+        my $invalid_obj_id = 1000;    # MTC-26364
         my $cd = MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
@@ -429,10 +430,12 @@ $test_env->prepare_fixture(
                 $cf_table->id => "<tr><td>1</td><td></td><td></td></tr>\n"
                     . "<tr><td></td><td>2</td><td></td></tr>\n"
                     . "<tr><td></td><td></td><td>3</td></tr>",
-                $cf_tag->id          => [ $tag2->id,      $tag1->id ],
-                $cf_category->id     => [ $category2->id, $category1->id ],
-                $cf_image->id        => [ $image1->id,    $image2->id ],
-                $cf_content_type->id => [ $cd2->id ],
+                $cf_tag->id => [ $tag2->id, $tag1->id, $invalid_obj_id ],
+                $cf_category->id =>
+                    [ $category2->id, $category1->id, $invalid_obj_id ],
+                $cf_image->id =>
+                    [ $image1->id, $image2->id, $invalid_obj_id ],
+                $cf_content_type->id => [ $cd2->id, $invalid_obj_id ],
             },
         );
     }
