@@ -245,8 +245,14 @@ sub test_data_api {
 
         if ( exists $data->{error} ) {
             $result = $format->{unserialize}->($body) if !defined $result;
-            is( $result->{error}{message},
-                $data->{error}, 'error: ' . $data->{error} );
+            if ( ref $data->{error} eq ref qr// ) {
+                like( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
+            else {
+                is( $result->{error}{message},
+                    $data->{error}, 'error: ' . $data->{error} );
+            }
         }
 
         if ( my $complete = $data->{complete} ) {
