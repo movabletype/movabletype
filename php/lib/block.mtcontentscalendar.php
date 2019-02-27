@@ -124,6 +124,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             );
             if(isset($category_set_id)){
                 $category_param['category_set_id'] = $category_set_id;
+            } else {
+                $category_param['category_set_id'] = '> 0';
             }
             $cats = $ctx->mt->db()->fetch_categories($category_param);
             if(!$cats){
