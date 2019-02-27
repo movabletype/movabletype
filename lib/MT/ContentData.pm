@@ -975,6 +975,10 @@ sub list_props_for_data_api {
             base    => '__virtual.id',
             display => 'none',
         },
+        label => {
+            base    => '__virtual.label',
+            display => 'none',
+        },
         identifier => {
             auto    => 1,
             display => 'none',

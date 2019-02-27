@@ -769,6 +769,24 @@ sub normal_tests_for_list {
             },
         }
     );
+
+    test_data_api(
+        {   note => 'sortBy',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method    => 'GET',
+            params => { sortBy => 'label' },
+            result => sub {
+                my @cd = MT->model('content_data')->load(
+                    { content_type_id => $content_type_id, },
+                    { sort => 'label', direction => 'descend', },
+                );
+                +{  totalResults => scalar @cd,
+                    items => MT::DataAPI::Resource->from_object( \@cd ),
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_get {
