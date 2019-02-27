@@ -121,7 +121,7 @@ foreach my $lang (qw(en_us ja de nl fr es)) {
     my $enc_js = Encode::encode_utf8($js);
     $enc_js =~ s/\\'/\t\t/g;
     my %lexicon;
-    while ( $enc_js =~ m/trans\(\s?(["'])([^\1|\\\1]+?)\1/g ) {
+    while ( $enc_js =~ m/trans\(\s*(["'])([^\1|\\\1]+?)\1/g ) {
         my $str = $2;
         $str =~ s/\t\t/'/g;
         my $local = $lex->{$str} ? Encode::encode_utf8( $lex->{$str} ) : $str;
