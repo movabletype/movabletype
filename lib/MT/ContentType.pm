@@ -66,10 +66,14 @@ sub list_props {
             html      => \&_make_name_html,
         },
         author_name => { base => '__virtual.author_name', order => 300 },
+        created_on => {
+            base    => '__virtual.created_on',
+            order   => 400,
+        },
         modified_on => {
             base    => '__virtual.modified_on',
             display => 'default',
-            order   => 400,
+            order   => 500,
         },
         category_set => {
             base                  => '__virtual.single_select',
@@ -84,7 +88,7 @@ sub list_props {
             label        => 'Content Data',
             filter_label => 'Content Data',
             display      => 'default',
-            order        => 500,
+            order        => 600,
             base         => '__virtual.object_count',
             col_class    => 'num',
             count_class  => 'content_data',
