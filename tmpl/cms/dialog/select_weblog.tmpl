@@ -21,12 +21,23 @@ function returnBlogSelection(ok) {
         var ids = new Array();
         var names = new Array();
 
-        jQuery('#blog-panel span.items').children().each( function (){
-            var id = jQuery(this).attr('id');
+        var inputs = dialog.panels[0].tableSelect.selected();
+        if (inputs.length == 0) return;
+        jQuery.each(inputs, function() {
+            var inp = this;
+            var row = TC.getParentByTagName( inp, "tr" );
+            if (!row) return;
+
+            var labels = jQuery(row).find('.panel-label');
+            if (labels.length == 0) return;
+
+            var id = jQuery(inp).attr('id');
             id = id.replace(/\D/g, '');
+            if (!id) return;
+
             ids.push(id);
 
-            var name = jQuery(this).children('span').remove().end().text();
+            var name = labels.get(0).innerHTML;
             names.push(name + '(' + id + ')');
         });
         el_id.value = ids.join(',');
