@@ -58,6 +58,56 @@ my $other_content_type
     = MT::Test::Permission->make_content_type( blog_id => $site_id );
 my $other_content_type_id = $other_content_type->id;
 
+my $ct_with_datetime
+    = MT::Test::Permission->make_content_type( blog_id => $site_id );
+my $datetime_field = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_datetime->id,
+    name            => 'datetime',
+    type            => 'date_and_time',
+);
+$ct_with_datetime->fields(
+    [   {   id        => $datetime_field->id,
+            order     => 1,
+            type      => $datetime_field->type,
+            options   => { label => $datetime_field->name },
+            unique_id => $datetime_field->unique_id,
+        }
+    ]
+);
+$ct_with_datetime->save;
+my $ct_with_datetime_id = $ct_with_datetime->id;
+
+my $cd_with_datetime = MT::Test::Permission->make_content_data(
+    content_type_id => $ct_with_datetime_id,
+    label           => 'cd with datetime',
+    blog_id         => $site_id,
+    data            => { $datetime_field->id => '20200101000000', },
+);
+
+my $ct_with_content_type
+    = MT::Test::Permission->make_content_type( blog_id => $site_id );
+my $content_type_field = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_content_type->id,
+    name            => 'ct',
+    type            => 'content_type',
+);
+$ct_with_content_type->fields(
+    [   {   id      => $content_type_field->id,
+            order   => 1,
+            type    => $content_type_field->type,
+            options => {
+                label  => $content_type_field->name,
+                source => $content_type_field->id,
+            },
+            unique_id => $content_type_field->unique_id,
+        }
+    ]
+);
+$ct_with_content_type->save;
+my $ct_with_content_type_id = $ct_with_content_type->id;
+
 $user->permissions(0)->rebuild;
 $user->permissions($site_id)->rebuild;
 
@@ -652,6 +702,36 @@ sub normal_tests_for_create {
                         limit     => 1,
                     },
                 );
+            },
+        }
+    );
+
+    test_data_api(
+        {   note => 'content type field (MTC-26261)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$ct_with_content_type_id/data",
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                content_data => {
+                    label => 'cd with content type',
+                    data  => [
+                        {   id   => $content_type_field->id,
+                            data => [ $cd_with_datetime->id ],
+                        },
+                    ],
+                },
+            },
+            result => sub {
+                ok my $cd = MT->model('content_data')->load(
+                    { content_type_id => $ct_with_content_type_id, },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                        limit     => 1,
+                    },
+                );
+                ok %{ $cd->data };
+                $cd;
             },
         }
     );

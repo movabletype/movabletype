@@ -189,6 +189,7 @@ sub ss_validator_multiple {
     my $max         = $options->{max};
     my $min         = $options->{min};
 
+    $data = [] unless defined $data;
     if ( $multiple && $max && @{$data} > $max ) {
         return $app->translate(
             '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
