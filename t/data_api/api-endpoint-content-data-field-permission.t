@@ -67,7 +67,8 @@ subtest 'without initial_value' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -115,7 +116,8 @@ subtest 'without initial_value' => sub {
             },
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -174,7 +176,8 @@ subtest 'with initial_value' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -222,7 +225,8 @@ subtest 'with initial_value' => sub {
             },
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },

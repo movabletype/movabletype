@@ -125,6 +125,11 @@ sub save_filter {
     my $content_type = $obj->content_type;
     my $data         = $obj->data;
 
+    my $label = $obj->column('label');
+    if ( !defined $label or $label eq '' ) {
+        return $app->errtrans( '"[_1]" is required.', "Data Label" );
+    }
+
     my $blog = $obj->blog;
     for my $field ( @{ $content_type->fields } ) {
         my $field_id   = $field->{id};

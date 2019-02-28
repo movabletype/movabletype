@@ -155,7 +155,7 @@ sub irregular_tests_for_create {
         {   note   => 'no permission',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {} },
+            params => { content_data => { label => 'test' } },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -175,7 +175,8 @@ sub irregular_tests_for_create {
         {   note   => 'not draft content_data without publish permission',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { status => 'Publish' } },
+            params =>
+                { content_data => { label => 'test', status => 'Publish' } },
             restrictions => {
                 0 => [
 
@@ -200,7 +201,8 @@ sub irregular_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'single',
                         },
@@ -227,7 +229,8 @@ sub irregular_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'single',
                         },
@@ -248,6 +251,23 @@ sub irregular_tests_for_create {
             error => qr/basename is too long./,
         }
     );
+    test_data_api(
+        {   note   => 'no label',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
+            params => {
+                content_data => {
+                    data => [
+                        {   id   => $single_field->id,
+                            data => 'single',
+                        },
+                    ],
+                },
+            },
+            code  => 409,
+            error => qr/"Data Label" is required./,
+        }
+    );
 }
 
 sub normal_tests_for_create {
@@ -257,7 +277,8 @@ sub normal_tests_for_create {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'single',
                         },
@@ -311,7 +332,8 @@ sub normal_tests_for_create {
         {   note   => 'system permission and draft content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { status => 'Draft', }, },
+            params =>
+                { content_data => { label => 'test', status => 'Draft', }, },
             restrictions => {
                 0 => [
 
@@ -360,7 +382,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -409,7 +431,8 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data and draft content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { status => 'Draft', }, },
+            params =>
+                { content_data => { label => 'test', status => 'Draft', }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -458,7 +481,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:???',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -509,7 +532,7 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:??? and own content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -560,7 +583,8 @@ sub normal_tests_for_create {
         {   note   => 'blog.manage_content_data:??? and draft content_data',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { status => 'Draft' }, },
+            params =>
+                { content_data => { label => 'test', status => 'Draft' }, },
             restrictions => {
                 0 => [
                     'create_new_content_data', 'publish_all_content_data',
@@ -611,7 +635,10 @@ sub normal_tests_for_create {
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
-                content_data => { unpublishedDate => '2020-01-01 00:00:00' },
+                content_data => {
+                    label           => 'test',
+                    unpublishedDate => '2020-01-01 00:00:00'
+                },
             },
             complete => sub {
                 my $cd = MT->model('content_data')->load(
@@ -630,7 +657,9 @@ sub normal_tests_for_create {
         {   note   => 'empty unpublished_on',
             path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => { unpublishedDate => '' }, },
+            params => {
+                content_data => { label => 'test', unpublishedDate => '' },
+            },
             complete => sub {
                 my $cd = MT->model('content_data')->load(
                     { content_type_id => $content_type_id, },
@@ -661,7 +690,7 @@ sub normal_tests_for_create {
                     'publish_own_content_data_' . $content_type->unique_id,
                 ],
             },
-            params    => { content_data => {}, },
+            params    => { content_data => { label => 'test' }, },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.content_data',
@@ -730,7 +759,8 @@ sub normal_tests_for_create {
             is_superuser => 1,
             params       => {
                 content_data => {
-                    data => [
+                    label => 'empty',
+                    data  => [
                         {   id   => $datetime_field->id,
                             data => '',
                         }
@@ -759,7 +789,8 @@ sub normal_tests_for_create {
             is_superuser => 1,
             params       => {
                 content_data => {
-                    data => [
+                    label => 'yyyymmddHHMMSS',
+                    data  => [
                         {   id   => $datetime_field->id,
                             data => '20190228000000',
                         }
@@ -788,7 +819,8 @@ sub normal_tests_for_create {
             is_superuser => 1,
             params       => {
                 content_data => {
-                    data => [
+                    label => 'yyyy-mm-dd HH:MM:SS',
+                    data  => [
                         {   id   => $datetime_field->id,
                             data => '2019-02-28 00:00:00',
                         }
@@ -817,7 +849,8 @@ sub normal_tests_for_create {
             is_superuser => 1,
             params       => {
                 content_data => {
-                    data => [
+                    label => 'yyyy-mm-dd HH:MM:SS+Z',
+                    data  => [
                         {   id   => $datetime_field->id,
                             data => '2019-02-28 00:00:00+Z',
                         }

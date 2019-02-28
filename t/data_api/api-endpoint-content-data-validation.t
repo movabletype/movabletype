@@ -60,7 +60,7 @@ subtest 'no validation' => sub {
             path =>
                 "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             result => sub {
                 MT->model('content_data')->load(
                     { content_type_id => $content_type_id, },
@@ -79,7 +79,8 @@ subtest 'no validation' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abc',
                         },
@@ -131,7 +132,7 @@ subtest 'required validation' => sub {
             path =>
                 "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             code   => 409,
         }
     );
@@ -143,7 +144,8 @@ subtest 'required validation' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'single',
                         },
@@ -197,7 +199,7 @@ subtest 'required validation with initial_value' => sub {
             path =>
                 "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
-            params => { content_data => {}, },
+            params => { content_data => { label => 'test' }, },
             result => sub {
                 $cd = MT->model('content_data')->load(
                     { content_type_id => $content_type_id, },
@@ -239,6 +241,7 @@ subtest 'required validation with initial_value' => sub {
             method => 'POST',
             params => {
                 content_data => {
+                    label => 'test',
                     data =>
                         [ { id => $single_field->id, data => '12345', }, ],
                 },
@@ -293,7 +296,8 @@ subtest 'ss_validator' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abc',
                         },
@@ -310,7 +314,8 @@ subtest 'ss_validator' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcdefghijklm',
                         },
@@ -327,7 +332,8 @@ subtest 'ss_validator' => sub {
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcdef',
                         },
