@@ -501,19 +501,20 @@ sub save {
         }
         $data ||= {};
     }
-    else {
-        foreach my $f (@$field_data) {
+
+    foreach my $f (@$field_data) {
+        if ( !$app->param('from_preview') ) {
             my $content_field_type = $content_field_types->{ $f->{type} };
             $data->{ $f->{id} }
-                = _get_form_data( $app, $content_field_type, $f );
-            if ( $f->{type} eq 'multi_line_text' ) {
-                $convert_breaks->{ $f->{id} } = $app->param(
-                    'content-field-' . $f->{id} . '_convert_breaks' );
-                my $key = $f->{id} . '_convert_breaks';
-                $data->{$key}
-                    = $app->param(
-                    'content-field-' . $f->{id} . '_convert_breaks' );
-            }
+                = _get_form_data($app, $content_field_type, $f);
+        }
+        if ( $f->{type} eq 'multi_line_text' ) {
+            $convert_breaks->{ $f->{id} } = $app->param(
+                'content-field-' . $f->{id} . '_convert_breaks' );
+            my $key = $f->{id} . '_convert_breaks';
+            $data->{$key}
+                = $app->param(
+                'content-field-' . $f->{id} . '_convert_breaks' );
         }
     }
 
@@ -1704,6 +1705,15 @@ sub _build_content_data_preview {
         data_name  => 'serialized_data',
         data_value => $serialized_data,
         };
+
+   foreach my $convert_breaks ( keys ( $app->{query}->{param}) ) {
+        if ($convert_breaks =~ /^content\-field\-(\d+)\_convert\_breaks/  ) {
+            push @data, {
+                data_name  => $convert_breaks,
+                data_value => $app->param($convert_breaks),
+            };
+        }
+    }
 
     $param{content_data_loop} = \@data;
 
