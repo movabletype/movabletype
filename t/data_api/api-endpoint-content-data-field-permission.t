@@ -61,9 +61,8 @@ subtest 'without initial_value' => sub {
     my $cd;
 
     test_data_api(
-        {   note => 'with permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        {   note   => 'with permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -91,10 +90,9 @@ subtest 'without initial_value' => sub {
     );
 
     test_data_api(
-        {   note => 'without permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method       => 'POST',
+        {   note   => 'without permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
@@ -170,9 +168,8 @@ subtest 'with initial_value' => sub {
     my $cd;
 
     test_data_api(
-        {   note => 'with permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        {   note   => 'with permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -200,10 +197,9 @@ subtest 'with initial_value' => sub {
     );
 
     test_data_api(
-        {   note => 'without permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method       => 'POST',
+        {   note   => 'without permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
