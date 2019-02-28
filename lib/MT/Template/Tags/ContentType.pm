@@ -1570,7 +1570,7 @@ sub _hdlr_content_calendar {
                 blog_id => $blog_id,
                 $category_set_id
                 ? ( category_set_id => $category_set_id )
-                : (),
+                : ( category_set_id => { op => '>', value => 0 } ),
             }
             )
             or return $ctx->error(
