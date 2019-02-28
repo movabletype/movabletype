@@ -58,6 +58,28 @@ my $other_content_type
     = MT::Test::Permission->make_content_type( blog_id => $site_id );
 my $other_content_type_id = $other_content_type->id;
 
+my $ct_with_data_label
+    = MT::Test::Permission->make_content_type( blog_id => $site_id );
+
+my $single_field2 = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_data_label->id,
+    name            => 'single',
+    type            => 'single_line_text',
+);
+$ct_with_data_label->fields(
+    [   {   id        => $single_field2->id,
+            order     => 1,
+            type      => $single_field2->type,
+            options   => { label => $single_field2->name },
+            unique_id => $single_field2->unique_id,
+        }
+    ]
+);
+$ct_with_data_label->data_label( $single_field2->unique_id );
+$ct_with_data_label->save;
+my $ct_with_data_label_id = $ct_with_data_label->id;
+
 my $ct_with_datetime
     = MT::Test::Permission->make_content_type( blog_id => $site_id );
 my $datetime_field = MT::Test::Permission->make_content_field(
@@ -260,6 +282,23 @@ sub irregular_tests_for_create {
                     data => [
                         {   id   => $single_field->id,
                             data => 'single',
+                        },
+                    ],
+                },
+            },
+            code  => 409,
+            error => qr/"Data Label" is required./,
+        }
+    );
+    test_data_api(
+        {   note   => 'no label',
+            path   => "/v4/sites/$site_id/contentTypes/$ct_with_data_label_id/data",
+            method => 'POST',
+            params => {
+                content_data => {
+                    data => [
+                        {   id   => $single_field2->id,
+                            data => '',
                         },
                     ],
                 },
@@ -862,6 +901,35 @@ sub normal_tests_for_create {
             result => sub {
                 ok my $cd = MT->model('content_data')->load(
                     { content_type_id => $ct_with_datetime_id, },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                        limit     => 1,
+                    },
+                );
+                ok %{ $cd->data };
+                $cd;
+            },
+        }
+    );
+
+    test_data_api(
+        {   note => 'content type with data_label',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$ct_with_data_label_id/data",
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                content_data => {
+                    data => [
+                        {   id   => $single_field2->id,
+                            data => 'test',
+                        }
+                    ],
+                },
+            },
+            result => sub {
+                ok my $cd = MT->model('content_data')->load(
+                    { content_type_id => $ct_with_data_label_id, },
                     {   sort      => 'id',
                         direction => 'descend',
                         limit     => 1,

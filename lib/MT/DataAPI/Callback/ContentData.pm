@@ -125,7 +125,18 @@ sub save_filter {
     my $content_type = $obj->content_type;
     my $data         = $obj->data;
 
-    my $label = $obj->column('label');
+    my $label;
+    if ( $content_type->data_label ) {
+        my $field = MT->model('content_field')->load(
+            {   content_type_id => $content_type->id,
+                unique_id       => $content_type->data_label,
+            }
+        );
+        $label = $data->{ $field->id } if $field;
+    }
+    else {
+        $label = $obj->column('label');
+    }
     if ( !defined $label or $label eq '' ) {
         return $app->errtrans( '"[_1]" is required.', "Data Label" );
     }
