@@ -529,6 +529,7 @@ sub core_search_apis {
         'content_type' => {
             'order'     => 1100,
             'condition' => sub {
+                return 0;    # This line would be removed in MTC-26406.
                 my $author = MT->app->user;
                 return 1 if $author->is_superuser;
             },
