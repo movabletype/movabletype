@@ -66,6 +66,10 @@ sub list_props {
             html      => \&_make_name_html,
         },
         author_name => { base => '__virtual.author_name', order => 300 },
+        created_on => {
+            base    => '__virtual.created_on',
+            order   => 350,
+        },
         modified_on => {
             base    => '__virtual.modified_on',
             display => 'default',
