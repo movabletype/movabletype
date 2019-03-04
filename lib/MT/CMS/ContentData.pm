@@ -1706,7 +1706,8 @@ sub _build_content_data_preview {
         data_value => $serialized_data,
         };
 
-   foreach my $convert_breaks ( keys ( $app->{query}->{param}) ) {
+   my %param_hash = $app->param_hash;
+   for my $convert_breaks ( keys %param_hash ) {
         if ($convert_breaks =~ /^content\-field\-(\d+)\_convert\_breaks/  ) {
             push @data, {
                 data_name  => $convert_breaks,
