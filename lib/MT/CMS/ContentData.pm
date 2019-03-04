@@ -360,22 +360,25 @@ sub edit {
 
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
         if ( $_->{type} eq 'multi_line_text' ) {
+            my $key
+                = 'content-field-'
+                . $_->{content_field_id}
+                . '_convert_breaks';
+
             if ( $convert_breaks
                 && exists $$convert_breaks->{ $_->{content_field_id} } )
             {
                 $_->{convert_breaks}
                     = $$convert_breaks->{ $_->{content_field_id} };
             }
-            elsif ( $content_data_id || $data ) {
-                my $key
-                    = 'content-field-'
-                    . $_->{content_field_id}
-                    . '_convert_breaks';
-                $_->{convert_breaks} = $app->param($key);
-            }
             else {
                 $_->{convert_breaks} = $_->{options}{input_format};
             }
+
+            if ( $app->param($key) ) {
+                $_->{convert_breaks} = $app->param($key);
+            }
+
         }
         $_;
     } @$array;
@@ -1706,12 +1709,15 @@ sub _build_content_data_preview {
         data_value => $serialized_data,
         };
 
-   my %param_hash = $app->param_hash;
-   for my $convert_breaks ( keys %param_hash ) {
-        if ($convert_breaks =~ /^content\-field\-(\d+)\_convert\_breaks/  ) {
+    my %param_hash = $app->param_hash;
+    for my $convert_breaks ( keys %param_hash ) {
+        if ($convert_breaks =~ /^content\-field\-([0-9]+)\_convert\_breaks$/  ) {
+            my $convert_breaks_param_value = $app->param($convert_breaks);
+            next if ref $convert_breaks_param_value ne 'SCALAR';
+
             push @data, {
                 data_name  => $convert_breaks,
-                data_value => $app->param($convert_breaks),
+                data_value => $convert_breaks_param_value,
             };
         }
     }
