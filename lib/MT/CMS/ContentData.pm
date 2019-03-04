@@ -1713,7 +1713,6 @@ sub _build_content_data_preview {
     for my $convert_breaks ( keys %param_hash ) {
         if ($convert_breaks =~ /^content\-field\-([0-9]+)\_convert\_breaks$/  ) {
             my $convert_breaks_param_value = $app->param($convert_breaks);
-            next if ref $convert_breaks_param_value ne 'SCALAR';
 
             push @data, {
                 data_name  => $convert_breaks,
