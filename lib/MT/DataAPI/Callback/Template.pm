@@ -71,19 +71,16 @@ sub save_filter {
     }
 
     if ( !$obj->id ) {
-        if ($obj->blog_id
-            && !(
-                grep { $obj->type eq $_ }
-                qw/ index archive individual page category custom /
-            )
-            )
+        my @archive_types
+            = qw/ index archive individual page category custom /;
+        push @archive_types, qw/ ct ct_archive /
+            if $app->current_api_version >= 4;
+        if ( $obj->blog_id && !( grep { $obj->type eq $_ } @archive_types ) )
         {
             return $app->errtrans( 'Invalid type: [_1]', $obj->type );
         }
 
-        if (  !$obj->blog_id
-            && $obj->type ne 'custom' )
-        {
+        if ( !$obj->blog_id && $obj->type ne 'custom' ) {
             return $app->errtrans( 'Invalid type: [_1]', $obj->type );
         }
     }
@@ -93,6 +90,14 @@ sub save_filter {
     {
         return $app->errtrans( 'A parameter "[_1]" is required.',
             'outputFile' );
+    }
+
+    if (   $app->current_api_version >= 4
+        && $obj->type =~ /^ct(?:\-archive)?$/
+        && !$obj->content_type_id )
+    {
+        return $app->errtrans( 'A parameter "[_1]" is required.',
+            'contentTypeID' );
     }
 
     return 1;

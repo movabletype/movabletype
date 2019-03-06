@@ -138,6 +138,10 @@ sub core_resources {
                 fields           => "${pkg}v2::Template::fields",
                 updatable_fields => "${pkg}v2::Template::updatable_fields",
             },
+            {   version          => 4,
+                fields           => "${pkg}v4::Template::fields",
+                updatable_fields => "${pkg}v4::Template::updatable_fields",
+            },
         ],
         'widget'      => 'template',
         'templatemap' => [
