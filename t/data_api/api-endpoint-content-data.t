@@ -791,6 +791,30 @@ sub normal_tests_for_create {
     );
 
     test_data_api(
+        {   note => 'datetime field (MTC-26262; no data field)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$ct_with_datetime_id/data",
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                content_data => {
+                    label => 'no data field',
+                },
+            },
+            result => sub {
+                ok my $cd = MT->model('content_data')->load(
+                    { content_type_id => $ct_with_datetime_id, },
+                    {   sort      => 'id',
+                        direction => 'descend',
+                        limit     => 1,
+                    },
+                );
+                $cd;
+            },
+        }
+    );
+
+    test_data_api(
         {   note => 'datetime field (MTC-26262/26264; empty)',
             path =>
                 "/v4/sites/$site_id/contentTypes/$ct_with_datetime_id/data",
