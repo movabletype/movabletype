@@ -44,6 +44,33 @@ my $blog    = MT::Blog->load( { name => 'my blog' } );
 
 my $admin = MT->model('author')->load(1);
 
+my $website_entry = MT::Test::Permission->make_entry(
+    blog_id => $website->id,
+    title   => 'WebsiteEntry',
+);
+
+my $blog_entry = MT::Test::Permission->make_entry(
+    blog_id => $blog->id,
+    title   => 'BlogEntry',
+);
+
+MT->publisher->rebuild( BlogID => $website->id );
+MT->publisher->rebuild( BlogID => $blog->id );
+
+my @published_files;
+require File::Find;
+File::Find::find(
+    {   wanted => sub {
+            push @published_files, $File::Find::name;
+        },
+        no_chdir => 1,
+    },
+    $test_env->root
+);
+
+ok grep( /websiteentry/, @published_files ), "website entry is published";
+ok grep( /blogentry/,    @published_files ), "blog entry is published";
+
 # Run tests
 my ( $app, $out );
 
@@ -165,7 +192,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             if ( $type eq 'website' ) {
                 my $archive_url  = 'http://localhost/archive/path/';
-                my $archive_path = '/var/www/html/archive/path';
+                my $archive_path = $test_env->root . "new/$type/archive/path";
 
                 $app = _run_app(
                     'MT::App::CMS',
@@ -189,6 +216,10 @@ subtest 'Test cfg_prefs mode' => sub {
                     $archive_url, 'Can save archive_url correctly.' );
                 is( $test_blog->column('archive_path'),
                     $archive_path, 'Can save archive_path correctly.' );
+
+                my @missing = grep { !-e $_ } @published_files;
+                ok !@missing, 'no files are removed';
+                note join "\n", @missing if @missing;
             }
 
             if ( $type eq 'blog' ) {
