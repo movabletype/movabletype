@@ -171,9 +171,10 @@ sub save_filter {
                 }
             }
             else {
-                return $app->errtrans(
-                    'Cannot parse "[_1]" as an ISO 8601 datetime',
-                    $field_data );
+                my $field_type  = $field_data->{type};
+                my $field_label = $field_data->{options}{label};
+                return $app->translate( 'Invalid [_1] in "[_2]" field.',
+                    $field_type, $field_label );
             }
         }
 
