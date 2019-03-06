@@ -1091,8 +1091,10 @@ sub _create_temp_entry {
     my $user_id = $app->user->id;
 
     if ($id) {
-        $entry = $entry_class->load( { id => $id, blog_id => $blog_id } )
+        my $org_entry
+            = $entry_class->load( { id => $id, blog_id => $blog_id } )
             or return $app->errtrans("Invalid request.");
+        $entry   = $org_entry->clone();
         $user_id = $entry->author_id;
     }
     else {
@@ -1549,8 +1551,8 @@ sub save {
         $primary_category_old = $orig_obj->category;
         $categories_old       = $orig_obj->categories;
     }
-    my $status_old           = $id ? $obj->status : 0;
-    my $names                = $obj->column_names;
+    my $status_old = $id ? $obj->status : 0;
+    my $names = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1838,9 +1840,9 @@ sub save {
     require MT::Asset;
     require MT::ObjectAsset;
     my $include_asset_ids = $app->param('include_asset_ids') || '';
-    my @asset_ids         = split( ',', $include_asset_ids );
-    my $obj_assets        = ();
-    my @obj_assets        = MT::ObjectAsset->load(
+    my @asset_ids  = split( ',', $include_asset_ids );
+    my $obj_assets = ();
+    my @obj_assets = MT::ObjectAsset->load(
         { object_ds => 'entry', object_id => $obj->id } );
     foreach my $obj_asset (@obj_assets) {
         my $asset_id = $obj_asset->asset_id;

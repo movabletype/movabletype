@@ -50,3 +50,5 @@ t/update/
 
 .perl-version
 perltidy.LOG
+
+.idea/
