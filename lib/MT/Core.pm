@@ -1270,7 +1270,7 @@ BEGIN {
                             } split ',', $specifieds;
                         }
                         else {
-                            @fields = @$defaults;
+                            @fields = @{ $defaults || [] };
                         }
 
                         my @terms;
