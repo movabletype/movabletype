@@ -1563,7 +1563,7 @@ sub filtered_list {
         {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
+            eval { $list_permission = $code->($app); };
             return $app->json_error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
