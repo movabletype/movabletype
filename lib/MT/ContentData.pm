@@ -282,7 +282,7 @@ sub save {
     }
 
     require bytes;
-    if ( bytes::length($self->identifier) > 246 ) {
+    if ( bytes::length( $self->identifier ) > 246 ) {
         return $self->error( MT->translate("basename is too long.") );
     }
 
@@ -1191,6 +1191,7 @@ sub make_list_props {
                 display         => 'none',
                 filter_editable => 0,
                 use_blank       => 1,
+                tagged_class    => '*',
             };
         }
     }
