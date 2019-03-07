@@ -199,6 +199,9 @@
       done: function (data, textStatus, jqXHR) {
         if (data && !data.error) {
           self.setResult(data.result);
+        } else if (data.error) {
+          alert(data.error);
+          self.objects = [];
         }
       },
       always: function () {
