@@ -472,6 +472,59 @@ sub normal_tests_for_list {
             },
         }
     );
+    test_data_api(
+        {   note => 'search',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-field-2' },
+            result       => sub {
+                my @cf = MT->model('content_field')->load(
+                    {   content_type_id => $content_type_id,
+                        name            => 'create-content-field-2',
+                    }
+                );
+                +{  totalResults => scalar @cf,
+                    items => MT::DataAPI::Resource->from_object( \@cf ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'search multiple rows',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-field' },
+            result       => sub {
+                my @cf = MT->model('content_field')->load(
+                    {   content_type_id => $content_type_id,
+                        name            => [
+                            'create-content-field',
+                            'create-content-field-2',
+                            'create-content-field-3',
+                        ],
+                    }
+                );
+                +{  totalResults => scalar @cf,
+                    items => MT::DataAPI::Resource->from_object( \@cf ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'search not found',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'not-found' },
+            result       => sub {
+                +{  totalResults => 0,
+                    items        => [],
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_get {
