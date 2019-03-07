@@ -842,6 +842,10 @@ if ($version) {
 </ul>
 INFO
 }
+eval {
+    require MT::Cloud::App::CMS;
+};
+if ( $@ ) {
 print_encode( trans_templ(<<INFO) );
 <ul id="path-info" class="list-unstyled">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
@@ -850,6 +854,7 @@ print_encode( trans_templ(<<INFO) );
 	<li><strong><__trans phrase="Perl version:"></strong> <code>$ver</code></li>
 	<li><strong><__trans phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO
+}
 if ($server) {
     print_encode( trans_templ(<<INFO) );
     <li><strong><__trans phrase="Web server:"></strong> <code>$server</code></li>
