@@ -1534,7 +1534,7 @@ sub filtered_list {
         $view = [$view] unless ref $view;
         my %view = map { $_ => 1 } @$view;
         if ( !$view{$scope} ) {
-            return $app->return_to_dashboard( redirect => 1, );
+            return $app->json_error( $app->translate('Invalid request') );
         }
     }
 
@@ -1586,8 +1586,12 @@ sub filtered_list {
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
         }
-        return $app->permission_denied()
-            unless $allowed;
+        return $app->json_error(
+            $app->translate(
+                'Permission denied: [_1]',
+                join( ',', @permissions )
+            )
+        ) unless $allowed;
     }
 
     my $filteritems;
@@ -1697,7 +1701,7 @@ sub filtered_list {
 
     my $count_result = $filter->count_objects(%count_options);
     if ( !defined $count_result ) {
-        return $app->error(
+        return $app->json_error(
             MT->translate(
                 "An error occurred while counting objects: [_1]",
                 $filter->errstr
@@ -1716,7 +1720,7 @@ sub filtered_list {
 
         $objs = $filter->load_objects(%load_options);
         if ( !defined $objs ) {
-            return $app->error(
+            return $app->json_error(
                 MT->translate(
                     "An error occurred while loading objects: [_1]",
                     $filter->errstr
