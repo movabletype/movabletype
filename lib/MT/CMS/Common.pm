@@ -1550,7 +1550,7 @@ sub filtered_list {
             $list_permission = $list_permission->{permit_action};
         }
         my $allowed = 0;
-        my @act;
+        my @permissions;
         if ( 'CODE' eq ref $list_permission ) {
             eval { $list_permission = $list_permission->($app); };
             return $app->json_error(
@@ -1572,12 +1572,12 @@ sub filtered_list {
         }
 
         if ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
+            @permissions = @$list_permission;
         }
         else {
-            @act = split /\s*,\s*/, $list_permission;
+            @permissions = split /\s*,\s*/, $list_permission;
         }
-        foreach my $p (@act) {
+        foreach my $p (@permissions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
