@@ -375,7 +375,7 @@ sub edit {
                 $_->{convert_breaks} = $_->{options}{input_format};
             }
 
-            if ( $app->param($key) ) {
+            if ( $app->param($key) || $app->param($key) =~ m/[0]/ ) {
                 $_->{convert_breaks} = $app->param($key);
             }
 
