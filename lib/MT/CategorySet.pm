@@ -128,6 +128,11 @@ sub list_props {
             display => 'none',
             terms   => \&_content_type_name_terms,
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
+            display => 'none',
+        },
     };
 }
 
