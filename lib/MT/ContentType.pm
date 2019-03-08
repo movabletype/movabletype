@@ -119,6 +119,11 @@ sub list_props {
                 return qq{<a href="$uri">$count</a>};
             },
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
+            display => 'none',
+        },
     };
 }
 

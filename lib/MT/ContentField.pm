@@ -94,8 +94,14 @@ sub list_props {
                 return @$objs unless $content_type;
                 my %obj_hash = map { $_->id => $_ } @$objs;
                 my @field_ids = map { $_->{id} } @{ $content_type->fields };
-                map { $obj_hash{$_} } @field_ids;
+                map      { $obj_hash{$_} }
+                    grep { exists $obj_hash{$_} } @field_ids;
             },
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
             display => 'none',
         },
     };
