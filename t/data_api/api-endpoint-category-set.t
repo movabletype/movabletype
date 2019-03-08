@@ -242,6 +242,57 @@ sub normal_tests_for_get_category_set {
             result => $category_set,
         }
     );
+    test_data_api(
+        {   note         => 'search',
+            path         => "/v4/sites/$site_id/categorySets",
+            method       => 'GET',
+            params       => { search => 'create-category-set-2' },
+            is_superuser => 1,
+            result       => sub {
+                my @rows = MT->model('category_set')->load(
+                    {   blog_id => $site_id,
+                        name    => 'create-category-set-2'
+                    }
+                );
+                +{  totalResults => scalar @rows,
+                    items => MT::DataAPI::Resource->from_object( \@rows ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'search multiple rows',
+            path         => "/v4/sites/$site_id/categorySets",
+            method       => 'GET',
+            params       => { search => 'create-category-set' },
+            is_superuser => 1,
+            result       => sub {
+                my @rows = MT->model('category_set')->load(
+                    {   blog_id => $site_id,
+                        name    => [
+                            'create-category-set', 'create-category-set-2'
+                        ],
+                    }
+                );
+                +{  totalResults => scalar @rows,
+                    items => MT::DataAPI::Resource->from_object( \@rows ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'search not found',
+            path         => "/v4/sites/$site_id/categorySets",
+            method       => 'GET',
+            params       => { search => 'not-found' },
+            is_superuser => 1,
+            result       => sub {
+                +{  totalResults => 0,
+                    items        => [],
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_update_category_set {
