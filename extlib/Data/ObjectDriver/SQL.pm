@@ -247,23 +247,63 @@ sub _mk_term {
             $term = join " $logic ", @terms;
         } else {
             $col = $m->($col) if $m = $stmt->column_mutator;
-            $term = "$col IN (".join(',', ('?') x scalar @$val).')';
+            $term = $stmt->_mk_term_arrayref($col, 'IN', $val);
             @bind = @$val;
         }
     } elsif (ref($val) eq 'HASH') {
         my $c = $val->{column} || $col;
         $c = $m->($c) if $m = $stmt->column_mutator;
-        $term = "$c $val->{op} ?";
-        push @bind, $val->{value};
+        my $op = uc $val->{op};
+        if (($op eq 'IN' or $op eq 'NOT IN') and ref $val->{value} eq 'ARRAY') {
+            $term = $stmt->_mk_term_arrayref($c, $op, $val->{value});
+            push @bind, @{$val->{value}};
+        } elsif (($op eq 'IN' or $op eq 'NOT IN') and ref $val->{value} eq 'REF') {
+            my @values = @{${$val->{value}}};
+            $term = "$c $op (" . (shift @values) . ")";
+            push @bind, @values;
+        } elsif ($op eq 'BETWEEN' and ref $val->{value} eq 'ARRAY') {
+            Carp::croak "USAGE: foo => {op => 'BETWEEN', value => [\$a, \$b]}" if @{$val->{value}} != 2;
+            $term = "$c $op ? AND ?";
+            push @bind, @{$val->{value}};
+        } else {
+            if (ref $val->{value} eq 'SCALAR') {
+                $term = "$c $val->{op} " . ${$val->{value}};
+            } else {
+                $term = "$c $val->{op} ?";
+                push @bind, $val->{value};
+            }
+        }
     } elsif (ref($val) eq 'SCALAR') {
         $col = $m->($col) if $m = $stmt->column_mutator;
         $term = "$col $$val";
+    } elsif (ref($val) eq 'REF') {
+        $col = $m->($col) if $m = $stmt->column_mutator;
+        my @values = @{$$val};
+        $term = "$col " . (shift @values);
+        push @bind, @values;
     } else {
         $col = $m->($col) if $m = $stmt->column_mutator;
-        $term = "$col = ?";
-        push @bind, $val;
+        if (defined $val) {
+            $term = "$col = ?";
+            push @bind, $val;
+        } else {
+            $term = "$col IS NULL";
+        }
     }
     ($term, \@bind, $col);
+}
+
+sub _mk_term_arrayref {
+    my ($stmt, $col, $op, $val) = @_;
+    if (@$val) {
+        return "$col $op (".join(',', ('?') x scalar @$val).')';
+    } else {
+        if ($op eq 'IN') {
+            return '0 = 1';
+        } elsif ($op eq 'NOT IN') {
+            return '1 = 1';
+        }
+    }
 }
 
 sub _add_index_hint {
