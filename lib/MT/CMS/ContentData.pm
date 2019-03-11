@@ -375,7 +375,7 @@ sub edit {
                 $_->{convert_breaks} = $_->{options}{input_format};
             }
 
-            if ( $app->param($key) || $app->param($key) =~ m/[0]/ ) {
+            if (defined $app->param($key) && $app->param($key) ne '') {
                 $_->{convert_breaks} = $app->param($key);
             }
 
@@ -1710,13 +1710,14 @@ sub _build_content_data_preview {
         };
 
     my %param_hash = $app->param_hash;
-    for my $convert_breaks ( keys %param_hash ) {
-        if ($convert_breaks =~ /^content\-field\-([0-9]+)\_convert\_breaks$/  ) {
-            my $convert_breaks_param_value = $app->param($convert_breaks);
-
+    for my $param_key ( keys %param_hash ) {
+        my $param_value = $app->param($param_key);
+        if ($param_key =~ /\Acontent-field-[0-9]+_convert_breaks\z/
+            || $param_key =~ /\A(date|time)-[0-9]+\z/
+        ) {
             push @data, {
-                data_name  => $convert_breaks,
-                data_value => $convert_breaks_param_value,
+                data_name  => $param_key,
+                data_value => $param_value,
             };
         }
     }
