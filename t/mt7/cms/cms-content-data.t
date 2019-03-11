@@ -158,7 +158,7 @@ subtest 'listing with tags_field filter' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out && $out =~ /test cd/i, 'Complete tags_field filter' );
+    ok( $out && $out =~ /test cd/i, 'Succeeded a match filter of tags_field' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -174,7 +174,7 @@ subtest 'listing with tags_field filter' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out && $out !~ /test cd/i, 'Complete tags_field filter' );
+    ok( $out && $out !~ /test cd/i, 'Succeeded a unmatch filter of tags_field' );
 };
 
 done_testing;
