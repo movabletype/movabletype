@@ -108,6 +108,7 @@ my $ct_with_archive
 my $content_type = MT->model('content_type')->load( { name => 'test ct' } );
 
 my ( $app, $out );
+my ( $headers, $body, $json );
 
 subtest 'preview without content_type archive' => sub {
     $app = _run_app(
@@ -157,8 +158,13 @@ subtest 'listing with tags_field filter' => sub {
         }
     );
     $out = delete $app->{__test_output};
+    ok( $out, 'Succeeded a match filter of tags_field' );
 
-    ok( $out && $out =~ /test cd/i, 'Succeeded a match filter of tags_field' );
+    ( $headers, $body ) = split /^\s*$/m, $out;
+    $json = MT::Util::from_json($body);
+    ok( $json->{result}{count} == 1, 'match filter: count = 1' );
+    like( $json->{result}{objects}[0][1],
+        qr/test cd/, 'match filter: keyword is included' );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -173,8 +179,13 @@ subtest 'listing with tags_field filter' => sub {
         }
     );
     $out = delete $app->{__test_output};
+    ok( $out, 'Succeeded a unmatch filter of tags_field' );
 
-    ok( $out && $out !~ /test cd/i, 'Succeeded a unmatch filter of tags_field' );
+    ( $headers, $body ) = split /^\s*$/m, $out;
+    $json = MT::Util::from_json($body);
+    ok( $json->{result}{count} == 0, 'unmatch filter: count = 0' );
+    unlike( $json->{result}{objects}[0][1],
+        qr/test cd/, 'unmatch filter: keyword is not included' );
 };
 
 done_testing;
