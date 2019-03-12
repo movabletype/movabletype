@@ -1311,17 +1311,20 @@ tinymce.util.Quirks = function(editor) {
 
 	function selectControlElements() {
 		editor.onClick.add(function(editor, e) {
-			e = e.target;
+			target = e.target;
 
 			// Workaround for bug, http://bugs.webkit.org/show_bug.cgi?id=12250
 			// WebKit can't even do simple things like selecting an image
 			// Needs tobe the setBaseAndExtend or it will fail to select floated images
-			if (/^(IMG|HR)$/.test(e.nodeName)) {
-				selection.getSel().setBaseAndExtent(e, 0, e, 1);
+			if (/^(IMG|HR)$/.test(target.nodeName)) {
+				e.preventDefault();
+				editor.selection.select(target);
+				editor.nodeChanged();
 			}
 
-			if (e.nodeName == 'A' && dom.hasClass(e, 'mceItemAnchor')) {
-				selection.select(e);
+			if (target.nodeName == 'A' && dom.hasClass(target, 'mceItemAnchor')) {
+				e.preventDefault();
+				selection.select(target);
 			}
 
 			editor.nodeChanged();
@@ -1583,6 +1586,8 @@ tinymce.util.Quirks = function(editor) {
 
 			if (!settings.object_resizing) {
 				setEditorCommandState("enableObjectResizing", false);
+			} else {
+				setEditorCommandState("enableObjectResizing", true);
 			}
 		};
 
