@@ -143,6 +143,8 @@
         done: function (data, textStatus, jqXHR) {
           if (data && !data.error) {
             self.setResult(data.result);
+          } else if (data.error) {
+            alert(data.error);
           }
         },
         always: function () {
@@ -158,6 +160,8 @@
         done: function (data, textStatus, jqXHR) {
           if (data && !data.error) {
             self.setDeleteFilterResult(data.result);
+          } else if (data.error) {
+            alert(data.error);
           }
         },
         always: function () {
@@ -227,6 +231,8 @@
       done: function (data, textStatus, jqXHR) {
         if (data && !data.error) {
           self.setSaveFilterResult(data.result);
+        } else if (data.error) {
+          alert(data.error);
         }
       },
       always: function () {
@@ -247,6 +253,8 @@
       done: function (data, textStatus, jqXHR) {
         if (data && !data.error) {
           self.setResult(data.result);
+        } else if (data.error) {
+          alert(data.error);
         }
       },
       always: function () {
