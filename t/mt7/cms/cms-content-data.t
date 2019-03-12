@@ -12,6 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT;
 use MT::Test;
 use MT::Test::Permission;
 
@@ -99,6 +100,9 @@ $test_env->prepare_fixture(
         );
     }
 );
+
+# clear cache in MT::ContentType->load_all
+MT->request->reset;
 
 my $admin = MT->model('author')->load(1) or die MT->model('author')->errstr;
 my $ct_without_archive
