@@ -2365,6 +2365,33 @@ sub core_endpoints {
             requires_login => 0,
         },
 
+        # template
+        {   id      => 'delete_template',
+            route   => '/sites/:site_id/templates/:template_id',
+            verb    => 'DELETE',
+            version => 4,
+            handler => "${pkg}v4::Template::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a template.', },
+        },
+
+        {   id      => 'publish_template',
+            route   => '/sites/:site_id/templates/:template_id/publish',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::publish",
+            error_codes =>
+                { 403 => 'Do not have permission to publish a template.', },
+        },
+        {   id      => 'clone_template',
+            route   => '/sites/:site_id/templates/:template_id/clone',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::clone",
+            error_codes =>
+                { 403 => 'Do not have permission to clone a template.', },
+        },
+
         # group
         {   id             => 'list_groups',
             route          => '/groups',
