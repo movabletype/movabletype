@@ -2392,6 +2392,33 @@ sub core_endpoints {
                 { 403 => 'Do not have permission to clone a template.', },
         },
 
+        # templatemap endpoints
+        {   id      => 'list_templatemaps',
+            route   => '/sites/:site_id/templates/:template_id/templatemaps',
+            version => 4,
+            handler => "${pkg}v4::TemplateMap::list",
+            default_params => {
+                limit      => 10,
+                offset     => 0,
+                sortBy     => 'id',
+                sortOrder  => 'ascend',
+                filterKeys => 'archiveType,buildType,isPreferred',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templatemaps.',
+            },
+        },
+        {   id    => 'create_templatemap',
+            route => '/sites/:site_id/templates/:template_id/templatemaps',
+            resources => ['templatemap'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::TemplateMap::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a templatemap.', },
+        },
+
         # group
         {   id             => 'list_groups',
             route          => '/groups',
