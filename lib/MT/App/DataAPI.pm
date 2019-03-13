@@ -22,7 +22,7 @@ our %endpoints = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {4}
-sub API_VERSION ()     {4.0}
+sub API_VERSION ()     {4.1}
 
 sub init {
     my $app = shift;
