@@ -188,6 +188,7 @@ use_ok('MT::DataAPI::Endpoint::v4::ContentType');
 use_ok('MT::DataAPI::Endpoint::v4::Publish');
 use_ok('MT::DataAPI::Endpoint::v4::Search');
 use_ok('MT::DataAPI::Endpoint::v4::Template');
+use_ok('MT::DataAPI::Endpoint::v4::TemplateMap');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::ContentData');
 use_ok('MT::DataAPI::Resource::v4::ContentField');
