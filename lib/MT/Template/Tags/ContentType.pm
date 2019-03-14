@@ -1836,8 +1836,13 @@ sub _hdlr_content_field {
         unless $ctx->stash('content_field_data');
 
     my $value = $content_data->data->{ $field_data->{id} };
-    return $ctx->_hdlr_pass_tokens_else(@_)
-        if ref $value eq 'ARRAY' ? !@$value || !( $value->[0] ) : !$value;
+    my $check_value = $value;
+
+    if (ref $value eq 'ARRAY') {
+        $check_value = @$value ? $value->[0] : '';
+    }
+
+    return $ctx->_hdlr_pass_tokens_else(@_) if !$check_value && $check_value eq '';
 
     my $field_type
         = MT->registry('content_field_types')->{ $field_data->{type} }
