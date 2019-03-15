@@ -1100,7 +1100,7 @@ sub _query_parse_core {
                     my $code = $app->handler_to_coderef(
                         $filter_types->{ $term->{field} } );
                     if ($code) {
-                        my $join_args = $code->( $app, $term );
+                        my $join_args = $code->( $app, $term ) or next;
                         if ( 'ARRAY' eq ref $join_args->[0] ) {
                             foreach my $j (@$join_args) {
                                 push @joins, $j;
