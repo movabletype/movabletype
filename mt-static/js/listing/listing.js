@@ -815,8 +815,7 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
     this.mixin('listTop')
 
     this.classes = function(index) {
-      var columnIndex = this.columnIndex(index)
-      var nameClass = this.store.columns[columnIndex].id
+      var nameClass = this.store.showColumns[index].id
       var classes
       if (this.store.hasMobileColumn()) {
         if (this.store.getMobileColumnIndex() == index) {
@@ -825,7 +824,7 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
           classes = 'd-none d-md-table-cell'
         }
       } else {
-        if (this.store.columns[columnIndex].primary) {
+        if (this.store.showColumns[index].primary) {
           classes = ''
         } else {
           classes = 'd-none d-md-table-cell'
@@ -835,13 +834,6 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
         return nameClass + ' ' + classes
       } else {
         return nameClass
-      }
-    }.bind(this)
-    this.columnIndex = function(index) {
-      if (this.store.columns[0].id == 'id' && !this.store.columns[0].checked) {
-        return index + 1
-      } else {
-        return index
       }
     }.bind(this)
 });
