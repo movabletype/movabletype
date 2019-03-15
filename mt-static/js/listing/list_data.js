@@ -262,13 +262,17 @@
 
   ListData.prototype.setResult = function (result) {
     var resultColumnIds = result.columns.split(',');
+    var showColumns = []
     this.columns.forEach(function (column) {
       column.checked = resultColumnIds.indexOf(column.id) >= 0;
       column.sub_fields.forEach(function (subField) {
         subField.checked = resultColumnIds.indexOf(subField.id) >= 0;
       });
+      if(column.checked){
+        showColumns.push(column);
+      }
     });
-
+    this.showColumns = showColumns;
     this.objects = result.objects.map(function (object) {
       return {
         checked: false,
