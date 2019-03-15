@@ -13987,11 +13987,14 @@ tinymce.create('tinymce.ui.Toolbar:tinymce.ui.Container', {
 
 			// Keep scripts from executing
 			self.parser.addNodeFilter('script', function(nodes, name) {
-				var i = nodes.length, node;
+				var i = nodes.length, node, type;
 
 				while (i--) {
 					node = nodes[i];
-					node.attr('type', 'mce-' + (node.attr('type') || 'text/javascript'));
+					type = node.attr('type') || 'no/type';
+					if (type.indexOf('mce-') !== 0) {
+						node.attr('type', 'mce-' + type);
+					}
 				}
 			});
 
