@@ -1037,6 +1037,11 @@ sub query_parse {
 
     my $search = $app->{search_string};
 
+    # MTC-25640
+    # Replace field:name:term_or_phrase with field__name:term_or_phrase
+    # to let Lucene::QueryParser handle term_or_phrase correctly
+    $search =~ s/(^|\s)(field):([^:]+):/$1${2}__$3:/g;
+
     my $reg
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
     my $filter_types = $reg->{'filter_types'};
@@ -1114,6 +1119,11 @@ sub _query_parse_core {
     my ( @structure, @joins );
     while ( my $term = shift @$lucene_struct ) {
         if ( exists $term->{field} ) {
+
+            # MTC-25640: Restore field__name
+            if ( $term->{field} =~ s/^field__(.+)/field/ ) {
+                $term->{term} = $1 . ':' . $term->{term};
+            }
             unless ( exists $columns->{ $term->{field} } ) {
                 if (   $filter_types
                     && %$filter_types
