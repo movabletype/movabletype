@@ -1836,7 +1836,7 @@ sub _hdlr_content_field {
         unless $ctx->stash('content_field_data');
 
     my $value = $content_data->data->{ $field_data->{id} };
-    my $check_value = $value;
+    my $check_value = defined $value ? $value : '';
 
     if (ref $value eq 'ARRAY') {
         $check_value = @$value ? $value->[0] : '';
