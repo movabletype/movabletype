@@ -1525,7 +1525,7 @@ sub _hdlr_category_archive {
     # Get the current category
     defined( my $cat = _get_category_context($ctx) )
         or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
+    return if ( $cat eq '' or $cat->class_type eq 'folder' );
 
     my $curr_at
         = $ctx->{current_archive_type}
