@@ -171,9 +171,9 @@ sub save_filter {
                 }
             }
             else {
-                my $field_type  = $field_data->{type};
-                my $field_label = $field_data->{options}{label};
-                return $app->translate( 'Invalid [_1] in "[_2]" field.',
+                my $field_type  = $field->{type};
+                my $field_label = $field->{options}{label};
+                return $app->errtrans( 'Invalid [_1] in "[_2]" field.',
                     $field_type, $field_label );
             }
         }
