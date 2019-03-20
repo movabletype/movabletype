@@ -291,8 +291,9 @@ sub irregular_tests_for_create {
         }
     );
     test_data_api(
-        {   note   => 'no label',
-            path   => "/v4/sites/$site_id/contentTypes/$ct_with_data_label_id/data",
+        {   note => 'no label',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$ct_with_data_label_id/data",
             method => 'POST',
             params => {
                 content_data => {
@@ -307,6 +308,27 @@ sub irregular_tests_for_create {
             error => qr/"Data Label" is required./,
         }
     );
+    test_data_api(
+        {   note => 'Invalid datetime field (MTC-26264)',
+            path =>
+                "/v4/sites/$site_id/contentTypes/$ct_with_datetime_id/data",
+            method       => 'POST',
+            is_superuser => 1,
+            params       => {
+                content_data => {
+                    label => 'Invalid datetime value',
+                    data  => [
+                        {   id   => $datetime_field->id,
+                            data => 'a',
+                        }
+                    ],
+                },
+            },
+            code  => 409,
+            error => qq{Invalid date_and_time in "datetime" field.\n},
+        }
+    );
+
 }
 
 sub normal_tests_for_create {
@@ -796,11 +818,7 @@ sub normal_tests_for_create {
                 "/v4/sites/$site_id/contentTypes/$ct_with_datetime_id/data",
             method       => 'POST',
             is_superuser => 1,
-            params       => {
-                content_data => {
-                    label => 'no data field',
-                },
-            },
+            params => { content_data => { label => 'no data field', }, },
             result => sub {
                 ok my $cd = MT->model('content_data')->load(
                     { content_type_id => $ct_with_datetime_id, },
