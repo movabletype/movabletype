@@ -325,7 +325,7 @@ sub irregular_tests_for_create {
                 },
             },
             code  => 409,
-            error => qr/Invalid date_and_time in "datetime" field./,
+            error => qq{Invalid date_and_time in "datetime" field.\n},
         }
     );
 
