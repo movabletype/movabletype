@@ -360,22 +360,25 @@ sub edit {
 
         $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
         if ( $_->{type} eq 'multi_line_text' ) {
+            my $key
+                = 'content-field-'
+                . $_->{content_field_id}
+                . '_convert_breaks';
+
             if ( $convert_breaks
                 && exists $$convert_breaks->{ $_->{content_field_id} } )
             {
                 $_->{convert_breaks}
                     = $$convert_breaks->{ $_->{content_field_id} };
             }
-            elsif ( $content_data_id || $data ) {
-                my $key
-                    = 'content-field-'
-                    . $_->{content_field_id}
-                    . '_convert_breaks';
-                $_->{convert_breaks} = $app->param($key);
-            }
             else {
                 $_->{convert_breaks} = $_->{options}{input_format};
             }
+
+            if (defined $app->param($key) && $app->param($key) ne '') {
+                $_->{convert_breaks} = $app->param($key);
+            }
+
         }
         $_;
     } @$array;
@@ -501,19 +504,20 @@ sub save {
         }
         $data ||= {};
     }
-    else {
-        foreach my $f (@$field_data) {
+
+    foreach my $f (@$field_data) {
+        if ( !$app->param('from_preview') ) {
             my $content_field_type = $content_field_types->{ $f->{type} };
             $data->{ $f->{id} }
-                = _get_form_data( $app, $content_field_type, $f );
-            if ( $f->{type} eq 'multi_line_text' ) {
-                $convert_breaks->{ $f->{id} } = $app->param(
-                    'content-field-' . $f->{id} . '_convert_breaks' );
-                my $key = $f->{id} . '_convert_breaks';
-                $data->{$key}
-                    = $app->param(
-                    'content-field-' . $f->{id} . '_convert_breaks' );
-            }
+                = _get_form_data($app, $content_field_type, $f);
+        }
+        if ( $f->{type} eq 'multi_line_text' ) {
+            $convert_breaks->{ $f->{id} } = $app->param(
+                'content-field-' . $f->{id} . '_convert_breaks' );
+            my $key = $f->{id} . '_convert_breaks';
+            $data->{$key}
+                = $app->param(
+                'content-field-' . $f->{id} . '_convert_breaks' );
         }
     }
 
@@ -1704,6 +1708,19 @@ sub _build_content_data_preview {
         data_name  => 'serialized_data',
         data_value => $serialized_data,
         };
+
+    my %param_hash = $app->param_hash;
+    for my $param_key ( keys %param_hash ) {
+        my $param_value = $app->param($param_key);
+        if ($param_key =~ /\Acontent-field-[0-9]+_convert_breaks\z/
+            || $param_key =~ /\A(date|time)-[0-9]+\z/
+        ) {
+            push @data, {
+                data_name  => $param_key,
+                data_value => $param_value,
+            };
+        }
+    }
 
     $param{content_data_loop} = \@data;
 
