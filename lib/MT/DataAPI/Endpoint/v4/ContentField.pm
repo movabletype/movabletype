@@ -84,7 +84,7 @@ sub _build_around_filter {
         my $content_field_types = $app->registry('content_field_types');
         my $type_label = $content_field_types->{ $field->{type} }->{label};
         $type_label = $type_label->() if 'CODE' eq ref $type_label;
-        $field->{field_label} = $type_label;
+        $field->{type_label} = $type_label;
         $field->{order} = scalar @$fields || 0;
 
         my $hashes = $app->request('data_api_content_field_hashes_for_save');
