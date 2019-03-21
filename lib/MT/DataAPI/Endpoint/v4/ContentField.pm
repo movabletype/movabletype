@@ -77,7 +77,8 @@ sub _build_around_filter {
             push @$fields, $field;
         }
         $field->{options} ||= {};
-        $field->{options}{label} = $new_content_field->name;
+        $field->{options}{label}       = $new_content_field->name;
+        $field->{options}{description} = $new_content_field->description;
 
         $field->{type}      = $new_content_field->type;
         $field->{unique_id} = $new_content_field->unique_id;
