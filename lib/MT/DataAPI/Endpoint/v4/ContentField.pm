@@ -85,7 +85,7 @@ sub _build_around_filter {
         my $type_label = $content_field_types->{ $field->{type} }->{label};
         $type_label = $type_label->() if 'CODE' eq ref $type_label;
         $field->{type_label} = $type_label;
-        $field->{order} = scalar @$fields || 0;
+        $field->{order}      = scalar @$fields || 0;
 
         my $hashes = $app->request('data_api_content_field_hashes_for_save');
         if ( my $hash = shift @{ $hashes || [] } ) {
@@ -186,7 +186,7 @@ sub permutate {
     return _invalid_error($app) if ref $content_fields_array ne 'ARRAY';
 
     my @content_field_ids = map { $_->{id} } @$content_fields_array;
-    my @content_fields = MT->model('content_field')->load(
+    my @content_fields    = MT->model('content_field')->load(
         {   id              => \@content_field_ids,
             content_type_id => $content_type->id,
         }
