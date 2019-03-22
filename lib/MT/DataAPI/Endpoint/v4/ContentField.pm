@@ -77,15 +77,16 @@ sub _build_around_filter {
             push @$fields, $field;
         }
         $field->{options} ||= {};
-        $field->{options}{label} = $new_content_field->name;
+        $field->{options}{label}       = $new_content_field->name;
+        $field->{options}{description} = $new_content_field->description;
 
         $field->{type}      = $new_content_field->type;
         $field->{unique_id} = $new_content_field->unique_id;
         my $content_field_types = $app->registry('content_field_types');
         my $type_label = $content_field_types->{ $field->{type} }->{label};
         $type_label = $type_label->() if 'CODE' eq ref $type_label;
-        $field->{field_label} = $type_label;
-        $field->{order} = scalar @$fields || 0;
+        $field->{type_label} = $type_label;
+        $field->{order}      = scalar @$fields || 0;
 
         my $hashes = $app->request('data_api_content_field_hashes_for_save');
         if ( my $hash = shift @{ $hashes || [] } ) {
@@ -186,7 +187,7 @@ sub permutate {
     return _invalid_error($app) if ref $content_fields_array ne 'ARRAY';
 
     my @content_field_ids = map { $_->{id} } @$content_fields_array;
-    my @content_fields = MT->model('content_field')->load(
+    my @content_fields    = MT->model('content_field')->load(
         {   id              => \@content_field_ids,
             content_type_id => $content_type->id,
         }
