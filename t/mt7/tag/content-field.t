@@ -691,11 +691,11 @@ $test_env->prepare_fixture(
                 $list_case0->id             => [ '0' ],
             },
         );
-        # $content_data_case0->convert_breaks(
-        #     MT::Serialize->serialize(
-        #         \{ $multi_line_text_case0->id => '__default__' }
-        #     )
-        # );
+        $content_data_case0->convert_breaks(
+            MT::Serialize->serialize(
+                \{ $multi_line_text_case0->id => 0 }
+            )
+        );
         $content_data_case0->save or die $content_data_case0->errstr;;
 
     }
