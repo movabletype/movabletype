@@ -5629,7 +5629,7 @@ sub _hdlr_search_script {
 
 =head2 ContentDataSearchScript
 
-Returns the value of the C<DataContentsSearchScript>
+Returns the value of the C<ContentDataSearchScript>
 configuration setting. The default for this setting if unassigned is
 "mt-cdsearch.cgi".
 
