@@ -499,5 +499,39 @@ sub suite {
                     'Cloned template.' );
             },
         },
+
+        # preview_template_by_id
+        {    # v2 (ct)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_tmpl[1]->id
+                . '/preview',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot preview ct template.',
+        },
+        {    # v2 (ct_archive)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/preview',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot preview ct_archive template.',
+        },
+        {    # v4 (ct)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_tmpl[1]->id
+                . '/preview',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot preview ct template.',
+        },
+        {    # v4 (ct_archive)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/preview',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot preview ct_archive template.',
+        },
     ];
 }

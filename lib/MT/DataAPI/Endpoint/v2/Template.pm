@@ -298,6 +298,13 @@ sub preview_by_id {
         return $app->error( $app->translate('Template not found'), 404 );
     }
 
+    if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
+        return $app->error(
+            $app->translate( 'Cannot preview [_1] template.', $tmpl->type, ),
+            403,
+        );
+    }
+
     $app->param( 'id', $tmpl->id );
 
     return preview( $app, $endpoint );
