@@ -13,7 +13,7 @@ use base 'MT::DataAPI::Resource::v2::Template';
 sub updatable_fields {
     my $self   = shift;
     my $fields = $self->SUPER::updatable_fields;
-    push @$fields, 'contentTypeID';
+    push @$fields, 'contentType';
     $fields;
 }
 
@@ -42,11 +42,34 @@ sub fields {
             };
         }
     }
-    push @$fields,
-        {
-        name  => 'contentTypeID',
-        alias => 'content_type_id',
-        };
+    push @$fields, +{
+        name             => 'contentType',
+        bulk_from_object => sub {
+            my ( $objs, $hashes ) = @_;
+            my $size = scalar(@$objs);
+            for ( my $i = 0; $i < $size; $i++ ) {
+                my $obj = $objs->[$i];
+                next unless $obj->content_type_id;
+                $hashes->[$i]{contentType}
+                    = +{ id => $obj->content_type_id };
+            }
+        },
+        to_object => sub {   # Do nothing here and set value in type_to_object
+        },
+        type_to_object => sub {
+            my ( $hashes, $objs ) = @_;
+            return if $objs->[0]->id;
+            my $size = scalar(@$objs);
+            for ( my $i = 0; $i < $size; $i++ ) {
+                if (   $hashes->[$i]{contentType}
+                    && $hashes->[$i]{contentType}{id} )
+                {
+                    $objs->[$i]
+                        ->content_type_id( $hashes->[$i]{contentType}{id} );
+                }
+            }
+        },
+    };
     $fields;
 }
 
