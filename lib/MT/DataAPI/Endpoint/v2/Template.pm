@@ -19,7 +19,9 @@ my %SupportedType
 sub list {
     my ( $app, $endpoint ) = @_;
 
-    my %terms = ( type => { not => [qw/ backup widget widgetset /] }, );
+    my %terms
+        = ( type => { not => [qw/ ct ct_archive backup widget widgetset /] },
+        );
 
     my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
 

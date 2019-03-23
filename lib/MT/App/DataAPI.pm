@@ -2366,6 +2366,23 @@ sub core_endpoints {
         },
 
         # template
+        {   id             => 'list_templates',
+            route          => '/sites/:site_id/templates',
+            version        => 4,
+            handler        => "${pkg}v4::Template::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+                filterKeys   => 'type',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templates.',
+            },
+        },
         {   id          => 'get_template',
             route       => '/sites/:site_id/templates/:template_id',
             version     => 4,

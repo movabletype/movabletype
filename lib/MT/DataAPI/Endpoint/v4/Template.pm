@@ -16,6 +16,20 @@ use MT::DataAPI::Resource;
 my %SupportedType = map { $_ => 1 }
     qw/ index archive individual page category ct ct_archive /;
 
+sub list {
+    my ( $app, $endpoint ) = @_;
+
+    my %terms = ( type => { not => [qw/ backup widget widgetset /] }, );
+
+    my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
+
+    return +{
+        totalResults => ( $res->{count} || 0 ),
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
