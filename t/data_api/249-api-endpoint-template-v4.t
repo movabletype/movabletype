@@ -190,26 +190,36 @@ sub suite {
         },
 
         # update_template
-        {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+        {   # Wrong api version. (ct)
+            path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
-            params => { template => { name => 'update-ct-template', }, },
-            result => sub {
-                $app->model('template')->load( $ct_tmpl[0]->id );
-            },
-            complete => sub {
-                my $count
-                    = $app->model('log')->count( { level => 4 } );    # ERROR
-                is( $count, 0, 'No error occurs.' );
-                $app->model('log')->remove( { level => 4 } );
-            },
+            params => { template => {
+                    name => 'update-ct-template'
+                }, },
+            code => 403,
+            error => 'Cannot update ct template.',
         },
-        {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+        {   # Wrong api version. (ct_archive)
+            path   => "/v2/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
+            method => 'PUT',
+            params => { template => {
+                    name => 'update-ct-archive-template'
+                }, },
+            code => 403,
+            error => 'Cannot update ct_archive template.',
+        },
+        {   # ct
+            path   => "/v4/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
             params =>
-                { template => { contentType => { id => $ct[1]->id }, }, },
+                { template => { 
+                        name => 'update-ct-template',
+                        contentType => { id => $ct[1]->id }, 
+                    }, },
             result => sub {
                 my $tmpl = $app->model('template')->load( $ct_tmpl[0]->id );
-                isnt $tmpl->content_type_id => $ct[1]->id;    # not updated
+                is $tmpl->name, 'update-ct-template';
+                is $tmpl->content_type_id => $ct[0]->id;    # not updated
                 $tmpl;
             },
             complete => sub {
@@ -219,12 +229,17 @@ sub suite {
                 $app->model('log')->remove( { level => 4 } );
             },
         },
-        {   path   => "/v4/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+        {   # ct_archive
+            path   => "/v4/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
             method => 'PUT',
             params =>
-                { template => { contentType => { id => $ct[1]->id, }, }, },
+                { template => { 
+                        name => 'update-ct-archive-template',
+                        contentType => { id => $ct[1]->id, },
+                    }, },
             result => sub {
-                my $tmpl = $app->model('template')->load( $ct_tmpl[0]->id );
+                my $tmpl = $app->model('template')->load( $ct_archive_tmpl[0]->id );
+                is $tmpl->name, 'update-ct-archive-template';
                 is $tmpl->content_type_id => $ct[0]->id;    # not updated
                 $tmpl;
             },

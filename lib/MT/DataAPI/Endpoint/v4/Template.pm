@@ -32,6 +32,27 @@ sub get {
     return $tmpl;
 }
 
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $orig_tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $orig_tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    my $new_tmpl = $app->resource_object( 'template', $orig_tmpl )
+        or return;
+
+    save_object( $app, 'template', $new_tmpl )
+        or return;
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, 'template', $new_tmpl->id );
+
+    return $new_tmpl;
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 

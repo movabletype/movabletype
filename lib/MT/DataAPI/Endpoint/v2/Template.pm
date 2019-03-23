@@ -41,7 +41,8 @@ sub get {
 
     if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
         return $app->error(
-            $app->translate( 'Cannot get [_1] template.', $tmpl->type ), 403 );
+            $app->translate( 'Cannot get [_1] template.', $tmpl->type ),
+            403 );
     }
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -78,6 +79,16 @@ sub update {
 
     if ( grep { $orig_tmpl->type eq $_ } qw/ widget widgetset / ) {
         return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    if ( grep { $orig_tmpl->type eq $_ } qw / ct ct_archive / ) {
+        return $app->error(
+            $app->translate(
+                'Cannot update [_1] template.',
+                $orig_tmpl->type
+            ),
+            403
+        );
     }
 
     my $new_tmpl = $app->resource_object( 'template', $orig_tmpl )
