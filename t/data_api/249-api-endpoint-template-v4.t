@@ -37,7 +37,7 @@ $author->save;
 my $blog_id = $objs->{blog_id} or die;
 
 my @ct_tmpl = MT::Template->load( { blog_id => $blog_id, type => 'ct' } );
-my @ct = map { $_->content_type } @ct_tmpl;
+my @ct      = map { $_->content_type } @ct_tmpl;
 
 # test.
 my $suite = suite();

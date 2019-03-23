@@ -25,7 +25,7 @@ sub fields {
             $field->{from_object} = sub {
                 my ($obj) = @_;
                 my $app = MT->instance;
-                my $blog_id = $obj->blog_id || 0;
+                my $blog_id  = $obj->blog_id || 0;
                 my $obj_type = $obj->type;
 
                 return
