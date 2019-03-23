@@ -178,6 +178,11 @@ sub refresh {
     if ( grep { $tmpl->type eq $_ } qw/ backup widget widgetset / ) {
         return $app->error( $app->translate('Template not found'), 404 );
     }
+    if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
+        return $app->error(
+            $app->translate( 'Cannot refresh [_1] template.', $tmpl->type ),
+            403 );
+    }
 
     my @messages;
     local *MT::App::DataAPI::build_page = sub {

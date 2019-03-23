@@ -2418,6 +2418,14 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to publish a template.', },
         },
+        {   id      => 'refresh_template',
+            route   => '/sites/:site_id/templates/:template_id/refresh',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::refresh",
+            error_codes =>
+                { 403 => 'Do not have permission to refresh a template.', },
+        },
         {   id      => 'clone_template',
             route   => '/sites/:site_id/templates/:template_id/clone',
             verb    => 'POST',

@@ -374,6 +374,52 @@ sub suite {
             },
         },
 
+        # refresh_template
+        {    # v2 (ct)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_tmpl[1]->id
+                . '/refresh',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot refresh ct template.',
+        },
+        {    # v2 (ct_archive)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/refresh',
+            method => 'POST',
+            code   => 403,
+            error  => 'Cannot refresh ct_archive template.',
+        },
+        {    # v4 (ct)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_tmpl[1]->id
+                . '/refresh',
+            method => 'POST',
+            result => sub {
+                return +{
+                    status   => 'success',
+                    messages => [
+                        "Skipping template 'tmpl_contenttype_ct_with_other_catset' since it appears to be a custom template."
+                    ],
+                };
+            },
+        },
+        {    # v4 (ct_archive)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/refresh',
+            method => 'POST',
+            result => sub {
+                return +{
+                    status   => 'success',
+                    messages => [
+                        "Skipping template 'tmpl_contenttype_category_ct_with_other_catset' since it appears to be a custom template."
+                    ],
+                };
+            },
+        },
+
         # clone_template
         {    # v2 (ct)
             path => "/v2/sites/$blog_id/templates/"

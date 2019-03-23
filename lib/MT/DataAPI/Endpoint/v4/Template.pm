@@ -132,6 +132,38 @@ sub publish {
     return +{ status => 'success' };
 }
 
+sub refresh {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ backup widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    my @messages;
+    local *MT::App::DataAPI::build_page = sub {
+        my ( $app, $page, $param ) = @_;
+        @messages = map { $_->{message} } @{ $param->{message_loop} };
+    };
+
+    local $app->{mode};
+
+    $app->param( 'id', $tmpl->id );
+
+    require MT::CMS::Template;
+    MT::CMS::Template::refresh_individual_templates($app);
+
+    if ( $app->errstr ) {
+        return $app->error(403);
+    }
+
+    return +{
+        status   => 'success',
+        messages => \@messages,
+    };
+}
+
 sub clone {
     my ( $app, $endpoint ) = @_;
 
