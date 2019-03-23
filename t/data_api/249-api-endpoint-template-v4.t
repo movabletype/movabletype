@@ -39,6 +39,9 @@ my $blog_id = $objs->{blog_id} or die;
 my @ct_tmpl = MT::Template->load( { blog_id => $blog_id, type => 'ct' } );
 my @ct      = map { $_->content_type } @ct_tmpl;
 
+my @ct_archive_tmpl
+    = MT::Template->load( { blog_id => $blog_id, type => 'ct_archive' } );
+
 # test.
 my $suite = suite();
 test_data_api($suite);
@@ -48,6 +51,29 @@ done_testing;
 sub suite {
     return +[
 
+        # list_templates
+
+        # get_template
+        {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+            method => 'GET',
+            code   => 403,
+            error  => 'Cannot get ct template.',
+        },
+        {   path => "/v2/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
+            method => 'GET',
+            code   => 403,
+            error  => 'Cannot get ct_archive template.',
+        },
+        {   path   => "/v4/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
+            method => 'GET',
+            result => sub { $ct_tmpl[0] },
+        },
+        {   path => "/v4/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
+            method => 'GET',
+            result => sub { $ct_archive_tmpl[0] },
+        },
+
+        # create_template
         {    # Wrong api version.
             path   => "/v2/sites/$blog_id/templates",
             method => 'POST',
@@ -136,6 +162,7 @@ sub suite {
             },
         },
 
+        # update_template
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
             params => { template => { name => 'update-ct-template', }, },
@@ -182,6 +209,7 @@ sub suite {
             },
         },
 
+        # delete_template
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'DELETE',
             code   => 403,
@@ -199,6 +227,7 @@ sub suite {
             },
         },
 
+        # publish_template
         {   path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/publish',
@@ -230,6 +259,7 @@ sub suite {
             },
         },
 
+        # clone_template
         {   path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/clone',

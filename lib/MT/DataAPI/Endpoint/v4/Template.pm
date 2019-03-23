@@ -16,6 +16,22 @@ use MT::DataAPI::Resource;
 my %SupportedType = map { $_ => 1 }
     qw/ index archive individual page category ct ct_archive /;
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'template', $tmpl->id, obj_promise($tmpl) )
+        or return;
+
+    return $tmpl;
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 

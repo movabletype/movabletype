@@ -13,6 +13,9 @@ use MT::CMS::Template;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+my %SupportedType
+    = map { $_ => 1 } qw/ index archive individual page category /;
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -34,6 +37,11 @@ sub get {
 
     if ( grep { $tmpl->type eq $_ } qw/ widget widgetset / ) {
         return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
+        return $app->error(
+            $app->translate( 'Cannot get [_1] template.', $tmpl->type ), 403 );
     }
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -97,11 +105,7 @@ sub delete {
         'template', $tmpl )
         or return;
 
-    if (!(  grep { $tmpl->type eq $_ }
-            qw/ index archive individual page category custom /
-        )
-        )
-    {
+    if ( !$SupportedType{ $tmpl->type } and $tmpl->type ne 'custom' ) {
         return $app->error(
             $app->translate( 'Cannot delete [_1] template.', $tmpl->type ),
             403 );
@@ -127,10 +131,7 @@ sub publish {
     my ( $site, $tmpl ) = context_objects(@_) or return;
 
     my $type = defined( $tmpl->type ) ? $tmpl->type : '';
-    if (!(  grep { $type eq $_ } qw/ index archive individual page category /
-        )
-        )
-    {
+    if ( !$SupportedType{$type} ) {
         return $app->error(
             $app->translate( 'Cannot publish [_1] template.', $type ), 400 );
     }
@@ -250,10 +251,7 @@ sub clone {
 
     # Check template type.
     my $type = defined( $tmpl->type ) ? $tmpl->type : '';
-    if (!(  grep { $type eq $_ } qw/ index archive individual page category /
-        )
-        )
-    {
+    if ( !$SupportedType{$type} ) {
         return $app->error(
             $app->translate( 'Cannot clone [_1] template.', $type ), 400 );
     }
@@ -344,7 +342,7 @@ sub preview {
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load( { id => $preview_basename } );
+    my $sess          = $session_class->load( { id => $preview_basename } );
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 

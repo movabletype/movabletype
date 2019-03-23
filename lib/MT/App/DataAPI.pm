@@ -2366,6 +2366,15 @@ sub core_endpoints {
         },
 
         # template
+        {   id          => 'get_template',
+            route       => '/sites/:site_id/templates/:template_id',
+            version     => 4,
+            handler     => "${pkg}v4::Template::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested template.',
+            },
+        },
         {   id      => 'delete_template',
             route   => '/sites/:site_id/templates/:template_id',
             verb    => 'DELETE',
@@ -3279,7 +3288,7 @@ sub show_error {
 
     if ( !$error ) {
         $error = {
-            code => $param->{status} || 500,
+            code    => $param->{status} || 500,
             message => $param->{error},
         };
     }
