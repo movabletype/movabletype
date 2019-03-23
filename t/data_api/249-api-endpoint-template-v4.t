@@ -48,13 +48,14 @@ done_testing;
 sub suite {
     return +[
 
-        {    # Invalid type.
+        {    # Wrong api version.
             path   => "/v2/sites/$blog_id/templates",
             method => 'POST',
             params => {
                 template => {
-                    name => 'create-template',
-                    type => 'ct',
+                    name        => 'create-template',
+                    type        => 'ct',
+                    contentType => { id => 1 },
                 },
             },
             code  => 409,
@@ -170,7 +171,7 @@ sub suite {
                 { template => { contentType => { id => $ct[1]->id, }, }, },
             result => sub {
                 my $tmpl = $app->model('template')->load( $ct_tmpl[0]->id );
-                is $tmpl->content_type_id => $ct[0]->id;
+                is $tmpl->content_type_id => $ct[0]->id;    # not updated
                 $tmpl;
             },
             complete => sub {
