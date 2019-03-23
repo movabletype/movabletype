@@ -309,14 +309,24 @@ sub suite {
         },
 
         # publish_template
-        {   path => "/v2/sites/$blog_id/templates/"
+        {    # v2 (ct)
+            path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/publish',
             method => 'POST',
             code   => 400,
             error  => "Cannot publish ct template.",
         },
-        {   path => "/v4/sites/$blog_id/templates/"
+        {    # v2 (ct_archive)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/publish',
+            method => 'POST',
+            code   => 400,
+            error  => 'Cannot publish ct_archive template.',
+        },
+        {    # v4 (ct)
+            path => "/v4/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/publish',
             method => 'POST',
@@ -334,6 +344,30 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $fi = $app->model('fileinfo')
                     ->load( { template_id => $ct_tmpl[1]->id } );
+
+                my $file_path = $fi->file_path;
+                ok( $fmgr->exists($file_path), "'$file_path' exists." );
+            },
+        },
+        {    # v4 (ct_archive)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/publish',
+            method => 'POST',
+            setup  => sub {
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $ct_archive_tmpl[1]->id } );
+
+                my $file_path = $fi->file_path;
+                $fmgr->delete($file_path);
+            },
+            result => sub {
+                return +{ status => 'success' };
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $ct_archive_tmpl[1]->id } );
 
                 my $file_path = $fi->file_path;
                 ok( $fmgr->exists($file_path), "'$file_path' exists." );
