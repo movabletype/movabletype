@@ -74,12 +74,12 @@ sub suite {
         },
 
         # create_template
-        {    # Wrong api version.
+        {    # Wrong api version. (ct)
             path   => "/v2/sites/$blog_id/templates",
             method => 'POST',
             params => {
                 template => {
-                    name        => 'create-template',
+                    name        => 'create-ct-template',
                     type        => 'ct',
                     contentType => { id => 1 },
                 },
@@ -87,7 +87,20 @@ sub suite {
             code  => 409,
             error => "Invalid type: ct\n",
         },
-        {    # No contentType
+        {    # Wrong api version. (ct_archive)
+            path   => "/v2/sites/$blog_id/templates",
+            method => 'POST',
+            params => {
+                template => {
+                    name        => 'create-ct-archive-template',
+                    type        => 'ct_archive',
+                    contentType => { id => 1 },
+                },
+            },
+            code  => 409,
+            error => "Invalid type: ct_archive\n",
+        },
+        {    # No contentType (ct)
             path   => "/v4/sites/$blog_id/templates",
             method => 'POST',
             params => {
@@ -99,7 +112,20 @@ sub suite {
             code  => 409,
             error => "A parameter \"contentType\" is required.\n",
         },
-        {   path   => "/v4/sites/$blog_id/templates",
+        {    # No contentType (ct_archive)
+            path   => "/v4/sites/$blog_id/templates",
+            method => 'POST',
+            params => {
+                template => {
+                    name => 'create-ct-archive-template',
+                    type => 'ct_archive',
+                },
+            },
+            code  => 409,
+            error => "A parameter \"contentType\" is required.\n",
+        },
+        {    # ct
+            path   => "/v4/sites/$blog_id/templates",
             method => 'POST',
             setup  => sub {
                 die
@@ -130,7 +156,8 @@ sub suite {
                 $app->model('log')->remove( { level => 4 } );
             },
         },
-        {   path   => "/v4/sites/$blog_id/templates",
+        {    # ct_archive
+            path   => "/v4/sites/$blog_id/templates",
             method => 'POST',
             setup  => sub {
                 die
