@@ -375,15 +375,56 @@ sub suite {
         },
 
         # clone_template
-        {   path => "/v2/sites/$blog_id/templates/"
+        {    # v2 (ct)
+            path => "/v2/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
                 . '/clone',
             method => 'POST',
             code   => 400,
             error  => "Cannot clone ct template.",
         },
-        {   path => "/v4/sites/$blog_id/templates/"
+        {    # v2 (ct_archive)
+            path => "/v2/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
+                . '/clone',
+            method => 'POST',
+            code   => 400,
+            error  => "Cannot clone ct_archive template.",
+        },
+        {    # v4 (ct)
+            path => "/v4/sites/$blog_id/templates/"
                 . $ct_tmpl[1]->id
+                . '/clone',
+            method => 'POST',
+            setup  => sub {
+                my ($data) = @_;
+                $data->{tmpl_count} = $app->model('template')->count(
+                    {   blog_id => $blog_id,
+                        type    => [
+                            qw/ index archive individual page category ct ct_archive /
+                        ]
+                    }
+                );
+            },
+            result => sub {
+                return +{ status => 'success' };
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                my $tmpl_count = $app->model('template')->count(
+                    {   blog_id => $blog_id,
+                        type    => [
+                            qw/ index archive individual page category ct ct_archive /
+                        ]
+                    }
+                );
+                is( $tmpl_count, $data->{tmpl_count} + 1,
+                    'Cloned template.' );
+            },
+        },
+        {    # v4 (ct_archive)
+            path => "/v4/sites/$blog_id/templates/"
+                . $ct_archive_tmpl[1]->id
                 . '/clone',
             method => 'POST',
             setup  => sub {
