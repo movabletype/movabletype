@@ -95,12 +95,12 @@ sub suite {
         # get_template
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'GET',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot get ct template.',
         },
         {   path => "/v2/sites/$blog_id/templates/" . $ct_archive_tmpl[0]->id,
             method => 'GET',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot get ct_archive template.',
         },
         {   path   => "/v4/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
@@ -233,7 +233,7 @@ sub suite {
             path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
             params => { template => { name => 'update-ct-template' }, },
-            code   => 403,
+            code   => 400,
             error  => 'Cannot update ct template.',
         },
         {    # Wrong api version. (ct_archive)
@@ -241,7 +241,7 @@ sub suite {
             method => 'PUT',
             params =>
                 { template => { name => 'update-ct-archive-template' }, },
-            code  => 403,
+            code  => 400,
             error => 'Cannot update ct_archive template.',
         },
         {    # ct
@@ -380,7 +380,7 @@ sub suite {
                 . $ct_tmpl[1]->id
                 . '/refresh',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot refresh ct template.',
         },
         {    # v2 (ct_archive)
@@ -388,7 +388,7 @@ sub suite {
                 . $ct_archive_tmpl[1]->id
                 . '/refresh',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot refresh ct_archive template.',
         },
         {    # v4 (ct)
@@ -506,7 +506,7 @@ sub suite {
                 . $ct_tmpl[1]->id
                 . '/preview',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot preview ct template.',
         },
         {    # v2 (ct_archive)
@@ -514,7 +514,7 @@ sub suite {
                 . $ct_archive_tmpl[1]->id
                 . '/preview',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot preview ct_archive template.',
         },
         {    # v4 (ct)
@@ -522,7 +522,7 @@ sub suite {
                 . $ct_tmpl[1]->id
                 . '/preview',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot preview ct template.',
         },
         {    # v4 (ct_archive)
@@ -530,7 +530,7 @@ sub suite {
                 . $ct_archive_tmpl[1]->id
                 . '/preview',
             method => 'POST',
-            code   => 403,
+            code   => 400,
             error  => 'Cannot preview ct_archive template.',
         },
     ];

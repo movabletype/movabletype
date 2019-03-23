@@ -44,7 +44,7 @@ sub get {
     if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
         return $app->error(
             $app->translate( 'Cannot get [_1] template.', $tmpl->type ),
-            403 );
+            400 );
     }
 
     run_permission_filter( $app, 'data_api_view_permission_filter',
@@ -87,9 +87,9 @@ sub update {
         return $app->error(
             $app->translate(
                 'Cannot update [_1] template.',
-                $orig_tmpl->type
+                $orig_tmpl->type,
             ),
-            403
+            400,
         );
     }
 
@@ -181,7 +181,7 @@ sub refresh {
     if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
         return $app->error(
             $app->translate( 'Cannot refresh [_1] template.', $tmpl->type ),
-            403 );
+            400 );
     }
 
     my @messages;
@@ -301,7 +301,7 @@ sub preview_by_id {
     if ( grep { $tmpl->type eq $_ } qw / ct ct_archive / ) {
         return $app->error(
             $app->translate( 'Cannot preview [_1] template.', $tmpl->type, ),
-            403,
+            400,
         );
     }
 
