@@ -37,6 +37,20 @@ sub list {
     };
 }
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl, $map ) = context_objects(@_) or return;
+
+    return if !_is_archive_template( $app, $tmpl );
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'templatemap', $map->id, obj_promise($map) )
+        or return;
+
+    return $map;
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 

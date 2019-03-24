@@ -94,7 +94,7 @@ my $blog_ct1_archive_tmplmap = MT::Test::Permission->make_templatemap(
     template_id  => $blog_ct1_archive_tmpl_id,
 );
 my $blog_ct1_tmplmap_id         = $blog_ct1_tmplmap->id,;
-my $blog_ct1_archive_tmplmap_id = $blog_ct1_archive_tmpl->id;
+my $blog_ct1_archive_tmplmap_id = $blog_ct1_archive_tmplmap->id;
 
 my $blog_ct2_tmpl = MT::Test::Permission->make_template(
     blog_id         => 1,
@@ -971,6 +971,34 @@ sub suite {
                     items => MT::DataAPI::Resource->from_object( \@tm ),
                 };
             },
+        },
+
+        # get_templatemap
+        {   note => 'get content type archive map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'GET',
+            code   => 400,
+            error  => 'Template "blog-name 0" is not an archive template.',
+        },
+        {   note => 'get content type archive map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method => 'GET',
+            code   => 400,
+            error  => 'Template "blog-name 1" is not an archive template.',
+        },
+        {   note => 'get content type archive map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'GET',
+            result => $blog_ct1_tmplmap,
+        },
+        {   note => 'get content type archive map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method => 'GET',
+            result => $blog_ct1_archive_tmplmap,
         },
     ];
 }

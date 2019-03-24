@@ -2452,6 +2452,16 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of templatemaps.',
             },
         },
+        {   id => 'get_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version     => 4,
+            handler     => "${pkg}v4::TemplateMap::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested templatemap.',
+            },
+        },
         {   id    => 'create_templatemap',
             route => '/sites/:site_id/templates/:template_id/templatemaps',
             resources => ['templatemap'],
