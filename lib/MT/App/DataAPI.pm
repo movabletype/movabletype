@@ -2481,6 +2481,15 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to update a templatemap.', },
         },
+        {   id => 'delete_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb    => 'DELETE',
+            version => 4,
+            handler => "${pkg}v4::TemplateMap::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a templatemap.', },
+        },
 
         # group
         {   id             => 'list_groups',

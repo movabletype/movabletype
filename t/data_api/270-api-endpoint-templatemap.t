@@ -1044,6 +1044,41 @@ sub suite {
                 $blog_ct1_archive_tmplmap;
             },
         },
+
+        # delete_templatemap
+        {   note => 'delete content type archive map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'DELETE',
+            code   => 400,
+            error  => 'Template "blog-name 0" is not an archive template.',
+        },
+        {   note => 'delete content type archive listing map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method => 'DELETE',
+            code   => 400,
+            error  => 'Template "blog-name 1" is not an archive template.',
+        },
+        {   note => 'delete content type archive map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method   => 'DELETE',
+            result   => $blog_ct1_tmplmap,
+            complete => sub {
+                ok( !$app->model('templatemap')->load($blog_ct1_tmplmap_id) );
+            },
+        },
+        {   note => 'delete content type archive listing map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method   => 'DELETE',
+            result   => $blog_ct1_archive_tmplmap,
+            complete => sub {
+                ok( !$app->model('templatemap')
+                        ->load($blog_ct1_archive_tmplmap_id) );
+            },
+        },
     ];
 }
 

@@ -89,6 +89,8 @@ sub delete {
 
     my ( $site, $tmpl, $map ) = context_objects(@_) or return;
 
+    return if !_is_archive_template( $app, $tmpl );
+
     run_permission_filter( $app, 'data_api_delete_permission_filter',
         'templatemap', $map )
         or return;
