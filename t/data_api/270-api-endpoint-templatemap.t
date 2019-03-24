@@ -24,6 +24,7 @@ use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
+use MT::PublishOption;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
@@ -999,6 +1000,49 @@ sub suite {
                 "/v4/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
             method => 'GET',
             result => $blog_ct1_archive_tmplmap,
+        },
+
+        # update_templatemap
+        {   note => 'update content type archive map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'PUT',
+            params => { templatemap => { buildType => 'Dynamic', }, },
+            code   => 400,
+            error  => 'Template "blog-name 0" is not an archive template.',
+        },
+        {   note => 'update content type archive listing map (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method => 'PUT',
+            params => { templatemap => { buildType => 'Dynamic', }, },
+            code   => 400,
+            error  => 'Template "blog-name 1" is not an archive template.',
+        },
+        {   note => 'update content type archive map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps/$blog_ct1_tmplmap_id",
+            method => 'PUT',
+            params => { templatemap => { buildType => 'Dynamic', }, },
+            result => sub {
+                $blog_ct1_tmplmap->refresh;
+                is( $blog_ct1_tmplmap->build_type,
+                    MT::PublishOption::DYNAMIC()
+                );
+                $blog_ct1_tmplmap;
+            },
+        },
+        {   note => 'update content type archive listing map',
+            path =>
+                "/v4/sites/1/templates/$blog_ct1_archive_tmpl_id/templatemaps/$blog_ct1_archive_tmplmap_id",
+            method => 'PUT',
+            params => { templatemap => { buildType => 'Dynamic', }, },
+            result => sub {
+                $blog_ct1_archive_tmplmap->refresh;
+                is( $blog_ct1_archive_tmplmap->build_type,
+                    MT::PublishOption::DYNAMIC() );
+                $blog_ct1_archive_tmplmap;
+            },
         },
     ];
 }

@@ -75,6 +75,8 @@ sub update {
 
     my ( $site, $tmpl, $orig_map ) = context_objects(@_) or return;
 
+    return if !_is_archive_template( $app, $tmpl );
+
     my $new_map = $app->resource_object( 'templatemap', $orig_map ) or return;
 
     save_object( $app, 'templatemap', $new_map, $orig_map ) or return;

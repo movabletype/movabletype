@@ -2471,6 +2471,16 @@ sub core_endpoints {
             error_codes =>
                 { 403 => 'Do not have permission to create a templatemap.', },
         },
+        {   id => 'update_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            resources => ['templatemap'],
+            verb      => 'PUT',
+            version   => 4,
+            handler   => "${pkg}v4::TemplateMap::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a templatemap.', },
+        },
 
         # group
         {   id             => 'list_groups',
