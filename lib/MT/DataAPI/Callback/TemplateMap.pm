@@ -54,11 +54,24 @@ sub save_filter {
 sub _retrieve_archive_types {
     my ( $app, $map ) = @_;
 
-    my $tmpl = $app->model('template')->load( $map->template_id )
-        or return [];
+    my $tmpl     = $map->template or return [];
     my $obj_type = $tmpl->type;
 
-    my @at = $app->publisher->archive_types;
+    my @at            = $app->publisher->archive_types;
+    my $has_cat_field = $app->model('content_field')->count(
+        {   content_type_id => $tmpl->content_type_id || 0,
+            type            => 'categories',
+        }
+    );
+    if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
+        @at = grep { $_ =~ /^ContentType/ } @at;
+        @at = grep { $_ !~ /^ContentType-Category/ } @at
+            unless $has_cat_field;
+    }
+    else {
+        @at = grep { $_ !~ /^ContentType/ } @at;
+    }
+
     my @archive_types;
     for my $at (@at) {
         my $archiver      = $app->publisher->archiver($at);
@@ -85,6 +98,16 @@ sub _retrieve_archive_types {
             # only include if it is a entry-based archive type and entry
             next unless $archiver->entry_based;
             next if $archiver->entry_class eq 'page';
+        }
+        elsif ( $obj_type eq 'ct_archive' ) {
+
+            # only include if it is NOT a contenttype-based archive type
+            next if $archiver->contenttype_based;
+        }
+        elsif ( $obj_type eq 'ct' ) {
+
+            # only include if it is a contenttype-based archive type
+            next unless $archiver->contenttype_based;
         }
         push @archive_types, $at;
     }

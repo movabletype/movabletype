@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -631,8 +633,10 @@ sub suite {
             },
         },
 
-        # version 4
-        {   note   => 'create content type archive for $ct1',
+        #### version 4
+
+        # create_templatemap
+        {   note   => 'create content type archive for $ct1 (v2)',
             path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
             method => 'POST',
             params => {
@@ -643,6 +647,128 @@ sub suite {
             },
             code  => 400,
             error => 'Template "blog-name 0" is not an archive template.',
+        },
+        {   note => 'create content type archive listing for $ct2 (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Author-Monthly',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 400,
+            error => 'Template "blog-name 3" is not an archive template.',
+        },
+        {   note =>
+                'create content type archive map for individual template (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType\n",
+        },
+        {   note =>
+                'create content type archive listing map for individual template (v2)',
+            path =>
+                "/v2/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Author',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType-Author\n",
+        },
+        {   note =>
+                'create content type archive listing map for content type archive template',
+            path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Author',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType-Author\n",
+        },
+        {   note =>
+                'create individual archive map for content type archive template',
+            path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'Individual',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: Individual\n",
+        },
+        {   note =>
+                'create content type archive map for content type archive listing template',
+            path =>
+                "/v4/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType\n",
+        },
+        {   note =>
+                'create category archive map for content type archive listing template',
+            path =>
+                "/v4/sites/1/templates/$blog_ct2_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'Category',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: Category\n",
+        },
+        {   note => 'create content type archive map for individual template',
+            path =>
+                "/v4/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType\n",
+        },
+        {   note =>
+                'create content type archive listing map for individual template',
+            path =>
+                "/v4/sites/1/templates/$blog_individual_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Author',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType-Author\n",
         },
         {   note   => 'create content type archive for $ct1',
             path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
@@ -807,6 +933,7 @@ sub suite {
             },
         },
 
+        # list_templatemaps
         {    # ct1 content type archive
             path   => "/v2/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
             method => 'GET',
