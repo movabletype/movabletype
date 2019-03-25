@@ -1849,8 +1849,10 @@ sub _post_save_cfg_screens {
 
         if ($path_changed) {
             update_dynamicity( $app, $obj );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
-                or $app->publish_error();
+
+            # MTC-26415
+            # $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
+            #     or $app->publish_error();
         }
     }
     if ( $screen eq 'cfg_entry' ) {
