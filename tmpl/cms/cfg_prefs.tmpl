@@ -282,7 +282,7 @@
       </div>
     </mt:if>
       <p class="text-warning alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none">
-        <__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%">
+        <__trans phrase="Warning: Changing the [_1] URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
         </p>
     <mt:if name="is_blog">
       <small class="form-text text-muted hint"><__trans phrase="The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></small>
@@ -458,7 +458,7 @@
         </div>
       </mt:if>
         <p class="text-warning alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none">
-          <__trans phrase="Warning: Changing the archive URL can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
+          <__trans phrase="Warning: Changing the archive URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
         </p>
       <mt:if name="is_blog">
         <small class="form-text text-muted hint"><__trans phrase="The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/"></small>
@@ -500,7 +500,7 @@
         </div>
         </mt:if>
         <p class="text-warning alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none">
-          <__trans phrase="Warning: Changing the archive path can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">">
+          <__trans phrase="Warning: Changing the archive path requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">">
           </p>
         <mt:if name="is_blog">
         <small class="form-text text-muted hint relative-site_path-hint">
