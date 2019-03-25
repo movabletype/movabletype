@@ -164,7 +164,7 @@ subtest 'Test cfg_prefs mode' => sub {
             like( $out, qr/$is_checked/,
                 'Parameter "enable_archive_paths" is checked.' );
 
-            if ( $type eq 'website' ) {
+            {
                 my $archive_url  = 'http://localhost/archive/path/';
                 my $archive_path = $test_env->root . "new/$type/archive/path";
 
@@ -173,21 +173,32 @@ subtest 'Test cfg_prefs mode' => sub {
                     {   __test_user          => $admin,
                         __request_method     => 'POST',
                         __mode               => 'save',
-                        _type                => 'blog',
+                        _type                => $type,
                         blog_id              => $test_blog->id,
                         id                   => $test_blog->id,
                         enable_archive_paths => 1,
                         archive_url          => $archive_url,
                         archive_path         => $archive_path,
+                        site_url_path    => $type eq 'blog' ? 'nana/' : '',
+                        archive_url_path => $type eq 'blog'
+                        ? 'nana/archives/'
+                        : '',
+                        cfg_screen             => 'cfg_prefs',
+                        preferred_archive_type => 'Individual',
+                        max_revisions_entry    => 20,
+                        max_revisions_cd       => 20,
+                        max_revisions_template => 20,
                     },
                 );
                 $out = delete $app->{__test_output};
                 ok( $out =~ /Status: 302 Found/ && $out =~ /saved=1/,
                     'Request: save blog' );
 
-                $test_blog = MT->model('website')->load( $test_blog->id );
-                is( $test_blog->column('archive_url'),
-                    $archive_url, 'Can save archive_url correctly.' );
+                $test_blog = MT->model($type)->load( $test_blog->id );
+                if ( $type eq 'website' ) {
+                    is( $test_blog->column('archive_url'),
+                        $archive_url, 'Can save archive_url correctly.' );
+                }
                 is( $test_blog->column('archive_path'),
                     $archive_path, 'Can save archive_path correctly.' );
 
