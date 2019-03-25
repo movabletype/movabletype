@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -21,26 +22,27 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
 
-    # Author
-    my $admin = MT->model('author')->load(1);
-});
+        # Author
+        my $admin = MT->model('author')->load(1);
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
-my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load( { name => 'my blog' } );
 
 my $admin = MT->model('author')->load(1);
 
@@ -58,7 +60,7 @@ MT->publisher->rebuild( BlogID => $website->id );
 MT->publisher->rebuild( BlogID => $blog->id );
 
 my @published_files;
-require File::Find;
+use File::Find;
 File::Find::find(
     {   wanted => sub {
             push @published_files, $File::Find::name;
@@ -78,8 +80,9 @@ note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
         my $type_ucfirst = 'Site';    # ucfirst $type;
-        my $test_blog = $type eq 'website' ? $website : $blog;
-        my $type_alias = $type eq 'website' ? 'site' : 'child site';
+        my $test_blog          = $type eq 'website' ? $website : $blog;
+        my $type_alias         = $type eq 'website' ? 'site' : 'child site';
+        my $type_alias_ucfirst = $type eq 'website' ? 'Site' : 'Child Site';
 
         note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
@@ -150,7 +153,8 @@ subtest 'Test cfg_prefs mode' => sub {
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all links in your ${type_alias}.";
+                "Warning: Changing the archive URL requires a complete publish of your ${type_alias_ucfirst}, even when publishing profile is dynamic publishing.";
+
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 
