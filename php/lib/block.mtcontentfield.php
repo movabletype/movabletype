@@ -101,7 +101,11 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
             $value = $value[$field_data['id']];
         }
 
-        $check_value = is_array($value) ? $value[0] : $value;
+        $check_value = $value;
+
+        if (is_array($check_value)) {
+            $check_value = isset($value[0]) ? $value[0] : '';
+        }
 
         if ($check_value === NULL || $check_value === '') {
             $ctx->stash('conditional', 0);
