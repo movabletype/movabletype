@@ -132,7 +132,7 @@ subtest 'Test cfg_prefs mode' => sub {
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all links in your ${type}.";
+                "Warning: Changing the archive URL requires a complete publish of your ${type}, even when publishing profile is dynamic publishing.";
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 

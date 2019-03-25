@@ -56,7 +56,7 @@
   <mtapp:statusmsg
      id="saved"
      class="success"
-     rebuild="all"
+     rebuild="cfg_prefs"
      can_close="0">
     <__trans phrase="Your preferences have been saved.">
   </mtapp:statusmsg>
@@ -265,7 +265,7 @@ function setLicense() {
         <input type="text" name="site_url" id="site_url" value="<mt:var name="site_url" escape="html" default="$suggested_site_url">" class="text website-url-field mt-edit-field required" />
       </div>
     </mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL can result in breaking all the links in your [_1]." params="<mt:var name="object_label" capitalize="1">%%"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_url-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">%%"></p>
     <mt:if name="is_blog">
       <div class="hint"><__trans phrase="The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/"></div>
     <mt:else>
@@ -290,7 +290,7 @@ function setLicense() {
         <input type="checkbox" name="use_absolute" id="use_absolute" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> class="cb" /> <label for="use_absolute"><__trans phrase="Use absolute path"></label>
       </div>
       </mt:if></mt:if>
-      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1]." params="<mt:var name="object_label" capitalize="1">"></p>
+      <p class="alert-warning-inline icon-left icon-warning" id="site_path-warning" style="display: none"><__trans phrase="Warning: Changing the [_1] root requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" capitalize="1">"></p>
 
       <mt:if name="is_blog">
       <div class="hint relative-site_path-hint">
@@ -370,7 +370,7 @@ function setLicense() {
           <input type="text" name="archive_url" id="archive_url" value="<mt:var name="archive_url" encode_html="1" default="$site_url">" class="text website-url-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required" />
         </div>
       </mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">"></p>
+        <p class="alert-warning-inline icon-left icon-warning" id="archive_url-warning" style="display: none"><__trans phrase="Warning: Changing the archive URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" lower_case="1">"></p>
       <mt:if name="is_blog">
         <div class="hint"><__trans phrase="The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/"></div>
       <mt:else>
@@ -403,7 +403,7 @@ function setLicense() {
           <input type="text" name="archive_path" id="archive_path" value="<mt:if name="archive_path_absolute"><mt:var name="archive_path" escape="html"><mt:else><mt:var name="site_path" escape="html" ></mt:if>" class="website-path-field mt-edit-field<mt:unless name="enable_archive_paths"> show-input</mt:unless> required<mt:if name="sitepath_limited"> limited_path</mt:if>" />
         </div>
         </mt:if>
-        <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path can result in breaking all links in your [_1]." params="<mt:var name="object_label" lower_case="1">"></p>
+        <p class="alert-warning-inline icon-left icon-warning" id="archive_path-warning" style="display: none"><__trans phrase="Warning: Changing the archive path requires a complete publish of your [_1], even when publishing profile is dynamic publishing." params="<mt:var name="object_label" lower_case="1">"></p>
         <mt:if name="is_blog">
         <div class="hint relative-site_path-hint">
           <__trans phrase="The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">

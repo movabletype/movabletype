@@ -3318,7 +3318,10 @@ sub _hdlr_app_statusmsg {
         )
         )
     {
-        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild = '' if $rebuild ne 'cfg_prefs' && $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
+            if $rebuild eq 'cfg_prefs';
         $rebuild
             = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild">%%</a>">}
             if $rebuild eq 'all';
