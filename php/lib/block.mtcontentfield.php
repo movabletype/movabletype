@@ -107,7 +107,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
             $check_value = isset($value[0]) ? $value[0] : '';
         }
 
-        if ($check_value === NULL || $check_value === '') {
+        if ($check_value === NULL || $check_value === '' || $check_value === false) {
             $ctx->stash('conditional', 0);
             $ctx->stash('_content_field_counter', $counter + 1);
             $repeat = true;
