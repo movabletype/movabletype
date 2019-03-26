@@ -17,7 +17,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     // notes: file case needs work -- search through blog site archive path, etc...
     // push to ctx->vars
     $ext_args = array();
-    while(list ($key, $val) = each($args)) {
+    foreach($args as $key => $val) {
         if (!preg_match('/(^file$|^module$|^widget$|^blog_id$|^identifier$|^type$)/', $key)) {
             require_once("function.mtsetvar.php");
             smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $ctx);
