@@ -102,7 +102,9 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                     }
                 }
             } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
-                $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
+                $fn = function($a, $b) {
+                    return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;
+                };
                 usort($tags, $fn);
                 if ( !isset($args['sort_order']) )
                     $sort_order = 'descend';

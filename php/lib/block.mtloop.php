@@ -37,26 +37,18 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
         if ($sort) {
             $sort = strtolower($sort);
             if (preg_match('/\bkey\b/', $sort)) {
-                usort($keys, create_function(
-                    '$a,$b',
-                    'return strcmp($a, $b);'
-                ));
+                usort($keys, function($a, $b) {
+                    return strcmp($a, $b);
+                });
             } elseif (preg_match('/\bvalue\b/', $sort)) {
-                $sort_fn = '';
-                foreach (array_keys($value) as $key) {
-                    $v = $value[$key];
-                    $sort_fn .= "\$value['$key']='$v';";
-                }
                 if (preg_match('/\bnumeric\b/', $sort)) {
-                    $sort_fn .= 'return $value[$a] === $value[$b] ? 0 : ($value[$a] > $value[$b] ? 1 : -1);';
-                    $sorter = create_function(
-                        '$a,$b',
-                        $sort_fn);
+                    $sorter = function($a, $b) use ($value) {
+                        return $value[$a] === $value[$b] ? 0 : ($value[$a] > $value[$b] ? 1 : -1);
+                    };
                 } else {
-                    $sort_fn .= 'return strcmp($value[$a], $value[$b]);';
-                    $sorter = create_function(
-                        '$a,$b',
-                        $sort_fn);
+                    $sorter = function($a, $b) use ($value) {
+                        return strcmp($value[$a], $value[$b]);
+                    };
                 }
                 usort($keys, $sorter);
             }
