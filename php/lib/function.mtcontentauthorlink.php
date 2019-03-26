@@ -36,7 +36,7 @@ function smarty_function_mtcontentauthorlink($args, &$ctx) {
     }
     if ($type == 'url') {
         if ($author->author_url && ($displayname != '')) {
-            $hcard = $args[show_hcard] ? ' class="fn url"' : '';
+            $hcard = $args['show_hcard'] ? ' class="fn url"' : '';
             return sprintf('<a%s href="%s"%s>%s</a>', $hcard, encode_html( $author->author_url ), $target, $displayname);
         }
     } elseif ($type == 'email') {
@@ -44,7 +44,7 @@ function smarty_function_mtcontentauthorlink($args, &$ctx) {
             $str = "mailto:" . encode_html( $author->author_email );
             if ($args['spam_protect'])
                 $str = spam_protect($str);
-            $hcard = $args[show_hcard] ? ' class="fn email"' : '';
+            $hcard = $args['show_hcard'] ? ' class="fn email"' : '';
             return sprintf('<a%s href="%s">%s</a>', $hcard, $str, $displayname);
         }
     } elseif ($type == 'archive') {

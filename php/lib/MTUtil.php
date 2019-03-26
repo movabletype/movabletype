@@ -819,7 +819,7 @@ function encode_xml($str, $nocdata = 0) {
         $str = '<![CDATA[' . $str . ']]>';
     } else {
         $str = strtr($str, $_encode_xml_Map);
-        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', __check_xml_char, $str);
+        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', '__check_xml_char', $str);
     }
     return $str;
 }
