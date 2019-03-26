@@ -107,7 +107,7 @@ subtest 'Delete Preview File' => sub {
     my $preview_file_name = 'mt-preview-' . MT::Util::perl_sha1_digest_hex($data);
 
     my $preview_date = Time::Piece->strptime(
-        $app_content_preview->param('authored_on_date'),
+        scalar $app_content_preview->param('authored_on_date'),
         '%Y%m%d'
     );
 
