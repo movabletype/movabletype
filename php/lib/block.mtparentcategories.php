@@ -47,7 +47,7 @@ function smarty_block_mtparentcategories($args, $content, &$ctx, &$repeat) {
         $out = $ctx->stash('__out');
     }
 
-    if ($counter < count($parents)) {
+    if (is_array($parents) && $counter < count($parents)) {
         $ctx->stash('category', $parents[$counter]);
         $ctx->stash('_categories_counter', $counter + 1);
         $repeat = true;

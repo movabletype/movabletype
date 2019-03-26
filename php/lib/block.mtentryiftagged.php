@@ -23,7 +23,7 @@ function smarty_block_mtentryiftagged($args, $content, &$ctx, &$repeat) {
                 }
             }
             $tags = $ctx->mt->db()->fetch_entry_tags($targs);
-            $has_tag = count($tags) > 0;
+            $has_tag = is_array($tags) && count($tags) > 0;
         }
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $has_tag);
     } else {

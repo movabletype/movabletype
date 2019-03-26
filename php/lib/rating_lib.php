@@ -76,7 +76,7 @@ function score_count(&$ctx, $obj_id, $datasource, $namespace) {
         return $count;
     } else {
         $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
-        $count = count($scores);
+        $count = is_array($scores) ? count($scores) : 0;
         $ctx->stash($datasource . '_score_count_' . $obj_id . '_' . $namespace, $count);
         return $count;
     }
