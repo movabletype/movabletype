@@ -33,12 +33,11 @@ function vote_for(&$ctx, $obj_id, $datasource, $namespace) {
     return count($scores);
 }
 
-function _score_top(&$ctx, $obj_id, $datasource, $namespace, $block) {
+function _score_top(&$ctx, $obj_id, $datasource, $namespace, $sorter) {
     $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
     if (0 == count($scores)) {
         return 0;
     }
-    $sorter = create_function('$a,$b', $block);
     usort($scores, $sorter);
 
     return $scores[0]->objectscore_score;
@@ -49,8 +48,10 @@ function score_high(&$ctx, $obj_id, $datasource, $namespace) {
     if ($high) {
         return $high;
     } else {
-        $high = _score_top($ctx, $obj_id, $datasource, $namespace,
-            'return $b->objectscore_score - $a->objectscore_score;');
+        $sorter = function($a, $b) {
+            return $b->objectscore_score - $a->objectscore_score;
+        };
+        $high = _score_top($ctx, $obj_id, $datasource, $namespace, $sorter);
         $ctx->stash($datasource . '_score_high_' . $obj_id . '_' . $namespace, $high);
         return $high;
     }
@@ -61,8 +62,10 @@ function score_low(&$ctx, $obj_id, $datasource, $namespace) {
     if ($low) {
         return $low;
     } else {
-        $low = _score_top($ctx, $obj_id, $datasource, $namespace,
-            'return $a->objectscore_score - $b->objectscore_score;');
+        $sorter = function($a, $b) {
+            return $a->objectscore_score - $b->objectscore_score;
+        };
+        $low = _score_top($ctx, $obj_id, $datasource, $namespace, $sorter);
         $ctx->stash($datasource . '_score_low_' . $obj_id . '_' . $namespace, $low);
         return $low;
     }

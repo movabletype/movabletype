@@ -826,18 +826,44 @@ EOT;
             $fn = $old_handler[0];
         } else {
             if ($type == 'block') {
-                $func = 'if (!isset($content)) @include_once "block.' . $tag . '.php"; if (function_exists("smarty_block_' . $tag . '")) { return smarty_block_' . $tag . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
                 if ( $fn ) {
-                    $func = 'if (!isset($content)) { return ' . $fn . '($args, $content, $ctx, $repeat); } $repeat = false; return "";';
+                    $fname = $fn;
+                    $fn = function($args, $content, &$ctx, &$repeat) use ($fname) {
+                        if (!isset($content)) {
+                            return $fname($args, $content, $ctx, $repeat);
+                        }
+                        $repeat = false;
+                        return "";
+                    };
+                } else {
+                    $fn = function($args, $content, &$ctx, &$repeat) use ($tag) {
+                        if (!isset($content)) @include_once "block.$tag.php";
+                        $smarty_block_tag = "smarty_block_$tag";
+                        if (function_exists($smarty_block_tag)) {
+                            return $smarty_block_tag($args, $content, $ctx, $repeat);
+                        }
+                        $repeat = false;
+                        return "";
+                    };
                 }
-                $fn = create_function('$args, $content, &$ctx, &$repeat', $func);
             }
             elseif ($type == 'function') {
-                $func = '@include_once "function.' . $tag . '.php"; if (function_exists("smarty_function_' . $tag . '")) { return smarty_function_' . $tag . '($args, $ctx); } return "";';
                 if ( $fn ) {
-                    $func = 'return ' . $fn . '($args, $ctx); return "";';
+                    $fname = $fn;
+                    $fn = function($args, &$ctx) use ($fname) {
+                        return $fname($args, $ctx);
+                        return "";
+                    };
+                } else {
+                    $fn = function($args, &$ctx) {
+                        @include_once "function.$tag.php";
+                        $smarty_function_tag = "smarty_function_$tag";
+                        if (function_exists($smarty_function_tag)) {
+                            return $smarty_function_tag($args, $ctx);
+                        }
+                        return "";
+                    };
                 }
-                $fn = create_function('$args, &$ctx', $func);
             }
         }
         return $fn;

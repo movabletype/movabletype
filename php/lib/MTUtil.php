@@ -856,10 +856,9 @@ function encode_json($str) {
     if (!isset($str)) return '';
     // Do not use JSON_UNESCAPED_UNICODE with json_encode for supporting PHP 5.3.x and before.
     // Do not use closure for supporting PHP 5.2.x and before.
-    $callback = create_function(
-        '$matches',
-        'return mb_convert_encoding(pack("H*", str_replace("\\\\u", "", $matches[0])), "UTF-8", "UTF-16");'
-    );
+    $callback = function($matches) {
+        return mb_convert_encoding(pack("H*", str_replace("\\\\u", "", $matches[0])), "UTF-8", "UTF-16");
+    };
     // Do not escape slashes for compatible with Perl,
     // and JSON spec says that it is OK whether slashes are escaped or not.
     $encoded_str = preg_replace_callback(
@@ -1201,8 +1200,12 @@ function create_cat_expr_function($expr, &$cats, $param) {
 
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$pm)", $expr);
     $expr = '$pm = array_key_exists($e->entry_id, $c["p"]) ? $c["p"][$e->entry_id] : array(); return (' . $expr . ');';
-    $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    try {
+        eval("\$fn = function (&\$e, &\$c) { $expr };");
+    } catch (ParseError $e) {
+        $error = true;
+    }
+    if ($error || $fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
     }
@@ -1308,8 +1311,12 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     # if all is well.  This function will be used later to 
     # test for existence of specified tags in entries.
     $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["t"]) ? $c["t"][$e->'.$datasource.'_id] : array(); return (' . $result . ');';
-    $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    try {
+        eval("\$fn = function (&\$e, &\$c) { $expr };");
+    } catch (ParseError $e) {
+        $error = true;
+    }
+    if ($error || $fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;
     }
@@ -1557,8 +1564,12 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = preg_replace('/#(\d+)/', "array_key_exists('\\1', \$tm)", $expr);
 
     $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["r"]) ? $c["r"][$e->'.$datasource.'_id] : array(); return ' . $expr . ';';
-    $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    try {
+        eval("\$fn = function (&\$e, &\$c) { $expr };");
+    } catch (ParseError $e) {
+        $error = true;
+    }
+    if ($error || $fn === FALSE) {
         echo "Invalid role filter: $orig_expr";
         return;
     }
@@ -1586,8 +1597,12 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
 
     $expr = preg_replace('/#(\d+)/', '$e->status == $1', $expr);
     $expr = 'return ' . $expr . ';';
-    $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    try {
+        eval("\$fn = function (&\$e, &\$c) { $expr };");
+    } catch (ParseError $e) {
+        $error = true;
+    }
+    if ($error || $fn === FALSE) {
         echo "Invalid status filter: $orig_expr";
         return;
     }
@@ -1616,8 +1631,12 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
     }
     $expr .= ' return $ret;';
 
-    $fn = create_function('&$e,&$c', $expr);
-    if ($fn === FALSE) {
+    try {
+        eval("\$fn = function (&\$e, &\$c) { $expr };");
+    } catch (ParseError $e) {
+        $error = true;
+    }
+    if ($error || $fn === FALSE) {
         echo "Invalid rating filter: $orig_expr";
         return;
     }
