@@ -34,7 +34,7 @@
             2,
             null,
             "__NOW__",
-            1,
+            8,
             1
          ]
       ]
@@ -334,7 +334,7 @@
             null,
             "__NOW__",
             null,
-            "Test site",
+            "my website",
             null,
             null,
             0,
@@ -522,7 +522,7 @@
             null,
             "__NOW__",
             null,
-            "'administer_blog','administer_site','administer_website','comment','create_post','create_site','edit_all_posts','edit_assets','edit_categories','edit_config','edit_notifications','edit_tags','edit_templates','manage_category_set','manage_content_data','manage_content_types','manage_feedback','manage_member_blogs','manage_pages','manage_themes','manage_users','publish_post','rebuild','send_notifications','set_publish_paths','upload','view_blog_log'",
+            "'create_site'",
             null,
             0,
             null
@@ -646,6 +646,21 @@
             "__NOW__",
             "Content Designer",
             "'manage_content_types','manage_content_data','manage_category_set'",
+            null,
+            null,
+            null,
+            null
+         ],
+         [
+            null,
+            "__NOW__",
+            null,
+            8,
+            0,
+            null,
+            "__NOW__",
+            "Create Child Site",
+            "'create_site'",
             null,
             null,
             null,

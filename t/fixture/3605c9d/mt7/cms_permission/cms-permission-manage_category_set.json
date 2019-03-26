@@ -34,7 +34,7 @@
             2,
             null,
             "__NOW__",
-            1,
+            8,
             1
          ]
       ]
@@ -334,7 +334,7 @@
             null,
             "__NOW__",
             null,
-            "Test site",
+            "my website",
             null,
             null,
             0,
@@ -433,6 +433,84 @@
          ]
       ]
    },
+   "mt_category" : {
+      "cols" : [
+         "category_allow_pings",
+         "category_author_id",
+         "category_basename",
+         "category_blog_id",
+         "category_category_set_id",
+         "category_class",
+         "category_created_by",
+         "category_created_on",
+         "category_description",
+         "category_id",
+         "category_label",
+         "category_modified_by",
+         "category_modified_on",
+         "category_parent",
+         "category_ping_urls"
+      ],
+      "rows" : [
+         [
+            0,
+            1,
+            "test_category",
+            2,
+            2,
+            "category",
+            null,
+            "__NOW__",
+            "foo",
+            1,
+            "test category",
+            null,
+            "__NOW__",
+            0,
+            null
+         ]
+      ]
+   },
+   "mt_category_set" : {
+      "cols" : [
+         "category_set_blog_id",
+         "category_set_cat_count",
+         "category_set_created_by",
+         "category_set_created_on",
+         "category_set_ct_count",
+         "category_set_id",
+         "category_set_modified_by",
+         "category_set_modified_on",
+         "category_set_name",
+         "category_set_order"
+      ],
+      "rows" : [
+         [
+            2,
+            0,
+            null,
+            "__NOW__",
+            0,
+            1,
+            null,
+            "__NOW__",
+            "test category set",
+            null
+         ],
+         [
+            2,
+            0,
+            null,
+            "__NOW__",
+            0,
+            2,
+            null,
+            "__NOW__",
+            "test category set2",
+            null
+         ]
+      ]
+   },
    "mt_config" : {
       "cols" : [
          "config_data",
@@ -522,7 +600,7 @@
             null,
             "__NOW__",
             null,
-            "'administer_blog','administer_site','administer_website','comment','create_post','create_site','edit_all_posts','edit_assets','edit_categories','edit_config','edit_notifications','edit_tags','edit_templates','manage_category_set','manage_content_data','manage_content_types','manage_feedback','manage_member_blogs','manage_pages','manage_themes','manage_users','publish_post','rebuild','send_notifications','set_publish_paths','upload','view_blog_log'",
+            "'manage_category_set'",
             null,
             0,
             null
@@ -646,6 +724,21 @@
             "__NOW__",
             "Content Designer",
             "'manage_content_types','manage_content_data','manage_category_set'",
+            null,
+            null,
+            null,
+            null
+         ],
+         [
+            null,
+            "__NOW__",
+            null,
+            8,
+            0,
+            null,
+            "__NOW__",
+            "Manage Category Set",
+            "'manage_category_set'",
             null,
             null,
             null,
