@@ -90,7 +90,7 @@ function smarty_block_mtsubcategories($args, $content, &$ctx, &$repeat) {
 
     # Loop through the immediate children (or the current cat,
     # depending on the arguments
-    if ($count < count($cats)) {
+    if (is_array($cats) && $count < count($cats)) {
         $category = $cats[$count];
         $ctx->stash('category', $category);
         $ctx->stash('entries', null);

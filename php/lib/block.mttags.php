@@ -102,7 +102,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $out = $ctx->stash('__out');
     }
 
-    if ($counter < count($tags)) {
+    if (is_array($tags) && $counter < count($tags)) {
         $tag = $tags[$counter];
         $ctx->stash('Tag', $tag);
         $ctx->stash('_tags_counter', $counter + 1);

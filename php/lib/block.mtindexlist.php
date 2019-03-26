@@ -19,7 +19,7 @@ function smarty_block_mtindexlist($args, $content, &$ctx, &$repeat) {
         $tmpl = $ctx->stash('index_templates');
         $counter = $ctx->stash('index_templates_counter') + 1;
     }
-    if ($counter < count($tmpl)) {
+    if (is_array($tmpl) && $counter < count($tmpl)) {
         $ctx->__stash['vars']['__counter__'] = $counter + 1;
         $ctx->__stash['vars']['__odd__'] = ($counter % 2) == 0;
         $ctx->__stash['vars']['__even__'] = ($counter % 2) == 1;

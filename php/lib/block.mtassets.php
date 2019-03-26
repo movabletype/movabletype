@@ -46,7 +46,7 @@ function smarty_block_mtassets($args, $content, &$ctx, &$repeat) {
         return $ret;
     }
 
-    if ($counter < count($assets)) {
+    if (is_array($assets) && $counter < count($assets)) {
         $blog_id = $ctx->stash('blog_id');
         $per_row = 1;
         if (isset($args['assets_per_row']))

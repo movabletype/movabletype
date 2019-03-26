@@ -121,7 +121,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
                     $no_loop = 1;
                 }
             }
-            if (!$no_loop && count($iter)) {
+            if (!$no_loop && is_array($iter) && count($iter)) {
                 while ($entry = array_shift($iter)) {
                     $e_day = substr($entry->entry_authored_on, 0, 8);
                     if ($e_day != $this_day) {

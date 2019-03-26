@@ -59,7 +59,7 @@ function smarty_block_mtarchivelist($args, $content, &$ctx, &$repeat) {
             $ctx->restore($localvars);
         return $content;
     }
-    if ($i < count($archive_list_results)) {
+    if (is_array($archive_list_results) && $i < count($archive_list_results)) {
         if (empty($ar))
             $ar = ArchiverFactory::get_archiver($at);
 
