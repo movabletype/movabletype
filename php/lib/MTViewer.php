@@ -498,7 +498,7 @@ class MTViewer extends SmartyBC {
         ),
     );
 
-    function rd_trans($blog, $phrase, $params) {
+    function rd_trans($blog, $phrase, $params = NULL) {
         $mt = $this->mt;
         $lang = (
               $blog && $blog->blog_date_language
