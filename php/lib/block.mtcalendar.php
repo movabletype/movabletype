@@ -106,6 +106,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $cell = $ctx->stash('CalendarCellNumber');
     }
     $left or $left = array();
+    $entries = array();
     if ($day <= $pad_start + $days_in_month + $pad_end) {
         $is_padding = $day < $pad_start + 1 || $day > $pad_start + $days_in_month;
         $this_day = '';

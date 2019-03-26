@@ -1849,6 +1849,7 @@ abstract class MTDatabase {
             $where = "category_id in ($list)
                       order by $base_sort $sort_order";
             $categories = $category->Find($where);
+            if (!$categories) $categories = array();
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
                 $ctx = $mt->context();
@@ -2881,6 +2882,7 @@ abstract class MTDatabase {
     public function fetch_comments($args) {
         # load comments
         $extras = array();
+        $filters = array();
 
         $entry_id = intval($args['entry_id']);
 
@@ -3343,6 +3345,7 @@ abstract class MTDatabase {
     function fetch_assets($args) {
         # load assets
         $extras = array();
+        $filters = array();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and asset_blog_id ' . $sql;
