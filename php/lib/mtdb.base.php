@@ -2517,9 +2517,9 @@ abstract class MTDatabase {
 
                 if ($row['blog_parent_id'] > 0) {
                     preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                    if ( count($matches > 1 ) ) {
+                    if ( count($matches) > 1 ) {
                         $site_url = preg_split( '/\/::\//', $blog_url );
-                        if ( count($site_url > 0 ) )
+                        if ( count($site_url) > 0 )
                             $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                         else
                             $path = $row['website_url'] . $this->blog_url;
