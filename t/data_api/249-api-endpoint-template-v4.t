@@ -400,7 +400,9 @@ sub suite {
                 return +{
                     status   => 'success',
                     messages => [
-                        "Skipping template 'tmpl_contenttype_ct_with_other_catset' since it appears to be a custom template."
+                              "Skipping template '"
+                            . $ct_tmpl[1]->name
+                            . "' since it appears to be a custom template."
                     ],
                 };
             },
@@ -414,7 +416,9 @@ sub suite {
                 return +{
                     status   => 'success',
                     messages => [
-                        "Skipping template 'tmpl_contenttype_category_ct_with_other_catset' since it appears to be a custom template."
+                              "Skipping template '"
+                            . $ct_archive_tmpl[1]->name
+                            . "' since it appears to be a custom template."
                     ],
                 };
             },
