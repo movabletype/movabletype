@@ -193,9 +193,11 @@ jQuery(window).on('load resize', function () {
                           selectedCategoryList: selectedCategoryList
                       }
                   );
+                  if(!window.app){
+                      MT.App.bootstrap();
+                  }
                   app.setDelegate( "categoryList", list );
                   list.redraw( catCache );
-
                   if ( !app.fieldCategorySelectors ) {
                       app.fieldCategorySelectors = {};
                   }

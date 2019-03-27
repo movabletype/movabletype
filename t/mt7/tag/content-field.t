@@ -438,6 +438,266 @@ $test_env->prepare_fixture(
                 $cf_content_type->id => [ $cd2->id, $invalid_obj_id ],
             },
         );
+
+        #MTC-25873
+        my $content_type_case0 = MT::Test::Permission->make_content_type(
+            name    => 'case 0',
+            blog_id => $blog_id,
+        );
+
+        my $single_line_text_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'single_line_text',
+            type            => 'single_line_text',
+        );
+
+        my $multi_line_text_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'multi_line_text',
+            type            => 'multi_line_text',
+        );
+
+        my $number_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'number',
+            type            => 'number',
+        );
+
+        my $embedded_text_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'embedded_text',
+            type            => 'embedded_text',
+        );
+
+        my $select_box_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'select_box',
+            type            => 'select_box',
+        );
+        my $radio_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'radio_button',
+            type            => 'radio_button',
+        );
+        my $checkbox_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'checkboxes',
+            type            => 'checkboxes',
+        );
+        my $list_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'list',
+            type            => 'list',
+        );
+        my $table_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'tables',
+            type            => 'tables',
+        );
+        my $tag0 = MT::Test::Permission->make_tag( name => '0' );
+        my $tag_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'tags',
+            type            => 'tags',
+        );
+        my $multi_tag_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'multi_tags',
+            type            => 'tags',
+        );
+
+        my $category_set_case0 = MT::Test::Permission->make_category_set(
+            blog_id => $content_type_case0->blog_id,
+            name    => 'category set 0',
+        );
+
+        my $category0 = MT::Test::Permission->make_category(
+            blog_id         => $category_set_case0->blog_id,
+            category_set_id => $category_set_case0->id,
+            label           => '0',
+        );
+
+        my $category_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'categories',
+            type            => 'categories',
+        );
+
+        my $multi_category_case0 = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            name            => 'multi_categories',
+            type            => 'categories',
+        );
+
+        my $fields_case0 = [
+            {   id        => $single_line_text_case0->id,
+                order     => 1,
+                type      => $single_line_text_case0->type,
+                options   => { label => $single_line_text_case0->name },
+                unique_id => $single_line_text_case0->unique_id,
+            },
+            {   id        => $multi_line_text_case0->id,
+                order     => 2,
+                type      => $multi_line_text_case0->type,
+                options   => { label => $multi_line_text_case0->name },
+                unique_id => $multi_line_text_case0->unique_id,
+            },
+            {   id        => $number_case0->id,
+                order     => 3,
+                type      => $number_case0->type,
+                options   => { label => $number_case0->name },
+                unique_id => $number_case0->unique_id,
+            },
+            {   id        => $embedded_text_case0->id,
+                order     => 5,
+                type      => $embedded_text_case0->type,
+                options   => { label => $embedded_text_case0->name },
+                unique_id => $embedded_text_case0->unique_id,
+            },
+            {   id      => $select_box_case0->id,
+                order   => 9,
+                type    => $select_box_case0->type,
+                options => {
+                    label  => $select_box_case0->name,
+                    values => [
+                        { label => '0', value => 0 },
+                    ],
+                },
+                unique_id => $select_box_case0->unique_id,
+            },
+            {   id      => $radio_case0->id,
+                order   => 10,
+                type    => $radio_case0->type,
+                options => {
+                    label  => $radio_case0->name,
+                    values => [
+                        { label => '0', value => 0 },
+                        { label => '0', value => 1 },
+                        { label => '0', value => 2 },
+                    ],
+                },
+                unique_id => $radio_case0->unique_id,
+            },
+            {   id      => $checkbox_case0->id,
+                order   => 11,
+                type    => $checkbox_case0->type,
+                options => {
+                    label  => $checkbox_case0->name,
+                    values => [
+                        { label => '0', value => 0 },
+                        { label => '0', value => 1 },
+                        { label => '0', value => 2 },
+                    ],
+                    multiple => 1,
+                    max      => 3,
+                    min      => 1,
+                },
+                unique_id => $checkbox_case0->unique_id,
+            },
+            {   id      => $list_case0->id,
+                order   => 12,
+                type    => $list_case0->type,
+                options => { label => $list_case0->name },
+            },
+            {   id      => $table_case0->id,
+                order   => 13,
+                type    => $table_case0->type,
+                options => {
+                    label        => $table_case0->name,
+                    initial_row  => 3,
+                    initial_cols => 3,
+                },
+            },
+            {   id      => $tag_case0->id,
+                order   => 14,
+                type    => $tag_case0->type,
+                options => {
+                    label    => $tag_case0->name,
+                    multiple => 0,
+                    max      => 5,
+                    min      => 1,
+                },
+            },
+            {   id      => $multi_tag_case0->id,
+                order   => 14,
+                type    => $multi_tag_case0->type,
+                options => {
+                    label    => $multi_tag_case0->name,
+                    multiple => 1,
+                    max      => 5,
+                    min      => 1,
+                },
+            },
+            {   id      => $category_case0->id,
+                order   => 15,
+                type    => $category_case0->type,
+                options => {
+                    label        => $category_case0->name,
+                    category_set => $category_set_case0->id,
+                    multiple     => 0,
+                    max          => 5,
+                    min          => 1,
+                },
+                unique_id => $category_case0->unique_id,
+            },
+            {   id      => $multi_category_case0->id,
+                order   => 16,
+                type    => $multi_category_case0->type,
+                options => {
+                    label        => $multi_category_case0->name,
+                    category_set => $category_set_case0->id,
+                    multiple     => 1,
+                    max          => 5,
+                    min          => 1,
+                },
+            },
+        ];
+
+        $content_type_case0->fields($fields_case0);
+        $content_type_case0->save or die $content_type_case0->errstr;
+
+        my $content_data_case0 = MT::Test::Permission->make_content_data(
+            blog_id         => $content_type_case0->blog_id,
+            content_type_id => $content_type_case0->id,
+            author_id       => 1,
+            label      => '0',
+            data            => {
+                $single_line_text_case0->id => '0',
+                $multi_line_text_case0->id  => "0",
+                $number_case0->id           => '0',
+                $embedded_text_case0->id    => "0",
+                $select_box_case0->id       => "0",
+                $radio_case0->id            => "0",
+                $checkbox_case0->id         => "0",
+                $table_case0->id            => "<tr><th>0</th><td>0</td></tr>"
+                    . "<tr><td>0</td><td>0</td></tr>",
+                $tag_case0->id              => [ $tag0->id ],
+                $category_case0->id  => [ $category0->id ],
+                $multi_tag_case0->id        => [ $tag0->id ],
+                $multi_category_case0->id   => [ $category0->id ],
+                $list_case0->id             => [ '0' ],
+            },
+        );
+        $content_data_case0->convert_breaks(
+            MT::Serialize->serialize(
+                \{ $multi_line_text_case0->id => 0 }
+            )
+        );
+        $content_data_case0->save or die $content_data_case0->errstr;;
+
     }
 );
 
@@ -768,3 +1028,109 @@ tags
 categories
 asset_image
 content_type
+
+=== mt:ContentField single_line_text value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="single_line_text"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField multi_line_text value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="multi_line_text"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField number value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="number"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField select_box value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="select_box"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField radio_button value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="radio_button"><mt:Var name="__key__">:<mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0:0
+
+=== mt:ContentField checkboxes value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="checkboxes"><mt:Var name="__key__">:<mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0:0
+
+=== mt:ContentField embedded_text value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="embedded_text"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField list value 0
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="list"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField categories label value
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="categories"><mt:CategoryLabel></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField multi categories label value
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="multi_categories"><mt:CategoryLabel></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField tag label value
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="tags"><mt:TagLabel></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField multi tag label value
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="multi_tags"><mt:TagLabel></mt:ContentField>
+</mt:Contents>
+--- expected
+0
+
+=== mt:ContentField table value
+--- template
+<mt:Contents content_type="case 0">
+<mt:ContentField content_field="tables"><mt:ContentFieldValue language="ja"></mt:ContentField>
+</mt:Contents>
+--- expected
+<table>
+<tr><th>0</th><td>0</td></tr><tr><td>0</td><td>0</td></tr>
+</table>
