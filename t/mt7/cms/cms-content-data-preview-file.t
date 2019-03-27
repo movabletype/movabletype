@@ -74,40 +74,21 @@ my $template_map = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
-my ($app_content_edit, $app_content_preview);
-subtest 'Delete Preview File' => sub {
-    my $field_name = 'content-field-' . $cf_single->id;
-    my $file_manager = $blog->file_mgr;
+my $field_name = 'content-field-' . $cf_single->id;
 
-    $app_content_preview = _run_app(
-        'MT::App::CMS',
-        { __test_user           => $admin,
-            __request_method    => 'POST',
-            __mode              => 'preview_content_data',
-            blog_id             => $blog->id,
-            content_type_id     => $content_type->id,
-            id                  => $cd1->id,
-            data_label          => 'The rewritten label',
-            $field_name         => 'The rewritten text',
-            authored_on_date    => '20190324',
-            authored_on_time    => '000000',
-            unpublished_on_date => '20190326',
-            unpublished_on_time => '000000',
-            rev_numbers         => '0,0',
-        }
-    );
-
+sub create_preview_file_path {
+    my ($app) = @_;
     my @parts;
     push @parts, $admin->id;
     push @parts, $blog_id;
     push @parts, $cd1->id;
     push @parts, $content_type->id;
-    push @parts, $app_content_preview->config->SecretToken;
+    push @parts, $app->config->SecretToken;
     my $data = join ",", @parts;
     my $preview_file_name = 'mt-preview-' . MT::Util::perl_sha1_digest_hex($data);
 
     my $preview_date = Time::Piece->strptime(
-        scalar $app_content_preview->param('authored_on_date'),
+        scalar $app->multi_param('authored_on_date'),
         '%Y%m%d'
     );
 
@@ -123,30 +104,201 @@ subtest 'Delete Preview File' => sub {
         )
     );
 
-    is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+    return ($preview_file_path, $preview_file_name);
+};
+subtest 'Delete preview file. (PreviewInNewWindow is 0)' => sub {
+    my ($app_content_edit, $app_content_preview);
+    MT->config->PreviewInNewWindow(0);
+    my $file_manager = $blog->file_mgr;
 
-    $app_content_edit = _run_app(
-        'MT::App::CMS',
-        { __test_user        => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit_content_data',
-            blog_id          => $blog->id,
-            content_type_id  => $content_type->id,
-            id               => $cd1->id,
-            _type            => 'content_data',
-            _preview_file    => $preview_file_name,
-            from_preview     => 1,
-            dirty            => 1,
-            reedit           => 'reedit',
-        }
-    );
+    subtest 'Delete preview file when navigating from preview page to edit page.' => sub {
+        $app_content_preview = _run_app(
+            'MT::App::CMS',
+            { __test_user           => $admin,
+                __request_method    => 'POST',
+                __mode              => 'preview_content_data',
+                blog_id             => $blog->id,
+                content_type_id     => $content_type->id,
+                id                  => $cd1->id,
+                data_label          => 'The rewritten label',
+                $field_name         => 'The rewritten text',
+                authored_on_date    => '20190324',
+                authored_on_time    => '000000',
+                unpublished_on_date => '20190326',
+                unpublished_on_time => '000000',
+                rev_numbers         => '0,0',
+            }
+        );
+        my ($preview_file_path, $preview_file_name) = &create_preview_file_path($app_content_preview);
 
-    is(
-        $file_manager->exists($preview_file_path),
-        undef,
-        'Preview file deleted successfully when navigating from preview page to edit page.'
-    );
-    File::Path::rmtree($blog->site_path);
+        is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+
+        $app_content_edit = _run_app(
+            'MT::App::CMS',
+            { __test_user        => $admin,
+                __request_method => 'POST',
+                __mode           => 'edit_content_data',
+                blog_id          => $blog->id,
+                content_type_id  => $content_type->id,
+                id               => $cd1->id,
+                _type            => 'content_data',
+                _preview_file    => $preview_file_name,
+                from_preview     => 1,
+                dirty            => 1,
+                reedit           => 'reedit',
+            }
+        );
+
+        ok(
+            !$file_manager->exists($preview_file_path),
+            'Preview file deleted successfully when navigating from preview page to edit page.'
+        );
+    };
+
+    subtest 'Delete preview file when saving.' => sub {
+        $app_content_preview = _run_app(
+            'MT::App::CMS',
+            { __test_user           => $admin,
+                __request_method    => 'POST',
+                __mode              => 'preview_content_data',
+                blog_id             => $blog->id,
+                content_type_id     => $content_type->id,
+                id                  => $cd1->id,
+                data_label          => 'The rewritten label',
+                $field_name         => 'The rewritten text',
+                authored_on_date    => '20190325',
+                authored_on_time    => '000000',
+                unpublished_on_date => '20190327',
+                unpublished_on_time => '000000',
+                rev_numbers         => '0,0',
+            }
+        );
+
+        my ($preview_file_path, $preview_file_name) = &create_preview_file_path($app_content_preview);
+
+        is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+
+        my $app_content_save = _run_app(
+            'MT::App::CMS',
+            {
+                __test_user        => $admin,
+                __request_method => 'POST',
+                __mode           => 'save',
+                blog_id          => $blog->id,
+                content_type_id  => $content_type->id,
+                id               => $cd1->id,
+                _type            => 'content_data',
+                from_preview     => 1,
+                save             => 'save',
+                $field_name      => 'The save text',
+                status           => 2,
+                _preview_file    => $preview_file_name,
+            }
+        );
+
+        ok(
+            !$file_manager->exists($preview_file_path),
+            'Preview file deleted successfully when navigating from preview page to saving process.'
+        );
+    };
 };
 
+subtest 'Delete preview file. (PreviewInNewWindow is 1)' => sub {
+    my ($app_content_edit, $app_content_preview);
+    MT->config->PreviewInNewWindow(1);
+    my $file_manager = $blog->file_mgr;
+
+    subtest 'Delete preview file when navigating from preview page to edit page.' => sub {
+        $app_content_preview = _run_app(
+            'MT::App::CMS',
+            { __test_user           => $admin,
+                __request_method    => 'POST',
+                __mode              => 'preview_content_data',
+                blog_id             => $blog->id,
+                content_type_id     => $content_type->id,
+                id                  => $cd1->id,
+                data_label          => 'The rewritten label',
+                $field_name         => 'The rewritten text',
+                authored_on_date    => '20190326',
+                authored_on_time    => '000000',
+                unpublished_on_date => '20190327',
+                unpublished_on_time => '000000',
+                rev_numbers         => '0,0',
+            }
+        );
+        my ($preview_file_path, $preview_file_name) = &create_preview_file_path($app_content_preview);
+
+        is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+
+        $app_content_edit = _run_app(
+            'MT::App::CMS',
+            { __test_user        => $admin,
+                __request_method => 'POST',
+                __mode           => 'edit_content_data',
+                blog_id          => $blog->id,
+                content_type_id  => $content_type->id,
+                id               => $cd1->id,
+                _type            => 'content_data',
+                _preview_file    => $preview_file_name,
+                from_preview     => 1,
+                dirty            => 1,
+                reedit           => 'reedit',
+            }
+        );
+
+        ok(
+            !$file_manager->exists($preview_file_path),
+            'Preview file deleted successfully when navigating from preview page to edit page.'
+        );
+    };
+
+    subtest 'Delete preview file when saving.' => sub {
+        $app_content_preview = _run_app(
+            'MT::App::CMS',
+            { __test_user           => $admin,
+                __request_method    => 'POST',
+                __mode              => 'preview_content_data',
+                blog_id             => $blog->id,
+                content_type_id     => $content_type->id,
+                id                  => $cd1->id,
+                data_label          => 'The rewritten label',
+                $field_name         => 'The rewritten text',
+                authored_on_date    => '20190327',
+                authored_on_time    => '000000',
+                unpublished_on_date => '20190328',
+                unpublished_on_time => '000000',
+                rev_numbers         => '0,0',
+            }
+        );
+
+        my ($preview_file_path, $preview_file_name) = &create_preview_file_path($app_content_preview);
+
+        is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+
+        my $app_content_save = _run_app(
+            'MT::App::CMS',
+            {
+                __test_user        => $admin,
+                __request_method => 'POST',
+                __mode           => 'save',
+                blog_id          => $blog->id,
+                content_type_id  => $content_type->id,
+                id               => $cd1->id,
+                _type            => 'content_data',
+                from_preview     => 1,
+                save             => 'save',
+                $field_name      => 'The save text',
+                status           => 2,
+                _preview_file    => $preview_file_name,
+            }
+        );
+
+        ok(
+            !$file_manager->exists($preview_file_path),
+            'Preview file deleted successfully when navigating from preview page to saving process.'
+        );
+    };
+};
+
+File::Path::rmtree($blog->site_path);
 done_testing();
