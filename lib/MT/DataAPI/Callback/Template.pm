@@ -97,7 +97,7 @@ sub save_filter {
         && !$obj->content_type_id )
     {
         return $app->errtrans( 'A parameter "[_1]" is required.',
-            'contentTypeID' );
+            'contentType' );
     }
 
     return 1;

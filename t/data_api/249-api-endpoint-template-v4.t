@@ -37,7 +37,7 @@ $author->save;
 my $blog_id = $objs->{blog_id} or die;
 
 my @ct_tmpl = MT::Template->load( { blog_id => $blog_id, type => 'ct' } );
-my @ct = map { $_->content_type } @ct_tmpl;
+my @ct      = map { $_->content_type } @ct_tmpl;
 
 # test.
 my $suite = suite();
@@ -60,7 +60,7 @@ sub suite {
             code  => 409,
             error => "Invalid type: ct\n",
         },
-        {    # No contentTypeID
+        {    # No contentType
             path   => "/v4/sites/$blog_id/templates",
             method => 'POST',
             params => {
@@ -70,7 +70,7 @@ sub suite {
                 },
             },
             code  => 409,
-            error => "A parameter \"contentTypeID\" is required.\n",
+            error => "A parameter \"contentType\" is required.\n",
         },
         {   path   => "/v4/sites/$blog_id/templates",
             method => 'POST',
@@ -84,9 +84,9 @@ sub suite {
             },
             params => {
                 template => {
-                    name          => 'create-ct-template',
-                    type          => 'ct',
-                    contentTypeID => 1,
+                    name        => 'create-ct-template',
+                    type        => 'ct',
+                    contentType => { id => 1 },
                 },
             },
             result => sub {
@@ -115,9 +115,9 @@ sub suite {
             },
             params => {
                 template => {
-                    name          => 'create-ct-archive-template',
-                    type          => 'ct',
-                    contentTypeID => 1,
+                    name        => 'create-ct-archive-template',
+                    type        => 'ct',
+                    contentType => { id => 1 },
                 },
             },
             result => sub {
@@ -150,7 +150,8 @@ sub suite {
         },
         {   path   => "/v2/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
-            params => { template => { contentTypeID => $ct[1]->id, }, },
+            params =>
+                { template => { contentType => { id => $ct[1]->id }, }, },
             result => sub {
                 my $tmpl = $app->model('template')->load( $ct_tmpl[0]->id );
                 isnt $tmpl->content_type_id => $ct[1]->id;    # not updated
@@ -165,10 +166,11 @@ sub suite {
         },
         {   path   => "/v4/sites/$blog_id/templates/" . $ct_tmpl[0]->id,
             method => 'PUT',
-            params => { template => { contentTypeID => $ct[1]->id, }, },
+            params =>
+                { template => { contentType => { id => $ct[1]->id, }, }, },
             result => sub {
                 my $tmpl = $app->model('template')->load( $ct_tmpl[0]->id );
-                is $tmpl->content_type_id => $ct[1]->id;
+                is $tmpl->content_type_id => $ct[0]->id;
                 $tmpl;
             },
             complete => sub {
