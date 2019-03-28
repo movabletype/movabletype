@@ -9,9 +9,7 @@ use Time::Piece;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        PreviewInNewWindow => 0
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -75,6 +73,7 @@ my $template_map = MT::Test::Permission->make_templatemap(
 );
 
 my $field_name = 'content-field-' . $cf_single->id;
+my $file_manager = $blog->file_mgr;
 
 sub create_preview_file_path {
     my ($app) = @_;
@@ -109,7 +108,6 @@ sub create_preview_file_path {
 subtest 'Delete preview file. (PreviewInNewWindow is 0)' => sub {
     my ($app_content_edit, $app_content_preview);
     MT->config->PreviewInNewWindow(0);
-    my $file_manager = $blog->file_mgr;
 
     subtest 'Delete preview file when navigating from preview page to edit page.' => sub {
         $app_content_preview = _run_app(
@@ -206,8 +204,6 @@ subtest 'Delete preview file. (PreviewInNewWindow is 0)' => sub {
 subtest 'Delete preview file. (PreviewInNewWindow is 1)' => sub {
     my ($app_content_edit, $app_content_preview);
     MT->config->PreviewInNewWindow(1);
-    my $file_manager = $blog->file_mgr;
-
     subtest 'Delete preview file when navigating from preview page to edit page.' => sub {
         $app_content_preview = _run_app(
             'MT::App::CMS',
@@ -298,6 +294,47 @@ subtest 'Delete preview file. (PreviewInNewWindow is 1)' => sub {
             'Preview file deleted successfully when navigating from preview page to saving process.'
         );
     };
+};
+
+subtest 'Delete preview file for task' => sub {
+    my $app_content_preview = _run_app(
+        'MT::App::CMS',
+        { __test_user           => $admin,
+            __request_method    => 'POST',
+            __mode              => 'preview_content_data',
+            blog_id             => $blog->id,
+            content_type_id     => $content_type->id,
+            id                  => $cd1->id,
+            data_label          => 'The rewritten label',
+            $field_name         => 'The rewritten text',
+            authored_on_date    => '20190326',
+            authored_on_time    => '000000',
+            unpublished_on_date => '20190327',
+            unpublished_on_time => '000000',
+            rev_numbers         => '0,0',
+        }
+    );
+
+    my ($preview_file_path, $preview_file_name) = &create_preview_file_path($app_content_preview);
+
+    is($file_manager->exists($preview_file_path), 1, 'Successful creation of preview file.');
+
+    my $this_test_session = MT::Session->get_by_key(
+        {
+            kind => 'TF',
+            name => $preview_file_path,
+        }
+    );
+
+    $this_test_session->start(time - 60 * 61);
+    $this_test_session->save;
+
+    MT::Core->remove_temporary_files;
+
+    ok(
+        !$file_manager->exists($preview_file_path),
+        'Preview file deleted successfully for CleanCompiledTemplateFiles task.'
+    );
 };
 
 File::Path::rmtree($blog->site_path);
