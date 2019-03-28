@@ -491,12 +491,7 @@ sub create_default_templates {
             && exists $val->{content_type} )
         {
             my $ct = MT->model('content_type')
-                ->load( { unique_id => $val->{content_type}, } );
-            $ct ||= MT->model('content_type')->load(
-                {   blog_id => $blog->id,
-                    name    => $val->{content_type},
-                }
-            );
+                ->load_by_id_or_name( $val->{content_type}, $blog->id );
             if ($ct) {
                 $obj->content_type_id( $ct->id );
             }

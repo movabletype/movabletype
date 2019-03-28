@@ -1777,7 +1777,7 @@ sub _hdlr_category_count {
                 $terms->{content_field_id} = $cf_arg;
             }
             else {
-                my ($cf)
+                my $cf
                     = MT->model('content_field')
                     ->load( { unique_id => $cf_arg } );
                 if ($cf) {

@@ -298,11 +298,7 @@ sub _hdlr_contents {
                     $dt_field = $arg;
                 }
                 else {
-                    my $date_cf = '';
-                    $date_cf = MT->model('cf')->load($arg)
-                        if ( $arg =~ /^[0-9]+$/ );
-                    $date_cf = MT->model('cf')->load( { unique_id => $arg } )
-                        unless ($date_cf);
+                    my $date_cf = MT->model('cf')->load_by_id_or_name($arg);
                     if ($date_cf) {
                         $dt_field_id = $date_cf->id;
                     }
@@ -2184,13 +2180,8 @@ sub _search_content_field {
     my $content_type_id = $args->{content_type_id} or return;
     my $name_or_unique_id = $args->{name_or_unique_id};
     return unless defined $name_or_unique_id && $name_or_unique_id ne '';
-    my $cf_class = MT->model('content_field');
-    my $cf       = $cf_class->load(
-        {   content_type_id => $content_type_id,
-            name            => $name_or_unique_id,
-        }
-    );
-    $cf ||= $cf_class->load( { unique_id => $name_or_unique_id } );
+    my $cf = MT->model('content_field')
+        ->load_by_id_or_name( $name_or_unique_id, $content_type_id );
     return $cf;
 }
 

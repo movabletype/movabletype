@@ -523,16 +523,9 @@ sub set_content_type_load_context {
         or return $ctx->error( $ctx->errstr );
 
     if ( my $arg = $args->{content_type} ) {
-        my $class = MT->model('content_type');
-        my $ct;
+        my $class   = MT->model('content_type');
         my $blog_id = $cd_terms->{blog_id};
-        $ct = $class->load($arg) if ( $arg =~ /^[0-9]+$/ );
-        $ct = $class->load( { unique_id => $arg } ) unless $ct;
-        $ct = $class->load(
-            {   name    => $arg,
-                blog_id => $blog_id,
-            }
-        ) unless $ct;
+        my $ct      = $class->load_by_id_or_name( $arg, $blog_id );
         return $ctx->_no_content_type_error unless $ct;
         $cd_terms->{content_type_id} = $ct->id;
     }
@@ -558,16 +551,8 @@ sub get_content_type_context {
             )
             )
         {
-            ($content_type)
-                = MT->model('content_type')->load( { unique_id => $str } );
-            unless ($content_type) {
-                ($content_type)
-                    = MT->model('content_type')
-                    ->load( { blog_id => $blog_id, name => $str } );
-            }
-            if ( !$content_type && $str =~ /^[0-9]+$/ ) {
-                $content_type = MT->model('content_type')->load($str);
-            }
+            $content_type = MT->model('content_type')
+                ->load_by_id_or_name( $str, $blog_id );
             return $ctx->_no_content_type_error() unless $content_type;
         }
     }

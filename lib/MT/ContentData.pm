@@ -786,13 +786,8 @@ sub _nextprev {
     my ( $category_field_id, $category_id, $date_field_id, $date_field_value,
         $by );
     if ( my $id = delete $terms->{category_field} ) {
-        my $cf = MT->model('cf')->load( { unique_id => $id } );
-        $cf = MT->model('cf')->load($id) unless $cf;
-        $cf = MT->model('cf')->load(
-            {   name            => $id,
-                content_type_id => $obj->content_type_id
-            }
-        ) unless $cf;
+        my $cf = MT->model('cf')
+            ->load_by_id_or_name( $id, $obj->content_type_id );
         $category_field_id = $cf->id if $cf;
         my @obj_cats = MT->model('objectcategory')->load(
             {   cf_id     => $category_field_id,
@@ -813,13 +808,7 @@ sub _nextprev {
             $by = $id;
         }
         else {
-            my $df = MT->model('cf')->load( { unique_id => $id } );
-            $df = MT->model('cf')->load($id) unless $df;
-            $df = MT->model('cf')->load(
-                {   name            => $id,
-                    content_type_id => $obj->content_type_id
-                }
-            ) unless $df;
+            my $df = MT->model('cf')->load( $id, $obj->content_type_id );
             $date_field_id = $df->id if $df;
         }
     }
@@ -2195,6 +2184,24 @@ sub remove_child_junction_table_records {
     MT->model('objecttag')
         ->remove_children_multi(
         { object_datasource => 'content_data', object_id => $self->id } );
+}
+
+sub load_by_id_or_name {
+    my ( $class, $id_or_name, $blog_id ) = @_;
+
+    my $cd;
+    if ( $id_or_name =~ /\A[0-9]+\z/ ) {
+        $cd = $class->load($id_or_name);
+        return $cd if $cd;
+    }
+    if ( $id_or_name =~ /\A[a-zA-Z0-9]{40}\z/ ) {
+        $cd = $class->load( { unique_id => $id_or_name } );
+        return $cd if $cd;
+    }
+    if ( defined $blog_id ) {
+        $cd = $class->load( { name => $id_or_name, blog_id => $blog_id } );
+    }
+    $cd;
 }
 
 1;
