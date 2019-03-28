@@ -118,6 +118,9 @@ class MTSerialize {
             '-' => create_function('&$s', '   # scalar value
                 $slen = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $col_val = substr($s["frozen"], $s["pos"]+4, $slen["len"]);
+                if ($col_val === false && $slen["len"] == 0) {
+                    $col_val = "";  # for PHP 5
+                }
                 $s["pos"] += 4 + $slen["len"];
                 return $col_val;
             '),

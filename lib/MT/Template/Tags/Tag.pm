@@ -1065,7 +1065,7 @@ sub _hdlr_tag_name {
     my ( $ctx, $args, $cond ) = @_;
     my $tag = $ctx->stash('Tag');
     return '' unless $tag;
-    my $name = $tag->name || '';
+    my $name = defined $tag->name && $tag->name ne '' ? $tag->name : '';
     if ( $args->{quote} && $name =~ m/ / ) {
         $name = '"' . $name . '"';
     }

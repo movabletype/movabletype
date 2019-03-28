@@ -93,11 +93,11 @@ sub save_filter {
     }
 
     if (   $app->current_api_version >= 4
-        && $obj->type =~ /^ct(?:\-archive)?$/
+        && $obj->type =~ /^ct(?:\_archive)?$/
         && !$obj->content_type_id )
     {
         return $app->errtrans( 'A parameter "[_1]" is required.',
-            'contentTypeID' );
+            'contentType' );
     }
 
     return 1;

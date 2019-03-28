@@ -173,6 +173,11 @@ sub upgrade_functions {
                 code  => \&_v7_add_mobile_site_list_dashboard_widget,
             },
         },
+        'v7_remove_sql_set_names' => {
+            version_limit => '7.0046',
+            priority      => 3.1,
+            code          => \&_v7_remove_sql_set_names,
+        },
     };
 }
 
@@ -1443,6 +1448,19 @@ sub _v7_add_mobile_site_list_dashboard_widget {
     }
     $user->widgets($widgets);
     $user->save;
+}
+
+sub _v7_remove_sql_set_names {
+    my $self      = shift;
+    my $cfg_class = MT->model('config');
+    my $data = $cfg_class->load(1)->data;
+    return 1 if $data =~ /SQLSetNames\s1/;
+
+    $self->progress( $self->translate_escape('Remove SQLSetNames...') );
+
+    my $cfg       = MT->config;
+    $cfg->SQLSetNames( undef, 1 );
+    $cfg->save_config;
 }
 
 1;

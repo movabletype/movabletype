@@ -16,6 +16,57 @@ use MT::DataAPI::Resource;
 my %SupportedType = map { $_ => 1 }
     qw/ index archive individual page category ct ct_archive /;
 
+sub list {
+    my ( $app, $endpoint ) = @_;
+
+    my %terms = ( type => { not => [qw/ backup widget widgetset /] }, );
+
+    my $res = filtered_list( $app, $endpoint, 'template', \%terms ) or return;
+
+    return +{
+        totalResults => ( $res->{count} || 0 ),
+        items =>
+            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'template', $tmpl->id, obj_promise($tmpl) )
+        or return;
+
+    return $tmpl;
+}
+
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $orig_tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $orig_tmpl->type eq $_ } qw/ widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    my $new_tmpl = $app->resource_object( 'template', $orig_tmpl )
+        or return;
+
+    save_object( $app, 'template', $new_tmpl )
+        or return;
+
+    # Remove autosave object
+    remove_autosave_session_obj( $app, 'template', $new_tmpl->id );
+
+    return $new_tmpl;
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 
@@ -79,6 +130,38 @@ sub publish {
     }
 
     return +{ status => 'success' };
+}
+
+sub refresh {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl ) = context_objects(@_) or return;
+
+    if ( grep { $tmpl->type eq $_ } qw/ backup widget widgetset / ) {
+        return $app->error( $app->translate('Template not found'), 404 );
+    }
+
+    my @messages;
+    local *MT::App::DataAPI::build_page = sub {
+        my ( $app, $page, $param ) = @_;
+        @messages = map { $_->{message} } @{ $param->{message_loop} };
+    };
+
+    local $app->{mode};
+
+    $app->param( 'id', $tmpl->id );
+
+    require MT::CMS::Template;
+    MT::CMS::Template::refresh_individual_templates($app);
+
+    if ( $app->errstr ) {
+        return $app->error(403);
+    }
+
+    return +{
+        status   => 'success',
+        messages => \@messages,
+    };
 }
 
 sub clone {
