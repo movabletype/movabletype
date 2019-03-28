@@ -1150,18 +1150,55 @@ sub _query_parse_core {
             }
         }
         elsif ( 'SUBQUERY' eq $term->{query} ) {
-            my ( $test_, $more_joins )
-                = $app->_query_parse_core( $term->{subquery}, $columns,
-                $filter_types );
-            next unless $test_ && @$test_;
-            if (@structure) {
-                push @structure, 'PROHIBITED' eq $term->{type}
-                    ? '-and_not'
-                    : '-and';
+            if ( exists( $term->{field} ) ) {
+                if (   $filter_types
+                    && %$filter_types
+                    && exists( $filter_types->{ $term->{field} } ) )
+                {
+                    my $code = $app->handler_to_coderef(
+                        $filter_types->{ $term->{field} } );
+                    if ($code) {
+                        my $join_args = $code->( $app, $term ) or next;
+                        if ( 'ARRAY' eq ref $join_args->[0] ) {
+                            foreach my $j (@$join_args) {
+                                push @joins, $j;
+                            }
+                        }
+                        else {
+                            push @joins, $join_args;
+                        }
+                        next;
+                    }
+                }
+                elsif ( exists $columns->{ $term->{field} } ) {
+                    my ( $test_, $more_joins )
+                        = $app->_query_parse_core( $term->{subquery}, $columns,
+                        $filter_types );
+                    next unless $test_ && @$test_;
+                    if (@structure) {
+                        push @structure, 'PROHIBITED' eq $term->{type}
+                            ? '-and_not'
+                            : '-and';
+                    }
+                    push @structure, @$test_;
+                    push @joins,     @$more_joins;
+                    next;
+                }
             }
-            push @structure, @$test_;
-            push @joins,     @$more_joins;
-            next;
+            else {
+                my ( $test_, $more_joins )
+                    = $app->_query_parse_core( $term->{subquery}, $columns,
+                    $filter_types );
+                next unless $test_ && @$test_;
+                if (@structure) {
+                    push @structure, 'PROHIBITED' eq $term->{type}
+                        ? '-and_not'
+                        : '-and';
+                }
+                push @structure, @$test_;
+                push @joins,     @$more_joins;
+                next;
+            }
         }
 
         if ( exists( $term->{conj} ) && ( 'OR' eq $term->{conj} ) ) {
