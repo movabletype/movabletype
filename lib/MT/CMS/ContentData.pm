@@ -69,6 +69,8 @@ sub edit {
         return $app->return_to_dashboard( redirect => 1 );
     }
 
+    $app->remove_preview_file;
+
     if ( $app->param('_recover') && !$app->param('reedit') ) {
         $app->param( '_type', 'content_data' );
         my $sess_obj = $app->autosave_session_obj;
@@ -467,6 +469,8 @@ sub save {
     # Validate magic token
     $app->validate_magic
         or return $app->errtrans("Invalid request.");
+
+    $app->remove_preview_file;
 
     # Parameter check
     my $blog_id = $app->param('blog_id')
