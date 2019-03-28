@@ -1082,8 +1082,19 @@ sub _query_parse_core {
 
                     # Colon in query but was not to specify a field.
                     # Treat it as a phrase including the colon.
+                    my $type  = $term->{type};
+                    my $conj  = delete $term->{conj};
                     my $field = delete $term->{field};
-                    $term->{term} = $field . ':' . $term->{term};
+                    $field .= ':' . delete $term->{field_name}
+                        if $term->{field_name};
+                    my $deparsed
+                        = Lucene::QueryParser::deparse_query( [$term] );
+                    $term = {
+                        query => 'PHRASE',
+                        term  => "$field:$deparsed",
+                        type  => $type,
+                    };
+                    $term->{conj} = $conj if $conj;
                     unshift @$lucene_struct, $term;
                 }
             }
