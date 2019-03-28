@@ -88,7 +88,7 @@ sub create_preview_file_path {
     my $preview_file_name = 'mt-preview-' . MT::Util::perl_sha1_digest_hex($data);
 
     my $preview_date = Time::Piece->strptime(
-        scalar $app->multi_param('authored_on_date'),
+        scalar $app->param('authored_on_date'),
         '%Y%m%d'
     );
 
