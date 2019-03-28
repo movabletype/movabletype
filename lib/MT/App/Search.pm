@@ -1183,13 +1183,6 @@ sub _query_parse_core {
 sub _join_category {
     my ( $app, $term ) = @_;
     my $query = $term->{term};
-    if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ) {
-        $query =~ s/'/"/g;
-        if ( !exists $term->{field} && $query =~ /^[^\"].*\s.*[^\"]$/ ) {
-            $query = '"' . $term->{term} . '"';
-        }
-    }
-
     my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
     # search for exact match
@@ -1257,10 +1250,6 @@ sub _join_author {
     my ( $app, $term ) = @_;
 
     my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
-        $query =~ s/'/"/g;
-    }
-
     my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
     delete $term->{field};
@@ -1279,11 +1268,6 @@ sub _join_field {
 
     eval "require CustomFields::Field;";
     return if $@;    # No Commercial.Pack installed?
-
-    my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
-        $query =~ s/'/"/g;
-    }
 
     my $basename = $term->{field_name};
 
