@@ -1065,14 +1065,9 @@ sub query_parse {
     my ( $terms, $joins )
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
-    if ( $joins && @$joins ) {
-        my $args = {};
 
-        #        _create_join_arg( $args, $joins );
-        $args->{joins} = $joins;
-        if ( $args && %$args ) {
-            $return->{args} = $args;
-        }
+    if ( $joins && @$joins ) {
+        $return->{args} = { joins => $joins };
     }
     $return;
 }
