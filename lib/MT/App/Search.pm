@@ -1190,7 +1190,7 @@ sub _join_category {
         }
     }
 
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+    my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
     my $lucene_struct = Lucene::QueryParser::parse_query($query);
     if ( 'PROHIBITED' eq $term->{type} ) {
@@ -1266,7 +1266,7 @@ sub _join_author {
         $query =~ s/'/"/g;
     }
 
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+    my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
     my $lucene_struct = Lucene::QueryParser::parse_query($query);
     if ( 'PROHIBITED' eq $term->{type} ) {
