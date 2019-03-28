@@ -434,7 +434,7 @@ $test_env->prepare_fixture(
                 $cf_category->id =>
                     [ $category2->id, $category1->id, $invalid_obj_id ],
                 $cf_image->id =>
-                    [ $image1->id, $image2->id, $invalid_obj_id ],
+                    [ $image2->id, $image1->id, $invalid_obj_id ],
                 $cf_content_type->id => [ $cd2->id, $invalid_obj_id ],
             },
         );
@@ -962,9 +962,9 @@ Footer
 <mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
 --- expected
 Header
-Sample Image 1
-
 Sample Image 2
+
+Sample Image 1
 Footer
 
 === mt:ContentField content_field="content_type"
