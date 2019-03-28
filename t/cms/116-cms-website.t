@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -21,28 +22,56 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
 
-    # Author
-    my $admin = MT->model('author')->load(1);
-});
+        # Author
+        my $admin = MT->model('author')->load(1);
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
-my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load( { name => 'my blog' } );
 
 my $admin = MT->model('author')->load(1);
+
+my $website_entry = MT::Test::Permission->make_entry(
+    blog_id => $website->id,
+    title   => 'WebsiteEntry',
+);
+
+my $blog_entry = MT::Test::Permission->make_entry(
+    blog_id => $blog->id,
+    title   => 'BlogEntry',
+);
+
+MT->publisher->rebuild( BlogID => $website->id );
+MT->publisher->rebuild( BlogID => $blog->id );
+
+my @published_files;
+use File::Find;
+File::Find::find(
+    {   wanted => sub {
+            push @published_files, $File::Find::name;
+        },
+        no_chdir => 1,
+    },
+    $test_env->root
+);
+
+ok grep( /websiteentry/, @published_files ), "website entry is published";
+ok grep( /blogentry/,    @published_files ), "blog entry is published";
 
 # Run tests
 my ( $app, $out );
@@ -51,8 +80,9 @@ note 'Test cfg_prefs mode';
 subtest 'Test cfg_prefs mode' => sub {
     foreach my $type ( 'website', 'blog' ) {
         my $type_ucfirst = 'Site';    # ucfirst $type;
-        my $test_blog = $type eq 'website' ? $website : $blog;
-        my $type_alias = $type eq 'website' ? 'site' : 'child site';
+        my $test_blog          = $type eq 'website' ? $website : $blog;
+        my $type_alias         = $type eq 'website' ? 'site' : 'child site';
+        my $type_alias_ucfirst = $type eq 'website' ? 'Site' : 'Child Site';
 
         note "$type_ucfirst scope";
         subtest "$type_ucfirst scope" => sub {
@@ -123,7 +153,8 @@ subtest 'Test cfg_prefs mode' => sub {
             like( $out, qr/$archive_url_hint/, 'Has Archive URL hint.' );
 
             my $archive_url_warning = quotemeta
-                "Warning: Changing the archive URL can result in breaking all links in your ${type_alias}.";
+                "Warning: Changing the archive URL requires a complete publish of your ${type_alias_ucfirst}, even when publishing profile is dynamic publishing.";
+
             like( $out, qr/$archive_url_warning/,
                 'Has Archive URL warning.' );
 
@@ -163,32 +194,47 @@ subtest 'Test cfg_prefs mode' => sub {
                     'Parameter "enable_archive_paths" is checked.' );
             }
 
-            if ( $type eq 'website' ) {
+            {
                 my $archive_url  = 'http://localhost/archive/path/';
-                my $archive_path = '/var/www/html/archive/path';
+                my $archive_path = $test_env->root . "new/$type/archive/path";
 
                 $app = _run_app(
                     'MT::App::CMS',
                     {   __test_user          => $admin,
                         __request_method     => 'POST',
                         __mode               => 'save',
-                        _type                => 'blog',
+                        _type                => $type,
                         blog_id              => $test_blog->id,
                         id                   => $test_blog->id,
                         enable_archive_paths => 1,
                         archive_url          => $archive_url,
                         archive_path         => $archive_path,
+                        site_url_path    => $type eq 'blog' ? 'nana/' : '',
+                        archive_url_path => $type eq 'blog'
+                        ? 'nana/archives/'
+                        : '',
+                        cfg_screen             => 'cfg_prefs',
+                        preferred_archive_type => 'Individual',
+                        max_revisions_entry    => 20,
+                        max_revisions_cd       => 20,
+                        max_revisions_template => 20,
                     },
                 );
                 $out = delete $app->{__test_output};
                 ok( $out =~ /Status: 302 Found/ && $out =~ /saved=1/,
                     'Request: save blog' );
 
-                $test_blog = MT->model('website')->load( $test_blog->id );
-                is( $test_blog->column('archive_url'),
-                    $archive_url, 'Can save archive_url correctly.' );
+                $test_blog = MT->model($type)->load( $test_blog->id );
+                if ( $type eq 'website' ) {
+                    is( $test_blog->column('archive_url'),
+                        $archive_url, 'Can save archive_url correctly.' );
+                }
                 is( $test_blog->column('archive_path'),
                     $archive_path, 'Can save archive_path correctly.' );
+
+                my @missing = grep { !-e $_ } @published_files;
+                ok !@missing, 'no files are removed';
+                note join "\n", @missing if @missing;
             }
 
             if ( $type eq 'blog' ) {
