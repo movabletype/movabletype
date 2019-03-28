@@ -1228,8 +1228,9 @@ sub _join_category {
         my $p_alias     = $place_class->datasource . '_' . $trail;
         my $c_alias     = $cat_class->datasource . '_' . $trail;
 
+        delete $term->{field};
         my ($terms)
-            = $app->_query_parse_core( $lucene_struct,
+            = $app->_query_parse_core( [$term],
             { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
         next unless $terms && @$terms;
 
@@ -1272,8 +1273,9 @@ sub _join_author {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
 
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct,
+        = $app->_query_parse_core( [$term],
         { ( $can_search_by_id ? ( id => 1 ) : () ), nickname => 'like', },
         {} );
     return unless $terms && @$terms;
@@ -1307,8 +1309,9 @@ sub _join_field {
         $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
     }
 
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
+        = $app->_query_parse_core( [$term], { $type_col => 'like' },
         {} );
     return unless $terms && @$terms;
 
