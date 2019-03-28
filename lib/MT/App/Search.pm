@@ -1308,8 +1308,9 @@ sub _join_category {
         my $p_alias     = $place_class->datasource . '_' . $trail;
         my $c_alias     = $cat_class->datasource . '_' . $trail;
 
+        delete $term->{field};
         my ($terms)
-            = $app->_query_parse_core( $lucene_struct,
+            = $app->_query_parse_core( [$term],
             { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
         next unless $terms && @$terms;
 
@@ -1343,8 +1344,9 @@ sub _join_author {
     my $query = $term->{term};
     my $can_search_by_id = $query && $query =~ /^[0-9]+$/ ? 1 : 0;
 
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct,
+        = $app->_query_parse_core( [$term],
         { ( $can_search_by_id ? ( id => 1 ) : () ), nickname => 'like', },
         {} );
     return unless $terms && @$terms;
@@ -1370,9 +1372,9 @@ sub _join_field {
     my $type_col = $meta_rec->{type};
     return unless $type_col;
 
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
-        {} );
+        = $app->_query_parse_core( [$term], { $type_col => 'like' }, {} );
     return unless $terms && @$terms;
 
     my $meta_class = $class->meta_pkg;
