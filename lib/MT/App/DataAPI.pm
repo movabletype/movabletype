@@ -2366,6 +2366,41 @@ sub core_endpoints {
         },
 
         # template
+        {   id             => 'list_templates',
+            route          => '/sites/:site_id/templates',
+            version        => 4,
+            handler        => "${pkg}v4::Template::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+                filterKeys   => 'type',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templates.',
+            },
+        },
+        {   id          => 'get_template',
+            route       => '/sites/:site_id/templates/:template_id',
+            version     => 4,
+            handler     => "${pkg}v4::Template::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested template.',
+            },
+        },
+        {   id        => 'update_template',
+            route     => '/sites/:site_id/templates/:template_id',
+            resources => ['template'],
+            verb      => 'PUT',
+            version   => 4,
+            handler   => "${pkg}v4::Template::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a template.', },
+        },
         {   id      => 'delete_template',
             route   => '/sites/:site_id/templates/:template_id',
             verb    => 'DELETE',
@@ -2382,6 +2417,14 @@ sub core_endpoints {
             handler => "${pkg}v4::Template::publish",
             error_codes =>
                 { 403 => 'Do not have permission to publish a template.', },
+        },
+        {   id      => 'refresh_template',
+            route   => '/sites/:site_id/templates/:template_id/refresh',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::refresh",
+            error_codes =>
+                { 403 => 'Do not have permission to refresh a template.', },
         },
         {   id      => 'clone_template',
             route   => '/sites/:site_id/templates/:template_id/clone',
@@ -3279,7 +3322,7 @@ sub show_error {
 
     if ( !$error ) {
         $error = {
-            code => $param->{status} || 500,
+            code    => $param->{status} || 500,
             message => $param->{error},
         };
     }
