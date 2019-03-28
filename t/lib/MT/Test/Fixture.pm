@@ -15,6 +15,7 @@ sub prepare {
     $class->prepare_website( $spec, \%objs );
     $class->prepare_blog( $spec, \%objs );
     $class->prepare_category( $spec, \%objs );
+    $class->prepare_customfield( $spec, \%objs );
     $class->prepare_entry( $spec, \%objs );
     $class->prepare_folder( $spec, \%objs );
     $class->prepare_page( $spec, \%objs );
@@ -145,6 +146,36 @@ sub prepare_folder {
                 %arg,
             );
             $objs->{folder}{ $folder->label } = $folder;
+        }
+    }
+}
+
+sub prepare_customfield {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{customfield};
+
+    if ( ref $spec->{customfield} eq 'ARRAY' ) {
+        my $blog_id = $objs->{blog_id}
+            or croak "blog_id is required: customfield";
+        for my $item ( @{ $spec->{customfield} } ) {
+            my %arg;
+            if ( ref $item eq 'HASH' ) {
+                %arg = %$item;
+            }
+            else {
+                %arg = (
+                    name => $item,
+                    obj_type => 'entry',
+                    type => 'text',
+                    basename => $item,
+                    tag => $item,
+                );
+            }
+            my $field = MT::Test::Permission->make_field(
+                blog_id => $blog_id,
+                %arg,
+            );
+            $objs->{customfield}{ $field->name } = $field;
         }
     }
 }
