@@ -1041,7 +1041,7 @@ sub query_parse {
     # MTC-25640
     # Replace field:name:term_or_phrase with field__name:term_or_phrase
     # to let Lucene::QueryParser handle term_or_phrase correctly
-    $search =~ s/(^|\s)(field):([^:]+):/$1${2}__$3:/g;
+    $search =~ s/(^|\s)([!+\-]?field):([^:]+):/$1${2}__$3:/g;
 
     my $reg
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
