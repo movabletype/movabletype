@@ -1192,11 +1192,6 @@ sub _join_category {
 
     my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
-    my $lucene_struct = Lucene::QueryParser::parse_query($query);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
-
     # search for exact match
     my $joins;
     if (scalar @$lucene_struct > 1
@@ -1268,11 +1263,6 @@ sub _join_author {
 
     my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
-    my $lucene_struct = Lucene::QueryParser::parse_query($query);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
-
     delete $term->{field};
     my ($terms)
         = $app->_query_parse_core( [$term],
@@ -1303,11 +1293,6 @@ sub _join_field {
     my $meta_rec = MT::Meta->metadata_by_name( $class, $field_basename );
     my $type_col = $meta_rec->{type};
     return unless $type_col;
-
-    my $lucene_struct = Lucene::QueryParser::parse_query($val);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
 
     delete $term->{field};
     my ($terms)
