@@ -1276,7 +1276,7 @@ sub _query_parse_core {
 sub _join_category {
     my ( $app, $term ) = @_;
     my $query = $term->{term};
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+    my $can_search_by_id = $query && $query =~ /^[0-9]+$/ ? 1 : 0;
     # search for exact match
     my $joins;
     if (scalar @$lucene_struct > 1
@@ -1341,7 +1341,7 @@ sub _join_author {
     my ( $app, $term ) = @_;
 
     my $query = $term->{term};
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+    my $can_search_by_id = $query && $query =~ /^[0-9]+$/ ? 1 : 0;
 
     my ($terms)
         = $app->_query_parse_core( $lucene_struct,
