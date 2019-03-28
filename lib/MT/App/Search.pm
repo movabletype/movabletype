@@ -473,6 +473,7 @@ sub process {
     }
 
     $out = $app->$method( $count, $iter );
+    $iter->end;
     unless ( defined $out ) {
         MT::Util::Log->info('--- End   search process. No out.');
         return $app->error( $app->errstr );
