@@ -1183,11 +1183,12 @@ sub _query_parse_core {
                 }
                 elsif ( exists $columns->{ $term->{field} } ) {
                     my ( $test_, $more_joins )
-                        = $app->_query_parse_core( $term->{subquery}, $columns,
-                        $filter_types );
+                        = $app->_query_parse_core( $term->{subquery},
+                        $columns, $filter_types );
                     next unless $test_ && @$test_;
                     if (@structure) {
-                        push @structure, 'PROHIBITED' eq $term->{type}
+                        push @structure,
+                            'PROHIBITED' eq $term->{type}
                             ? '-and_not'
                             : '-and';
                     }
@@ -1202,7 +1203,8 @@ sub _query_parse_core {
                     $filter_types );
                 next unless $test_ && @$test_;
                 if (@structure) {
-                    push @structure, 'PROHIBITED' eq $term->{type}
+                    push @structure,
+                        'PROHIBITED' eq $term->{type}
                         ? '-and_not'
                         : '-and';
                 }
@@ -1309,8 +1311,7 @@ sub _join_field {
 
     delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( [$term], { $type_col => 'like' },
-        {} );
+        = $app->_query_parse_core( [$term], { $type_col => 'like' }, {} );
     return unless $terms && @$terms;
 
     my $meta_class = $class->meta_pkg;
