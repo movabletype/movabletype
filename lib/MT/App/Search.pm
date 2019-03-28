@@ -1122,7 +1122,7 @@ sub _query_parse_core {
 
             # MTC-25640: Restore field__name
             if ( $term->{field} =~ s/^field__(.+)/field/ ) {
-                $term->{term} = $1 . ':' . $term->{term};
+                $term->{field_name} = $1;
             }
             unless ( exists $columns->{ $term->{field} } ) {
                 if (   $filter_types
@@ -1344,8 +1344,7 @@ sub _join_field {
     eval "require CustomFields::Field;";
     return if $@;    # No Commercial.Pack installed?
 
-    my ( $basename, $val ) = split ':', $query, 2;
-    return unless $basename && $val;
+    my $basename = $term->{field_name};
 
     require MT::Meta;
     my $field_basename = 'field.' . $basename;
