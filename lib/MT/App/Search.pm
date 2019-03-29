@@ -422,16 +422,18 @@ sub process {
     }
 
     $out = $app->$method( $count, $iter );
-    $iter->end;
     unless ( defined $out ) {
         MT::Util::Log->info('--- End   search process. No out.');
+        $iter->end;
         return $app->error( $app->errstr );
     }
 
     my $result;
     if ( ref($out) && eval { $out->isa('MT::Template') } ) {
-        defined( $result = $out->build() )
-            or return $app->error( $out->errstr );
+        unless ( defined( $result = $out->build() ) ) {
+            $iter->end;
+            return $app->error( $out->errstr );
+        }
     }
     else {
         $result = $out;
@@ -439,6 +441,7 @@ sub process {
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
     MT::Util::Log->info('--- End   search process.');
+    $iter->end;
     $result;
 }
 
