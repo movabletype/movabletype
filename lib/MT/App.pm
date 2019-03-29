@@ -4369,7 +4369,7 @@ sub remote_ip {
     $remote_ip ||= '127.0.0.1';
     my $ip
         = $trusted
-        ? $app->get_header('X-Forwarded-For')
+        ? ( $app->get_header('X-Forwarded-For') || '' )
         : $remote_ip;
     if ($trusted) {
         if ( $trusted =~ m/^\d+$/ ) {
