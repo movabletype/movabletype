@@ -53,7 +53,7 @@ script:
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.24" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:stretch-full bash -c "$TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.26" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:bionic-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && service mysql start && $TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.26" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:bionic-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && $TEST_COMMAND" ; fi
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:centos6-full bash -c "yum -y install git && $TEST_COMMAND"; fi
 
