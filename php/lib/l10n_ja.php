@@ -12,23 +12,23 @@ $Lexicon_ja = array(
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => '記事',
-	'Page' => 'ウェブページ',
-	'Yearly' => '年別',
-	'Monthly' => '月別',
-	'Daily' => '日別',
-	'Weekly' => '週別',
-	'Author' => 'ユーザー',
+	'INDIVIDUAL_ADV' => '記事',
+	'PAGE_ADV' => 'ウェブページ',
+	'YEARLY_ADV' => '年別',
+	'MONTHLY_ADV' => '月別',
+	'DAILY_ADV' => '日別',
+	'WEEKLY_ADV' => '週別',
+	'AUTHOR_ADV' => 'ユーザー',
 	'(Display Name not set)' => '(表示名なし)',
-	'Author Yearly' => 'ユーザー 年別',
-	'Author Monthly' => 'ユーザー 月別',
-	'Author Daily' => 'ユーザー 日別',
-	'Author Weekly' => 'ユーザー 週別',
-	'Category' => 'カテゴリ',
-	'Category Yearly' => 'カテゴリ 年別',
-	'Category Monthly' => 'カテゴリ 月別',
-	'Category Daily' => 'カテゴリ 日別',
-	'Category Weekly' => 'カテゴリ 週別',
+	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
+	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
+	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
+	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
+	'CATEGORY_ADV' => 'カテゴリ',
+	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
+	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
+	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
+	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'CONTENTTYPE_ADV' => 'コンテンツタイプ別',
 	'CONTENTTYPE-DAILY_ADV' => 'コンテンツタイプ 日別',
 	'CONTENTTYPE-WEEKLY_ADV' => 'コンテンツタイプ 週別',
@@ -44,6 +44,10 @@ $Lexicon_ja = array(
 	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'コンテンツタイプ カテゴリ 月別',
 	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'コンテンツタイプ カテゴリ 日別',
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'コンテンツタイプ カテゴリ 週別',
+	'Category' => 'カテゴリ',
+
+## php/lib/block.mtarchivelist.php
+	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtarchives.php
 	'ArchiveType not found - [_1]' => 'アーカイブタイプが見つかりません - [_1]',
@@ -63,18 +67,20 @@ $Lexicon_ja = array(
 
 ## php/lib/block.mtcategorysets.php
 	'No Category Set could be found.' => 'カテゴリセットが見つかりません。',
-	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtcontentauthoruserpicasset.php
 	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTContentsコンテナタグの外部で使っていませんか?',
 
 ## php/lib/block.mtcontentfield.php
+	'No Content Field could be found: \"[_1]\"' => 'コンテンツフィールドが見つかりません: "[_1]"',
 	'No Content Field could be found.' => 'コンテンツフィールドが見つかりません。',
 	'No Content Field Type could be found.' => 'コンテンツフィールドタイプが見つかりません。',
 
 ## php/lib/block.mtcontentfields.php
 
 ## php/lib/block.mtcontents.php
+	'You used an \'[_1]\' tag outside of the context of the site;' => '[_1]をコンテキスト外で利用しようとしています。サイトの外部で使っていませんか?',
+	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtcontentscalendar.php
 	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Sun、Mon、Tue、Wed、Thu、Fri、Satのいずれかでなければなりません。',
@@ -90,6 +96,11 @@ $Lexicon_ja = array(
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
+
+## php/lib/block.mtifarchivetype.php
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
+
+## php/lib/block.mtifarchivetypeenabled.php
 
 ## php/lib/block.mtsethashvar.php
 
@@ -109,7 +120,9 @@ $Lexicon_ja = array(
 
 ## php/lib/content_field_type_lib.php
 	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
-	'No category_set setting in content field type.' => 'コンテンっつフィールドにカテゴリセットが設定されていません。',
+	'No category_set setting in content field type.' => 'コンテンツフィールドにカテゴリセットが設定されていません。',
+
+## php/lib/function.mtarchivelink.php
 
 ## php/lib/function.mtassettype.php
 	'image' => '画像',
@@ -122,6 +135,9 @@ $Lexicon_ja = array(
 	'Video' => 'ビデオ',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcategoryarchivelink.php
+	'[_1] cannot be used without publishing [_2] archive.' => '[_1]アーカイブを公開していないので[_1]は使えません。',
 
 ## php/lib/function.mtcontentauthordisplayname.php
 
@@ -180,6 +196,7 @@ $Lexicon_ja = array(
 ## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
+	'Page' => 'ウェブページ',
 	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php
@@ -191,7 +208,6 @@ $Lexicon_ja = array(
 	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
 	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
-	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
 
 ## php/lib/function.mtpasswordvalidationrule.php
 	'minimum length of [_1]' => '[_1]文字以上',
