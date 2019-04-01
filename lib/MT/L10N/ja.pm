@@ -6778,15 +6778,15 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
-	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信のジョブが正常に登録されました。次の run-periodic-tasks 実行時に処理されます。',
+	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
 	'Immediate sync job has been registered.' => '即時配信のジョブが正常に登録されました。',
 	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、配信先サーバー上で正しく動作しない場合があります。',
 	'Register immediate sync job' => '即時配信する',
 	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Sync Date' => 'サーバー配信日時',
-	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Recipient for Notification' => '通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
 	'htaccess' => 'htaccess',
 	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
