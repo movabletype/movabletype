@@ -13,7 +13,7 @@ env:
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.18" TEST_COMMAND="phpunit && make test-php-lint"
+    - PERL_VERSION="5.18" TEST_COMMAND="wget https://phar.phpunit.de/phpunit-4.8.36.phar && chmod +x phpunit-4.8.36.phar && ./phpunit-4.8.36.phar && make test-php-lint"
 
     - TEST_COMMAND="travis_retry npm run test-riot"
 
