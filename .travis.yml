@@ -47,6 +47,9 @@ env:
     - PERL_VERSION="5.26" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.26" TEST_COMMAND="phpunit && make test-php-lint"
 
+before_script:
+  - composer install --dev
+
 script:
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
 
