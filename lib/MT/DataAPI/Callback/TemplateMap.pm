@@ -255,13 +255,15 @@ sub post_delete {
         )
     {
         my $m = $app->model('templatemap')->load(
-            {   blog_id      => $obj->blog,
+            {   blog_id      => $obj->blog_id,
                 archive_type => $obj->archive_type,
             },
             $args,
         );
-        $m->is_preferred(1);
-        $m->save or return;
+        if ($m) {
+            $m->is_preferred(1);
+            $m->save or return;
+        }
     }
 
     my $site = $app->blog;
