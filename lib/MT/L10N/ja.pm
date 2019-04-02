@@ -6060,7 +6060,7 @@ use vars qw( @ISA %Lexicon );
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
-	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www の有無を統一する。 <a href="[_1]">詳細</a>',
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www 有無を無視してどちらでもアクセスをできるようにする。 <a href="[_1]">詳細</a>',
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
 	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
