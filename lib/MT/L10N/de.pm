@@ -36,7 +36,6 @@ use vars qw( @ISA %Lexicon );
 	'CATEGORY-DAILY_ADV' => 'Kategorie täglich',
 	'CATEGORY-WEEKLY_ADV' => 'Kategorie wöchentlich',
 	'Category' => 'Kategorie',
-	'(Display Name not set)' => '(Kein Anzeigename festgelegt)',
 	'CONTENTTYPE_ADV' => 'Inhaltstyparchiv',
 	'CONTENTTYPE-DAILY_ADV' => 'tägliches Inhaltstyparchiv',
 	'CONTENTTYPE-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv',
