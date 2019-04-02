@@ -194,3 +194,9 @@ clean:
 	-rm -rf MANIFEST
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
+
+PHP_LINT_DIR ?= php plugins
+
+test-php-lint:
+	php -v
+	find $(PHP_LINT_DIR) -name "*.php" | xargs -n1 php -l
