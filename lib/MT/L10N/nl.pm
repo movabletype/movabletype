@@ -18,18 +18,23 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/archive_lib.php
-	'Individual' => 'per bericht',
-	'Page' => 'Pagina',
-	'Yearly' => 'per jaar',
-	'Monthly' => 'per maand',
-	'Daily' => 'per dag',
-	'Weekly' => 'per week',
-	'Author' => 'Auteur',
+	'INDIVIDUAL_ADV' => 'per bericht',
+	'PAGE_ADV' => 'Pagina',
+	'YEARLY_ADV' => 'per jaar',
+	'MONTHLY_ADV' => 'per maand',
+	'DAILY_ADV' => 'per dag',
+	'WEEKLY_ADV' => 'per week',
+	'AUTHOR_ADV' => 'Auteur',
 	'(Display Name not set)' => '(Getoonde naam niet ingesteld)',
-	'Author Yearly' => 'per auteur per jaar',
-	'Author Monthly' => 'per auteur per maand',
-	'Author Daily' => 'per auteur per dag',
-	'Author Weekly' => 'per auteur per week',
+	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
+	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
+	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
+	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
+	'CATEGORY_ADV' => 'Categorie',
+	'CATEGORY-YEARLY_ADV' => 'per categorie per jaar',
+	'CATEGORY-MONTHLY_ADV' => 'per categorie per maand',
+	'CATEGORY-DAILY_ADV' => 'per categorie per dag',
+	'CATEGORY-WEEKLY_ADV' => 'per categorie per week',
 	'Category' => 'Categorie',
 	'Category Yearly' => 'per categorie per jaar',
 	'Category Monthly' => 'per categorie per maand',
@@ -789,52 +794,42 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/dd/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
 	'author/author-basename/yyyy/mm/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'per auteur',
 	'author/author-basename/index.html' => 'auteur/auteur-basisnaam/index.html',
 	'author/author_basename/index.html' => 'auteur/auteur_basisnaam/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/dag-week/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
 	'author/author-basename/yyyy/index.html' => 'auteur/auteur-basisnaam/yyyy/index.html',
 	'author/author_basename/yyyy/index.html' => 'auteur/auteur_basisnaam/yyyy/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'per categorie per dag',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'per categorie per maand',
 	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'per categorie',
 	'category/sub-category/index.html' => 'categorie/sub-categorie/index.html',
 	'category/sub_category/index.html' => 'categorie/sub_categorie/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'per categorie per week',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'per categorie per jaar',
 	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
 	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
 
@@ -859,11 +854,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'DAILY_ADV' => 'per dag',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'MONTHLY_ADV' => 'per maand',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentType.pm
@@ -885,17 +878,14 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/content_basename/index.html' => 'categorie/sub_categorie/basisnaam_inhoud/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'WEEKLY_ADV' => 'per week',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'YEARLY_ADV' => 'per jaar',
 	'yyyy/index.html' => 'jjjj/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => 'per bericht',
 	'yyyy/mm/entry-basename.html' => 'jjjj/mm/basisnaam-bericht.html',
 	'yyyy/mm/entry_basename.html' => 'jjjj/mm/basisnaam_bericht.html',
 	'yyyy/mm/entry-basename/index.html' => 'jjjj/mm/basisnaam-bericht/index.html',
@@ -912,7 +902,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/Monthly.pm
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'per pagina',
 	'folder-path/page-basename.html' => 'map-pad/basisnaam-pagina.html',
 	'folder-path/page-basename/index.html' => 'map-pad/basisnaam-pagina/index.html',
 	'folder_path/page_basename.html' => 'map_pad/basisnaam_pagina.html',

@@ -18,23 +18,25 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/archive_lib.php
-	'Individual' => 'Individuell',
-	'Page' => 'Seite',
-	'Yearly' => 'Jährlich',
-	'Monthly' => 'Monatlich',
-	'Daily' => 'Täglich',
-	'Weekly' => 'Wöchentlich',
-	'Author' => 'Autor',
+	'INDIVIDUAL_ADV' => 'Individuell',
+	'PAGE_ADV' => 'Seite',
+	'YEARLY_ADV' => 'Jährlich',
+	'MONTHLY_ADV' => 'Monatlich',
+	'DAILY_ADV' => 'Täglich',
+	'WEEKLY_ADV' => 'Wöchentlich',
+	'AUTHOR_ADV' => 'Autor',
 	'(Display Name not set)' => '(Kein Anzeigename festgelegt)',
-	'Author Yearly' => 'Autor jährlich',
-	'Author Monthly' => 'Autor monatlich',
-	'Author Daily' => 'Autor täglich',
-	'Author Weekly' => 'Autor wöchentlich',
+	'AUTHOR-YEARLY_ADV' => 'Autor jährlich',
+	'AUTHOR-MONTHLY_ADV' => 'Autor monatlich',
+	'AUTHOR-DAILY_ADV' => 'Autor täglich',
+	'AUTHOR-WEEKLY_ADV' => 'Autor wöchentlich',
+	'CATEGORY_ADV' => 'Kategorie',
+	'CATEGORY-YEARLY_ADV' => 'Kategorie jährlich',
+	'CATEGORY-MONTHLY_ADV' => 'Kategorie monatlich',
+	'CATEGORY-DAILY_ADV' => 'Kategorie täglich',
+	'CATEGORY-WEEKLY_ADV' => 'Kategorie wöchentlich',
 	'Category' => 'Kategorie',
-	'Category Yearly' => 'Kategorie jährlich',
-	'Category Monthly' => 'Kategorie monatlich',
-	'Category Daily' => 'Kategorie täglich',
-	'Category Weekly' => 'Kategorie wöchentlich',
+	'(Display Name not set)' => '(Kein Anzeigename festgelegt)',
 	'CONTENTTYPE_ADV' => 'Inhaltstyparchiv',
 	'CONTENTTYPE-DAILY_ADV' => 'tägliches Inhaltstyparchiv',
 	'CONTENTTYPE-WEEKLY_ADV' => 'wöchentliches Inhaltstyparchiv',
@@ -788,52 +790,42 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'Dieses Modul ist zur Cookie-Authentifizierung erforderlich.',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'tägliches Autorenarchiv',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'autor/autoren-basisname/jjjj/mm/tt/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'autor/autoren_basisname/jjjj/mm/tt/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'monatliches Autorenarchiv',
 	'author/author-basename/yyyy/mm/index.html' => 'autor/autoren-basisname/jjjj/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'autor/autoren_basisname/jjjj/mm/index.hmtl',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'Autorenarchiv',
 	'author/author-basename/index.html' => 'autor/autoren-basisname/index.html',
 	'author/author_basename/index.html' => 'autor/autoren-basisname/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'wöchentliches Autorenarchiv',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'autor/autoren-basisname/jjjj/mm/wochen-tag/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'autor/autoren-basisname/jjjj/mm/wochen-tag/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'jährliches Autorenarchiv',
 	'author/author-basename/yyyy/index.html' => 'autor/autoren-basisname/jjjj/index.html',
 	'author/author_basename/yyyy/index.html' => 'autor/autoren_basisname/jjjj/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'tägliches Kategoriearchiv',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'kategorie/unter-kategorie/jjjj/mm/tt/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'kategorie/unter_kategorie/jjjj/mm/tt/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'monatliches Kategoriearchiv',
 	'category/sub-category/yyyy/mm/index.html' => 'kategorie/unter-kategorie/jjjj/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'kategorie/unter_kategorie/jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'Kategoriearchiv',
 	'category/sub-category/index.html' => 'kategorie/unter-kategorie/index.html',
 	'category/sub_category/index.html' => 'kategorie/unter_kategorie/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'wöchentliches Kategoriearchiv',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'kategorie/unter-kategorie/jjjj/mm/tag-woche/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'kategorie/unter_kategorie/jjjj/mm/tag-woche/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'jährliches Kategoriearchiv',
 	'category/sub-category/yyyy/index.html' => 'kategorie/unter-kategorie/jjjj/index.html',
 	'category/sub_category/yyyy/index.html' => 'kategorie/unter_kategorie/jjjj/index.html',
 
@@ -858,11 +850,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'DAILY_ADV' => 'Tagesarchiv',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/tt/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'MONTHLY_ADV' => 'Monatsarchiv',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentType.pm
@@ -884,17 +874,14 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/content_basename/index.html' => 'kategorie/unter_kategorie/inhalts_basisname/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'WEEKLY_ADV' => 'Wochenarchiv',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/tag-woche/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'YEARLY_ADV' => 'Jahresarchiv',
 	'yyyy/index.html' => 'jjjj/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => 'Einzelarchiv',
 	'yyyy/mm/entry-basename.html' => 'jjjj/mm/eintrags-name.html',
 	'yyyy/mm/entry_basename.html' => 'jjjj/mm/eintrags_name.html',
 	'yyyy/mm/entry-basename/index.html' => 'jjjj/mm/eintrags-name/index.html',
@@ -911,7 +898,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/Monthly.pm
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'Seitenarchiv',
 	'folder-path/page-basename.html' => 'pfad-angabe/seiten-name.html',
 	'folder-path/page-basename/index.html' => 'pfad-angabe/seiten-name/index.html',
 	'folder_path/page_basename.html' => 'pfad_angabe/seiten_name.html',
