@@ -424,13 +424,16 @@ sub process {
     $out = $app->$method( $count, $iter );
     unless ( defined $out ) {
         MT::Util::Log->info('--- End   search process. No out.');
+        $iter->end;
         return $app->error( $app->errstr );
     }
 
     my $result;
     if ( ref($out) && eval { $out->isa('MT::Template') } ) {
-        defined( $result = $out->build() )
-            or return $app->error( $out->errstr );
+        unless ( defined( $result = $out->build() ) ) {
+            $iter->end;
+            return $app->error( $out->errstr );
+        }
     }
     else {
         $result = $out;
@@ -438,6 +441,7 @@ sub process {
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
     MT::Util::Log->info('--- End   search process.');
+    $iter->end;
     $result;
 }
 
@@ -993,7 +997,7 @@ sub query_parse {
     # MTC-25640
     # Replace field:name:term_or_phrase with field__name:term_or_phrase
     # to let Lucene::QueryParser handle term_or_phrase correctly
-    $search =~ s/(^|\s)(field):([^:]+):/$1${2}__$3:/g;
+    $search =~ s/(^|\s)([!+\-]?field):([^:]+):/$1${2}__$3:/g;
 
     my $reg
         = $app->registry( $app->mode, 'types', $app->{searchparam}{Type} );
@@ -1016,13 +1020,7 @@ sub query_parse {
         = $app->_query_parse_core( $lucene_struct, \%columns, $filter_types );
     my $return = { $terms && @$terms ? ( terms => $terms ) : () };
     if ( $joins && @$joins ) {
-        my $args = {};
-
-        #        _create_join_arg( $args, $joins );
-        $args->{joins} = $joins;
-        if ( $args && %$args ) {
-            $return->{args} = $args;
-        }
+        $return->{args} = { joins => $joins };
     }
     $return;
 }
@@ -1071,7 +1069,7 @@ sub _query_parse_core {
 
             # MTC-25640: Restore field__name
             if ( $term->{field} =~ s/^field__(.+)/field/ ) {
-                $term->{term} = $1 . ':' . $term->{term};
+                $term->{field_name} = $1;
             }
             unless ( exists $columns->{ $term->{field} } ) {
                 if (   $filter_types
@@ -1081,8 +1079,19 @@ sub _query_parse_core {
 
                     # Colon in query but was not to specify a field.
                     # Treat it as a phrase including the colon.
+                    my $type  = $term->{type};
+                    my $conj  = delete $term->{conj};
                     my $field = delete $term->{field};
-                    $term->{term} = $field . ':' . $term->{term};
+                    $field .= ':' . delete $term->{field_name}
+                        if $term->{field_name};
+                    my $deparsed
+                        = Lucene::QueryParser::deparse_query( [$term] );
+                    $term = {
+                        query => 'PHRASE',
+                        term  => "$field:$deparsed",
+                        type  => $type,
+                    };
+                    $term->{conj} = $conj if $conj;
                     unshift @$lucene_struct, $term;
                 }
             }
@@ -1149,18 +1158,57 @@ sub _query_parse_core {
             }
         }
         elsif ( 'SUBQUERY' eq $term->{query} ) {
-            my ( $test_, $more_joins )
-                = $app->_query_parse_core( $term->{subquery}, $columns,
-                $filter_types );
-            next unless $test_ && @$test_;
-            if (@structure) {
-                push @structure, 'PROHIBITED' eq $term->{type}
-                    ? '-and_not'
-                    : '-and';
+            if ( exists( $term->{field} ) ) {
+                if (   $filter_types
+                    && %$filter_types
+                    && exists( $filter_types->{ $term->{field} } ) )
+                {
+                    my $code = $app->handler_to_coderef(
+                        $filter_types->{ $term->{field} } );
+                    if ($code) {
+                        my $join_args = $code->( $app, $term ) or next;
+                        if ( 'ARRAY' eq ref $join_args->[0] ) {
+                            foreach my $j (@$join_args) {
+                                push @joins, $j;
+                            }
+                        }
+                        else {
+                            push @joins, $join_args;
+                        }
+                        next;
+                    }
+                }
+                elsif ( exists $columns->{ $term->{field} } ) {
+                    my ( $test_, $more_joins )
+                        = $app->_query_parse_core( $term->{subquery},
+                        $columns, $filter_types );
+                    next unless $test_ && @$test_;
+                    if (@structure) {
+                        push @structure,
+                            'PROHIBITED' eq $term->{type}
+                            ? '-and_not'
+                            : '-and';
+                    }
+                    push @structure, @$test_;
+                    push @joins,     @$more_joins;
+                    next;
+                }
             }
-            push @structure, @$test_;
-            push @joins,     @$more_joins;
-            next;
+            else {
+                my ( $test_, $more_joins )
+                    = $app->_query_parse_core( $term->{subquery}, $columns,
+                    $filter_types );
+                next unless $test_ && @$test_;
+                if (@structure) {
+                    push @structure,
+                        'PROHIBITED' eq $term->{type}
+                        ? '-and_not'
+                        : '-and';
+                }
+                push @structure, @$test_;
+                push @joins,     @$more_joins;
+                next;
+            }
         }
 
         if ( exists( $term->{conj} ) && ( 'OR' eq $term->{conj} ) ) {
@@ -1182,77 +1230,47 @@ sub _query_parse_core {
 sub _join_category {
     my ( $app, $term ) = @_;
     my $query = $term->{term};
-    if ( ( 'TERM' eq $term->{query} ) || ( 'PHRASE' eq $term->{query} ) ) {
-        $query =~ s/'/"/g;
-        if ( !exists $term->{field} && $query =~ /^[^\"].*\s.*[^\"]$/ ) {
-            $query = '"' . $term->{term} . '"';
+    my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
+
+    my $make_alias = sub {
+        my $length = shift @_ || 8;
+        my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+        my $str = '';
+        while ( length $str < $length ) {
+            $str .= @seed[ int rand( scalar @seed ) ];
         }
-    }
 
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
+        return $str;
+    };
+    require MT::Placement;
+    require MT::Category;
+    my $place_class = $app->model('placement');
+    my $cat_class   = $app->model('category');
+    my $trail       = $make_alias->(4);
+    my $p_alias     = $place_class->datasource . '_' . $trail;
+    my $c_alias     = $cat_class->datasource . '_' . $trail;
 
-    my $lucene_struct = Lucene::QueryParser::parse_query($query);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
+    delete $term->{field};
+    my ($terms)
+        = $app->_query_parse_core( [$term],
+        { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
+    next unless $terms && @$terms;
 
-    # search for exact match
-    my $joins;
-    if (scalar @$lucene_struct > 1
-        && (   $lucene_struct->[1]->{conj}
-            && $lucene_struct->[1]->{conj} eq 'AND' )
-        )
-    {
-        while ( my $t = shift @$lucene_struct ) {
-            my $j = _join_category( $app, $t );
-            push @$joins, $j;
-        }
-    }
-    else {
-        my $make_alias = sub {
-            my $length = shift @_ || 8;
-            my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-            my $str = '';
-            while ( length $str < $length ) {
-                $str .= @seed[ int rand( scalar @seed ) ];
-            }
-
-            return $str;
+    push @$terms, '-and',
+        {
+        id      => \"= $p_alias.placement_category_id",
+        blog_id => \'= entry_blog_id',
         };
-        require MT::Placement;
-        require MT::Category;
-        my $place_class = $app->model('placement');
-        my $cat_class   = $app->model('category');
-        my $trail       = $make_alias->(4);
-        my $p_alias     = $place_class->datasource . '_' . $trail;
-        my $c_alias     = $cat_class->datasource . '_' . $trail;
 
-        my ($terms)
-            = $app->_query_parse_core( $lucene_struct,
-            { ( $can_search_by_id ? ( id => 1 ) : () ), label => 1 }, {} );
-        next unless $terms && @$terms;
-
-        push @$terms, '-and',
-            {
-            id      => \"= $p_alias.placement_category_id",
-            blog_id => \'= entry_blog_id',
-            };
-
-        my $join = MT::Placement->join_on(
-            undef,
-            { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
-            {   join => MT::Category->join_on(
-                    undef, $terms, { alias => $c_alias }
-                ),
-                unique => 1,
-                alias  => $p_alias
-            }
-        );
-
-        push @$joins, @$join;
-    }
-    return $joins;
-
+    return MT::Placement->join_on(
+        undef,
+        { entry_id => \'= entry_id', blog_id => \'= entry_blog_id' },
+        {   join =>
+                MT::Category->join_on( undef, $terms, { alias => $c_alias } ),
+            unique => 1,
+            alias  => $p_alias
+        }
+    );
 }
 
 # add author filter to entry search
@@ -1260,19 +1278,11 @@ sub _join_author {
     my ( $app, $term ) = @_;
 
     my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
-        $query =~ s/'/"/g;
-    }
+    my $can_search_by_id = $query && $query =~ /^[0-9]*$/ ? 1 : 0;
 
-    my $can_search_by_id = $query =~ /^[0-9]*$/ ? 1 : 0;
-
-    my $lucene_struct = Lucene::QueryParser::parse_query($query);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
-
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct,
+        = $app->_query_parse_core( [$term],
         { ( $can_search_by_id ? ( id => 1 ) : () ), nickname => 'like', },
         {} );
     return unless $terms && @$terms;
@@ -1287,13 +1297,7 @@ sub _join_field {
     eval "require CustomFields::Field;";
     return if $@;    # No Commercial.Pack installed?
 
-    my $query = $term->{term};
-    if ( 'PHRASE' eq $term->{query} ) {
-        $query =~ s/'/"/g;
-    }
-
-    my ( $basename, $val ) = split ':', $query, 2;
-    return unless $basename && $val;
+    my $basename = $term->{field_name};
 
     require MT::Meta;
     my $field_basename = 'field.' . $basename;
@@ -1302,14 +1306,9 @@ sub _join_field {
     my $type_col = $meta_rec->{type};
     return unless $type_col;
 
-    my $lucene_struct = Lucene::QueryParser::parse_query($val);
-    if ( 'PROHIBITED' eq $term->{type} ) {
-        $_->{type} = 'PROHIBITED' foreach @$lucene_struct;
-    }
-
+    delete $term->{field};
     my ($terms)
-        = $app->_query_parse_core( $lucene_struct, { $type_col => 'like' },
-        {} );
+        = $app->_query_parse_core( [$term], { $type_col => 'like' }, {} );
     return unless $terms && @$terms;
 
     my $meta_class = $class->meta_pkg;
