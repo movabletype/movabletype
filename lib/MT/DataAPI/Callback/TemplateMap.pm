@@ -57,23 +57,8 @@ sub _retrieve_archive_types {
     my $tmpl     = $map->template or return [];
     my $obj_type = $tmpl->type;
 
-    my @at            = $app->publisher->archive_types;
-    my $has_cat_field = $app->model('content_field')->count(
-        {   content_type_id => $tmpl->content_type_id || 0,
-            type            => 'categories',
-        }
-    );
-    if ( $obj_type eq 'ct' || $obj_type eq 'ct_archive' ) {
-        @at = grep { $_ =~ /^ContentType/ } @at;
-        @at = grep { $_ !~ /^ContentType-Category/ } @at
-            unless $has_cat_field;
-    }
-    else {
-        @at = grep { $_ !~ /^ContentType/ } @at;
-    }
-
     my @archive_types;
-    for my $at (@at) {
+    for my $at ( $app->publisher->archive_types ) {
         my $archiver      = $app->publisher->archiver($at);
         my $archive_label = $archiver->archive_label;
         $archive_label = $at unless $archive_label;
@@ -85,7 +70,10 @@ sub _retrieve_archive_types {
         {
 
             # only include if it is NOT an entry-based archive type
-            next if $archiver->entry_based;
+            next
+                if $archiver->entry_based
+                && $archiver->contenttype_based
+                && $archiver->contenttype_group_based;
         }
         elsif ( $obj_type eq 'page' ) {
 
@@ -101,13 +89,26 @@ sub _retrieve_archive_types {
         }
         elsif ( $obj_type eq 'ct_archive' ) {
 
-            # only include if it is NOT a contenttype-based archive type
-            next if $archiver->contenttype_based;
+            # only include if it is a contenttype-group-based archive type
+            next
+                unless $app->current_api_version >= 4
+                && $archiver->contenttype_group_based;
+
+            if ( $archiver->contenttype_category_based ) {
+                my $has_cat_field = $app->model('content_field')->count(
+                    {   content_type_id => $tmpl->content_type_id || 0,
+                        type            => 'categories',
+                    }
+                );
+                next unless $has_cat_field;
+            }
         }
         elsif ( $obj_type eq 'ct' ) {
 
             # only include if it is a contenttype-based archive type
-            next unless $archiver->contenttype_based;
+            next
+                unless $app->current_api_version >= 4
+                && $archiver->contenttype_based;
         }
         push @archive_types, $at;
     }
