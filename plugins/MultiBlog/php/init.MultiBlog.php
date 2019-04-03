@@ -326,12 +326,12 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
             $mt = MT::get_instance();
             $ctx = $mt->context();
             $blog = $ctx->stash('blog');
+            $allow = array();
             if ( !empty($blog) ) {
                 $website = $blog->class == 'blog' ? $blog->website() : $blog;
                 $blogs = $website->blogs();
                 if ( empty( $blogs ) )
                     $blogs = array();
-                $allow = array();
                 foreach($blogs as $b) {
                     if ($b->id == $this_blog || (!isset($access_overrides[$b->id])) || ($access_overrides[$b->id] == MULTIBLOG_ACCESS_ALLOWED))
                     array_push($allow, $b->id);
@@ -383,11 +383,11 @@ function multiblog_filter_blogs(&$ctx, $is_include, $blogs) {
             $mt = MT::get_instance();
             $ctx = $mt->context();
             $blog = $ctx->stash('blog');
+            $allow = array();
             if (!empty($blog) && $blog->class == 'blog') {
                 require_once('class.mt_blog.php');
                 $blog_class = new Blog();
                 $blogs = $blog_class->Find("blog_parent_id = " . $blog->parent_id);
-                $allow = array();
                 foreach($blogs as $b) {
                     if ($b->id == $this_blog
                     || (isset($access_overrides[$b->id]) && ($access_overrides[$b->id] == MULTIBLOG_ACCESS_ALLOWED)))

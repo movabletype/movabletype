@@ -30,7 +30,7 @@ class Textile {
 	var $qtags;
 	var $qtag;
 
-	function Textile($opt = array()) {
+	function __construct($opt = array()) {
 		$this->filters = $opt['filters'] or array();
 		$this->charset = $opt['charset'] or 'iso-8859-1';
 		$this->char_encoding = array_key_exists('char_encoding',$opt) ? $opt['char_encoding'] : 1;

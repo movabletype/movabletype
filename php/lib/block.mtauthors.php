@@ -48,7 +48,7 @@ function smarty_block_mtauthors($args, $content, &$ctx, &$repeat) {
         $authors = $ctx->stash('authors');
         $counter = $ctx->stash('authors_counter');
     }
-    if ($counter < count($authors)) {
+    if (is_array($authors) && $counter < count($authors)) {
         $author = $authors[$counter];
         $ctx->stash('author', $author);
         $ctx->stash('authors_counter', $counter + 1);
