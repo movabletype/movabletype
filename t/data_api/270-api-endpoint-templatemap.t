@@ -51,6 +51,11 @@ my $blog_index_tmpl
     or die $template_class->errstr;
 my $blog_index_tmpl_id = $blog_index_tmpl->id;
 
+my $blog_archive_tmpl
+    = $template_class->load( { blog_id => 1, type => 'archive' } )
+    or die $template_class->errstr;
+my $blog_archive_tmpl_id = $blog_archive_tmpl->id;
+
 my $tmplmap_class = $app->model('templatemap');
 
 my $blog_tmplmap
@@ -771,6 +776,47 @@ sub suite {
             code  => 409,
             error => "Invalid archive type: ContentType-Author\n",
         },
+        {   note => 'create Individual archive map for archive template',
+            path =>
+                "/v4/sites/1/templates/$blog_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'Indivual',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: Indivual\n",
+        },
+        {   note => 'create ContentType archive map for archive template',
+            path =>
+                "/v4/sites/1/templates/$blog_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType\n",
+        },
+        {   note =>
+                'create ContentType-Yearly archive map for archive template',
+            path =>
+                "/v4/sites/1/templates/$blog_archive_tmpl_id/templatemaps",
+            method => 'POST',
+            params => {
+                templatemap => {
+                    archiveType => 'ContentType-Yearly',
+                    buildType   => 'Static',
+                },
+            },
+            code  => 409,
+            error => "Invalid archive type: ContentType-Yearly\n",
+        },
+
         {   note   => 'create content type archive for $ct1',
             path   => "/v4/sites/1/templates/$blog_ct1_tmpl_id/templatemaps",
             method => 'POST',

@@ -69,11 +69,11 @@ sub _retrieve_archive_types {
             || ( $obj_type eq 'category' ) )
         {
 
-            # only include if it is NOT an entry-based archive type
+          # only include if it is an non-content-type group-based archive type
             next
                 if $archiver->entry_based
-                && $archiver->contenttype_based
-                && $archiver->contenttype_group_based;
+                || $archiver->contenttype_based
+                || $archiver->contenttype_group_based;
         }
         elsif ( $obj_type eq 'page' ) {
 
