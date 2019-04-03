@@ -2452,6 +2452,16 @@ sub core_endpoints {
                     'Do not have permission to retrieve the list of templatemaps.',
             },
         },
+        {   id => 'get_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version     => 4,
+            handler     => "${pkg}v4::TemplateMap::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested templatemap.',
+            },
+        },
         {   id    => 'create_templatemap',
             route => '/sites/:site_id/templates/:template_id/templatemaps',
             resources => ['templatemap'],
@@ -2460,6 +2470,25 @@ sub core_endpoints {
             handler   => "${pkg}v4::TemplateMap::create",
             error_codes =>
                 { 403 => 'Do not have permission to create a templatemap.', },
+        },
+        {   id => 'update_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            resources => ['templatemap'],
+            verb      => 'PUT',
+            version   => 4,
+            handler   => "${pkg}v4::TemplateMap::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a templatemap.', },
+        },
+        {   id => 'delete_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb    => 'DELETE',
+            version => 4,
+            handler => "${pkg}v4::TemplateMap::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a templatemap.', },
         },
 
         # group

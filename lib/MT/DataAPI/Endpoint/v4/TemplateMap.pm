@@ -37,6 +37,20 @@ sub list {
     };
 }
 
+sub get {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl, $map ) = context_objects(@_) or return;
+
+    return if !_is_archive_template( $app, $tmpl );
+
+    run_permission_filter( $app, 'data_api_view_permission_filter',
+        'templatemap', $map->id, obj_promise($map) )
+        or return;
+
+    return $map;
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
@@ -57,6 +71,45 @@ sub create {
     save_object( $app, 'templatemap', $new_map ) or return;
 
     return $new_map;
+}
+
+sub update {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl, $orig_map ) = context_objects(@_) or return;
+
+    return if !_is_archive_template( $app, $tmpl );
+
+    my $new_map = $app->resource_object( 'templatemap', $orig_map ) or return;
+
+    save_object( $app, 'templatemap', $new_map, $orig_map ) or return;
+
+    return $new_map;
+}
+
+sub delete {
+    my ( $app, $endpoint ) = @_;
+
+    my ( $site, $tmpl, $map ) = context_objects(@_) or return;
+
+    return if !_is_archive_template( $app, $tmpl );
+
+    run_permission_filter( $app, 'data_api_delete_permission_filter',
+        'templatemap', $map )
+        or return;
+
+    $map->remove
+        or return $app->error(
+        $app->translate(
+            'Removing [_1] failed: [_2]',
+            $map->class_label, $map->errstr
+        ),
+        500,
+        );
+
+    $app->run_callbacks( 'data_api_post_delete.templatemap', $app, $map );
+
+    return $map;
 }
 
 sub _is_archive_template {
