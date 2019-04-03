@@ -148,7 +148,7 @@ wöchentliches Inhaltstyparchiv
 --- expected_contenttype_yearly
 jährliches Inhaltstyparchiv
 --- expected_daily
-Tagesarchiv
+Täglich
 --- expected_individual
 Individuell
 --- expected_monthly
@@ -260,7 +260,7 @@ Anuales del autor
 --- expected_category
 Categoría
 --- expected_category_daily
-ContentType diario
+Categorías diarias
 --- expected_category_monthly
 Categorías mensuales
 --- expected_category_weekly
@@ -333,7 +333,7 @@ Par auteurs et semaines
 --- expected_author_yearly
 Par auteurs et années
 --- expected_category
-par catégories
+Catégorie
 --- expected_category_daily
 Par catégories et jours
 --- expected_category_monthly
@@ -408,7 +408,7 @@ per auteur per week
 --- expected_author_yearly
 per auteur per jaar
 --- expected_category
-per categorie
+Categorie
 --- expected_category_daily
 per categorie per dag
 --- expected_category_monthly
