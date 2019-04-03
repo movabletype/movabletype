@@ -21,7 +21,7 @@ function _hdlr_archive_prev_next($args, $content, &$ctx, &$repeat, $tag) {
     return $archiver->archive_prev_next($args, $content, $repeat, $tag, $at);
 }
 
-function _get_join_on($ctx, $at, $blog_id, $cat, $cat_field_id) {
+function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
     $maps = $ctx->mt->db()->fetch_templatemap(array(
         'blog_id' => $blog_id,
         'content_type_id' => $ctx->stash('content_type')->id,

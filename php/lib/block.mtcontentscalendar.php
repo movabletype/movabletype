@@ -234,7 +234,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                     $no_loop = 1;
                 }
             }
-            if (!$no_loop && count($iter)) {
+            if (!$no_loop && is_array($iter) && count($iter)) {
                 while ($cd = array_shift($iter)) {
                     $data = $cd->data();
                     if(isset($data[$dt_field_id])){

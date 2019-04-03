@@ -80,6 +80,8 @@ class ContentFieldTypeTagHandler {
     public static function multiple ($value, &$args, &$res, &$ctx, &$repeat) {
         if (isset($value)) {
             $values = is_array($value) ? $value : array($value);
+        } else {
+            $values = array();
         }
         $field_data = $ctx->stash('_content_field_data');
         $option_values = $field_data['options']['values'];

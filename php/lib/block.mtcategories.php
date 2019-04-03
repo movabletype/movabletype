@@ -39,7 +39,7 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
         $glue = $ctx->stash('_categories_glue');
         $out =$ctx->stash('__out');
     }
-    if ($counter < count($categories)) {
+    if (is_array($categories) && $counter < count($categories)) {
         $category = $categories[$counter];
         $ctx->stash('category', $category);
         $ctx->stash('entries', null);
