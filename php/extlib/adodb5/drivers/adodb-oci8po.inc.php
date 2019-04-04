@@ -1,13 +1,13 @@
 <?php
 /*
-@version   v5.20.3  01-Jan-2016
+@version   v5.20.14  06-Jan-2019
 @copyright (c) 2000-2013 John Lim. All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
   Whenever there is any discrepancy between the two licenses,
   the BSD license will take precedence.
 
-  Latest version is available at http://adodb.sourceforge.net
+  Latest version is available at http://adodb.org/
 
   Portable version of oci8 driver, to make it more similar to other database drivers.
   The main differences are
@@ -56,6 +56,21 @@ class ADODB_oci8po extends ADODB_oci8 {
 		return ADOConnection::Execute($sql,$inputarr);
 	}
 
+	/**
+	 * The optimizations performed by ADODB_oci8::SelectLimit() are not
+	 * compatible with the oci8po driver, so we rely on the slower method
+	 * from the base class.
+	 * We can't properly handle prepared statements either due to preprocessing
+	 * of query parameters, so we treat them as regular SQL statements.
+	 */
+	function SelectLimit($sql, $nrows=-1, $offset=-1, $inputarr=false, $secs2cache=0)
+	{
+		if(is_array($sql)) {
+//			$sql = $sql[0];
+		}
+		return ADOConnection::SelectLimit($sql, $nrows, $offset, $inputarr, $secs2cache);
+	}
+
 	// emulate handling of parameters ? ?, replacing with :bind0 :bind1
 	function _query($sql,$inputarr=false)
 	{
@@ -66,25 +81,87 @@ class ADODB_oci8po extends ADODB_oci8 {
 					$arr['bind'.$i++] = $v;
 				}
 			} else {
-				// Need to identify if the ? is inside a quoted string, and if
-				// so not use it as a bind variable
-				preg_match_all('/".*\??"|\'.*\?.*?\'/', $sql, $matches);
-				foreach($matches[0] as $qmMatch){
-					$qmReplace = str_replace('?', '-QUESTIONMARK-', $qmMatch);
-					$sql = str_replace($qmMatch, $qmReplace, $sql);
-				}
-
-				$sqlarr = explode('?',$sql);
-				$sql = $sqlarr[0];
-
-				foreach($inputarr as $k => $v) {
-					$sql .=  ":$k" . $sqlarr[++$i];
-				}
-
-				$sql = str_replace('-QUESTIONMARK-', '?', $sql);
+				$sql = $this->extractBinds($sql,$inputarr);
 			}
 		}
 		return ADODB_oci8::_query($sql,$inputarr);
+	}
+	/**
+	* Replaces compatibility bind markers with oracle ones and returns a
+	* valid sql statement
+	*
+	* This replaces a regexp based section of code that has been subject
+	* to numerous tweaks, as more extreme test cases have appeared. This
+	* is now done this like this to help maintainability and avoid the 
+	* need to rely on regexp experienced maintainers
+        *
+	* @param	string		$sql		The sql statement
+	* @param	string[]	$inputarr	The bind array
+	*
+	* @return	string	The modified statement
+	*/	
+	final private function extractBinds($sql,$inputarr)
+	{
+		$inString  = false;
+		$escaped   = 0;
+		$sqlLength = strlen($sql) - 1;
+		$newSql    = '';
+		$bindCount = 0;
+		
+		/*
+		* inputarr is the passed in bind list, which is associative, but
+		* we only want the keys here
+		*/
+		$inputKeys = array_keys($inputarr);
+		
+		
+		for ($i=0;$i<=$sqlLength;$i++)
+		{
+			/*
+			* find the next character of the string
+			*/
+			$c = $sql{$i};
+
+			if ($c == "'" && !$inString && $escaped==0)
+				/*
+				* Found the start of a string inside the statement
+				*/
+				$inString = true;
+			elseif ($c == "\\" && $escaped==0)
+				/*
+				* The next character will be escaped
+				*/
+				$escaped = 1;
+			elseif ($c == "'" && $inString && $escaped==0)
+				/*
+				* We found the end of the string
+				*/
+				$inString = false;
+			
+			if ($escaped == 2)
+				$escaped = 0;
+
+			if ($escaped==0 && !$inString && $c == '?')
+				/*
+				* We found a bind symbol, replace it with the oracle equivalent
+				*/
+				$newSql .= ':' . $inputKeys[$bindCount++];
+			else
+				/*
+				* Add the current character the pile
+				*/
+				$newSql .= $c;
+			
+			if ($escaped == 1)
+				/*
+				* We have just found an escape character, make sure we ignore the
+				* next one that comes along, it might be a ' character
+				*/
+				$escaped = 2;
+		}
+		
+		return $newSql;
+			
 	}
 }
 
@@ -138,8 +215,10 @@ class ADORecordset_oci8po extends ADORecordset_oci8 {
 	// 10% speedup to move MoveNext to child class
 	function MoveNext()
 	{
-		if(@OCIfetchinto($this->_queryID,$this->fields,$this->fetchMode)) {
+		$ret = @oci_fetch_array($this->_queryID,$this->fetchMode);
+		if($ret !== false) {
 		global $ADODB_ANSI_PADDING_OFF;
+			$this->fields = $ret;
 			$this->_currentRow++;
 			$this->_updatefields();
 
@@ -169,10 +248,12 @@ class ADORecordset_oci8po extends ADORecordset_oci8 {
 				$arr = array();
 				return $arr;
 			}
-		if (!@OCIfetchinto($this->_queryID,$this->fields,$this->fetchMode)) {
+		$ret = @oci_fetch_array($this->_queryID,$this->fetchMode);
+		if ($ret === false) {
 			$arr = array();
 			return $arr;
 		}
+		$this->fields = $ret;
 		$this->_updatefields();
 		$results = array();
 		$cnt = 0;
@@ -188,8 +269,9 @@ class ADORecordset_oci8po extends ADORecordset_oci8 {
 	{
 		global $ADODB_ANSI_PADDING_OFF;
 
-		$ret = @OCIfetchinto($this->_queryID,$this->fields,$this->fetchMode);
+		$ret = @oci_fetch_array($this->_queryID,$this->fetchMode);
 		if ($ret) {
+			$this->fields = $ret;
 			$this->_updatefields();
 
 			if (!empty($ADODB_ANSI_PADDING_OFF)) {
@@ -198,7 +280,7 @@ class ADORecordset_oci8po extends ADORecordset_oci8 {
 				}
 			}
 		}
-		return $ret;
+		return $ret !== false;
 	}
 
 }
