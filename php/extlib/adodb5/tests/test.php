@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.3  01-Jan-2016
+@version   v5.20.14  06-Jan-2019
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -8,7 +8,7 @@
   the BSD license will take precedence.
   Set tabs to 4 for best viewing.
 
-  Latest version is available at http://adodb.sourceforge.net
+  Latest version is available at http://adodb.org/
 */
 
 
@@ -1741,8 +1741,11 @@ if (sizeof($_GET) == 0) $testmysql = true;
 
 
 foreach($_GET as $k=>$v)  {
-	//global $$k;
-	$$k = $v;
+	// XSS protection (see Github issue #274) - only set variables for
+	// expected get parameters used in testdatabases.inc.php
+	if(preg_match('/^(test|no)\w+$/', $k)) {
+		$$k = $v;
+	}
 }
 
 ?>
@@ -1753,7 +1756,7 @@ foreach($_GET as $k=>$v)  {
 
 This script tests the following databases: Interbase, Oracle, Visual FoxPro, Microsoft Access (ODBC and ADO), MySQL, MSSQL (ODBC, native, ADO).
 There is also support for Sybase, PostgreSQL.</p>
-For the latest version of ADODB, visit <a href=http://adodb.sourceforge.net/>adodb.sourceforge.net</a>.</p>
+For the latest version of ADODB, visit <a href=http://adodb.org//>adodb.org</a>.</p>
 
 Test <a href=test4.php>GetInsertSQL/GetUpdateSQL</a> &nbsp;
 	<a href=testsessions.php>Sessions</a> &nbsp;
