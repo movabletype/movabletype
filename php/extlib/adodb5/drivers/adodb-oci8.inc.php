@@ -1,7 +1,7 @@
 <?php
 /*
 
-  @version   v5.20.12  30-Mar-2018
+  @version   v5.20.14  06-Jan-2019
   @copyright (c) 2000-2013 John Lim. All rights reserved.
   @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -9,7 +9,7 @@
   Whenever there is any discrepancy between the two licenses,
   the BSD license will take precedence.
 
-  Latest version is available at http://adodb.sourceforge.net
+  Latest version is available at http://adodb.org/
 
   Code contributed by George Fourlanos <fou@infomap.gr>
 
@@ -1565,7 +1565,13 @@ class ADORecordset_oci8 extends ADORecordSet {
 		$this->adodbFetchMode = $mode;
 		$this->_queryID = $queryID;
 	}
-
+	
+	/**
+	* Overrides the core destructor method as that causes problems here
+	*
+	* @return void
+	*/
+	function __destruct() {}
 
 	function Init()
 	{
