@@ -38,7 +38,7 @@ function closeDialog(url) {
 </script>
 </head>
 
-<body id="<$mt:var name="screen_id"$>" class="<mt:if name="blog_id">blog blog-<mt:var name="blog_id"><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$>"<mt:if name="refocus"> onload="window.focus()"</mt:if>>
+<body id="<$mt:var name="screen_id" escape="html"$>" class="<mt:if name="blog_id">blog blog-<mt:var name="blog_id"><mt:else>system</mt:if> <$mt:var name="screen_type" default="main-screen"$>"<mt:if name="refocus"> onload="window.focus()"</mt:if>>
 <div id="container">
 <div class="header">
     <div id="brand"><h1><mt:var name="mt_product_name"></h1></div>
