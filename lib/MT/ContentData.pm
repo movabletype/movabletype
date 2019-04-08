@@ -951,7 +951,7 @@ sub is_in_category {
     0;
 }
 
-sub list_props_for_data_api {
+sub list_props {
     +{  authored_on => {
             base    => 'entry.authored_on',
             display => 'none',
@@ -966,7 +966,7 @@ sub list_props_for_data_api {
         },
         label => {
             base    => '__virtual.label',
-            display => 'none',
+            display => 'force',
         },
         identifier => {
             auto    => 1,
