@@ -27,9 +27,9 @@
         label="<__trans phrase="Useful links">">
         <ul>
             <li><a href="<mt:var name="script_url">?__mode=list_template&amp;filter_key=backup_templates&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Template Backups"></a></li>
-        <mt:if name="can_edit_config">
+        <mt:if name="scope_type" ne="system"><mt:if name="can_edit_config">
             <li><a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-related"><__trans phrase="Publishing Settings"></a></li>
-        </mt:if>
+        </mt:if></mt:if>
         </ul>
     </mtapp:widget>
     <$MTApp:PageActions from="list_template"$>

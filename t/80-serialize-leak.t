@@ -2,14 +2,22 @@
 
 use strict;
 use warnings;
-use lib qw( t/lib lib extlib ../lib ../extlib );
-use MT;
-use MT::Test;
-use constant HAS_LEAKTRACE => eval { require Test::LeakTrace };
-use Test::More HAS_LEAKTRACE
-    ? ( tests => 12 )
-    : ( skip_all => 'require Test::LeakTrace' );
-use Test::LeakTrace;
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+BEGIN {
+    eval qq{ use Test::LeakTrace; 1 }
+        or plan skip_all => 'require Test::LeakTrace';
+}
+
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
+plan tests => 12;
 
 require MT::Serialize;
 my %sers
@@ -26,7 +34,7 @@ my $data2 = [
 ];
 $data2->[1]->{z} = $data2;
 
-for my $label ( keys %sers ) {
+for my $label ( sort keys %sers ) {
     my $ser = $sers{$label};
     note "Checking leaks for $label\n";
 

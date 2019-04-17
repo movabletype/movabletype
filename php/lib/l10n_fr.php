@@ -9,22 +9,23 @@ global $Lexicon_fr;
 $Lexicon_fr = array(
 
 ## php/lib/archive_lib.php
-	'Individual' => 'Individuelles',
-	'Page' => 'Page',
-	'Yearly' => 'Annuelles',
-	'Monthly' => 'Mensuelles',
-	'Daily' => 'Journalières',
-	'Weekly' => 'Hebdomadaires',
-	'Author' => 'Auteur',
+	'INDIVIDUAL_ADV' => 'Individuelles',
+	'PAGE_ADV' => 'Page',
+	'YEARLY_ADV' => 'Annuelles',
+	'MONTHLY_ADV' => 'Mensuelles',
+	'DAILY_ADV' => 'Journalières',
+	'WEEKLY_ADV' => 'Hebdomadaires',
+	'AUTHOR_ADV' => 'Auteur',
 	'(Display Name not set)' => '(Nom pas spécifié)',
-	'Author Yearly' => 'Par auteurs et années',
-	'Author Monthly' => 'Par auteurs et mois',
-	'Author Daily' => 'Par auteurs et jours',
-	'Author Weekly' => 'Par auteurs et semaines',
-	'Category Yearly' => 'Par catégories et années',
-	'Category Monthly' => 'Par catégories et mois',
-	'Category Daily' => 'Par catégories et jours',
-	'Category Weekly' => 'Par catégories et semaines',
+	'AUTHOR-YEARLY_ADV' => 'Par auteurs et années',
+	'AUTHOR-MONTHLY_ADV' => 'Par auteurs et mois',
+	'AUTHOR-DAILY_ADV' => 'Par auteurs et jours',
+	'AUTHOR-WEEKLY_ADV' => 'Par auteurs et semaines',
+	'CATEGORY_ADV' => 'Catégorie',
+	'CATEGORY-YEARLY_ADV' => 'Par catégories et années',
+	'CATEGORY-MONTHLY_ADV' => 'Par catégories et mois',
+	'CATEGORY-DAILY_ADV' => 'Par catégories et jours',
+	'CATEGORY-WEEKLY_ADV' => 'Par catégories et semaines',
 	'Category' => 'Catégorie',
 
 ## php/lib/block.mtassets.php
@@ -88,7 +89,7 @@ $Lexicon_fr = array(
 
 ## php/lib/function.mtpasswordvalidation.php
 	'Password should be longer than [_1] characters' => 'Le mot de passe doit faire plus de [_1] caractères',
-	q{Password should not include your Username} => q{Le mot de passe ne doit pas être composé de votre nom d'utilisateur},
+	'Password should not include your Username' => "Le mot de passe ne doit pas être composé de votre nom d'utilisateur",
 	'Password should include letters and numbers' => 'Le mot de passe doit être composé de lettres et de chiffres',
 	'Password should include lowercase and uppercase letters' => 'Le mot de passe doit être composé de lettres en minuscule et majuscule',
 	'Password should contain symbols such as #!$%' => 'Le mot de passe doit contenir des caractères spéciaux comme #!$%',

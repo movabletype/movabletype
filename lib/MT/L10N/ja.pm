@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -20,22 +20,22 @@ use vars qw( @ISA %Lexicon );
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => '記事',
-	'Page' => 'ウェブページ',
-	'Yearly' => '年別',
-	'Monthly' => '月別',
-	'Daily' => '日別',
-	'Weekly' => '週別',
-	'Author' => 'ユーザー',
+	'INDIVIDUAL_ADV' => '記事',
+	'PAGE_ADV' => 'ウェブページ',
+	'YEARLY_ADV' => '年別',
+	'MONTHLY_ADV' => '月別',
+	'DAILY_ADV' => '日別',
+	'WEEKLY_ADV' => '週別',
+	'AUTHOR_ADV' => 'ユーザー',
 	'(Display Name not set)' => '(表示名なし)',
-	'Author Yearly' => 'ユーザー 年別',
-	'Author Monthly' => 'ユーザー 月別',
-	'Author Daily' => 'ユーザー 日別',
-	'Author Weekly' => 'ユーザー 週別',
-	'Category Yearly' => 'カテゴリ 年別',
-	'Category Monthly' => 'カテゴリ 月別',
-	'Category Daily' => 'カテゴリ 日別',
-	'Category Weekly' => 'カテゴリ 週別',
+	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
+	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
+	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
+	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
+	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
+	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
+	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
+	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'Category' => 'カテゴリ',
 
 ## php/lib/block.mtassets.php
@@ -92,6 +92,7 @@ use vars qw( @ISA %Lexicon );
 	'Reply' => '返信',
 
 ## php/lib/function.mtentryclasslabel.php
+	'Page' => 'ウェブページ',
 	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php
@@ -154,7 +155,7 @@ use vars qw( @ISA %Lexicon );
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
-	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '$modはインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	q{You're ready to go!} => q{Movable Typeを利用できます。},
@@ -851,7 +852,8 @@ use vars qw( @ISA %Lexicon );
 	'TrackBack ID (tb_id) is required.' => 'トラックバックIDが必要です。',
 	'Invalid TrackBack ID \'[_1]\'' => 'トラックバックID([_1])が不正です。',
 	'You are not allowed to send TrackBack pings.' => 'トラックバック送信を許可されていません。',
-	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけてもう一度送信してください。',
+	'You are sending TrackBack pings too quickly. Please try again later.' => '短い期間にトラックバックを送信しすぎです。少し間をあけても
+ 一度送信してください。',
 	'You need to provide a Source URL (url).' => 'URLが必要です。',
 	'This TrackBack item is disabled.' => 'トラックバックは無効に設定されています。',
 	'This TrackBack item is protected by a passphrase.' => 'トラックバックはパスワードで保護されています。',
@@ -906,27 +908,22 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'ユーザー',
 	'author/author-basename/index.html' => 'author/author-basename/index.html',
 	'author/author_basename/index.html' => 'author/author_basename/index.html',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'author/author-basename/yyyy/mm/dd/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'author/author_basename/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
 	'author/author-basename/yyyy/mm/index.html' => 'author/author-basename/yyyy/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'author/author_basename/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'author/author-basename/yyyy/mm/day-week/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'author/author_basename/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
 	'author/author-basename/yyyy/index.html' => 'author/author-basename/yyyy/index.html',
 	'author/author_basename/yyyy/index.html' => 'author/author_basename/yyyy/index.html',
 
@@ -936,31 +933,25 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/index.html' => 'category/sub_category/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'category/sub-category/yyyy/mm/dd/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'category/sub_category/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
 	'category/sub-category/yyyy/mm/index.html' => 'category/sub-category/yyyy/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'category/sub_category/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'category/sub-category/yyyy/mm/day-week/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'category/sub_category/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
 	'category/sub-category/yyyy/index.html' => 'category/sub-category/yyyy/index.html',
 	'category/sub_category/yyyy/index.html' => 'category/sub_category/yyyy/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
-	'DAILY_ADV' => '日別',
 	'yyyy/mm/dd/index.html' => 'yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => '記事',
 	'yyyy/mm/entry-basename.html' => 'yyyy/mm/entry-basename.html',
 	'yyyy/mm/entry_basename.html' => 'yyyy/mm/entry_basename.html',
 	'yyyy/mm/entry-basename/index.html' => 'yyyy/mm/entry-basename/index.html',
@@ -975,22 +966,18 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/entry_basename/index.html' => 'category/sub_category/entry_basename/index.html',
 
 ## lib/MT/ArchiveType/Monthly.pm
-	'MONTHLY_ADV' => '月別',
 	'yyyy/mm/index.html' => 'yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'ウェブページ',
 	'folder-path/page-basename.html' => 'folder-path/page-basename.html',
 	'folder-path/page-basename/index.html' => 'folder-path/page-basename/index.html',
 	'folder_path/page_basename.html' => 'folder_path/page_basename.html',
 	'folder_path/page_basename/index.html' => 'folder_path/page_basename/index.html',
 
 ## lib/MT/ArchiveType/Weekly.pm
-	'WEEKLY_ADV' => '週別',
 	'yyyy/mm/day-week/index.html' => 'yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/Yearly.pm
-	'YEARLY_ADV' => '年別',
 	'yyyy/index.html' => 'yyyy/index.html',
 
 ## lib/MT/Asset.pm
@@ -1255,6 +1242,7 @@ use vars qw( @ISA %Lexicon );
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
 	'Please select an image to upload.' => 'アップロードする画像を選択してください。',
 	'Please select a video to upload.' => 'アップロードするビデオファイルを選択してください。',
+	'none' => 'なし',
 	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'アップロード先のディレクトリに書き込みできません。ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'Invalid extra path \'[_1]\'' => '追加パスが不正です。',
 	'Invalid temp file name \'[_1]\'' => 'テンポラリファイルの名前\'[_1]\'が不正です。',
@@ -1609,7 +1597,6 @@ use vars qw( @ISA %Lexicon );
 	'Any site' => '任意のサイト',
 	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
-	'none' => 'なし',
 	'Changing image quality is [_1]' => '画像品質の自動変換は[_1]です',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
@@ -1665,9 +1652,11 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])をカテゴリ\'[_4]\'から削除しました。',
+	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from category \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])をカテゴリ\'[
+_4]\'から削除しました。',
 	'(Untitled entry)' => '(タイトルなし)',
-	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。',
+	'Ping (ID:[_1]) from \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'が\'[_2]\'のトラックバック(ID:[_1])を削除しました。
+',
 	'No Excerpt' => '抜粋なし',
 	'No Title' => 'タイトルなし',
 	'Orphaned TrackBack' => '対応する記事のないトラックバック',
@@ -1743,10 +1732,12 @@ use vars qw( @ISA %Lexicon );
 	'Reported as spam' => 'スパム',
 	'All comments by [_1] \'[_2]\'' => '[_1]\'[_2]\'のコメント',
 	'Commenter' => 'コメント投稿者',
+	'Author' => 'ユーザー',
 	'Loading entry \'[_1]\' failed: [_2]' => '記事\'[_1]\'をロードできませんでした: [_1]',
 	'Entry/Page' => '記事/ウェブページ',
 	'Comments on My Entries/Pages' => '自分の記事/ウェブページへのコメント',
 	'Commenter Status' => 'コメント投稿者の状態',
+	'Entry/Page Status' => '記事/ウェブページの公開状態',
 	'Comments in This Website' => 'ウェブサイトのコメント',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
@@ -2090,6 +2081,7 @@ use vars qw( @ISA %Lexicon );
 	'Junk' => 'スパム',
 	'Unpublished (End)' => '非公開（公開終了）',
 	'Entries by [_1]' => '[_1]の記事',
+	'basename is too long.' => '出力ファイルが長すぎます。',
 	'record does not exist.' => 'ブログがありません。',
 	'Invalid arguments. They all need to be saved MT::Category objects.' => 'カテゴリオブジェクトを指定する必要があります。',
 	'Invalid arguments. They all need to be saved MT::Asset objects.' => 'アイテムオブジェクトを指定する必要があります。',
@@ -2401,6 +2393,7 @@ use vars qw( @ISA %Lexicon );
 	'Opening linked file \'[_1]\' failed: [_2]' => 'リンクファイル\'[_1]\'を開けませんでした: [_2]',
 	'Index' => 'インデックス',
 	'Category Archive' => 'カテゴリアーカイブ',
+	'Individual' => '記事',
 	'Ping Listing' => 'トラックバック一覧',
 	'Comment Error' => 'コメントエラー',
 	'Comment Pending' => 'コメント保留中',
@@ -2431,6 +2424,7 @@ use vars qw( @ISA %Lexicon );
 	'All About Me' => 'All About Me',
 	'Remove this widget' => 'このウィジェットを削除',
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
+	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'Actions' => 'アクション',
 	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.jp/documentation/appendices/tags/%t.html',
@@ -2713,6 +2707,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Upgrade/v6.pm
 	'Fixing TheSchwartz::Error table...' => 'TheSchwartz::Errorテーブルを更新しています...',
+	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
 	'Migrating current blog to a website...' => '現在のブログをウェブサイトへ変換しています...',
 	'Migrating the record for recently accessed blogs...' => '最近利用したブログのデータを移行しています...',
 	'Adding Website Administrator role...' => 'ウェブサイト管理者のロールを追加しています...',
@@ -3566,22 +3561,22 @@ use vars qw( @ISA %Lexicon );
 	'Publishing Paths' => '公開パス',
 	'[_1] URL' => '[_1]URL',
 	'Use subdomain' => 'サブドメインの利用',
-	'Warning: Changing the [_1] URL can result in breaking all the links in your [_1].' => '警告:[_1]URLを変更すると[_1]内の全てのリンクがリンク切れとなることがあります。',
+	'Warning: Changing the [_1] URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:[_1]URLを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The URL of your blog. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/} => q{ブログを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 	q{The URL of your website. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/} => q{ウェブサイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。 例: http://www.example.com/},
 	'[_1] Root' => '[_1]パス',
 	'Use absolute path' => '絶対パスの利用',
-	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => '警告:[_1]パスを変更した場合には[_1]の再構築が必要です。',
+	'Warning: Changing the [_1] root requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:[_1]パスを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{インデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Select this option only if you need to publish your archives outside of your Blog Root.' => 'アーカイブをサイトパス以外で公開するときにこのオプションを選択してください。',
 	'Publish archives outside of [_1] Root' => 'アーカイブを[_1]パスとは別のパスで公開する',
 	'Archive URL' => 'アーカイブURL',
-	'Warning: Changing the archive URL can result in breaking all links in your [_1].' => '警告: アーカイブURLを変更することで[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:アーカイブURLを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	'The URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'ブログのアーカイブのURLです。例: http://www.example.com/blog/archives/',
 	'The URL of the archives section of your website. Example: http://www.example.com/archives/' => 'ウェブサイトのアーカイブのURLです。例: http://www.example.com/archives/',
-	'Warning: Changing the archive path can result in breaking all links in your [_1].' => '警告: アーカイブパスを変更すると[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive path requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:アーカイブパスを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{アーカイブのインデックスファイルが公開されるパスです。ウェブサイトからの相対パスを指定します。末尾には'/'や'\'を含めません。},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{アーカイブのインデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Dynamic Publishing Options' => 'ダイナミックパブリッシング設定',
@@ -3595,7 +3590,7 @@ use vars qw( @ISA %Lexicon );
 	q{Used to generate URLs (permalinks) for this blog's archived entries. Choose one of the archive types used in this blog's archive templates.} => q{記事にリンクするときのURLとして使われます。このブログで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this website's archived entries. Choose one of the archive types used in this website's archive templates.} => q{記事にリンクするときのURLとして使われます。このウェブサイトで使われているアーカイブテンプレートの中から選択してください。},
 	'Publish With No Entries' => '記事がないアーカイブの公開',
-	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリ アーカイブを公開する',
+	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリアーカイブを公開する',
 	'Module Settings' => 'モジュール設定',
 	'Server Side Includes' => 'サーバーサイドインクルード',
 	'None (disabled)' => '無効',
@@ -3911,13 +3906,13 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Publishing Profile' => '公開プロファイル',
 	'Choose the profile that best matches the requirements for this blog.' => 'ブログの要件に最も近いプロファイルを選択してください。',
+	'Choose the profile that best matches the requirements for this website.' => 'ウェブサイトの要件に最も近いプロファイルを選択してください。',
 	'Static Publishing' => 'スタティックパブリッシング',
 	'Immediately publish all templates statically.' => 'すべてのテンプレートをスタティックパブリッシングします。',
 	'Background Publishing' => 'バックグラウンドパブリッシング',
 	'All templates published statically via Publish Que.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
-	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
-	'Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
+	'Immediately publish Main Index and Feed templates, preferred Individual and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、フィード、記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
 	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
 	'Dynamic Archives Only' => 'アーカイブのみダイナミックパブリッシング',
@@ -5504,6 +5499,199 @@ use vars qw( @ISA %Lexicon );
 	'A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type.' => '構成ファイル(mt-config.cgi)はすでに存在します。Movable Typeに<a href="[_1]">サインイン</a>してください。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
+## addons/Cloud.pack/config.yaml
+	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
+	'Cloud Services' => 'クラウドサービス',
+	'Basic Authentication' => 'Basic認証',
+	'HTTP Redirect' => 'URLリダイレクト',
+	'FTPS Password' => 'FTPSパスワードリセット',
+	'Full Restore' => '環境のリストア',
+	'SSL Certificates' => 'サーバー証明書',
+	'IP Restriction' => 'アクセス制限',
+	'Config Directives' => 'MT環境変数',
+	'Disk Usage' => 'ディスクの使用量',
+	'Auto Update' => '自動アップデート',
+
+## addons/Cloud.pack/lib/Cloud/App.pm
+	'Your Movable Type will be automatically updated on [_1].' => 'ご利用中の Movable Type は、[_1] にアップデートが自動的に行われます。',
+	'New version of Movable Type has been released on [_1].' => 'Movable Type の新しいバージョンが [_1] にリリースされています。',
+	'Disk usage rate is [_1]%.' => 'ディスク使用量が[_1]%に達しています。',
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">ディスク使用量を再取得する。</a>',
+	'An error occurred while reading version information.' => 'バージョン情報の取得に失敗しました。',
+
+## addons/Cloud.pack/lib/Cloud/App/CMS.pm
+	'Owner' => '管理者',
+	'Creator' => '制作者',
+	'FTP passowrd for [_1] has successfully been updated.' => '[_1]用 FTP パスワードが更新されました。',
+	'Unable to reset [_1] FTPS password.' => 'FTPSパスワードのリセットが出来ませんでした。',
+	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'いくつかの[_2]がすでに更新されていたため、[_1]の更新に失敗しました。',
+	'Basic Authentication setting' => 'Basic認証の設定',
+	'Cannot access to this uri: [_1]' => '[_1]が存在しません。',
+	'Basic authentication for site has successfully been updated.' => 'Basic認証の設定が更新されました。',
+	'Unable to update Basic Authentication settings.' => 'Basic認証の設定を保存する事が出来ませんでした。',
+	'Administration Screen Setting' => '管理画面の設定',
+	'The URL you specified is not available.' => '指定されたURLは利用できません。',
+	'Unable to update Admin Screen URL settings.' => '管理画面のURLを変更できませんでした。',
+	'The URL for administration screen has successfully been updated.' => '管理画面のURLが変更されました。',
+	'Cannot delete basicauth_admin file.' => 'Basic認証の設定を削除する事が出来ませんでした。',
+	'Basic authentication for administration screen has successfully been cleared.' => '管理画面のBasic認証設定が削除されました。',
+	'User ID is required.' => 'ユーザー名は必須です。',
+	'Password is required.' => 'パスワードは必須です。',
+	'Unable to update basic authentication for administration screen.' => '管理画面のBasic認証設定を更新できません。',
+	'Unable to write temporary file.' => '一時保存ファイルの書き込みが出来ませんでした。',
+	'Basic authentication for administration screen has successfully been updated.' => '管理画面のBasic認証設定が更新されました。',
+	'Cannot delete ip_restriction_[_1] file.' => 'アクセス制限の設定を削除することができませんでした。',
+	'IP restriction for administration screen has successfully been cleared.' => '管理画面のアクセス制限が解除されました。',
+	'[_1] is not a valid IP address.' => '[_1] は正しいIPアドレスではありません。',
+	'Unable to write allowed IP addresses file.' => 'アクセス許可リストファイルの書き込みができませんでした。',
+	'IP restriction white list for administration screen  has successfully been updated.' => '管理画面のアクセス制限が更新されました。',
+	'HTTP Redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings has successfully updated.' => 'URLリダイレクトの設定が更新されました。',
+	'Unable to update HTTP Redirect settings.' => 'URLリダイレクトの設定を保存することが出来ませんでした。',
+	'Update SSL Certification' => 'サーバー証明書の更新',
+	'__SSL_CERT_UPDATE' => '更新',
+	'__SSL_CERT_INSTALL' => '導入',
+	'Cannot copy default cert file.' => '既定のサーバー証明書のコピーに失敗しました。',
+	'Unable to create temporary path: [_1]' => 'テンポラリディレクトリの作成に失敗しました: [_1]',
+	'SSL certification has successfully been updated.' => 'サーバー証明書が更新されました。',
+	'Unable to update SSL certification.' => 'サーバー証明書の更新をする事が出来ませんでした。',
+	'Config Directive' => '環境変数',
+	'Movable Type environment settings has successfully been updated.' => 'MT環境変数の設定が更新されました。',
+	'Restoring Backup Data' => 'バックアップデータの復元',
+	'backup data' => 'バックアップデータ',
+	'Invalid backup file name.' => '不正なバックアップファイルです。',
+	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
+	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
+	'Auto update settings has successfully been updated.' => '自動アップデートの設定が更新されました。',
+	'IP Restriction settings' => 'アクセス制限の設定',
+	'Domain, Path and IP addresses are required.' => 'ドメイン名、パス名、IPアドレスは必須です。',
+	'\'[_1]\' does not exist.' => '\'[_1]\' が見つかりません。',
+	'\'[_1]\' is invalid path.' => '\'[_1]\' は無効なパスです。',
+	'Unable to create acl path: [_1]' => '設定ファイルの書き込みディレクトリを作成できません: [_1]',
+	'Cannot write to acl directory: [_1]' => '設定ファイルの書き込みディレクトリに書き込めません: [_1]',
+	'Cannot write to acl file: [_1]' => '設定ファイルを書き込めません: [_1]',
+	'IP restriction for site has successfully been updated.' => 'アクセス制限の設定が更新されました。',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'アクセス制限の設定を、適用することができません。おそらく、入力されたパスまたはIPアドレスが有効ではない可能性があります。',
+	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
+
+## addons/Cloud.pack/lib/Cloud/Template.pm
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www 有無を無視してどちらでもアクセスをできるようにする。 <a href="[_1]">詳細</a>',
+	'http://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'http://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
+
+## addons/Cloud.pack/lib/Cloud/Util.pm
+	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
+	'Cannot get the resource data.' => 'リソース情報を取得できません。',
+	'Unknown CPU type.' => 'CPUタイプの判定ができません。',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
+	'You must specify the same state of the checkboxes for unify the existence of www when the both of site domain and archive domain are same.' => 'サイトURLとアーカイブURLのドメインが同じ場合は、それぞれの「www 有無を無視してどちらでもアクセスをできるようにする」を同じ状態にする必要があります。',
+
+## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
+	'Auto Update Settings' => '自動アップデートの設定',
+	'Auto update setting have been saved.' => '自動アップデートの設定を保存しました。',
+	'Current installed version of Movable Type is the latest version.' => 'ご利用中の Movable Type は、最新のバージョンです。',
+	'New version of Movable Type is available.' => 'Movable Type の新しいバージョンがリリースされています。',
+	'Last Update' => '最終更新日',
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] （[_2] に更新されました）',
+	'Available version' => '最新のバージョン',
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] （[_2] にリリースされています）',
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => '自動アップデートが無効になっている場合でも、ご利用中の Movable Type は、[_1] にアップデートが自動的に行われます。',
+	'Auto update' => '自動アップデート',
+	'Enable	automatic update of Movable Type' => 'Movable Type の自動アップデートを有効にする',
+
+## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
+	'Manage Basic Authentication' => 'Basic認証の管理',
+	'/path/to/authentication' => '/path/to/authentication',
+	'User ID' => 'ユーザー名',
+	'Remove this setting' => '設定の削除',
+	'URI is required.' => 'URIは必須です。',
+	'Invalid URI.' => '不正なURIです。',
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'ユーザー名は半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'パスワードは半角英数または記号のみ利用可能です。(バックスラッシュを除く)',
+	'basic authentication setting' => 'Basic認証の設定',
+	'basic authentication settings' => 'Basic認証の設定',
+
+## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
+	'Manage Configuration Directives' => '環境変数の管理',
+	'Configuration directive' => '環境変数',
+	'View Documentation' => 'ドキュメントの参照',
+	'Configuration value' => '設定値',
+	'Remove Config Directive' => '環境変数の削除',
+
+## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
+	'User Contents Files' => 'コンテンツファイル',
+	'Buckup Files' => 'バックアップファイル',
+	'Free Disk Space' => '空き容量',
+	'User Contents' => 'コンテンツファイル',
+	'Others' => 'その他',
+	'Free' => '空き容量',
+
+## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
+	'Reset FTPS Password' => 'FTPSパスワードのリセット',
+	'Please select the account for which you want to reset the password.' => 'FTPSパスワードのリセットを行うアカウントを選択してください。',
+	'Owner Password' => '管理者のパスワード',
+	'Saved' => '保存しました',
+	'Creater Password' => '制作者のパスワード',
+
+## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
+	'Manage HTTP Redirect' => 'URLリダイレクトの管理',
+	'/path/of/redirect' => '/path/of/redirect',
+	'__REDIRECT_TO' => 'リダイレクト先',
+	'http://example.com or /path/to/redirect' => 'http://example.com 又は /path/to/redirect',
+	'Redirect URL is required.' => 'リダイレクト先URLは必須です。',
+	'Redirect url is same as URI' => 'リダイレクト先URLは、がリダイレクト元URIと違うURLを設定してください。',
+	'HTTP redirect setting' => 'URLリダイレクトの設定',
+	'HTTP redirect settings' => 'URLリダイレクトの設定',
+
+## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
+	'IP Restriction Settings' => 'アクセス制限の設定',
+	'Administration screen settings have been saved.' => '管理画面の設定を保存しました。',
+	'Domain name like example.com' => 'ドメイン名 例: example.com',
+	'Path begin with / like /path' => 'パス名 例: /path',
+	'IP addresses that are allowed to access' => 'アクセスを許可するIPアドレス',
+	'Domain is required.' => 'ドメイン名は必須です。',
+	'"[_1]" does not exist.' => '"[_1]" が見つかりません。',
+	'Invalid Path.' => 'パスが正しくありません。',
+	'This combination of domain and path already exists.' => '指定されたドメインとパスの組み合わせはすでに設定されています。',
+	'IP is required.' => 'アクセス許可IPアドレスは必須です。',
+	'[_1] is invalid IP Address.' => '[_1] は不正なIPアドレスです。',
+	'IP restriction settings' => 'アクセス制限の設定',
+
+## addons/Cloud.pack/tmpl/cfg_security.tmpl
+	'Administration screen setting have been saved.' => '管理画面の設定を保存しました。',
+	'Administration screen url have been reset to default.' => '管理画面のURLが既定のURLにリセットされました。',
+	'Admin Screen URL' => '管理画面のURL',
+	'Protect administration screen by Basic Authentication' => '管理画面をBasic認証で保護する',
+	'Access Restriction' => 'アクセス制限',
+	'Restricts IP addresses that can access to administration screen.' => '管理画面にアクセスすることができるIPアドレスを制限する',
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'アクセスを許可するIPアドレスをカンマ又は改行区切りで入力してください。現在のアクセス元のIPアドレスが一覧に含まれない場合、設定の保存後に管理画面へアクセスできなくなる場合がありますのでご注意ください。',
+	'Your IP address is [_1].' => '現在のIPアドレスは [_1] です。',
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => '上記に加えて、検索やDataAPIなどのCGIへアクセスすることができるIPアドレスを制限する',
+	'IP address list is required.' => 'IPアドレスは必須です。',
+	'administration screen' => '管理画面',
+	' and ' => 'と',
+	'public access CGI' => '公開されているCGI',
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => '現在のIPアドレスが[_1]の許可IPアドレスに含まれていません。現在のIPアドレスを制限してもよろしいですか？',
+	'Are you sure you want to save restrict access settings?' => 'アクセス制限の設定を保存します。よろしいですか？',
+
+## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
+	'Install SSL Certification' => 'サーバー証明書の導入',
+	'SSL certification have been updated.' => 'サーバー証明書が更新されました。',
+	'SSL certification have been reset to default.' => 'サーバー証明書が既定の証明書にリセットされました。',
+	'The current server certification is as follows.' => '現在のサーバー証明書は以下の通りです。',
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{サーバー証明書の[_1]を行うには、以下のフィールドに情報を入力してください。現在の証明書を削除して既定の証明書に戻すには、'サーバー証明書の削除'ボタンを押してください。秘密鍵のパスフレーズは解除されている必要があります。},
+	'Server Certification' => '証明書 (server.crt)',
+	'Secret Key' => '秘密鍵 (server.key)',
+	'Intermediate Certification' => '中間証明書',
+	'Remove SSL Certification' => 'サーバー証明書の削除',
+
+## addons/Cloud.pack/tmpl/full_restore.tmpl
+	'Restoring Full Backup Data' => 'バックアップデータからの復元',
+	q{Restored backup data from '[_1]' at [_2]} => q{[_2]に[_1]のバックアップデータから復元されています。},
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'バックアップデータの復元を実行すると、全てのコンテンツがバックアップデータ作成時の状態に戻ります。復元元のバックアップデータが作成されてから保存された内容や、復元実行中に受信したコメントやトラックバックは破棄されますのでご注意ください。また、復元を実行する前に現在の状態のバックアップを自動的に行います。バックアップデータの復元後に復元の実行前の状態に戻すことが可能です。',
+	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
+
 ## addons/Commercial.pack/config.yaml
 	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'バナー画像、水平型のナビゲーションなど、ホームページ用途に適したデザインです。あらかじめ用意されたページをカスタマイズして、簡単にウェブサイトを作成できます。',
@@ -6634,15 +6822,15 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
-	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信のジョブが正常に登録されました。次の run-periodic-tasks 実行時に処理されます。',
+	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
 	'Immediate sync job has been registered.' => '即時配信のジョブが正常に登録されました。',
 	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、配信先サーバー上で正しく動作しない場合があります。',
 	'Register immediate sync job' => '即時配信する',
 	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Sync Date' => 'サーバー配信日時',
-	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Recipient for Notification' => '通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
 	'htaccess' => 'htaccess',
 	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
@@ -6827,6 +7015,40 @@ use vars qw( @ISA %Lexicon );
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
 
+## plugins/SmartphoneOption/config.yaml
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
+	'iPhone' => 'iPhone',
+	'iPad' => 'iPad',
+	'Android' => 'Android',
+	'Desktop' => 'PC',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
+	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
+	'Mobile Dashboard' => 'モバイルダッシュボード',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。無効にして編集しますか？',
+	'[_1] View' => '[_1]表示',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Re-Edit' => '再編集する',
+	'Re-Edit (e)' => '再編集する (e)',
+	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '全て',
+	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'to [_1]' => 'to [_1]',
+	'Smartphone Main' => 'Smartphone Main',
+	'Smartphone Sub' => 'Smartphone Sub',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'No boilerplate could be found.' => '定型文が見つかりません。',
+
 ## plugins/StyleCatcher/config.yaml
 	'StyleCatcher lets you easily browse through styles and then apply them to your blog in just a few clicks.' => 'StyleCatcherを使うと、ウェブサイトやブログのスタイルを探して、数クリックで変更することができます。',
 	'MT 4 Style Library' => 'MT 4 スタイルライブラリ',
@@ -6921,6 +7143,59 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Failed.' => '失敗',
 
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'\'[_1]\' is a required argument of [_2]' => '\'[_1]\' は[_2]の引数を必要とします',
+	'MT[_1] was not used in the proper context.' => 'MT[_1]を適切なコンテキスト外で使用しています。',
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Liteからブログ上のフィードを更新（再構築）できます。Movable Typeでフィードをさらに活用するには<a href="http://code.appnel.com/feeds-app" target="_blank">Feeds.App</a>にアップグレードします。',
+	'Create a Feed Widget' => 'フィードウィジェットを作成',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite ウィジェット作成ツール',
+	'Configure feed widget settings' => 'フィードウィジェットを設定する',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Widgetのタイトルを入力してください。このタイトルは、公開されているブログでWidgetが使用されたときにもフィードのタイトルとして表示されます。',
+	'[_1] Feed Widget' => '[_1]フィードウィジェット',
+	'Select the maximum number of entries to display.' => '表示するブログ記事の最大数を選択します。',
+	'3' => '3',
+	'5' => '5',
+	'10' => '10',
+	'All' => 'すべて',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'No feeds could be discovered using [_1]' => '[_1]でフィードが見つかりませんでした。',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{[_1]の実行中にエラーが発生しました。<a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ここ</a>をクリックし、詳細を確認のうえ、再度実行してください。},
+	'A widget named <strong>[_1]</strong> has been created.' => 'フィードウィジェット「[_1]」を作成しました。',
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、<a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a>か以下のMTIncludeタグを使ってブログに挿入できます。},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、以下のMTIncludeタグを使ってブログに挿入できます。},
+	'Create Another' => '続けて作成する',
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => 'フィードが複数見つかりました。',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '利用するフィードを選択してください。<strong>Feeds.App Liteはテキストで構成されたRSS 1.0、RSS 2.0、Atomの各形式をサポートしています</strong>。',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'You must enter a feed or site URL to proceed' => 'フィードまたはサイトのURLを入力してください。',
+	'Create a widget from a feed' => 'フィードからウィジェットを作成する',
+	'Feed or Site URL' => 'フィードまたはサイトのURL',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'フィードのURLを入力するか、フィードを配信しているサイトのURLを入力してください。',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'mixiのアカウントを使ってMovable Typeにサインインし、コメントできるようにします。',
+	'mixi' => 'ミクシィ',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'すでにmixiのIDを登録してあります。ブログに関連付けるmixiのIDを変えたい場合は、<a href="[_1]">ここをクリックしてmixiにログイン</a>してください。マイミクだけでなくすべてのmixiユーザーからのコメントを受け付けたいときは、初期化ボタンをクリックして設定を消去してください。',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'マイミクからのみコメントを受け付ける設定にするには、<a href="[_1]">ここをクリックしてまずmixiにログイン</a>してください。',
+
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Failed to resolve IP address for source URL [_1]' => 'ソースURL[_1]の解決に失敗しました。',
 	'Moderating: Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しないため、「未公開」にします。',
@@ -6997,7 +7272,5 @@ use vars qw( @ISA %Lexicon );
 	'Keywords to Junk' => 'スパムにするキーワード',
 
 );
-
-## New words: 355
 
 1;

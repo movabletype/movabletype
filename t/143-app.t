@@ -1,23 +1,25 @@
 #!/usr/bin/perl
+
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
 BEGIN {
-    use Test::More;
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use lib qw( lib extlib ../lib ../extlib t/lib );
-
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
+    eval { require Test::MockModule }
+        or plan skip_all => 'Test::MockModule is not installed';
 }
 
 use MT;
 use MT::Test qw( :app :db );
 use MT::Test::Permission;
-use Test::More;
 
 subtest 'Check transencoding in validate_request_params().' => sub {
     my $flag = 0;
@@ -45,6 +47,13 @@ subtest 'If Content-Type has multi paramters' => sub {
     eval { $app->validate_request_params };
 
     is( scalar(@_), 0, 'No error occurs in validate_request_params().' );
+};
+
+subtest 'do_reboot' => sub {
+    my $app = MT->app;
+    $app->reboot;
+    ok( $app->do_reboot,  'ran do_reboot' );
+    ok( !$app->do_reboot, 'do not run do_reboot twice' );
 };
 
 done_testing;

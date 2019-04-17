@@ -15,10 +15,13 @@ sub upgrade_functions {
             priority      => 3.3,
             updater       => {
                 type      => 'blog',
-                condition => sub { $_[0]->class eq 'blog' },
-                code      => sub { $_[0]->class('website') },
-                label     => "Migrating current blog to a website...",
-                sql       => <<__SQL__,
+                condition => sub {
+                    my $blog = $_[0];
+                    $blog->class eq 'blog' && !$blog->parent_id;
+                },
+                code  => sub { $_[0]->class('website') },
+                label => "Migrating current blog to a website...",
+                sql   => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
@@ -114,6 +117,11 @@ __SQL__
                 label => "Rebuilding permission records...",
                 code  => \&_v6_rebuild_permissions,
             },
+        },
+        'v6_remove_sql_set_names' => {
+            version_limit => '6.0021',
+            priority      => 3.1,
+            code          => \&_v6_remove_sql_set_names,
         },
     };
 }
@@ -263,6 +271,19 @@ SQL
         $driver->sql( [ "alter table mt_ts_error drop constraint $pkey", ] );
     }
     1;
+}
+
+sub _v6_remove_sql_set_names {
+    my $self      = shift;
+    my $cfg_class = MT->model('config');
+    my $data      = $cfg_class->load(1)->data;
+    return 1 if $data =~ /SQLSetNames\s1/;
+
+    $self->progress( $self->translate_escape('Remove SQLSetNames...') );
+
+    my $cfg = MT->config;
+    $cfg->SQLSetNames( undef, 1 );
+    $cfg->save_config;
 }
 
 1;

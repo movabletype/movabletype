@@ -11,7 +11,7 @@ function smarty_block_mtfolderfooter($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('_categories_counter');
 
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 
-                              ((isset($counter) && isset($categories)) && $counter == count($categories) || $ctx->stash('subFolderFoot'))
+                              ((isset($counter) && is_array($categories)) && $counter == count($categories) || $ctx->stash('subFolderFoot'))
         );
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);

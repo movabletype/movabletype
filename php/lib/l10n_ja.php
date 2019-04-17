@@ -12,22 +12,22 @@ $Lexicon_ja = array(
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => '記事',
-	'Page' => 'ウェブページ',
-	'Yearly' => '年別',
-	'Monthly' => '月別',
-	'Daily' => '日別',
-	'Weekly' => '週別',
-	'Author' => 'ユーザー',
+	'INDIVIDUAL_ADV' => '記事',
+	'PAGE_ADV' => 'ウェブページ',
+	'YEARLY_ADV' => '年別',
+	'MONTHLY_ADV' => '月別',
+	'DAILY_ADV' => '日別',
+	'WEEKLY_ADV' => '週別',
+	'AUTHOR_ADV' => 'ユーザー',
 	'(Display Name not set)' => '(表示名なし)',
-	'Author Yearly' => 'ユーザー 年別',
-	'Author Monthly' => 'ユーザー 月別',
-	'Author Daily' => 'ユーザー 日別',
-	'Author Weekly' => 'ユーザー 週別',
-	'Category Yearly' => 'カテゴリ 年別',
-	'Category Monthly' => 'カテゴリ 月別',
-	'Category Daily' => 'カテゴリ 日別',
-	'Category Weekly' => 'カテゴリ 週別',
+	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
+	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
+	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
+	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
+	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
+	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
+	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
+	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'Category' => 'カテゴリ',
 
 ## php/lib/block.mtassets.php
@@ -84,6 +84,7 @@ $Lexicon_ja = array(
 	'Reply' => '返信',
 
 ## php/lib/function.mtentryclasslabel.php
+	'Page' => 'ウェブページ',
 	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php

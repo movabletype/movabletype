@@ -98,7 +98,7 @@ class ArchiverFactory {
 class IndividualArchiver implements ArchiveType {
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate("Individual");
+        return $mt->translate("INDIVIDUAL_ADV");
     }
 
     public function get_title($args) {
@@ -189,7 +189,7 @@ class IndividualArchiver implements ArchiveType {
 class PageArchiver extends IndividualArchiver {
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate("Page");
+        return $mt->translate("PAGE_ADV");
     }
 
     protected function get_archive_list_data($args) {
@@ -387,7 +387,7 @@ class YearlyArchiver extends DateBasedArchiver {
     // Override Method
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Yearly');
+        return $mt->translate('YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -476,7 +476,7 @@ class MonthlyArchiver extends DateBasedArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Monthly');
+        return $mt->translate('MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -570,7 +570,7 @@ class MonthlyArchiver extends DateBasedArchiver {
 class DailyArchiver extends DateBasedArchiver {
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Daily');
+        return $mt->translate('DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -671,7 +671,7 @@ class WeeklyArchiver extends DateBasedArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Weekly');
+        return $mt->translate('WEEKLY_ADV');
     }
 
     public function get_title($args) {
@@ -778,7 +778,7 @@ class AuthorBasedArchiver implements ArchiveType {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author');
+        return $mt->translate('AUTHOR_ADV');
     }
 
     public function get_title($args) {
@@ -1052,7 +1052,7 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Yearly');
+        return $mt->translate('AUTHOR-YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -1156,7 +1156,7 @@ class MonthlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Monthly');
+        return $mt->translate('AUTHOR-MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -1270,7 +1270,7 @@ class DailyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Daily');
+        return $mt->translate('AUTHOR-DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -1387,7 +1387,7 @@ class WeeklyAuthorBasedArchiver extends DateBasedAuthorArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Author Weekly');
+        return $mt->translate('AUTHOR-WEEKLY_ADV');
     }
 
     public function get_title($args) {
@@ -1657,7 +1657,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Yearly');
+        return $mt->translate('CATEGORY-YEARLY_ADV');
     }
 
     public function get_title($args) {
@@ -1774,7 +1774,7 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Monthly');
+        return $mt->translate('CATEGORY-MONTHLY_ADV');
     }
 
     public function get_title($args) {
@@ -1887,7 +1887,7 @@ class DailyCategoryArchiver extends DateBasedCategoryArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Daily');
+        return $mt->translate('CATEGORY-DAILY_ADV');
     }
 
     public function get_title($args) {
@@ -2004,7 +2004,7 @@ class WeeklyCategoryArchiver extends DateBasedCategoryArchiver {
 
     public function get_label($args = null) {
         $mt = MT::get_instance();
-        return $mt->translate('Category Weekly');
+        return $mt->translate('CATEGORY-WEEKLY_ADV');
     }
 
     public function get_title($args) {

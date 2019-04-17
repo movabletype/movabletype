@@ -2,12 +2,20 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app    = MT::App::DataAPI->new;
@@ -447,6 +455,18 @@ __BODY__
             },
             code => 404,
         },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title    => 'test-api-basename-is-too-long',
+                    basename => 'a' x 247,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
         {    # Invalid folder.
             path   => '/v2/sites/1/pages',
             method => 'POST',
@@ -843,6 +863,13 @@ __BODY__
             restrictions => { 1 => [qw/ save_page /], },
             code         => 403,
             error => 'Do not have permission to update a page.',
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { basename => 'a' x 247, }, },
+            code   => 500,
+            error  => qr/basename is too long./,
         },
 
         # update_page - normal tests

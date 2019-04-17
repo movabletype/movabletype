@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version   v5.20.3  01-Jan-2016
+ * @version   v5.20.14  06-Jan-2019
  * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
  * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
  * Released under both BSD license and Lesser GPL library license.
@@ -10,7 +10,7 @@
  *
  * Set tabs to 4 for best viewing.
  *
- * Latest version is available at http://php.weblogs.com
+ * Latest version is available at http://adodb.org/
  *
  * Exception-handling code using PHP5 exceptions (try-catch-throw).
  */
@@ -33,16 +33,16 @@ var $database = '';
 		case 'EXECUTE':
 			$this->sql = is_array($p1) ? $p1[0] : $p1;
 			$this->params = $p2;
-			$s = "$dbms error: [$errno: $errmsg] in $fn(\"$this->sql\")\n";
+			$s = "$dbms error: [$errno: $errmsg] in $fn(\"$this->sql\")";
 			break;
 
 		case 'PCONNECT':
 		case 'CONNECT':
 			$user = $thisConnection->user;
-			$s = "$dbms error: [$errno: $errmsg] in $fn($p1, '$user', '****', $p2)\n";
+			$s = "$dbms error: [$errno: $errmsg] in $fn($p1, '$user', '****', $p2)";
 			break;
 		default:
-			$s = "$dbms error: [$errno: $errmsg] in $fn($p1, $p2)\n";
+			$s = "$dbms error: [$errno: $errmsg] in $fn($p1, $p2)";
 			break;
 		}
 

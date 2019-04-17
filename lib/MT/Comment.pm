@@ -800,6 +800,7 @@ sub list_props {
             condition => sub {0},
         },
         entry_status => {
+            label   => 'Entry/Page Status',
             base    => 'entry.status',
             col     => 'entry.status',
             display => 'none',

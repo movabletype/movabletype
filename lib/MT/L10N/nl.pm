@@ -17,22 +17,23 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/archive_lib.php
-	'Individual' => 'per bericht',
-	'Page' => 'Pagina',
-	'Yearly' => 'per jaar',
-	'Monthly' => 'per maand',
-	'Daily' => 'per dag',
-	'Weekly' => 'per week',
-	'Author' => 'Auteur',
+	'INDIVIDUAL_ADV' => 'per bericht',
+	'PAGE_ADV' => 'Pagina',
+	'YEARLY_ADV' => 'per jaar',
+	'MONTHLY_ADV' => 'per maand',
+	'DAILY_ADV' => 'per dag',
+	'WEEKLY_ADV' => 'per week',
+	'AUTHOR_ADV' => 'Auteur',
 	'(Display Name not set)' => '(Getoonde naam niet ingesteld)',
-	'Author Yearly' => 'per auteur per jaar',
-	'Author Monthly' => 'per auteur per maand',
-	'Author Daily' => 'per auteur per dag',
-	'Author Weekly' => 'per auteur per week',
-	'Category Yearly' => 'per categorie per jaar',
-	'Category Monthly' => 'per categorie per maand',
-	'Category Daily' => 'per categorie per dag',
-	'Category Weekly' => 'per categorie per week',
+	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
+	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
+	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
+	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
+	'CATEGORY_ADV' => 'Categorie',
+	'CATEGORY-YEARLY_ADV' => 'per categorie per jaar',
+	'CATEGORY-MONTHLY_ADV' => 'per categorie per maand',
+	'CATEGORY-DAILY_ADV' => 'per categorie per dag',
+	'CATEGORY-WEEKLY_ADV' => 'per categorie per week',
 	'Category' => 'Categorie',
 
 ## php/lib/block.mtassets.php
@@ -154,7 +155,7 @@ use vars qw( @ISA %Lexicon );
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => '[_1] is niet geïnstalleerd op uw server of [_1] vereist een andere module die niet is geïnstalleerd.',
 	'Please consult the installation instructions for help in installing [_1].' => 'Gelieve de installatiehandleiding te raadplegen voor hulp met de installatie van [_1]',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'Van de versie van DBD::mysql die op uw server geïnstalleerd is, is geweten dat ze niet compatibel is met Movable Type.  Gelieve de meest recent beschikbare versie te installeren.',
-	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => 'De $mod is correct geïnstalleerd maar vereist een bijgewerkte DBI module.  Zie ook de opmerking hierboven over vereisten voor de DBI module.',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => 'De [_1] is correct geïnstalleerd maar vereist een bijgewerkte DBI module.  Zie ook de opmerking hierboven over vereisten voor de DBI module.',
 	'Your server has [_1] installed (version [_2]).' => '[_1] is op uw server geïnstalleerd (versie [_2]).',
 	'Movable Type System Check Successful' => 'Movable Type Systeemcontrole met succes afgerond',
 	q{You're ready to go!} => q{Klaar om van start te gaan!},
@@ -867,61 +868,49 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'Deze module is vereist voor cookie-authenticatie.',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'per auteur per dag',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/dd/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'per auteur per maand',
 	'author/author-basename/yyyy/mm/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'per auteur',
 	'author/author-basename/index.html' => 'auteur/auteur-basisnaam/index.html',
 	'author/author_basename/index.html' => 'auteur/auteur_basisnaam/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'per auteur per week',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'auteur/auteur-basisnaam/yyyy/mm/dag-week/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'auteur/auteur_basisnaam/yyyy/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'per auteur per jaar',
 	'author/author-basename/yyyy/index.html' => 'auteur/auteur-basisnaam/yyyy/index.html',
 	'author/author_basename/yyyy/index.html' => 'auteur/auteur_basisnaam/yyyy/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'per categorie per dag',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sub-categorie/jjjj/dd/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sub_categorie/jjjj/dd/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'per categorie per maand',
 	'category/sub-category/yyyy/mm/index.html' => 'categorie/sub-categorie/jjjj/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'categorie/sub_categorie/jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'per categorie',
 	'category/sub-category/index.html' => 'categorie/sub-categorie/index.html',
 	'category/sub_category/index.html' => 'categorie/sub_categorie/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'per categorie per week',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sub-categorie/jjjj/mm/dag-week/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sub_categorie/jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'per categorie per jaar',
 	'category/sub-category/yyyy/index.html' => 'categorie/sub-categorie/jjjj/index.html',
 	'category/sub_category/yyyy/index.html' => 'categorie/sub_categorie/jjjj/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
-	'DAILY_ADV' => 'per dag',
 	'yyyy/mm/dd/index.html' => 'jjjj/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => 'per bericht',
 	'yyyy/mm/entry-basename.html' => 'jjjj/mm/basisnaam-bericht.html',
 	'yyyy/mm/entry_basename.html' => 'jjjj/mm/basisnaam_bericht.html',
 	'yyyy/mm/entry-basename/index.html' => 'jjjj/mm/basisnaam-bericht/index.html',
@@ -936,22 +925,18 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/entry_basename/index.html' => 'categorie/sub_categorie/basisnaam_bericht/index.html',
 
 ## lib/MT/ArchiveType/Monthly.pm
-	'MONTHLY_ADV' => 'per maand',
 	'yyyy/mm/index.html' => 'jjjj/mm/index.html',
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'per pagina',
 	'folder-path/page-basename.html' => 'map-pad/basisnaam-pagina.html',
 	'folder-path/page-basename/index.html' => 'map-pad/basisnaam-pagina/index.html',
 	'folder_path/page_basename.html' => 'map_pad/basisnaam_pagina.html',
 	'folder_path/page_basename/index.html' => 'map_pad/basisnaam_pagina/index.html',
 
 ## lib/MT/ArchiveType/Weekly.pm
-	'WEEKLY_ADV' => 'per week',
 	'yyyy/mm/day-week/index.html' => 'jjjj/mm/dag-week/index.html',
 
 ## lib/MT/ArchiveType/Yearly.pm
-	'YEARLY_ADV' => 'per jaar',
 	'yyyy/index.html' => 'jjjj/index.html',
 
 ## lib/MT/Asset/Audio.pm

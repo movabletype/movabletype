@@ -3,15 +3,49 @@ sudo: required
 services:
   - docker
 
+env:
+  matrix:
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.18" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.18" TEST_COMMAND="wget https://phar.phpunit.de/phpunit-4.8.36.phar && chmod +x phpunit-4.8.36.phar && ./phpunit-4.8.36.phar && make test-php-lint"
+
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.10" TEST_COMMAND="curl -sLO https://phar.phpunit.de/phpunit-4.8.36.phar && chmod +x phpunit-4.8.36.phar && ./phpunit-4.8.36.phar && make test-php-lint"
+
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.24" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.24" TEST_COMMAND="phpunit && make test-php-lint"
+
+    - PERL_VERSION="5.26" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+    - PERL_VERSION="5.26" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+    - PERL_VERSION="5.26" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
+    - PERL_VERSION="5.26" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - PERL_VERSION="5.26" TEST_COMMAND="phpunit && make test-php-lint"
+
 before_script:
   - rm t/34-sqlite.t
-  - rm t/90-podcoverage.t
   - rm plugins/MultiBlog/t/02.tags.t
-
-  - cp t/mysql-test.cfg mt-config.cgi
+  - rm t/dangling-symlinks.t
 
 script:
-  - docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "cpm install -g --test --cpanfile=t/cpanfile && find /var/lib/mysql -type f | xargs touch && service mysql start && service memcached start && PERL_JSON_BACKEND=0 prove t plugins/*/t"
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.24" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:stretch-full bash -c "$TEST_COMMAND" ; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.26" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:bionic-full bash -c "$TEST_COMMAND" ; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:centos6-full bash -c "yum -y install git && $TEST_COMMAND"; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ -z $PERL_VERSION ]; then $TEST_COMMAND; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:

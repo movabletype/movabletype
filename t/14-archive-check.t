@@ -1,9 +1,15 @@
 use strict;
 use warnings;
 use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
 
-use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT::Util::Archive::Tgz;
 use MT::Util::Archive::Zip;
@@ -21,7 +27,7 @@ my %conf = (
     zip => { method => 'fileName', class => 'MT::Util::Archive::Zip' },
 );
 
-my $TEST_DIR = tempdir( TMPDIR => 1, CLEANUP => 1 );
+my $TEST_DIR = tempdir( DIR => $test_env->root, CLEANUP => 1 );
 
 sub _create_dir {
     my $name = shift;

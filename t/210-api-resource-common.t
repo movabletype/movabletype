@@ -2,28 +2,26 @@
 
 use strict;
 use warnings;
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
 BEGIN {
-    $ENV{MT_CONFIG} = 'mysql-test.cfg';
-}
-
-BEGIN {
-    use Test::More;
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use lib qw(lib extlib t/lib);
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
-use Test::More;
-eval(
-    $ENV{SKIP_REINITIALIZE_DATABASE}
-    ? "use MT::Test;"
-    : "use MT::Test qw(:db :data);"
-);
-
+use MT::Test;
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
+
+$test_env->prepare_fixture('db_data');
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);

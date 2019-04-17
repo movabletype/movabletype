@@ -2,11 +2,19 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -269,6 +277,41 @@ sub suite {
                     totalResults => scalar @greped_entries,
                     items        => MT::DataAPI::Resource->from_object(
                         [ @greped_entries[ 5 .. 9 ] ]
+                    ),
+                };
+            },
+        },
+        {    # MTC-25640: phrasal search for a custom field doesn't die
+            path   => '/v2/search',
+            method => 'GET',
+            params => {
+                search       => 'a OR field:name:"foo bar"',
+                IncludeBlogs => '1,2',
+            },
+            result => sub {
+                my @entries = $app->model('entry')->load(
+                    {   blog_id => [ 1, 2 ],
+                        status  => MT::Entry::RELEASE(),
+                        class   => '*'
+                    },
+                    { sort => 'authored_on', direction => 'descend' },
+                );
+
+                my @greped_entries;
+                for my $e (@entries) {
+                    if ( grep { $e->$_ && $e->$_ =~ m/a/ }
+                        qw/ title text text_more keywords / )
+                    {
+                        push @greped_entries, $e;
+                    }
+                }
+
+                $app->user($author);
+
+                return +{
+                    totalResults => scalar @greped_entries,
+                    items        => MT::DataAPI::Resource->from_object(
+                        \@greped_entries
                     ),
                 };
             },

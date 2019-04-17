@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.3.9';
+    $version = '6.5';
 }
 
 my ( $mt, $LH );
@@ -1029,7 +1029,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="msg msg-warning"><p class="msg-text"><__trans phrase="The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements." params="$mod"></p></div>}
                         )
                     );
                 }

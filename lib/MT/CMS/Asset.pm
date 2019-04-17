@@ -1562,6 +1562,7 @@ sub _upload_file_compat {
                 {
                     if ( $basename eq $ext_old ) {
                         $basename .= '.' . $ext_new;
+                        $ext_old = $app->translate('none');
                     }
                     else {
                         $basename =~ s/$ext_old$/$ext_new/;
@@ -2100,6 +2101,7 @@ sub _upload_file {
         {
             if ( $basename eq $ext_old ) {
                 $basename .= '.' . $ext_new;
+                $ext_old = $app->translate('none');
             }
             else {
                 $basename =~ s/$ext_old$/$ext_new/;

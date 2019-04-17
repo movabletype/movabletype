@@ -24,15 +24,11 @@ function returnMemberSelection(ok) {
         if (el_id) {
             var ids = new Array();
             var names = new Array();
-            var inputs = dialog.panels[0].tableSelect.selected();
-            for (var i = 0; i < inputs.length; ++i) {
-                var inp = inputs[i];
-                var row = jQuery(inp).parents('tr')[0];
-                if (!row) continue;
-                var labels = row.getElementsByTagName('label');
-                if (labels.length == 0) continue;
-                names.push(labels[0].innerHTML + ' (' + inp.value + ')');
-                ids.push(inp.value);
+            var items = dialog.panels[0].selectionList.items();
+            var itemHash = dialog.panels[0].selectionList.itemHash;
+            for (var i = 0; i < items.length; i++) {
+                ids[i] = items[i].replace(/\D/g, '');
+                names.push(itemHash[items[i]].label + ' (' + ids[i] + ')');
             }
             el_id.value = ids.join(',');
             <mt:if name="namefield">el_name.innerHTML = names.join(',');</mt:if>

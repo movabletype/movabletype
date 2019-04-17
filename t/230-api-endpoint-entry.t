@@ -2,12 +2,20 @@
 
 use strict;
 use warnings;
-
-use lib qw(lib extlib t/lib);
-
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
+
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
@@ -201,6 +209,18 @@ sub suite {
             },
             code  => 400,
             error => "'categories' parameter is invalid.",
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title    => 'test-api-basename-is-too-long',
+                    basename => 'a' x 247,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
         },
         {    # Attach category of other site.
             path   => '/v2/sites/1/entries',
@@ -582,6 +602,13 @@ __BODY__
             params => { entry => { categories => [ id => 20 ] } },
             code   => 400,
             error  => "'categories' parameter is invalid.",
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { basename => 'a' x 247 } },
+            code   => 500,
+            error  => qr/basename is too long./,
         },
 
         # update_entry - normal tests.

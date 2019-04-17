@@ -80,7 +80,9 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                     }
                 }
             } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
-                $fn = create_function ('$a,$b', 'return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;');
+                $fn = function($a, $b) {
+                    return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;
+                };
                 usort($tags, $fn);
                 if ( !isset($args['sort_order']) )
                     $sort_order = 'descend';
@@ -100,7 +102,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $out = $ctx->stash('__out');
     }
 
-    if ($counter < count($tags)) {
+    if (is_array($tags) && $counter < count($tags)) {
         $tag = $tags[$counter];
         $ctx->stash('Tag', $tag);
         $ctx->stash('_tags_counter', $counter + 1);

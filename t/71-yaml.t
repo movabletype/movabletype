@@ -2,11 +2,18 @@
 
 use strict;
 use warnings;
-
-use lib qw( ../lib ../extlib lib extlib t/lib t/extlib);
+use FindBin;
+use lib "$FindBin::Bin/lib"; # t/lib
+use Test::More;
+use MT::Test::Env;
+our $test_env;
+BEGIN {
+    $test_env = MT::Test::Env->new;
+    $ENV{MT_CONFIG} = $test_env->config_file;
+}
 
 use MT::Test;
-use Test::More tests => 17;
+plan tests => 17;
 use Encode;
 
 require_ok('MT::Util::YAML');

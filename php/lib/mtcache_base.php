@@ -8,7 +8,7 @@
 class MTCacheBase {
     var $_ttl = 0;
 
-    function MTCacheBase ($ttl = 0) {
+    function __construct ($ttl = 0) {
         $this->ttl = $ttl;
     }
 

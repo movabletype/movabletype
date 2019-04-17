@@ -26,7 +26,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
         $blogs = $ctx->stash('_blogs');
         $counter = $ctx->stash('_blogs_counter');
     }
-    if ($counter < count($blogs)) {
+    if (is_array($blogs) && $counter < count($blogs)) {
         $blog = $blogs[$counter];
         $ctx->stash('blog', $blog);
         $ctx->stash('blog_id', $blog->blog_id);

@@ -49,3 +49,6 @@ t/update/
 .DS_Store
 
 .perl-version
+perltidy.LOG
+
+.idea/
