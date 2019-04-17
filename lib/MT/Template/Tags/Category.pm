@@ -1691,7 +1691,7 @@ sub _hdlr_category_archive {
     # Get the current category
     defined( my $cat = _get_category_context($ctx) )
         or return $ctx->error( $ctx->errstr );
-    return if ( $cat eq '' );
+    return if ( $cat eq '' or $cat->class_type eq 'folder' );
 
     my $cat_at_label
         = $ctx->stash('content')
@@ -1777,7 +1777,7 @@ sub _hdlr_category_count {
                 $terms->{content_field_id} = $cf_arg;
             }
             else {
-                my ($cf)
+                my $cf
                     = MT->model('content_field')
                     ->load( { unique_id => $cf_arg } );
                 if ($cf) {

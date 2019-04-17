@@ -94,6 +94,7 @@ on 'test' => sub {
     requires 'HTTP::Request::Common';
     requires 'IO::String';
     requires 'IPC::Run3';
+    requires 'Log::Minimal';
     requires 'Net::SFTP';
     requires 'PHP::Serialization';
     requires 'pQuery';
@@ -108,9 +109,11 @@ on 'test' => sub {
     requires 'Test::LeakTrace';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
+    requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
     requires 'Text::Diff';
+    requires 'Time::Piece';
     requires 'URI::Escape';
     requires 'Wight';
 };

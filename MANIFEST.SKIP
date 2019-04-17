@@ -390,6 +390,7 @@ Dockerfile
 
 # Etc
 \.perltidyrc
+\.perlcriticrc
 \.gitattributes
 shippable.yml
 yarn.lock

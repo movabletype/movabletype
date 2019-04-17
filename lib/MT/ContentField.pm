@@ -94,8 +94,14 @@ sub list_props {
                 return @$objs unless $content_type;
                 my %obj_hash = map { $_->id => $_ } @$objs;
                 my @field_ids = map { $_->{id} } @{ $content_type->fields };
-                map { $obj_hash{$_} } @field_ids;
+                map      { $obj_hash{$_} }
+                    grep { exists $obj_hash{$_} } @field_ids;
             },
+            display => 'none',
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
             display => 'none',
         },
     };
@@ -312,6 +318,25 @@ sub data_type {
     my $self = shift;
     my $type_registry = $self->type_registry or return;
     $type_registry->{data_type};
+}
+
+sub load_by_id_or_name {
+    my ( $class, $id_or_name, $ct_id ) = @_;
+
+    my $cf;
+    if ( $id_or_name =~ /\A[0-9]+\z/ ) {
+        $cf = $class->load($id_or_name);
+        return $cf if $cf;
+    }
+    if ( $id_or_name =~ /\A[a-zA-Z0-9]{40}\z/ ) {
+        $cf = $class->load( { unique_id => $id_or_name } );
+        return $cf if $cf;
+    }
+    if ( defined $ct_id ) {
+        $cf = $class->load(
+            { name => $id_or_name, content_type_id => $ct_id } );
+    }
+    $cf;
 }
 
 1;

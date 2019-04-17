@@ -514,9 +514,9 @@ sub cfg_prefs {
     $param{saved_deleted}    = 1 if $app->param('saved_deleted');
     $param{saved_added}      = 1 if $app->param('saved_added');
     $param{archives_changed} = 1 if $app->param('archives_changed');
-    $param{no_writedir}    = $app->param('no_writedir');
-    $param{no_cachedir}    = $app->param('no_cachedir');
-    $param{no_writecache}  = $app->param('no_writecache');
+    $param{no_writedir}      = $app->param('no_writedir');
+    $param{no_cachedir}      = $app->param('no_cachedir');
+    $param{no_writecache}    = $app->param('no_writecache');
     $param{include_system} = $blog->include_system || '';
 
     my $mtview_path = File::Spec->catfile( $blog->site_path(), "mtview.php" );
@@ -976,6 +976,7 @@ sub rebuild_pages {
         if ( !$special ) {
             return $app->permission_denied()
                 unless $perms->can_do('rebuild');
+            my $map;
             if ($template_id) {
                 my $tmpl = MT->model('template')->load($template_id)
                     or return $app->errtrans( 'Cannot load template #[_1].',
@@ -985,7 +986,7 @@ sub rebuild_pages {
                     ->can_do('rebuild');
             }
             elsif ($map_id) {
-                my $map = MT->model('templatemap')->load($map_id)
+                $map = MT->model('templatemap')->load($map_id)
                     or return $app->errtrans( 'Cannot load template #[_1].',
                     $map_id );
                 return $app->permission_denied()
@@ -1015,7 +1016,7 @@ sub rebuild_pages {
                     $no_static ? ( NoStatic => 1 ) : (),
                     $template_id ? ( TemplateID => $template_id, Force => 1 )
                     : (),
-                    $map_id ? ( TemplateMap => $template_id, Force => 1 )
+                    $map ? ( TemplateMap => $map, Force => 1 )
                     : (),
                 ) or return $app->publish_error();
                 $offset += $count;
@@ -1851,7 +1852,7 @@ sub _post_save_cfg_screens {
 # publishing method selected:
 #     none (0% publish queue, all static)
 #     async_all (100% publish queue)
-#     async_partial (high-priority templates publish synchronously (main index, preferred indiv. archives, feed templates))
+#     async_partial (high-priority templates publish synchronously (main index, preferred entry_based/contenttype_based archives, feed templates))
 #     all (100% dynamic)
 #     archives (archives dynamic, static indexes)
 #     custom (custom configuration)
@@ -1890,8 +1891,10 @@ sub _post_save_cfg_screens {
 
         if ($path_changed) {
             update_dynamicity( $app, $obj );
-            $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
-                or $app->publish_error();
+
+            # MTC-26415
+            # $app->rebuild( BlogID => $obj->id, NoStatic => 1 )
+            #     or $app->publish_error();
         }
     }
     if ( $screen eq 'cfg_entry' ) {

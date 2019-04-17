@@ -61,13 +61,13 @@ subtest 'without initial_value' => sub {
     my $cd;
 
     test_data_api(
-        {   note => 'with permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        {   note   => 'with permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -90,10 +90,9 @@ subtest 'without initial_value' => sub {
     );
 
     test_data_api(
-        {   note => 'without permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method       => 'POST',
+        {   note   => 'without permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
@@ -115,7 +114,8 @@ subtest 'without initial_value' => sub {
             },
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -168,13 +168,13 @@ subtest 'with initial_value' => sub {
     my $cd;
 
     test_data_api(
-        {   note => 'with permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+        {   note   => 'with permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
             method => 'POST',
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },
@@ -197,10 +197,9 @@ subtest 'with initial_value' => sub {
     );
 
     test_data_api(
-        {   note => 'without permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/data",
-            method       => 'POST',
+        {   note   => 'without permission',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'POST',
             restrictions => {
                 0        => ['edit_all_content_data'],
                 $site_id => [
@@ -222,7 +221,8 @@ subtest 'with initial_value' => sub {
             },
             params => {
                 content_data => {
-                    data => [
+                    label => 'test',
+                    data  => [
                         {   id   => $single_field->id,
                             data => 'abcde',
                         },

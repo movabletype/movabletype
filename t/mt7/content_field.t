@@ -23,6 +23,7 @@ subtest 'set unique_id' => sub {
     my $cf = MT::ContentField->new(
         blog_id         => 1,
         content_type_id => 1,
+        name            => 'test1',
     );
 
     $cf->unique_id($unique_id);
@@ -40,6 +41,7 @@ subtest 'generate unique_id automatically' => sub {
     my $cf = MT::ContentField->new(
         blog_id         => 1,
         content_type_id => 1,
+        name            => 'test2',
     );
     $cf->save or die $cf->errstr;
     ok( $cf->unique_id, 'unique_id is generated' );
@@ -50,12 +52,14 @@ subtest 'forbid creating content_field with not unique unique_id' => sub {
     my $cf1 = MT::ContentField->new(
         blog_id         => 1,
         content_type_id => 1,
+        name            => 'test3-1',
     );
     $cf1->save or die $cf1->errstr;
 
     my $cf2 = MT::ContentField->new(
         blog_id         => 1,
         content_type_id => 1,
+        name            => 'test3-2',
     );
     $cf2->unique_id( $cf1->unique_id );
     $cf2->save;

@@ -27,5 +27,5 @@ if ( !$alive ) {
 }
 else {
     ( my $filename = __FILE__ ) =~ s/-memcached\.t\z/.t/;
-    require($filename);    # t/64-objectmeta.t
+    require("./$filename");    # t/64-objectmeta.t
 }

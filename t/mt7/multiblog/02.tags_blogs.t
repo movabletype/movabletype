@@ -24,7 +24,7 @@ use IPC::Open2;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test;
+use MT::Test 'has_php';
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
@@ -42,6 +42,7 @@ my $default_access_overrides = { 1 => 1 };
 filters {
     template => [qw( chomp )],
     expected => [qw( chomp )],
+    blog_id  => [qw( chomp )],
 };
 
 sub undef_to_empty_string {
@@ -215,9 +216,8 @@ PHP
 
 SKIP:
 {
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
+    unless ( has_php() ) {
+        skip "Can't find executable file: php", 1 * blocks;
     }
 
     run {

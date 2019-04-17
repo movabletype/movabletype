@@ -29,7 +29,7 @@ function smarty_block_mtcontentfields($args, $res, &$ctx, &$repeat) {
         }
         $ctx->stash('_content_fields_unserialized', $content_fields);
 
-        $counter_max = count($content_fields);
+        $counter_max = is_array($content_fields) ? count($content_fields) : 0;
         $ctx->stash('_content_fields_counter_max', $counter_max);
     } else {
         $counter = $ctx->stash('_content_fields_counter');

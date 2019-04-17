@@ -342,6 +342,87 @@ sub normal_tests_for_list {
             },
         }
     );
+    test_data_api(
+        {   note   => 'dateField',
+            path   => "/v4/sites/$site_id/contentTypes",
+            method => 'GET',
+            params => {
+                dateField => 'created_on',
+                dateFrom  => '2000-01-01',
+            },
+            setup => sub {
+                my $ct = MT->model('content_type')->load(1);
+                $ct->created_on('19900101000000');
+                $ct->save;
+            },
+            result => sub {
+                my $total = MT->model('content_type')
+                    ->count( { blog_id => $site_id } );
+                my @ct = MT->model('content_type')->load(
+                    {   blog_id    => $site_id,
+                        created_on => { op => '>', value => '2000-01-01' },
+                    }
+                );
+                is $total => @ct + 1;
+                +{  totalResults => scalar @ct,
+                    items => MT::DataAPI::Resource->from_object( \@ct ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'search',
+            path         => "/v4/sites/$site_id/contentTypes",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-type-2' },
+            result       => sub {
+                my @ct = MT->model('content_type')->load(
+                    {   blog_id => $site_id,
+                        name    => 'create-content-type-2'
+                    }
+                );
+                +{  totalResults => scalar @ct,
+                    items => MT::DataAPI::Resource->from_object( \@ct ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'search multiple rows',
+            path         => "/v4/sites/$site_id/contentTypes",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-type' },
+            result       => sub {
+                my @ct = MT->model('content_type')->load(
+                    {   blog_id => $site_id,
+                        name    => [
+                            'create-content-type',
+                            'create-content-type-2',
+                            'create-content-type-3'
+                        ]
+                    }
+                );
+                +{  totalResults => scalar @ct,
+                    items => MT::DataAPI::Resource->from_object( \@ct ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note         => 'search not found',
+            path         => "/v4/sites/$site_id/contentTypes",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'not-found' },
+            result       => sub {
+                +{  totalResults => 0,
+                    items        => [],
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_get {

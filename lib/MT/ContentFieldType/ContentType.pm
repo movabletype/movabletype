@@ -36,7 +36,7 @@ sub field_html_params {
     }
 
     my $content_field_id = $field_data->{content_field_id} || 0;
-    my $content_field = MT::ContentField->load($content_field_id);
+    my $content_field    = MT::ContentField->load($content_field_id);
     my $related_content_type
         = $content_field ? $content_field->related_content_type : undef;
     my $content_type_name
@@ -136,7 +136,7 @@ sub ss_validator {
     my $field_label     = $options->{label};
 
     my $iter = MT::ContentData->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id              => @{ $data || [] } ? $data : 0,
             blog_id         => $app->blog->id,
             content_type_id => $content_type_id,
         },
@@ -171,12 +171,8 @@ sub theme_import_handler {
     my ( $theme, $blog, $ct, $cf_value, $field, $cf ) = @_;
     my $name_or_unique_id = $field->{options}{source};
     if ( defined $name_or_unique_id && $name_or_unique_id ne '' ) {
-        my $ct = MT::ContentType->load( { unique_id => $name_or_unique_id } );
-        $ct ||= MT::ContentType->load(
-            {   blog_id => $blog->id,
-                name    => $name_or_unique_id,
-            }
-        );
+        my $ct = MT::ContentType->load_by_id_or_name( $name_or_unique_id,
+            $blog->id );
         if ($ct) {
             $field->{options}{source} = $ct->id;
             $cf->related_content_type_id( $ct->id );
@@ -339,7 +335,7 @@ sub search_handler {
         = MT->model('content_data')->load_iter( { id => $content_data_ids } );
     while ( my $cd = $iter->() ) {
         my $content_type = $cd->content_type or next;
-        my $data = $cd->data;
+        my $data         = $cd->data;
         for my $f_id ( keys %$data ) {
             my $f_data = $content_type->get_field($f_id);
             next if $f_data->{type} eq 'content_type';
@@ -410,7 +406,7 @@ sub tag_handler {
     while ( my $cd = $iter->() ) {
         $contents{ $cd->id } = $cd;
     }
-    my @ordered_contents = map { $contents{$_} } @ids;
+    my @ordered_contents = grep {$_} map { $contents{$_} } @ids;
 
     local $ctx->{__stash}{parent_content}      = $ctx->stash('content');
     local $ctx->{__stash}{parent_content_type} = $ctx->stash('content_type');

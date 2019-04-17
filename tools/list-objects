@@ -5,7 +5,6 @@ binmode STDOUT, ":utf8";
 use FindBin;
 use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 
-my %opts;
 use Getopt::Long;
 GetOptions("type=s", \my($type),
 	   "id=i", \my($id),

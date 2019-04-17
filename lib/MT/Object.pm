@@ -951,7 +951,8 @@ sub _get_date_translator {
             my $value = $obj->column($field);
             next FIELD if !defined $value;
             my $new_val = $translator->($value);
-            if ( ( defined $new_val ) && ( $new_val ne $value ) ) {
+            $new_val = undef if defined $new_val && $new_val eq '';
+            if ( ( !defined $new_val ) || ( $new_val ne $value ) ) {
                 $obj->column( $field, $new_val,
                     { no_changed_flag => !$change } );
             }
@@ -967,7 +968,8 @@ sub _get_date_translator {
                 my $value = $obj->$field;
                 next META_FIELD if !defined $value;
                 my $new_val = $translator->($value);
-                if ( ( defined $new_val ) && ( $new_val ne $value ) ) {
+                $new_val = undef if defined $new_val && $new_val eq '';
+                if ( ( !defined $new_val ) || ( $new_val ne $value ) ) {
                     $obj->$field($new_val);
                 }
             }
@@ -1554,6 +1556,7 @@ sub set_values {
             # there's no point in croaking here; just set the
             # values that are defined; ignore any others
             next unless defined $values->{$col};
+
             if (   $args
                 && exists( $args->{no_changed_flag} )
                 && $args->{no_changed_flag} )

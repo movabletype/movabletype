@@ -80,7 +80,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $out = $ctx->stash('__out');
     }
 
-    if ($counter < count($category_sets)) {
+    if (is_array($category_sets) && $counter < count($category_sets)) {
         $cs = $category_sets[$counter];
         $count = $counter + 1;
         $ctx->__stash['vars']['__first__'] = $count == 1;

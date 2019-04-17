@@ -17,7 +17,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test;
+use MT::Test 'has_php';
 use MT::Test::Permission;
 
 MT::Test->init_app;
@@ -184,7 +184,7 @@ PHP
 
 SKIP:
 {
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
+    unless ( has_php() ) {
         skip "Can't find executable file: php",
             2 * blocks() + 2 * blocks('decode_entities');
     }
@@ -409,3 +409,82 @@ __foo__
 <p><a href="mailto:address@example.com">address@example.com</a></p>
 --- decode_entities
 address@example.com
+
+@@@ NoIndent
+--- text
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+--- markdown
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+--- markdown_with_smartypants
+<div>
+<div>
+<p>foo</p>
+</div>
+</div>
+
+@@@ TabIndent
+--- text
+<div>
+	<div>
+		<p>foo</p>
+	</div>
+</div>
+--- markdown
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown_with_smartypants
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+
+@@@ Space4Indent
+--- text
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+--- markdown_with_smartypants
+<div>
+    <div>
+        <p>foo</p>
+    </div>
+</div>
+@@@ Space2Indent
+--- text
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>
+--- markdown
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>
+--- markdown_with_smartypants
+<div>
+  <div>
+    <p>foo</p>
+  </div>
+</div>

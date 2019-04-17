@@ -788,6 +788,9 @@ sub edit {
     $param->{publish_queue_available}
         = eval 'require List::Util; require Scalar::Util; 1;';
 
+    return $app->return_to_dashboard( redirect => 1 )
+        if $param->{type} =~ /['"<>]/;
+
     my $set = $blog ? $blog->template_set : undef;
     require MT::DefaultTemplates;
     my $tmpls = MT::DefaultTemplates->templates($set);
@@ -1417,8 +1420,10 @@ sub preview {
 
     require MT::Template;
     if ($id) {
-        $tmpl = MT::Template->load( { id => $id, blog_id => $blog_id } )
+        my $org_tmpl
+            = MT::Template->load( { id => $id, blog_id => $blog_id } )
             or return $app->errtrans("Invalid request.");
+        $tmpl = $org_tmpl->clone();
     }
     else {
         $tmpl = MT::Template->new;

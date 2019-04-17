@@ -120,7 +120,7 @@ sub mt_presave_obj {
 
     # Collision Checking
     my $changed_cols = $obj->{changed_revisioned_cols};
-    my $modified_by = $obj->can('author') ? $obj->author : $app->user;
+    my $modified_by  = $obj->can('author') ? $obj->author : $app->user;
 
     if ( scalar @$changed_cols ) {
         my $current_revision = $app->param('current_revision') || 0;
@@ -234,13 +234,15 @@ sub unpack_revision {
     delete $packed_obj->{current_revision}
         if exists $packed_obj->{current_revision};
 
+    $obj->{is_revisioned} = 1;
+
     $obj->set_values($packed_obj);
 
     MT->run_callbacks( $class . '::unpack_revision', $obj, $packed_obj );
 }
 
 sub save_revision {
-    my $obj = shift;
+    my $obj   = shift;
     my $class = ref $obj || $obj;
 
     my $filter_result
@@ -329,7 +331,7 @@ sub diff_revision {
 sub _diff_string {
     my ( $str_a, $str_b, $diff_args ) = @_;
     $diff_args ||= {};
-    my $diff_method = $diff_args->{method} || 'html_word_diff';
+    my $diff_method     = $diff_args->{method} || 'html_word_diff';
     my $limit_unchanged = $diff_args->{limit_unchanged};
 
     require HTML::Diff;
@@ -361,6 +363,11 @@ sub _diff_string {
         }
     }
     return \@result;
+}
+
+sub is_revisioned {
+    my $obj = shift;
+    return $obj->{is_revisioned};
 }
 
 1;
@@ -501,6 +508,10 @@ of the diff:
 
 with the flag being C<'u', '+', '-', 'c'>. See the C<HTML::Diff> POD for more
 information.
+
+=head2 $obj->is_revisioned()
+
+Returns 1 if C<$obj> is revisioned object.
 
 =head1 CALLBACKS
 

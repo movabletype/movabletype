@@ -18,23 +18,24 @@ use vars qw( @ISA %Lexicon );
 %Lexicon = (
 
 ## php/lib/archive_lib.php
-	'Individual' => 'Individuelles',
-	'Page' => 'Page',
-	'Yearly' => 'Annuelles',
-	'Monthly' => 'Mensuelles',
-	'Daily' => 'Journalières',
-	'Weekly' => 'Hebdomadaires',
-	'Author' => 'Auteur',
+	'INDIVIDUAL_ADV' => 'Individuelles',
+	'PAGE_ADV' => 'Page',
+	'YEARLY_ADV' => 'Annuelles',
+	'MONTHLY_ADV' => 'Mensuelles',
+	'DAILY_ADV' => 'Journalières',
+	'WEEKLY_ADV' => 'Hebdomadaires',
+	'AUTHOR_ADV' => 'Auteur',
 	'(Display Name not set)' => '(Nom pas spécifié)',
-	'Author Yearly' => 'Par auteurs et années',
-	'Author Monthly' => 'Par auteurs et mois',
-	'Author Daily' => 'Par auteurs et jours',
-	'Author Weekly' => 'Par auteurs et semaines',
+	'AUTHOR-YEARLY_ADV' => 'Par auteurs et années',
+	'AUTHOR-MONTHLY_ADV' => 'Par auteurs et mois',
+	'AUTHOR-DAILY_ADV' => 'Par auteurs et jours',
+	'AUTHOR-WEEKLY_ADV' => 'Par auteurs et semaines',
+	'CATEGORY_ADV' => 'Catégorie',
+	'CATEGORY-YEARLY_ADV' => 'Par catégories et années',
+	'CATEGORY-MONTHLY_ADV' => 'Par catégories et mois',
+	'CATEGORY-DAILY_ADV' => 'Par catégories et jours',
+	'CATEGORY-WEEKLY_ADV' => 'Par catégories et semaines',
 	'Category' => 'Catégorie',
-	'Category Yearly' => 'Par catégories et années',
-	'Category Monthly' => 'Par catégories et mois',
-	'Category Daily' => 'Par catégories et jours',
-	'Category Weekly' => 'Par catégories et semaines',
 	'CONTENTTYPE_ADV' => 'ContentType',
 	'CONTENTTYPE-DAILY_ADV' => 'ContentType journalières',
 	'CONTENTTYPE-WEEKLY_ADV' => 'ContentType hebdomadaires',
@@ -244,7 +245,7 @@ use vars qw( @ISA %Lexicon );
 	q{Your server does not have [_1] installed, or [_1] requires another module that is not installed.} => q{Votre serveur n'a pas [_1] d'installé ou [_1] nécessite un autre module qui n'est pas installé.},
 	q{Please consult the installation instructions for help in installing [_1].} => q{Veuillez consulter les instructions d'installation pour obtenir de l'aide pour installer [_1].},
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'La version installée de DBD::mysql est connue pour être incompatible avec Movable Type. Veuillez installer la dernière version disponible.',
-	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '$mod est installé correctement mais nécessite une version plus récente de DBI. Veuillez vous reporter à la note précédente concernant les pré-requis du module DBI.',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1] est installé correctement mais nécessite une version plus récente de DBI. Veuillez vous reporter à la note précédente concernant les pré-requis du module DBI.',
 	'Your server has [_1] installed (version [_2]).' => 'Votre serveur possède [_1] (version [_2]).',
 	'Movable Type System Check Successful' => 'Vérification du système Movable Type terminée avec succès.',
 	q{You're ready to go!} => q{Vous êtes prêt à continuer !},
@@ -789,52 +790,42 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'Ce module est nécessaire pour l\'authentification par cookies.',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'par auteurs et jours',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'auteur/nomdebase-auteur/aaaa/mm/jj/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'auteur/nomdebase_auteur/aaaa/mm/jj/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'par auteurs et semaines',
 	'author/author-basename/yyyy/mm/index.html' => 'auteur/nomdebase-auteur/aaaa/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'auteur/nomdebase_auteur/aaaa/mm/index.html',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'par auteurs',
 	'author/author-basename/index.html' => 'auteur/nomdebase-auteur/index.html',
 	'author/author_basename/index.html' => 'auteur/nomdebase_auteur/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'par auteurs et années',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'auteur/nomdebase-auteur/aaaa/mm/jour-semaine/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'auteur/nomdebase_auteur/aaaa/mm/jour-semaine/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'par auteurs et années',
 	'author/author-basename/yyyy/index.html' => 'auteur/nomdebase-auteur/aaaa/index.html',
 	'author/author_basename/yyyy/index.html' => 'auteur/nomdebase_auteur/aaaa/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'par catégories et jours',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'categorie/sous-categorie/aaaa/mm/jj/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'categorie/sous_categorie/aaa/mm/jj/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'par catégories et mois',
 	'category/sub-category/yyyy/mm/index.html' => 'categorie/sous-categorie/aaaa/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'categorie/sous_categorie/aaaa/mm/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'par catégories',
 	'category/sub-category/index.html' => 'categorie/sous-categorie/index.html',
 	'category/sub_category/index.html' => 'categorie/sous_categorie/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'par catégories et semaines',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'categorie/sous-categorie/aaaa/mm/jour-semaine/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'categorie/sous_categorie/aaaa/mm/jour-semaine/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'par catégories et années',
 	'category/sub-category/yyyy/index.html' => 'categorie/sous-categorie/aaaa/index.html',
 	'category/sub_category/yyyy/index.html' => 'categorie/sous_categorie/aaaa/index.html',
 
@@ -859,11 +850,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'DAILY_ADV' => 'journalières',
 	'yyyy/mm/dd/index.html' => 'aaaa/mm/jj/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'MONTHLY_ADV' => 'mensuelles',
 	'yyyy/mm/index.html' => 'aaaa/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentType.pm
@@ -885,17 +874,14 @@ use vars qw( @ISA %Lexicon );
 	'category/sub_category/content_basename/index.html' => 'categorie/sous_categorie/content_basename/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'WEEKLY_ADV' => 'hebdomadaires',
 	'yyyy/mm/day-week/index.html' => 'aaaa/mm/jour-semaine/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'YEARLY_ADV' => 'annuelles',
 	'yyyy/index.html' => 'aaaa/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => 'par notes',
 	'yyyy/mm/entry-basename.html' => 'aaaa/mm/nomdebase-note.html',
 	'yyyy/mm/entry_basename.html' => 'aaaa/mm/nomdebase_note.html',
 	'yyyy/mm/entry-basename/index.html' => 'aaaa/mm/nomdebase-note/index.html',
@@ -912,7 +898,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/Monthly.pm
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'par pages',
 	'folder-path/page-basename.html' => 'chemin-repertoire/nomdebase-page.html',
 	'folder-path/page-basename/index.html' => 'chemin-repertoire/nomdebase-page/index.html',
 	'folder_path/page_basename.html' => 'chemin_repertoire/nomdebase_page.html',

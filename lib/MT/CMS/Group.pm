@@ -410,7 +410,7 @@ sub build_group_table {
     my $param = $args{param};
     $param->{has_edit_access}  = $app->user->can_manage_users_groups();
     $param->{is_administrator} = $app->user->is_superuser();
-    my ( %blogs, %user_count_refs );
+    my %user_count_refs;
     while ( my $group = $iter->() ) {
         my $row = {
             name           => $group->name,

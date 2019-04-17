@@ -40,9 +40,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
     isa_ok( $asset, 'MT::Asset::Image', 'Is MT::Asset::Image' );
 
     # method validation
-    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst )
-        = gmtime(time + $blog->server_offset * 3600 );
-    my $cache_path = sprintf( "%04d/%02d", $year + 1900, $mon + 1 );
+    my $cache_path = join '/', unpack 'A4A2', $asset->created_on;
 
     #    is($asset->class, 'Image', 'class');
     is( $asset->class_label, 'Image', 'class_label' );
@@ -138,7 +136,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta->{Location},
-        "$ENV{MT_HOME}/t/images/test.jpg",
+        File::Spec->canonpath("$ENV{MT_HOME}/t/images/test.jpg"),
         'metadata - Location'
     );
     is( $meta->{name},      "test.jpg",   'metadata - name' );
@@ -219,7 +217,7 @@ isa_ok( $mt, 'MT', 'Is MT' );
         'metadata - URL'
     );
     is( $meta_f->{Location},
-        "$ENV{MT_HOME}/t/test.tmpl",
+        File::Spec->canonpath("$ENV{MT_HOME}/t/test.tmpl"),
         'metadata - Location'
     );
     is( $meta_f->{name},      "test.tmpl",  'metadata - name' );

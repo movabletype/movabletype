@@ -95,8 +95,15 @@ sub fields {
                             $obj_data->{$field_id} = $field_hash_data->{data};
                         }
                         elsif ( !defined $obj_data->{$field_id}
-                            && exists $options->{initial_value} )
+                            && defined $options->{initial_value} )
                         {
+                            if ( $field->{type}
+                                =~ /(?:date|time|date_and_time)/
+                                and $options->{initial_value} =~ /(?:^ | $)/ )
+                            {
+                                # Fix broken initial values (MTC-26262)
+                                $options->{initial_value} = undef;
+                            }
                             $obj_data->{$field_id}
                                 = $options->{initial_value};
                         }

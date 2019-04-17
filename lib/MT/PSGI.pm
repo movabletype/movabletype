@@ -130,7 +130,8 @@ sub run_cgi_without_buffering {
         syswrite $child_in, do {
             local $/;
             my $fh = $env->{'psgi.input'};
-            <$fh>;
+            my $v = <$fh>;
+            defined $v ? $v : '';
         };
         my $s = IO::Select->new( $child_out, $child_err );
         my $header = '';

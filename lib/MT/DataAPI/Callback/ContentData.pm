@@ -125,6 +125,23 @@ sub save_filter {
     my $content_type = $obj->content_type;
     my $data         = $obj->data;
 
+    my $label;
+    if ( $content_type->data_label ) {
+        my $field = MT->model('content_field')->load(
+            {   content_type_id => $content_type->id,
+                unique_id       => $content_type->data_label,
+            }
+        );
+        $label = $data->{ $field->id } if $field;
+    }
+    else {
+        $label = $obj->column('label');
+    }
+    if ( !defined $label or $label eq '' ) {
+        return $app->errtrans( '"[_1]" is required.', "Data Label" );
+    }
+
+    my $blog = $obj->blog;
     for my $field ( @{ $content_type->fields } ) {
         my $field_id   = $field->{id};
         my $field_data = $data->{$field_id};
@@ -144,6 +161,23 @@ sub save_filter {
         unless ( ref $ss_validator eq 'CODE' ) {
             $ss_validator = $app->handler_to_coderef($ss_validator);
         }
+
+        if ( $type_registry->{data_type} eq 'datetime' and $field_data ) {
+            my $ts = MT::Util::iso2ts( $blog, $field_data );
+            if ($ts) {
+                if ( $ts ne $field_data ) {
+                    $field_data = $data->{$field_id} = $ts;
+                    $obj->data($data);
+                }
+            }
+            else {
+                my $field_type  = $field->{type};
+                my $field_label = $field->{options}{label};
+                return $app->errtrans( 'Invalid [_1] in "[_2]" field.',
+                    $field_type, $field_label );
+            }
+        }
+
         if ( my $error = $ss_validator->( $app, $field, $field_data ) ) {
             return $app->errtrans( 'There is an invalid field data: [_1]',
                 $error );

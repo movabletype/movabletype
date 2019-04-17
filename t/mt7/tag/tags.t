@@ -128,14 +128,58 @@ $test_env->prepare_fixture(
             author_id       => 1,
             data            => { $cf_tag2->id => [ $tag4->id ], },
         );
+
+
+        #case value 0
+        my $ct3 = MT::Test::Permission->make_content_type(
+            name    => 'tag name is 0',
+            blog_id => $blog_id,
+        );
+
+        my $cf_tag3 = MT::Test::Permission->make_content_field(
+            blog_id         => $ct3->blog_id,
+            content_type_id => $ct3->id,
+            name            => '0',
+            type            => 'tags',
+        );
+
+        my $tag5 = MT::Test::Permission->make_tag( name => '0' );
+
+        my $fields3 = [
+            {   id      => $cf_tag3->id,
+                order   => 1,
+                type    => $cf_tag3->type,
+                options => {
+                    label    => $cf_tag3->name,
+                    multiple => 1,
+                    max      => 5,
+                    min      => 1,
+                },
+            },
+        ];
+
+        $ct3->fields($fields3);
+        $ct3->save or die $ct3->errstr;
+
+        my $cd05 = MT::Test::Permission->make_content_data(
+            blog_id         => $ct3->blog_id,
+            content_type_id => $ct3->id,
+            author_id       => 1,
+            data            => { $cf_tag3->id => [ $tag5->id ], },
+        );
     }
 );
 
 my $ct = MT::ContentType->load( { name => 'test content type 1' } );
+my $ct3 = MT::ContentType->load( { name => 'tag name is 0' } );
 
 $vars->{ct_uid}  = $ct->unique_id;
 $vars->{ct_name} = $ct->name;
 $vars->{ct_id}   = $ct->id;
+
+$vars->{ct3_uid}  = $ct3->unique_id;
+$vars->{ct3_name}  = $ct3->name;
+$vars->{ct3_id}   = $ct3->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -147,7 +191,7 @@ __END__
 --- template
 <mt:Tags top="20" type="content_type" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
 --- expected
-tag2:2,tag4:2,tag1:1,tag3:1
+tag2:2,tag4:2,0:1,tag1:1,tag3:1
 
 === mt:Tags with content_type unique_id
 --- template
@@ -185,3 +229,8 @@ content_type modifier cannot be used with type "entry".
 --- expected
 tag1:1,tag2:2
 
+=== mt:Tags tag name is 0
+--- template
+<mt:Tags content_type="[% ct3_uid %]" glue=","><$mt:TagName$>:<$mt:TagCount$></mt:Tags>
+--- expected
+0:1

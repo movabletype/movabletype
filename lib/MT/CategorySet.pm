@@ -128,6 +128,11 @@ sub list_props {
             display => 'none',
             terms   => \&_content_type_name_terms,
         },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
+            display => 'none',
+        },
     };
 }
 
@@ -194,7 +199,7 @@ sub _content_type_name_terms {
         );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type               => 'category',
+            {   type               => 'categories',
                 related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },
@@ -213,7 +218,7 @@ sub _content_type_name_terms {
             [ $query, { id => \'= cf_content_type_id' } ] );
         my $cf_join = MT::ContentField->join_on(
             undef,
-            {   type               => 'category',
+            {   type               => 'categories',
                 related_cat_set_id => \'= category_set_id',
             },
             { join => $ct_join },

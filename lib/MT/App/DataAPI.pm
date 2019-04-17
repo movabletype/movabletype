@@ -22,7 +22,7 @@ our %endpoints = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {4}
-sub API_VERSION ()     {4.0}
+sub API_VERSION ()     {4.1}
 
 sub init {
     my $app = shift;
@@ -2365,6 +2365,132 @@ sub core_endpoints {
             requires_login => 0,
         },
 
+        # template
+        {   id             => 'list_templates',
+            route          => '/sites/:site_id/templates',
+            version        => 4,
+            handler        => "${pkg}v4::Template::list",
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'ascend',
+                searchFields => 'name,templateType,text',
+                filterKeys   => 'type',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templates.',
+            },
+        },
+        {   id          => 'get_template',
+            route       => '/sites/:site_id/templates/:template_id',
+            version     => 4,
+            handler     => "${pkg}v4::Template::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested template.',
+            },
+        },
+        {   id        => 'update_template',
+            route     => '/sites/:site_id/templates/:template_id',
+            resources => ['template'],
+            verb      => 'PUT',
+            version   => 4,
+            handler   => "${pkg}v4::Template::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a template.', },
+        },
+        {   id      => 'delete_template',
+            route   => '/sites/:site_id/templates/:template_id',
+            verb    => 'DELETE',
+            version => 4,
+            handler => "${pkg}v4::Template::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a template.', },
+        },
+
+        {   id      => 'publish_template',
+            route   => '/sites/:site_id/templates/:template_id/publish',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::publish",
+            error_codes =>
+                { 403 => 'Do not have permission to publish a template.', },
+        },
+        {   id      => 'refresh_template',
+            route   => '/sites/:site_id/templates/:template_id/refresh',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::refresh",
+            error_codes =>
+                { 403 => 'Do not have permission to refresh a template.', },
+        },
+        {   id      => 'clone_template',
+            route   => '/sites/:site_id/templates/:template_id/clone',
+            verb    => 'POST',
+            version => 4,
+            handler => "${pkg}v4::Template::clone",
+            error_codes =>
+                { 403 => 'Do not have permission to clone a template.', },
+        },
+
+        # templatemap endpoints
+        {   id      => 'list_templatemaps',
+            route   => '/sites/:site_id/templates/:template_id/templatemaps',
+            version => 4,
+            handler => "${pkg}v4::TemplateMap::list",
+            default_params => {
+                limit      => 10,
+                offset     => 0,
+                sortBy     => 'id',
+                sortOrder  => 'ascend',
+                filterKeys => 'archiveType,buildType,isPreferred',
+            },
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the list of templatemaps.',
+            },
+        },
+        {   id => 'get_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            version     => 4,
+            handler     => "${pkg}v4::TemplateMap::get",
+            error_codes => {
+                403 =>
+                    'Do not have permission to retrieve the requested templatemap.',
+            },
+        },
+        {   id    => 'create_templatemap',
+            route => '/sites/:site_id/templates/:template_id/templatemaps',
+            resources => ['templatemap'],
+            verb      => 'POST',
+            version   => 4,
+            handler   => "${pkg}v4::TemplateMap::create",
+            error_codes =>
+                { 403 => 'Do not have permission to create a templatemap.', },
+        },
+        {   id => 'update_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            resources => ['templatemap'],
+            verb      => 'PUT',
+            version   => 4,
+            handler   => "${pkg}v4::TemplateMap::update",
+            error_codes =>
+                { 403 => 'Do not have permission to update a templatemap.', },
+        },
+        {   id => 'delete_templatemap',
+            route =>
+                '/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id',
+            verb    => 'DELETE',
+            version => 4,
+            handler => "${pkg}v4::TemplateMap::delete",
+            error_codes =>
+                { 403 => 'Do not have permission to delete a templatemap.', },
+        },
+
         # group
         {   id             => 'list_groups',
             route          => '/groups',
@@ -3225,7 +3351,7 @@ sub show_error {
 
     if ( !$error ) {
         $error = {
-            code => $param->{status} || 500,
+            code    => $param->{status} || 500,
             message => $param->{error},
         };
     }

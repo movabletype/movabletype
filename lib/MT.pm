@@ -12,6 +12,7 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
+use Encode::Locale;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
 
@@ -34,14 +35,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.1', '7.0045' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.1', '7.0046' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.1.1',                '__PRODUCT_VERSION_ID__',
+        '7.1.2',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -59,11 +60,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 1;
+        $RELEASE_NUMBER = 2;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4503';
+        $RELEASE_VERSION_ID = 'r.4601';
     }
 
     $DebugMode = 0;
@@ -386,9 +387,9 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode_utf8(
+    print STDERR Encode::encode('locale',
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode && ( $^O ne "MSWin32" );
+        if $MT::DebugMode;
 
     require MT::Util::Log;
     MT::Util::Log::init();

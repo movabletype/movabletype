@@ -440,6 +440,30 @@ __BODY__
             },
             code => 404,
         },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title    => 'test-api-basename-is-too-long',
+                    basename => 'a' x 247,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/pages',
+            method => 'POST',
+            params => {
+                page => {
+                    title    => 'test-api-basename-is-too-long-utf8',
+                    basename => chr(0x3042) x 83,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
         {    # Invalid folder.
             path   => '/v2/sites/1/pages',
             method => 'POST',
@@ -836,6 +860,20 @@ __BODY__
             restrictions => { 1 => [qw/ save_page /], },
             code         => 403,
             error => 'Do not have permission to update a page.',
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { basename => 'a' x 247, }, },
+            code   => 500,
+            error  => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/pages/23',
+            method => 'PUT',
+            params => { page => { basename => chr(0x3042) x 83, }, },
+            code   => 500,
+            error  => qr/basename is too long./,
         },
 
         # update_page - normal tests

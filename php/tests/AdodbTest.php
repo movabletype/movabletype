@@ -3,7 +3,9 @@
 error_reporting(E_ALL | E_STRICT);
 set_include_path(realpath(__DIR__).'/../extlib/adodb5');
 
-class AdodbTest extends PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class AdodbTest extends TestCase {
 
     public function testRequire() {
 

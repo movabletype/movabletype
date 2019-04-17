@@ -38,7 +38,7 @@
    id="default_mt_sites_action"
    label="<__trans phrase="MTMultiBlog tag default arguments">"
    class="form-inline"
-   hint="<__trans phrase="Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.">"
+   hint="<__trans phrase="Enables use of the MTSites tag without include_sites/exclude_sites attributes. Comma-separated SiteIDs or 'all' (include_sites only) are acceptable values.">"
    show_hint="1">
   <select name="default_mt_sites_action" id="default_mt_sites_action" class="custom-select form-control">
     <option value="1"<mt:if name="default_mt_sites_action" eq="1"> selected="selected"</mt:if>>
@@ -153,10 +153,10 @@ rebuildMultiBlogTriggerTable();
     </li>
   </ul>
   <p id="mb-allow" style="display:<mt:if name="default_access_allowed">block<mt:else>none</mt:if>;">
-    <__trans phrase="Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.">
+    <__trans phrase="Cross-site aggregation will be allowed by default.  Individual sites can be configured through the site-level rebuild trigger settings to restrict access to their content by other sites.">
   </p>
   <p id="mb-disallow" style="display:<mt:if name="default_access_allowed">none<mt:else>block</mt:if>;">
-    <__trans phrase="Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.">
+    <__trans phrase="Cross-site aggregation will be disallowed by default.  Individual sites can be configured through the site-level rebuild trigger settings to allow access to their content by other sites.">
   </p>
 </mtapp:setting>
 </mt:if>

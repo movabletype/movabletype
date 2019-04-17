@@ -45,11 +45,7 @@ __END__
 MTCategoryArchiveLink must be used in a category context
 --- expected_individual
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
---- expected_php_todo_page
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26151
 --- expected_page
-http://narnia.na/folder-green-tea/folder-cola/folder-coffee/
 --- expected_category
 http://narnia.na/cat-clip/cat-compass/cat-ruler/
 --- expected_category_daily
@@ -126,3 +122,151 @@ http://narnia.na/ct/cat-strawberry/cat-orange/
 --- expected_php_todo_error_monthly
 --- expected_php_todo_error_weekly
 --- expected_php_todo_error_yearly
+
+=== mt:CategoryArchiveLink with stash, wrapped by mt:categories
+--- stash
+{ entry => 'entry_author1_ruler_eraser', page => 'page_author1_coffee', cd => 'cd_same_apple_orange', dt_field => 'cf_same_date', cat_field => 'cf_same_catset_other_fruit', category => 'cat_orange', entry_category => 'cat_eraser' }
+--- template
+<mt:Categories><mt:CategoryArchiveLink>
+</mt:Categories>
+--- expected_author
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_author_daily
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_author_monthly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_author_weekly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_author_yearly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_category
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_category_daily
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_category_monthly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_category_weekly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_category_yearly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_todo_contenttype
+--- expected_contenttype_author
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_author_daily
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_author_monthly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_author_weekly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_author_yearly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_todo_contenttype_category
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+--- expected_todo_contenttype_category_daily
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+--- expected_todo_contenttype_category_monthly
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+--- expected_todo_contenttype_category_weekly
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+--- expected_todo_contenttype_category_yearly
+http://narnia.na/ct/cat-strawberry/cat-orange/
+http://narnia.na/ct/cat-peach/
+--- expected_contenttype_daily
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_monthly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_weekly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_contenttype_yearly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_daily
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_individual
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_monthly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_page
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_weekly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/
+--- expected_yearly
+http://narnia.na/cat-clip/cat-compass/
+http://narnia.na/cat-eraser/
+http://narnia.na/cat-pencil/
+http://narnia.na/cat-clip/cat-compass/cat-ruler/

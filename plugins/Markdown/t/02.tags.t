@@ -17,7 +17,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test;
+use MT::Test 'has_php';
 
 MT::Test->init_app;
 
@@ -105,7 +105,7 @@ PHP
 
 SKIP:
 {
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
+    unless ( has_php() ) {
         skip "Can't find executable file: php", 1 * blocks('php');
     }
 

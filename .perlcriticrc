@@ -1,0 +1,3 @@
+only = 1
+include = Variables::ProhibitUnusedVariables
+

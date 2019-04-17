@@ -66,6 +66,10 @@ sub list_props {
             html      => \&_make_name_html,
         },
         author_name => { base => '__virtual.author_name', order => 300 },
+        created_on => {
+            base    => '__virtual.created_on',
+            order   => 350,
+        },
         modified_on => {
             base    => '__virtual.modified_on',
             display => 'default',
@@ -114,6 +118,11 @@ sub list_props {
                 );
                 return qq{<a href="$uri">$count</a>};
             },
+        },
+        content => {
+            base    => '__virtual.content',
+            fields  => [qw(name)],
+            display => 'none',
         },
     };
 }
@@ -876,6 +885,24 @@ sub categories_fields {
         push @fields, $field_hash;
     }
     return \@fields;
+}
+
+sub load_by_id_or_name {
+    my ( $class, $id_or_name, $blog_id ) = @_;
+
+    my $ct;
+    if ( $id_or_name =~ /\A[0-9]+\z/ ) {
+        $ct = $class->load($id_or_name);
+        return $ct if $ct;
+    }
+    if ( $id_or_name =~ /\A[a-zA-Z0-9]{40}\z/ ) {
+        $ct = $class->load( { unique_id => $id_or_name } );
+        return $ct if $ct;
+    }
+    if ( defined $blog_id ) {
+        $ct = $class->load( { name => $id_or_name, blog_id => $blog_id } );
+    }
+    $ct;
 }
 
 1;

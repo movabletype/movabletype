@@ -563,7 +563,7 @@
                   </div>
                 </div>
               </li>
-              <li class="filter line d-none d-md-list-item">
+              <li class="filter line d-none d-md-block">
                 <a href="#"
                   id="new_filter"
                   class="icon-mini-left addnew create-new apply-link d-md-inline-block"

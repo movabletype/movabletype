@@ -393,6 +393,7 @@ sub core_tags {
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
+            ContentDataSearchScript => \&MT::Template::Tags::System::_hdlr_cd_search_script,
             XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
             AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
@@ -3400,7 +3401,10 @@ sub _hdlr_app_statusmsg {
         )
         )
     {
-        $rebuild = '' if $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild = '' if $rebuild ne 'cfg_prefs' && $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild
+            = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
+            if $rebuild eq 'cfg_prefs';
         $rebuild
             = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'all';
@@ -5611,9 +5615,9 @@ sub _hdlr_trackback_script {
 
 =head2 SearchScript
 
-Returns the value of the C<SearchScript> or C<ContentDataSearchScript>
+Returns the value of the C<SearchScript>
 configuration setting. The default for this setting if unassigned is
-"mt-search.cgi" or "mt-cdsearch.cgi".
+"mt-search.cgi".
 
 =for tags configuration
 
@@ -5621,9 +5625,24 @@ configuration setting. The default for this setting if unassigned is
 
 sub _hdlr_search_script {
     my ($ctx) = @_;
-    return MT->instance->isa('MT::App::Search::ContentData')
-        ? $ctx->{config}->ContentDataSearchScript
-        : $ctx->{config}->SearchScript;
+    return $ctx->{config}->SearchScript;
+}
+
+###########################################################################
+
+=head2 ContentDataSearchScript
+
+Returns the value of the C<ContentDataSearchScript>
+configuration setting. The default for this setting if unassigned is
+"mt-cdsearch.cgi".
+
+=for tags configuration
+
+=cut
+
+sub _hdlr_cd_search_script {
+    my ($ctx) = @_;
+    return $ctx->{config}->ContentDataSearchScript;
 }
 
 ###########################################################################

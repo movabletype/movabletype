@@ -61,8 +61,7 @@ normal_tests_for_delete();
 sub normal_tests_for_create {
     test_data_api(
         {   note => 'has system permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'POST',
             restrictions => { $site_id => ['edit_all_content_types'], },
             params       => {
@@ -112,8 +111,7 @@ sub normal_tests_for_create {
     );
     test_data_api(
         {   note => 'has site permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'POST',
             restrictions => { 0 => ['edit_all_content_types'], },
             params       => {
@@ -156,8 +154,7 @@ sub normal_tests_for_create {
     );
     test_data_api(
         {   note => 'superuser',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'POST',
             is_superuser => 1,
             restrictions => {
@@ -207,17 +204,15 @@ sub normal_tests_for_create {
 sub irregular_tests_for_create {
     test_data_api(
         {   note => 'not logged in',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method    => 'POST',
             author_id => 0,
             code      => 401,
         }
     );
     test_data_api(
-        {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/contentTypes/$content_type_id/fields",
+        {   note   => 'invalid site_id',
+            path   => "/v4/sites/1000/contentTypes/$content_type_id/fields",
             method => 'POST',
             code   => 404,
         }
@@ -230,17 +225,15 @@ sub irregular_tests_for_create {
         }
     );
     test_data_api(
-        {   note => 'other site',
-            path =>
-                "/v4/sites/2/content_types/$content_type_id/fields",
+        {   note   => 'other site',
+            path   => "/v4/sites/2/content_types/$content_type_id/fields",
             method => 'POST',
             code   => 404,
         }
     );
     test_data_api(
         {   note => 'no permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field =>
@@ -255,16 +248,14 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note => 'no content_field resource',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             code   => 400,
         }
     );
     test_data_api(
         {   note => 'no type field',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -277,8 +268,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note => 'no label field',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -291,8 +281,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note => 'invalid type field',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -306,8 +295,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note => 'invalid options{display} field',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -321,8 +309,7 @@ sub irregular_tests_for_create {
     );
     test_data_api(
         {   note => 'invalid options key',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method => 'POST',
             params => {
                 content_field => {
@@ -339,17 +326,15 @@ sub irregular_tests_for_create {
 sub irregular_tests_for_list {
     test_data_api(
         {   note => 'not logged in',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method    => 'GET',
             author_id => 0,
             code      => 401,
         }
     );
     test_data_api(
-        {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/content_types/$content_type_id/fields",
+        {   note   => 'invalid site_id',
+            path   => "/v4/sites/1000/content_types/$content_type_id/fields",
             method => 'GET',
             code   => 404,
         }
@@ -362,17 +347,15 @@ sub irregular_tests_for_list {
         }
     );
     test_data_api(
-        {   note => 'other site',
-            path =>
-                "/v4/sites/2/contentTypes/$content_type_id/fields",
+        {   note   => 'other site',
+            path   => "/v4/sites/2/contentTypes/$content_type_id/fields",
             method => 'GET',
             code   => 404,
         }
     );
     test_data_api(
         {   note => 'no permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'GET',
             restrictions => {
                 0        => ['edit_all_content_types'],
@@ -386,8 +369,7 @@ sub irregular_tests_for_list {
 sub normal_tests_for_list {
     test_data_api(
         {   note => 'has system permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'GET',
             restrictions => { $site_id => ['edit_all_content_types'], },
             callbacks    => [
@@ -414,8 +396,7 @@ sub normal_tests_for_list {
     );
     test_data_api(
         {   note => 'has site permission',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'GET',
             restrictions => { 0 => ['edit_all_content_types'], },
             callbacks    => [
@@ -442,8 +423,7 @@ sub normal_tests_for_list {
     );
     test_data_api(
         {   note => 'superuser',
-            path =>
-                "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
             method       => 'GET',
             is_superuser => 1,
             restrictions => {
@@ -472,6 +452,59 @@ sub normal_tests_for_list {
             },
         }
     );
+    test_data_api(
+        {   note => 'search',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-field-2' },
+            result       => sub {
+                my @cf = MT->model('content_field')->load(
+                    {   content_type_id => $content_type_id,
+                        name            => 'create-content-field-2',
+                    }
+                );
+                +{  totalResults => scalar @cf,
+                    items => MT::DataAPI::Resource->from_object( \@cf ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'search multiple rows',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'create-content-field' },
+            result       => sub {
+                my @cf = MT->model('content_field')->load(
+                    {   content_type_id => $content_type_id,
+                        name            => [
+                            'create-content-field',
+                            'create-content-field-2',
+                            'create-content-field-3',
+                        ],
+                    }
+                );
+                +{  totalResults => scalar @cf,
+                    items => MT::DataAPI::Resource->from_object( \@cf ),
+                };
+            },
+        }
+    );
+    test_data_api(
+        {   note => 'search not found',
+            path => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+            method       => 'GET',
+            is_superuser => 1,
+            params       => { search => 'not-found' },
+            result       => sub {
+                +{  totalResults => 0,
+                    items        => [],
+                };
+            },
+        }
+    );
 }
 
 sub irregular_tests_for_get {
@@ -491,8 +524,7 @@ sub irregular_tests_for_get {
     );
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/contentTypes/$content_type_id/fields/"
+            path => "/v4/sites/1000/contentTypes/$content_type_id/fields/"
                 . $cf->id,
             method => 'GET',
             code   => 404,
@@ -500,8 +532,7 @@ sub irregular_tests_for_get {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/contentTypes/1000/fields/"
-                . $cf->id,
+            path => "/v4/sites/$site_id/contentTypes/1000/fields/" . $cf->id,
             method => 'GET',
             code   => 404,
         }
@@ -516,8 +547,7 @@ sub irregular_tests_for_get {
     );
     test_data_api(
         {   note => 'other site',
-            path =>
-                "/v4/sites/2/contentTypes/$content_type_id/fields/"
+            path => "/v4/sites/2/contentTypes/$content_type_id/fields/"
                 . $cf->id,
             method => 'GET',
             code   => 404,
@@ -641,8 +671,7 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/contentTypes/$content_type_id/fields/"
+            path => "/v4/sites/1000/contentTypes/$content_type_id/fields/"
                 . $cf->id,
             method => 'PUT',
             code   => 404,
@@ -650,8 +679,7 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/contentTypes/1000/fields/"
-                . $cf->id,
+            path => "/v4/sites/$site_id/contentTypes/1000/fields/" . $cf->id,
             method => 'PUT',
             code   => 404,
         }
@@ -666,8 +694,7 @@ sub irregular_tests_for_update {
     );
     test_data_api(
         {   note => 'other site',
-            path =>
-                "/v4/sites/2/content_types/$content_type_id/fields/"
+            path => "/v4/sites/2/content_types/$content_type_id/fields/"
                 . $cf->id,
             method => 'PUT',
             code   => 404,
@@ -1044,8 +1071,7 @@ sub irregular_tests_for_delete {
     );
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/contentTypes/$content_type_id/fields/"
+            path => "/v4/sites/1000/contentTypes/$content_type_id/fields/"
                 . $cf->id,
             method => 'DELETE',
             code   => 404,
@@ -1053,8 +1079,7 @@ sub irregular_tests_for_delete {
     );
     test_data_api(
         {   note => 'invalid content_type_id',
-            path => "/v4/sites/$site_id/contentTypes/1000/fields/"
-                . $cf->id,
+            path => "/v4/sites/$site_id/contentTypes/1000/fields/" . $cf->id,
             method => 'DELETE',
             code   => 404,
         }
@@ -1069,8 +1094,7 @@ sub irregular_tests_for_delete {
     );
     test_data_api(
         {   note => 'other site',
-            path =>
-                "/v4/sites/2/contentTypes/$content_type_id/fields/"
+            path => "/v4/sites/2/contentTypes/$content_type_id/fields/"
                 . $cf->id,
             method => 'DELETE',
             code   => 404,

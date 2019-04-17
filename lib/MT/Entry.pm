@@ -1227,6 +1227,12 @@ sub save {
         my $name = MT::Util::make_unique_basename($entry);
         $entry->basename($name);
     }
+
+    require bytes;
+    if ( bytes::length($entry->basename) > 246 ) {
+        return $entry->error( MT->translate("basename is too long." ) );
+    }
+
     if ( !$entry->id && !$entry->authored_on ) {
         my @ts = MT::Util::offset_time_list( time, $entry->blog_id );
         my $ts = sprintf '%04d%02d%02d%02d%02d%02d',
