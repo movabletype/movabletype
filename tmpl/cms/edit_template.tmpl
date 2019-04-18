@@ -161,14 +161,14 @@
         <__trans phrase="List all templates">
       </a>
     </li>
-    <mt:if name="can_edit_config">
+    <mt:if name="scope_type" ne="system"><mt:if name="can_edit_config">
     <li>
       <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
         <__trans phrase="Module Option Settings">
       </a>
     </li>
-    </mt:if>
+    </mt:if></mt:if>
   <mt:elseif name="template_group" eq="module">
     <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>
     <li>
@@ -183,14 +183,14 @@
         <__trans phrase="List all templates">
       </a>
     </li>
-    <mt:if name="can_edit_config">
+    <mt:if name="scope_type" ne="system"><mt:if name="can_edit_config">
     <li>
       <a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">#module-option-settings" class="icon-left icon-related d-inline-block">
         <mtapp:svgicon id="ic_related" title="<__trans phrase="Module Option Settings">" size="sm">
         <__trans phrase="Module Option Settings">
       </a>
     </li>
-    </mt:if>
+    </mt:if></mt:if>
   <mt:else>
     <mt:unless name="type" eq="backup">
     <mt:setvarblock name="template_group_label"><__trans phrase="List [_1] templates" params="<$mt:var name="template_group_trans"$>"></mt:setvarblock>

@@ -28,7 +28,7 @@ class MTSerialize {
 
     function _freeze_mt_2($ref) {
         # version 2 signature: 'SERG' + packed long 0 + packed long protocol
-        $freezer = create_function('$i, $v, $f', '
+        $freezer = function($i, $v, $f) {
             if (is_array($v)) {
                 $type = perl_array_type($v);
                 return $i[$type]($i, $v, $f);
@@ -39,23 +39,23 @@ class MTSerialize {
                     return "U";
                 }
             }
-        ');
+        };
 
         # The ice tray freezes a single element, yielding a frozen cube
         $ice_tray = array(
-            'HASH' => create_function('$i, $v, $f', '
+            'HASH' => function($i, $v, $f) {
                 $cube = "H" . pack("N", count(array_keys($v)));
                 foreach ($v as $k => $kv)
                     $cube .= pack("N", strlen($k)) . $k . $f($i, $kv, $f);
                 return $cube;
-            '),
-            'ARRAY' => create_function('$i, $v, $f','
+            },
+            'ARRAY' => function($i, $v, $f) {
                 $cube = "A" . pack("N", count($v));
                 foreach ($v as $k) {
                     $cube .= $f($i, $k, $f);
                 }
                 return $cube;
-            '),
+            },
         );
 
         return 'SERG' . pack('N', 0) . pack('N', 2) .
@@ -72,7 +72,7 @@ class MTSerialize {
     
         # The microwave thaws and pops out an element
         $microwave = array(
-            'H' => create_function('&$s','   # hashref
+            'H' => function(&$s) {   # hashref
                 $keys = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $s["pos"] += 4;
                 $values = array();
@@ -89,8 +89,8 @@ class MTSerialize {
                     }
                 }
                 return $values;
-            '),
-            'A' => create_function('&$s', '   # arrayref
+            },
+            'A' => function(&$s) {   # arrayref
                 $array_count = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $s["pos"] += 4;
                 $values = array();
@@ -100,38 +100,41 @@ class MTSerialize {
                     $values[] = $h($s);
                 }
                 return $values;
-            '),
-            'S' => create_function('&$s', '  # scalarref
+            },
+            'S' => function(&$s) {  # scalarref
                 $slen = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $col_val = substr($s["frozen"], $s["pos"]+4, $slen["len"]);
                 $s["pos"] += 4 + $slen["len"];
                 $s["refs"][] = &$col_val;
                 return $col_val;
-            '),
-            'R' => create_function('&$s', '   # refref
+            },
+            'R' => function(&$s) {   # refref
                 $value = NULL;
                 $s["refs"][] = &$value;
                 $h = $s["heater"];
                 $value = $h($s);
                 return $value;
-            '),
-            '-' => create_function('&$s', '   # scalar value
+            },
+            '-' => function(&$s) {   # scalar value
                 $slen = unpack("Nlen", substr($s["frozen"], $s["pos"], 4));
                 $col_val = substr($s["frozen"], $s["pos"]+4, $slen["len"]);
+                if ($col_val === false && $slen["len"] == 0) {
+                    $col_val = "";  # for PHP 5
+                }
                 $s["pos"] += 4 + $slen["len"];
                 return $col_val;
-            '),
-            'U' => create_function('&$s', '   # undef
+            },
+            'U' => function(&$s) {   # undef
                 return NULL;
-            '),
-            'P' => create_function('&$s', '   # pointer to known ref
+            },
+            'P' => function(&$s) {   # pointer to known ref
                 $ptr = unpack("Npos", substr($s["frozen"], $s["pos"], 4));
                 $s["pos"] += 4;
                 return $s["refs"][$ptr["pos"]];
-            ')
+            }
         );
     
-        $heater = create_function('&$s', '
+        $heater = function(&$s) {
             $type = substr($s["frozen"], $s["pos"], 1); $s["pos"]++;
             if (array_key_exists($type, $s["microwave"])) {
                 $h = $s["microwave"][$type];
@@ -139,7 +142,7 @@ class MTSerialize {
             } else {
                 return NULL;
             }
-        ');
+        };
 
         $state = array('pos' => 12, 'heater' => $heater, 'refs' => $refs,
                        'frozen' => $frozen, 'microwave' => $microwave);

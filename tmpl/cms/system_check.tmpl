@@ -51,8 +51,43 @@
 </mtapp:setting>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_include" append="1">
-<script>
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.toggle-link {
+  cursor: pointer;
+  background: transparent;
+  color: #666666;
+  text-decoration: underline;
+}
+
+.toggle-link:link,
+.toggle-link:visited {
+    color: #666666;
+}
+
+.toggle-link:hover,
+.toggle-link:active {
+    text-decoration: none;
+}
+.exception {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.2em 0.25em;
+    margin: 10px 0 0;
+    border: 1px solid #c0c6c9;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 95%;
+    background-color: #f3f3f3;
+    color: #666666;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
   jQuery('.msg-warning').each( function(){
     var $this = jQuery(this);
     var $detail = $this.find('span.exception');
@@ -65,7 +100,6 @@
       }
     });
   });
-</script>
 </mt:setVarBlock>
 
 <mt:include name="layout/default.tmpl">

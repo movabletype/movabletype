@@ -28,7 +28,7 @@ function smarty_function_mtwidgetmanager($args, &$ctx) {
     if ( isset($tmpl) && $tmpl ) {
         // push to ctx->vars
         $ext_args = array();
-        while(list ($key, $val) = each($args)) {
+        foreach($args as $key => $val) {
             if (!preg_match('/(^name$|^blog_id$)/', $key)) {
                 require_once("function.mtsetvar.php");
                 smarty_function_mtsetvar(array('name' => $key, 'value' => $val), $ctx);

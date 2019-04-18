@@ -1270,7 +1270,7 @@ BEGIN {
                             } split ',', $specifieds;
                         }
                         else {
-                            @fields = @$defaults;
+                            @fields = @{ $defaults || [] };
                         }
 
                         my @terms;
@@ -1305,9 +1305,9 @@ BEGIN {
             category_set  => '$Core::MT::CategorySet::list_props',
             content_type  => '$Core::MT::ContentType::list_props',
             content_field => '$Core::MT::ContentField::list_props',
-            content_data => '$Core::MT::ContentData::list_props_for_data_api',
-            group        => '$Core::MT::Group::list_props',
-            group_member => '$Core::MT::Group::member_list_props',
+            content_data  => '$Core::MT::ContentData::list_props',
+            group         => '$Core::MT::Group::list_props',
+            group_member  => '$Core::MT::Group::member_list_props',
         },
         system_filters => {
             entry        => '$Core::MT::Entry::system_filters',

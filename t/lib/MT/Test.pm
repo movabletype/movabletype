@@ -1797,6 +1797,7 @@ sub _run_app {
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
         [ abs_path( $app->config->SeachTemplatePath ) ] );
+    $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
     # seems to be hanging around when it doesn't need to be
@@ -1835,6 +1836,9 @@ sub _run_app {
             # anything else here??
             delete $app->{__test_output};
             undef $app;
+
+            # avoid processing multiple requests in a second
+            sleep(1);
 
             $app = _run_app( $class, \%params, $level + 1 );
         }
@@ -1994,6 +1998,11 @@ sub has_php {
     my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
     my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
     $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
+    if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
+        my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
+        $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
+    }
+    $HasPHP;
 }
 
 1;

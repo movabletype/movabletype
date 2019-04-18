@@ -298,11 +298,7 @@ sub _hdlr_contents {
                     $dt_field = $arg;
                 }
                 else {
-                    my $date_cf = '';
-                    $date_cf = MT->model('cf')->load($arg)
-                        if ( $arg =~ /^[0-9]+$/ );
-                    $date_cf = MT->model('cf')->load( { unique_id => $arg } )
-                        unless ($date_cf);
+                    my $date_cf = MT->model('cf')->load_by_id_or_name($arg);
                     if ($date_cf) {
                         $dt_field_id = $date_cf->id;
                     }
@@ -1369,7 +1365,7 @@ TODO: This tag has not been implemented yet.
 sub _hdlr_content_permalink {
     my ( $ctx, $args ) = @_;
     my $c = $ctx->stash('content')
-        or return $ctx->_no_entry_error();
+        or return $ctx->_no_content_error();
     my $blog = $ctx->stash('blog');
     my $at = $args->{type} || $args->{archive_type};
     if ($at) {
@@ -1570,7 +1566,7 @@ sub _hdlr_content_calendar {
                 blog_id => $blog_id,
                 $category_set_id
                 ? ( category_set_id => $category_set_id )
-                : (),
+                : ( category_set_id => { op => '>', value => 0 } ),
             }
             )
             or return $ctx->error(
@@ -1830,14 +1826,19 @@ sub _hdlr_content_field {
     $field_data
         ||= $ctx->stash('content_field_data')
         || ( $args->{content_field} ? undef : $content_type->fields->[0] )
-        or return $ctx->_no_content_field_error;
+        or return $ctx->_no_content_field_error( $args->{content_field} );
 
     local $ctx->{__stash}{content_field_data} = $field_data
         unless $ctx->stash('content_field_data');
 
     my $value = $content_data->data->{ $field_data->{id} };
-    return $ctx->_hdlr_pass_tokens_else(@_)
-        if ref $value eq 'ARRAY' ? !@$value || !( $value->[0] ) : !$value;
+    my $check_value = defined $value ? $value : '';
+
+    if (ref $value eq 'ARRAY') {
+        $check_value = @$value ? $value->[0] : '';
+    }
+
+    return $ctx->_hdlr_pass_tokens_else(@_) if !$check_value && $check_value eq '';
 
     my $field_type
         = MT->registry('content_field_types')->{ $field_data->{type} }
@@ -2179,13 +2180,8 @@ sub _search_content_field {
     my $content_type_id = $args->{content_type_id} or return;
     my $name_or_unique_id = $args->{name_or_unique_id};
     return unless defined $name_or_unique_id && $name_or_unique_id ne '';
-    my $cf_class = MT->model('content_field');
-    my $cf       = $cf_class->load(
-        {   content_type_id => $content_type_id,
-            name            => $name_or_unique_id,
-        }
-    );
-    $cf ||= $cf_class->load( { unique_id => $name_or_unique_id } );
+    my $cf = MT->model('content_field')
+        ->load_by_id_or_name( $name_or_unique_id, $content_type_id );
     return $cf;
 }
 

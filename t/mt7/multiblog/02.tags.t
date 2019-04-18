@@ -25,7 +25,7 @@ use Test::Base;
 plan tests => 2 * blocks;
 
 use MT;
-use MT::Test;
+use MT::Test 'has_php';
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
@@ -211,9 +211,8 @@ PHP
 
 SKIP:
 {
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
+    unless ( has_php() ) {
+        skip "Can't find executable file: php", 1 * blocks;
     }
 
     run {

@@ -491,12 +491,7 @@ sub create_default_templates {
             && exists $val->{content_type} )
         {
             my $ct = MT->model('content_type')
-                ->load( { unique_id => $val->{content_type}, } );
-            $ct ||= MT->model('content_type')->load(
-                {   blog_id => $blog->id,
-                    name    => $val->{content_type},
-                }
-            );
+                ->load_by_id_or_name( $val->{content_type}, $blog->id );
             if ($ct) {
                 $obj->content_type_id( $ct->id );
             }
@@ -2026,7 +2021,7 @@ When using dynamic publishing, this field controls when a template will be
 converted to a PHP page. possible values: 'all' - all templates are to
 built dynamically. 'none' - all the template will be build on-demand.
 'async_all' - all the template will be build a-synchronically.
-'async_partial' - the main index, feed and the preferred archive type
+'async_partial' - the main index, feed and the preferred entry_based/contenttype_based archive type
 are to by build on-demand, and the rest will be built a-synchronically.
 'archives' - only the index is to be build on-demand, all the rest will
 be built dynamically

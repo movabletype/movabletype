@@ -1,6 +1,8 @@
 <?php
 
-class BaseObjectTest extends PHPUnit_Framework_TestCase {
+use PHPUnit\Framework\TestCase;
+
+class BaseObjectTest extends TestCase {
     private static $_cache_driver;
   public function testIssetWithOverloading() {
 

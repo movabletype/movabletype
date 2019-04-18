@@ -110,11 +110,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.1.1';
+    $version = '7.1.2';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4503';
+    $release_version = 'r.4601';
 }
 
 my ( $mt, $LH );
@@ -842,6 +842,10 @@ if ($version) {
 </ul>
 INFO
 }
+eval {
+    require MT::Cloud::App::CMS;
+};
+if ( $@ ) {
 print_encode( trans_templ(<<INFO) );
 <ul id="path-info" class="list-unstyled">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
@@ -850,6 +854,7 @@ print_encode( trans_templ(<<INFO) );
 	<li><strong><__trans phrase="Perl version:"></strong> <code>$ver</code></li>
 	<li><strong><__trans phrase="Perl include path:"></strong><br /> <code>$inc_path</code></li>
 INFO
+}
 if ($server) {
     print_encode( trans_templ(<<INFO) );
     <li><strong><__trans phrase="Web server:"></strong> <code>$server</code></li>
@@ -1032,7 +1037,7 @@ MSG
                 if ( !$dbi_is_okay ) {
                     print_encode(
                         trans_templ(
-                            qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements."></p></div>}
+                            qq{<div class="alert alert-warning msg msg-warning"><p class="msg-text"><__trans phrase="The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements." params="$mod"></p></div>}
                         )
                     );
                 }

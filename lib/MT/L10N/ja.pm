@@ -21,23 +21,23 @@ use vars qw( @ISA %Lexicon );
 	'userpic-[_1]-%wx%h%x' => 'userpic-[_1]-%wx%h%x',
 
 ## php/lib/archive_lib.php
-	'Individual' => '記事',
-	'Page' => 'ウェブページ',
-	'Yearly' => '年別',
-	'Monthly' => '月別',
-	'Daily' => '日別',
-	'Weekly' => '週別',
-	'Author' => 'ユーザー',
+	'INDIVIDUAL_ADV' => '記事',
+	'PAGE_ADV' => 'ウェブページ',
+	'YEARLY_ADV' => '年別',
+	'MONTHLY_ADV' => '月別',
+	'DAILY_ADV' => '日別',
+	'WEEKLY_ADV' => '週別',
+	'AUTHOR_ADV' => 'ユーザー',
 	'(Display Name not set)' => '(表示名なし)',
-	'Author Yearly' => 'ユーザー 年別',
-	'Author Monthly' => 'ユーザー 月別',
-	'Author Daily' => 'ユーザー 日別',
-	'Author Weekly' => 'ユーザー 週別',
-	'Category' => 'カテゴリ',
-	'Category Yearly' => 'カテゴリ 年別',
-	'Category Monthly' => 'カテゴリ 月別',
-	'Category Daily' => 'カテゴリ 日別',
-	'Category Weekly' => 'カテゴリ 週別',
+	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
+	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
+	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
+	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
+	'CATEGORY_ADV' => 'カテゴリ',
+	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
+	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
+	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
+	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'CONTENTTYPE_ADV' => 'コンテンツタイプ別',
 	'CONTENTTYPE-DAILY_ADV' => 'コンテンツタイプ 日別',
 	'CONTENTTYPE-WEEKLY_ADV' => 'コンテンツタイプ 週別',
@@ -53,6 +53,10 @@ use vars qw( @ISA %Lexicon );
 	'CONTENTTYPE-CATEGORY-MONTHLY_ADV' => 'コンテンツタイプ カテゴリ 月別',
 	'CONTENTTYPE-CATEGORY-DAILY_ADV' => 'コンテンツタイプ カテゴリ 日別',
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'コンテンツタイプ カテゴリ 週別',
+	'Category' => 'カテゴリ',
+
+## php/lib/block.mtarchivelist.php
+	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtarchives.php
 	'ArchiveType not found - [_1]' => 'アーカイブタイプが見つかりません - [_1]',
@@ -72,18 +76,20 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/block.mtcategorysets.php
 	'No Category Set could be found.' => 'カテゴリセットが見つかりません。',
-	'No Content Type could be found.' => 'コンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtcontentauthoruserpicasset.php
 	'You used an \'[_1]\' tag outside of the context of a content; Perhaps you mistakenly placed it outside of an \'MTContents\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTContentsコンテナタグの外部で使っていませんか?',
 
 ## php/lib/block.mtcontentfield.php
+	'No Content Field could be found: \"[_1]\"' => 'コンテンツフィールドが見つかりません: "[_1]"',
 	'No Content Field could be found.' => 'コンテンツフィールドが見つかりません。',
 	'No Content Field Type could be found.' => 'コンテンツフィールドタイプが見つかりません。',
 
 ## php/lib/block.mtcontentfields.php
 
 ## php/lib/block.mtcontents.php
+	'You used an \'[_1]\' tag outside of the context of the site;' => '[_1]をコンテキスト外で利用しようとしています。サイトの外部で使っていませんか?',
+	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 
 ## php/lib/block.mtcontentscalendar.php
 	'Invalid weeks_start_with format: must be Sun|Mon|Tue|Wed|Thu|Fri|Sat' => 'Sun、Mon、Tue、Wed、Thu、Fri、Satのいずれかでなければなりません。',
@@ -99,6 +105,11 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/block.mtif.php
 	'You used an [_1] tag without a valid name attribute.' => '[_1]タグではname属性は必須です。',
 	'[_1] [_2] [_3] is illegal.' => '[_1] [_2] [_3]は不正です。',
+
+## php/lib/block.mtifarchivetype.php
+	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
+
+## php/lib/block.mtifarchivetypeenabled.php
 
 ## php/lib/block.mtsethashvar.php
 
@@ -120,6 +131,8 @@ use vars qw( @ISA %Lexicon );
 	'No Label (ID:[_1])' => 'ラベルがありません (ID:[_1])',
 	'No category_set setting in content field type.' => 'コンテンツフィールドにカテゴリセットが設定されていません。',
 
+## php/lib/function.mtarchivelink.php
+
 ## php/lib/function.mtassettype.php
 	'image' => '画像',
 	'Image' => '画像',
@@ -131,6 +144,9 @@ use vars qw( @ISA %Lexicon );
 	'Video' => 'ビデオ',
 
 ## php/lib/function.mtauthordisplayname.php
+
+## php/lib/function.mtcategoryarchivelink.php
+	'[_1] cannot be used without publishing [_2] archive.' => '[_1]アーカイブを公開していないので[_1]は使えません。',
 
 ## php/lib/function.mtcontentauthordisplayname.php
 
@@ -189,6 +205,7 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/function.mtcontentunpublisheddate.php
 
 ## php/lib/function.mtentryclasslabel.php
+	'Page' => 'ウェブページ',
 	'Entry' => '記事',
 
 ## php/lib/function.mtinclude.php
@@ -200,7 +217,6 @@ use vars qw( @ISA %Lexicon );
 	'Password should include letters and numbers' => 'パスワードは文字と数字を含める必要があります。',
 	'Password should include lowercase and uppercase letters' => 'パスワードは大文字と小文字を含める必要があります。',
 	'Password should contain symbols such as #!$%' => 'パスワードは記号を含める必要があります。',
-	'You used an [_1] tag without a valid [_2] attribute.' => '[_1]タグでは[_2]属性は必須です。',
 
 ## php/lib/function.mtpasswordvalidationrule.php
 	'minimum length of [_1]' => '[_1]文字以上',
@@ -250,7 +266,7 @@ use vars qw( @ISA %Lexicon );
 	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'サーバーに [_1]か、[_1]の動作に必要な他のモジュールがインストールされていません。',
 	'Please consult the installation instructions for help in installing [_1].' => '[_1]のインストールはインストールマニュアルに沿って行ってください。',
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'お使いのサーバーにインストールされている DBD::mysqlのバージョンは、Movable Type と互換性がありません。CPAN に公開されている最新バージョンをインストールしてください。',
-	'The $mod is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '$modはインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1]はインストールされていますが、新しいDBIが必要です。上記を参考に必要なDBIを確認してください。',
 	'Your server has [_1] installed (version [_2]).' => 'サーバーに [_1] がインストールされています(バージョン [_2])。',
 	'Movable Type System Check Successful' => 'システムのチェックを完了しました。',
 	q{You're ready to go!} => q{Movable Typeを利用できます。},
@@ -829,52 +845,42 @@ use vars qw( @ISA %Lexicon );
 	'This module is required for cookie authentication.' => 'cookie 認証のために必要です。',
 
 ## lib/MT/ArchiveType/Author.pm
-	'AUTHOR_ADV' => 'ユーザー',
 	'author/author-basename/index.html' => 'author/author-basename/index.html',
 	'author/author_basename/index.html' => 'author/author_basename/index.html',
 
 ## lib/MT/ArchiveType/AuthorDaily.pm
-	'AUTHOR-DAILY_ADV' => 'ユーザー 日別',
 	'author/author-basename/yyyy/mm/dd/index.html' => 'author/author-basename/yyyy/mm/dd/index.html',
 	'author/author_basename/yyyy/mm/dd/index.html' => 'author/author_basename/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/AuthorMonthly.pm
-	'AUTHOR-MONTHLY_ADV' => 'ユーザー 月別',
 	'author/author-basename/yyyy/mm/index.html' => 'author/author-basename/yyyy/mm/index.html',
 	'author/author_basename/yyyy/mm/index.html' => 'author/author_basename/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/AuthorWeekly.pm
-	'AUTHOR-WEEKLY_ADV' => 'ユーザー 週別',
 	'author/author-basename/yyyy/mm/day-week/index.html' => 'author/author-basename/yyyy/mm/day-week/index.html',
 	'author/author_basename/yyyy/mm/day-week/index.html' => 'author/author_basename/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/AuthorYearly.pm
-	'AUTHOR-YEARLY_ADV' => 'ユーザー 年別',
 	'author/author-basename/yyyy/index.html' => 'author/author-basename/yyyy/index.html',
 	'author/author_basename/yyyy/index.html' => 'author/author_basename/yyyy/index.html',
 
 ## lib/MT/ArchiveType/Category.pm
-	'CATEGORY_ADV' => 'カテゴリ',
 	'category/sub-category/index.html' => 'category/sub-category/index.html',
 	'category/sub_category/index.html' => 'category/sub_category/index.html',
 
 ## lib/MT/ArchiveType/CategoryDaily.pm
-	'CATEGORY-DAILY_ADV' => 'カテゴリ 日別',
 	'category/sub-category/yyyy/mm/dd/index.html' => 'category/sub-category/yyyy/mm/dd/index.html',
 	'category/sub_category/yyyy/mm/dd/index.html' => 'category/sub_category/yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/CategoryMonthly.pm
-	'CATEGORY-MONTHLY_ADV' => 'カテゴリ 月別',
 	'category/sub-category/yyyy/mm/index.html' => 'category/sub-category/yyyy/mm/index.html',
 	'category/sub_category/yyyy/mm/index.html' => 'category/sub_category/yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/CategoryWeekly.pm
-	'CATEGORY-WEEKLY_ADV' => 'カテゴリ 週別',
 	'category/sub-category/yyyy/mm/day-week/index.html' => 'category/sub-category/yyyy/mm/day-week/index.html',
 	'category/sub_category/yyyy/mm/day-week/index.html' => 'category/sub_category/yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/CategoryYearly.pm
-	'CATEGORY-YEARLY_ADV' => 'カテゴリ 年別',
 	'category/sub-category/yyyy/index.html' => 'category/sub-category/yyyy/index.html',
 	'category/sub_category/yyyy/index.html' => 'category/sub_category/yyyy/index.html',
 
@@ -917,25 +923,20 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/ContentTypeCategoryYearly.pm
 
 ## lib/MT/ArchiveType/ContentTypeDaily.pm
-	'DAILY_ADV' => '日別',
 	'yyyy/mm/dd/index.html' => 'yyyy/mm/dd/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeMonthly.pm
-	'MONTHLY_ADV' => '月別',
 	'yyyy/mm/index.html' => 'yyyy/mm/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeWeekly.pm
-	'WEEKLY_ADV' => '週別',
 	'yyyy/mm/day-week/index.html' => 'yyyy/mm/day-week/index.html',
 
 ## lib/MT/ArchiveType/ContentTypeYearly.pm
-	'YEARLY_ADV' => '年別',
 	'yyyy/index.html' => 'yyyy/index.html',
 
 ## lib/MT/ArchiveType/Daily.pm
 
 ## lib/MT/ArchiveType/Individual.pm
-	'INDIVIDUAL_ADV' => '記事',
 	'yyyy/mm/entry-basename.html' => 'yyyy/mm/entry-basename.html',
 	'yyyy/mm/entry_basename.html' => 'yyyy/mm/entry_basename.html',
 	'yyyy/mm/entry-basename/index.html' => 'yyyy/mm/entry-basename/index.html',
@@ -952,7 +953,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/Monthly.pm
 
 ## lib/MT/ArchiveType/Page.pm
-	'PAGE_ADV' => 'ウェブページ',
 	'folder-path/page-basename.html' => 'folder-path/page-basename.html',
 	'folder-path/page-basename/index.html' => 'folder-path/page-basename/index.html',
 	'folder_path/page_basename.html' => 'folder_path/page_basename.html',
@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	'Please select an audio file to upload.' => 'アップロードするオーディオファイルを選択してください。',
 	'Please select an image to upload.' => 'アップロードする画像を選択してください。',
 	'Please select a video to upload.' => 'アップロードするビデオファイルを選択してください。',
+	'none' => 'なし',
 	'Movable Type was unable to write to the "Upload Destination". Please make sure that the webserver can write to this folder.' => 'アップロード先のディレクトリに書き込みできません。ウェブサーバーから書き込みできるパーミッションを与えてください。',
 	'Invalid extra path \'[_1]\'' => '追加パスが不正です。',
 	'Invalid temp file name \'[_1]\'' => 'テンポラリファイルの名前\'[_1]\'が不正です。',
@@ -1328,6 +1329,7 @@ use vars qw( @ISA %Lexicon );
 	'All [_1]' => 'すべての[_1]',
 	'[_1] Feed' => '[_1]のフィード',
 	'Unknown list type' => '不明なタイプです。',
+	'Permission denied: [_1]' => '権限がありません: [_1]',
 	'Invalid filter terms: [_1]' => '不正なフィルタ条件です。',
 	'An error occurred while counting objects: [_1]' => 'オブジェクトのカウント中にエラーが発生しました。',
 	'An error occurred while loading objects: [_1]' => 'オブジェクトのロード中にエラーが発生しました。',
@@ -1335,7 +1337,6 @@ use vars qw( @ISA %Lexicon );
 	'Removing [_1] failed: [_2]' => '[_1]を削除できませんでした: [_2]',
 	'System templates cannot be deleted.' => 'システムテンプレートは削除できません。',
 	'The selected [_1] has been deleted from the database.' => '選択された[_1]をデータベースから削除しました。',
-	'Permission denied: [_1]' => '権限がありません: [_1]',
 	'Saving snapshot failed: [_1]' => 'スナップショットの保存に失敗しました: [_1]',
 
 ## lib/MT/CMS/ContentData.pm
@@ -1381,7 +1382,7 @@ use vars qw( @ISA %Lexicon );
 	'Manage Content Type Boilerplates' => 'コンテンツタイプのひな形の管理',
 	'Content Type \'[_1]\' (ID:[_2]) added by user \'[_3]\'' => '[_3]がコンテンツタイプ \'[_1]\' (ID: [_2]) を追加しました',
 	'A content field \'[_1]\' ([_2]) was added' => 'コンテンツフィールド \'[_1]\'が追加されました',
-	'A content field options of \'[_1]\' ([_2]) was changed' => '今添付フィールド \'[_1]\'の設定が変更されました',
+	'A content field options of \'[_1]\' ([_2]) was changed' => 'コンテンツフィールド \'[_1]\'の設定が変更されました',
 	'Some content fields were deleted: ([_1])' => 'いくつかのコンテンツフィールドが削除されました: [_1]',
 	'Content Type \'[_1]\' (ID:[_2]) edited by user \'[_3]\'' => '[_3]がコンテンツタイプ \'[_1]\' (ID: [_2]) を変更しました',
 	'Content Type \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => '[_3]がコンテンツタイプ \'[_2]\' (ID: [_2])を削除しました',
@@ -1573,7 +1574,7 @@ use vars qw( @ISA %Lexicon );
 	'Global' => 'グローバル',
 	'You must specify a template type when creating a template' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
 	'contnt type' => 'コンテンツタイプ',
-	'Content Type Archive' => 'コンテンツタイプ アーカイブ',
+	'Content Type Archive' => 'コンテンツタイプアーカイブ',
 	'Create Widget' => 'ウィジェットを作成',
 	'Create Template' => 'テンプレートの作成',
 	'No Name' => '名前なし',
@@ -1669,7 +1670,6 @@ use vars qw( @ISA %Lexicon );
 	'Any site' => '任意のサイト',
 	'Only to blogs within this system' => 'ブログのみ',
 	'[_1] is [_2]' => '[_1]が[_2]',
-	'none' => 'なし',
 	'Changing image quality is [_1]' => '画像品質の自動変換は[_1]です',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
 	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
@@ -1807,6 +1807,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentData.pm
 	'Invalid content type' => '不正なコンテンツタイプです',
+	'basename is too long.' => '出力ファイルが長すぎます。',
 	'Saving content field index failed: [_1]' => 'コンテンツデータのインデックスを作成できません: [_1]',
 	'Removing content field indexes failed: [_1]' => 'コンテンツデータのインデックスを削除できません: [_1]',
 	'Saving object asset failed: [_1]' => 'コンテンツデータとアセットのリンクを作成できません: [_1]',
@@ -1820,6 +1821,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish Date' => '公開日',
 	'Unpublish Date' => '公開終了日',
 	'[_1] ( id:[_2] ) does not exists.' => '[_1] ( id:[_2] ) が見つかりません。',
+	'Author' => 'ユーザー',
 	'Contents by [_1]' => '[_1]のコンテンツデータ',
 	'Tags fields' => 'いずれかのタグのフィールド',
 	'(No label)' => '(ラベルなし)',
@@ -2091,7 +2093,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Child Sites' => '子サイトの作成',
 	'Manage Plugins' => 'プラグインの管理',
 	'View System Activity Log' => 'システムログの閲覧',
-	'Sign In(CMS)' => 'CMSへのサインイン',
+	'Sign In(CMS)' => '管理画面へのサインイン',
 	'Sign In(Data API)' => 'Data API でのサインイン',
 	'Create Websites' => 'ウェブサイトの作成',
 	'Manage Users & Groups' => 'ユーザーとグループの管理',
@@ -2110,6 +2112,7 @@ use vars qw( @ISA %Lexicon );
 	'Name "[_1]" is used in the same site.' => '"[_1]"はすでに存在します。',
 
 ## lib/MT/DataAPI/Callback/ContentData.pm
+	'"[_1]" is required.' => '"[_1]"は必須です。',
 	'There is an invalid field data: [_1]' => '不正なフィールドデータです: [_1]',
 
 ## lib/MT/DataAPI/Callback/ContentField.pm
@@ -2232,10 +2235,14 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/Template.pm
 	'Template not found' => '指定されたテンプレートが見つかりません',
+	'Cannot get [_1] template.' => '指定されたテンプレートが取得できません: [_1]',
+	'Cannot update [_1] template.' => '指定されたテンプレートは更新できません: [_1]',
 	'Cannot delete [_1] template.' => '指定されたテンプレートは削除できません: [_1]',
 	'Cannot publish [_1] template.' => '指定されたテンプレートは公開できません: [_1]',
+	'Cannot refresh [_1] template.' => '指定されたテンプレートはリフレッシュできません: [_1]',
 	'A parameter "refresh_type" is invalid: [_1]' => '不正な初期化方法が指定されました: [_1]',
 	'Cannot clone [_1] template.' => '指定されたテンプレートは複製できません: [_1]',
+	'Cannot preview [_1] template.' => '指定されたテンプレートはプレビューできません: [_1]',
 	'A resource "template" is required.' => '"template" リソースの指定は必須です。',
 
 ## lib/MT/DataAPI/Endpoint/v2/TemplateMap.pm
@@ -2281,6 +2288,10 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Endpoint/v4/ContentType.pm
 
 ## lib/MT/DataAPI/Endpoint/v4/Search.pm
+
+## lib/MT/DataAPI/Endpoint/v4/Template.pm
+
+## lib/MT/DataAPI/Endpoint/v4/TemplateMap.pm
 
 ## lib/MT/DataAPI/Resource.pm
 	'Cannot parse "[_1]" as an ISO 8601 datetime' => '"[_1]"は、ISO 8601形式のデータではありません',
@@ -2634,6 +2645,7 @@ use vars qw( @ISA %Lexicon );
 	'Opening linked file \'[_1]\' failed: [_2]' => 'リンクファイル\'[_1]\'を開けませんでした: [_2]',
 	'Index' => 'インデックス',
 	'Category Archive' => 'カテゴリアーカイブ',
+	'Individual' => '記事',
 	'Comment Listing' => 'コメント一覧',
 	'Ping Listing' => 'トラックバック一覧',
 	'Comment Preview' => 'コメントプレビュー',
@@ -2654,10 +2666,10 @@ use vars qw( @ISA %Lexicon );
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'include_blogs属性とexclude_blogs属性に同じブログIDが指定されています。',
 	'You used an \'[_1]\' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an \'MTAuthors\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of an entry; Perhaps you mistakenly placed it outside of an \'MTEntries\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTEntriesコンテナタグの外部で使っていませんか?',
+	'No Content Field could be found: "[_1]"' => 'コンテンツフィールドが見つかりません: "[_1]"',
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTWebsitesコンテナタグの外部で使っていませんか?',
 	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => '[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => '[_1]をコンテキスト外で利用しようとしています。MTBlogsコンテナタグの外部で使っていませんか?',
-	'You used an \'[_1]\' tag outside of the context of the site;' => '[_1]をコンテキスト外で利用しようとしています。サイトの外部で使っていませんか?',
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => '[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => '[_1]タグをトラックバックのコンテキスト外で利用しようとしました。MTPingsコンテナの外部に配置していませんか?',
 	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => '[_1]をAssetのコンテキスト外で利用しようとしました。MTAssetsコンテナの外部に配置していませんか?',
@@ -2666,6 +2678,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/ContextHandlers.pm
 	'All About Me' => 'All About Me',
 	'[_1]Publish[_2] your [_3] to see these changes take effect.' => '変更を反映するために、対象の[_3]を[_1]再構築[_2]してください。',
+	'[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing.' => 'ダイナミック・パブリッシングを利用している場合でも、設定を反映するために[_1]再構築[_2]してください。',
 	'[_1]Publish[_2] your site to see these changes take effect.' => '設定を有効にするために[_1]再構築[_2]してください。',
 	'Actions' => 'アクション',
 	'The entered message is displayed as a input field hint.' => '入力フィールドの説明として表示されます。',
@@ -2726,13 +2739,11 @@ use vars qw( @ISA %Lexicon );
 	'Cannot find package [_1]: [_2]' => '[_1]というパッケージが見つかりませんでした: [_2]',
 	'Error sorting [_2]: [_1]' => '[_2]の並べ替えでエラーが発生しました: [_1]',
 	'Cannot use sort_by and sort_method together in [_1]' => 'sort_byとsort_methodは同時に利用できません。',
-	'[_1] cannot be used without publishing [_2] archive.' => '[_1]アーカイブを公開していないので[_1]は使えません。',
 	'[_1] used outside of [_2]' => '[_1]を[_2]の外部で利用しようとしました。',
 
 ## lib/MT/Template/Tags/ContentType.pm
 	'Invalid tag_handler of [_1].' => '不正な tag_handler です。',
 	'Invalid field_value_handler of [_1].' => '不正な field_value_handler です。',
-	'Content Type was not found. Blog ID: [_1]' => 'サイト (ID: [_1]) でコンテンツタイプが見つかりません。',
 
 ## lib/MT/Template/Tags/Entry.pm
 	'You used <$MTEntryFlag$> without a flag.' => '<$MTEntryFlag$>をフラグなしで利用しようとしました。',
@@ -3013,6 +3024,7 @@ use vars qw( @ISA %Lexicon );
 	'Cleaning up objecttag records for content data...' => 'コンテンツデータと関連する objecttag のレコードを削除しています...',
 	'Truncating values of value_varchar column...' => 'コンテンツデータの varchar カラムのインデックスを再構築しています...',
 	'Migrating Max Length option of Single Line Text fields...' => 'テキスト型のコンテンツフィールドの最大値を修正しています...',
+	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
 	'Reset default dashboard widgets...' => 'ダッシュボードウィジェットを初期化しています...',
 	'Rebuilding Content Type count of Category Sets...' => 'カテゴリセットの情報を再構築しています...',
 	'Adding site list dashboard widget for mobile...' => 'モバイル用のサイト一覧ウィジェットを追加しています...',
@@ -3163,8 +3175,6 @@ use vars qw( @ISA %Lexicon );
 	'This field must be a signed number' => 'このフィールドには符号付き整数を入力してください',
 	'Please input [_1] characters or more' => '[_1]文字以上入力してください',
 
-## mt-static/jquery/jquery.mt.min.js
-
 ## mt-static/js/assetdetail.js
 	'No Preview Available.' => 'プレビューは利用できません。',
 	'Dimensions' => '大きさ',
@@ -3206,8 +3216,8 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to [_2] this [_1]?' => '[_1]を[_2]してよろしいですか?',
 	'Are you sure you want to [_3] the [_1] selected [_2]?' => '[_1]件の[_2]を[_3]してよろしいですか?',
 	'Label "[_1]" is already in use.' => '"[_1]というラベルは既に使用されています。"',
-'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 	'One or more fields in the filter item are not filled in properly.' => '1つ以上のフィルター項目が正しく入力されていません。',
+	'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'Show' => '表示項目',
@@ -3367,8 +3377,6 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
-
-## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.min.js
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => '全画面表示',
@@ -3979,21 +3987,21 @@ use vars qw( @ISA %Lexicon );
 	'Select a license' => 'ライセンスの選択',
 	'Publishing Paths' => '公開パス',
 	'Use subdomain' => 'サブドメインの利用',
-	'Warning: Changing the [_1] URL can result in breaking all the links in your [_1].' => '警告:[_1]URLを変更すると[_1]内の全てのリンクがリンク切れとなることがあります。',
+	'Warning: Changing the [_1] URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:[_1]URLを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The URL of your child site. Exclude the filename (i.e. index.html). End with '/'. Example: http://www.example.com/blog/} => q{サイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/blog/},
 	q{The URL of your site. Exclude the filename (i.e. index.html).  End with '/'. Example: http://www.example.com/} => q{サイトを公開するURLです。ファイル名(index.htmlなど)は含めず、末尾は'/'で終わります。例: http://www.example.com/},
 	'Use absolute path' => '絶対パスの利用',
-	'Warning: Changing the [_1] root requires a complete publish of your [_1].' => '警告:[_1]パスを変更した場合には[_1]の再構築が必要です。',
+	'Warning: Changing the [_1] root requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:[_1]パスを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The path where your index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{インデックスファイルが公開されるパスです。末尾には'/'や'\'を含めません。},
 	q{The path where your index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{インデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Advanced Archive Publishing' => '高度な公開の設定',
 	'Publish archives outside of Site Root' => 'アーカイブパスをサイトパスとは別のパスで公開する',
 	'Archive URL' => 'アーカイブURL',
-	'Warning: Changing the archive URL can result in breaking all links in your [_1].' => '警告: アーカイブURLを変更することで[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive URL requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:アーカイブURLを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	'The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/' => 'サイトのアーカイブのURLです。例: http://www.example.com/archives/',
 	'The URL of the archives section of your site. Example: http://www.example.com/archives/' => 'サイトのアーカイブのURLです。例: http://www.example.com/archives/',
 	'Archive Root' => 'アーカイブパス',
-	'Warning: Changing the archive path can result in breaking all links in your [_1].' => '警告: アーカイブパスを変更すると[_1]上のすべてのリンクがリンク切れとなる場合があります。',
+	'Warning: Changing the archive path requires a complete publish of your [_1], even when publishing profile is dynamic publishing.' => '警告:アーカイブパスを変更すると[_1]の全体再構築が必要になります。これはダイナミック・パブリッシングを利用している場合でも同様です。',
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{アーカイブのインデックスファイルが公開されるパスです。ウェブサイトからの相対パスを指定します。末尾には'/'や'\'を含めません。},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{アーカイブのインデックスファイルが公開されるパスです。絶対パス(Linuxの時は'/'、Windowsの時は'C:\'などで始まる)を推奨しますが、Movable Typeディレクトリからの相対パスも指定できます。末尾には'/'や'\'を含めません。例: /home/melody/public_html/blogやC:\www\public_html\blog},
 	'Dynamic Publishing Options' => 'ダイナミックパブリッシング設定',
@@ -4006,7 +4014,7 @@ use vars qw( @ISA %Lexicon );
 	q{Used to generate URLs (permalinks) for this child site's archived entries. Choose one of the archive types used in this child site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	q{Used to generate URLs (permalinks) for this site's archived entries. Choose one of the archive types used in this site's archive templates.} => q{記事にリンクするときのURLとして使われます。このサイトで使われているアーカイブテンプレートの中から選択してください。},
 	'Publish With No Entries' => '記事がないアーカイブの公開',
-	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリ アーカイブを公開する',
+	'Publish category archive without entries' => '記事が含まれない場合でも、カテゴリアーカイブを公開する',
 	'Module Settings' => 'モジュール設定',
 	'Server Side Includes' => 'サーバーサイドインクルード',
 	'None (disabled)' => '無効',
@@ -4052,7 +4060,7 @@ use vars qw( @ISA %Lexicon );
 	'Allow' => '許可',
 	'Disallow' => '許可しない',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlogタグの既定の属性:',
-	q{Enables use of the MTMultiBlog tag without include_blogs/exclude_blogs attributes. Comma-separated BlogIDs or 'all' (include_blogs only) are acceptable values.} => q{include_blogs/exclude_blogs属性なしでMTMultiBlogタグを使用できるようにします。カンマで区切ったブログID、または「all」(include_blogs のみ)が指定できます。},
+	q{Enables use of the MTSites tag without include_sites/exclude_sites attributes. Comma-separated SiteIDs or 'all' (include_sites only) are acceptable values.} => q{include_sites/exclude_sites属性なしでMTSitesタグを使用できるようにします。カンマで区切ったサイトID、または「all」(include_sites のみ)が指定できます。},
 	'Include sites/child sites' => '含めるサイト',
 	'Exclude sites/child sites' => '除外するサイト',
 	'Rebuild Triggers' => '再構築トリガー',
@@ -4063,8 +4071,8 @@ use vars qw( @ISA %Lexicon );
 	'Trigger' => 'トリガー',
 	'Action' => 'アクション',
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
-	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
-	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
+	'Cross-site aggregation will be allowed by default.  Individual sites can be configured through the site-level rebuild trigger settings to restrict access to their content by other sites.' => 'サイトをまたがったアグリゲーションが既定で許可されます。個別のサイトレベルでの再構築トリガーの設定で他のサイトからのコンテンツへのアクセスを制限できます。',
+	'Cross-site aggregation will be disallowed by default.  Individual sites can be configured through the site-level rebuild trigger settings to allow access to their content by other sites.' => 'サイトをまたがったアグリゲーションが既定で不許可になります。個別のサイトレベルでの再構築トリガーの設定で他のサイトからのコンテンツへのアクセスを許可することもできます。',
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Your site preferences have been saved.' => 'サイトの設定を保存しました。',
@@ -4411,8 +4419,7 @@ use vars qw( @ISA %Lexicon );
 	'Background Publishing' => 'バックグラウンドパブリッシング',
 	'All templates published statically via Publish Queue.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'High Priority Static Publishing' => '一部アーカイブのみ非同期スタティックパブリッシング',
-	'Immediately publish Main Index template, Entry archives, and Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、記事アーカイブ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
-	'Immediately publish Main Index template, Page archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、ウェブページアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
+	'Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.' => 'メインページ、フィード、記事アーカイブ、ウェブページアーカイブ、コンテンツタイプアーカイブをスタティックパブリッシングし、他のテンプレートは公開キューを経由してスタティックパブリッシングします。',
 	'Dynamic Publishing' => 'ダイナミックパブリッシング',
 	'Publish all templates dynamically.' => 'すべてのテンプレートをダイナミックパブリッシングします。',
 	'Dynamic Archives Only' => 'アーカイブのみダイナミックパブリッシング',
@@ -5525,7 +5532,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/listing/content_type_list_header.tmpl
 	'The content type has been deleted from the database.' => 'コンテンツタイプをデータベースから削除しました。',
-	'Some content types were not deleted. You need to delete archive templates or content type fields from the content type first.' => 'いくつかのコンテンツフィールドが削除できませんでした。先にアーカイブマッピングを削除する必要があります。',
+	'Some content types were not deleted. You need to delete archive templates or content type fields from the content type first.' => 'いくつかのコンテンツタイプが削除できませんでした。先にアーカイブマッピングを削除する必要があります。',
 
 ## tmpl/cms/listing/entry_list_header.tmpl
 
@@ -5797,6 +5804,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/widget/updates.tmpl
 	'Update check failed. Please check server network settings.' => 'アップデートの確認ができません。ネットワーク設定を見直してください。',
 	'Update check is disabled.' => 'アップデートの確認は無効です。',
+	'Available updates ([_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート([_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
 	'Available updates (Ver. [_1]) found. Please see the <a href="[_2]" target="_blank">news</a> for detail.' => '利用可能なアップデート(Ver. [_1])があります。詳しくは<a href="[_2]" target="_blank">Movable Typeニュース</a>をご覧ください。',
 	'Movable Type is up to date.' => '最新のMovable Typeです。',
 
@@ -6036,8 +6044,6 @@ use vars qw( @ISA %Lexicon );
 	'backup data' => 'バックアップデータ',
 	'Invalid backup file name.' => '不正なバックアップファイルです。',
 	'Cannot copy backup file to workspace.' => 'バックアップファイルのコピーに失敗しました。',
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
 	'Auto Update Settings' => '自動アップデートの設定',
 	'Unable to write AUTOUPDATE file: [_1]' => '自動アップデートの設定を保存することが出来ませんでした。',
 	'Auto update settings has successfully been updated.' => '自動アップデートの設定が更新されました。',
@@ -6054,7 +6060,7 @@ use vars qw( @ISA %Lexicon );
 	'Unable to remove acl file.' => 'アクセス制限リストファイルの削除ができません。',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
-	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www の有無を統一する。 <a href="[_1]">詳細</a>',
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'www 有無を無視してどちらでもアクセスをできるようにする。 <a href="[_1]">詳細</a>',
 	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
 	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'ウェブサイトパス\' または \'アーカイブパス\' が変更されています。既存のコンテンツは自身の手で移動してください。',
 
@@ -6065,6 +6071,9 @@ use vars qw( @ISA %Lexicon );
 	'Cannot read resource file.' => 'リソースファイルを読み込めません。',
 	'Cannot get the resource data.' => 'リソース情報を取得できません。',
 	'Unknown CPU type.' => 'CPUタイプの判定ができません。',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを保存できません。',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => '利用可能なドメイン数を超えるため、ウェブサイトを作成できません。',
+	'You must specify the same state of the checkboxes for unify the existence of www when the both of site domain and archive domain are same.' => 'サイトURLとアーカイブURLのドメインが同じ場合は、それぞれの「www 有無を無視してどちらでもアクセスをできるようにする」を同じ状態にする必要があります。',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
 	'Auto update setting have been saved.' => '自動アップデートの設定を保存しました。',
@@ -6759,6 +6768,7 @@ use vars qw( @ISA %Lexicon );
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => '[_3] が、サーバー配信の設定 \'[_1]\' (ID: [_2]) を保存しました。',
 	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => '[_3] が、サーバー配の信設定 \'[_1]\' (ID: [_2]) を削除しました。',
+	'Error saving Sync Setting. No response from FTP server \'[_1]\'.' => 'サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'FTPサーバー \'[_1]\' への接続中にエラーが発生しました: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'FTPサーバーのカレントディレクトリが取得できませんでした。',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'FTPサーバーからディレクトリの一覧が取得できませんでした',
@@ -6768,15 +6778,15 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'サーバー配信設定',
-	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信のジョブが正常に登録されました。次の run-periodic-tasks 実行時に処理されます。',
+	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
 	'Immediate sync job has been registered.' => '即時配信のジョブが正常に登録されました。',
 	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、宛先サーバー上で正しく動作しない場合があります。',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、配信先サーバー上で正しく動作しない場合があります。',
 	'Register immediate sync job' => '即時配信する',
 	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Sync Date' => 'サーバー配信日時',
-	'Recipient for Notification' => '配信結果の通知先メールアドレス',
+	'Recipient for Notification' => '通知先メールアドレス',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
 	'htaccess' => 'htaccess',
 	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
@@ -7432,6 +7442,6 @@ _4]\'から削除しました。',
 
 );
 
-## New words: 456
+## New words: 438
 
 1;

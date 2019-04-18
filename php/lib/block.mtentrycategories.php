@@ -27,7 +27,7 @@ function smarty_block_mtentrycategories($args, $content, &$ctx, &$repeat) {
         $counter = $ctx->stash('_categories_counter');
         $out = $ctx->stash('__out');
     }
-    if ($counter < count($categories)) {
+    if (is_array($categories) && $counter < count($categories)) {
         $category = $categories[$counter];
         $ctx->stash('category', $category);
         $ctx->stash('_categories_counter', $counter + 1);

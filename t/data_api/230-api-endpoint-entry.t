@@ -14,6 +14,7 @@ BEGIN {
 
 use MT::Test::DataAPI;
 use MT::Test::Permission;
+use File::Path 'remove_tree';
 
 $test_env->prepare_fixture('db_data');
 
@@ -209,6 +210,30 @@ sub suite {
             },
             code  => 400,
             error => "'categories' parameter is invalid.",
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title    => 'test-api-basename-is-too-long',
+                    basename => 'a' x 247,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title    => 'test-api-basename-is-too-long-utf8',
+                    basename => chr(0x3042) x 83,
+                },
+            },
+            code  => 500,
+            error => qr/basename is too long./,
         },
         {    # Attach category of other site.
             path   => '/v2/sites/1/entries',
@@ -590,6 +615,20 @@ __BODY__
             params => { entry => { categories => [ id => 20 ] } },
             code   => 400,
             error  => "'categories' parameter is invalid.",
+        },
+        {    # Basename is too long. (ascii)
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { basename => 'a' x 247 } },
+            code   => 500,
+            error  => qr/basename is too long./,
+        },
+        {    # Basename is too long. (utf8)
+            path   => '/v2/sites/1/entries/2',
+            method => 'PUT',
+            params => { entry => { basename => chr(0x3042) x 83 } },
+            code   => 500,
+            error  => qr/basename is too long./,
         },
 
         # update_entry - normal tests.
@@ -1182,6 +1221,65 @@ __BODY__
                 my ( $data, $body ) = @_;
                 my $obj = MT::Util::from_json($body);
                 is( $obj->{status}, 'success', 'Preview entry make success' );
+            },
+        },
+
+        # MTC-26265 publish param to skip post_save (rebuild)
+        {   path   => '/v3/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-permission-entry-publish',
+                    status => 'Publish',
+                },
+                publish => 1,
+            },
+            setup => sub {
+                my $data = shift;
+                my $site = MT::Website->load(1);
+                remove_tree $site->archive_path;
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                ok my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-permission-entry-publish',
+                        status => MT::Entry::RELEASE(),
+                    }
+                );
+                require MT::FileInfo;
+                ok my ($fileinfo) = grep {
+                    $_->file_path =~ /test-api-permission-entry-publish/
+                } MT::FileInfo->load;
+                ok -f $fileinfo->file_path, 'published file exists';
+            },
+        },
+        {   path   => '/v3/sites/1/entries',
+            method => 'POST',
+            params => {
+                entry => {
+                    title  => 'test-api-permission-entry-no-publish',
+                    status => 'Publish',
+                },
+                publish => 0,
+            },
+            setup => sub {
+                my $data = shift;
+                my $site = MT::Website->load(1);
+                remove_tree $site->archive_path;
+            },
+            complete => sub {
+                my ( $data, $body ) = @_;
+                require MT::Entry;
+                ok my $entry = MT->model('entry')->load(
+                    {   title  => 'test-api-permission-entry-no-publish',
+                        status => MT::Entry::RELEASE(),
+                    }
+                );
+                require MT::FileInfo;
+                ok !grep {
+                    $_->file_path =~ /test-api-permission-entry-no-publish/
+                } MT::FileInfo->load;
             },
         },
     ];

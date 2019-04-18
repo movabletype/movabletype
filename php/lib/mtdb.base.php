@@ -910,7 +910,9 @@ abstract class MTDatabase {
         }
 
         if (isset($args['unique']) && $args['unique']) {
-            $filters[] = create_function('$e,$ctx', 'return !isset($ctx["entry_ids_published"][$e->entry_id]);');
+            $filters[] = function($e, $ctx) {
+                return !isset($ctx["entry_ids_published"][$e->entry_id]);
+            };
             $ctx['entry_ids_published'] = &$_REQUEST['entry_ids_published'];
         }
 
@@ -1505,14 +1507,28 @@ abstract class MTDatabase {
                             || ($sort_field == 'entry_comment_count') || ($sort_field == 'entry_ping_count');
                     }
 
-                    $sort_fn = "\$f = '" . addslashes($sort_field) . "'; " .
-                        ($sort_by_numeric
-                            ? 'if ($a->$f == $b->$f) return 0; return $a->$f < $b->$f ? -1 : 1;'
-                            : 'return strcmp($a->$f,$b->$f);');
+                    if ($sort_by_numeric) {
+                        $sort_fn = function($a, $b) use ($sort_field) {
+                            $f = addslashes($sort_field);
+                            if ($a->$f == $b->$f) return 0;
+                            return $a->$f < $b->$f ? -1 : 1;
+                        };
+                    } else {
+                        $sort_fn = function($a, $b) use ($sort_field) {
+                            $f = addslashes($sort_field);
+                            return strcmp($a->$f, $b->$f);
+                        };
+                    }
 
-                    $sorter = create_function(
-                        $order == 'asc' ? '$a,$b' : '$b,$a',
-                        $sort_fn);
+                    if ($order == 'asc') {
+                        $sorter = function($a, $b) use ($sort_fn) {
+                            return $sort_fn($a, $b);
+                        };
+                    } else {
+                        $sorter = function($b, $a) use ($sort_fn) {
+                            return $sort_fn($a, $b);
+                        };
+                    }
                     usort($entries, $sorter);
 
                     if (isset($post_sort_offset)) {
@@ -1845,7 +1861,7 @@ abstract class MTDatabase {
            }
         }
 
-        if (!isset($args['category_set_id']) || $args['category_set_id'] == 0) {
+        if (!isset($args['category_set_id']) || $args['category_set_id'] === 0) {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_placement on placement_category_id = category_id';
                 if (isset($args['entry_id'])) {
@@ -1959,6 +1975,7 @@ abstract class MTDatabase {
             $where = "category_id in ($list)
                       order by $base_sort $sort_order";
             $categories = $category->Find($where);
+            if (!$categories) $categories = array();
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
                 $mt = MT::get_instance();
                 try {
@@ -2246,25 +2263,40 @@ abstract class MTDatabase {
                 $field_name = $type.'_id';
                 $obj_id = $obj->$field_name;
                 if (isset($args['min_score'])) {
-                    $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); } ';
-                    $expr .= '$sc = get_score($ctx, '.$obj_id.', "'.$type.'", "'.$args['namespace'].'", $e->author_id);';
-                    $expr .= '$ret = $sc >= '.$args['min_score'].';';
-                    $expr .= ' return $ret;';
-                    $fn = create_function('&$e,&$c', $expr);
+                    $fn = function(&$e, &$c) use ($obj_id, $args) {
+                        $ctx = $c;
+                        if ($ctx == null) {
+                            $mt = MT::get_instance();
+                            $ctx = $mt->context();
+                        }
+                        $sc = get_score($ctx, $obj_id, $type, $args['namespace'], $e->author_id);
+                        $ret = $sc >= $args['min_score'];
+                        return $ret;
+                    };
                     $filters[] = $fn;
                 } elseif (isset($args['max_score'])) {
-                    $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); } ';
-                    $expr .= '$sc = get_score($ctx, '.$obj_id.', "'.$type.'", "'.$args['namespace'].'", $e->author_id);';
-                    $expr .= '$ret = $sc <= '.$args['max_score'].';';
-                    $expr .= ' return $ret;';
-                    $fn = create_function('&$e,&$c', $expr);
+                    $fn = function(&$e, &$c) use ($obj_id, $args) {
+                        $ctx = $c;
+                        if ($ctx == null) {
+                            $mt = MT::get_instance();
+                            $ctx = $mt->context();
+                        }
+                        $sc = get_score($ctx, $obj_id, $type, $args['namespace'], $e->author_id);
+                        $ret = $sc <= $args['max_score'];
+                        return $ret;
+                    };
                     $filters[] = $fn;
                 }
                 else {
-                    $expr = '$ctx = $c;if ($ctx == null) { $mt = MT::get_instance(); $ctx = $mt->context(); } ';
-                    $expr .= '$ret = !is_null($ctx->mt->db()->fetch_score('.$args['namespace'].','.$obj_id.', $e->author_id,'.$type.'));';
-                    $expr .= ' return $ret;';
-                    $fn = create_function('&$e,&$c', $expr);
+                    $fn = function(&$e, &$c) use ($obj_id, $args, $type) {
+                        $ctx = $c;
+                        if ($ctx == null) {
+                            $mt = MT::get_instance();
+                            $ctx = $mt->context();
+                        }
+                        $ret = !is_null($ctx->mt->db()->fetch_score($args['namespace'], $obj_id, $e->author_id, $type));
+                        return $ret;
+                    };
                     $filters[] = $fn;
                 }
             }
@@ -2640,9 +2672,9 @@ abstract class MTDatabase {
 
                 if ($row['blog_parent_id'] > 0) {
                     preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                    if ( count($matches > 1 ) ) {
+                    if ( count($matches) > 1 ) {
                         $site_url = preg_split( '/\/::\//', $blog_url );
-                        if ( count($site_url > 0 ) )
+                        if ( count($site_url) > 0 )
                             $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                         else
                             $path = $row['website_url'] . $this->blog_url;
@@ -2706,9 +2738,9 @@ abstract class MTDatabase {
 
                 if ($row['blog_parent_id'] > 0 ) {
                     preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                    if ( count($matches > 1 ) ) {
+                    if ( count($matches) > 1 ) {
                         $site_url = preg_split( '/\/::\//', $blog_url );
-                        if ( count($site_url > 0 ) )
+                        if ( count($site_url) > 0 )
                             $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                         else
                             $path = $row['website_url'] . $this->blog_url;
@@ -3041,6 +3073,7 @@ abstract class MTDatabase {
     public function fetch_comments($args) {
         # load comments
         $extras = array();
+        $filters = array();
 
         $entry_id = intval($args['entry_id']);
 
@@ -3215,9 +3248,13 @@ abstract class MTDatabase {
 
         if ($reorder && !isset($args['sort_by'])) {  // lastn and ascending sort
             if ( $order == 'asc' ) {
-                $resorting = create_function('$a,$b', 'return strcmp($a->comment_created_on, $b->comment_created_on);');
+                $resorting = function($a, $b) {
+                    return strcmp($a->comment_created_on, $b->comment_created_on);
+                };
             } else {
-                $resorting = create_function('$a,$b', 'return strcmp($b->comment_created_on, $a->comment_created_on);');
+                $resorting = function($a, $b) {
+                    return strcmp($b->comment_created_on, $a->comment_created_on);
+                };
             }
             usort($comments, $resorting);
         }
@@ -3307,7 +3344,9 @@ abstract class MTDatabase {
             return array();
 
         if ($reorder) {  // lastn and ascending sort
-            $asc_created_on = create_function('$a,$b', 'return strcmp($a->comment_created_on, $b->comment_created_on);');
+            $asc_created_on = function($a, $b) {
+                return strcmp($a->comment_created_on, $b->comment_created_on);
+            };
             usort($comments, $asc_created_on);
         }
   
@@ -3497,6 +3536,7 @@ abstract class MTDatabase {
     function fetch_assets($args) {
         # load assets
         $extras = array();
+        $filters = array();
 
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and asset_blog_id ' . $sql;
@@ -3805,13 +3845,25 @@ abstract class MTDatabase {
                 || $sort_field == 'asset_id'
                 || $sort_field == 'asset_parent'
             ) {
-                $sort_fn = "if (\$a->$sort_field == \$b->$sort_field) return 0; return \$a->$sort_field < \$b->$sort_field ? -1 : 1;";
+                $sort_fn = function($a, $b) use ($sort_field) {
+                    if ($a->$sort_field == $b->$sort_field) return 0;
+                    return $a->$sort_field < $b->$sort_field ? -1 : 1;
+                };
             } else {
-                $sort_fn = "\$f = '" . addslashes($sort_field) . "'; return strcmp(\$a->\$f,\$b->\$f);";
-            }   
-            $sorter = create_function(
-                $order == 'asc' ? '$a,$b' : '$b,$a',
-            $sort_fn);
+                $sort_fn = function($a, $b) use ($sort_field) {
+                    $f = addslashes($sort_field);
+                    return strcmp($a->$f, $b->$f);
+                };
+            }
+            if ($order == 'asc') {
+                $sorter = function($a, $b) use ($sort_fn) {
+                    return $sort_fn($a, $b);
+                };
+            } else {
+                $sorter = function($b, $a) use ($sort_fn) {
+                    return $sort_fn($a, $b);
+                };
+            }
             usort($assets, $sorter);
         }
         return $assets;
@@ -4287,7 +4339,9 @@ abstract class MTDatabase {
 
         if (isset($args['unique']) && $args['unique']) {
             $filter_ctx = array();
-            $filter_func = create_function('$cd,$ctx', 'return !isset($ctx["content_ids_published"][$cd->cd_id]);');
+            $filter_func = function($cd, $ctx) {
+                return !isset($ctx["content_ids_published"][$cd->cd_id]);
+            };
             $filter_ctx['content_ids_published'] = &$_REQUEST['content_ids_published'];
             $filters[] = array($filter_func, $filter_ctx);
         }
@@ -4849,14 +4903,27 @@ abstract class MTDatabase {
                             || ($sort_field == 'cd_comment_count') || ($sort_field == 'cd_ping_count');
                     }
 
-                    $sort_fn = "\$f = '" . addslashes($sort_field) . "'; " .
-                        ($sort_by_numeric
-                            ? 'if ($a->$f == $b->$f) return 0; return $a->$f < $b->$f ? -1 : 1;'
-                            : 'return strcmp($a->$f,$b->$f);');
+                    if ($sort_by_numeric) {
+                        $sort_fn = function($a, $b) use ($sort_field) {
+                            $f = addslashes($sort_field);
+                            if ($a->$f == $b->$f) return 0;
+                            return $a->$f < $b->$f ? -1 : 1;
+                        };
+                    } else {
+                        $sort_fn = function($a, $b) {
+                            return strcmp($a->$f, $b->$f);
+                        };
+                    }
 
-                    $sorter = create_function(
-                        $order == 'asc' ? '$a,$b' : '$b,$a',
-                        $sort_fn);
+                    if ($order == 'asc') {
+                        $sorter = function($a, $b) use ($sort_fn) {
+                            return $sort_fn($a, $b);
+                        };
+                    } else {
+                        $sorter = function($b, $a) use ($sort_fn) {
+                            return $sort_fn($a, $b);
+                        };
+                    }
                     usort($contents, $sorter);
 
                     if (isset($post_sort_offset)) {

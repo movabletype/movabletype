@@ -80,6 +80,9 @@ ok($entry, "Test entry loaded");
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
+my $asset = MT::Asset->load(1);
+my ($year, $month) = unpack 'A4A2', $asset->created_on;
+
 # entry we want to capture is dated: 19780131074500
 my $tsdiff = time - ts2epoch($blog, '19780131074500');
 my $daysdiff = int($tsdiff / (60 * 60 * 24));
@@ -91,8 +94,8 @@ my %const = (
     DYNAMIC_CONSTANT => '',
     DAYS_CONSTANT1 => $daysdiff + 2,
     DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => POSIX::strftime("%Y", gmtime(time + $blog->server_offset * 3600)),
-    CURRENT_MONTH => POSIX::strftime("%m", gmtime(time + $blog->server_offset * 3600)),
+    CURRENT_YEAR => $year,
+    CURRENT_MONTH => $month,
     STATIC_FILE_PATH => MT->instance->static_file_path . '/',
     THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
     TEST_ROOT => $test_env->root,
@@ -154,8 +157,8 @@ $const = array(
     'DYNAMIC_CONSTANT' => '1',
     'DAYS_CONSTANT1' => '<DAYS_CONSTANT1>',
     'DAYS_CONSTANT2' => '<DAYS_CONSTANT2>',
-    'CURRENT_YEAR' => strftime("%Y"),
-    'CURRENT_MONTH' => strftime("%m"),
+    'CURRENT_YEAR' => '<CURRENT_YEAR>',
+    'CURRENT_MONTH' => '<CURRENT_MONTH>',
     'STATIC_FILE_PATH' => '<STATIC_FILE_PATH>',
     'THREE_DAYS_AGO' => '<THREE_DAYS_AGO>',
     'TEST_ROOT' => '<TEST_ROOT>',
@@ -169,6 +172,7 @@ $ctx =& $mt->context();
 $db = $mt->db();
 
 $db->db()->Execute( "SET time_zone = '-7:00'" );
+date_default_timezone_set('America/Denver');
 
 $ctx->stash('blog_id', 1);
 $blog = $db->fetch_blog(1);
@@ -176,11 +180,6 @@ $ctx->stash('blog', $blog);
 $ctx->stash('current_timestamp', '20040816135142');
 $mt->init_plugins();
 $entry = $db->fetch_entry(1);
-
-if ($blog->server_offset) {
-    $const['CURRENT_YEAR'] = strftime("%Y", time() + $blog->server_offset * 3600);
-    $const['CURRENT_MONTH'] = strftime("%m", time() + $blog->server_offset * 3600);
-}
 
 $suite = load_tests();
 

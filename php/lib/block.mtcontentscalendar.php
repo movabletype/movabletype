@@ -124,6 +124,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             );
             if(isset($category_set_id)){
                 $category_param['category_set_id'] = $category_set_id;
+            } else {
+                $category_param['category_set_id'] = '> 0';
             }
             $cats = $ctx->mt->db()->fetch_categories($category_param);
             if(!$cats){
@@ -232,7 +234,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                     $no_loop = 1;
                 }
             }
-            if (!$no_loop && count($iter)) {
+            if (!$no_loop && is_array($iter) && count($iter)) {
                 while ($cd = array_shift($iter)) {
                     $data = $cd->data();
                     if(isset($data[$dt_field_id])){

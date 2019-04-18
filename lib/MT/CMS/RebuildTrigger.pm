@@ -477,7 +477,6 @@ sub save {
     $app->validate_magic or return;
     my $blog_id = $app->blog ? $app->blog->id : 0;
     my @p = $app->multi_param;
-    my %params;
 
     my @rebuild_triggers
         = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );

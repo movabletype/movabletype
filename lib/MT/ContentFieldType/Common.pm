@@ -90,7 +90,7 @@ sub terms_text {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $join_terms = $prop->super(@_);
-    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    my $cd_ids     = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
 }
 
@@ -99,7 +99,7 @@ sub terms_datetime {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $join_terms = $prop->super(@_);
-    my $cd_ids = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
+    my $cd_ids     = get_cd_ids_by_left_join( $prop, $join_terms, undef, @_ );
     { id => $cd_ids };
 }
 
@@ -189,6 +189,7 @@ sub ss_validator_multiple {
     my $max         = $options->{max};
     my $min         = $options->{min};
 
+    $data = [] unless defined $data;
     if ( $multiple && $max && @{$data} > $max ) {
         return $app->translate(
             '[_1] less than or equal to [_2] must be selected in "[_3]" field.',
@@ -215,7 +216,7 @@ sub ss_validator_values {
     return undef unless defined $data && $data ne '';
     $data = [$data] unless ref $data eq 'ARRAY';
 
-    my $options = $field_data->{options} || {};
+    my $options      = $field_data->{options} || {};
     my @valid_values = map { $_->{value} }
         grep { $_ && ref $_ eq 'HASH' } @{ $options->{values} || [] };
 
@@ -228,7 +229,7 @@ sub ss_validator_values {
 
     if (@invalid_values) {
         my $invalid_values = join ', ', sort(@invalid_values);
-        my $field_label = $options->{label};
+        my $field_label    = $options->{label};
         return $app->translate( 'Invalid values in "[_1]" field: [_2]',
             $field_label, $invalid_values );
     }
@@ -322,7 +323,7 @@ sub html_text {
 
 sub single_select_options_multiple {
     my $prop = shift;
-    my $app = shift || MT->app;
+    my $app  = shift || MT->app;
 
     my $content_field_id = $prop->{content_field_id};
     my $content_field = MT->model('content_field')->load($content_field_id);
@@ -385,7 +386,7 @@ sub tag_handler_asset {
     my ( $ctx, $args, $cond, $field_data, $value ) = @_;
 
     my $asset_terms = {
-        id => @$value ? $value : 0,
+        id     => @$value ? $value : 0,
         class  => '*',
         parent => \'IS NULL',
     };
@@ -396,13 +397,57 @@ sub tag_handler_asset {
     while ( my $asset = $iter->() ) {
         $assets{ $asset->id } = $asset;
     }
-    my @ordered_assets = map { $assets{$_} } @{$value};
+    my @ordered_assets = grep {$_} map { $assets{$_} } @{$value};
 
     local $ctx->{__stash}{assets} = \@ordered_assets;
     local $args->{sort_order} = 'none'
         if !exists $args->{sort_by} && !exists $args->{sort_order};
 
-    $ctx->invoke_handler( 'assets', $args, $cond );
+    my $res     = '';
+    my $tok     = $ctx->stash('tokens');
+    my $builder = $ctx->stash('builder');
+    my $glue    = $args->{glue};
+    my $per_row = $args->{assets_per_row} || 0;
+    $per_row -= 1 if $per_row;
+    my $row_count   = 0;
+    my $i           = 0;
+    my $total_count = @ordered_assets;
+    my $vars        = $ctx->{__stash}{vars} ||= {};
+
+    MT::Meta::Proxy->bulk_load_meta_objects( \@ordered_assets );
+    for my $asset (@ordered_assets) {
+        local $ctx->{__stash}{asset} = $asset;
+        local $vars->{__first__}     = !$i;
+        local $vars->{__last__}      = !defined $ordered_assets[ $i + 1 ];
+        local $vars->{__odd__}     = ( $i % 2 ) == 0;    # 0-based $i
+        local $vars->{__even__}    = ( $i % 2 ) == 1;
+        local $vars->{__counter__} = $i + 1;
+        my $f = $row_count == 0;
+        my $l = $row_count == $per_row;
+        $l = 1 if ( ( $i + 1 ) == $total_count );
+        my $out = $builder->build(
+            $ctx, $tok,
+            {   %$cond,
+                AssetIsFirstInRow  => $f,
+                AssetIsLastInRow   => $l,
+                AssetsHeader       => !$i,
+                AssetsFooter       => !defined $ordered_assets[ $i + 1 ],
+                ContentFieldHeader => !$i,
+                ContentFieldFooter => !defined $ordered_assets[ $i + 1 ],
+            }
+        );
+        return $ctx->error( $builder->errstr ) unless defined $out;
+        $res .= $glue if defined $glue && length($res) && length($out);
+        $res .= $out;
+        $row_count++;
+        $row_count = 0 if $row_count > $per_row;
+        $i++;
+    }
+    if ( !@ordered_assets ) {
+        return $ctx->_hdlr_pass_tokens_else(@_);
+    }
+
+    $res;
 }
 
 sub field_value_handler_datetime {
@@ -424,7 +469,7 @@ sub field_value_handler_datetime {
 }
 
 sub _has_some_modifier {
-    my $args = shift;
+    my $args     = shift;
     my %arg_keys = map { $_ => 1 } keys %{ $args || {} };
     delete $arg_keys{$_} for qw( convert_breaks words @ );
     %arg_keys ? 1 : 0;

@@ -187,15 +187,19 @@ use_ok('MT::DataAPI::Endpoint::v4::ContentField');
 use_ok('MT::DataAPI::Endpoint::v4::ContentType');
 use_ok('MT::DataAPI::Endpoint::v4::Publish');
 use_ok('MT::DataAPI::Endpoint::v4::Search');
+use_ok('MT::DataAPI::Endpoint::v4::Template');
+use_ok('MT::DataAPI::Endpoint::v4::TemplateMap');
 use_ok('MT::DataAPI::Resource::v4::CategorySet');
 use_ok('MT::DataAPI::Resource::v4::ContentData');
 use_ok('MT::DataAPI::Resource::v4::ContentField');
 use_ok('MT::DataAPI::Resource::v4::ContentType');
+use_ok('MT::DataAPI::Resource::v4::Template');
 use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::ContentType');
 use_ok('MT::Template::Tags::Common');
+use_ok('MT::version');
 
 SKIP: {
 

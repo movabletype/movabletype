@@ -112,15 +112,21 @@ sub options_validation_handler {
 sub options_pre_save_handler {
     my ( $app, $type, $obj, $options ) = @_;
 
-    if (   exists $options->{initial_date}
-        or exists $options->{initial_time} )
+    if ((   defined $options->{initial_date}
+            and $options->{initial_date} ne ''
+        )
+        or ( defined $options->{initial_time}
+            and $options->{initial_time} ne '' )
+        )
     {
         my $date
-            = exists $options->{initial_date}
+            = ( defined $options->{initial_date}
+                and $options->{initial_date} ne '' )
             ? delete $options->{initial_date}
             : '1970-01-01';
         my $time
-            = exists $options->{initial_time}
+            = ( defined $options->{initial_time}
+                and $options->{initial_time} ne '' )
             ? delete $options->{initial_time}
             : '00:00:00';
         $options->{initial_value} = "$date $time";

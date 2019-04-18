@@ -54,13 +54,11 @@ sub save_filter {
 sub _retrieve_archive_types {
     my ( $app, $map ) = @_;
 
-    my $tmpl = $app->model('template')->load( $map->template_id )
-        or return [];
+    my $tmpl     = $map->template or return [];
     my $obj_type = $tmpl->type;
 
-    my @at = $app->publisher->archive_types;
     my @archive_types;
-    for my $at (@at) {
+    for my $at ( $app->publisher->archive_types ) {
         my $archiver      = $app->publisher->archiver($at);
         my $archive_label = $archiver->archive_label;
         $archive_label = $at unless $archive_label;
@@ -71,8 +69,11 @@ sub _retrieve_archive_types {
             || ( $obj_type eq 'category' ) )
         {
 
-            # only include if it is NOT an entry-based archive type
-            next if $archiver->entry_based;
+          # only include if it is an non-content-type group-based archive type
+            next
+                if $archiver->entry_based
+                || $archiver->contenttype_based
+                || $archiver->contenttype_group_based;
         }
         elsif ( $obj_type eq 'page' ) {
 
@@ -86,6 +87,29 @@ sub _retrieve_archive_types {
             next unless $archiver->entry_based;
             next if $archiver->entry_class eq 'page';
         }
+        elsif ( $obj_type eq 'ct_archive' ) {
+
+            # only include if it is a contenttype-group-based archive type
+            next
+                unless $app->current_api_version >= 4
+                && $archiver->contenttype_group_based;
+
+            if ( $archiver->contenttype_category_based ) {
+                my $has_cat_field = $app->model('content_field')->count(
+                    {   content_type_id => $tmpl->content_type_id || 0,
+                        type            => 'categories',
+                    }
+                );
+                next unless $has_cat_field;
+            }
+        }
+        elsif ( $obj_type eq 'ct' ) {
+
+            # only include if it is a contenttype-based archive type
+            next
+                unless $app->current_api_version >= 4
+                && $archiver->contenttype_based;
+        }
         push @archive_types, $at;
     }
 
@@ -95,16 +119,27 @@ sub _retrieve_archive_types {
 sub pre_save {
     my ( $cb, $app, $obj ) = @_;
 
-    if (!$obj->is_preferred
-        && !$app->model('templatemap')->exist(
-            {   blog_id      => $obj->blog_id,
-                archive_type => $obj->archive_type,
-                is_preferred => 1,
-            }
-        )
-        )
-    {
-        $obj->is_preferred(1);
+    if ( !$obj->is_preferred ) {
+        my $terms = {
+            blog_id      => $obj->blog_id,
+            archive_type => $obj->archive_type,
+            is_preferred => 1,
+        };
+        my $tmpl = $obj->template;
+        my $args = {
+            $tmpl->content_type_id
+            ? ( join => $app->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $tmpl->content_type_id,
+                    },
+                ),
+                )
+            : (),
+        };
+        if ( !$app->model('templatemap')->exist( $terms, $args ) ) {
+            $obj->is_preferred(1);
+        }
     }
 
     return 1;
@@ -115,14 +150,26 @@ sub post_save {
     my ( $app, $obj, $original ) = @_;
 
     if ( $obj->is_preferred ) {
-        my @maps = $app->model('templatemap')->load(
-            {   id           => { not => $obj->id },
-                blog_id      => $obj->blog_id,
-                archive_type => $obj->archive_type,
-                is_preferred => 1,
-            }
-        );
+        my $terms = {
+            id           => { not => $obj->id },
+            blog_id      => $obj->blog_id,
+            archive_type => $obj->archive_type,
+            is_preferred => 1,
+        };
+        my $tmpl = $obj->template;
+        my $args = {
+            $tmpl->content_type_id
+            ? ( join => $app->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $tmpl->content_type_id,
+                    },
+                ),
+                )
+            : (),
+        };
 
+        my @maps = $app->model('templatemap')->load( $terms, $args );
         for my $m (@maps) {
             $m->is_preferred(0);
             $m->save or return;
@@ -186,21 +233,38 @@ sub post_delete {
     my $eh = shift;
     my ( $app, $obj ) = @_;
 
+    my $tmpl = $obj->template;
+    my $args = {
+        $tmpl->content_type_id
+        ? ( join => $app->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $tmpl->content_type_id,
+                },
+            ),
+            )
+        : (),
+    };
+
     if (!$app->model('templatemap')->exist(
             {   blog_id      => $obj->blog_id,
                 archive_type => $obj->archive_type,
                 is_preferred => 1,
-            }
+            },
+            $args,
         )
         )
     {
         my $m = $app->model('templatemap')->load(
-            {   blog_id      => $obj->blog,
+            {   blog_id      => $obj->blog_id,
                 archive_type => $obj->archive_type,
-            }
+            },
+            $args,
         );
-        $m->is_preferred(1);
-        $m->save or return;
+        if ($m) {
+            $m->is_preferred(1);
+            $m->save or return;
+        }
     }
 
     my $site = $app->blog;

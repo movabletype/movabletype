@@ -1534,7 +1534,7 @@ sub filtered_list {
         $view = [$view] unless ref $view;
         my %view = map { $_ => 1 } @$view;
         if ( !$view{$scope} ) {
-            return $app->return_to_dashboard( redirect => 1, );
+            return $app->json_error( $app->translate('Invalid request') );
         }
     }
 
@@ -1550,7 +1550,7 @@ sub filtered_list {
             $list_permission = $list_permission->{permit_action};
         }
         my $allowed = 0;
-        my @act;
+        my @permissions;
         if ( 'CODE' eq ref $list_permission ) {
             eval { $list_permission = $list_permission->($app); };
             return $app->json_error(
@@ -1563,7 +1563,7 @@ sub filtered_list {
         {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
+            eval { $list_permission = $code->($app); };
             return $app->json_error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
@@ -1572,12 +1572,12 @@ sub filtered_list {
         }
 
         if ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
+            @permissions = @$list_permission;
         }
         else {
-            @act = split /\s*,\s*/, $list_permission;
+            @permissions = split /\s*,\s*/, $list_permission;
         }
-        foreach my $p (@act) {
+        foreach my $p (@permissions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
@@ -1586,8 +1586,12 @@ sub filtered_list {
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
         }
-        return $app->permission_denied()
-            unless $allowed;
+        return $app->json_error(
+            $app->translate(
+                'Permission denied: [_1]',
+                join( ',', @permissions )
+            )
+        ) unless $allowed;
     }
 
     my $filteritems;
@@ -1697,7 +1701,7 @@ sub filtered_list {
 
     my $count_result = $filter->count_objects(%count_options);
     if ( !defined $count_result ) {
-        return $app->error(
+        return $app->json_error(
             MT->translate(
                 "An error occurred while counting objects: [_1]",
                 $filter->errstr
@@ -1716,7 +1720,7 @@ sub filtered_list {
 
         $objs = $filter->load_objects(%load_options);
         if ( !defined $objs ) {
-            return $app->error(
+            return $app->json_error(
                 MT->translate(
                     "An error occurred while loading objects: [_1]",
                     $filter->errstr

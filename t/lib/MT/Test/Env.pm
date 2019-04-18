@@ -295,6 +295,7 @@ sub _fixture_file {
 sub prepare_fixture {
     my $self = shift;
 
+    require MT::Test;
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1" or die $@;
     MT->set_instance( $app->new );

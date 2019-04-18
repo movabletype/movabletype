@@ -282,10 +282,11 @@ sub new_password {
         elsif ( $new_password ne $again ) {
             $param->{'error'} = $app->translate('Passwords do not match');
         }
-
-        $param->{'error'} = eval {
-            $app->verify_password_strength( $user->name, $new_password );
-        };
+        else {
+            $param->{'error'} = eval {
+                $app->verify_password_strength( $user->name, $new_password );
+            };
+        }
 
         if ( not $param->{'error'} ) {
             my $redirect = $user->password_reset_return_to || '';

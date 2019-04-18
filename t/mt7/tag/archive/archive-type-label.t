@@ -98,25 +98,25 @@ de
 --- template
 <mt:Archives type="[% archive_type %]"><mt:ArchiveTypeLabel></mt:Archives>
 --- expected_author
-Autorenarchiv
+Autor
 --- expected_author_daily
-tägliches Autorenarchiv
+Autor täglich
 --- expected_author_monthly
-monatliches Autorenarchiv
+Autor monatlich
 --- expected_author_weekly
-wöchentliches Autorenarchiv
+Autor wöchentlich
 --- expected_author_yearly
-jährliches Autorenarchiv
+Autor jährlich
 --- expected_category
-Kategoriearchiv
+Kategorie
 --- expected_category_daily
-tägliches Kategoriearchiv
+Kategorie täglich
 --- expected_category_monthly
-monatliches Kategoriearchiv
+Kategorie monatlich
 --- expected_category_weekly
-wöchentliches Kategoriearchiv
+Kategorie wöchentlich
 --- expected_category_yearly
-jährliches Kategoriearchiv
+Kategorie jährlich
 --- expected_contenttype
 Inhaltstyparchiv
 --- expected_contenttype_author
@@ -148,17 +148,17 @@ wöchentliches Inhaltstyparchiv
 --- expected_contenttype_yearly
 jährliches Inhaltstyparchiv
 --- expected_daily
-Tagesarchiv
+Täglich
 --- expected_individual
-Einzelarchiv
+Individuell
 --- expected_monthly
-Monatsarchiv
+Monatlich
 --- expected_page
-Seitenarchiv
+Seite
 --- expected_weekly
-Wochenarchiv
+Wöchentlich
 --- expected_yearly
-Jahresarchiv
+Jährlich
 
 
 === mt:ArchiveTypeLabel en_us
@@ -248,25 +248,25 @@ es
 --- template
 <mt:Archives type="[% archive_type %]"><mt:ArchiveTypeLabel></mt:Archives>
 --- expected_author
-por autor
+Autor
 --- expected_author_daily
-por día y autor
+Diarios del autor
 --- expected_author_monthly
-por mes y autor
+Mensuales del autor
 --- expected_author_weekly
-por semana y autor
+Semanales del autor
 --- expected_author_yearly
-por año y autor
+Anuales del autor
 --- expected_category
-por categoría
+Categoría
 --- expected_category_daily
-por día y categoría
+Categorías diarias
 --- expected_category_monthly
-por mes y categoría
+Categorías mensuales
 --- expected_category_weekly
-por semana y categoría
+Categorías semanales
 --- expected_category_yearly
-por año y categoría
+Categorías anuales
 --- expected_contenttype
 ContentType
 --- expected_contenttype_author
@@ -298,17 +298,17 @@ ContentType semanal
 --- expected_contenttype_yearly
 ContentType anual
 --- expected_daily
-diarios
+Diarias
 --- expected_individual
-por entrada
+Inidivual
 --- expected_monthly
-mensuales
+Mensuales
 --- expected_page
-por página
+Página
 --- expected_weekly
-semanales
+Semanales
 --- expected_yearly
-anuales
+Anuales
 
 
 === mt:ArchiveTypeLabel fr
@@ -323,25 +323,25 @@ fr
 --- template
 <mt:Archives type="[% archive_type %]"><mt:ArchiveTypeLabel></mt:Archives>
 --- expected_author
-par auteurs
+Auteur
 --- expected_author_daily
-par auteurs et jours
+Par auteurs et jours
 --- expected_author_monthly
-par auteurs et semaines
+Par auteurs et mois
 --- expected_author_weekly
-par auteurs et années
+Par auteurs et semaines
 --- expected_author_yearly
-par auteurs et années
+Par auteurs et années
 --- expected_category
-par catégories
+Catégorie
 --- expected_category_daily
-par catégories et jours
+Par catégories et jours
 --- expected_category_monthly
-par catégories et mois
+Par catégories et mois
 --- expected_category_weekly
-par catégories et semaines
+Par catégories et semaines
 --- expected_category_yearly
-par catégories et années
+Par catégories et années
 --- expected_contenttype
 ContentType
 --- expected_contenttype_author
@@ -373,17 +373,17 @@ ContentType hebdomadaires
 --- expected_contenttype_yearly
 ContentType annuelles
 --- expected_daily
-journalières
+Journalières
 --- expected_individual
-par notes
+Individuelles
 --- expected_monthly
-mensuelles
+Mensuelles
 --- expected_page
-par pages
+Page
 --- expected_weekly
-hebdomadaires
+Hebdomadaires
 --- expected_yearly
-annuelles
+Annuelles
 
 
 === mt:ArchiveTypeLabel nl
@@ -398,7 +398,7 @@ nl
 --- template
 <mt:Archives type="[% archive_type %]"><mt:ArchiveTypeLabel></mt:Archives>
 --- expected_author
-per auteur
+Auteur
 --- expected_author_daily
 per auteur per dag
 --- expected_author_monthly
@@ -408,7 +408,7 @@ per auteur per week
 --- expected_author_yearly
 per auteur per jaar
 --- expected_category
-per categorie
+Categorie
 --- expected_category_daily
 per categorie per dag
 --- expected_category_monthly
@@ -454,7 +454,7 @@ per bericht
 --- expected_monthly
 per maand
 --- expected_page
-per pagina
+Pagina
 --- expected_weekly
 per week
 --- expected_yearly

@@ -55,44 +55,49 @@ sub create {
         = $app->resource_object( 'content_field', $orig_content_field )
         or return;
 
-    save_object(
-        $app,
-        'content_field',
-        $new_content_field,
+    save_object( $app, 'content_field', $new_content_field,
         $orig_content_field,
-        sub {
-            my $save_method = shift;
-            $save_method->() or return;
-
-            my $fields = $content_type->fields;
-            my ($field)
-                = grep { ( $_->{id} || 0 ) eq $new_content_field->id }
-                @$fields;
-            unless ($field) {
-                $field = { id => $new_content_field->id };
-                push @$fields, $field;
-            }
-            $field->{options} ||= {};
-            $field->{options}{label} = $new_content_field->name;
-
-            my $hashes
-                = $app->request('data_api_content_field_hashes_for_save')
-                || [];
-            my $hash = shift @$hashes;
-            return unless $hash;
-
-            $field->{options}
-                = Hash::Merge::Simple->merge( $field->{options},
-                $hash->{options} );
-
-            $content_type->fields($fields);
-            $content_type->save
-                or return $new_content_field->error( $content_type->errstr );
-
-        }
+        _build_around_filter( $app, $content_type, $new_content_field ),
     ) or return;
 
     $new_content_field;
+}
+
+sub _build_around_filter {
+    my ( $app, $content_type, $new_content_field ) = @_;
+    return sub {
+        my $save_method = shift;
+        $save_method->() or return;
+
+        my $fields = $content_type->fields;
+        my ($field)
+            = grep { ( $_->{id} || 0 ) eq $new_content_field->id } @$fields;
+        unless ($field) {
+            $field = { id => $new_content_field->id };
+            push @$fields, $field;
+        }
+        $field->{options} ||= {};
+        $field->{options}{label}       = $new_content_field->name;
+        $field->{options}{description} = $new_content_field->description;
+
+        $field->{type}      = $new_content_field->type;
+        $field->{unique_id} = $new_content_field->unique_id;
+        my $content_field_types = $app->registry('content_field_types');
+        my $type_label = $content_field_types->{ $field->{type} }->{label};
+        $type_label = $type_label->() if 'CODE' eq ref $type_label;
+        $field->{type_label} = $type_label;
+        $field->{order}      = scalar @$fields || 0;
+
+        my $hashes = $app->request('data_api_content_field_hashes_for_save');
+        if ( my $hash = shift @{ $hashes || [] } ) {
+            $field->{options} = Hash::Merge::Simple->merge( $field->{options},
+                $hash->{options} );
+        }
+
+        $content_type->fields($fields);
+        $content_type->save
+            or return $new_content_field->error( $content_type->errstr );
+    };
 }
 
 sub get {
@@ -125,7 +130,11 @@ sub update {
     my $new_content_field
         = $app->resource_object( 'content_field', $orig_content_field );
 
-    save_object( $app, 'content_field', $new_content_field ) or return;
+    save_object(
+        $app, 'content_field', $new_content_field, undef,
+        _build_around_filter( $app, $content_type, $new_content_field ),
+
+    ) or return;
 
     $new_content_field;
 }
@@ -178,7 +187,7 @@ sub permutate {
     return _invalid_error($app) if ref $content_fields_array ne 'ARRAY';
 
     my @content_field_ids = map { $_->{id} } @$content_fields_array;
-    my @content_fields = MT->model('content_field')->load(
+    my @content_fields    = MT->model('content_field')->load(
         {   id              => \@content_field_ids,
             content_type_id => $content_type->id,
         }

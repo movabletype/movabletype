@@ -28,7 +28,7 @@ function smarty_block_mtarchives($args, $content, &$ctx, &$repeat) {
         $blog = $ctx->stash('blog');
     }
 
-    if ($i < count($at)) {
+    if (is_array($at) && $i < count($at)) {
         $curr_at = $at[$i];
 
         require_once("archive_lib.php");

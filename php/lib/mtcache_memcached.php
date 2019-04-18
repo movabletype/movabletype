@@ -10,9 +10,9 @@ class MTCache_memcached extends MTCacheBase {
 
     var $_server;
 
-    function MTCache_memcached ($ttl = 0) {
+    function __construct ($ttl = 0) {
         $this->_server = new Memcache;
-        parent::MTCacheBase($ttl);
+        parent::__construct($ttl);
     }
 
     function connect ($servers) {

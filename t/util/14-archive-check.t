@@ -193,8 +193,11 @@ subtest 'upwards' => sub {
             $type, $tempdir,
             sub {
                 my $member = shift;
-                $member->$method(
-                    File::Spec->catdir( $member->$method, '..' ) );
+
+                # Avoid File::Spec->catdir() here because
+                # File::Spec::Win32::catdir calls _canon_cat()
+                # and removes .. silently
+                $member->$method( $member->$method . '/..' );
             }
         );
 

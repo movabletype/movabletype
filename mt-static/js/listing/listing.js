@@ -571,7 +571,7 @@ riot.tag2('list-filter-item-field', '<virtual></virtual>', '', '', function(opts
     this.setValues()
 });
 
-riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter" tabindex="-1"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">{trans( \'Select Filter\' )}</h5> <button type="button" class="close" data-dismiss="modal"><span>×</span></button> </div> <div class="modal-body"> <div class="filter-list-block"> <h6 class="filter-list-label">{trans( \'My Filters\' )}</h6> <ul id="user-filters" class="list-unstyled editable"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗1⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <virtual if="{!parent.isEditingFilter[id]}"> <a href="#" onclick="{applyFilter}"> {label} </a> <div class="float-right d-none d-md-block"> <a href="#" onclick="{startEditingFilter}">[{trans( \'rename\' )}]</a> <a href="#" class="d-inline-block" onclick="{removeFilter}"> <ss title="{trans(\'Remove\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_trash\'}"> </ss> </a> </div> </virtual> <div class="form-inline" if="{parent.isEditingFilter[id]}"> <div class="form-group form-group-sm"> <input type="text" class="form-control rename-filter-input" riot-value="{label}" ref="label"> <button class="btn btn-default form-control" onclick="{renameFilter}"> {trans(\'Save\')} </button> <button class="btn btn-default form-control" onclick="{stopEditingFilter}"> {trans(\'Cancel\')} </button> </div> </div> </li> <li class="filter line d-none d-md-list-item"> <a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link d-md-inline-block" onclick="{createNewFilter}"> <ss title="{trans(\'Add\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_add\'}"> </ss> {trans( \'Create New\' )} </a> </li> </ul> </div> <div class="filter-list-block" if="{store.hasSystemFilter()}"> <h6 class="filter-list-label">{trans( \'Built in Filters\' )}</h6> <ul id="built-in-filters" class="list-unstyled"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗0⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <a href="#" onclick="{applyFilter}"> {label} </a> </li> </ul> </div> </div> </div> </div> </div>', '', '', function(opts) {
+riot.tag2('list-filter-select-modal', '<div class="modal fade" id="select-filter" tabindex="-1"> <div class="modal-dialog"> <div class="modal-content"> <div class="modal-header"> <h5 class="modal-title">{trans( \'Select Filter\' )}</h5> <button type="button" class="close" data-dismiss="modal"><span>×</span></button> </div> <div class="modal-body"> <div class="filter-list-block"> <h6 class="filter-list-label">{trans( \'My Filters\' )}</h6> <ul id="user-filters" class="list-unstyled editable"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗1⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <virtual if="{!parent.isEditingFilter[id]}"> <a href="#" onclick="{applyFilter}"> {label} </a> <div class="float-right d-none d-md-block"> <a href="#" onclick="{startEditingFilter}">[{trans( \'rename\' )}]</a> <a href="#" class="d-inline-block" onclick="{removeFilter}"> <ss title="{trans(\'Remove\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_trash\'}"> </ss> </a> </div> </virtual> <div class="form-inline" if="{parent.isEditingFilter[id]}"> <div class="form-group form-group-sm"> <input type="text" class="form-control rename-filter-input" riot-value="{label}" ref="label"> <button class="btn btn-default form-control" onclick="{renameFilter}"> {trans(\'Save\')} </button> <button class="btn btn-default form-control" onclick="{stopEditingFilter}"> {trans(\'Cancel\')} </button> </div> </div> </li> <li class="filter line d-none d-md-block"> <a href="#" id="new_filter" class="icon-mini-left addnew create-new apply-link d-md-inline-block" onclick="{createNewFilter}"> <ss title="{trans(\'Add\')}" class="mt-icon mt-icon--sm" href="{StaticURI + \'images/sprite.svg#ic_add\'}"> </ss> {trans( \'Create New\' )} </a> </li> </ul> </div> <div class="filter-list-block" if="{store.hasSystemFilter()}"> <h6 class="filter-list-label">{trans( \'Built in Filters\' )}</h6> <ul id="built-in-filters" class="list-unstyled"> <li class="filter line" each="{store.filters}" if="{can_save == ⁗0⁗}" data-mt-list-filter-id="{id}" data-mt-list-filter-label="{label}"> <a href="#" onclick="{applyFilter}"> {label} </a> </li> </ul> </div> </div> </div> </div> </div>', '', '', function(opts) {
     this.mixin('listTop')
     this.mixin('listFilterTop')
 
@@ -815,8 +815,7 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
     this.mixin('listTop')
 
     this.classes = function(index) {
-      var columnIndex = this.columnIndex(index)
-      var nameClass = this.store.columns[columnIndex].id
+      var nameClass = this.store.showColumns[index].id
       var classes
       if (this.store.hasMobileColumn()) {
         if (this.store.getMobileColumnIndex() == index) {
@@ -825,7 +824,7 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
           classes = 'd-none d-md-table-cell'
         }
       } else {
-        if (this.store.columns[columnIndex].primary) {
+        if (this.store.showColumns[index].primary) {
           classes = ''
         } else {
           classes = 'd-none d-md-table-cell'
@@ -835,13 +834,6 @@ riot.tag2('list-table-row', '<td if="{listTop.opts.hasListActions}" class="{d-no
         return nameClass + ' ' + classes
       } else {
         return nameClass
-      }
-    }.bind(this)
-    this.columnIndex = function(index) {
-      if (this.store.columns[0].id == 'id' && !this.store.columns[0].checked) {
-        return index + 1
-      } else {
-        return index
       }
     }.bind(this)
 });

@@ -1,5 +1,15 @@
 # MT test documentation
 
+## Setup
+
+Create database `mt_test` and user `mt`
+
+```
+$ mysql -uroot
+mysql> create database mt_test character set utf8;
+mysql> grant all privileges on mt_test.* to mt@localhost;
+```
+
 ## Test commands
 
 ### default

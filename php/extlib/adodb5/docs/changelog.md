@@ -5,6 +5,24 @@ Older changelogs:
 [v3.x](changelog_v3.x.md),
 [v2.x](changelog_v2.x.md).
 
+## 5.20.14 - 06-Jan-2019
+
+- security: Denial of service in adodb_date(). #467
+- core: Fix support for getMenu with ADODB_FETCH_ASSOC. #460
+- perf/mysql: fix tables() function incompatible with parent. #435
+- perf/mysql: fix error when logging slow queries. #463
+
+## 5.20.13 - 06-Aug-2018
+
+- core: Fix query execution failures with mismatched quotes. #420
+- ldap: Fix connections using URIs. #340
+- mssql: Fix Time field format, allowing autoExecute() to inserting time. #432
+- mssql: Fix Insert_ID returning null with table name in brackets. #313
+- mssql: Fix count wrapper. #423
+- oci8: Fix prepared statements failure. #318
+- oci8po: Fix incorrect query parameter replacements. #370
+- pdo: fix PHP notice due to uninitialized variable. #437
+
 ## 5.20.12 - 30-Mar-2018
 
 - adodb: PHP 7.2 compatibility
@@ -361,7 +379,7 @@ other database types as well; all drivers derived from the above are also impact
 - BeginTrans/CommitTrans/RollbackTrans return true/false correctly on success/failure now for mssql, odbc, oci8, mysqlt, mysqli, postgres, pdo.
 - Replace() now quotes all non-null values including numeric ones.
 - Postgresql qstr() now returns booleans as *true* and *false* without quotes.
-- MetaForeignKeys in mysql and mysqli drivers had this problem: A table can have two foreign keys pointing to the same column in the same table. The original code will incorrectly report only the last column. Fixed. https://sourceforge.net/tracker/index.php?func=detail&aid=2287278&group_id=42718&atid=433976
+- MetaForeignKeys in mysql and mysqli drivers had this problem: A table can have two foreign keys pointing to the same column in the same table. The original code will incorrectly report only the last column. Fixed. https://sourceforge.net/p/adodb/bugs/100/
 - Passing in full ado connection string in $argHostname with ado drivers was failing in adodb5 due to bug. Fixed.
 - Fixed memcachelib flushcache and flushall bugs. Also fixed possible timeCreated = 0 problem in readcache. (Also in adodb 4.992). Thanks AlexB_UK (alexbarnes#hotmail.com).
 - Fixed a notice in adodb-sessions2.inc.php, in _conn(). Thx bober m.derlukiewicz#rocktech.remove_me.pl;
