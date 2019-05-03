@@ -1,0 +1,22 @@
+version: 2
+jobs:
+  coverall:
+    docker:
+      - image: masiuchi/docker-mt-test:trusty-full
+    steps:
+      - checkout
+      - run: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+
+workflows:
+   version: 2
+   nightly:
+     triggers:
+       - schedule:
+           cron: "0 0 * * *"
+           filters:
+             branches:
+               only:
+                 - develop
+     jobs:
+       - coverall
+
