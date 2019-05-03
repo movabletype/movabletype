@@ -9,6 +9,9 @@ jobs:
 
 workflows:
    version: 2
+   normal_test_workflow:
+     jobs:
+       - coverall
    nightly:
      triggers:
        - schedule:
