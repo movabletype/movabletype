@@ -5,7 +5,7 @@ jobs:
       - image: masiuchi/docker-mt-test:trusty-full
     steps:
       - checkout
-      - run: prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+      - run: bash /docker-entrypoint.sh prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
 
 workflows:
    version: 2
