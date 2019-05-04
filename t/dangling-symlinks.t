@@ -36,4 +36,6 @@ sub test {
 
 find( \&test, getcwd );
 
+ok 1; # to pass when there's no symlink
+
 done_testing;
