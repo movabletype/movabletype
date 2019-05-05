@@ -32,7 +32,6 @@ env:
 before_script:
   - rm t/34-sqlite.t
   - rm plugins/MultiBlog/t/02.tags.t
-  - rm t/dangling-symlinks.t
 
 script:
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
