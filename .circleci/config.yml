@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  coverall:
+  coveralls:
     docker:
       - image: masiuchi/docker-mt-test:trusty-full
     steps:
@@ -11,7 +11,7 @@ workflows:
    version: 2
    normal_test_workflow:
      jobs:
-       - coverall
+       - coveralls
    nightly:
      triggers:
        - schedule:
@@ -21,5 +21,5 @@ workflows:
                only:
                  - develop
      jobs:
-       - coverall
+       - coveralls
 
