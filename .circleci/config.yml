@@ -10,7 +10,7 @@ jobs:
       - run:
           name: Test and send coverage report
           command: |
-            HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/00-compile.t
+            HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/class/80-serialize-leak.t
             cover -report coveralls
 
 workflows:
