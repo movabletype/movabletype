@@ -16,13 +16,10 @@ jobs:
 
 workflows:
    version: 2
-   normal_test_workflow:
-     jobs:
-       - coveralls
    nightly:
      triggers:
        - schedule:
-           cron: "0 0 * * *"
+           cron: "0 18 * * *"
            filters:
              branches:
                only:
