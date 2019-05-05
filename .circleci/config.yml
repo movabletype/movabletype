@@ -5,8 +5,7 @@ jobs:
       - image: masiuchi/docker-mt-test:trusty-full
     steps:
       - checkout
-      - run: COVERALLS_REPO_TOKEN= cpm install -g --test Devel::Cover::Report::Coveralls
-      - run: bash /docker-entrypoint.sh HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+      - run: bash /docker-entrypoint.sh COVERALLS_REPO_TOKEN= cpm install -g --test Devel::Cover::Report::Coveralls && HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
       - run: cover -port coveralls
 
 workflows:
