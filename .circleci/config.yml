@@ -6,8 +6,8 @@ jobs:
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls
-      - run: HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t bash /docker-entrypoint.sh prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
-      - run: cover -port coveralls
+      - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
+      - run: HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t; cover -port coveralls
 
 workflows:
    version: 2
