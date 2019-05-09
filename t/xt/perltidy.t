@@ -6,7 +6,7 @@ use Test::PerlTidy;
 run_tests(
     path       => '.',
     perltidyrc => './.perltidyrc',
-    exclude    => [ qr/\/L10N\//, 'build/', 'extlib/', 't/' ],
+    exclude    => [ qr/\/L10N\//, 'build/', qr/extlib\//, 't/' ],
     mute       => 1,
 );
 
