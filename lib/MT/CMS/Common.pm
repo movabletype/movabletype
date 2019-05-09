@@ -409,7 +409,7 @@ sub save {
 
     if ( $type eq 'template' ) {
         my $archive_type = $app->param('archive_type');
-        my $param_type = $app->param('type') || '';
+        my $param_type   = $app->param('type') || '';
         if (   $param_type eq 'archive'
             && $archive_type )
         {
@@ -610,7 +610,7 @@ sub save {
             }
             if (%$terms) {
                 my @maps = MT::TemplateMap->load($terms);
-                my @ats = map { $_->archive_type } @maps;
+                my @ats  = map { $_->archive_type } @maps;
                 if ( $#ats >= 0 ) {
                     $app->param( 'type', join( ',', @ats ) );
                     $app->param( 'with_indexes',    1 );
@@ -649,7 +649,7 @@ sub save {
         return $app->forward('filtered_list');
     }
 
-    $app->add_return_arg( 'id' => $obj->id ) if !$original->id;
+    $app->add_return_arg( 'id'    => $obj->id ) if !$original->id;
     $app->add_return_arg( 'saved' => 1 );
     $app->add_return_arg(
         ( $original->id ? 'saved_changes' : 'saved_added' ) => 1 );
@@ -1101,7 +1101,7 @@ sub list {
     my $rows        = $list_pref->{rows}        || 50;    ## FIXME: Hardcoded
     my $last_filter = $list_pref->{last_filter} || '';
     $last_filter = '' if $last_filter eq '_allpass';
-    my $last_items = $list_pref->{last_items} || [];
+    my $last_items         = $list_pref->{last_items} || [];
     my $initial_sys_filter = $app->param('filter_key');
     if ( !$initial_sys_filter && $last_filter =~ /\D/ ) {
         $initial_sys_filter = $last_filter;
@@ -1231,7 +1231,7 @@ sub list {
     my @list_columns;
     for my $prop ( values %$list_props ) {
         next if !$prop->can_display($scope);
-        my $id = $prop->id;
+        my $id   = $prop->id;
         my $disp = $prop->display || 'optional';
         my $show
             = $disp eq 'force'   ? 1
@@ -1267,16 +1267,16 @@ sub list {
         }
         push @list_columns,
             {
-            id        => $prop->id,
-            type      => $prop->type,
-            label     => MT::Util::encode_html( $prop->label ),
-            primary   => $primary_col{$id} ? 1 : 0,
-            col_class => $prop->col_class,
-            sortable  => $prop->can_sort($scope),
-            sorted    => $prop->id eq $default_sort ? 1 : 0,
-            display   => $show,
-            is_default => $force || $default,
-            checked => $show,
+            id                 => $prop->id,
+            type               => $prop->type,
+            label              => MT::Util::encode_html( $prop->label ),
+            primary            => $primary_col{$id} ? 1 : 0,
+            col_class          => $prop->col_class,
+            sortable           => $prop->can_sort($scope),
+            sorted             => $prop->id eq $default_sort ? 1 : 0,
+            display            => $show,
+            is_default         => $force || $default,
+            checked            => $show,
             force_display      => $force,
             default_sort_order => $prop->default_sort_order || 'ascend',
             order              => $prop->order,
@@ -1483,7 +1483,7 @@ sub filtered_list {
         = !$blog         ? undef
         : $blog->is_blog ? [$blog_id]
         :                  [ $blog->id, map { $_->id } @{ $blog->blogs } ];
-    my $debug = {};
+    my $debug    = {};
     my @messages = @{ $forward_params{messages} || [] };
 
     if ($MT::DebugMode) {
@@ -1513,7 +1513,7 @@ sub filtered_list {
         $debug->{section} = sub { };
     }
 
-    my $ds = $app->param('datasource');
+    my $ds      = $app->param('datasource');
     my $setting = MT->registry( listing_screens => $ds )
         or return $app->json_error( $app->translate('Unknown list type') );
 
@@ -1637,7 +1637,7 @@ sub filtered_list {
         }
     );
     my $limit = $app->param('limit') || 50;    # FIXME: hard coded.
-    my $page = $app->param('page');
+    my $page  = $app->param('page');
     $page = 1 if !$page || $page =~ /\D/;
     my $offset = ( $page - 1 ) * $limit;
 
@@ -1648,9 +1648,9 @@ sub filtered_list {
     ## FIXME: take identifical column from column defs.
     my $cols
         = defined( $app->param('columns') ) ? $app->param('columns') : '';
-    my @cols = grep {/^[^\.]+$/} split( ',', $cols );
+    my @cols    = grep {/^[^\.]+$/} split( ',', $cols );
     my @subcols = grep {/\./} split( ',', $cols );
-    my $class = MT->model( $setting->{object_type} || $ds );
+    my $class   = MT->model( $setting->{object_type} || $ds );
     if ( $class->has_column('id') ) {
         unshift @cols,    '__id';
         unshift @subcols, '__id';
@@ -1662,7 +1662,7 @@ sub filtered_list {
 
     $MT::DebugMode && $debug->{print}->("COLUMNS: $cols");
 
-    my $scope_mode = $setting->{scope_mode} || 'wide';
+    my $scope_mode   = $setting->{scope_mode} || 'wide';
     my @blog_id_term = (
          !$blog_id              ? ()
         : $scope_mode eq 'none' ? ()
@@ -1771,7 +1771,7 @@ sub filtered_list {
             elsif ( $prop->has('html_link') ) {
                 for my $obj (@$objs) {
                     my $link = $prop->html_link( $obj, $app, \%load_options );
-                    my $raw = MT::Util::encode_html(
+                    my $raw  = MT::Util::encode_html(
                         $prop->raw( $obj, $app, \%load_options ) );
                     push @result,
                         ( $link ? qq{<a href="$link">$raw</a>} : $raw );
@@ -1796,7 +1796,7 @@ sub filtered_list {
     ## Save user list prefs.
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows} = $limit;
+    $list_pref->{rows}    = $limit;
     $list_pref->{columns} = [ split ',', $cols ];
     $list_pref->{last_filter}
         = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
@@ -1859,7 +1859,7 @@ sub save_list_prefs {
     my $cols       = $app->param('columns') || '';
     my $list_prefs = $app->user->list_prefs || {};
     my $list_pref = $list_prefs->{$ds}{$blog_id} ||= {};
-    $list_pref->{rows} = $limit;
+    $list_pref->{rows}    = $limit;
     $list_pref->{columns} = [ split ',', $cols ];
 
 #$list_pref->{last_filter} = $filter_id ? $filter_id : $allpass ? '_allpass' : '';
@@ -2020,7 +2020,7 @@ sub delete {
         }
         elsif ( $type eq 'website' ) {
             my $blog_class = $app->model('blog');
-            my $count = $blog_class->count( { parent_id => $obj->id, } );
+            my $count      = $blog_class->count( { parent_id => $obj->id, } );
             if ( $count > 0 ) {
                 push @not_deleted, $obj->id;
                 next;
@@ -2055,7 +2055,11 @@ sub delete {
                 = $app->model('content_field')->exist(
                 {   blog_id                 => $obj->blog_id,
                     related_content_type_id => $obj->id,
-                }
+                },
+                {   join => $app->model('content_type')
+                        ->join_on( undef, { id => \'= cf_content_type_id', },
+                        ),
+                },
                 );
             if ($used_in_content_type_field) {
                 push @not_deleted, $obj->id;
@@ -2067,7 +2071,11 @@ sub delete {
                 = $app->model('content_field')->exist(
                 {   blog_id            => $obj->blog_id,
                     related_cat_set_id => $obj->id,
-                }
+                },
+                {   join => $app->model('content_type')
+                        ->join_on( undef, { id => \'= cf_content_type_id', },
+                        ),
+                },
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
@@ -2106,7 +2114,7 @@ sub delete {
 
     if ( $#not_deleted >= 0 ) {
         $return_arg{not_deleted} = 1;
-        $return_arg{error_id} = join ',', @not_deleted;
+        $return_arg{error_id}    = join ',', @not_deleted;
     }
     else {
         $return_arg{
