@@ -1,14 +1,17 @@
 use strict;
 use warnings;
 
-use Test::PerlTidy;
-use version;
+use Test::More;
 
-run_tests(
+BEGIN {
+    eval { require Test::PerlTidy }
+        or plan skip_all => 'Test::PerlTidy is not installed';
+}
+
+Test::PerlTidy::run_tests(
     path       => '.',
     perltidyrc => './.perltidyrc',
     exclude    => [ qr/\/L10N\//, 'build/', qr/extlib\//, qr/t\// ],
     mute       => 1,
-    skip_all   => ( $^V < version->parse('5.14.0') ) ? 1 : 0,
 );
 
