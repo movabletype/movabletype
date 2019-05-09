@@ -110,6 +110,7 @@ on 'test' => sub {
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::Perl::Critic';
+    requires 'Test::PerlTidy';
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
     requires 'Text::Diff';
