@@ -2055,7 +2055,11 @@ sub delete {
                 = $app->model('content_field')->exist(
                 {   blog_id                 => $obj->blog_id,
                     related_content_type_id => $obj->id,
-                }
+                },
+                {   join => $app->model('content_type')
+                        ->join_on( undef, { id => \'= cf_content_type_id', },
+                        ),
+                },
                 );
             if ($used_in_content_type_field) {
                 push @not_deleted, $obj->id;
@@ -2067,7 +2071,11 @@ sub delete {
                 = $app->model('content_field')->exist(
                 {   blog_id            => $obj->blog_id,
                     related_cat_set_id => $obj->id,
-                }
+                },
+                {   join => $app->model('content_type')
+                        ->join_on( undef, { id => \'= cf_content_type_id', },
+                        ),
+                },
                 );
             if ($used_in_categories_field) {
                 push @not_deleted, $obj->id;
