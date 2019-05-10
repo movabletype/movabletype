@@ -4,7 +4,7 @@ use warnings;
 use Test::More;
 
 BEGIN {
-    eval { require Test::PerlTidy }
+    eval { require Test::PerlTidy; 1 }
         or plan skip_all => 'Test::PerlTidy is not installed';
 }
 
