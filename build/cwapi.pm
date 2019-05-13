@@ -95,7 +95,7 @@ sub login {
     my $class      = shift;
     my $is_blogger = $class =~ /^blogger/;
     my ( $appkey, $user, $pass ) = @_;
-    my $mt = MT->new;
+    my $mt     = MT->new;
     my $author = MT::XMLRPC::Helpers->_login( $user, $pass )
         or die "Invalid login\n";
     if ($is_blogger) {
@@ -123,7 +123,7 @@ sub get_blogs {
     my $class      = shift;
     my $is_blogger = $class =~ /^blogger/;
     my ( $appkey, $user, $pass ) = @_;
-    my $mt = MT->new;
+    my $mt     = MT->new;
     my $author = MT::XMLRPC::Helpers->_login( $user, $pass )
         or die "Invalid login\n";
     require MT::Permission;
@@ -298,7 +298,7 @@ sub get_posts {
     require MT::Entry;
     my %arg = ( 'sort' => 'created_on', direction => 'descend' );
     if ($limit) {
-        $arg{limit} = $limit;
+        $arg{limit}  = $limit;
         $arg{offset} = $offset if $offset;
     }
     my $iter = MT::Entry->load_iter( { blog_id => $blog_id }, \%arg );

@@ -31,8 +31,10 @@ sub get_cgi_files {
 }
 
 sub get_perl_dirs {
-    my @perl_dirs = ( 'lib', 'tools', 'plugins', 't' );
-    push @perl_dirs, 'addons' if -e 'addons';
+    my @perl_dirs = ( 'lib', 'tools', 'plugins' );
+    for my $dir (qw/ addons t build /) {
+        push @perl_dirs, $dir if -e $dir;
+    }
     @perl_dirs;
 }
 
