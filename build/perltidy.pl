@@ -6,10 +6,19 @@ use Getopt::Long;
 
 GetOptions( "dryrun" => \my $dryrun );
 
-chdir '../' if -e './perltidy.pl';
+if ( my @files = @ARGV ) {
+    perltidy($_) for @files;
+}
+else {
+    perltidy_all_files();
+}
 
-perltidy($_) for get_cgi_files();
-find( { wanted => \&wanted, follow => 1, no_chdir => 1 }, get_perl_dirs() );
+sub perltidy_all_files {
+    chdir '../' if -e './perltidy.pl';
+    perltidy($_) for get_cgi_files();
+    find( { wanted => \&wanted, follow => 1, no_chdir => 1 },
+        get_perl_dirs() );
+}
 
 sub wanted {
     if ( is_perl_file($File::Find::name) ) {
