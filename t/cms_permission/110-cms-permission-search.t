@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,197 +19,198 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website        = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
-    my $second_website = MT::Test::Permission->make_website(
-        name => 'second website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
+        my $second_website
+            = MT::Test::Permission->make_website( name => 'second website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name     => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name     => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name     => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name     => 'ogawa',
-        nickname => 'Goro Ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro Ogawa',
+        );
 
-    my $kagawa = MT::Test::Permission->make_author(
-        name     => 'kagawa',
-        nickname => 'Ichiro Kagawa',
-    );
+        my $kagawa = MT::Test::Permission->make_author(
+            name     => 'kagawa',
+            nickname => 'Ichiro Kagawa',
+        );
 
-    my $kikkawa = MT::Test::Permission->make_author(
-        name     => 'kikkawa',
-        nickname => 'Jiro Kikkawa',
-    );
+        my $kikkawa = MT::Test::Permission->make_author(
+            name     => 'kikkawa',
+            nickname => 'Jiro Kikkawa',
+        );
 
-    my $kumekawa = MT::Test::Permission->make_author(
-        name     => 'kumekawa',
-        nickname => 'Saburo Kumekawa',
-    );
+        my $kumekawa = MT::Test::Permission->make_author(
+            name     => 'kumekawa',
+            nickname => 'Saburo Kumekawa',
+        );
 
-    my $kemikawa = MT::Test::Permission->make_author(
-        name     => 'kemikawa',
-        nickname => 'Shiro Kemikawa',
-    );
+        my $kemikawa = MT::Test::Permission->make_author(
+            name     => 'kemikawa',
+            nickname => 'Shiro Kemikawa',
+        );
 
-    my $komiya = MT::Test::Permission->make_author(
-        name     => 'komiya',
-        nickname => 'Goro Komiya',
-    );
+        my $komiya = MT::Test::Permission->make_author(
+            name     => 'komiya',
+            nickname => 'Goro Komiya',
+        );
 
-    my $sagawa = MT::Test::Permission->make_author(
-        name     => 'sagawa',
-        nickname => 'Ichiro Sagawa',
-    );
+        my $sagawa = MT::Test::Permission->make_author(
+            name     => 'sagawa',
+            nickname => 'Ichiro Sagawa',
+        );
 
-    my $shiki = MT::Test::Permission->make_author(
-        name     => 'shiki',
-        nickname => 'Jiro Shiki',
-    );
+        my $shiki = MT::Test::Permission->make_author(
+            name     => 'shiki',
+            nickname => 'Jiro Shiki',
+        );
 
-    my $suda = MT::Test::Permission->make_author(
-        name     => 'suda',
-        nickname => 'Saburo Suda',
-    );
+        my $suda = MT::Test::Permission->make_author(
+            name     => 'suda',
+            nickname => 'Saburo Suda',
+        );
 
-    my $segawa = MT::Test::Permission->make_author(
-        name     => 'segawa',
-        nickname => 'Shiro Segawa',
-    );
+        my $segawa = MT::Test::Permission->make_author(
+            name     => 'segawa',
+            nickname => 'Shiro Segawa',
+        );
 
-    my $sone = MT::Test::Permission->make_author(
-        name     => 'sone',
-        nickname => 'Goro Sone',
-    );
+        my $sone = MT::Test::Permission->make_author(
+            name     => 'sone',
+            nickname => 'Goro Sone',
+        );
 
-    my $tachikawa = MT::Test::Permission->make_author(
-        name     => 'tachikawa',
-        nickname => 'Ichiro Tachikawa',
-    );
+        my $tachikawa = MT::Test::Permission->make_author(
+            name     => 'tachikawa',
+            nickname => 'Ichiro Tachikawa',
+        );
 
-    my $tsuda = MT::Test::Permission->make_author(
-        name     => 'tsuda',
-        nickname => 'Saburo Tsuda',
-    );
+        my $tsuda = MT::Test::Permission->make_author(
+            name     => 'tsuda',
+            nickname => 'Saburo Tsuda',
+        );
 
-    my $terakawa = MT::Test::Permission->make_author(
-        name     => 'terakawa',
-        nickname => 'Shiro Terakawa',
-    );
+        my $terakawa = MT::Test::Permission->make_author(
+            name     => 'terakawa',
+            nickname => 'Shiro Terakawa',
+        );
 
-    my $toda = MT::Test::Permission->make_author(
-        name     => 'toda',
-        nickname => 'Goro Toda',
-    );
+        my $toda = MT::Test::Permission->make_author(
+            name     => 'toda',
+            nickname => 'Goro Toda',
+        );
 
-    my $nagayama = MT::Test::Permission->make_author(
-        name     => 'nagayama',
-        nickname => 'Ichiro Nagayama',
-    );
+        my $nagayama = MT::Test::Permission->make_author(
+            name     => 'nagayama',
+            nickname => 'Ichiro Nagayama',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Role
-    my $create_post = MT::Test::Permission->make_role(
-        name        => 'Create Post',
-        permissions => "'create_post'",
-    );
-    my $edit_all_posts = MT::Test::Permission->make_role(
-        name        => 'Edit All Posts',
-        permissions => "'edit_all_posts'",
-    );
-    my $manage_feedback = MT::Test::Permission->make_role(
-        name        => 'Manage Feedback',
-        permissions => "'manage_feedback'",
-    );
-    my $edit_templates = MT::Test::Permission->make_role(
-        name        => 'Edit Templates',
-        permissions => "'edit_templates'",
-    );
-    my $edit_assets = MT::Test::Permission->make_role(
-        name        => 'Edit Assets',
-        permissions => "'edit_assets'",
-    );
-    my $view_blog_log = MT::Test::Permission->make_role(
-        name        => 'View Blog Log',
-        permissions => "'view_blog_log'",
-    );
-    my $manage_pages = MT::Test::Permission->make_role(
-        name        => 'Manage Pages',
-        permissions => "'manage_pages'",
-    );
+        # Role
+        my $create_post = MT::Test::Permission->make_role(
+            name        => 'Create Post',
+            permissions => "'create_post'",
+        );
+        my $edit_all_posts = MT::Test::Permission->make_role(
+            name        => 'Edit All Posts',
+            permissions => "'edit_all_posts'",
+        );
+        my $manage_feedback = MT::Test::Permission->make_role(
+            name        => 'Manage Feedback',
+            permissions => "'manage_feedback'",
+        );
+        my $edit_templates = MT::Test::Permission->make_role(
+            name        => 'Edit Templates',
+            permissions => "'edit_templates'",
+        );
+        my $edit_assets = MT::Test::Permission->make_role(
+            name        => 'Edit Assets',
+            permissions => "'edit_assets'",
+        );
+        my $view_blog_log = MT::Test::Permission->make_role(
+            name        => 'View Blog Log',
+            permissions => "'view_blog_log'",
+        );
+        my $manage_pages = MT::Test::Permission->make_role(
+            name        => 'Manage Pages',
+            permissions => "'manage_pages'",
+        );
 
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
+        my $site_admin
+            = MT::Role->load(
+            { name => MT->translate('Site Administrator') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa   => $create_post     => $blog );
-    MT::Association->link( $ichikawa => $edit_all_posts  => $blog );
-    MT::Association->link( $ukawa    => $manage_feedback => $blog );
-    MT::Association->link( $egawa    => $edit_templates  => $blog );
-    MT::Association->link( $ogawa    => $edit_assets     => $blog );
-    MT::Association->link( $kagawa   => $view_blog_log   => $blog );
-    MT::Association->link( $kikkawa  => $manage_pages    => $blog );
-    MT::Association->link( $kumekawa => $site_admin      => $blog );
-    MT::Association->link( $kemikawa => $site_admin      => $website );
+        require MT::Association;
+        MT::Association->link( $aikawa   => $create_post     => $blog );
+        MT::Association->link( $ichikawa => $edit_all_posts  => $blog );
+        MT::Association->link( $ukawa    => $manage_feedback => $blog );
+        MT::Association->link( $egawa    => $edit_templates  => $blog );
+        MT::Association->link( $ogawa    => $edit_assets     => $blog );
+        MT::Association->link( $kagawa   => $view_blog_log   => $blog );
+        MT::Association->link( $kikkawa  => $manage_pages    => $blog );
+        MT::Association->link( $kumekawa => $site_admin      => $blog );
+        MT::Association->link( $kemikawa => $site_admin      => $website );
 
-    MT::Association->link( $shiki     => $create_post     => $second_blog );
-    MT::Association->link( $suda      => $edit_all_posts  => $second_blog );
-    MT::Association->link( $segawa    => $manage_feedback => $second_blog );
-    MT::Association->link( $sone      => $edit_templates  => $second_blog );
-    MT::Association->link( $tachikawa => $edit_assets     => $second_blog );
-    MT::Association->link( $tsuda     => $view_blog_log   => $second_blog );
-    MT::Association->link( $terakawa  => $manage_pages    => $second_blog );
-    MT::Association->link( $toda      => $site_admin      => $second_blog );
-    MT::Association->link( $nagayama  => $site_admin      => $second_website );
+        MT::Association->link( $shiki  => $create_post     => $second_blog );
+        MT::Association->link( $suda   => $edit_all_posts  => $second_blog );
+        MT::Association->link( $segawa => $manage_feedback => $second_blog );
+        MT::Association->link( $sone   => $edit_templates  => $second_blog );
+        MT::Association->link( $tachikawa => $edit_assets   => $second_blog );
+        MT::Association->link( $tsuda     => $view_blog_log => $second_blog );
+        MT::Association->link( $terakawa  => $manage_pages  => $second_blog );
+        MT::Association->link( $toda      => $site_admin    => $second_blog );
+        MT::Association->link( $nagayama => $site_admin => $second_website );
 
-    require MT::Permission;
-    my $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $komiya->id );
-    $p->permissions("'edit_templates'");
-    $p->save;
+        require MT::Permission;
+        my $p = MT::Permission->new;
+        $p->blog_id(0);
+        $p->author_id( $komiya->id );
+        $p->permissions("'edit_templates'");
+        $p->save;
 
-    $p = MT::Permission->new;
-    $p->blog_id(0);
-    $p->author_id( $sagawa->id );
-    $p->permissions("'view_log'");
-    $p->save;
-});
+        $p = MT::Permission->new;
+        $p->blog_id(0);
+        $p->author_id( $sagawa->id );
+        $p->permissions("'view_log'");
+        $p->save;
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
 
@@ -261,7 +263,7 @@ subtest 'search: entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:entry" );
+    ok( $out, "Request: search:entry" );
     ok( $out !~ m!permission=1!i, "search:entry by admin" );
 
     $app = _run_app(
@@ -382,7 +384,7 @@ subtest 'search: template' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:template" );
+    ok( $out, "Request: search:template" );
     ok( $out !~ m!permission=1!i, "search:template by admin" );
 
     $app = _run_app(
@@ -438,7 +440,7 @@ subtest 'search: template' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:template" );
+    ok( $out, "Request: search:template" );
     ok( $out =~ m!permission=1!i, "search:template by other blog" );
 
     $app = _run_app(
@@ -481,7 +483,7 @@ subtest 'search: asset' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:asset" );
+    ok( $out, "Request: search:asset" );
     ok( $out !~ m!permission=1!i, "search:asset by admin" );
 
     $app = _run_app(
@@ -499,7 +501,7 @@ subtest 'search: asset' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:asset" );
+    ok( $out, "Request: search:asset" );
     ok( $out !~ m!permission=1!i, "search:asset by permitted user" );
 
     $app = _run_app(
@@ -517,7 +519,7 @@ subtest 'search: asset' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:asset" );
+    ok( $out, "Request: search:asset" );
     ok( $out =~ m!permission=1!i, "search:asset by other blog" );
 
     $app = _run_app(
@@ -560,7 +562,7 @@ subtest 'search: log' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:log" );
+    ok( $out, "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by admin" );
 
     $app = _run_app(
@@ -578,7 +580,7 @@ subtest 'search: log' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:log" );
+    ok( $out, "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by permitted user (local)" );
 
     $app = _run_app(
@@ -596,7 +598,7 @@ subtest 'search: log' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:log" );
+    ok( $out, "Request: search:log" );
     ok( $out !~ m!permission=1!i, "search:log by permitted user (system)" );
 
     $app = _run_app(
@@ -614,7 +616,7 @@ subtest 'search: log' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:log" );
+    ok( $out, "Request: search:log" );
     ok( $out =~ m!permission=1!i, "search:log by other blog" );
 
     $app = _run_app(
@@ -658,7 +660,7 @@ subtest 'search: author' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:author" );
+    ok( $out, "Request: search:author" );
     ok( $out !~ m!permission=1!i, "search:author by admin" );
 
     $app = _run_app(
@@ -701,7 +703,7 @@ subtest 'search: blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:blog" );
+    ok( $out, "Request: search:blog" );
     ok( $out !~ m!permission=1!i, "search:blog by admin" );
 
     $app = _run_app(
@@ -719,7 +721,7 @@ subtest 'search: blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:blog" );
+    ok( $out, "Request: search:blog" );
     ok( $out !~ m!permission=1!i, "search:blog by permitted user" );
 
     $app = _run_app(
@@ -737,7 +739,7 @@ subtest 'search: blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:blog" );
+    ok( $out, "Request: search:blog" );
     ok( $out =~ m!permission=1!i, "search:blog by other blog" );
 
     $app = _run_app(
@@ -778,7 +780,7 @@ subtest 'search: website' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:website" );
+    ok( $out, "Request: search:website" );
     ok( $out !~ m!permission=1!i, "search:website by admin" );
 
     $app = _run_app(
@@ -797,7 +799,7 @@ subtest 'search: website' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:website" );
+    ok( $out, "Request: search:website" );
     ok( $out !~ m!permission=1!i, "search:website by permitted user" );
 
     $app = _run_app(
@@ -816,7 +818,7 @@ subtest 'search: website' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:website" );
+    ok( $out, "Request: search:website" );
     ok( $out =~ m!permission=1!i, "search:website by other website" );
 
     $app = _run_app(
@@ -835,7 +837,7 @@ subtest 'search: website' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:website" );
+    ok( $out, "Request: search:website" );
     ok( $out =~ m!permission=1!i, "search:website by other permission" );
 };
 
@@ -860,7 +862,7 @@ subtest 'search: page' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:page" );
+    ok( $out, "Request: search:page" );
     ok( $out !~ m!permission=1!i, "search:page by admin" );
 
     $app = _run_app(
@@ -878,7 +880,7 @@ subtest 'search: page' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:page" );
+    ok( $out, "Request: search:page" );
     ok( $out !~ m!permission=1!i, "search:page by permitted user" );
 
     $app = _run_app(
@@ -896,7 +898,7 @@ subtest 'search: page' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: search:page" );
+    ok( $out, "Request: search:page" );
     ok( $out =~ m!permission=1!i, "search:page by other blog" );
 
     $app = _run_app(

@@ -12,7 +12,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -30,10 +30,10 @@ filters {
     MT::Test::ArchiveType->filter_spec
 };
 
-my $objs    = MT::Test::Fixture::ArchiveType->load_objs;
-for my $cd_label ( keys %{$objs->{content_data}} ){
+my $objs = MT::Test::Fixture::ArchiveType->load_objs;
+for my $cd_label ( keys %{ $objs->{content_data} } ) {
     my $key = $cd_label . '_unique_id';
-    my $cd = $objs->{content_data}->{$cd_label};
+    my $cd  = $objs->{content_data}->{$cd_label};
     MT::Test::ArchiveType->vars->{$key} = $cd->unique_id;
 }
 

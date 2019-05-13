@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../lib"; # t/lib
+use lib "$FindBin::Bin/../../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -27,14 +28,16 @@ filters {
     error    => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-    MT::Test->init_data;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+        MT::Test->init_data;
 
-    my $website = MT::Test::Permission->make_website;
-    $website->id(10);
-    $website->save or die $website->errstr;
-});
+        my $website = MT::Test::Permission->make_website;
+        $website->id(10);
+        $website->save or die $website->errstr;
+    }
+);
 
 MT::Test::Tag->run_perl_tests;
 MT::Test::Tag->run_php_tests;

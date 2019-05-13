@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require YAML::Syck }
         or plan skip_all => 'YAML::Syck is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -33,7 +35,7 @@ $test_env->prepare_fixture('db_data');
 
 my $app = MT::App::DataAPI->new;
 MT->set_instance($app);
-$app->user($app->model('author')->load(1));
+$app->user( $app->model('author')->load(1) );
 {
     ( my $base = __FILE__ ) =~ s/\.t$/.d/;
     $app->_init_plugins_core( {}, 1,
@@ -96,8 +98,8 @@ sub to_object {
 
     for my $d (@$suite) {
         note( $d->{note} ) if $d->{note};
-        if ($d->{env}) {
-            while (my ($k, $v) = each %{ $d->{env} }) {
+        if ( $d->{env} ) {
+            while ( my ( $k, $v ) = each %{ $d->{env} } ) {
                 $ENV{$k} = $v;
             }
         }
@@ -115,10 +117,7 @@ sub to_object {
         my $obj
             = MT::DataAPI::Resource->to_object( $model, $d->{from},
             $original );
-        my $values = {
-            %{ $obj->column_values },
-            %{ $obj->meta },
-        };
+        my $values = { %{ $obj->column_values }, %{ $obj->meta }, };
 
         if ( $d->{not_to} ) {
             foreach my $k ( sort keys %{ $d->{not_to} } ) {

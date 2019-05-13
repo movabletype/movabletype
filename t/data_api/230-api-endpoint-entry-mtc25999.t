@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -69,19 +70,17 @@ sub suite {
         },
         {   path   => '/v2/sites/1/entries/1',
             method => 'PUT',
-            params => {
-                entry => { unpublishedDate => '2038-01-01 00:00:00' },
-            },
+            params =>
+                { entry => { unpublishedDate => '2038-01-01 00:00:00' }, },
             complete => sub {
                 my ( $data, $body ) = @_;
-                is( MT->model('entry')->load(1)->unpublished_on => '20380101000000' );
+                is( MT->model('entry')->load(1)->unpublished_on =>
+                        '20380101000000' );
             },
         },
-        {   path   => '/v2/sites/1/entries/1',
-            method => 'PUT',
-            params => {
-                entry => { unpublishedDate => '' },
-            },
+        {   path     => '/v2/sites/1/entries/1',
+            method   => 'PUT',
+            params   => { entry => { unpublishedDate => '' }, },
             complete => sub {
                 my ( $data, $body ) = @_;
                 is( MT->model('entry')->load(1)->unpublished_on => undef );

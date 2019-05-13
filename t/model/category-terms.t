@@ -45,7 +45,7 @@ subtest 'Do not load category for category set without terms' => sub {
 subtest
     'Do not load category for category set without category_set_id (HASH)' =>
     sub {
-    my $terms = { blog_id => $blog_id };
+    my $terms      = { blog_id => $blog_id };
     my @categories = MT->model('category')->load($terms);
 
     is( @categories,                     1 );
@@ -56,7 +56,7 @@ subtest
 subtest
     'Do not load category for category set without category_set_id (ARRAY)'
     => sub {
-    my $terms = [ { blog_id => $blog_id }, { class => 'category' } ];
+    my $terms      = [ { blog_id => $blog_id }, { class => 'category' } ];
     my @categories = MT->model('category')->load($terms);
 
     is( @categories,                     1 );
@@ -105,7 +105,7 @@ subtest 'Load category for category set with id without category_set_id' =>
         ->load(
         { blog_id => $blog_id, category_set_id => $category_set->id } )
         or die;
-    my $terms = { id => $category_for_category_set->id };
+    my $terms      = { id => $category_for_category_set->id };
     my @categories = MT->model('category')->load($terms);
 
     is( @categories,        1 );
@@ -142,7 +142,7 @@ subtest
     'load_iter method does not load category for category set without category_set_id'
     => sub {
     my $terms = { blog_id => $blog_id };
-    my $iter = MT->model('category')->load_iter($terms);
+    my $iter  = MT->model('category')->load_iter($terms);
 
     my @categories;
     while ( my $cat = $iter->() ) {
@@ -165,7 +165,7 @@ subtest
 subtest
     'remove method does not remove category for category set without category_set_id'
     => sub {
-    my $terms = { blog_id => $blog_id };
+    my $terms   = { blog_id => $blog_id };
     my $removed = MT->model('category')->remove($terms);
 
     ok($removed);

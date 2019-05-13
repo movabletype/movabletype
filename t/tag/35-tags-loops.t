@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -32,314 +33,341 @@ filters {
 
 my $mt = MT->instance;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $obj;
+        my $obj;
 
-    ($obj) = $mt->model('website')->load();
-    $website_id = $obj->id;
+        ($obj) = $mt->model('website')->load();
+        $website_id = $obj->id;
 
-    $obj = $mt->model('website')->new;
-    $obj->set_values({
-        name => 'web2',
-    });
-    $obj->save or die $obj->errstr;
-
-    my ($author_role) = $mt->model('role')->load({ name => 'Author' });
-
-    my $author = $mt->model('author')->new;
-    $author->set_values({
-        name => 'dummy',
-        nickname => 'Dum Dummy',
-        password => '12345',
-    });
-    $author->save or die $author->errstr;
-    $author_id = $author->id;
-
-    $obj = $mt->model('blog')->create_default_blog('blog1', undef, $website_id);
-    $blog_id = $obj->id;
-    $author->add_role($author_role, $obj);
-
-    $obj = $mt->model('blog')->create_default_blog('blog2', undef, $website_id);
-
-    my @categories;
-    $obj = $mt->model('category')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'cat1',
-    });
-    $obj->save or die $obj->errstr;
-    push @categories, $obj;
-
-    $obj = $mt->model('category')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'cat2',
-    });
-    $obj->save or die $obj->errstr;
-    push @categories, $obj;
-
-    $obj = $mt->model('category')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subcat1',
-        parent => $categories[0]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @categories, $obj;
-
-    $obj = $mt->model('category')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subcat2',
-        parent => $categories[0]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @categories, $obj;
-
-    $obj = $mt->model('category')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subsubcat',
-        parent => $categories[2]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @categories, $obj;
-
-    my @assets;
-    $obj = $mt->model('asset')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        label => 'asset1',
-    });
-    $obj->tags(qw(@PRIVATE TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-    push @assets, $obj;
-
-    $obj = $mt->model('asset')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        label => 'asset2',
-    });
-    $obj->tags(qw(@PRIVATE TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-    push @assets, $obj;
-
-    $obj = $mt->model('entry')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        status => MT::Entry::RELEASE(),
-    });
-    $obj->tags(qw(@PRIVATE TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
-    $obj->save;
-
-    $obj = $mt->model('entry')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        status => MT::Entry::RELEASE(),
-        pinged_urls => "http://see.you.com/later.html\nhttp://see.you.com/soon.html",
-    });
-    $obj->tags(qw(TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-
-    foreach my $ix (0..1) {
-        my $plac = $mt->model('placement')->new;
-        $plac->set_values({
-            blog_id => $blog_id,
-            entry_id => $obj->id,
-            category_id => $categories[ $ix ]->id,
-            is_primary => ($ix == 0 ? 1 : 0),
-        });
-        $plac->save or die $plac->errstr;
-
-        $plac = $mt->model('placement')->new;
-        $plac->set_values({
-            blog_id => $blog_id,
-            entry_id => $obj->id,
-            category_id => $categories[ $ix+2 ]->id,
-            is_primary => 0,
-        });
-        $plac->save or die $plac->errstr;
-
-        my $asset = $assets[$ix];
-        my $oas = $mt->model('objectasset')->new;
-        $oas->set_values({
-            blog_id => $blog_id,
-            object_id => $obj->id,
-            object_ds => 'entry',
-            asset_id => $asset->id,
-        });
-        $oas->save or die $oas->errstr;
-    }
-
-    my $comment = $mt->model('comment')->new;
-    $comment->set_values({
-        blog_id => $blog_id,
-        entry_id => $obj->id,
-        commenter_id => $author_id,
-        visible => 1,
-    });
-    $comment->save or die $obj->errstr;
-
-    for my $ix (0..1) {
-        my $c2 = $mt->model('comment')->new;
-        $c2->set_values({
-            blog_id => $blog_id,
-            entry_id => $obj->id,
-            parent_id => $comment->id,
-            commenter_id => $author_id,
-            visible => 1,
-        });
-        $c2->save or die $obj->errstr;
-    }
-
-    my @folders;
-    $obj = $mt->model('folder')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'folder1',
-    });
-    $obj->save or die $obj->errstr;
-    push @folders, $obj;
-
-    $obj = $mt->model('folder')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'folder2',
-    });
-    $obj->save or die $obj->errstr;
-    push @folders, $obj;
-
-    $obj = $mt->model('folder')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subfold1',
-        parent => $folders[0]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @folders, $obj;
-
-    $obj = $mt->model('folder')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subfold2',
-        parent => $folders[0]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @folders, $obj;
-
-    $obj = $mt->model('folder')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        label => 'subsubfold',
-        parent => $folders[2]->id,
-    });
-    $obj->save or die $obj->errstr;
-    push @folders, $obj;
-
-
-    $obj = $mt->model('page')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        status => MT::Entry::RELEASE(),
-    });
-    $obj->tags(qw(@PRIVATE TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-    $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
-    $obj->save;
-
-    $obj = $mt->model('page')->new;
-    $obj->set_values({
-        blog_id => $blog_id,
-        author_id => $author_id,
-        status => MT::Entry::RELEASE(),
-    });
-    $obj->tags(qw(@PRIVATE TEST1 TEST2));
-    $obj->save or die $obj->errstr;
-
-    foreach my $ix (0..1) {
-        my $fold = $folders[$ix];
-        my $plac = $mt->model('placement')->new;
-        $plac->set_values({
-            blog_id => $blog_id,
-            entry_id => $obj->id,
-            category_id => $fold->id,
-            is_primary => ($ix == 0 ? 1 : 0),
-        });
-        $plac->save or die $plac->errstr;
-
-        my $asset = $assets[$ix];
-        my $oas = $mt->model('objectasset')->new;
-        $oas->set_values({
-            blog_id => $blog_id,
-            object_id => $obj->id,
-            object_ds => 'entry',
-            asset_id => $asset->id,
-        });
-        $oas->save or die $oas->errstr;
-    }
-
-    for my $ix (1..2) {
-        $obj = $mt->model('tbping')->new;
-        $obj->set_values({
-            blog_id => $blog_id,
-            ip => '1.2.3.'.$ix,
-            visible => 1,
-            tb_id => 0,
-        });
+        $obj = $mt->model('website')->new;
+        $obj->set_values( { name => 'web2', } );
         $obj->save or die $obj->errstr;
+
+        my ($author_role) = $mt->model('role')->load( { name => 'Author' } );
+
+        my $author = $mt->model('author')->new;
+        $author->set_values(
+            {   name     => 'dummy',
+                nickname => 'Dum Dummy',
+                password => '12345',
+            }
+        );
+        $author->save or die $author->errstr;
+        $author_id = $author->id;
+
+        $obj = $mt->model('blog')
+            ->create_default_blog( 'blog1', undef, $website_id );
+        $blog_id = $obj->id;
+        $author->add_role( $author_role, $obj );
+
+        $obj = $mt->model('blog')
+            ->create_default_blog( 'blog2', undef, $website_id );
+
+        my @categories;
+        $obj = $mt->model('category')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'cat1',
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @categories, $obj;
+
+        $obj = $mt->model('category')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'cat2',
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @categories, $obj;
+
+        $obj = $mt->model('category')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subcat1',
+                parent    => $categories[0]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @categories, $obj;
+
+        $obj = $mt->model('category')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subcat2',
+                parent    => $categories[0]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @categories, $obj;
+
+        $obj = $mt->model('category')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subsubcat',
+                parent    => $categories[2]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @categories, $obj;
+
+        my @assets;
+        $obj = $mt->model('asset')->new;
+        $obj->set_values(
+            {   blog_id => $blog_id,
+                label   => 'asset1',
+            }
+        );
+        $obj->tags(qw(@PRIVATE TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+        push @assets, $obj;
+
+        $obj = $mt->model('asset')->new;
+        $obj->set_values(
+            {   blog_id => $blog_id,
+                label   => 'asset2',
+            }
+        );
+        $obj->tags(qw(@PRIVATE TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+        push @assets, $obj;
+
+        $obj = $mt->model('entry')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                status    => MT::Entry::RELEASE(),
+            }
+        );
+        $obj->tags(qw(@PRIVATE TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+        $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+        $obj->save;
+
+        $obj = $mt->model('entry')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                status    => MT::Entry::RELEASE(),
+                pinged_urls =>
+                    "http://see.you.com/later.html\nhttp://see.you.com/soon.html",
+            }
+        );
+        $obj->tags(qw(TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+
+        foreach my $ix ( 0 .. 1 ) {
+            my $plac = $mt->model('placement')->new;
+            $plac->set_values(
+                {   blog_id     => $blog_id,
+                    entry_id    => $obj->id,
+                    category_id => $categories[$ix]->id,
+                    is_primary  => ( $ix == 0 ? 1 : 0 ),
+                }
+            );
+            $plac->save or die $plac->errstr;
+
+            $plac = $mt->model('placement')->new;
+            $plac->set_values(
+                {   blog_id     => $blog_id,
+                    entry_id    => $obj->id,
+                    category_id => $categories[ $ix + 2 ]->id,
+                    is_primary  => 0,
+                }
+            );
+            $plac->save or die $plac->errstr;
+
+            my $asset = $assets[$ix];
+            my $oas   = $mt->model('objectasset')->new;
+            $oas->set_values(
+                {   blog_id   => $blog_id,
+                    object_id => $obj->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                }
+            );
+            $oas->save or die $oas->errstr;
+        }
+
+        my $comment = $mt->model('comment')->new;
+        $comment->set_values(
+            {   blog_id      => $blog_id,
+                entry_id     => $obj->id,
+                commenter_id => $author_id,
+                visible      => 1,
+            }
+        );
+        $comment->save or die $obj->errstr;
+
+        for my $ix ( 0 .. 1 ) {
+            my $c2 = $mt->model('comment')->new;
+            $c2->set_values(
+                {   blog_id      => $blog_id,
+                    entry_id     => $obj->id,
+                    parent_id    => $comment->id,
+                    commenter_id => $author_id,
+                    visible      => 1,
+                }
+            );
+            $c2->save or die $obj->errstr;
+        }
+
+        my @folders;
+        $obj = $mt->model('folder')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'folder1',
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @folders, $obj;
+
+        $obj = $mt->model('folder')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'folder2',
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @folders, $obj;
+
+        $obj = $mt->model('folder')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subfold1',
+                parent    => $folders[0]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @folders, $obj;
+
+        $obj = $mt->model('folder')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subfold2',
+                parent    => $folders[0]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @folders, $obj;
+
+        $obj = $mt->model('folder')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                label     => 'subsubfold',
+                parent    => $folders[2]->id,
+            }
+        );
+        $obj->save or die $obj->errstr;
+        push @folders, $obj;
+
+        $obj = $mt->model('page')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                status    => MT::Entry::RELEASE(),
+            }
+        );
+        $obj->tags(qw(@PRIVATE TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+        $obj->authored_on( MT::Util::iso2ts( $obj->authored_on - 60 ) );
+        $obj->save;
+
+        $obj = $mt->model('page')->new;
+        $obj->set_values(
+            {   blog_id   => $blog_id,
+                author_id => $author_id,
+                status    => MT::Entry::RELEASE(),
+            }
+        );
+        $obj->tags(qw(@PRIVATE TEST1 TEST2));
+        $obj->save or die $obj->errstr;
+
+        foreach my $ix ( 0 .. 1 ) {
+            my $fold = $folders[$ix];
+            my $plac = $mt->model('placement')->new;
+            $plac->set_values(
+                {   blog_id     => $blog_id,
+                    entry_id    => $obj->id,
+                    category_id => $fold->id,
+                    is_primary  => ( $ix == 0 ? 1 : 0 ),
+                }
+            );
+            $plac->save or die $plac->errstr;
+
+            my $asset = $assets[$ix];
+            my $oas   = $mt->model('objectasset')->new;
+            $oas->set_values(
+                {   blog_id   => $blog_id,
+                    object_id => $obj->id,
+                    object_ds => 'entry',
+                    asset_id  => $asset->id,
+                }
+            );
+            $oas->save or die $oas->errstr;
+        }
+
+        for my $ix ( 1 .. 2 ) {
+            $obj = $mt->model('tbping')->new;
+            $obj->set_values(
+                {   blog_id => $blog_id,
+                    ip      => '1.2.3.' . $ix,
+                    visible => 1,
+                    tb_id   => 0,
+                }
+            );
+            $obj->save or die $obj->errstr;
+        }
     }
-});
+);
 
 $website_id = MT::Website->load()->id;
-$blog_id = MT::Blog->load( { name => 'blog1' } )->id;
-$author_id = MT::Author->load( { name => 'dummy' } )->id;
+$blog_id    = MT::Blog->load( { name => 'blog1' } )->id;
+$author_id  = MT::Author->load( { name => 'dummy' } )->id;
 
-MT::Test::Tag->run_perl_tests($blog_id, \&_set_handler_perl);
+MT::Test::Tag->run_perl_tests( $blog_id, \&_set_handler_perl );
 MT::Test::Tag->run_php_tests($blog_id);
 
 sub _set_handler_perl {
-    my ($ctx, $block) = @_;
+    my ( $ctx, $block ) = @_;
     return unless $block->name eq 'mt:SearchResults';
 
     require MT::Template::Context::Search;
     my $mt = MT->instance;
-    $mt->{__tag_handlers}->{'searchresults'}->[0] = 
-        \&MT::Template::Context::Search::_hdlr_results;
+    $mt->{__tag_handlers}->{'searchresults'}->[0]
+        = \&MT::Template::Context::Search::_hdlr_results;
 
-    my @elist = $mt->model('entry')->load({ blog_id => $blog_id });
-    $ctx->stash('results', sub { return shift @elist });
-    $ctx->stash('count', 2);
+    my @elist = $mt->model('entry')->load( { blog_id => $blog_id } );
+    $ctx->stash( 'results', sub { return shift @elist } );
+    $ctx->stash( 'count', 2 );
 }
 
 sub count2expect {
     my $count = shift;
-    if ($count =~ m/^\d+$/) {
+    if ( $count =~ m/^\d+$/ ) {
         my $str = '';
-        for (my $ix = 1; $ix <= $count; $ix++) {
+        for ( my $ix = 1; $ix <= $count; $ix++ ) {
             my @line;
-            push @line, ($ix == 1 ? '1' : '');      # __first__
-            push @line, ($ix == $count ? '1' : ''); # __last__
-            push @line, $ix;                        # __counter__
-            push @line, ($ix % 2 == 1 ? '1' : '');  # __odd__
-            push @line, ($ix % 2 == 0 ? '1' : '');  # __even__
-            $str .= '|X' . join('X', @line) . 'X|';
+            push @line, ( $ix == 1      ? '1' : '' );    # __first__
+            push @line, ( $ix == $count ? '1' : '' );    # __last__
+            push @line, $ix;                             # __counter__
+            push @line, ( $ix % 2 == 1 ? '1' : '' );     # __odd__
+            push @line, ( $ix % 2 == 0 ? '1' : '' );     # __even__
+            $str .= '|X' . join( 'X', @line ) . 'X|';
         }
         return $str;
     }

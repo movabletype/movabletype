@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -136,13 +138,13 @@ my @suite = (
             entry_id => 3,
         }
     },
-    {   request => [ 'GET', 1, '/sites/2/entries/3/resources' ],
-        id       => [ 1, 'get_some_resources_of_entry' ],
+    {   request  => [ 'GET', 1, '/sites/2/entries/3/resources' ],
+        id       => [ 1,     'get_some_resources_of_entry' ],
         note     => 'This route has no version 1',
         endpoint => undef,
     },
-    {   request => [ 'GET', 2, '/sites/2/entries/3/resources' ],
-        id       => [ 2, 'get_some_resources_of_entry' ],
+    {   request  => [ 'GET', 2, '/sites/2/entries/3/resources' ],
+        id       => [ 2,     'get_some_resources_of_entry' ],
         endpoint => {
             id      => 'get_some_resources_of_entry',
             version => 2,
@@ -154,8 +156,8 @@ my @suite = (
     },
     {   note =>
             'Should not assign format for the endpoint that has own format.',
-        request => [ 'GET', 2, '/sites/2/entries/3/resources.xml' ],
-        id       => [ 2, 'get_some_resources_of_entry' ],
+        request  => [ 'GET', 2, '/sites/2/entries/3/resources.xml' ],
+        id       => [ 2,     'get_some_resources_of_entry' ],
         endpoint => {
             id      => 'get_some_resources_of_entry',
             version => 2,

@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -45,7 +46,7 @@ plan tests => 26;
     is( finfos_of_type('Yearly'),   0, 'blog #1 has 0 yearly fileinfos' );
     is( finfos_of_type('Page'),     4, 'blog #1 has 4 page fileinfos' );
     is( finfos_of_type('Category'), 2, 'blog #1 has 2 category fileinfos' );
-    is( finfos_of_type('Author'), 2, 'blog #1 has 2 author fileinfos' );
+    is( finfos_of_type('Author'),   2, 'blog #1 has 2 author fileinfos' );
 
     my $total_fileinfos = MT->model('fileinfo')->count( { blog_id => 1 } );
     is( $total_fileinfos, 38, 'blog #1 has 38 fileinfos' );

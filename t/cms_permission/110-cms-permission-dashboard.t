@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -19,44 +20,45 @@ MT::Test->init_app;
 
 ### Make test data
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'first blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'first blog',
+        );
+        my $second_blog
+            = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Role
-    require MT::Role;
-    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+        # Role
+        require MT::Role;
+        my $designer
+            = MT::Role->load( { name => MT->translate('Designer') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa => $designer => $blog );
-    MT::Association->link( $ichikawa => $designer => $second_blog );
-});
+        require MT::Association;
+        MT::Association->link( $aikawa   => $designer => $blog );
+        MT::Association->link( $ichikawa => $designer => $second_blog );
+    }
+);
 
 my $admin    = MT::Author->load(1);
 my $website  = MT::Website->load( { name => 'my website' } );
@@ -114,7 +116,8 @@ subtest 'mode = dashboard' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by permitted user (parent website)" );
+    ok( $out !~ m!permission=1!i,
+        "dashboard by permitted user (parent website)" );
 
     $app = _run_app(
         'MT::App::CMS',

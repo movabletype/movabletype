@@ -29,7 +29,7 @@ my $blog_id = 1;
 
 $test_env->prepare_fixture('db');
 
-my $author = MT->model('author')->load(1) or die;
+my $author          = MT->model('author')->load(1) or die;
 my $author_basename = $author->basename;
 
 my $ct = MT::Test::Permission->make_content_type(

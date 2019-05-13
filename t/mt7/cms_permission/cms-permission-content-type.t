@@ -284,8 +284,9 @@ subtest 'mode = save(edit)' => sub {
             __mode           => 'view',
             blog_id          => $site->id,
             _type            => 'content_type',
-            name             => $content_type->name . '_' . $sys_manage_content_types_user->id,
-            id               => $content_type->id,
+            name             => $content_type->name . '_'
+                . $sys_manage_content_types_user->id,
+            id => $content_type->id,
         },
     );
 
@@ -301,8 +302,8 @@ subtest 'mode = save(edit)' => sub {
             blog_id          => $site->id,
             content_type_id  => $content_type->id,
             _type            => 'content_type',
-            name             => $content_type->name . '_' . $manage_content_type_user->id,
-            id               => $content_type->id,
+            name => $content_type->name . '_' . $manage_content_type_user->id,
+            id   => $content_type->id,
         },
     );
 

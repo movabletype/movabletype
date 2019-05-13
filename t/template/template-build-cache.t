@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -43,7 +44,7 @@ my $tmpl = MT::Template->new;
 $tmpl->blog_id( $blog->id );
 $tmpl->text('<mt:include module="Included Template">');
 $tmpl->type('custom');
-my $ctx = MT::Template::Context->new;
+my $ctx  = MT::Template::Context->new;
 my $out1 = $tmpl->build( $ctx, {} );
 ok( $out1 eq "hello", "Test template successfully built" );
 

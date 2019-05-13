@@ -23,24 +23,24 @@ my $blog_id = 1;
 $test_env->prepare_fixture('db');
 
 my $author = MT::Test::Permission->make_author(
-    name => 'author',
+    name     => 'author',
     nickname => 'author',
 );
 
 my $entry = MT::Test::Permission->make_entry(
-    blog_id => $blog_id,
-    author_id => $author->id,
+    blog_id     => $blog_id,
+    author_id   => $author->id,
     authored_on => '20180906000000',
 );
 
 my $category = MT::Test::Permission->make_category(
-    blog_id         => $blog_id,
-    label           => 'category',
+    blog_id => $blog_id,
+    label   => 'category',
 );
 
 my $placement1 = MT::Test::Permission->make_placement(
-    blog_id => $blog_id,
-    entry_id => $entry->id,
+    blog_id     => $blog_id,
+    entry_id    => $entry->id,
     category_id => $category->id,
 );
 
@@ -105,10 +105,10 @@ my $unique_id = $cd->unique_id;
 
 # Mapping
 my $template_author = MT::Test::Permission->make_template(
-    blog_id         => $blog_id,
-    name            => 'Author Test',
-    type            => 'author',
-    text            => 'test',
+    blog_id => $blog_id,
+    name    => 'Author Test',
+    type    => 'author',
+    text    => 'test',
 );
 my $template_map_author = MT::Test::Permission->make_templatemap(
     template_id   => $template_author->id,
@@ -119,10 +119,10 @@ my $template_map_author = MT::Test::Permission->make_templatemap(
 );
 
 my $template_category = MT::Test::Permission->make_template(
-    blog_id         => $blog_id,
-    name            => 'Category Test',
-    type            => 'categories',
-    text            => 'test',
+    blog_id => $blog_id,
+    name    => 'Category Test',
+    type    => 'categories',
+    text    => 'test',
 );
 my $template_map_category = MT::Test::Permission->make_templatemap(
     template_id   => $template_category->id,
@@ -149,9 +149,9 @@ my $template_map_ct = MT::Test::Permission->make_templatemap(
     is_preferred  => 1,
 );
 
-my $site_root = File::Spec->catdir( $test_env->root, "site" );
-my $archive_root = File::Spec->catdir( $site_root, "archive" );
-my $blog = MT::Blog->load($blog_id);
+my $site_root    = File::Spec->catdir( $test_env->root, "site" );
+my $archive_root = File::Spec->catdir( $site_root,      "archive" );
+my $blog         = MT::Blog->load($blog_id);
 $blog->site_path($site_root);
 $blog->archive_path($archive_root);
 $blog->save;
@@ -179,12 +179,18 @@ $publisher->rebuild(
     TemplateMap => $template_map_ct,
 );
 
-ok -e File::Spec->catfile( $archive_root, "author/index.html" ), "author index exists";
-ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ), "category-monthly index exists";
-ok -e File::Spec->catfile( $archive_root, "category_for_set/2018/08/$unique_id.html" ), "contenttype index exists";
+ok -e File::Spec->catfile( $archive_root, "author/index.html" ),
+    "author index exists";
+ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ),
+    "category-monthly index exists";
+ok -e File::Spec->catfile(
+    $archive_root, "category_for_set/2018/08/$unique_id.html"
+    ),
+    "contenttype index exists";
 
 require File::Find;
-File::Find::find({ wanted => sub { note $File::Find::name }, no_chdir => 1 }, $archive_root);
+File::Find::find( { wanted => sub { note $File::Find::name }, no_chdir => 1 },
+    $archive_root );
 
 require File::Path;
 File::Path::remove_tree($archive_root);
@@ -195,14 +201,20 @@ MT->request->reset;
 $publisher->start_time( time + 1 );
 $publisher->rebuild(
     BlogID => $blog_id,
-    Force => 1,
+    Force  => 1,
 );
 
-ok -e File::Spec->catfile( $archive_root, "author/index.html" ), "author index exists";
-ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ), "category-monthly index exists";
-ok -e File::Spec->catfile( $archive_root, "category_for_set/2018/08/$unique_id.html" ), "contenttype index exists";
+ok -e File::Spec->catfile( $archive_root, "author/index.html" ),
+    "author index exists";
+ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ),
+    "category-monthly index exists";
+ok -e File::Spec->catfile(
+    $archive_root, "category_for_set/2018/08/$unique_id.html"
+    ),
+    "contenttype index exists";
 
-File::Find::find({ wanted => sub { note $File::Find::name }, no_chdir => 1 }, $archive_root);
+File::Find::find( { wanted => sub { note $File::Find::name }, no_chdir => 1 },
+    $archive_root );
 
 require File::Path;
 File::Path::remove_tree($archive_root);
@@ -211,15 +223,13 @@ File::Path::mkpath($archive_root);
 note "aysnc rebuild";
 
 for my $map ( MT::Template->load, MT::TemplateMap->load ) {
-    $map->build_type(MT::PublishOption::ASYNC());
+    $map->build_type( MT::PublishOption::ASYNC() );
     $map->save;
 }
 
 MT->request->reset;
 $publisher->start_time( time + 1 );
-$publisher->rebuild(
-    BlogID => $blog_id,
-);
+$publisher->rebuild( BlogID => $blog_id, );
 
 my @jobs = MT::TheSchwartz::Job->load;
 is @jobs => 3;
@@ -227,10 +237,16 @@ is @jobs => 3;
 note "process queue";
 _run_rpt();
 
-ok -e File::Spec->catfile( $archive_root, "author/index.html" ), "author index exists";
-ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ), "category-monthly index exists";
-ok -e File::Spec->catfile( $archive_root, "category_for_set/2018/08/$unique_id.html" ), "contenttype index exists";
+ok -e File::Spec->catfile( $archive_root, "author/index.html" ),
+    "author index exists";
+ok -e File::Spec->catfile( $archive_root, "category/2018/09/index.html" ),
+    "category-monthly index exists";
+ok -e File::Spec->catfile(
+    $archive_root, "category_for_set/2018/08/$unique_id.html"
+    ),
+    "contenttype index exists";
 
-File::Find::find({ wanted => sub { note $File::Find::name }, no_chdir => 1 }, $archive_root);
+File::Find::find( { wanted => sub { note $File::Find::name }, no_chdir => 1 },
+    $archive_root );
 
 done_testing;

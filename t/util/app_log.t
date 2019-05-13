@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new(
         LoggerModule => 'Log::Minimal',
@@ -23,11 +24,10 @@ $test_env->prepare_fixture('db');
 
 my $app = MT::App->instance;
 
-my $blog    = MT::Test::Permission->make_website( name => 'first site' );
-my $blog2   = MT::Test::Permission->make_website( name => 'second site' );
+my $blog  = MT::Test::Permission->make_website( name => 'first site' );
+my $blog2 = MT::Test::Permission->make_website( name => 'second site' );
 my $author  = MT::Test::Permission->make_author( name => 'foo' );
 my $author2 = MT::Test::Permission->make_author( name => 'bar' );
-
 
 MT->log('log 1');
 $app->log('log 2');
@@ -43,18 +43,16 @@ MT->log( { message => 'log 5' } );
 $app->log( { message => 'log 6' } );
 
 MT->log(
-    {
-        message => 'log 7',
+    {   message   => 'log 7',
         author_id => $author2->id,
-        blog_id => $blog2->id,
+        blog_id   => $blog2->id,
     }
 );
 
 $app->log(
-    {
-        message => 'log 8',
+    {   message   => 'log 8',
         author_id => $author2->id,
-        blog_id => $blog2->id,
+        blog_id   => $blog2->id,
     }
 );
 

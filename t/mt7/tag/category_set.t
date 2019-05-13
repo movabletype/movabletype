@@ -82,7 +82,7 @@ $test_env->prepare_fixture(
             blog_id => $blog->id,
             name    => 'test category set 01',
         );
-        
+
         my $category_set_02 = MT::Test::Permission->make_category_set(
             blog_id => $blog->id,
             name    => 'test category set 02',
@@ -145,25 +145,23 @@ $test_env->prepare_fixture(
         $content_type_02->fields($fields_02);
         $content_type_02->save or die $content_type_02->errstr;
 
-        
         my $content_data_01 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $content_type_01->id,
             status          => MT::ContentStatus::RELEASE(),
             authored_on     => '20170927112314',
             identifier      => 'mtcontent_type-context-test-data-01',
-            data            => { $cf_category_01->id => [ $category_01->id ], }
+            data => { $cf_category_01->id => [ $category_01->id ], }
         );
-        
+
         my $content_data_02 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $content_type_02->id,
             status          => MT::ContentStatus::RELEASE(),
             authored_on     => '20170927112314',
             identifier      => 'mtcontent_type-context-test-data-02',
-            data            => { $cf_category_02->id => [ $category_02->id ], }
+            data => { $cf_category_02->id => [ $category_02->id ], }
         );
-
 
     }
 );

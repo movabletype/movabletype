@@ -81,7 +81,7 @@ $test_env->prepare_fixture(
 );
 
 my $content_type = MT::ContentType->load( { blog_id => $blog_id } );
-my $asset_field = MT::ContentField->load(
+my $asset_field  = MT::ContentField->load(
     {   blog_id         => $blog_id,
         content_type_id => $content_type->id,
         type            => 'asset',

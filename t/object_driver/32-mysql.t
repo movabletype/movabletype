@@ -9,9 +9,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     my $module = 'DBD::mysql';
     eval "require $module;";
@@ -23,10 +24,9 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DisableObjectCache => 1,
-    );
+    $test_env = MT::Test::Env->new( DisableObjectCache => 1, );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 

@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -102,7 +103,7 @@ sub suite {
                 }
             ),
         },
-        map( {  +{  path   => '/v1/sites/1/entries',
+        map( { +{   path   => '/v1/sites/1/entries',
                     method => 'GET',
                     params => {
                         limit  => 1,
@@ -121,13 +122,13 @@ sub suite {
                             ]
                         }
                     ),
-                }
-            } ( [ Publish => MT::Entry::RELEASE(), ],
+            } } (
+                [ Publish => MT::Entry::RELEASE(), ],
                 [ Draft   => MT::Entry::HOLD(), ],
                 [ Review  => MT::Entry::REVIEW(), ],
                 [ Future  => MT::Entry::FUTURE(), ],
                 [ Spam    => MT::Entry::JUNK(), ],
-                ) ),
+            ) ),
         {   path   => '/v1/sites/1/entries',
             method => 'GET',
             params => {

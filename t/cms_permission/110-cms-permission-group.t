@@ -7,6 +7,7 @@ use lib Cwd::realpath("./t/lib");
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -94,7 +95,7 @@ subtest 'mode = add_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
+    ok( $out, "Request: add_group" );
     ok( $out !~ m!permission=1!i, "add_group by admin" );
 
     $app = _run_app(
@@ -106,7 +107,7 @@ subtest 'mode = add_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
+    ok( $out, "Request: add_group" );
     ok( $out !~ m!permission=1!i, "add_group by can_manage_user_group user" );
 
     $app = _run_app(
@@ -118,7 +119,7 @@ subtest 'mode = add_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
+    ok( $out, "Request: add_group" );
     ok( $out =~ m!permission=1!i, "add_group by non permitted user" );
 
 };
@@ -133,7 +134,7 @@ subtest 'mode = add_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
+    ok( $out, "Request: add_member" );
     ok( $out !~ m!permission=1!i, "add_member by admin" );
 
     $app = _run_app(
@@ -145,8 +146,9 @@ subtest 'mode = add_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
-    ok( $out !~ m!permission=1!i, "add_member by can_manage_user_group user" );
+    ok( $out, "Request: add_member" );
+    ok( $out !~ m!permission=1!i,
+        "add_member by can_manage_user_group user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -157,7 +159,7 @@ subtest 'mode = add_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
+    ok( $out, "Request: add_member" );
     ok( $out =~ m!permission=1!i, "add_member by non permitted user" );
 };
 
@@ -174,7 +176,7 @@ subtest 'mode = delete_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
+    ok( $out, "Request: delete_group" );
     ok( $out !~ m!permission=1!i, "delete_group by admin" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group C', );
@@ -189,8 +191,9 @@ subtest 'mode = delete_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
-    ok( $out !~ m!permission=1!i, "delete_group by can_manage_user_group user" );
+    ok( $out, "Request: delete_group" );
+    ok( $out !~ m!permission=1!i,
+        "delete_group by can_manage_user_group user" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group D', );
     $app = _run_app(
@@ -204,7 +207,7 @@ subtest 'mode = delete_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
+    ok( $out, "Request: delete_group" );
     ok( $out =~ m!permission=1!i, "delete_group by non permitted user" );
 };
 
@@ -218,7 +221,7 @@ subtest 'mode = dialog_grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
+    ok( $out, "Request: dialog_grant_role" );
     ok( $out !~ m!permission=1!i, "dialog_grant_role by admin" );
 
     $app = _run_app(
@@ -295,7 +298,7 @@ subtest 'mode = dialog_grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
+    ok( $out, "Request: dialog_grant_role" );
     ok( $out =~ m!permission=1!i, "dialog_grant_role by other permission" );
 };
 
@@ -309,7 +312,7 @@ subtest 'mode = view_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
+    ok( $out, "Request: view_group" );
     ok( $out !~ m!permission=1!i, "view_group by admin" );
 
     $app = _run_app(
@@ -321,8 +324,9 @@ subtest 'mode = view_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
-    ok( $out !~ m!permission=1!i, "view_group by can_manage_user_group user" );
+    ok( $out, "Request: view_group" );
+    ok( $out !~ m!permission=1!i,
+        "view_group by can_manage_user_group user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -333,7 +337,7 @@ subtest 'mode = view_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
+    ok( $out, "Request: view_group" );
     ok( $out =~ m!permission=1!i, "view_group by non permitted user" );
 
 };
@@ -348,7 +352,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by admin" );
 
     $app = _run_app(
@@ -360,7 +364,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by permitted user (blog)" );
 
     $app = _run_app(
@@ -372,7 +376,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by permitted user (website)" );
 
     $app = _run_app(
@@ -384,7 +388,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out =~ m!permission=1!i, "grant_role by non permitted user (blog)" );
 
     $app = _run_app(
@@ -409,7 +413,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out =~ m!permission=1!i, "grant_role by other permission" );
 };
 
@@ -425,7 +429,7 @@ subtest 'mode = list_group_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
+    ok( $out, "Request: list_group_member" );
     ok( $out !~ m!permission=1!i, "list_group_member by admin" );
 
     $app = _run_app(
@@ -439,8 +443,9 @@ subtest 'mode = list_group_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
-    ok( $out !~ m!permission=1!i, "list_group_member by can_manage_user_group user" );
+    ok( $out, "Request: list_group_member" );
+    ok( $out !~ m!permission=1!i,
+        "list_group_member by can_manage_user_group user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -453,7 +458,7 @@ subtest 'mode = list_group_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
+    ok( $out, "Request: list_group_member" );
     ok( $out =~ m!permission=1!i, "list_group_member by non permitted user" );
 };
 
@@ -469,7 +474,7 @@ subtest 'mode = remove_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
+    ok( $out, "Request: remove_group" );
     ok( $out !~ m!permission=1!i, "remove_group by admin" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group F', );
@@ -483,8 +488,9 @@ subtest 'mode = remove_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
-    ok( $out !~ m!permission=1!i, "remove_group by can_manage_user_group user" );
+    ok( $out, "Request: remove_group" );
+    ok( $out !~ m!permission=1!i,
+        "remove_group by can_manage_user_group user" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group G', );
     $app = _run_app(
@@ -497,7 +503,7 @@ subtest 'mode = remove_group' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
+    ok( $out, "Request: remove_group" );
     ok( $out =~ m!permission=1!i, "remove_group by non permitted user" );
 
 };
@@ -513,7 +519,7 @@ subtest 'mode = remove_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
+    ok( $out, "Request: remove_member" );
     ok( $out !~ m!permission=1!i, "remove_member by admin" );
 
     $app = _run_app(
@@ -526,8 +532,9 @@ subtest 'mode = remove_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
-    ok( $out !~ m!permission=1!i, "remove_member by can_manage_user_group user" );
+    ok( $out, "Request: remove_member" );
+    ok( $out !~ m!permission=1!i,
+        "remove_member by can_manage_user_group user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -539,7 +546,7 @@ subtest 'mode = remove_member' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
+    ok( $out, "Request: remove_member" );
     ok( $out =~ m!permission=1!i, "remove_member by non permitted user" );
 
 };
@@ -555,7 +562,7 @@ subtest 'mode = view_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_role" );
+    ok( $out, "Request: view_role" );
     ok( $out !~ m!permission=1!i, "view_role by admin" );
 
     $app = _run_app(
@@ -568,7 +575,7 @@ subtest 'mode = view_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_role" );
+    ok( $out, "Request: view_role" );
     ok( $out =~ m!permission=1!i, "view_role by non permitted user" );
 };
 
@@ -585,7 +592,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group I', );
@@ -600,9 +607,9 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by can_manage_user_group user" );
-    
+
     $grp = MT::Test::Permission->make_group( name => 'Group J', );
     $app = _run_app(
         'MT::App::CMS',
@@ -615,7 +622,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by non permitted user" );
 };
 
@@ -632,7 +639,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit by admin" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group L', );
@@ -647,7 +654,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit by can_manage_user_group user" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group M', );
@@ -662,7 +669,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit by non permitted user" );
 
 };
@@ -680,7 +687,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save by admin" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group O', );
@@ -695,7 +702,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save by can_manage_user_group user" );
 
     $grp = MT::Test::Permission->make_group( name => 'Group P', );
@@ -710,7 +717,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by non permitted user" );
 };
 

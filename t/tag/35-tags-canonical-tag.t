@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -35,18 +36,18 @@ sub undef_to_empty_string {
     defined( $_[0] ) ? $_[0] : '';
 }
 
-MT::Test::Tag->run_perl_tests($blog_id, \&_set_mapping_url_perl);
-MT::Test::Tag->run_php_tests($blog_id, \&_set_mapping_url_php);
+MT::Test::Tag->run_perl_tests( $blog_id, \&_set_mapping_url_perl );
+MT::Test::Tag->run_php_tests( $blog_id, \&_set_mapping_url_php );
 
 sub _set_mapping_url_perl {
-    my ($ctx, $block) = @_;
+    my ( $ctx, $block ) = @_;
     $ctx->stash( 'current_mapping_url',   $block->current_mapping_url );
     $ctx->stash( 'preferred_mapping_url', $block->preferred_mapping_url );
 }
 
 sub _set_mapping_url_php {
-    my ($block) = @_;
-    my $current_mapping_url = $block->current_mapping_url;
+    my ($block)               = @_;
+    my $current_mapping_url   = $block->current_mapping_url;
     my $preferred_mapping_url = $block->preferred_mapping_url;
     return <<"PHP";
 \$ctx->stash('current_mapping_url', '$current_mapping_url');

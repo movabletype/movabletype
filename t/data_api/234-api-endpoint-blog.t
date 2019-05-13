@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -25,7 +26,7 @@ $author->save;
 
 # Oops, sitepath is not absolute.
 my $website = $app->model('website')->load(2);
-$website->site_path($test_env->root);
+$website->site_path( $test_env->root );
 $website->save or die $website->errstr;
 
 # TODO: Avoid an error when installing GoogleAnalytics plugin.
@@ -111,7 +112,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
 
-                my $result = MT::Util::from_json($body);
+                my $result     = MT::Util::from_json($body);
                 my @result_ids = map { $_->{id} } @{ $result->{items} };
 
                 my @sites = MT->model('blog')
@@ -134,7 +135,7 @@ sub suite {
             complete  => sub {
                 my ( $data, $body ) = @_;
 
-                my $result = MT::Util::from_json($body);
+                my $result     = MT::Util::from_json($body);
                 my @result_ids = map { $_->{id} } @{ $result->{items} };
 
                 my @sites = MT->model('blog')
@@ -205,7 +206,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
 
-                my $result = MT::Util::from_json($body);
+                my $result     = MT::Util::from_json($body);
                 my @result_ids = map { $_->{id} } @{ $result->{items} };
 
                 my @sites = MT->model('blog')
@@ -337,7 +338,7 @@ sub suite {
             },
             restrictions => { 0 => [qw/ create_new_website /], },
             code         => 403,
-            error => 'Do not have permission to create a website.',
+            error        => 'Do not have permission to create a website.',
         },
 
         #   insert_new_website - normal tests
@@ -413,9 +414,9 @@ sub suite {
             ],
             params => {
                 website => {
-                    name     => 'test-api-permission-website',
-                    url      => 'http://narnia2.na/',
-                    sitePath => $test_env->root,
+                    name        => 'test-api-permission-website',
+                    url         => 'http://narnia2.na/',
+                    sitePath    => $test_env->root,
                     archivePath => $test_env->root . '/archives',
                     archiveUrl  => 'http://narnia2.na/archives/',
                 },
@@ -441,11 +442,11 @@ sub suite {
             ],
             params => {
                 website => {
-                    name     => 'test-api-permission-website',
-                    url      => 'http://narnia2.na/',
-                    sitePath => $test_env->root,
+                    name        => 'test-api-permission-website',
+                    url         => 'http://narnia2.na/',
+                    sitePath    => $test_env->root,
                     archivePath => $test_env->root . '/archives/',
-                    archiveUrl => 'http://narnia2.na/archives/',
+                    archiveUrl  => 'http://narnia2.na/archives/',
                 },
             },
         },
@@ -487,7 +488,7 @@ sub suite {
 
                 is( $got->{name}, 'test-api-permission-website-2', 'name' ),
                     is( $got->{url}, 'http://narnia2.na/', 'url' );
-                is( $got->{sitePath},     $test_env->root,     'sitePath' );
+                is( $got->{sitePath},     $test_env->root,   'sitePath' );
                 is( $got->{themeId},      'classic_website', 'themeId' );
                 is( $got->{serverOffset}, -5.5,              'serverOffset' );
                 is( $got->{language},     'de',              'language' );
@@ -625,7 +626,7 @@ sub suite {
             },
             restrictions => { 0 => [qw/ create_site /], },
             code         => 403,
-            error => 'Do not have permission to create a blog.',
+            error        => 'Do not have permission to create a blog.',
         },
 
         # insert_new_blog - normal tests
@@ -754,8 +755,8 @@ sub suite {
                 is( $got->{name},    'blog-3 name',  'name' ),
                     is( $got->{url}, 'http://www.narnia.na/blog-3/', 'url' );
                 is( $got->{sitePath},     $test_env->root, 'sitePath' );
-                is( $got->{serverOffset}, 8,             'serverOffset' );
-                is( $got->{language},     'nl',          'language' );
+                is( $got->{serverOffset}, 8,               'serverOffset' );
+                is( $got->{language},     'nl',            'language' );
             },
         },
 
@@ -998,18 +999,18 @@ sub suite {
                 is( $got->{basenameLimit},  50,            'basenameLimit' );
                 is( $got->{statusDefault},  'Draft',       'statusDefault' );
                 is( $got->{convertParas},   '__default__', 'convertParas' );
-                is( $got->{contentCss},   'css dummy', 'contentCss' );
-                is( $got->{smartReplace}, 1,           'smartReplace' );
+                is( $got->{contentCss},     'css dummy',   'contentCss' );
+                is( $got->{smartReplace},   1,             'smartReplace' );
                 is_deeply( $got->{smartReplaceFields},
                     ['text'], 'smartReplaceFields' );
 
                 # Feedback Settings screen.
                 is( $got->{junkFolderExpiry},   10, 'junkfolderExpiry' );
                 is( $got->{junkScoreThreshold}, -5, 'junkScoreThreshold' );
-                is( $got->{nofollowUrls},     1, 'nofollowUrls' );     # true.
-                is( $got->{followAuthLinks},  1, 'followAuthLinks' );  # true.
-                is( $got->{sanitizeSpec},     'b,p', 'sanitizeSpec' );
-                is( $got->{autolinkUrls}, 1, 'autolinkUrls' );         # true.
+                is( $got->{nofollowUrls},    1, 'nofollowUrls' );      # true.
+                is( $got->{followAuthLinks}, 1, 'followAuthLinks' );   # true.
+                is( $got->{sanitizeSpec}, 'b,p', 'sanitizeSpec' );
+                is( $got->{autolinkUrls}, 1,     'autolinkUrls' );     # true.
                 is( $got->{autodiscoverLinks}, 1, 'autodiscoverLinks' )
                     ;                                                  # true.
                 is( $got->{internalAutodiscovery},
@@ -1033,7 +1034,7 @@ sub suite {
                     'all', 'customDynamicTemplates' );
             },
         },
-        {                                                       # website
+        {    # website
                 # set 'days' todaysOrPosts field.
                 # check whether boolean fields can have false.
             path   => '/v2/sites/2',
@@ -1109,9 +1110,9 @@ sub suite {
                 is( $got->{convertParas}, 'markdown', 'convertParas' );
 
                 # Feedback Settings screen.
-                is( $got->{nofollowUrls},     0, 'nofollowUrls' );    # false.
-                is( $got->{followAuthLinks},  0, 'followAuthLinks' ); # false.
-                is( $got->{autolinkUrls}, 0, 'autolinkUrls' );        # false.
+                is( $got->{nofollowUrls},    0, 'nofollowUrls' );     # false.
+                is( $got->{followAuthLinks}, 0, 'followAuthLinks' );  # false.
+                is( $got->{autolinkUrls},    0, 'autolinkUrls' );     # false.
                 is( $got->{autodiscoverLinks}, 0, 'autodiscoverLinks' )
                     ;                                                 # false.
                 is( $got->{internalAutodiscovery},
@@ -1125,9 +1126,10 @@ sub suite {
             is_superuser => 1,
             params       => {
                 website => {
-                    name     => 'test-api-website-3-update',
-                    url      => 'http://narnia2.na/update/',
-                    sitePath => File::Spec->catfile( $test_env->root, 'update' )
+                    name => 'test-api-website-3-update',
+                    url  => 'http://narnia2.na/update/',
+                    sitePath =>
+                        File::Spec->catfile( $test_env->root, 'update' )
                         . '/',
                 },
             },

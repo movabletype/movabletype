@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,152 +19,157 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name     => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name     => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name     => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name     => 'ogawa',
-        nickname => 'Goro ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro ogawa',
+        );
 
-    my $kagawa = MT::Test::Permission->make_author(
-        name     => 'kagawa',
-        nickname => 'Ichiro kagawa',
-    );
+        my $kagawa = MT::Test::Permission->make_author(
+            name     => 'kagawa',
+            nickname => 'Ichiro kagawa',
+        );
 
-    my $kikkawa = MT::Test::Permission->make_author(
-        name     => 'kikkawa',
-        nickname => 'Jiro Kikkawa',
-    );
+        my $kikkawa = MT::Test::Permission->make_author(
+            name     => 'kikkawa',
+            nickname => 'Jiro Kikkawa',
+        );
 
-    my $kumekawa = MT::Test::Permission->make_author(
-        name     => 'kumekawa',
-        nickname => 'Saburo Kumekawa',
-    );
+        my $kumekawa = MT::Test::Permission->make_author(
+            name     => 'kumekawa',
+            nickname => 'Saburo Kumekawa',
+        );
 
-    my $kemikawa = MT::Test::Permission->make_author(
-        name     => 'kemikawa',
-        nickname => 'Shiro Kemikawa',
-    );
+        my $kemikawa = MT::Test::Permission->make_author(
+            name     => 'kemikawa',
+            nickname => 'Shiro Kemikawa',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Asset
-    my $pic = MT::Test::Permission->make_asset(
-        class   => 'image',
-        blog_id => 0,
-        url     => 'http://narnia.na/nana/images/test.jpg',
-        file_path =>
-            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-        file_name    => 'test.jpg',
-        file_ext     => 'jpg',
-        image_width  => 640,
-        image_height => 480,
-        mime_type    => 'image/jpeg',
-        label        => 'Userpic A',
-        description  => 'Userpic A',
-    );
-    $pic->tags('@userpic');
-    $pic->save;
+        # Asset
+        my $pic = MT::Test::Permission->make_asset(
+            class     => 'image',
+            blog_id   => 0,
+            url       => 'http://narnia.na/nana/images/test.jpg',
+            file_path => File::Spec->catfile(
+                $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+            ),
+            file_name    => 'test.jpg',
+            file_ext     => 'jpg',
+            image_width  => 640,
+            image_height => 480,
+            mime_type    => 'image/jpeg',
+            label        => 'Userpic A',
+            description  => 'Userpic A',
+        );
+        $pic->tags('@userpic');
+        $pic->save;
 
-    my $pic2 = MT::Test::Permission->make_asset(
-        class   => 'image',
-        blog_id => $blog->id,
-        url     => 'http://narnia.na/nana/images/test.jpg',
-        file_path =>
-            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-        file_name    => 'test.jpg',
-        file_ext     => 'jpg',
-        image_width  => 640,
-        image_height => 480,
-        mime_type    => 'image/jpeg',
-        label        => 'Sample Image',
-        description  => 'Sample Image',
-    );
+        my $pic2 = MT::Test::Permission->make_asset(
+            class     => 'image',
+            blog_id   => $blog->id,
+            url       => 'http://narnia.na/nana/images/test.jpg',
+            file_path => File::Spec->catfile(
+                $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+            ),
+            file_name    => 'test.jpg',
+            file_ext     => 'jpg',
+            image_width  => 640,
+            image_height => 480,
+            mime_type    => 'image/jpeg',
+            label        => 'Sample Image',
+            description  => 'Sample Image',
+        );
 
-    my $file1 = MT::Test::Permission->make_asset(
-        class   => 'file',
-        blog_id => $blog->id,
-        url     => 'http://narnia.na/nana/files/test.pdf',
-        file_path =>
-            File::Spec->catfile( $ENV{MT_HOME}, "t", 'files', 'test.pdf' ),
-        file_name    => 'test.pdf',
-        file_ext     => 'pdf',
-        mime_type    => 'application/pdf',
-        label        => 'Sample File',
-        description  => 'Sample PDF File',
-    );
+        my $file1 = MT::Test::Permission->make_asset(
+            class     => 'file',
+            blog_id   => $blog->id,
+            url       => 'http://narnia.na/nana/files/test.pdf',
+            file_path => File::Spec->catfile(
+                $ENV{MT_HOME}, "t", 'files', 'test.pdf'
+            ),
+            file_name   => 'test.pdf',
+            file_ext    => 'pdf',
+            mime_type   => 'application/pdf',
+            label       => 'Sample File',
+            description => 'Sample PDF File',
+        );
 
-    # Role
-    my $create_post = MT::Test::Permission->make_role(
-        name        => 'Create Post',
-        permissions => "'create_post'",
-    );
+        # Role
+        my $create_post = MT::Test::Permission->make_role(
+            name        => 'Create Post',
+            permissions => "'create_post'",
+        );
 
-    my $manage_pages = MT::Test::Permission->make_role(
-        name        => 'Manage Pages',
-        permissions => "'manage_pages'",
-    );
+        my $manage_pages = MT::Test::Permission->make_role(
+            name        => 'Manage Pages',
+            permissions => "'manage_pages'",
+        );
 
-    my $edit_assets = MT::Test::Permission->make_role(
-        name        => 'Edit Assets',
-        permissions => "'edit_assets', 'upload'",
-    );
+        my $edit_assets = MT::Test::Permission->make_role(
+            name        => 'Edit Assets',
+            permissions => "'edit_assets', 'upload'",
+        );
 
-    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+        my $designer
+            = MT::Role->load( { name => MT->translate('Designer') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa   => $create_post  => $blog );
-    MT::Association->link( $ichikawa => $manage_pages => $blog );
-    MT::Association->link( $ukawa    => $create_post  => $second_blog );
-    MT::Association->link( $egawa    => $manage_pages => $second_blog );
-    MT::Association->link( $ogawa    => $designer     => $blog );
-    MT::Association->link( $kagawa   => $edit_assets  => $blog );
-    MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
-    MT::Association->link( $kumekawa => $edit_assets  => $blog );
-    MT::Association->link( $kumekawa => $create_post  => $blog );
-    MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
-    MT::Association->link( $kemikawa => $create_post  => $second_blog );
-});
+        require MT::Association;
+        MT::Association->link( $aikawa   => $create_post  => $blog );
+        MT::Association->link( $ichikawa => $manage_pages => $blog );
+        MT::Association->link( $ukawa    => $create_post  => $second_blog );
+        MT::Association->link( $egawa    => $manage_pages => $second_blog );
+        MT::Association->link( $ogawa    => $designer     => $blog );
+        MT::Association->link( $kagawa   => $edit_assets  => $blog );
+        MT::Association->link( $kikkawa  => $edit_assets  => $second_blog );
+        MT::Association->link( $kumekawa => $edit_assets  => $blog );
+        MT::Association->link( $kumekawa => $create_post  => $blog );
+        MT::Association->link( $kemikawa => $edit_assets  => $second_blog );
+        MT::Association->link( $kemikawa => $create_post  => $second_blog );
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
-my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load( { name => 'my blog' } );
 
 my $aikawa   = MT::Author->load( { name => 'aikawa' } );
 my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
@@ -179,7 +185,7 @@ my $admin = MT::Author->load(1);
 
 my $pic  = MT::Asset::Image->load( { label => 'Userpic A' } );
 my $pic2 = MT::Asset::Image->load( { label => 'Sample Image' } );
-my $file1 = MT::Asset->load({ label => 'Sample File' } );
+my $file1 = MT::Asset->load( { label => 'Sample File' } );
 
 # Run
 my ( $app, $out );
@@ -195,7 +201,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_userpic" );
+    ok( $out, "Request: asset_userpic" );
     ok( $out !~ m!permission=1!i, "asset_userpic by admin" );
 
     $app = _run_app(
@@ -208,7 +214,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_userpic" );
+    ok( $out, "Request: asset_userpic" );
     ok( $out !~ m!permission=1!i, "asset_userpic by myself" );
 
     $app = _run_app(
@@ -221,7 +227,7 @@ subtest 'mode = asset_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_userpic" );
+    ok( $out, "Request: asset_userpic" );
     ok( $out =~ m!permission=1!i, "asset_userpic by other user" );
 
     done_testing();
@@ -329,7 +335,7 @@ subtest 'mode = complete_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                    "Request: complete_upload" );
+    ok( $out, "Request: complete_upload" );
     ok( $out =~ m!__mode=list!i, "complete_upload by admin" );
 
     # By Permitted user
@@ -344,7 +350,7 @@ subtest 'mode = complete_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                    "Request: complete_upload" );
+    ok( $out, "Request: complete_upload" );
     ok( $out =~ m!__mode=list!i, "complete_upload by permitted user" );
 
     # By non Permitted user
@@ -525,7 +531,7 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_insert" );
+    ok( $out, "Request: asset_insert" );
     ok( $out !~ m!Permission=1!i, "asset_insert by admin" );
 
     # By Permitted user(A)
@@ -584,7 +590,7 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_insert" );
+    ok( $out, "Request: asset_insert" );
     ok( $out =~ m!Permission=1!i, "asset_insert other blog (manage_pages)" );
 
     # By other permission
@@ -598,7 +604,7 @@ subtest 'mode = asset_insert' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: asset_insert" );
+    ok( $out, "Request: asset_insert" );
     ok( $out =~ m!Permission=1!i, "asset_insert by other permission" );
 };
 
@@ -616,7 +622,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!Permission=1!i, "list by admin" );
 
     # By Permitted user
@@ -631,7 +637,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!Permission=1!i, "list by permitted user" );
 
     # By non Permitted user
@@ -646,7 +652,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!Permission=1!i, "list by other blog" );
 
     # By other permission
@@ -661,7 +667,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!Permission=1!i, "list by other permission" );
 };
 
@@ -678,7 +684,7 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload" );
+    ok( $out, "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by admin" );
 
     # By Permitted user
@@ -692,7 +698,7 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload" );
+    ok( $out, "Request: start_upload" );
     ok( $out !~ m!Permission=1!i, "start_upload by permitted user" );
 
     # By non Permitted user
@@ -706,7 +712,7 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload" );
+    ok( $out, "Request: start_upload" );
     ok( $out =~ m!Permission=1!i, "start_upload by other blog" );
 
     # By other permission
@@ -720,7 +726,7 @@ subtest 'mode = start_upload' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload" );
+    ok( $out, "Request: start_upload" );
     ok( $out =~ m!Permission=1!i, "start_upload by other permission" );
 };
 
@@ -738,7 +744,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload_entry" );
+    ok( $out, "Request: start_upload_entry" );
     ok( $out !~ m!Permission=1!i, "start_upload_entry by admin" );
 
     # By Permitted user
@@ -753,7 +759,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload_entry" );
+    ok( $out, "Request: start_upload_entry" );
     ok( $out !~ m!Permission=1!i, "start_upload_entry by permitted user" );
 
     # By non Permitted user
@@ -768,7 +774,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload_entry" );
+    ok( $out, "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other blog" );
 
     # By other permission
@@ -783,7 +789,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload_entry" );
+    ok( $out, "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other blog" );
 
     $app = _run_app(
@@ -797,7 +803,7 @@ subtest 'mode = start_upload_entry' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_upload_entry" );
+    ok( $out, "Request: start_upload_entry" );
     ok( $out =~ m!Permission=1!i, "start_upload_entry by other permission" );
 };
 
@@ -814,7 +820,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: upload_file" );
+    ok( $out, "Request: upload_file" );
     ok( $out !~ m!Permission denied!i, "upload_file by admin" );
 
     # By Permitted user
@@ -828,7 +834,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: upload_file" );
+    ok( $out, "Request: upload_file" );
     ok( $out !~ m!Permission denied!i, "upload_file by permitted user" );
 
     # By non Permitted user
@@ -842,7 +848,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                      "Request: upload_file" );
+    ok( $out, "Request: upload_file" );
     ok( $out =~ m!&permission=1!i, "upload_file by other blog" );
 
     # By other permission
@@ -856,7 +862,7 @@ subtest 'mode = upload_file' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                          "Request: upload_file" );
+    ok( $out, "Request: upload_file" );
     ok( $out =~ m!Permission denied!i, "upload_file by other permission" );
 };
 
@@ -874,7 +880,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!Permission=1!i, "view by admin" );
 
     # By Permitted user
@@ -889,7 +895,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!Permission=1!i, "view by permitted user" );
 
     # By non Permitted user
@@ -904,7 +910,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Permission=1!i, "view by other blog" );
 
     # By other permission
@@ -920,7 +926,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Permission=1!i, "view by other permission" );
 };
 
@@ -938,7 +944,7 @@ subtest 'mode = view (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view file" );
+    ok( $out, "Request: view file" );
     ok( $out =~ m!Invalid Request!i, "view file by admin" );
 
     # By Permitted user
@@ -953,7 +959,7 @@ subtest 'mode = view (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view file" );
+    ok( $out, "Request: view file" );
     ok( $out =~ m!Invalid Request!i, "view file by permitted user" );
 
     # By non Permitted user
@@ -968,7 +974,7 @@ subtest 'mode = view (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "view file by other blog" );
 
     # By other permission
@@ -984,7 +990,7 @@ subtest 'mode = view (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view file" );
+    ok( $out, "Request: view file" );
     ok( $out =~ m!Invalid request!i, "view file by other permission" );
 };
 
@@ -1002,7 +1008,7 @@ subtest 'mode = view (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view image" );
+    ok( $out, "Request: view image" );
     ok( $out =~ m!Invalid Request!i, "view image by admin" );
 
     # By Permitted user
@@ -1017,7 +1023,7 @@ subtest 'mode = view (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view image" );
+    ok( $out, "Request: view image" );
     ok( $out =~ m!Invalid Request!i, "view image by permitted user" );
 
     # By non Permitted user
@@ -1032,7 +1038,7 @@ subtest 'mode = view (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view image" );
+    ok( $out, "Request: view image" );
     ok( $out =~ m!permission=1!i, "view image by other blog" );
 
     # By other permission
@@ -1048,7 +1054,7 @@ subtest 'mode = view (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view image" );
+    ok( $out, "Request: view image" );
     ok( $out =~ m!Invalid request!i, "view image by other permission" );
 };
 
@@ -1066,7 +1072,7 @@ subtest 'mode = view (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view audio" );
+    ok( $out, "Request: view audio" );
     ok( $out =~ m!Invalid Request!i, "view audio by admin" );
 
     # By Permitted user
@@ -1081,7 +1087,7 @@ subtest 'mode = view (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view audio" );
+    ok( $out, "Request: view audio" );
     ok( $out =~ m!Invalid Request!i, "view audio by permitted user" );
 
     # By non Permitted user
@@ -1096,7 +1102,7 @@ subtest 'mode = view (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view audio" );
+    ok( $out, "Request: view audio" );
     ok( $out =~ m!permission=1!i, "view audio by other blog" );
 
     # By other permission
@@ -1112,7 +1118,7 @@ subtest 'mode = view (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view audio" );
+    ok( $out, "Request: view audio" );
     ok( $out =~ m!Invalid request!i, "view audio by other permission" );
 };
 
@@ -1131,7 +1137,7 @@ subtest 'mode = view (type is video)' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out,                     "Request: view video" );
+    ok( $out, "Request: view video" );
     ok( $out =~ m!Invalid request!i, "view video by admin" );
 
     # By Permitted user
@@ -1146,7 +1152,7 @@ subtest 'mode = view (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view video" );
+    ok( $out, "Request: view video" );
     ok( $out =~ m!Invalid Request!i, "view video by permitted user" );
 
     # By non Permitted user
@@ -1161,7 +1167,7 @@ subtest 'mode = view (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view video" );
+    ok( $out, "Request: view video" );
     ok( $out =~ m!permission=1!i, "view video by other blog" );
 
     # By other permission
@@ -1177,7 +1183,7 @@ subtest 'mode = view (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view video" );
+    ok( $out, "Request: view video" );
     ok( $out =~ m!Invalid request!i, "view video by other permission" );
 };
 
@@ -1195,7 +1201,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!Permission=1!i, "save by admin" );
 
     # By Permitted user
@@ -1210,7 +1216,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!Permission=1!i, "save by permitted user" );
 
     # By non Permitted user
@@ -1225,7 +1231,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Permission=1!i, "save by other blog" );
 
     # By other permission
@@ -1241,7 +1247,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Permission=1!i, "save by other permission" );
 };
 
@@ -1259,7 +1265,7 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     # By Permitted user
@@ -1274,7 +1280,7 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by permitted user" );
 
     # By non Permitted user
@@ -1289,7 +1295,7 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other blog" );
 
     # By other permission
@@ -1305,7 +1311,7 @@ subtest 'mode = save (type is file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
@@ -1323,7 +1329,7 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     # By Permitted user
@@ -1338,7 +1344,7 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by permitted user" );
 
     # By non Permitted user
@@ -1353,7 +1359,7 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other blog" );
 
     # By other permission
@@ -1369,7 +1375,7 @@ subtest 'mode = save (type is image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
@@ -1387,7 +1393,7 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     # By Permitted user
@@ -1402,7 +1408,7 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by permitted user" );
 
     # By non Permitted user
@@ -1417,7 +1423,7 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other blog" );
 
     # By other permission
@@ -1433,7 +1439,7 @@ subtest 'mode = save (type is audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
@@ -1451,7 +1457,7 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     # By Permitted user
@@ -1466,7 +1472,7 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by permitted user" );
 
     # By non Permitted user
@@ -1481,7 +1487,7 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by other blog" );
 
     # By other permission
@@ -1497,7 +1503,7 @@ subtest 'mode = save (type is video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by other permission" );
 };
 
@@ -1529,7 +1535,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!Permission=1!i, "delete by admin" );
 
     $asset = MT::Test::Permission->make_asset(
@@ -1559,7 +1565,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!Permission=1!i, "delete by permitted user" );
 
     $asset = MT::Test::Permission->make_asset(
@@ -1589,7 +1595,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     $asset = MT::Test::Permission->make_asset(
@@ -1620,11 +1626,12 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other permission" );
 };
 
 subtest 'mode = delete (file)' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -1637,7 +1644,7 @@ subtest 'mode = delete (file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     # By Permitted user
@@ -1652,7 +1659,7 @@ subtest 'mode = delete (file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
 
     # By non Permitted user
@@ -1667,7 +1674,7 @@ subtest 'mode = delete (file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     # By other permission
@@ -1682,11 +1689,12 @@ subtest 'mode = delete (file)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other permission" );
 };
 
 subtest 'mode = delete (image)' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -1699,7 +1707,7 @@ subtest 'mode = delete (image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     # By Permitted user
@@ -1714,7 +1722,7 @@ subtest 'mode = delete (image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
 
     # By non Permitted user
@@ -1729,7 +1737,7 @@ subtest 'mode = delete (image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     # By other permission
@@ -1744,11 +1752,12 @@ subtest 'mode = delete (image)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other permission" );
 };
 
 subtest 'mode = delete (audio)' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -1761,7 +1770,7 @@ subtest 'mode = delete (audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     # By Permitted user
@@ -1776,7 +1785,7 @@ subtest 'mode = delete (audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
 
     # By non Permitted user
@@ -1791,7 +1800,7 @@ subtest 'mode = delete (audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     # By other permission
@@ -1806,11 +1815,12 @@ subtest 'mode = delete (audio)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other permission" );
 };
 
 subtest 'mode = delete (video)' => sub {
+
     # By admim
     $app = _run_app(
         'MT::App::CMS',
@@ -1823,7 +1833,7 @@ subtest 'mode = delete (video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
     # By Permitted user
@@ -1838,7 +1848,7 @@ subtest 'mode = delete (video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid Request!i, "delete by permitted user" );
 
     # By non Permitted user
@@ -1853,7 +1863,7 @@ subtest 'mode = delete (video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Permission=1!i, "delete by other blog" );
 
     # By other permission
@@ -1868,7 +1878,7 @@ subtest 'mode = delete (video)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other permission" );
 };
 
@@ -1905,7 +1915,7 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
+    ok( $out, "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by admin" );
 
     # By Permitted user
@@ -1925,7 +1935,7 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
+    ok( $out, "Request: add_tags" );
     ok( $out !~ m!not implemented!i, "add_tags by permitted user" );
 
     # By non Permitted user
@@ -1945,7 +1955,7 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                      "Request: add_tags" );
+    ok( $out, "Request: add_tags" );
     ok( $out =~ m!&permission=1!i, "add_tags by other blog" );
 
     # By other permission
@@ -1965,7 +1975,7 @@ subtest 'mode = add_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: add_tags" );
+    ok( $out, "Request: add_tags" );
     ok( $out =~ m!not implemented!i, "add_tags by other permission" );
 };
 
@@ -2002,7 +2012,7 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
+    ok( $out, "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by admin" );
 
     # By Permitted user
@@ -2022,7 +2032,7 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
+    ok( $out, "Request: remove_tags" );
     ok( $out !~ m!not implemented!i, "remove_tags by permitted user" );
 
     # By non Permitted user
@@ -2042,7 +2052,7 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                      "Request: remove_tags" );
+    ok( $out, "Request: remove_tags" );
     ok( $out =~ m!&permission=1!i, "remove_tags by other blog" );
 
     # By other permission
@@ -2062,7 +2072,7 @@ subtest 'mode = remove_tags' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: remove_tags" );
+    ok( $out, "Request: remove_tags" );
     ok( $out =~ m!not implemented!i, "remove_tags by other permission" );
 };
 

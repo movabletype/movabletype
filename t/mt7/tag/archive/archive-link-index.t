@@ -38,9 +38,9 @@ for my $cd_label ( keys %{ $objs->{content_data} } ) {
     my $cd  = $objs->{content_data}->{$cd_label};
     MT::Test::Tag->vars->{$key} = $cd->unique_id;
 }
-for my $ct_name ( keys %{$objs->{content_type}} ) {
+for my $ct_name ( keys %{ $objs->{content_type} } ) {
     my $key = $ct_name . '_unique_id';
-    my $ct = $objs->{content_type}{$ct_name}{content_type};
+    my $ct  = $objs->{content_type}{$ct_name}{content_type};
     MT::Test::Tag->vars->{$key} = $ct->unique_id;
 }
 

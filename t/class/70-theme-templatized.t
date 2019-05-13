@@ -37,7 +37,7 @@ my $data;
     local $/ = undef;
     $data = ( YAML::Tiny::Load(<DATA>) )[0];
 }
-MT::Component::__deep_localize_labels( $mt, $data ); # make labels CODE
+MT::Component::__deep_localize_labels( $mt, $data );    # make labels CODE
 $mt->component('core')->registry->{themes} = $data;
 
 ## create theme instance.
@@ -478,7 +478,8 @@ for my $lang (qw/en_us ja en_us/) {
 
             subtest 'date_and_time field' => sub {
                 my $f = $test_content_type->fields->[4];
-                is( $f->{options}{label},         $theme->translate('Date and Time') );
+                is( $f->{options}{label},
+                    $theme->translate('Date and Time') );
                 is( $f->{options}{description},   'datetime field' );
                 is( $f->{type},                   'date_and_time' );
                 is( $f->{options}{required},      0 );
@@ -658,7 +659,7 @@ for my $lang (qw/en_us ja en_us/) {
 
             subtest 'categories field (1)' => sub {
                 my $f = $test_content_type->fields->[17];
-                is( $f->{options}{label},        $theme->translate('Category') );
+                is( $f->{options}{label}, $theme->translate('Category') );
                 is( $f->{options}{description},  'categories field 1' );
                 is( $f->{type},                  'categories' );
                 is( $f->{options}{required},     1 );

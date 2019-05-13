@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -26,51 +27,54 @@ filters {
     expected => [qw( chomp )],
 };
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $mt = MT->instance;
+        my $mt = MT->instance;
 
-    {
-        my $b = $mt->model('blog')->new;
-        $b->set_values({
-            id => 1,
-        });
-        $b->save or die $b->errstr;
+        {
+            my $b = $mt->model('blog')->new;
+            $b->set_values( { id => 1, } );
+            $b->save or die $b->errstr;
+        }
+
+        {
+            my $e = $mt->model('entry')->new;
+            $e->set_values(
+                {   blog_id   => 1,
+                    author_id => 1,
+                    status    => MT::Entry::RELEASE(),
+                }
+            );
+            $e->tags(qw(@1clm TEST));
+            $e->save or die $e->errstr;
+        }
+
+        {
+            my $p = $mt->model('page')->new;
+            $p->set_values(
+                {   blog_id   => 1,
+                    author_id => 1,
+                    status    => MT::Entry::RELEASE(),
+                }
+            );
+            $p->tags(qw(@1clm TEST));
+            $p->save or die $p->errstr;
+        }
+
+        {
+            my $a = $mt->model('asset')->new;
+            $a->set_values(
+                {   blog_id   => 1,
+                    author_id => 1,
+                }
+            );
+            $a->tags(qw(@1clm TEST));
+            $a->save or die $a->errstr;
+        }
     }
-
-    {
-        my $e = $mt->model('entry')->new;
-        $e->set_values({
-            blog_id => 1,
-            author_id => 1,
-            status => MT::Entry::RELEASE(),
-        });
-        $e->tags(qw(@1clm TEST));
-        $e->save or die $e->errstr;
-    }
-
-    {
-        my $p = $mt->model('page')->new;
-        $p->set_values({
-            blog_id => 1,
-            author_id => 1,
-            status => MT::Entry::RELEASE(),
-        });
-        $p->tags(qw(@1clm TEST));
-        $p->save or die $p->errstr;
-    }
-
-    {
-        my $a = $mt->model('asset')->new;
-        $a->set_values({
-            blog_id => 1,
-            author_id => 1,
-        });
-        $a->tags(qw(@1clm TEST));
-        $a->save or die $a->errstr;
-    }
-});
+);
 
 MT::Test::Tag->run_perl_tests($blog_id);
 MT::Test::Tag->run_php_tests($blog_id);

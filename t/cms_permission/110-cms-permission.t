@@ -52,7 +52,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new asset" );
+ok( $out, "Create a new asset" );
 ok( $out =~ m/Invalid request\./i, "Create a new asset: result" );
 
 # Delete Asset
@@ -146,7 +146,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new association" );
+ok( $out, "Create a new association" );
 ok( $out =~ m/Invalid request\./i, "Create a new Association: result" );
 
 # Delete Association
@@ -257,7 +257,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new category" );
+ok( $out, "Create a new category" );
 ok( $out =~ m/Invalid request\./i, "Create a new Category: result" );
 
 # Delete Category
@@ -293,7 +293,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new folder" );
+ok( $out, "Create a new folder" );
 ok( $out =~ m/Invalid request\./i, "Create a new Folder: result" );
 
 # Delete Folder
@@ -350,7 +350,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new comment" );
+ok( $out, "Create a new comment" );
 ok( $out =~ m/Invalid request\./i, "Create a new Comment: result" );
 
 # Delete Comment
@@ -629,7 +629,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new config" );
+ok( $out, "Create a new config" );
 ok( $out =~ m/Invalid request\./i, "Create a new Config: result" );
 
 # Delete Config
@@ -644,7 +644,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete config" );
+ok( $out, "Delete config" );
 ok( $out =~ m/Invalid request\./i, "Delete config: result" );
 
 # Create a new Fileinfo
@@ -659,7 +659,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new fileinfo" );
+ok( $out, "Create a new fileinfo" );
 ok( $out =~ m/Invalid request\./i, "Create a new Fileinfo: result" );
 
 # Delete Fileinfo
@@ -674,7 +674,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete fileinfo" );
+ok( $out, "Delete fileinfo" );
 ok( $out =~ m/Invalid request\./i, "Delete fileinfo: result" );
 
 # Create a new Log
@@ -689,7 +689,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new log" );
+ok( $out, "Create a new log" );
 ok( $out =~ m/Invalid request\./i, "Create a new Log: result" );
 
 # Delete Log
@@ -704,7 +704,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete log" );
+ok( $out, "Delete log" );
 ok( $out =~ m/Invalid request\./i, "Delete log: result" );
 
 # Create a new ObjectAsset
@@ -721,7 +721,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objectasset" );
+ok( $out, "Create a new objectasset" );
 ok( $out =~ m/Invalid request\./i, "Create a new Objectasset: result" );
 
 # Delete Objectasset
@@ -736,7 +736,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objectasset" );
+ok( $out, "Delete objectasset" );
 ok( $out =~ m/Invalid request\./i, "Delete objectasset: result" );
 
 # Create a new Objectscore
@@ -752,7 +752,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objectscore" );
+ok( $out, "Create a new objectscore" );
 ok( $out =~ m/Invalid request\./i, "Create a new Objectscore: result" );
 
 # Delete Objectscore
@@ -767,7 +767,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objectscore" );
+ok( $out, "Delete objectscore" );
 ok( $out =~ m/Invalid request\./i, "Delete objectscore: result" );
 
 # Create a new Objecttag
@@ -784,7 +784,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new objecttag" );
+ok( $out, "Create a new objecttag" );
 ok( $out =~ m/Invalid request\./i, "Create a new Objecttag: result" );
 
 # Delete Objecttag
@@ -799,7 +799,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete objecttag" );
+ok( $out, "Delete objecttag" );
 ok( $out =~ m/Invalid request\./i, "Delete objecttag: result" );
 
 # Create a new Permission
@@ -815,7 +815,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new permission" );
+ok( $out, "Create a new permission" );
 ok( $out =~ m/Invalid request\./i, "Create a new Permission: result" );
 
 # Delete Permission
@@ -830,7 +830,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete permission" );
+ok( $out, "Delete permission" );
 ok( $out =~ m/Invalid request\./i, "Delete permission: result" );
 
 # Create a new Placement
@@ -848,7 +848,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new placement" );
+ok( $out, "Create a new placement" );
 ok( $out =~ m/Invalid request\./i, "Create a new Placement: result" );
 
 # Delete Placement
@@ -863,7 +863,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete placement" );
+ok( $out, "Delete placement" );
 ok( $out =~ m/Invalid request\./i, "Delete placement: result" );
 
 # Create a new Session
@@ -879,7 +879,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new session" );
+ok( $out, "Create a new session" );
 ok( $out =~ m/Invalid request\./i, "Create a new Session: result" );
 
 # Delete Session
@@ -894,7 +894,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete session" );
+ok( $out, "Delete session" );
 ok( $out =~ m/Invalid request\./i, "Delete session: result" );
 
 # Create a new Tag
@@ -909,7 +909,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new tag" );
+ok( $out, "Create a new tag" );
 ok( $out =~ m/Invalid request\./i, "Create a new Tag: result" );
 
 # Delete Tag
@@ -984,7 +984,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new touch" );
+ok( $out, "Create a new touch" );
 ok( $out =~ m/Invalid request\./i, "Create a new Touch: result" );
 
 # Delete Touch
@@ -999,7 +999,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete touch" );
+ok( $out, "Delete touch" );
 ok( $out =~ m/Invalid request\./i, "Delete touch: result" );
 
 # Create a new Trackback
@@ -1014,7 +1014,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new trackback" );
+ok( $out, "Create a new trackback" );
 ok( $out =~ m/Invalid request\./i, "Create a new Trackback: result" );
 
 # Delete Trackback
@@ -1029,7 +1029,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete trackback" );
+ok( $out, "Delete trackback" );
 ok( $out =~ m/Invalid request\./i, "Delete trackback: result" );
 
 # Create a new Template
@@ -1087,7 +1087,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Create a new templatemap" );
+ok( $out, "Create a new templatemap" );
 ok( $out =~ m/Invalid request\./i, "Create a new Templatemap: result" );
 
 # Delete Templatemap
@@ -1102,7 +1102,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete templatemap" );
+ok( $out, "Delete templatemap" );
 ok( $out =~ m/Invalid request\./i, "Delete templatemap: result" );
 
 ### Addons
@@ -1209,7 +1209,7 @@ $app = _run_app(
     }
 );
 $out = delete $app->{__test_output};
-ok( $out,                          "Delete filter" );
+ok( $out, "Delete filter" );
 ok( $out =~ m/Permission Denied/i, "Delete filter: result" );
 
 ### Different type

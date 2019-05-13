@@ -87,7 +87,7 @@ subtest 'mode = view (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view by permitted user" );
 
     $app = _run_app(
@@ -100,7 +100,7 @@ subtest 'mode = view (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "view by non permitted user" );
 };
 
@@ -116,7 +116,7 @@ subtest 'mode = view (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view by permitted user" );
 
     $app = _run_app(
@@ -130,7 +130,7 @@ subtest 'mode = view (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "view by non permitted user" );
 };
 
@@ -146,7 +146,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save by permitted user" );
 
     $app = _run_app(
@@ -160,7 +160,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by non permitted user" );
 
 };
@@ -176,7 +176,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     $app = _run_app(
@@ -189,7 +189,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list by non permitted user" );
 
 };
@@ -206,7 +206,7 @@ subtest 'mode = disable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: disable_object" );
+    ok( $out, "Request: disable_object" );
     ok( $out !~ m!permission=1!i, "disable_object by permitted user" );
 
     $app = _run_app(
@@ -220,7 +220,7 @@ subtest 'mode = disable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: disable_object" );
+    ok( $out, "Request: disable_object" );
     ok( $out =~ m!permission=1!i, "disable_object by non permitted user" );
 };
 
@@ -236,7 +236,7 @@ subtest 'mode = enable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: enable_object" );
+    ok( $out, "Request: enable_object" );
     ok( $out !~ m!permission=1!i, "enable_object by ermitted user" );
 
     $app = _run_app(
@@ -250,7 +250,7 @@ subtest 'mode = enable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: enable_object" );
+    ok( $out, "Request: enable_object" );
     ok( $out =~ m!permission=1!i, "enable_object by non permitted user" );
 };
 
@@ -266,7 +266,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by permitted user" );
 
     $app = _run_app(
@@ -295,7 +295,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out =~ m!permission=1!i, "grant_role by non permitted user" );
 
     $app = _run_app(

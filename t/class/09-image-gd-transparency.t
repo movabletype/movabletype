@@ -2,15 +2,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval 'use GD; 1'
         or plan skip_all => 'GD is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -82,7 +84,7 @@ sub has_alpha {
 
     $sub->($img);
 
-    my $gd = GD::Image->new( $img->blob );
+    my $gd    = GD::Image->new( $img->blob );
     my $alpha = $gd->getPixel( 0, 0 ) >> 24;
     ok( $alpha, $test );
 }

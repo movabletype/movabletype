@@ -62,7 +62,7 @@ MT::Test::Tag->run_perl_tests(
     sub {
         my ( $ctx, $block ) = @_;
         my $status = $block->status // return;
-        my $ct = MT->model('content_type')
+        my $ct     = MT->model('content_type')
             ->load( { name => 'test content data', blog_id => $blog_id } );
         my $content = MT->model('content_data')->load(
             {   content_type_id => $ct->id,

@@ -56,9 +56,9 @@ sub suite {
             code  => 401,
             error => 'Invalid login',
         },
-        {   path      => '/v3/authentication',
-            method    => 'POST',
-            params    => {
+        {   path   => '/v3/authentication',
+            method => 'POST',
+            params => {
                 clientId => 'test',
                 username => $author->name,
                 password => 'seecret',
@@ -66,9 +66,9 @@ sub suite {
             code  => 401,
             error => 'Invalid login',
         },
-        {   path      => '/v4/authentication',
-            method    => 'POST',
-            params    => {
+        {   path   => '/v4/authentication',
+            method => 'POST',
+            params => {
                 clientId => 'test',
                 username => $author->name,
                 password => 'seecret',

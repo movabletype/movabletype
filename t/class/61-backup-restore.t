@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -39,10 +40,10 @@ my $mel   = MT::Author->load( { name => 'Melody' } );
 
 my $mt = MT->new or die MT->errstr;
 isa_ok( $mt, 'MT' );
-$mt->request('__restore_in_progress', 1);
+$mt->request( '__restore_in_progress', 1 );
 
 my $backup_data = '';
-my $printer = sub { $backup_data .= $_[0]; return length( $_[0] ) };
+my $printer     = sub { $backup_data .= $_[0]; return length( $_[0] ) };
 
 my $inst = MT::BackupRestore->core_backup_instructions();
 my %skip = map { $_ => 1 } grep { $inst->{$_}{skip} } keys %$inst;
@@ -322,7 +323,7 @@ sub finish {
     );
 
     my @website_ids = map { $_->id } MT::Website->load();
-    my $terms = { blog_id => \@website_ids };
+    my $terms   = { blog_id => \@website_ids };
     my @entries = MT::Entry->load($terms);
     foreach my $e (@entries) {
         foreach my $c ( @{ $e->comments } ) {
@@ -374,7 +375,7 @@ sub setup {
 
     require MT::Association;
     my $b1 = MT::Blog->load(1);
-    my $r = MT::Role->load( { name => 'Site Administrator' } );
+    my $r  = MT::Role->load( { name => 'Site Administrator' } );
     MT::Association->link( $chuck => $r => $b1 );    # Chuck is a blog admin
 
     my $r2 = MT::Role->load( { name => 'Editor' } );
@@ -395,7 +396,7 @@ sub setup {
             template_id  => $w_cat_tmpl->id
         }
     );
-    my $w_cat1 = MT::Test::Permission->make_category( blog_id => $w->id, );
+    my $w_cat1    = MT::Test::Permission->make_category( blog_id => $w->id, );
     my $w_fi_cat1 = MT::Test::Permission->make_fileinfo(
         archive_type   => 'Category',
         blog_id        => $w->id,
@@ -411,7 +412,7 @@ sub setup {
             template_id  => $w_e_tmpl->id
         }
     );
-    my $w_e1 = MT::Test::Permission->make_entry( blog_id => $w->id, );
+    my $w_e1    = MT::Test::Permission->make_entry( blog_id => $w->id, );
     my $w_fi_e1 = MT::Test::Permission->make_fileinfo(
         archive_type   => 'Individual',
         blog_id        => $w->id,

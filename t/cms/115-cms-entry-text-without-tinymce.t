@@ -3,19 +3,19 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        PluginSwitch => 'TinyMCE=0',
-    );
+    $test_env = MT::Test::Env->new( PluginSwitch => 'TinyMCE=0', );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -39,79 +39,58 @@ $mock_app->mock( 'validate_magic', 0 );
 }
 
 my @suite = (
-    {
-        param => {
-            text => 'Archetype Editor is used',
-        },
-        like => qr{/js/archetype_editor\.js},
+    {   param => { text => 'Archetype Editor is used', },
+        like  => qr{/js/archetype_editor\.js},
     },
-    {
-        param => {
-            id => 1,
-        },
-        like => qr{Some Entry Text With IMG Tag &lt;img src=&quot;src_via_entry&quot; /&gt;},
+    {   param => { id => 1, },
+        like =>
+            qr{Some Entry Text With IMG Tag &lt;img src=&quot;src_via_entry&quot; /&gt;},
     },
-    {
-        param => {
-            text => 'Set the text via param',
-        },
-        like => qr/Set the text via param/,
+    {   param => { text => 'Set the text via param', },
+        like  => qr/Set the text via param/,
     },
-    {
-        param => {
-            text_more => 'Set the text more via param',
-        },
-        like => qr/Set the text more via param/,
+    {   param => { text_more => 'Set the text more via param', },
+        like  => qr/Set the text more via param/,
     },
-    {
-        param => {
-            text => 'Set the text via param <img src="src_via_param" />',
-        },
-        like => qr/Set the text via param/,
+    {   param =>
+            { text => 'Set the text via param <img src="src_via_param" />', },
+        like   => qr/Set the text via param/,
         unlike => qr/src_via_param/,
     },
-    {
-        param => {
-            text_more => 'Set the text more via param <img src="src_via_param" />',
+    {   param => {
+            text_more =>
+                'Set the text more via param <img src="src_via_param" />',
         },
-        like => qr/Set the text more via param/,
+        like   => qr/Set the text more via param/,
         unlike => qr/src_via_param/,
     },
-    {
-        param => {
-            text => 'Set the text via param <img src="src_via_param" />',
-        },
-        config => {
-            GlobalSanitizeSpec => 'img src',
-        },
-        like => qr{Set the text via param &lt;img src=&quot;src_via_param&quot; /&gt;},
+    {   param =>
+            { text => 'Set the text via param <img src="src_via_param" />', },
+        config => { GlobalSanitizeSpec => 'img src', },
+        like =>
+            qr{Set the text via param &lt;img src=&quot;src_via_param&quot; /&gt;},
     },
-    {
-        param => {
-            text_more => 'Set the text more via param <img src="src_via_param" />',
+    {   param => {
+            text_more =>
+                'Set the text more via param <img src="src_via_param" />',
         },
-        config => {
-            GlobalSanitizeSpec => 'img src',
-        },
-        like => qr{Set the text more via param &lt;img src=&quot;src_via_param&quot; /&gt;},
+        config => { GlobalSanitizeSpec => 'img src', },
+        like =>
+            qr{Set the text more via param &lt;img src=&quot;src_via_param&quot; /&gt;},
     },
-    {
-        param => {
-            text => 'Set the text via param <img src="src_via_param" />',
-        },
-        config => {
-            GlobalSanitizeSpec => '0',
-        },
-        like => qr{Set the text via param &lt;img src=&quot;src_via_param&quot; /&gt;},
+    {   param =>
+            { text => 'Set the text via param <img src="src_via_param" />', },
+        config => { GlobalSanitizeSpec => '0', },
+        like =>
+            qr{Set the text via param &lt;img src=&quot;src_via_param&quot; /&gt;},
     },
-    {
-        param => {
-            text_more => 'Set the text more via param <img src="src_via_param" />',
+    {   param => {
+            text_more =>
+                'Set the text more via param <img src="src_via_param" />',
         },
-        config => {
-            GlobalSanitizeSpec => '0',
-        },
-        like => qr{Set the text more via param &lt;img src=&quot;src_via_param&quot; /&gt;},
+        config => { GlobalSanitizeSpec => '0', },
+        like =>
+            qr{Set the text more via param &lt;img src=&quot;src_via_param&quot; /&gt;},
     },
 );
 
@@ -121,7 +100,8 @@ for my $type (qw(entry page)) {
             my $p = MT::Util::to_json(
                 {   param => $data->{param},
                     ( $data->{config} ? ( config => $data->{config} ) : () )
-                }, { canonical => 1 },
+                },
+                { canonical => 1 },
             );
             subtest $p => sub {
                 local $app->config->{__var}{ lc('GlobalSanitizeSpec') }

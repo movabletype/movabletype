@@ -93,7 +93,7 @@ my %feed_link = (
 );
 
 my $username = 'Chuck D';
-my $chuck = MT::Author->load( { name => $username } )
+my $chuck    = MT::Author->load( { name => $username } )
     or die "Couldn't load $username";
 my $chuck_token = $chuck->api_password;
 
@@ -331,7 +331,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
 
             require Digest::MD5;
             my $hash = \&Digest::MD5::md5;
-            my $kd = sub { $hash->( $_[0] . ':' . $_[1] ) };
+            my $kd   = sub { $hash->( $_[0] . ':' . $_[1] ) };
 
             print STDERR "Signing ",
                 join( ':', $nonce, '', '', 'auth', $hash->($A2) ), "\n";
@@ -382,7 +382,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             print "# Doing Digest auth\n";
 
             # # # # Now try posting an entry with authentication
-            my $nonce = make_nonce();
+            my $nonce     = make_nonce();
             my $timestamp = strftime( "%Y-%m-%dT%H:%M:%SZ", gmtime(time) );
             use Digest::SHA1 qw(sha1_base64);
             my $PasswordDigest
@@ -497,7 +497,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             print "# Doing Digest auth\n";
 
             # # # # Now try posting an entry with authentication
-            my $nonce = make_nonce();
+            my $nonce     = make_nonce();
             my $timestamp = strftime( "%Y-%m-%dT%H:%M:%SZ", gmtime(time) );
             use Digest::SHA1 qw(sha1_base64);
             my $PasswordDigest
@@ -568,7 +568,7 @@ foreach my $base_uri (qw{/mt-atom.cgi/weblog }) {    #/mt-atom.cgi/1.0 } ) {
             print "# Doing Digest auth\n";
 
             # # # # Now try posting an entry with authentication
-            my $nonce = make_nonce();
+            my $nonce     = make_nonce();
             my $timestamp = strftime( "%Y-%m-%dT%H:%M:%SZ", gmtime(time) );
             use Digest::SHA1 qw(sha1_base64);
             my $PasswordDigest

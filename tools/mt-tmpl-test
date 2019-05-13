@@ -415,8 +415,10 @@ sub report {
     print STDERR "Template Tag Utilization:\n";
     my $total_time  = 0;
     my $total_query = 0;
-    foreach my $tag ( sort { $PROFILES{$b}{time} <=> $PROFILES{$a}{time} }
-        keys %PROFILES )
+    foreach my $tag (
+        sort { $PROFILES{$b}{time} <=> $PROFILES{$a}{time} }
+        keys %PROFILES
+        )
     {
         my $queries  = $PROFILES{$tag}{queries} || [];
         my $time_avg = sprintf( "%0.3f",

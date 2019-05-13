@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -29,8 +30,8 @@ my $admin   = MT::Author->load(1);
 my $website = MT::Website->load(1);
 
 subtest 'Remove all members with all_selected = 1.' => sub {
-    my $role = MT::Role->load(
-        { name => MT->translate('Site Administrator') } );
+    my $role
+        = MT::Role->load( { name => MT->translate('Site Administrator') } );
 
     for ( my $cnt = 0; $cnt < 5; $cnt++ ) {
         my $name   = "user$cnt";

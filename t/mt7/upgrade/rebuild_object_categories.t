@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../lib"; # t/lib
+use lib "$FindBin::Bin/../../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,66 +19,70 @@ use MT::Test::Upgrade;
 
 my $blog_id = 1;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $category_set
-        = MT::Test::Permission->make_category_set( blog_id => $blog_id );
-    my @categories;
-    for ( 1 .. 3 ) {
-        my $cat = MT::Test::Permission->make_category(
+        my $category_set
+            = MT::Test::Permission->make_category_set( blog_id => $blog_id );
+        my @categories;
+        for ( 1 .. 3 ) {
+            my $cat = MT::Test::Permission->make_category(
+                blog_id         => $blog_id,
+                category_set_id => $category_set->id,
+            );
+            push @categories, $cat;
+        }
+
+        my $content_type
+            = MT::Test::Permission->make_content_type( blog_id => $blog_id );
+        my $categories_field = MT::Test::Permission->make_content_field(
             blog_id         => $blog_id,
-            category_set_id => $category_set->id,
+            content_type_id => $content_type->id,
+            type            => 'categories',
         );
-        push @categories, $cat;
+        $content_type->fields(
+            [   {   id      => $categories_field->id,
+                    order   => 1,
+                    type    => $categories_field->type,
+                    options => {
+                        label    => $categories_field->name,
+                        multiple => 1,
+                    },
+                    uniuque_id => $categories_field->unique_id,
+                }
+            ]
+        );
+        $content_type->save or die $content_type->errstr;
+
+        my $content_data = MT::Test::Permission->make_content_data(
+            blog_id         => $blog_id,
+            content_type_id => $content_type->id,
+            data =>
+                { $categories_field->id => [ map { $_->id } @categories ] },
+        );
     }
-
-    my $content_type
-        = MT::Test::Permission->make_content_type( blog_id => $blog_id );
-    my $categories_field = MT::Test::Permission->make_content_field(
-        blog_id         => $blog_id,
-        content_type_id => $content_type->id,
-        type            => 'categories',
-    );
-    $content_type->fields(
-        [   {   id      => $categories_field->id,
-                order   => 1,
-                type    => $categories_field->type,
-                options => {
-                    label    => $categories_field->name,
-                    multiple => 1,
-                },
-                uniuque_id => $categories_field->unique_id,
-            }
-        ]
-    );
-    $content_type->save or die $content_type->errstr;
-
-    my $content_data = MT::Test::Permission->make_content_data(
-        blog_id         => $blog_id,
-        content_type_id => $content_type->id,
-        data => { $categories_field->id => [ map { $_->id } @categories ] },
-    );
-});
+);
 
 my $category_set = MT::CategorySet->load( { blog_id => $blog_id } );
-my @categories = sort { $a->id <=> $b->id } MT::Category->load(
-    {
-        blog_id         => $blog_id,
+my @categories   = sort { $a->id <=> $b->id } MT::Category->load(
+    {   blog_id         => $blog_id,
         category_set_id => $category_set->id,
     }
 );
 
-my $content_type = MT::ContentType->load( { blog_id => $blog_id } );
-my $categories_field = MT::ContentField->load( {
-    blog_id         => $blog_id,
-    content_type_id => $content_type->id,
-    type            => 'categories',
-});
-my $content_data = MT::ContentData->load({
-    blog_id         => $blog_id,
-    content_type_id => $content_type->id,
-});
+my $content_type     = MT::ContentType->load( { blog_id => $blog_id } );
+my $categories_field = MT::ContentField->load(
+    {   blog_id         => $blog_id,
+        content_type_id => $content_type->id,
+        type            => 'categories',
+    }
+);
+my $content_data = MT::ContentData->load(
+    {   blog_id         => $blog_id,
+        content_type_id => $content_type->id,
+    }
+);
 
 my @object_categories = MT->model('objectcategory')->load(
     {   blog_id   => $blog_id,

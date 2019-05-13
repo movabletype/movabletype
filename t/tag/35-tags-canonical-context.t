@@ -3,19 +3,19 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DisableObjectCache => 1,
-    );
+    $test_env = MT::Test::Env->new( DisableObjectCache => 1, );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -167,8 +167,7 @@ print($ctx->stash('current_mapping_url') . "\n");
 print($ctx->stash('preferred_mapping_url') . "\n");
 PHP
 
-    run3 ['php', '-q'],
-        \$test_script, \my $php_result, undef
+    run3 [ 'php', '-q' ], \$test_script, \my $php_result, undef
         or die $?;
 
     my $result = {};

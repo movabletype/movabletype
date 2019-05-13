@@ -124,7 +124,7 @@ sub suite {
                     items        => MT::DataAPI::Resource->from_object(
                         [   MT->model('category')->load(
                                 { blog_id => 1, category_set_id => 0 },
-                                { sort => 'created_by' },
+                                { sort    => 'created_by' },
                             )
                         ]
                     ),
@@ -837,7 +837,7 @@ sub suite {
                 },
             ],
             result => sub {
-                my $site = $app->model('blog')->load(1);
+                my $site           = $app->model('blog')->load(1);
                 my @category_order = split ',', $site->category_order;
 
                 $app->user($author);

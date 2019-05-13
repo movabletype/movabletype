@@ -158,10 +158,11 @@ sub display_junk {
         print "\t\t E-mail: " . $obj->email . "\n";
         print "\t\t     IP: " . $obj->ip . "\n";
         print "\t\t  Authn: "
-            . ( $obj->commenter_id
+            . (
+            $obj->commenter_id
             ? 'Yes: ' . ( MT::Author->load( $obj->commenter_id )->name )
-            : 'No' )
-            . "\n";
+            : 'No'
+            ) . "\n";
         my $text = $obj->text;
         $text = "\t\t\t" . $text;
         $text =~ s/\n/\n\t\t\t/sg;

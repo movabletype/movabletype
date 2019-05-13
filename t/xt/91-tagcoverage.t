@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -149,10 +150,10 @@ foreach my $c ( sort keys %$components ) {
     # Determine if the core tags have adequate documentation or not.
     my $doc_names = {};
     while ( $all_docs =~ m/\n=head2[ ]+([\w:]+)[ ]*\n(.*?)?\n=cut[ ]*\n/gs ) {
-        my $tag = $1;
+        my $tag  = $1;
         my $docs = defined $2 ? $2 : '';
-        $docs =~ s/\r//g;    # for windows newlines
-                             # ignore comment lines
+        $docs =~ s/\r//g;      # for windows newlines
+                               # ignore comment lines
         $docs =~ s/^#.*//gm;
 
         # ignore empty lines

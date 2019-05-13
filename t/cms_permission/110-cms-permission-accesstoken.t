@@ -71,7 +71,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by admin" );
 
     $app = _run_app(
@@ -86,7 +86,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 };
 
@@ -101,7 +101,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
     $app = _run_app(
@@ -114,7 +114,7 @@ subtest 'mode = edit' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 };
 
@@ -129,7 +129,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by admin" );
 
     $app = _run_app(
@@ -142,7 +142,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by non permitted user" );
 };
 

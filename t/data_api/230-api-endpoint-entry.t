@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -491,8 +492,8 @@ __BODY__
             method => 'POST',
             params => {
                 entry => {
-                    title      => 'test-api-attach-empty-category-list-to-entry',
-                    status     => 'Draft',
+                    title  => 'test-api-attach-empty-category-list-to-entry',
+                    status => 'Draft',
                     categories => [],
                 },
             },
@@ -514,7 +515,8 @@ __BODY__
             result => sub {
                 require MT::Entry;
                 MT->model('entry')->load(
-                    {   title  => 'test-api-attach-empty-category-list-to-entry',
+                    {   title =>
+                            'test-api-attach-empty-category-list-to-entry',
                         status => MT::Entry::HOLD(),
                     }
                 );
@@ -524,15 +526,16 @@ __BODY__
 
                 require MT::Entry;
                 my $entry = MT->model('entry')->load(
-                    {   title  => 'test-api-attach-empty-category-list-to-entry',
+                    {   title =>
+                            'test-api-attach-empty-category-list-to-entry',
                         status => MT::Entry::HOLD(),
                     }
                 );
                 is( $entry->revision, 1, 'Has created new revision' );
 
                 my $got = $app->current_format->{unserialize}->($body);
-                is( scalar @{ $got->{categories} }, 0,
-                    'Attaches no category' );
+                is( scalar @{ $got->{categories} },
+                    0, 'Attaches no category' );
             },
         },
         {    # Attach empty asset list.
@@ -713,10 +716,9 @@ __BODY__
             },
         },
         {    # Detatch categories.
-            path   => '/v2/sites/1/entries/2',
-            method => 'PUT',
-            params =>
-                { entry => { categories => [] }, },
+            path      => '/v2/sites/1/entries/2',
+            method    => 'PUT',
+            params    => { entry => { categories => [] }, },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_save_permission_filter.entry',
@@ -1196,7 +1198,7 @@ __BODY__
                     text   => 'bar',
                     status => 'Draft',
                 },
-                raw              => '1',
+                raw => '1',
             },
             method   => 'POST',
             complete => sub {

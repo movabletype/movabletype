@@ -30,7 +30,10 @@ sub get_perl_dirs {
 sub is_perl_file {
     my ($file) = @_;
     return 0 if $file =~ m|/L10N/|;
-    return 1 if $file =~ /\.(?:cgi|pl|pm)\z/ || $file =~ m|tools/|;
+    return 1
+        if $file =~ /\.(?:cgi|pl|pm|t)\z/
+        || $file =~ m|/cpanfile\z|
+        || $file =~ m|tools/|;
     0;
 }
 

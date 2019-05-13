@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -552,7 +553,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
-            error => 'Do not have permission to grant a permission.',
+            error        => 'Do not have permission to grant a permission.',
         },
 
         # grant_permission_to_site - normal tests
@@ -661,7 +662,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ grant_administer_role /], },
             code         => 403,
-            error => 'Do not have permission to grant a permission.',
+            error        => 'Do not have permission to grant a permission.',
         },
 
         # grant_permission_to_user - normal tests
@@ -767,7 +768,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ revoke_role /], },
             code         => 403,
-            error => 'Do not have permission to revoke a permission.',
+            error        => 'Do not have permission to revoke a permission.',
         },
         {    # No permissions (administer role).
             path   => '/v2/sites/1/permissions/revoke',
@@ -778,7 +779,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
-            error => 'Do not have permission to revoke a permission.',
+            error        => 'Do not have permission to revoke a permission.',
         },
 
         # revoke_permission_from_site - normal tests
@@ -877,7 +878,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ revoke_role /], },
             code         => 403,
-            error => 'Do not have permission to revoke a permission.',
+            error        => 'Do not have permission to revoke a permission.',
         },
         {    # No permissions (administer role).
             path   => '/v2/users/1/permissions/revoke',
@@ -888,7 +889,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ revoke_administer_role /], },
             code         => 403,
-            error => 'Do not have permission to revoke a permission.',
+            error        => 'Do not have permission to revoke a permission.',
         },
 
         # revoke_permission_from_user - normal tests

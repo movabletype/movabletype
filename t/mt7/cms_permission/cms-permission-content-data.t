@@ -27,8 +27,8 @@ $test_env->prepare_fixture(
 
         # Sites
         my $site = MT::Test::Permission->make_website( name => 'my website' );
-        my $site2 =
-          MT::Test::Permission->make_website( name => 'my second website' );
+        my $site2 = MT::Test::Permission->make_website(
+            name => 'my second website' );
 
         # Users
         my $create_user = MT::Test::Permission->make_author(
@@ -92,16 +92,16 @@ $test_env->prepare_fixture(
 my $site  = MT::Website->load( { name => 'my website' } );
 my $site2 = MT::Website->load( { name => 'my second website' } );
 
-my $create_user                  = MT::Author->load( { name => 'aikawa' } );
-my $create_user2                 = MT::Author->load( { name => 'kagawa' } );
-my $edit_user                    = MT::Author->load( { name => 'ichikawa' } );
-my $edit_user2                   = MT::Author->load( { name => 'kikkawa' } );
-my $manage_user                  = MT::Author->load( { name => 'ukawa' } );
-my $manage_user2                 = MT::Author->load( { name => 'kumekawa' } );
-my $publish_user                 = MT::Author->load( { name => 'egawa' } );
-my $publish_user2                = MT::Author->load( { name => 'kemikawa' } );
-my $manage_content_data_user     = MT::Author->load( { name => 'ogawa' } );
-my $manage_content_data_user2    = MT::Author->load( { name => 'koishikawa' } );
+my $create_user               = MT::Author->load( { name => 'aikawa' } );
+my $create_user2              = MT::Author->load( { name => 'kagawa' } );
+my $edit_user                 = MT::Author->load( { name => 'ichikawa' } );
+my $edit_user2                = MT::Author->load( { name => 'kikkawa' } );
+my $manage_user               = MT::Author->load( { name => 'ukawa' } );
+my $manage_user2              = MT::Author->load( { name => 'kumekawa' } );
+my $publish_user              = MT::Author->load( { name => 'egawa' } );
+my $publish_user2             = MT::Author->load( { name => 'kemikawa' } );
+my $manage_content_data_user  = MT::Author->load( { name => 'ogawa' } );
+my $manage_content_data_user2 = MT::Author->load( { name => 'koishikawa' } );
 my $sys_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
 
 ### Make test data
@@ -120,8 +120,7 @@ my $content_field = MT::Test::Permission->make_content_field(
 );
 
 my $field_data = [
-    {
-        id        => $content_field->id,
+    {   id        => $content_field->id,
         order     => 1,
         type      => $content_field->type,
         options   => { label => $content_field->name, },
@@ -151,8 +150,7 @@ my $content_field2 = MT::Test::Permission->make_content_field(
 );
 
 my $field_data2 = [
-    {
-        id        => $content_field2->id,
+    {   id        => $content_field2->id,
         order     => 1,
         type      => $content_field2->type,
         options   => { label => $content_field2->name, },
@@ -170,16 +168,16 @@ my $cd2 = MT::Test::Permission->make_content_data(
 );
 
 # Permissions
-my $field_priv =
-    'content_type:'
-  . $content_type->unique_id
-  . '-content_field:'
-  . $content_field->unique_id;
-my $field_priv2 =
-    'content_type:'
-  . $content_type2->unique_id
-  . '-content_field:'
-  . $content_field2->unique_id;
+my $field_priv
+    = 'content_type:'
+    . $content_type->unique_id
+    . '-content_field:'
+    . $content_field->unique_id;
+my $field_priv2
+    = 'content_type:'
+    . $content_type2->unique_id
+    . '-content_field:'
+    . $content_field2->unique_id;
 
 my $create_priv = 'create_content_data:' . $content_type->unique_id;
 my $create_role = MT::Test::Permission->make_role(
@@ -221,14 +219,14 @@ my $manage_priv = 'manage_content_data:' . $content_type->unique_id;
 my $manage_role = MT::Test::Permission->make_role(
     name => 'manage_content_data ' . $content_field->name,
     permissions =>
-"'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
+        "'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
 );
 
 my $manage_priv2 = 'manage_content_data:' . $content_type2->unique_id;
 my $manage_role2 = MT::Test::Permission->make_role(
     name => 'manage_content_data ' . $content_field2->name,
     permissions =>
-"'${manage_priv2}','${create_priv2}','${publish_priv2}','${edit_priv2}','${field_priv2}'",
+        "'${manage_priv2}','${create_priv2}','${publish_priv2}','${edit_priv2}','${field_priv2}'",
 );
 
 my $manage_content_data_role = MT::Test::Permission->make_role(
@@ -262,8 +260,7 @@ my ( $app, $out );
 subtest 'mode = view (new)' => sub {
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $admin,
+        {   __test_user      => $admin,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -278,8 +275,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user,
+        {   __test_user      => $create_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -294,8 +290,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
+        {   __test_user      => $publish_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -310,8 +305,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
+        {   __test_user      => $manage_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -326,8 +320,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
+        {   __test_user      => $manage_content_data_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -342,8 +335,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
+        {   __test_user      => $sys_manage_content_data_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -358,8 +350,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user,
+        {   __test_user      => $create_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site2->id,
@@ -374,8 +365,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
+        {   __test_user      => $publish_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site2->id,
@@ -390,8 +380,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
+        {   __test_user      => $manage_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site2->id,
@@ -406,8 +395,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
+        {   __test_user      => $manage_content_data_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site2->id,
@@ -422,8 +410,7 @@ subtest 'mode = view (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
+        {   __test_user      => $edit_user,
             __request_method => 'GET',
             __mode           => 'view',
             blog_id          => $site->id,
@@ -441,8 +428,7 @@ subtest 'mode = view (new)' => sub {
 subtest 'mode = save (new)' => sub {
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $admin,
+        {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -459,8 +445,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user,
+        {   __test_user      => $create_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -477,8 +462,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
+        {   __test_user      => $publish_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -495,8 +479,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
+        {   __test_user      => $manage_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -513,8 +496,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
+        {   __test_user      => $manage_content_data_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -531,8 +513,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
+        {   __test_user      => $sys_manage_content_data_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -549,8 +530,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user2,
+        {   __test_user      => $create_user2,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -567,8 +547,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user2,
+        {   __test_user      => $publish_user2,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -585,8 +564,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user2,
+        {   __test_user      => $manage_user2,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -603,8 +581,7 @@ subtest 'mode = save (new)' => sub {
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user2,
+        {   __test_user      => $manage_content_data_user2,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -617,12 +594,12 @@ subtest 'mode = save (new)' => sub {
     );
 
     $out = delete $app->{__test_output};
-    ok( $out =~ /permission=1/, 'save new by non permitted user (manage_all)' );
+    ok( $out =~ /permission=1/,
+        'save new by non permitted user (manage_all)' );
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
+        {   __test_user      => $edit_user,
             __request_method => 'POST',
             __mode           => 'save',
             blog_id          => $site->id,
@@ -649,8 +626,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $admin,
+        {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -672,8 +648,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user,
+        {   __test_user      => $create_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -695,8 +670,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user,
+        {   __test_user      => $publish_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -718,8 +692,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
+        {   __test_user      => $manage_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -733,16 +706,16 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out !~ /permission=1/, 'delete by permitted user (manage)' );
 
-    my $cd_manage_content_data_user = MT::Test::Permission->make_content_data(
+    my $cd_manage_content_data_user
+        = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
         author_id       => $admin->id,
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
-    );
+        );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user,
+        {   __test_user      => $manage_content_data_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -756,17 +729,16 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out !~ /permission=1/, 'delete by permitted user (manage_all)' );
 
-    my $cd_sys_manage_content_data_user =
-      MT::Test::Permission->make_content_data(
+    my $cd_sys_manage_content_data_user
+        = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
         author_id       => $admin->id,
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
-      );
+        );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $sys_manage_content_data_user,
+        {   __test_user      => $sys_manage_content_data_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -788,8 +760,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $create_user2,
+        {   __test_user      => $create_user2,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -811,8 +782,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $publish_user2,
+        {   __test_user      => $publish_user2,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -834,8 +804,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_user2,
+        {   __test_user      => $manage_user2,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -849,16 +818,16 @@ subtest 'mode = delete' => sub {
     $out = delete $app->{__test_output};
     ok( $out =~ /permission=1/, 'delete by non permitted user (manage)' );
 
-    my $cd_manage_content_data_user2 = MT::Test::Permission->make_content_data(
+    my $cd_manage_content_data_user2
+        = MT::Test::Permission->make_content_data(
         blog_id         => $site->id,
         author_id       => $admin->id,
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
-    );
+        );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $manage_content_data_user2,
+        {   __test_user      => $manage_content_data_user2,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,
@@ -880,8 +849,7 @@ subtest 'mode = delete' => sub {
     );
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
+        {   __test_user      => $edit_user,
             __request_method => 'POST',
             __mode           => 'delete',
             blog_id          => $site->id,

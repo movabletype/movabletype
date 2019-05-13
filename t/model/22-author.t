@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -38,26 +39,26 @@ isa_ok( $mt, 'MT' );
     # Superuser Chuck D should have permission to do anything, on any blog
     my $perm = $author->blog_perm(1);
     ok( $perm, "$author->blog_perm(1)" ) || die;
-    ok( $author->can_edit_entry(1),     'Chuck D can edit entry #1' );
-    ok( $author->can_edit_entry(2),     'Chuck D can edit entry #2' );
-    ok( $perm->can_comment,             'can_comment' );
-    ok( $perm->can_post,                'can_post' );
-    ok( $perm->can_create_post,         'can_create_post' );
-    ok( $perm->can_publish_post,        'can_publish_post' );
-    ok( $perm->can_upload,              'can_upload' );
-    ok( $perm->can_edit_all_posts,      'can_edit_all_posts' );
-    ok( $perm->can_manage_pages,        'can_manage_pages' );
-    ok( $perm->can_edit_templates,      'can_edit_templates' );
-    ok( $perm->can_edit_tags,           'can_edit_tags' );
-    ok( $perm->can_edit_config,         'can_edit_config' );
-    ok( $perm->can_set_publish_paths,   'can_set_publish_paths' );
-    ok( $perm->can_rebuild,             'can_rebuild' );
-    ok( $perm->can_send_notifications,  'can_send_notifications' );
-    ok( $perm->can_edit_categories,     'can_edit_categories' );
-    ok( $perm->can_edit_notifications,  'can_edit_notifications' );
-    ok( $perm->can_administer_site,     'can_administer_site' );
-    ok( $perm->can_edit_assets,         'can_edit_assets' );
-    ok( $perm->can_manage_feedback,     'can_manage_feedback' );
+    ok( $author->can_edit_entry(1),    'Chuck D can edit entry #1' );
+    ok( $author->can_edit_entry(2),    'Chuck D can edit entry #2' );
+    ok( $perm->can_comment,            'can_comment' );
+    ok( $perm->can_post,               'can_post' );
+    ok( $perm->can_create_post,        'can_create_post' );
+    ok( $perm->can_publish_post,       'can_publish_post' );
+    ok( $perm->can_upload,             'can_upload' );
+    ok( $perm->can_edit_all_posts,     'can_edit_all_posts' );
+    ok( $perm->can_manage_pages,       'can_manage_pages' );
+    ok( $perm->can_edit_templates,     'can_edit_templates' );
+    ok( $perm->can_edit_tags,          'can_edit_tags' );
+    ok( $perm->can_edit_config,        'can_edit_config' );
+    ok( $perm->can_set_publish_paths,  'can_set_publish_paths' );
+    ok( $perm->can_rebuild,            'can_rebuild' );
+    ok( $perm->can_send_notifications, 'can_send_notifications' );
+    ok( $perm->can_edit_categories,    'can_edit_categories' );
+    ok( $perm->can_edit_notifications, 'can_edit_notifications' );
+    ok( $perm->can_administer_site,    'can_administer_site' );
+    ok( $perm->can_edit_assets,        'can_edit_assets' );
+    ok( $perm->can_manage_feedback,    'can_manage_feedback' );
 }
 
 {
@@ -110,27 +111,27 @@ isa_ok( $mt, 'MT' );
     # Non-superuser Bob D should only have selected permissions
     my $perm = $author->blog_perm(1);
     ok( $perm, "$author->blog_perm(1)" ) || die;
-    ok( !$author->can_view_log,          'can_view_log' );
-    ok( !$author->can_manage_plugins,    'can manage plugins' );
-    ok( !$author->can_edit_entry(1),     'Bob D can edit entry #1' );
-    ok( $author->can_edit_entry(2),      'Bob D can edit entry #2' );
-    ok( $perm->can_post,                 'can_post' );
-    ok( $perm->can_create_post,          'can_create_post' );
-    ok( $perm->can_publish_post,         'can_publish_post' );
-    ok( $perm->can_upload,               'Bob D can *not* upload files' );
-    ok( !$perm->can_edit_all_posts,      'Bob D can *not* edit all posts' );
-    ok( !$perm->can_manage_pages,        'can_manage_pages' );
-    ok( !$perm->can_edit_templates,      'Bob D can *not* edit templates' );
-    ok( !$perm->can_edit_tags,           'can_edit_tags' );
-    ok( !$perm->can_edit_config,         'can_edit_config' );
-    ok( !$perm->can_set_publish_paths,   'can_set_publish_paths' );
-    ok( !$perm->can_rebuild,             'can_rebuild' );
-    ok( $perm->can_send_notifications,   'Bob D can send notifications' );
-    ok( !$perm->can_edit_categories,     'can_edit_categories' );
-    ok( !$perm->can_edit_notifications,  'can_edit_notifications' );
-    ok( !$perm->can_administer_site,     'can_administer_site' );
-    ok( !$perm->can_edit_assets,         'can_edit_assets' );
-    ok( !$perm->can_manage_feedback,     'can_manage_feedback' );
+    ok( !$author->can_view_log,         'can_view_log' );
+    ok( !$author->can_manage_plugins,   'can manage plugins' );
+    ok( !$author->can_edit_entry(1),    'Bob D can edit entry #1' );
+    ok( $author->can_edit_entry(2),     'Bob D can edit entry #2' );
+    ok( $perm->can_post,                'can_post' );
+    ok( $perm->can_create_post,         'can_create_post' );
+    ok( $perm->can_publish_post,        'can_publish_post' );
+    ok( $perm->can_upload,              'Bob D can *not* upload files' );
+    ok( !$perm->can_edit_all_posts,     'Bob D can *not* edit all posts' );
+    ok( !$perm->can_manage_pages,       'can_manage_pages' );
+    ok( !$perm->can_edit_templates,     'Bob D can *not* edit templates' );
+    ok( !$perm->can_edit_tags,          'can_edit_tags' );
+    ok( !$perm->can_edit_config,        'can_edit_config' );
+    ok( !$perm->can_set_publish_paths,  'can_set_publish_paths' );
+    ok( !$perm->can_rebuild,            'can_rebuild' );
+    ok( $perm->can_send_notifications,  'Bob D can send notifications' );
+    ok( !$perm->can_edit_categories,    'can_edit_categories' );
+    ok( !$perm->can_edit_notifications, 'can_edit_notifications' );
+    ok( !$perm->can_administer_site,    'can_administer_site' );
+    ok( !$perm->can_edit_assets,        'can_edit_assets' );
+    ok( !$perm->can_manage_feedback,    'can_manage_feedback' );
 }
 
 {
@@ -156,7 +157,7 @@ isa_ok( $mt, 'MT' );
 
 {
     my $author = MT::Author->new;
-    my $perm = sub { $author->permissions(0)->permissions };
+    my $perm   = sub { $author->permissions(0)->permissions };
 
     $author->$_(1)
         for
@@ -179,10 +180,7 @@ isa_ok( $mt, 'MT' );
     );
 
     $author->can_edit_templates(0);
-    is( $perm->(),
-        "'manage_plugins'",
-        'Delete edit_templates permission.'
-    );
+    is( $perm->(), "'manage_plugins'", 'Delete edit_templates permission.' );
 
     $author->can_manage_plugins(0);
     ok( !$perm->(), 'Delete manage_plugins permission.' );

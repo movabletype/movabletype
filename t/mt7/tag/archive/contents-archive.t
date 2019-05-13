@@ -31,11 +31,12 @@ my $ct = $app->model('content_type')->load(
     }
 ) or die;
 
-my ($cf_same_date, $cf_same_datetime );
-for my $cf (@{ $ct->fields }) {
+my ( $cf_same_date, $cf_same_datetime );
+for my $cf ( @{ $ct->fields } ) {
     if ( $cf->{name} eq 'cf_same_date' ) {
         $cf_same_date = $cf;
-    } elsif ( $cf->{name} eq 'cf_same_datetime' ) {
+    }
+    elsif ( $cf->{name} eq 'cf_same_datetime' ) {
         $cf_same_datetime = $cf;
     }
 }
@@ -54,9 +55,10 @@ my $cd_same_apple_orange_plus
 $cd_same_apple_orange_plus->label('cd_same_apple_orange_plus');
 my $data = $cd_same_apple_orange->data;
 $data->{ $cf_same_date->{id} }++;
-$data->{ $cf_same_datetime->{id} } ++;
-$cd_same_apple_orange_plus->data( $data );
-$cd_same_apple_orange_plus->authored_on( $cd_same_apple_orange_plus->authored_on + 1 );
+$data->{ $cf_same_datetime->{id} }++;
+$cd_same_apple_orange_plus->data($data);
+$cd_same_apple_orange_plus->authored_on(
+    $cd_same_apple_orange_plus->authored_on + 1 );
 $cd_same_apple_orange_plus->save or die;
 
 filters {

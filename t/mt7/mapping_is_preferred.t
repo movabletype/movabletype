@@ -1,10 +1,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -15,41 +16,43 @@ use MT::Test::Permission;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Site
-    my $site = MT->model('website')->load();
+        # Site
+        my $site = MT->model('website')->load();
 
-    # Author
-    my $admin = MT->model('author')->load(1);
+        # Author
+        my $admin = MT->model('author')->load(1);
 
-    my $content_type_01 = MT::Test::Permission->make_content_type(
-        blog_id => $site->id,
-        name    => 'test content type 01',
-    );
+        my $content_type_01 = MT::Test::Permission->make_content_type(
+            blog_id => $site->id,
+            name    => 'test content type 01',
+        );
 
-    my $content_type_02 = MT::Test::Permission->make_content_type(
-        blog_id => $site->id,
-        name    => 'test content type 02',
-    );
+        my $content_type_02 = MT::Test::Permission->make_content_type(
+            blog_id => $site->id,
+            name    => 'test content type 02',
+        );
 
-    my $template_01 = MT::Test::Permission->make_template(
-        blog_id         => $site->id,
-        content_type_id => $content_type_01->id,
-        name            => 'ContentType Test 01',
-        type            => 'ct',
-        text            => 'test',
-    );
+        my $template_01 = MT::Test::Permission->make_template(
+            blog_id         => $site->id,
+            content_type_id => $content_type_01->id,
+            name            => 'ContentType Test 01',
+            type            => 'ct',
+            text            => 'test',
+        );
 
-    my $template_02 = MT::Test::Permission->make_template(
-        blog_id         => $site->id,
-        content_type_id => $content_type_02->id,
-        name            => 'ContentType Test 02',
-        type            => 'ct',
-        text            => 'test',
-    );
-});
+        my $template_02 = MT::Test::Permission->make_template(
+            blog_id         => $site->id,
+            content_type_id => $content_type_02->id,
+            name            => 'ContentType Test 02',
+            type            => 'ct',
+            text            => 'test',
+        );
+    }
+);
 
 my $site = MT->model('website')->load();
 

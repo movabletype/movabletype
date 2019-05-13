@@ -28,7 +28,7 @@ $test_env->prepare_fixture(
         MT::Test->init_db;
 
         my $admin = MT::Author->load(1);
-        my $user = MT::Test::Permission->make_author( name => 'test user', );
+        my $user  = MT::Test::Permission->make_author( name => 'test user', );
         $user->is_superuser(1);
         $user->save or die $user->errstr;
 
@@ -59,7 +59,7 @@ $test_env->prepare_fixture(
 );
 
 my $admin = MT::Author->load(1);
-my $user = MT::Author->load( { name => 'test user' } );
+my $user  = MT::Author->load( { name => 'test user' } );
 
 my $content_type = MT::ContentType->load( { name => 'test content type' } );
 my $content_field = MT::ContentField->load( { name => 'single text' } );

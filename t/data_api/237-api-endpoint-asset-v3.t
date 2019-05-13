@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,50 +19,52 @@ use MT::Test::Permission;
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-    MT::Test->init_data;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
+        MT::Test->init_data;
 
-    my $author = MT->model('author')->load(1);
-    $author->email('melody@example.com');
-    $author->save;
+        my $author = MT->model('author')->load(1);
+        $author->email('melody@example.com');
+        $author->save;
 
-    # Make a new role that including upload permission only.
-    require MT::Role;
-    my $role = MT::Role->new();
-    $role->name( 'upload' );
-    $role->description( 'upload' );
-    $role->clear_full_permissions;
-    $role->set_these_permissions( 'upload' );
-    $role->save;
+        # Make a new role that including upload permission only.
+        require MT::Role;
+        my $role = MT::Role->new();
+        $role->name('upload');
+        $role->description('upload');
+        $role->clear_full_permissions;
+        $role->set_these_permissions('upload');
+        $role->save;
 
-    # Make a new user who is associated with upload role.
-    my $uploader = MT::Author->new;
-    $uploader->set_values(
-        {   name             => 'uploader',
-            nickname         => 'Mr. Uploader',
-            email            => 'uploader@example.com',
-            url              => 'http://example.com/',
-            userpic_asset_id => 3,
-            api_password     => 'seecret',
-            auth_type        => 'MT',
-            created_on       => '19780131074500',
-        }
-    );
-    $uploader->set_password("bass");
-    $uploader->type( MT::Author::AUTHOR() );
-    $uploader->id(100);
-    $uploader->save()
-        or die "Couldn't save author record 100: " . $uploader->errstr;
+        # Make a new user who is associated with upload role.
+        my $uploader = MT::Author->new;
+        $uploader->set_values(
+            {   name             => 'uploader',
+                nickname         => 'Mr. Uploader',
+                email            => 'uploader@example.com',
+                url              => 'http://example.com/',
+                userpic_asset_id => 3,
+                api_password     => 'seecret',
+                auth_type        => 'MT',
+                created_on       => '19780131074500',
+            }
+        );
+        $uploader->set_password("bass");
+        $uploader->type( MT::Author::AUTHOR() );
+        $uploader->id(100);
+        $uploader->save()
+            or die "Couldn't save author record 100: " . $uploader->errstr;
 
-    require MT::Association;
-    my $assoc = MT::Association->new();
-    $assoc->author_id( $uploader->id );
-    $assoc->blog_id(1);
-    $assoc->role_id( $role->id );
-    $assoc->type(1);
-    $assoc->save();
-});
+        require MT::Association;
+        my $assoc = MT::Association->new();
+        $assoc->author_id( $uploader->id );
+        $assoc->blog_id(1);
+        $assoc->role_id( $role->id );
+        $assoc->type(1);
+        $assoc->save();
+    }
+);
 
 my $blog = MT::Blog->load(1);
 File::Path::mkpath $blog->archive_path unless -d $blog->archive_path;
@@ -93,11 +96,12 @@ sub suite {
         ### v3
         {   path   => '/v3/sites/1/assets/upload',
             method => 'POST',
-            params => {  },
+            params => {},
             setup  => sub {
-                my $iter = $app->model('asset')->load_iter(
-                    { id => \'> 8', blog_id => [ 0, 1] }, { no_class => 1 }
-                );
+                my $iter
+                    = $app->model('asset')
+                    ->load_iter( { id => \'> 8', blog_id => [ 0, 1 ] },
+                    { no_class => 1 } );
                 while ( my $a = $iter->() ) {
                     $a->remove;
                 }
@@ -163,6 +167,7 @@ sub suite {
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
             },
         },
+
         # upload_asset_v3 - normal tests upload only user.
         {    # Site.
             path   => '/v3/assets/upload',
@@ -179,7 +184,7 @@ sub suite {
                 ),
             ],
             author_id => 100,
-            result => sub {
+            result    => sub {
                 $app->model('asset')->load( { class => '*' },
                     { sort => [ { column => 'id', desc => 'DESC' }, ] } );
             },
@@ -230,15 +235,14 @@ sub suite {
         },
 
         # upload_asset_v3 - path parameter is allowed.
-        {
-            path   => '/v3/assets/upload',
+        {   path   => '/v3/assets/upload',
             method => 'POST',
             params => {
-                site_id => 1,
-                path => '/images',
+                site_id        => 1,
+                path           => '/images',
                 overwrite_once => 1,
             },
-            setup  => sub {
+            setup => sub {
                 my ($data) = @_;
                 $data->{count} = $app->model('asset')->count;
 
@@ -257,7 +261,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-                is( $result->{url},'http://narnia.na/nana/images/test.png' );
+                is( $result->{url}, 'http://narnia.na/nana/images/test.png' );
 
                 # Revert changes
                 my $site = $app->model('blog')->load(1);
@@ -269,15 +273,14 @@ sub suite {
         },
 
         # upload_asset_v3 - path parameter is disallowed.
-        {
-            path   => '/v3/assets/upload',
+        {   path   => '/v3/assets/upload',
             method => 'POST',
             params => {
-                site_id => 1,
-                path => '/images',
+                site_id        => 1,
+                path           => '/images',
                 overwrite_once => 1,
             },
-            setup  => sub {
+            setup => sub {
                 my ($data) = @_;
                 $data->{count} = $app->model('asset')->count;
 
@@ -296,7 +299,7 @@ sub suite {
             complete => sub {
                 my ( $data, $body ) = @_;
                 my $result = MT::Util::from_json($body);
-                is( $result->{url},'http://narnia.na/nana/test.png' );
+                is( $result->{url}, 'http://narnia.na/nana/test.png' );
 
                 # Revert changes
                 my $site = $app->model('blog')->load(1);
@@ -588,9 +591,11 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 3,
-                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3 ]
+                    ),
                 };
             },
         },
@@ -685,9 +690,11 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 3,
-                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3 ]
+                    ),
                 };
                 return $res;
             },
@@ -786,9 +793,11 @@ sub suite {
                 my $asset2 = $app->model('asset')->load(7);
                 my $asset3 = $app->model('asset')->load(6);
                 my $asset4 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 4,
-                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3, $asset4 ]
+                    ),
                 };
                 return $res;
             },
@@ -821,7 +830,6 @@ sub suite {
                 },
             ],
         },
-
 
         # get_asset - irregular tests
         {   path   => '/v3/sites/2/assets/1',

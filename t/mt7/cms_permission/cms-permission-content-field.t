@@ -58,7 +58,7 @@ my $permitted_action
 my $create_action = "create_content_data:" . $content_type->unique_id;
 
 my $edit_field_role = MT::Test::Permission->make_role(
-    name => 'Edit Content Field "' . $content_field->name . '"',
+    name        => 'Edit Content Field "' . $content_field->name . '"',
     permissions => "'" . $create_action . "','" . $permitted_action . "'"
 );
 require MT::Association;

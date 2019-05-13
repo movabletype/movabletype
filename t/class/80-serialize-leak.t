@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use Test::LeakTrace; 1 }
         or plan skip_all => 'require Test::LeakTrace';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -28,7 +30,8 @@ my %sers
 my $a     = [1];
 my $c     = 3;
 my $data1 = [
-    1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 }, undef
+    1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 },
+    undef
 ];
 my $data2 = [
     1, { a => 'value-a', b => $a, c => [ 'array', $a, $c, 2 ], d => 1 },
@@ -40,7 +43,7 @@ for my $label ( sort keys %sers ) {
     my $ser = $sers{$label};
     note "Checking leaks for $label\n";
 
-    # Call it once outside of leak check to make sure we load the serialization backend
+# Call it once outside of leak check to make sure we load the serialization backend
     $ser->serialize( \$data1 );
 
     no_leaks_ok {

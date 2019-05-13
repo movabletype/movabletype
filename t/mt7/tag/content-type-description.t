@@ -45,11 +45,11 @@ my $ct2 = MT::Test::Permission->make_content_type(
 );
 
 MT::Test::Permission->make_content_data(
-    blog_id => $blog_id,
+    blog_id         => $blog_id,
     content_type_id => $ct1->id,
 );
 MT::Test::Permission->make_content_data(
-    blog_id => $blog_id,
+    blog_id         => $blog_id,
     content_type_id => $ct2->id,
 );
 

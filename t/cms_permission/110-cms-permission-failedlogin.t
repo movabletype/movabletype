@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -23,38 +24,39 @@ my $config = MT->config;
 $config->EnableAddressBook( 1, 1 );
 $config->save_config;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website();
+        # Website
+        my $website = MT::Test::Permission->make_website();
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-    );
+        # Blog
+        my $blog
+            = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    # Role
-    require MT::Role;
-    my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
+        # Role
+        require MT::Role;
+        my $blog_admin = MT::Role->load(
+            { name => MT->translate('Blog Administrator') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa => $blog_admin => $blog );
-});
+        require MT::Association;
+        MT::Association->link( $aikawa => $blog_admin => $blog );
+    }
+);
 
-my $website     = MT::Website->load( { name => 'my website' } );
-my $blog        = MT::Blog->load( { name => 'my blog' } );
+my $website = MT::Website->load( { name => 'my website' } );
+my $blog = MT::Blog->load( { name => 'my blog' } );
 
-my $aikawa   = MT::Author->load( { name => 'aikawa' } );
+my $aikawa = MT::Author->load( { name => 'aikawa' } );
 
 my $admin = MT::Author->load(1);
-
 
 # Run
 my ( $app, $out );

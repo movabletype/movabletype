@@ -36,7 +36,7 @@ $website->archive_path( $test_env->root . '/site/archive' );
 $website->save or die;
 
 my $catset = MT::Test::Permission->make_category_set( blog_id => $blog_id );
-my $cat1 = MT::Test::Permission->make_category(
+my $cat1   = MT::Test::Permission->make_category(
     blog_id         => $blog_id,
     category_set_id => $catset->id,
     label           => 'foo',
@@ -52,7 +52,7 @@ my $cat3 = MT::Test::Permission->make_category(
     label           => 'baz',
 );
 
-my $ct = MT::Test::Permission->make_content_type( blog_id => $blog_id );
+my $ct      = MT::Test::Permission->make_content_type( blog_id => $blog_id );
 my $cf_cat1 = MT::Test::Permission->make_content_field(
     blog_id            => $blog_id,
     content_type_id    => $ct->id,

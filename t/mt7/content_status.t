@@ -24,38 +24,42 @@ subtest 'status methods' => sub {
 };
 
 subtest 'status_text method' => sub {
-    is( MT::ContentStatus::status_text(1), 'Draft',     '1 returns Draft' );
-    is( MT::ContentStatus::status_text(2), 'Publish',   '2 returns Publish' );
-    is( MT::ContentStatus::status_text(3), 'Review',    '3 returns Review' );
-    is( MT::ContentStatus::status_text(4), 'Future',    '4 returns Future' );
-    is( MT::ContentStatus::status_text(5), 'Spam',      '5 returns Spam' );
-    is( MT::ContentStatus::status_text(6), 'Unpublish', '6 returns Unpublish' );
+    is( MT::ContentStatus::status_text(1), 'Draft',   '1 returns Draft' );
+    is( MT::ContentStatus::status_text(2), 'Publish', '2 returns Publish' );
+    is( MT::ContentStatus::status_text(3), 'Review',  '3 returns Review' );
+    is( MT::ContentStatus::status_text(4), 'Future',  '4 returns Future' );
+    is( MT::ContentStatus::status_text(5), 'Spam',    '5 returns Spam' );
+    is( MT::ContentStatus::status_text(6),
+        'Unpublish', '6 returns Unpublish' );
 };
 
 subtest 'status_int method' => sub {
-    is( MT::ContentStatus::status_int('Draft'),     1, 'Draft returns 1' );
-    is( MT::ContentStatus::status_int('Publish'),   2, 'Publish returns 2' );
-    is( MT::ContentStatus::status_int('Review'),    3, 'Review returns 3' );
-    is( MT::ContentStatus::status_int('Future'),    4, 'Future returns 4' );
-    is( MT::ContentStatus::status_int('Junk'),      5, 'Junk returns 5' );
-    is( MT::ContentStatus::status_int('Spam'),      5, 'Spam returns 5' );
-    is( MT::ContentStatus::status_int('Unpublish'), 6, 'Unpublish returns 6' );
+    is( MT::ContentStatus::status_int('Draft'),   1, 'Draft returns 1' );
+    is( MT::ContentStatus::status_int('Publish'), 2, 'Publish returns 2' );
+    is( MT::ContentStatus::status_int('Review'),  3, 'Review returns 3' );
+    is( MT::ContentStatus::status_int('Future'),  4, 'Future returns 4' );
+    is( MT::ContentStatus::status_int('Junk'),    5, 'Junk returns 5' );
+    is( MT::ContentStatus::status_int('Spam'),    5, 'Spam returns 5' );
+    is( MT::ContentStatus::status_int('Unpublish'), 6,
+        'Unpublish returns 6' );
 
-    is( MT::ContentStatus::status_int('DRAFT'),     1, 'DRAFT returns 1' );
-    is( MT::ContentStatus::status_int('PUBLISH'),   2, 'PUBLISH returns 2' );
-    is( MT::ContentStatus::status_int('REVIEW'),    3, 'REVIEW returns 3' );
-    is( MT::ContentStatus::status_int('FUTURE'),    4, 'Future returns 4' );
-    is( MT::ContentStatus::status_int('JUNK'),      5, 'JUNK returns 5' );
-    is( MT::ContentStatus::status_int('SPAM'),      5, 'SPAM returns 5' );
-    is( MT::ContentStatus::status_int('UNPUBLISH'), 6, 'UNPUBLISH returns 6' );
+    is( MT::ContentStatus::status_int('DRAFT'),   1, 'DRAFT returns 1' );
+    is( MT::ContentStatus::status_int('PUBLISH'), 2, 'PUBLISH returns 2' );
+    is( MT::ContentStatus::status_int('REVIEW'),  3, 'REVIEW returns 3' );
+    is( MT::ContentStatus::status_int('FUTURE'),  4, 'Future returns 4' );
+    is( MT::ContentStatus::status_int('JUNK'),    5, 'JUNK returns 5' );
+    is( MT::ContentStatus::status_int('SPAM'),    5, 'SPAM returns 5' );
+    is( MT::ContentStatus::status_int('UNPUBLISH'), 6,
+        'UNPUBLISH returns 6' );
 
-    is( MT::ContentStatus::status_int('draft'),     1, 'draft returns 1' );
-    is( MT::ContentStatus::status_int('publish'),   2, 'publish returns 2' );
-    is( MT::ContentStatus::status_int('review'),    3, 'review returns 3' );
-    is( MT::ContentStatus::status_int('future'),    4, 'future returns 4' );
-    is( MT::ContentStatus::status_int('junk'),      5, 'junk returns 5' );
-    is( MT::ContentStatus::status_int('spam'),      5, 'spam returns 5' );
-    is( MT::ContentStatus::status_int('unpublish'), 6, 'unpublish returns 6' );
+    is( MT::ContentStatus::status_int('draft'),   1, 'draft returns 1' );
+    is( MT::ContentStatus::status_int('publish'), 2, 'publish returns 2' );
+    is( MT::ContentStatus::status_int('review'),  3, 'review returns 3' );
+    is( MT::ContentStatus::status_int('future'),  4, 'future returns 4' );
+    is( MT::ContentStatus::status_int('junk'),    5, 'junk returns 5' );
+    is( MT::ContentStatus::status_int('spam'),    5, 'spam returns 5' );
+    is( MT::ContentStatus::status_int('unpublish'), 6,
+        'unpublish returns 6' );
 };
 
 done_testing;

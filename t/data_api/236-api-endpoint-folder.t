@@ -153,9 +153,9 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permisions.
-            path   => '/v2/sites/1/folders',
-            method => 'POST',
-            params => { folder => { label => 'create-folder', }, },
+            path         => '/v2/sites/1/folders',
+            method       => 'POST',
+            params       => { folder => { label => 'create-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
             error        => 'Do not have permission to create a folder.',
@@ -236,9 +236,9 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/folders/22',
-            method => 'PUT',
-            params => { folder => { label => 'update-folder', }, },
+            path         => '/v2/sites/1/folders/22',
+            method       => 'PUT',
+            params       => { folder => { label => 'update-folder', }, },
             restrictions => { 1 => [qw/ save_folder /], },
             code         => 403,
             error        => 'Do not have permission to update a folder.',
@@ -373,7 +373,7 @@ sub suite {
                 },
             ],
             result => sub {
-                my $site = $app->model('blog')->load(1);
+                my $site         = $app->model('blog')->load(1);
                 my @folder_order = split ',', $site->folder_order;
 
                 $app->user($author);

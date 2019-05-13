@@ -167,7 +167,7 @@ sub suite {
                 my ( $data, $body ) = @_;
                 my $app = MT->instance;
 
-                my $got = $app->current_format->{unserialize}->($body);
+                my $got     = $app->current_format->{unserialize}->($body);
                 my @got_ids = map { $_->{id} } @{ $got->{items} };
 
                 my @expected

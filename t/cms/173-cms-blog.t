@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -135,7 +137,7 @@ subtest 'Check callbacks for each config screens for global level' => sub {
             my $out = delete $app->{__test_output};
 
             for my $t (qw(blog)) {
-                for my $name ( qw(cms_edit) ) {
+                for my $name (qw(cms_edit)) {
                     my $cb = 'MT::App::CMS::' . $name . '.' . $t;
                     is( scalar @{ $callbacks{$cb} || [] },
                         1, $cb . ' has been called once' );

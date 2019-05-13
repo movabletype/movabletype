@@ -4,10 +4,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -446,8 +447,8 @@ my $script_tag_encoded
     = '\\<s\\cript\\>alert(\\\'test\\\');alert(\\"test\\");\\<\\/s\\cript\\>';
 is( encode_js($script_tag), $script_tag_encoded, 'encode_js()' );
 is( 'description',          'description',       "encode_js('description')" );
-is( decode_js($script_tag_encoded), $script_tag,      'decode_js()' );
-is( encode_php("\\\$\"\n\r\t", '' ),     "\\\\\$\"\n\r\t", 'encode_php()' );
+is( decode_js($script_tag_encoded), $script_tag, 'decode_js()' );
+is( encode_php( "\\\$\"\n\r\t", '' ), "\\\\\$\"\n\r\t", 'encode_php()' );
 is( encode_php( "\\\$\"\n\r\t", 'qq' ),
     '\\\\\\$\\"\\n\\r\\t', 'encode_php() (qq)' );
 is( encode_php( "\\\$\"\n\r\t", 'here' ),
@@ -523,8 +524,7 @@ is( xliterate_utf8('Ã'), 'A', 'xliterate_utf8()' );
 
 {
     require File::Temp;
-    my ( $fh, $file )
-        = File::Temp::tempfile( DIR => MT->config->TempDir );
+    my ( $fh, $file ) = File::Temp::tempfile( DIR => MT->config->TempDir );
     close($fh);
     unlink($file);
 
@@ -665,7 +665,7 @@ ok( dir_separator(), 'dir_separator()' );
 
 {
     # deep copied (complex data)
-    my $data = [ 1, \2, { 3 => 4, 5 => { 6 => 7 } }, [ 8, 9 ] ];
+    my $data   = [ 1, \2, { 3 => 4, 5 => { 6 => 7 } }, [ 8, 9 ] ];
     my $copied = deep_copy( $data, 2 );
     is_deeply( $data, $copied, 'deep copied complex data' );
 
@@ -681,7 +681,7 @@ ok( dir_separator(), 'dir_separator()' );
 
 {
     # shallow copied
-    my $data = [ 1, \2, { 3 => 4, 5 => { 6 => 7 } }, [ 8, 9 ] ];
+    my $data   = [ 1, \2, { 3 => 4, 5 => { 6 => 7 } }, [ 8, 9 ] ];
     my $copied = deep_copy( $data, 0 );
     is_deeply( $data, $copied, 'shallow copied complex data' );
     $data->[0] += 1;

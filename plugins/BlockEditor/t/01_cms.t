@@ -53,6 +53,7 @@ subtest 'blockeditor_dialog_list_asset' => sub {
 };
 
 subtest 'blockeditor_dialog_list_asset_permission' => sub {
+
     # Author
     my $user = MT::Test::Permission->make_author(
         name     => 'test_user',
@@ -75,7 +76,8 @@ subtest 'blockeditor_dialog_list_asset_permission' => sub {
         }
     );
     my $out = delete $app->{__test_output};
-    ok( $out =~ m!permission=1!i, "blockeditor_dialog_list_asset by non permitted user." );
+    ok( $out =~ m!permission=1!i,
+        "blockeditor_dialog_list_asset by non permitted user." );
 };
 
 done_testing();

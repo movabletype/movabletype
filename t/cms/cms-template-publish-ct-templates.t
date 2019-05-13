@@ -31,7 +31,7 @@ my $admin = MT->model('author')->load(1) or die;
 $admin->basename('admin');
 $admin->save or die;
 
-my $website = MT->model('website')->load(1) or die;
+my $website              = MT->model('website')->load(1) or die;
 my $website_archive_path = join '/', $test_env->root, 'site', 'archive';
 $website->archive_path($website_archive_path);
 $website->theme_id('classic_website');

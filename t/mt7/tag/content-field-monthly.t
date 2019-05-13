@@ -11,7 +11,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -131,25 +131,31 @@ $publisher->rebuild(
     TemplateMap => $template_map,
 );
 
-MT::Test::Tag->run_perl_tests($blog_id, sub {
-    my ($ctx, $block) = @_;
-    $ctx->{current_timestamp}     = '20180801000000';
-    $ctx->{current_timestamp_end} = '20180901000000';
-    $ctx->stash(template_map => $template_map);
-});
+MT::Test::Tag->run_perl_tests(
+    $blog_id,
+    sub {
+        my ( $ctx, $block ) = @_;
+        $ctx->{current_timestamp}     = '20180801000000';
+        $ctx->{current_timestamp_end} = '20180901000000';
+        $ctx->stash( template_map => $template_map );
+    }
+);
 
-MT::Test::Tag->run_php_tests($blog_id, sub {
-    my $block = shift;
+MT::Test::Tag->run_php_tests(
+    $blog_id,
+    sub {
+        my $block = shift;
 
-    $template_map->build_type(3);
-    $template_map->save;
+        $template_map->build_type(3);
+        $template_map->save;
 
-    return <<'PHP';
+        return <<'PHP';
 $ctx->stash('current_timestamp', '20180801000000');
 $ctx->stash('current_timestamp_end', '20180901000000');
 $ctx->stash('current_archive_type', 'ContentType-Monthly');
 PHP
-});
+    }
+);
 
 __END__
 

@@ -3,24 +3,24 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use IPC::Run3; 1 }
         or plan skip_all => 'IPC::Run3 is not installed';
 }
 
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        ThemesDirectory => 'TEST_ROOT/themes/',
-    );
+    $test_env = MT::Test::Env->new( ThemesDirectory => 'TEST_ROOT/themes/', );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use File::Path;
-File::Path::mkpath($test_env->path('themes'));
+File::Path::mkpath( $test_env->path('themes') );
 
 use IO::String;
 
@@ -58,47 +58,48 @@ $test_json =~ s/^ *#.*$//mg;
 $test_json =~ s/# *\d+ *(?:TBD.*)? *$//mg;
 
 my $json = new JSON;
-$json->loose(1); # allows newlines inside strings
+$json->loose(1);    # allows newlines inside strings
 my $test_suite = $json->decode($test_json);
 
 # Ok. We are now ready to test!
-plan tests => (scalar(@$test_suite) * 2) + 3;
+plan tests => ( scalar(@$test_suite) * 2 ) + 3;
 
-my $blog_name_tmpl = MT::Template->load({name => "blog-name", blog_id => 1});
-ok($blog_name_tmpl, "'blog-name' template found");
+my $blog_name_tmpl
+    = MT::Template->load( { name => "blog-name", blog_id => 1 } );
+ok( $blog_name_tmpl, "'blog-name' template found" );
 
-my $ctx = MT::Template::Context->new;
+my $ctx  = MT::Template::Context->new;
 my $blog = MT::Blog->load(1);
-ok($blog, "Test blog loaded");
-$ctx->stash('blog', $blog);
-$ctx->stash('blog_id', $blog->id);
-$ctx->stash('builder', MT::Builder->new);
+ok( $blog, "Test blog loaded" );
+$ctx->stash( 'blog',    $blog );
+$ctx->stash( 'blog_id', $blog->id );
+$ctx->stash( 'builder', MT::Builder->new );
 
-my $entry  = MT::Entry->load( 1 );
-ok($entry, "Test entry loaded");
+my $entry = MT::Entry->load(1);
+ok( $entry, "Test entry loaded" );
 
 my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $asset = MT::Asset->load(1);
-my ($year, $month) = unpack 'A4A2', $asset->created_on;
+my ( $year, $month ) = unpack 'A4A2', $asset->created_on;
 
 # entry we want to capture is dated: 19780131074500
-my $tsdiff = time - ts2epoch($blog, '19780131074500');
-my $daysdiff = int($tsdiff / (60 * 60 * 24));
-my %const = (
-    CFG_FILE => MT->instance->{cfg_file},
-    VERSION_ID => MT->instance->version_id,
+my $tsdiff   = time - ts2epoch( $blog, '19780131074500' );
+my $daysdiff = int( $tsdiff / ( 60 * 60 * 24 ) );
+my %const    = (
+    CFG_FILE                  => MT->instance->{cfg_file},
+    VERSION_ID                => MT->instance->version_id,
     CURRENT_WORKING_DIRECTORY => $server_path,
-    STATIC_CONSTANT => '1',
-    DYNAMIC_CONSTANT => '',
-    DAYS_CONSTANT1 => $daysdiff + 2,
-    DAYS_CONSTANT2 => $daysdiff - 1,
-    CURRENT_YEAR => $year,
-    CURRENT_MONTH => $month,
-    STATIC_FILE_PATH => MT->instance->static_file_path . '/',
-    THREE_DAYS_AGO => epoch2ts($blog, time() - int(3.5 * 86400)),
-    TEST_ROOT => $test_env->root,
+    STATIC_CONSTANT           => '1',
+    DYNAMIC_CONSTANT          => '',
+    DAYS_CONSTANT1            => $daysdiff + 2,
+    DAYS_CONSTANT2            => $daysdiff - 1,
+    CURRENT_YEAR              => $year,
+    CURRENT_MONTH             => $month,
+    STATIC_FILE_PATH          => MT->instance->static_file_path . '/',
+    THREE_DAYS_AGO => epoch2ts( $blog, time() - int( 3.5 * 86400 ) ),
+    TEST_ROOT      => $test_env->root,
 );
 
 $test_json =~ s/$_/\Q$const{$_}\E/g for keys %const;
@@ -108,17 +109,19 @@ $ctx->{current_timestamp} = '20040816135142';
 
 my $num = 1;
 foreach my $test_item (@$test_suite) {
-    unless ($test_item->{r}) {
-        pass("perl test skip " . $num++);
+    unless ( $test_item->{r} ) {
+        pass( "perl test skip " . $num++ );
         next;
     }
     local $ctx->{__stash}{entry} = $entry if $test_item->{t} =~ m/<MTEntry/;
-    $ctx->{__stash}{entry} = undef if $test_item->{t} =~ m/MTComments|MTPings/;
-    $ctx->{__stash}{entries} = undef if $test_item->{t} =~ m/MTEntries|MTPages/;
-    $ctx->stash('comment', undef);
+    $ctx->{__stash}{entry} = undef
+        if $test_item->{t} =~ m/MTComments|MTPings/;
+    $ctx->{__stash}{entries} = undef
+        if $test_item->{t} =~ m/MTEntries|MTPages/;
+    $ctx->stash( 'comment', undef );
     $request->{__stash} = {};
-    my $result = build($ctx, $test_item->{t});
-    is($result, $test_item->{e}, "perl test " . $num++);
+    my $result = build( $ctx, $test_item->{t} );
+    is( $result, $test_item->{e}, "perl test " . $num++ );
 }
 
 SKIP: {
@@ -128,13 +131,13 @@ SKIP: {
 }
 
 sub build {
-    my($ctx, $markup) = @_;
-    my $b = $ctx->stash('builder');
-    my $tokens = $b->compile($ctx, $markup);
-    print('# -- error compiling: ' . $b->errstr), return undef
+    my ( $ctx, $markup ) = @_;
+    my $b      = $ctx->stash('builder');
+    my $tokens = $b->compile( $ctx, $markup );
+    print( '# -- error compiling: ' . $b->errstr ), return undef
         unless defined $tokens;
-    my $res = $b->build($ctx, $tokens);
-    print '# -- error building: ' . ($b->errstr ? $b->errstr : '') . "\n"
+    my $res = $b->build( $ctx, $tokens );
+    print '# -- error building: ' . ( $b->errstr ? $b->errstr : '' ) . "\n"
         unless defined $res;
     return $res;
 }
@@ -294,19 +297,21 @@ PHP
     my $test = sub {
         while (@lines) {
             my $result = shift @lines;
-            if ($result =~ m/^ok/) {
+            if ( $result =~ m/^ok/ ) {
                 pass($result);
-            } elsif ($result =~ m/^not ok/) {
+            }
+            elsif ( $result =~ m/^not ok/ ) {
                 fail($result);
-            } elsif ($result =~ m/^#/) {
+            }
+            elsif ( $result =~ m/^#/ ) {
                 print STDERR $result . "\n";
-            } else {
+            }
+            else {
                 print $result . "\n";
             }
         }
     };
-    run3 ['php', '-q'],
-        \$test_script, \my $php_result, undef
+    run3 [ 'php', '-q' ], \$test_script, \my $php_result, undef
         or die $?;
 
     my $RESULT = IO::String->new($php_result);
@@ -314,7 +319,7 @@ PHP
     my $output = '';
     while (<$RESULT>) {
         $output .= $_;
-        if ($output =~ m/\n/) {
+        if ( $output =~ m/\n/ ) {
             my @new_lines = split /\n/, $output;
             $output = pop @new_lines;
             push @lines, @new_lines;

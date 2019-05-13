@@ -61,14 +61,14 @@ my $site = MT::Website->load( { name => 'my website' } );
 
 require MT::Author;
 my $admin = MT::Author->load(1);
-my $user = MT::Author->load( { name => 'aikawa' } );
+my $user  = MT::Author->load( { name => 'aikawa' } );
 
 require MT::Role;
 my $manage_category_set_role
     = MT::Role->load( { name => 'Manage Category Set' } );
 
 require MT::CategorySet;
-my $category_set  = MT::CategorySet->load( { name => 'test category set' } );
+my $category_set = MT::CategorySet->load( { name => 'test category set' } );
 
 # Run
 my ( $app, $out );
@@ -84,7 +84,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list by permitted user" );
 
     MT::Association->unlink( $user => $manage_category_set_role => $site );
@@ -99,7 +99,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list by non permitted user" );
 
     done_testing();
@@ -116,7 +116,7 @@ subtest 'mode = view ( new )' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view by permitted user" );
 
     MT::Association->unlink( $user => $manage_category_set_role => $site );
@@ -131,7 +131,7 @@ subtest 'mode = view ( new )' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "view by non permitted user" );
 
     done_testing();
@@ -160,7 +160,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save by permitted user" );
 
     MT::Association->unlink( $user => $manage_category_set_role => $site );
@@ -185,7 +185,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save by non permitted user" );
 
     done_testing();
@@ -204,7 +204,7 @@ subtest 'mode = view ( edit )' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "edit by permitted user" );
 
     MT::Association->unlink( $user => $manage_category_set_role => $site );
@@ -220,7 +220,7 @@ subtest 'mode = view ( edit )' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "edit by non permitted user" );
 
     done_testing();
@@ -239,7 +239,7 @@ subtest 'mode = delet' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "edit by permitted user" );
 
     MT::Association->unlink( $user => $manage_category_set_role => $site );
@@ -255,7 +255,7 @@ subtest 'mode = delet' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "edit by non permitted user" );
 
     done_testing();

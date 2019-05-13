@@ -26,7 +26,7 @@ $author->email('melody@example.com');
 $author->save;
 
 use MT::Test::Permission;
-my $role = MT::Test::Permission->make_role( name => 'Test Role' );
+my $role    = MT::Test::Permission->make_role( name => 'Test Role' );
 my $role_id = $role->id;
 
 # test.
@@ -115,7 +115,7 @@ sub suite {
             result => sub {
                 my @roles = $app->model('role')->load(
                     { description => { like => '%administer%' } },
-                    { sort => 'name', direction => 'ascend' },
+                    { sort        => 'name', direction => 'ascend' },
                 );
 
                 $app->user($author);

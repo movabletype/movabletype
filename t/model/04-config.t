@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -121,8 +122,10 @@ foreach my $key (
 $mt->init_config;
 my @altpaths = $mt->{cfg}->AltTemplatePath;
 is( $mt->{cfg}->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY' );
-is( @altpaths,                    2,       'paths=2' );
-ok( File::Spec->file_name_is_absolute($altpaths[0]),  'alt-foo becomes absolute' );
-ok( File::Spec->file_name_is_absolute($altpaths[1]),  'alt-bar becomes absolute' );
+is( @altpaths,                           2,       'paths=2' );
+ok( File::Spec->file_name_is_absolute( $altpaths[0] ),
+    'alt-foo becomes absolute' );
+ok( File::Spec->file_name_is_absolute( $altpaths[1] ),
+    'alt-bar becomes absolute' );
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";

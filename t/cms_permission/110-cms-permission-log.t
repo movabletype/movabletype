@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,72 +19,74 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name => 'ogawa',
-        nickname => 'Goro Ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro Ogawa',
+        );
 
-    my $admin = MT::Author->load( 1 );
+        my $admin = MT::Author->load(1);
 
-    # Role
-    my $view_blog_log = MT::Test::Permission->make_role(
-       name  => 'View Blog Log',
-       permissions => "'view_blog_log'",
-    );
+        # Role
+        my $view_blog_log = MT::Test::Permission->make_role(
+            name        => 'View Blog Log',
+            permissions => "'view_blog_log'",
+        );
 
-    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+        my $designer
+            = MT::Role->load( { name => MT->translate('Designer') } );
 
-    require MT::Association;
-    MT::Association->link( $aikawa => $view_blog_log => $blog );
-    MT::Association->link( $ichikawa => $view_blog_log => $website );
-    MT::Association->link( $ukawa => $view_blog_log => $second_blog );
-    MT::Association->link( $egawa => $designer => $blog );
+        require MT::Association;
+        MT::Association->link( $aikawa   => $view_blog_log => $blog );
+        MT::Association->link( $ichikawa => $view_blog_log => $website );
+        MT::Association->link( $ukawa    => $view_blog_log => $second_blog );
+        MT::Association->link( $egawa    => $designer      => $blog );
 
-    $ogawa->can_view_log(1);
-    $ogawa->save();
-});
+        $ogawa->can_view_log(1);
+        $ogawa->save();
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
-my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load( { name => 'my blog' } );
 
 my $aikawa   = MT::Author->load( { name => 'aikawa' } );
 my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
@@ -91,7 +94,7 @@ my $ukawa    = MT::Author->load( { name => 'ukawa' } );
 my $egawa    = MT::Author->load( { name => 'egawa' } );
 my $ogawa    = MT::Author->load( { name => 'ogawa' } );
 
-my $admin = MT::Author->load( 1 );
+my $admin = MT::Author->load(1);
 
 # Run
 my ( $app, $out );
@@ -119,7 +122,8 @@ subtest 'mode = export_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_log" );
-    ok( $out =~ m!Content-disposition: attachment;!i, "export_log by permitted_user" );
+    ok( $out =~ m!Content-disposition: attachment;!i,
+        "export_log by permitted_user" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -131,7 +135,9 @@ subtest 'mode = export_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_log" );
-    ok( $out =~ m!Content-disposition: attachment;!i, "export_log by permitted user on website" );
+    ok( $out =~ m!Content-disposition: attachment;!i,
+        "export_log by permitted user on website"
+    );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -143,9 +149,11 @@ subtest 'mode = export_log' => sub {
     );
     $out = delete $app->{__test_output};
     ok( $out, "Request: export_log" );
-    ok( $out =~ m!Content-disposition: attachment;!i, "export_log by permitted user on system" );
+    ok( $out =~ m!Content-disposition: attachment;!i,
+        "export_log by permitted user on system"
+    );
 
-    SKIP: {
+SKIP: {
         skip 'https://movabletype.fogbugz.com/default.asp?106840', 4;
 
         $app = _run_app(
@@ -171,7 +179,7 @@ subtest 'mode = export_log' => sub {
         $out = delete $app->{__test_output};
         ok( $out, "Request: export_log" );
         ok( $out =~ m!permission=1!i, "export_log by other blog" );
-    };
+    }
 
     $app = _run_app(
         'MT::App::CMS',

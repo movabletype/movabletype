@@ -64,7 +64,7 @@ $test_env->prepare_fixture(
 
 my $category_set = MT::CategorySet->load( { blog_id => $blog_id } );
 
-my $content_type = MT::ContentType->load( { blog_id => $blog_id } );
+my $content_type     = MT::ContentType->load( { blog_id => $blog_id } );
 my $categories_field = MT::ContentField->load(
     {   blog_id         => $blog_id,
         content_type_id => $content_type->id,

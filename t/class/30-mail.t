@@ -1,17 +1,19 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
 }
 
 our $test_env;
+
 BEGIN {
-    $test_env = MT::Test::Env->new;
-    $ENV{MT_CONFIG} = $test_env->config_file;
+    $test_env          = MT::Test::Env->new;
+    $ENV{MT_CONFIG}    = $test_env->config_file;
     $ENV{MT_TEST_MAIL} = 1;
 }
 
@@ -21,11 +23,11 @@ use MT::Mail;
 use MIME::Base64;
 
 my $mt = MT->new() or die MT->errstr;
-$mt->config('MailTransfer', 'debug');
+$mt->config( 'MailTransfer', 'debug' );
 
 my $max_line_octet = $MT::Mail::MAX_LINE_OCTET;
 
-isa_ok($mt, 'MT');
+isa_ok( $mt, 'MT' );
 
 my @base64_encode_suite = (
     {   name     => 'Not base64 encoded',
@@ -40,6 +42,7 @@ my @base64_encode_suite = (
         headers => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
     }
 );
+
 for my $data (@base64_encode_suite) {
     my ( $headers, $body ) = send_mail( {}, $data->{input} );
     is( $body, $data->{expected}, $data->{name} . ' : body' );

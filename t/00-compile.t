@@ -267,7 +267,7 @@ SKIP: {
 }
 use_ok('MT::Util::Captcha');
 SKIP: {
-    my @modules = qw( Compress::Zlib Path::Class DateTime );
+    my @modules     = qw( Compress::Zlib Path::Class DateTime );
     my $eval_string = join( ';', map {"require $_"} @modules );
     if ( eval $eval_string ) {
         use_ok('MT::Util::LogProcessor');
@@ -622,7 +622,7 @@ sub test_all_modules_are_checked {
 
 sub _collect_modules {
     my ($path) = @_;
-    my @files = _internal_collect_modules( $path, "" );
+    my @files  = _internal_collect_modules( $path, "" );
     my @files2 = map { s/^:://; s/\.pm$//; $_ } grep {m/\.pm$/} @files;
     return @files2;
 }

@@ -129,7 +129,6 @@ $test_env->prepare_fixture(
             data            => { $cf_tag2->id => [ $tag4->id ], },
         );
 
-
         #case value 0
         my $ct3 = MT::Test::Permission->make_content_type(
             name    => 'tag name is 0',
@@ -170,7 +169,7 @@ $test_env->prepare_fixture(
     }
 );
 
-my $ct = MT::ContentType->load( { name => 'test content type 1' } );
+my $ct  = MT::ContentType->load( { name => 'test content type 1' } );
 my $ct3 = MT::ContentType->load( { name => 'tag name is 0' } );
 
 $vars->{ct_uid}  = $ct->unique_id;
@@ -178,7 +177,7 @@ $vars->{ct_name} = $ct->name;
 $vars->{ct_id}   = $ct->id;
 
 $vars->{ct3_uid}  = $ct3->unique_id;
-$vars->{ct3_name}  = $ct3->name;
+$vars->{ct3_name} = $ct3->name;
 $vars->{ct3_id}   = $ct3->id;
 
 MT::Test::Tag->run_perl_tests($blog_id);

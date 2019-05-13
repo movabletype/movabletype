@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -59,7 +60,7 @@ subtest '"bulk_update_folder" method check' => sub {
 
     require MT::Util;
     my $to_json = sub {
-        my $ret = MT::Util::to_json(shift, {canonical => 1});
+        my $ret = MT::Util::to_json( shift, { canonical => 1 } );
         return $ret;
     };
 
@@ -78,7 +79,7 @@ subtest '"bulk_update_folder" method check' => sub {
                         $_->id,
                         ( $_->parent || '0' ),
                         Encode::encode_utf8( $_->label ),
-                        )
+                    )
                     }
                     sort { $a->id <=> $b->id } @old_objects
             );
@@ -187,7 +188,7 @@ subtest '"bulk_update_folder" method check' => sub {
 
     # parent: Foo, child: Bar => parent: FooBar, child: Baz
     subtest 'rename 2 folders' => sub {
-        my $cat = $cat_class->load( { parent => 0 } );
+        my $cat    = $cat_class->load( { parent => 0 } );
         my @params = (
             {   id       => $cat->id,
                 parent   => 0,
@@ -233,7 +234,7 @@ subtest '"bulk_update_folder" method check' => sub {
 
     # parent: FooBar, child: Baz => parent: Baz, child: FooBar
     subtest 'swap 2 folders' => sub {
-        my $cat = $cat_class->load( { parent => 0 } );
+        my $cat    = $cat_class->load( { parent => 0 } );
         my @params = (
             {   id       => $cat->id,
                 parent   => 'dummy',
@@ -277,7 +278,7 @@ subtest '"bulk_update_folder" method check' => sub {
 
     # parent: Baz, child: FooBar => Baz
     subtest 'remove child folder' => sub {
-        my $cat = $cat_class->load( { parent => 0 } );
+        my $cat    = $cat_class->load( { parent => 0 } );
         my @params = (
             {   parent   => 0,
                 id       => $cat->id,

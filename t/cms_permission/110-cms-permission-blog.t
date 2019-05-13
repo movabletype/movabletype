@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,276 +19,279 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website        = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
-    my $second_website = MT::Test::Permission->make_website(
-        name => 'second website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
+        my $second_website
+            = MT::Test::Permission->make_website( name => 'second website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
-    my $third_blog = MT::Test::Permission->make_blog(
-        parent_id => $second_website->id,
-        name => 'third blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
+        my $third_blog = MT::Test::Permission->make_blog(
+            parent_id => $second_website->id,
+            name      => 'third blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name     => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name     => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name     => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name     => 'ogawa',
-        nickname => 'Goro ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro ogawa',
+        );
 
-    my $kagawa = MT::Test::Permission->make_author(
-        name     => 'kagawa',
-        nickname => 'Ichiro kagawa',
-    );
+        my $kagawa = MT::Test::Permission->make_author(
+            name     => 'kagawa',
+            nickname => 'Ichiro kagawa',
+        );
 
-    my $kikkawa = MT::Test::Permission->make_author(
-        name     => 'kikkawa',
-        nickname => 'Jiro Kikkawa',
-    );
+        my $kikkawa = MT::Test::Permission->make_author(
+            name     => 'kikkawa',
+            nickname => 'Jiro Kikkawa',
+        );
 
-    my $kumekawa = MT::Test::Permission->make_author(
-        name     => 'kumekawa',
-        nickname => 'Saburo Kumekawa',
-    );
+        my $kumekawa = MT::Test::Permission->make_author(
+            name     => 'kumekawa',
+            nickname => 'Saburo Kumekawa',
+        );
 
-    my $kemikawa = MT::Test::Permission->make_author(
-        name     => 'kemikawa',
-        nickname => 'Shiro Kemikawa',
-    );
+        my $kemikawa = MT::Test::Permission->make_author(
+            name     => 'kemikawa',
+            nickname => 'Shiro Kemikawa',
+        );
 
-    my $koishikawa = MT::Test::Permission->make_author(
-        name     => 'koishikawa',
-        nickname => 'Goro Koishikawa',
-    );
+        my $koishikawa = MT::Test::Permission->make_author(
+            name     => 'koishikawa',
+            nickname => 'Goro Koishikawa',
+        );
 
-    my $sagawa = MT::Test::Permission->make_author(
-        name     => 'sagawa',
-        nickname => 'Ichiro Sagawa',
-    );
+        my $sagawa = MT::Test::Permission->make_author(
+            name     => 'sagawa',
+            nickname => 'Ichiro Sagawa',
+        );
 
-    my $shiki = MT::Test::Permission->make_author(
-        name     => 'shiki',
-        nickname => 'Jiro Shiki',
-    );
+        my $shiki = MT::Test::Permission->make_author(
+            name     => 'shiki',
+            nickname => 'Jiro Shiki',
+        );
 
-    my $suda = MT::Test::Permission->make_author(
-        name     => 'suda',
-        nickname => 'Saburo Suda',
-    );
+        my $suda = MT::Test::Permission->make_author(
+            name     => 'suda',
+            nickname => 'Saburo Suda',
+        );
 
-    my $seta = MT::Test::Permission->make_author(
-        name     => 'seta',
-        nickname => 'Shiro Seta',
-    );
+        my $seta = MT::Test::Permission->make_author(
+            name     => 'seta',
+            nickname => 'Shiro Seta',
+        );
 
-    my $soneda = MT::Test::Permission->make_author(
-        name     => 'soneda',
-        nickname => 'Goro Soneda',
-    );
+        my $soneda = MT::Test::Permission->make_author(
+            name     => 'soneda',
+            nickname => 'Goro Soneda',
+        );
 
-    my $taneda = MT::Test::Permission->make_author(
-        name     => 'taneda',
-        nickname => 'Ichiro Taneda',
-    );
+        my $taneda = MT::Test::Permission->make_author(
+            name     => 'taneda',
+            nickname => 'Ichiro Taneda',
+        );
 
-    my $tsuda = MT::Test::Permission->make_author(
-        name     => 'tsuda',
-        nickname => 'Saburo Tsuda',
-    );
+        my $tsuda = MT::Test::Permission->make_author(
+            name     => 'tsuda',
+            nickname => 'Saburo Tsuda',
+        );
 
-    my $tezuka = MT::Test::Permission->make_author(
-        name     => 'tezuka',
-        nickname => 'Shiro Tezuka',
-    );
+        my $tezuka = MT::Test::Permission->make_author(
+            name     => 'tezuka',
+            nickname => 'Shiro Tezuka',
+        );
 
-    my $toda = MT::Test::Permission->make_author(
-        name     => 'toda',
-        nickname => 'Goro Toda',
-    );
+        my $toda = MT::Test::Permission->make_author(
+            name     => 'toda',
+            nickname => 'Goro Toda',
+        );
 
-    my $namegawa = MT::Test::Permission->make_author(
-        name     => 'namegawa',
-        nickname => 'Ichiro Namegawa',
-    );
+        my $namegawa = MT::Test::Permission->make_author(
+            name     => 'namegawa',
+            nickname => 'Ichiro Namegawa',
+        );
 
-    my $niyagawa = MT::Test::Permission->make_author(
-        name     => 'niyagawa',
-        nickname => 'Jiro Niyagawa',
-    );
+        my $niyagawa = MT::Test::Permission->make_author(
+            name     => 'niyagawa',
+            nickname => 'Jiro Niyagawa',
+        );
 
-    my $nunota = MT::Test::Permission->make_author(
-        name     => 'nunota',
-        nickname => 'Saburo Nunota',
-    );
+        my $nunota = MT::Test::Permission->make_author(
+            name     => 'nunota',
+            nickname => 'Saburo Nunota',
+        );
 
-    my $negoro = MT::Test::Permission->make_author(
-        name     => 'negoro',
-        nickname => 'Shiro Negoro',
-    );
+        my $negoro = MT::Test::Permission->make_author(
+            name     => 'negoro',
+            nickname => 'Shiro Negoro',
+        );
 
-    my $noda = MT::Test::Permission->make_author(
-        name     => 'noda',
-        nickname => 'Goro Noda',
-    );
+        my $noda = MT::Test::Permission->make_author(
+            name     => 'noda',
+            nickname => 'Goro Noda',
+        );
 
-    my $hada = MT::Test::Permission->make_author(
-        name     => 'hada',
-        nickname => 'Ichiro Hada',
-    );
-    my $hida = MT::Test::Permission->make_author(
-        name     => 'hida',
-        nickname => 'Jiro Hida',
-    );
+        my $hada = MT::Test::Permission->make_author(
+            name     => 'hada',
+            nickname => 'Ichiro Hada',
+        );
+        my $hida = MT::Test::Permission->make_author(
+            name     => 'hida',
+            nickname => 'Jiro Hida',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Role
-    require MT::Role;
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
-    my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+        # Role
+        require MT::Role;
+        my $site_admin
+            = MT::Role->load(
+            { name => MT->translate('Site Administrator') } );
+        my $designer
+            = MT::Role->load( { name => MT->translate('Designer') } );
 
-    my $create_post = MT::Test::Permission->make_role(
-        name        => 'Create Post',
-        permissions => "'create_post'",
-    );
+        my $create_post = MT::Test::Permission->make_role(
+            name        => 'Create Post',
+            permissions => "'create_post'",
+        );
 
-    my $manage_pages = MT::Test::Permission->make_role(
-        name        => 'Manage Pages',
-        permissions => "'manage_pages'",
-    );
+        my $manage_pages = MT::Test::Permission->make_role(
+            name        => 'Manage Pages',
+            permissions => "'manage_pages'",
+        );
 
-    my $rebuild = MT::Test::Permission->make_role(
-        name        => 'Rebuild',
-        permissions => "'rebuild'",
-    );
+        my $rebuild = MT::Test::Permission->make_role(
+            name        => 'Rebuild',
+            permissions => "'rebuild'",
+        );
 
-    my $edit_config = MT::Test::Permission->make_role(
-        name        => 'Edit Config',
-        permissions => "'edit_config'",
-    );
+        my $edit_config = MT::Test::Permission->make_role(
+            name        => 'Edit Config',
+            permissions => "'edit_config'",
+        );
 
-    my $edit_all_posts = MT::Test::Permission->make_role(
-        name        => 'Edit All Posts',
-        permissions => "'edit_all_posts'",
-    );
+        my $edit_all_posts = MT::Test::Permission->make_role(
+            name        => 'Edit All Posts',
+            permissions => "'edit_all_posts'",
+        );
 
-    my $publish_post = MT::Test::Permission->make_role(
-        name        => 'Publish Post',
-        permissions => "'publish_post'",
-    );
+        my $publish_post = MT::Test::Permission->make_role(
+            name        => 'Publish Post',
+            permissions => "'publish_post'",
+        );
 
-    my $manage_feedback = MT::Test::Permission->make_role(
-        name        => 'Manage Feedback',
-        permissions => "'manage_feedback'",
-    );
-    my $edit_templates = MT::Test::Permission->make_role(
-        name        => 'Edit Templates',
-        permissions => "'edit_templates'",
-    );
+        my $manage_feedback = MT::Test::Permission->make_role(
+            name        => 'Manage Feedback',
+            permissions => "'manage_feedback'",
+        );
+        my $edit_templates = MT::Test::Permission->make_role(
+            name        => 'Edit Templates',
+            permissions => "'edit_templates'",
+        );
 
-    require MT::Association;
-    MT::Association->link( $aikawa   => $site_admin      => $blog );
-    MT::Association->link( $ichikawa => $edit_templates  => $blog );
-    MT::Association->link( $ukawa    => $manage_pages    => $blog );
-    MT::Association->link( $egawa    => $rebuild         => $blog );
-    MT::Association->link( $ogawa    => $edit_config     => $blog );
-    MT::Association->link( $kagawa   => $edit_all_posts  => $blog );
-    MT::Association->link( $kikkawa  => $publish_post    => $blog );
-    MT::Association->link( $kumekawa => $manage_feedback => $blog );
-    MT::Association->link( $tezuka   => $edit_templates  => $blog );
-    MT::Association->link( $noda     => $site_admin      => $blog );
-    MT::Association->link( $hada     => $site_admin      => $blog );
-    MT::Association->link( $hida     => $site_admin      => $blog );
+        require MT::Association;
+        MT::Association->link( $aikawa   => $site_admin      => $blog );
+        MT::Association->link( $ichikawa => $edit_templates  => $blog );
+        MT::Association->link( $ukawa    => $manage_pages    => $blog );
+        MT::Association->link( $egawa    => $rebuild         => $blog );
+        MT::Association->link( $ogawa    => $edit_config     => $blog );
+        MT::Association->link( $kagawa   => $edit_all_posts  => $blog );
+        MT::Association->link( $kikkawa  => $publish_post    => $blog );
+        MT::Association->link( $kumekawa => $manage_feedback => $blog );
+        MT::Association->link( $tezuka   => $edit_templates  => $blog );
+        MT::Association->link( $noda     => $site_admin      => $blog );
+        MT::Association->link( $hada     => $site_admin      => $blog );
+        MT::Association->link( $hida     => $site_admin      => $blog );
 
-    MT::Association->link( $kemikawa   => $site_admin      => $second_blog );
-    MT::Association->link( $koishikawa => $designer        => $second_blog );
-    MT::Association->link( $sagawa     => $manage_pages    => $second_blog );
-    MT::Association->link( $shiki      => $rebuild         => $second_blog );
-    MT::Association->link( $suda       => $edit_config     => $second_blog );
-    MT::Association->link( $seta       => $edit_all_posts  => $second_blog );
-    MT::Association->link( $soneda     => $publish_post    => $second_blog );
-    MT::Association->link( $taneda     => $manage_feedback => $second_blog );
-    MT::Association->link( $toda       => $edit_templates  => $second_blog );
-    MT::Association->link( $noda       => $site_admin      => $second_blog );
+        MT::Association->link( $kemikawa   => $site_admin   => $second_blog );
+        MT::Association->link( $koishikawa => $designer     => $second_blog );
+        MT::Association->link( $sagawa     => $manage_pages => $second_blog );
+        MT::Association->link( $shiki      => $rebuild      => $second_blog );
+        MT::Association->link( $suda       => $edit_config  => $second_blog );
+        MT::Association->link( $seta   => $edit_all_posts  => $second_blog );
+        MT::Association->link( $soneda => $publish_post    => $second_blog );
+        MT::Association->link( $taneda => $manage_feedback => $second_blog );
+        MT::Association->link( $toda   => $edit_templates  => $second_blog );
+        MT::Association->link( $noda   => $site_admin      => $second_blog );
 
-    MT::Association->link( $niyagawa => $site_admin     => $website );
-    MT::Association->link( $noda     => $edit_all_posts => $website );
-    MT::Association->link( $nunota   => $site_admin     => $second_website );
+        MT::Association->link( $niyagawa => $site_admin     => $website );
+        MT::Association->link( $noda     => $edit_all_posts => $website );
+        MT::Association->link( $nunota => $site_admin => $second_website );
 
-    MT::Association->link( $kemikawa   => $create_post => $blog );
-    MT::Association->link( $koishikawa => $create_post => $blog );
-    MT::Association->link( $sagawa     => $create_post => $blog );
-    MT::Association->link( $shiki      => $create_post => $blog );
-    MT::Association->link( $suda       => $create_post => $blog );
-    MT::Association->link( $seta       => $create_post => $blog );
-    MT::Association->link( $soneda     => $create_post => $blog );
-    MT::Association->link( $taneda     => $create_post => $blog );
-    MT::Association->link( $toda       => $create_post => $blog );
+        MT::Association->link( $kemikawa   => $create_post => $blog );
+        MT::Association->link( $koishikawa => $create_post => $blog );
+        MT::Association->link( $sagawa     => $create_post => $blog );
+        MT::Association->link( $shiki      => $create_post => $blog );
+        MT::Association->link( $suda       => $create_post => $blog );
+        MT::Association->link( $seta       => $create_post => $blog );
+        MT::Association->link( $soneda     => $create_post => $blog );
+        MT::Association->link( $taneda     => $create_post => $blog );
+        MT::Association->link( $toda       => $create_post => $blog );
 
-    MT::Association->link( $negoro => $create_post => $blog );
+        MT::Association->link( $negoro => $create_post => $blog );
 
-    $tsuda->can_create_site(1);
-    $tsuda->save();
+        $tsuda->can_create_site(1);
+        $tsuda->save();
 
-    $namegawa->can_edit_templates(1);
-    $namegawa->save();
+        $namegawa->can_edit_templates(1);
+        $namegawa->save();
 
-    $hada->can_edit_templates(1);
-    $hada->save();
+        $hada->can_edit_templates(1);
+        $hada->save();
 
-    # Entry
-    my $entry = MT::Test::Permission->make_entry(
-        blog_id   => $blog->id,
-        author_id => $kikkawa->id,
-        title     => 'my entry',
-    );
+        # Entry
+        my $entry = MT::Test::Permission->make_entry(
+            blog_id   => $blog->id,
+            author_id => $kikkawa->id,
+            title     => 'my entry',
+        );
 
-    # Page
-    my $page = MT::Test::Permission->make_page(
-        blog_id   => $blog->id,
-        author_id => $ukawa->id,
-        title     => 'my page',
-    );
+        # Page
+        my $page = MT::Test::Permission->make_page(
+            blog_id   => $blog->id,
+            author_id => $ukawa->id,
+            title     => 'my page',
+        );
 
-    # Template
-    my $tmpl
-        = MT::Test::Permission->make_template( blog_id => $second_blog->id, );
-});
+        # Template
+        my $tmpl
+            = MT::Test::Permission->make_template(
+            blog_id => $second_blog->id, );
+    }
+);
 
 my $website        = MT::Website->load( { name => 'my website' } );
 my $second_website = MT::Website->load( { name => 'second website' } );
@@ -325,7 +329,8 @@ my $hida       = MT::Author->load( { name => 'hida' } );
 my $admin = MT::Author->load(1);
 
 require MT::Role;
-my $site_admin      = MT::Role->load( { name => MT->translate('Site Administrator') } );
+my $site_admin
+    = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer        = MT::Role->load( { name => MT->translate('Designer') } );
 my $create_post     = MT::Role->load( { name => 'Create Post' } );
 my $manage_pages    = MT::Role->load( { name => 'Manage Pages' } );
@@ -337,7 +342,7 @@ my $manage_feedback = MT::Role->load( { name => 'Manage Feedback' } );
 my $edit_templates  = MT::Role->load( { name => 'Edit Templates' } );
 
 my $entry = MT::Entry->load( { title => 'my entry' } );
-my $page  = MT::Page->load( { title => 'my page' } );
+my $page = MT::Page->load( { title => 'my page' } );
 
 # Run
 my ( $app, $out );
@@ -354,7 +359,7 @@ subtest 'mode = cc_return' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cc_return" );
+    ok( $out, "Request: cc_return" );
     ok( $out !~ m!permission=1!i, "cc_return by admin" );
 
     $app = _run_app(
@@ -366,7 +371,7 @@ subtest 'mode = cc_return' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cc_return" );
+    ok( $out, "Request: cc_return" );
     ok( $out !~ m!permission=1!i, "cc_return by permitted user" );
 
     $app = _run_app(
@@ -378,7 +383,7 @@ subtest 'mode = cc_return' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cc_return" );
+    ok( $out, "Request: cc_return" );
     ok( $out =~ m!permission=1!i, "cc_return by other blog" );
 
     $app = _run_app(
@@ -390,7 +395,7 @@ subtest 'mode = cc_return' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cc_return" );
+    ok( $out, "Request: cc_return" );
     ok( $out =~ m!permission=1!i, "cc_return by other permission" );
     done_testing();
 };
@@ -405,7 +410,7 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
+    ok( $out, "Request: cfg_prefs" );
     ok( $out !~ m!permission=1!i, "cfg_prefs by admin" );
 
     $app = _run_app(
@@ -417,7 +422,7 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
+    ok( $out, "Request: cfg_prefs" );
     ok( $out !~ m!permission=1!i, "cfg_prefs by permitted user" );
 
     $app = _run_app(
@@ -429,7 +434,7 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
+    ok( $out, "Request: cfg_prefs" );
     ok( $out =~ m!permission=1!i, "cfg_prefs by other blog" );
 
     $app = _run_app(
@@ -441,7 +446,7 @@ subtest 'mode = cfg_prefs' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_prefs" );
+    ok( $out, "Request: cfg_prefs" );
     ok( $out =~ m!permission=1!i, "cfg_prefs by other permission" );
     done_testing();
 };
@@ -456,7 +461,7 @@ subtest 'mode = cfg_web_services' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_web_services" );
+    ok( $out, "Request: cfg_web_services" );
     ok( $out !~ m!permission=1!i, "cfg_web_services by admin" );
 
     $app = _run_app(
@@ -468,7 +473,7 @@ subtest 'mode = cfg_web_services' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_web_services" );
+    ok( $out, "Request: cfg_web_services" );
     ok( $out !~ m!permission=1!i, "cfg_web_services by permitted user" );
 
     $app = _run_app(
@@ -480,7 +485,7 @@ subtest 'mode = cfg_web_services' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_web_services" );
+    ok( $out, "Request: cfg_web_services" );
     ok( $out =~ m!permission=1!i, "cfg_web_services by other blog" );
 
     $app = _run_app(
@@ -492,7 +497,7 @@ subtest 'mode = cfg_web_services' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_web_services" );
+    ok( $out, "Request: cfg_web_services" );
     ok( $out =~ m!permission=1!i, "cfg_web_services by other permission" );
     done_testing();
 };
@@ -508,7 +513,7 @@ subtest 'mode = dialog_clone_blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_clone_blog" );
+    ok( $out, "Request: dialog_clone_blog" );
     ok( $out !~ m!permission=1!i, "dialog_clone_blog by admin" );
 
     $app = _run_app(
@@ -521,7 +526,7 @@ subtest 'mode = dialog_clone_blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_clone_blog" );
+    ok( $out, "Request: dialog_clone_blog" );
     ok( $out =~ m!permission=1!i, "dialog_clone_blog by blog admin" );
 
     $app = _run_app(
@@ -534,7 +539,7 @@ subtest 'mode = dialog_clone_blog' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_clone_blog" );
+    ok( $out, "Request: dialog_clone_blog" );
     ok( $out =~ m!permission=1!i, "dialog_clone_blog by other blog" );
     done_testing();
 };
@@ -550,7 +555,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                   "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!redirect=1!i, "list by admin" );
 
     $app = _run_app(
@@ -563,7 +568,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list by other blog" );
 
     $app = _run_app(
@@ -576,7 +581,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                   "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!redirect=1!i, "list by permitted user" );
 
     foreach my $blog_id ( $website->id ) {
@@ -612,7 +617,7 @@ subtest 'mode = list' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                   "Request: list" );
+        ok( $out, "Request: list" );
         ok( $out !~ m!redirect=1!i, "list by not permitted user" );
         unlike( $out, qr/$button/, 'There is not "Delete" button.' );
 
@@ -626,7 +631,7 @@ subtest 'mode = list' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                   "Request: list" );
+        ok( $out, "Request: list" );
         ok( $out !~ m!redirect=1!i, "list by permitted user" );
     SKIP: {
             skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
@@ -655,7 +660,7 @@ subtest 'mode = rebuild_confirm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_confirm" );
+    ok( $out, "Request: rebuild_confirm" );
     ok( $out !~ m!permission=1!i, "rebuild_confirm by admin" );
 
     $app = _run_app(
@@ -667,7 +672,7 @@ subtest 'mode = rebuild_confirm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_confirm" );
+    ok( $out, "Request: rebuild_confirm" );
     ok( $out !~ m!permission=1!i, "rebuild_confirm by permitted user" );
 
     $app = _run_app(
@@ -679,7 +684,7 @@ subtest 'mode = rebuild_confirm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_confirm" );
+    ok( $out, "Request: rebuild_confirm" );
     ok( $out =~ m!permission=1!i, "rebuild_confirm by other blog" );
 
     $app = _run_app(
@@ -691,7 +696,7 @@ subtest 'mode = rebuild_confirm' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_confirm" );
+    ok( $out, "Request: rebuild_confirm" );
     ok( $out =~ m!permission=1!i, "rebuild_confirm by other permission" );
 
 };
@@ -707,7 +712,7 @@ subtest 'mode = rebuild_new_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_new_phase" );
+    ok( $out, "Request: rebuild_new_phase" );
     ok( $out !~ m!permission=1!i, "rebuild_new_phase by admin" );
 
     $app = _run_app(
@@ -812,7 +817,7 @@ subtest 'mode = rebuild_new_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_new_phase" );
+    ok( $out, "Request: rebuild_new_phase" );
     ok( $out =~ m!permission=1!i, "rebuild_new_phase by other permission" );
     done_testing();
 };
@@ -828,7 +833,7 @@ subtest 'mode = rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild" );
+    ok( $out, "Request: rebuild" );
     ok( $out !~ m!permission=1!i, "rebuild by admin" );
 
     $app = _run_app(
@@ -841,7 +846,7 @@ subtest 'mode = rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild" );
+    ok( $out, "Request: rebuild" );
     ok( $out !~ m!permission=1!i, "rebuild by permitted user" );
 
     $app = _run_app(
@@ -854,7 +859,7 @@ subtest 'mode = rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild" );
+    ok( $out, "Request: rebuild" );
     ok( $out =~ m!permission=1!i, "rebuild by other blog" );
 
     $app = _run_app(
@@ -867,7 +872,7 @@ subtest 'mode = rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild" );
+    ok( $out, "Request: rebuild" );
     ok( $out =~ m!permission=1!i, "rebuild by other permission" );
     done_testing();
 };
@@ -884,7 +889,7 @@ subtest 'mode = rebuild_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_phase" );
+    ok( $out, "Request: rebuild_phase" );
     ok( $out !~ m!permission=1!i, "rebuild_phase by admin" );
 
     $app = _run_app(
@@ -898,7 +903,7 @@ subtest 'mode = rebuild_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_phase" );
+    ok( $out, "Request: rebuild_phase" );
     ok( $out !~ m!permission=1!i, "rebuild_phase by permitted user" );
 
     $app = _run_app(
@@ -912,7 +917,7 @@ subtest 'mode = rebuild_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_phase" );
+    ok( $out, "Request: rebuild_phase" );
     ok( $out =~ m!permission=1!i, "rebuild_phase by other blog" );
 
     $app = _run_app(
@@ -926,7 +931,7 @@ subtest 'mode = rebuild_phase' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: rebuild_phase" );
+    ok( $out, "Request: rebuild_phase" );
     ok( $out =~ m!permission=1!i, "rebuild_phase by other permission" );
     done_testing();
 };
@@ -945,7 +950,7 @@ subtest 'mode = start_rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_rebuild" );
+    ok( $out, "Request: start_rebuild" );
     ok( $out !~ m!permission=1!i, "start_rebuild by admin" );
 
     $app = _run_app(
@@ -1034,7 +1039,7 @@ subtest 'mode = start_rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_rebuild" );
+    ok( $out, "Request: start_rebuild" );
     ok( $out =~ m!permission=1!i, "start_rebuild by other blog (rebuild)" );
 
     $app = _run_app(
@@ -1108,7 +1113,7 @@ subtest 'mode = start_rebuild' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: start_rebuild" );
+    ok( $out, "Request: start_rebuild" );
     ok( $out =~ m!permission=1!i, "start_rebuild by other permission" );
     done_testing();
 };
@@ -1125,7 +1130,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save (new) by admin" );
 
     $app = _run_app(
@@ -1140,7 +1145,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save (new) by permitted user" );
 
     $app = _run_app(
@@ -1155,7 +1160,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save (new) by blog admin" );
     done_testing();
 };
@@ -1173,7 +1178,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save (edit) by admin" );
 
     $app = _run_app(
@@ -1236,7 +1241,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other blog (blog admin)" );
 
     $app = _run_app(
@@ -1251,7 +1256,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other blog (edit config)" );
 
     $app = _run_app(
@@ -1266,7 +1271,7 @@ subtest 'mode = save (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save (edit) by other permission" );
     done_testing();
 };
@@ -1284,7 +1289,7 @@ subtest 'mode = save (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save (edit) by admin" );
 
     $app = _run_app(
@@ -1347,8 +1352,9 @@ subtest 'mode = save (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save (edit) by other blog (blog admin)" );
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save (edit) by other blog (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1362,8 +1368,9 @@ subtest 'mode = save (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!Invalid request!i, "save (edit) by other blog (edit config)" );
+    ok( $out, "Request: save" );
+    ok( $out =~ m!Invalid request!i,
+        "save (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1377,7 +1384,7 @@ subtest 'mode = save (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save (edit) by other permission" );
     done_testing();
 };
@@ -1393,7 +1400,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (new) by admin" );
 
     $app = _run_app(
@@ -1406,7 +1413,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out !~ m!permission=1!i, "edit (new) by permitted user" );
 
     $app = _run_app(
@@ -1419,7 +1426,7 @@ subtest 'mode = edit (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!permission=1!i, "edit (new) by blog admin" );
     done_testing();
 };
@@ -1437,7 +1444,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out !~ m!Permission=1!i, "edit (edit) by admin" );
 
     $app = _run_app(
@@ -1500,7 +1507,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (blog admin)" );
 
     $app = _run_app(
@@ -1515,7 +1522,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Permission=1!i, "edit (edit) by other blog (edit config)" );
 
     $app = _run_app(
@@ -1530,7 +1537,7 @@ subtest 'mode = edit (edit)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Permission=1!i, "edit (edit) by other permission" );
     done_testing();
 };
@@ -1548,7 +1555,7 @@ subtest 'mode = edit (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid request!i, "edit (edit) by admin" );
 
     $app = _run_app(
@@ -1611,8 +1618,9 @@ subtest 'mode = edit (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit (edit) by other blog (blog admin)" );
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit (edit) by other blog (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1626,8 +1634,9 @@ subtest 'mode = edit (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!Invalid request!i, "edit (edit) by other blog (edit config)" );
+    ok( $out, "Request: edit" );
+    ok( $out =~ m!Invalid request!i,
+        "edit (edit) by other blog (edit config)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -1641,7 +1650,7 @@ subtest 'mode = edit (type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
+    ok( $out, "Request: edit" );
     ok( $out =~ m!Invalid request!i, "edit (edit) by other permission" );
     done_testing();
 };
@@ -1663,7 +1672,7 @@ subtest 'action = refresh_blog_templates' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: refresh_blog_templates" );
+    ok( $out, "Request: refresh_blog_templates" );
     ok( $out !~ m!not implemented!i, "refresh_blog_templates by admin" );
 
     $app = _run_app(
@@ -1721,7 +1730,7 @@ subtest 'action = refresh_blog_templates' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: refresh_blog_templates" );
+    ok( $out, "Request: refresh_blog_templates" );
     ok( $out =~ m!not implemented!i, "refresh_blog_templates by other blog" );
 
     $app = _run_app(
@@ -1756,7 +1765,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
@@ -1788,7 +1797,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by permitted user (blog admin)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
@@ -1886,7 +1895,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other blog (blog admin)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
@@ -1918,7 +1927,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other blog (edit config)" );
 
     $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
@@ -1950,7 +1959,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete by other permission" );
     done_testing();
 };
@@ -1966,7 +1975,7 @@ subtest 'mode = delete ( type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by admin" );
 
     $app = _run_app(
@@ -1979,8 +1988,9 @@ subtest 'mode = delete ( type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!Invalid request!i, "delete by permitted user (blog admin)" );
+    ok( $out, "Request: delete" );
+    ok( $out =~ m!Invalid request!i,
+        "delete by permitted user (blog admin)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2020,7 +2030,7 @@ subtest 'mode = delete ( type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other blog (blog admin)" );
 
     $app = _run_app(
@@ -2033,7 +2043,7 @@ subtest 'mode = delete ( type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other blog (edit config)" );
 
     $app = _run_app(
@@ -2046,7 +2056,7 @@ subtest 'mode = delete ( type is site)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by other permission" );
     done_testing();
 };

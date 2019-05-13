@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,154 +19,154 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website       = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
-    my $other_website = MT::Test::Permission->make_website(
-        name => 'other website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
+        my $other_website
+            = MT::Test::Permission->make_website( name => 'other website', );
 
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-    my $second_blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'second blog',
-    );
-    my $other_blog = MT::Test::Permission->make_blog(
-        parent_id => $other_website->id,
-        name => 'other blog',
-    );
+        # Blog
+        my $blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'my blog',
+        );
+        my $second_blog = MT::Test::Permission->make_blog(
+            parent_id => $website->id,
+            name      => 'second blog',
+        );
+        my $other_blog = MT::Test::Permission->make_blog(
+            parent_id => $other_website->id,
+            name      => 'other blog',
+        );
 
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $aikawa = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    my $ichikawa = MT::Test::Permission->make_author(
-        name     => 'ichikawa',
-        nickname => 'Jiro Ichikawa',
-    );
+        my $ichikawa = MT::Test::Permission->make_author(
+            name     => 'ichikawa',
+            nickname => 'Jiro Ichikawa',
+        );
 
-    my $ukawa = MT::Test::Permission->make_author(
-        name     => 'ukawa',
-        nickname => 'Saburo Ukawa',
-    );
+        my $ukawa = MT::Test::Permission->make_author(
+            name     => 'ukawa',
+            nickname => 'Saburo Ukawa',
+        );
 
-    my $egawa = MT::Test::Permission->make_author(
-        name     => 'egawa',
-        nickname => 'Shiro Egawa',
-    );
+        my $egawa = MT::Test::Permission->make_author(
+            name     => 'egawa',
+            nickname => 'Shiro Egawa',
+        );
 
-    my $ogawa = MT::Test::Permission->make_author(
-        name     => 'ogawa',
-        nickname => 'Goro Ogawa',
-    );
+        my $ogawa = MT::Test::Permission->make_author(
+            name     => 'ogawa',
+            nickname => 'Goro Ogawa',
+        );
 
-    my $kagawa = MT::Test::Permission->make_author(
-        name     => 'kagawa',
-        nickname => 'Ichiro Kagawa',
-    );
+        my $kagawa = MT::Test::Permission->make_author(
+            name     => 'kagawa',
+            nickname => 'Ichiro Kagawa',
+        );
 
-    my $kikkawa = MT::Test::Permission->make_author(
-        name     => 'kikkawa',
-        nickname => 'Jiro Kikkawa',
-    );
+        my $kikkawa = MT::Test::Permission->make_author(
+            name     => 'kikkawa',
+            nickname => 'Jiro Kikkawa',
+        );
 
-    my $kumekawa = MT::Test::Permission->make_author(
-        name     => 'kumekawa',
-        nickname => 'Saburo Kumekawa',
-    );
+        my $kumekawa = MT::Test::Permission->make_author(
+            name     => 'kumekawa',
+            nickname => 'Saburo Kumekawa',
+        );
 
-    my $kemikawa = MT::Test::Permission->make_author(
-        name     => 'kemikawa',
-        nickname => 'Shiro Kemikawa',
-    );
+        my $kemikawa = MT::Test::Permission->make_author(
+            name     => 'kemikawa',
+            nickname => 'Shiro Kemikawa',
+        );
 
-    my $koishikawa = MT::Test::Permission->make_author(
-        name     => 'koishikawa',
-        nickname => 'Goro Koishikawa',
-    );
+        my $koishikawa = MT::Test::Permission->make_author(
+            name     => 'koishikawa',
+            nickname => 'Goro Koishikawa',
+        );
 
-    my $sagawa = MT::Test::Permission->make_author(
-        name     => 'sagawa',
-        nickname => 'Ichiro Sagawa',
-    );
+        my $sagawa = MT::Test::Permission->make_author(
+            name     => 'sagawa',
+            nickname => 'Ichiro Sagawa',
+        );
 
-    my $shiki = MT::Test::Permission->make_author(
-        name     => 'shiki',
-        nickname => 'Jiro Shiki',
-    );
+        my $shiki = MT::Test::Permission->make_author(
+            name     => 'shiki',
+            nickname => 'Jiro Shiki',
+        );
 
-    my $suda = MT::Test::Permission->make_author(
-        name     => 'suda',
-        nickname => 'Saburo Suda',
-    );
+        my $suda = MT::Test::Permission->make_author(
+            name     => 'suda',
+            nickname => 'Saburo Suda',
+        );
 
-    my $seta = MT::Test::Permission->make_author(
-        name     => 'seta',
-        nickname => 'Shiro Seta',
-    );
+        my $seta = MT::Test::Permission->make_author(
+            name     => 'seta',
+            nickname => 'Shiro Seta',
+        );
 
-    my $admin = MT::Author->load(1);
+        my $admin = MT::Author->load(1);
 
-    # Role
-    my $edit_templates = MT::Test::Permission->make_role(
-        name        => 'Edit Templates',
-        permissions => "'edit_templates'",
-    );
+        # Role
+        my $edit_templates = MT::Test::Permission->make_role(
+            name        => 'Edit Templates',
+            permissions => "'edit_templates'",
+        );
 
-    my $rebuild = MT::Test::Permission->make_role(
-        name        => 'rebuild',
-        permissions => "'rebuild'",
-    );
+        my $rebuild = MT::Test::Permission->make_role(
+            name        => 'rebuild',
+            permissions => "'rebuild'",
+        );
 
-    my $create_post = MT::Test::Permission->make_role(
-        name        => 'Create Post',
-        permissions => "'create_post'",
-    );
+        my $create_post = MT::Test::Permission->make_role(
+            name        => 'Create Post',
+            permissions => "'create_post'",
+        );
 
-    require MT::Association;
-    MT::Association->link( $aikawa   => $edit_templates => $blog );
-    MT::Association->link( $ichikawa => $rebuild        => $blog );
-    MT::Association->link( $ukawa    => $edit_templates => $second_blog );
-    MT::Association->link( $egawa    => $rebuild        => $second_blog );
-    MT::Association->link( $ogawa    => $create_post    => $blog );
+        require MT::Association;
+        MT::Association->link( $aikawa   => $edit_templates => $blog );
+        MT::Association->link( $ichikawa => $rebuild        => $blog );
+        MT::Association->link( $ukawa    => $edit_templates => $second_blog );
+        MT::Association->link( $egawa    => $rebuild        => $second_blog );
+        MT::Association->link( $ogawa    => $create_post    => $blog );
 
-    MT::Association->link( $kikkawa, $edit_templates, $website );
-    MT::Association->link( $sagawa,  $create_post,    $website );
-    MT::Association->link( $shiki,   $rebuild,        $website );
+        MT::Association->link( $kikkawa, $edit_templates, $website );
+        MT::Association->link( $sagawa,  $create_post,    $website );
+        MT::Association->link( $shiki,   $rebuild,        $website );
 
-    MT::Association->link( $kemikawa, $edit_templates, $other_website );
-    MT::Association->link( $suda,     $rebuild,        $other_website );
+        MT::Association->link( $kemikawa, $edit_templates, $other_website );
+        MT::Association->link( $suda,     $rebuild,        $other_website );
 
-    MT::Association->link( $koishikawa, $edit_templates, $other_blog );
-    MT::Association->link( $seta,       $rebuild,        $other_blog );
+        MT::Association->link( $koishikawa, $edit_templates, $other_blog );
+        MT::Association->link( $seta,       $rebuild,        $other_blog );
 
-    $kagawa->can_edit_templates(1);
-    $kagawa->save();
+        $kagawa->can_edit_templates(1);
+        $kagawa->save();
 
-    # Template
-    my $tmpl = MT::Test::Permission->make_template(
-        blog_id => $blog->id,
-        name => 'my template',
-    );
+        # Template
+        my $tmpl = MT::Test::Permission->make_template(
+            blog_id => $blog->id,
+            name    => 'my template',
+        );
 
-    my $widget = MT::Test::Permission->make_template(
-        blog_id => $blog->id,
-        type    => 'widget',
-        name    => 'my widget',
-    );
+        my $widget = MT::Test::Permission->make_template(
+            blog_id => $blog->id,
+            type    => 'widget',
+            name    => 'my widget',
+        );
 
-    my $sys_tmpl = MT::Test::Permission->make_template( blog_id => 0, );
-});
+        my $sys_tmpl = MT::Test::Permission->make_template( blog_id => 0, );
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
 
@@ -208,7 +209,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: add_map" );
+        ok( $out, "Request: add_map" );
         ok( $out !~ m!No permissions!i, "add_map by admin" );
 
         $app = _run_app(
@@ -222,7 +223,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: add_map" );
+        ok( $out, "Request: add_map" );
         ok( $out !~ m!No permissions!i, "add_map by permitted user" );
 
         $app = _run_app(
@@ -236,7 +237,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: add_map" );
+        ok( $out, "Request: add_map" );
         ok( $out !~ m!No permissions!i, "add_map by permitted user (sys)" );
 
         $app = _run_app(
@@ -250,7 +251,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: add_map" );
+        ok( $out, "Request: add_map" );
         ok( $out =~ m!permission=1!i, "add_map by other blog" );
 
         $app = _run_app(
@@ -264,7 +265,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: add_map" );
+        ok( $out, "Request: add_map" );
         ok( $out =~ m!No permissions!i, "add_map by other permission" );
 
         done_testing();
@@ -283,7 +284,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: delete_map" );
+        ok( $out, "Request: delete_map" );
         ok( $out !~ m!No permissions!i, "delete_map by admin" );
 
         $map
@@ -298,7 +299,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: delete_map" );
+        ok( $out, "Request: delete_map" );
         ok( $out !~ m!No permissions!i, "delete_map by permitted user" );
 
         $map
@@ -329,7 +330,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete_map" );
+        ok( $out, "Request: delete_map" );
         ok( $out =~ m!permission=1!i, "delete_map by other blog" );
 
         $map
@@ -344,7 +345,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: delete_map" );
+        ok( $out, "Request: delete_map" );
         ok( $out =~ m!No permissions!i, "delete_map by other permission" );
 
         done_testing();
@@ -365,7 +366,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete_widget" );
+        ok( $out, "Request: delete_widget" );
         ok( $out !~ m!permission denied!i, "delete_widget by admin" );
 
         $widget = MT::Test::Permission->make_template(
@@ -433,7 +434,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete_widget" );
+        ok( $out, "Request: delete_widget" );
         ok( $out =~ m!permission=1!i, "delete_widget by other blog" );
 
         $widget = MT::Test::Permission->make_template(
@@ -477,7 +478,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: dialog_publishing_profile" );
+        ok( $out, "Request: dialog_publishing_profile" );
         ok( $out !~ m!permission=1!i, "dialog_publishing_profile by admin" );
 
         $app = _run_app(
@@ -555,7 +556,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: dialog_refresh_templates" );
+        ok( $out, "Request: dialog_refresh_templates" );
         ok( $out !~ m!permission=1!i, "dialog_refresh_templates by admin" );
 
         $app = _run_app(
@@ -637,7 +638,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit_widget" );
+        ok( $out, "Request: edit_widget" );
         ok( $out !~ m!permission denied!i, "edit_widget by admin" );
 
         $app = _run_app(
@@ -651,7 +652,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: edit_widget" );
+        ok( $out, "Request: edit_widget" );
         ok( $out !~ m!permission denied!i, "edit_widget by permitted user" );
 
         $app = _run_app(
@@ -681,7 +682,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit_widget" );
+        ok( $out, "Request: edit_widget" );
         ok( $out =~ m!permission=1!i, "edit_widget by other blog" );
 
         $app = _run_app(
@@ -714,7 +715,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: list_template" );
+        ok( $out, "Request: list_template" );
         ok( $out !~ m!permission=1!i, "list_template by admin" );
 
         $app = _run_app(
@@ -726,7 +727,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: list_template" );
+        ok( $out, "Request: list_template" );
         ok( $out !~ m!permission=1!i, "list_template by permitted user" );
 
         $app = _run_app(
@@ -751,7 +752,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: list_template" );
+        ok( $out, "Request: list_template" );
         ok( $out =~ m!permission=1!i, "list_template by other blog" );
 
         $app = _run_app(
@@ -763,7 +764,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: list_template" );
+        ok( $out, "Request: list_template" );
         ok( $out =~ m!permission=1!i, "list_template by other permission" );
 
         done_testing();
@@ -780,7 +781,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: preview_template" );
+        ok( $out, "Request: preview_template" );
         ok( $out !~ m!permission=1!i, "preview_template by admin" );
 
         $app = _run_app(
@@ -793,7 +794,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: preview_template" );
+        ok( $out, "Request: preview_template" );
         ok( $out !~ m!permission=1!i, "preview_template by permitted user" );
 
         $app = _run_app(
@@ -820,7 +821,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: preview_template" );
+        ok( $out, "Request: preview_template" );
         ok( $out =~ m!permission=1!i, "preview_template by other blog" );
 
         $app = _run_app(
@@ -851,7 +852,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: publish_archive_templates" );
+        ok( $out, "Request: publish_archive_templates" );
         ok( $out !~ m!permission=1!i, "publish_archive_templates by admin" );
 
         $app = _run_app(
@@ -910,7 +911,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: publish_index_templates" );
+        ok( $out, "Request: publish_index_templates" );
         ok( $out !~ m!permission=1!i, "publish_index_templates by admin" );
 
         $app = _run_app(
@@ -1035,7 +1036,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                  "Request: refresh_all_templates" );
+        ok( $out, "Request: refresh_all_templates" );
         ok( $out !~ m!error_id=!i, "refresh_all_templates by admin" );
 
         $app = _run_app(
@@ -1073,7 +1074,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: refresh_all_templates" );
+        ok( $out, "Request: refresh_all_templates" );
         ok( $out =~ m!permission=1!i, "refresh_all_templates by other blog" );
 
         $app = _run_app(
@@ -1104,7 +1105,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save_widget" );
+        ok( $out, "Request: save_widget" );
         ok( $out !~ m!permission denied!i, "save_widget by admin" );
 
         $app = _run_app(
@@ -1118,7 +1119,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: save_widget" );
+        ok( $out, "Request: save_widget" );
         ok( $out !~ m!permission denied!i, "save_widget by permitted user" );
 
         $app = _run_app(
@@ -1148,7 +1149,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save_widget" );
+        ok( $out, "Request: save_widget" );
         ok( $out =~ m!permission=1!i, "save_widget by other blog" );
 
         $app = _run_app(
@@ -1182,7 +1183,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out !~ m!permission=1!i, "save by admin" );
 
         $app = _run_app(
@@ -1196,7 +1197,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out !~ m!permission=1!i, "save by permitted user" );
 
         $app = _run_app(
@@ -1210,7 +1211,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out !~ m!permission=1!i, "save by permitted user (sys)" );
 
         $app = _run_app(
@@ -1224,7 +1225,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out =~ m!permission=1!i, "save by other blog" );
 
         $app = _run_app(
@@ -1238,7 +1239,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out =~ m!permission=1!i, "save by other permission" );
 
         done_testing();
@@ -1258,7 +1259,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out !~ m!permission=1!i, "edit by admin" );
 
         $app = _run_app(
@@ -1272,7 +1273,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out !~ m!permission=1!i, "edit by permitted user" );
 
         $app = _run_app(
@@ -1286,7 +1287,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out !~ m!permission=1!i, "edit by permitted user (sys)" );
 
         $app = _run_app(
@@ -1300,7 +1301,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out =~ m!permission=1!i, "edit by other blog" );
 
         $app = _run_app(
@@ -1314,7 +1315,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out =~ m!permission=1!i, "edit by other permission" );
 
         done_testing();
@@ -1336,7 +1337,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission=1!i, "delete by admin" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1354,7 +1355,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission=1!i, "delete by permitted user" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1372,7 +1373,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission=1!i, "delete by permitted user (sys)" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1390,7 +1391,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!permission=1!i, "delete by other blog" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1408,7 +1409,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!permission=1!i, "delete by other permission" );
 
         done_testing();
@@ -1425,7 +1426,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: list" );
+        ok( $out, "Request: list" );
         ok( $out =~ m!Unknown Action!i, "list by admin" );
 
         $app = _run_app(
@@ -1438,7 +1439,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                       "Request: list" );
+        ok( $out, "Request: list" );
         ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
 
         done_testing();
@@ -1455,7 +1456,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out =~ m!Invalid Request!i, "save by admin" );
 
         $app = _run_app(
@@ -1468,7 +1469,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: save" );
+        ok( $out, "Request: save" );
         ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
 
         done_testing();
@@ -1487,7 +1488,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out =~ m!Invalid Request!i, "edit by admin" );
 
         $templatemap
@@ -1502,7 +1503,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: edit" );
+        ok( $out, "Request: edit" );
         ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
 
         done_testing();
@@ -1521,7 +1522,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!Invalid Request!i, "delete by admin" );
 
         $templatemap
@@ -1536,7 +1537,7 @@ subtest 'blog scope' => sub {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
 
         done_testing();
@@ -1559,7 +1560,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: save" );
+            ok( $out, "Request: save" );
             ok( $out !~ m!permission denied!i, "save by admin" );
 
             $app = _run_app(
@@ -1573,7 +1574,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: save" );
+            ok( $out, "Request: save" );
             ok( $out !~ m!permission denied!i, "save by permitted user" );
 
             $app = _run_app(
@@ -1603,7 +1604,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: save" );
+            ok( $out, "Request: save" );
             ok( $out =~ m!permission denied!i, "save by other blog" );
 
             $app = _run_app(
@@ -1617,7 +1618,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: save" );
+            ok( $out, "Request: save" );
             ok( $out =~ m!permission denied!i, "save by other permission" );
 
             done_testing();
@@ -1647,7 +1648,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: edit" );
+            ok( $out, "Request: edit" );
             ok( $out !~ m!permission denied!i, "edit by admin" );
 
             $app = _run_app(
@@ -1661,7 +1662,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: edit" );
+            ok( $out, "Request: edit" );
             ok( $out !~ m!permission denied!i, "edit by permitted user" );
 
             $app = _run_app(
@@ -1691,7 +1692,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: edit" );
+            ok( $out, "Request: edit" );
             ok( $out =~ m!permission denied!i, "edit by other blog" );
 
             $app = _run_app(
@@ -1705,7 +1706,7 @@ SKIP: {
                 }
             );
             $out = delete $app->{__test_output};
-            ok( $out,                          "Request: edit" );
+            ok( $out, "Request: edit" );
             ok( $out =~ m!permission denied!i, "edit by other permission" );
 
             done_testing();
@@ -1729,7 +1730,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission denied!i, "delete by admin" );
 
         $widget = MT::Test::Permission->make_template(
@@ -1748,7 +1749,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission denied!i, "delete by permitted user" );
 
         $widget = MT::Test::Permission->make_template(
@@ -1767,7 +1768,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out !~ m!permission denied!i, "delete by permitted user (sys)" );
 
         $widget = MT::Test::Permission->make_template(
@@ -1786,7 +1787,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!permission=1!i, "delete by other blog" );
 
         $widget = MT::Test::Permission->make_template(
@@ -1805,7 +1806,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                          "Request: delete" );
+        ok( $out, "Request: delete" );
         ok( $out =~ m!permission denied!i, "delete by other permission" );
 
         done_testing();
@@ -1833,7 +1834,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: refresh_tmpl_templates" );
+        ok( $out, "Request: refresh_tmpl_templates" );
         ok( $out !~ m!not implemented!i, "refresh_tmpl_templates by admin" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1960,7 +1961,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: copy_templates" );
+        ok( $out, "Request: copy_templates" );
         ok( $out !~ m!not implemented!i, "copy_templates by admin" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -1984,7 +1985,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                        "Request: copy_templates" );
+        ok( $out, "Request: copy_templates" );
         ok( $out !~ m!not implemented!i, "copy_templates by permitted user" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -2032,7 +2033,7 @@ SKIP: {
             }
         );
         $out = delete $app->{__test_output};
-        ok( $out,                     "Request: copy_templates" );
+        ok( $out, "Request: copy_templates" );
         ok( $out =~ m!permission=1!i, "copy_templates by other blog" );
 
         $tmpl = MT::Test::Permission->make_template(
@@ -2373,7 +2374,7 @@ subtest 'mode = save_template_prefs' => sub {
         },
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save_template_prefs by admin" );
 
     $app = _run_app(
@@ -2386,7 +2387,7 @@ subtest 'mode = save_template_prefs' => sub {
         },
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user" );
 
     $app = _run_app(
@@ -2399,8 +2400,9 @@ subtest 'mode = save_template_prefs' => sub {
         },
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save_template_prefs by permitted user (sys)" );
+    ok( $out, "Request: save" );
+    ok( $out !~ m!permission=1!i,
+        "save_template_prefs by permitted user (sys)" );
 
     $app = _run_app(
         'MT::App::CMS',
@@ -2412,7 +2414,7 @@ subtest 'mode = save_template_prefs' => sub {
         },
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save_template_prefs by other blog" );
 
     $app = _run_app(
@@ -2425,7 +2427,7 @@ subtest 'mode = save_template_prefs' => sub {
         },
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save_template_prefs by other permission" );
 
 };

@@ -45,7 +45,7 @@ filters {
 
 $test_env->prepare_fixture('db');
 
-my @ts = MT::Util::offset_time_list( time, $blog_id );
+my @ts         = MT::Util::offset_time_list( time, $blog_id );
 my $this_month = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
 my $next_month;
 if ( $ts[4] + 2 > 12 ) {

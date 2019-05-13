@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -18,51 +19,53 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
+        # Website
+        my $website
+            = MT::Test::Permission->make_website( name => 'my website', );
 
-    # Author
-    my $admin = MT->model('author')->load(1);
+        # Author
+        my $admin = MT->model('author')->load(1);
 
-    # Entry
-    my $website_entry = MT::Test::Permission->make_entry(
-        blog_id   => $website->id,
-        author_id => $admin->id,
-    );
-    $website_entry->tags('@entry');
-    $website_entry->save;
+        # Entry
+        my $website_entry = MT::Test::Permission->make_entry(
+            blog_id   => $website->id,
+            author_id => $admin->id,
+        );
+        $website_entry->tags('@entry');
+        $website_entry->save;
 
-    # Page
-    my $website_page = MT::Test::Permission->make_page(
-        blog_id   => $website->id,
-        author_id => $admin->id,
-    );
-    $website_page->tags('@page');
-    $website_page->save;
+        # Page
+        my $website_page = MT::Test::Permission->make_page(
+            blog_id   => $website->id,
+            author_id => $admin->id,
+        );
+        $website_page->tags('@page');
+        $website_page->save;
 
-    # Asset
-    my $website_asset = MT::Test::Permission->make_asset(
-        class   => 'image',
-        blog_id => $website->id,
-        url     => 'http://narnia.na/nana/images/test.jpg',
-        file_path =>
-            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
-        file_name    => 'test.jpg',
-        file_ext     => 'jpg',
-        image_width  => 640,
-        image_height => 480,
-        mime_type    => 'image/jpeg',
-        label        => 'Userpic A',
-        description  => 'Userpic A',
-    );
-    $website_asset->tags('@asset');
-    $website_asset->save;
-});
+        # Asset
+        my $website_asset = MT::Test::Permission->make_asset(
+            class     => 'image',
+            blog_id   => $website->id,
+            url       => 'http://narnia.na/nana/images/test.jpg',
+            file_path => File::Spec->catfile(
+                $ENV{MT_HOME}, "t", 'images', 'test.jpg'
+            ),
+            file_name    => 'test.jpg',
+            file_ext     => 'jpg',
+            image_width  => 640,
+            image_height => 480,
+            mime_type    => 'image/jpeg',
+            label        => 'Userpic A',
+            description  => 'Userpic A',
+        );
+        $website_asset->tags('@asset');
+        $website_asset->save;
+    }
+);
 
 my $website = MT::Website->load( { name => 'my website' } );
 
@@ -152,10 +155,11 @@ subtest 'Test in website scope' => sub {
         my $checkbox = quotemeta(
             '<label for="custom-prefs-entry_count">Entries</label>');
         $checkbox = qr/$checkbox/;
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        like( $out, $checkbox, 'Has "Entries" setting in Display Options' );
-}
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            like( $out, $checkbox,
+                'Has "Entries" setting in Display Options' );
+        }
 
         done_testing();
     };

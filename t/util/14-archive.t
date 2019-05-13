@@ -3,9 +3,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     if ( eval { require Archive::Tar } ) {
         plan tests => 10;
@@ -16,6 +17,7 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -27,7 +29,7 @@ use MT::Test;
 
 my $mt = MT->new;
 use MT::Util::Archive;
-my $tmp = ( $^O eq 'MSWin32' ) ? File::Spec->tmpdir : MT->config->TempDir;
+my $tmp   = ( $^O eq 'MSWin32' ) ? File::Spec->tmpdir : MT->config->TempDir;
 my %files = (
     'zip' => File::Spec->catfile( $tmp, 'test1.zip' ),
     'tgz' => File::Spec->catfile( $tmp, 'test1.tar.gz' ),
@@ -113,7 +115,7 @@ SKIP: {
 open my $file4, '<', $files{'tgz'};
 bless $file4, 'IO::File';
 require IO::Uncompress::Gunzip;
-my $z = new IO::Uncompress::Gunzip $file4;
+my $z    = new IO::Uncompress::Gunzip $file4;
 my $data = do { local $/; <$z> };
 close $z;
 close $file4;

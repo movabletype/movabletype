@@ -138,7 +138,7 @@ subtest 'create content_data' => sub {
     );
     delete $app->{__test_output};
 
-    my $cd1 = MT->model('content_data')->load or die;
+    my $cd1           = MT->model('content_data')->load or die;
     my $cd1_unique_id = $cd1->unique_id;
 
     ok -e File::Spec->catfile( $blog->archive_path,

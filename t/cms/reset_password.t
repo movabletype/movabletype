@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -32,25 +33,27 @@ $admin->save;
 
     my $app = _run_app(
         'MT::App::CMS',
-        {
-            __mode => 'recover',
+        {   __mode           => 'recover',
             __request_method => 'POST',
-            email => $admin->email,
+            email            => $admin->email,
         },
     );
     my $out = delete $app->{__test_output};
-    like $out => qr/An email with a link to reset your password has been sent/, "email sent";
+    like $out =>
+        qr/An email with a link to reset your password has been sent/,
+        "email sent";
 
-    like $mail_sent => qr/A request was made to change your Movable Type password./, 'link to reset';
+    like $mail_sent =>
+        qr/A request was made to change your Movable Type password./,
+        'link to reset';
     my ($url) = $mail_sent =~ m!(/cgi-bin/mt.cgi?\S+)!;
     my $uri = URI->new($url);
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __request_method => 'POST',
+        {   __request_method => 'POST',
             $uri->query_form,
-            password => 'foo',
+            password       => 'foo',
             password_again => '',
         }
     );
@@ -59,10 +62,9 @@ $admin->save;
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __request_method => 'POST',
+        {   __request_method => 'POST',
             $uri->query_form,
-            password => 'foo',
+            password       => 'foo',
             password_again => 'bar',
         }
     );
@@ -71,22 +73,21 @@ $admin->save;
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __request_method => 'POST',
+        {   __request_method => 'POST',
             $uri->query_form,
-            password => 'foo',
+            password       => 'foo',
             password_again => 'foo',
         }
     );
     $out = delete $app->{__test_output};
-    like $out => qr/Password should be longer than 8 characters/, 'short password error';
+    like $out => qr/Password should be longer than 8 characters/,
+        'short password error';
 
     $app = _run_app(
         'MT::App::CMS',
-        {
-            __request_method => 'POST',
+        {   __request_method => 'POST',
             $uri->query_form,
-            password => '12345678',
+            password       => '12345678',
             password_again => '12345678',
         }
     );

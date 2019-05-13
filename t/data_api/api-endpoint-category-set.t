@@ -28,7 +28,8 @@ $user->save;
 $app->user($user);
 
 # manage_content_types permission remove.
-my $system_perm = MT::Permission->load({author_id => $user->id, blog_id => 0});
+my $system_perm
+    = MT::Permission->load( { author_id => $user->id, blog_id => 0 } );
 my $permissions = $system_perm->permissions();
 $permissions =~ s/'manage_content_types',?//;
 $system_perm->permissions($permissions);

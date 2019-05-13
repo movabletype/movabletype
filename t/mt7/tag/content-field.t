@@ -445,12 +445,13 @@ $test_env->prepare_fixture(
             blog_id => $blog_id,
         );
 
-        my $single_line_text_case0 = MT::Test::Permission->make_content_field(
+        my $single_line_text_case0
+            = MT::Test::Permission->make_content_field(
             blog_id         => $content_type_case0->blog_id,
             content_type_id => $content_type_case0->id,
             name            => 'single_line_text',
             type            => 'single_line_text',
-        );
+            );
 
         my $multi_line_text_case0 = MT::Test::Permission->make_content_field(
             blog_id         => $content_type_case0->blog_id,
@@ -503,7 +504,7 @@ $test_env->prepare_fixture(
             name            => 'tables',
             type            => 'tables',
         );
-        my $tag0 = MT::Test::Permission->make_tag( name => '0' );
+        my $tag0      = MT::Test::Permission->make_tag( name => '0' );
         my $tag_case0 = MT::Test::Permission->make_content_field(
             blog_id         => $content_type_case0->blog_id,
             content_type_id => $content_type_case0->id,
@@ -572,9 +573,7 @@ $test_env->prepare_fixture(
                 type    => $select_box_case0->type,
                 options => {
                     label  => $select_box_case0->name,
-                    values => [
-                        { label => '0', value => 0 },
-                    ],
+                    values => [ { label => '0', value => 0 }, ],
                 },
                 unique_id => $select_box_case0->unique_id,
             },
@@ -673,7 +672,7 @@ $test_env->prepare_fixture(
             blog_id         => $content_type_case0->blog_id,
             content_type_id => $content_type_case0->id,
             author_id       => 1,
-            label      => '0',
+            label           => '0',
             data            => {
                 $single_line_text_case0->id => '0',
                 $multi_line_text_case0->id  => "0",
@@ -684,19 +683,17 @@ $test_env->prepare_fixture(
                 $checkbox_case0->id         => "0",
                 $table_case0->id            => "<tr><th>0</th><td>0</td></tr>"
                     . "<tr><td>0</td><td>0</td></tr>",
-                $tag_case0->id              => [ $tag0->id ],
-                $category_case0->id  => [ $category0->id ],
-                $multi_tag_case0->id        => [ $tag0->id ],
-                $multi_category_case0->id   => [ $category0->id ],
-                $list_case0->id             => [ '0' ],
+                $tag_case0->id            => [ $tag0->id ],
+                $category_case0->id       => [ $category0->id ],
+                $multi_tag_case0->id      => [ $tag0->id ],
+                $multi_category_case0->id => [ $category0->id ],
+                $list_case0->id           => ['0'],
             },
         );
         $content_data_case0->convert_breaks(
-            MT::Serialize->serialize(
-                \{ $multi_line_text_case0->id => 0 }
-            )
+            MT::Serialize->serialize( \{ $multi_line_text_case0->id => 0 } )
         );
-        $content_data_case0->save or die $content_data_case0->errstr;;
+        $content_data_case0->save or die $content_data_case0->errstr;
 
     }
 );

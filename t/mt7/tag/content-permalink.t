@@ -188,7 +188,8 @@ $test_env->prepare_fixture(
             cat_field_id  => $cf_category->id,
         );
 
-        my $website = MT::Test::Permission->make_website( name => 'content permalink website', );
+        my $website = MT::Test::Permission->make_website(
+            name => 'content permalink website', );
         $website->site_url('https://localhost/');
         $website->archive_url('');
         $website->archive_type($archive_types);
@@ -242,7 +243,6 @@ $test_env->prepare_fixture(
             data            => { $cf_category2->id => [ $category2->id ], },
         );
 
-
         my $template_04 = MT::Test::Permission->make_template(
             blog_id         => $website->id,
             content_type_id => $content_type_04->id,
@@ -261,19 +261,20 @@ $test_env->prepare_fixture(
         );
 
         my $mt = MT->new or die MT->errstr;
-        for my $map (
-            ( $map_01, $map_02, $map_03, $map_04 ) )
-        {
+        for my $map ( ( $map_01, $map_02, $map_03, $map_04 ) ) {
             $mt->rebuild(
-                BlogID => $map->blog_id,
-                Force  => 1,
+                BlogID      => $map->blog_id,
+                Force       => 1,
                 ArchiveType => $map->archive_type,
                 TemplateMap => ($map),
             ) || diag "Rebuild error: ", $mt->errstr;
         }
 
         for my $content_type (
-            ( $content_type_01, $content_type_02, $content_type_03, $content_type_04 ) )
+            (   $content_type_01, $content_type_02,
+                $content_type_03, $content_type_04
+            )
+            )
         {
             my $tmpl_archive = MT::Test::Permission->make_template(
                 blog_id         => $content_type->blog_id,
@@ -283,8 +284,13 @@ $test_env->prepare_fixture(
                 text            => 'test ct_archive ' . $content_type->name,
             );
             foreach my $type (@archive_types) {
-                next if($type =~ /^ContentType$/);
-                next if ( $type =~ /Category/ && ($content_type != $content_type_03 && $content_type != $content_type_04) );
+                next if ( $type =~ /^ContentType$/ );
+                next
+                    if (
+                    $type =~ /Category/
+                    && (   $content_type != $content_type_03
+                        && $content_type != $content_type_04 )
+                    );
                 my $archiver = $publisher->archiver($type);
                 my $tmpls    = $archiver->default_archive_templates;
                 my ($default) = grep { $_->{default} } @$tmpls;
@@ -300,16 +306,17 @@ $test_env->prepare_fixture(
                 );
 
                 if ( $type =~ /Category/ ) {
-                    if($content_type == $content_type_03){
+                    if ( $content_type == $content_type_03 ) {
                         $tmpl_map->cat_field_id( $cf_category->id );
-                    } elsif($content_type == $content_type_04){
+                    }
+                    elsif ( $content_type == $content_type_04 ) {
                         $tmpl_map->cat_field_id( $cf_category2->id );
                     }
                     $tmpl_map->save;
                 }
                 $mt->rebuild(
-                    BlogID => $content_type->blog_id,
-                    Force  => 1,
+                    BlogID      => $content_type->blog_id,
+                    Force       => 1,
                     ArchiveType => $type,
                     TemplateMap => ($tmpl_map),
                 ) || diag "Rebuild error: ", $mt->errstr;

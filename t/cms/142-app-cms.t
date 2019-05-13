@@ -29,7 +29,7 @@ my $app = MT->instance;
 $app->user($admin);
 
 my $website = MT::Website->load();
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $blog    = MT::Test::Permission->make_blog( parent_id => $website->id, );
 
 # Do tests
 my $param = {};

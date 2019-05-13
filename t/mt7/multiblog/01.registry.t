@@ -28,7 +28,10 @@ my %registries = (
     },
     'application methods' => {
         registry => [ 'applications', 'cms', 'methods' ],
-        names    => [ 'add_rebuild_trigger', 'cfg_rebuild_trigger', 'save_rebuild_trigger' ],
+        names    => [
+            'add_rebuild_trigger', 'cfg_rebuild_trigger',
+            'save_rebuild_trigger'
+        ],
     },
     'help_url' => {
         registry => ['tags'],
@@ -55,7 +58,7 @@ for my $k ( keys(%registries) ) {
         ok( $registry->{$name}, "$k '$name'" );
     }
     for my $name ( keys %{ $registries{$k}{like_any} || {} } ) {
-        my $value = $registry->{$name} || undef;
+        my $value  = $registry->{$name} || undef;
         my $regexp = $registries{$k}{like_any}{$name};
         if ( ref($value) ne 'ARRAY' && ref($value) ne 'CODE' ) {
             $value = [$value];

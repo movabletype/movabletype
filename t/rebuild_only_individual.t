@@ -116,7 +116,7 @@ my $app = _run_app(
     }
 );
 my $out = delete $app->{__test_output};
-ok( $out,                     "Request: delete_entry" );
+ok( $out, "Request: delete_entry" );
 ok( $out !~ m!permission=1!i, "delete_entry by admin" );
 
 @finfos = MT::FileInfo->load( { blog_id => $blog_id } );

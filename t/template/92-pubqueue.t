@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -44,7 +45,8 @@ my @blogs = MT::Blog->load();
 foreach my $blog (@blogs) {
 
     my $job_count = 0;
-    my @tmpls = sort {$a->name cmp $b->name} MT::Template->load( { blog_id => $blog->id } );
+    my @tmpls     = sort { $a->name cmp $b->name }
+        MT::Template->load( { blog_id => $blog->id } );
     ok( @tmpls, "Templates exist for this blog" );
 
     for ( my $i = 0; $i < scalar(@tmpls); $i++ ) {
@@ -75,7 +77,7 @@ foreach my $blog (@blogs) {
     for my $job (@jobs) {
 
         my $fi = MT::FileInfo->load( { id => $job->uniqkey } );
-        my $at = $fi->archive_type || '';
+        my $at       = $fi->archive_type || '';
         my $priority = $job->priority;
 
         if ( ( $at eq 'Individual' ) || ( $at eq 'Page' ) ) {

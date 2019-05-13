@@ -3,17 +3,19 @@ use warnings;
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
-    my @modules = qw( DateTime DateTime::TimeZone );
+    my @modules     = qw( DateTime DateTime::TimeZone );
     my $eval_string = join ';', map {"require $_"} @modules;
     eval $eval_string
         or plan skip_all => join( ' or ', @modules ) . ' is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -103,7 +105,7 @@ foreach my $dh (@dates) {
 
     my ( $mt_yr, $mt_wk ) = $mt_dt->week;
     my ( $wk_y, $wk_m, $wk_d ) = week2ymd( $mt_yr, $mt_wk );
-    my $wk_ymd = sprintf( "%04d%02d%02d", $wk_y, $wk_m, $wk_d );
+    my $wk_ymd   = sprintf( "%04d%02d%02d", $wk_y, $wk_m, $wk_d );
     my $mt_wk_dt = MT::DateTime->new(
         year  => substr( $wk_ymd, 0, 4 ),
         month => substr( $wk_ymd, 4, 2 ),

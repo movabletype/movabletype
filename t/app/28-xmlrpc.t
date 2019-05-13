@@ -162,7 +162,7 @@ my @apis = (
             my ($som) = @_;
             my $result = $som->result;
             is( scalar(@$result), 2 );
-            my $entry = MT::Entry->load(3);
+            my $entry  = MT::Entry->load(3);
             my $author = MT::Author->load( { name => 'Chuck D' } );
             is( $result->[0]->{userid}, $author->id );
             is( $result->[0]->{postid}, $entry->id );
@@ -170,7 +170,7 @@ my @apis = (
                 unpack 'A4A2A2A2A2A2', $entry->authored_on;
             is( $result->[0]->{dateCreated}, $ao );
             is( $result->[0]->{content},     $entry->text );
-            $entry = MT::Entry->load(2);
+            $entry  = MT::Entry->load(2);
             $author = MT::Author->load( { name => 'Bob D' } );
             is( $result->[1]->{userid}, $author->id );
             is( $result->[1]->{postid}, $entry->id );
@@ -216,7 +216,7 @@ my @apis = (
             my $result = $som->result;
             is( scalar(@$result), 2 );
             my $author = MT::Author->load( { name => 'Chuck D' } );
-            my $entry = MT::Entry->load(3);
+            my $entry  = MT::Entry->load(3);
             is( $result->[0]->{userid}, $author->id );
             is( $result->[0]->{postid}, $entry->id );
             my $ao = sprintf "%04d%02d%02dT%02d:%02d:%02d",
@@ -236,7 +236,7 @@ my @apis = (
             );
             is( $result->[0]->{mt_keywords}, '' );
             $author = MT::Author->load( { name => 'Bob D' } );
-            $entry = MT::Entry->load(2);
+            $entry  = MT::Entry->load(2);
             is( $result->[1]->{userid}, $author->id );
             is( $result->[1]->{postid}, $entry->id );
             $ao = sprintf "%04d%02d%02dT%02d:%02d:%02d",
@@ -717,7 +717,7 @@ my @apis = (
             ]
         ],
         pre => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {
@@ -756,7 +756,7 @@ my @apis = (
             },
         ],
         pre => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {
@@ -789,7 +789,7 @@ my @apis = (
             ]
         ],
         pre => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {
@@ -828,7 +828,7 @@ my @apis = (
             },
         ],
         pre => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {
@@ -853,7 +853,7 @@ my @apis = (
     {   api    => 'mt.setPostCategories',
         params => [ 3, $username, $password, [] ],
         pre    => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {
@@ -883,7 +883,7 @@ my @apis = (
             []
         ],
         pre => sub {
-            my $r = MT->request;
+            my $r  = MT->request;
             my $oc = $r->cache( 'object_cache', {} );
         },
         result => sub {

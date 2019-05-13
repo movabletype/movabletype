@@ -11,7 +11,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -108,7 +108,8 @@ $ct->fields(
             order     => 1,
             type      => $cf_category->type,
             unique_id => $cf_category->unique_id,
-            options   => { category_set => $category_set->id, label => 'category' },
+            options =>
+                { category_set => $category_set->id, label => 'category' },
         },
         {   id        => $cf_datetime->id,
             label     => 1,
@@ -131,8 +132,7 @@ $ct->fields(
 $ct->save or die $ct->error;
 
 $ct2->fields(
-    [
-        {   id        => $cf_single_line->id,
+    [   {   id        => $cf_single_line->id,
             label     => 1,
             name      => $cf_single_line->name,
             order     => 1,
@@ -151,7 +151,7 @@ $ct3->fields(
             order     => 1,
             type      => $cf_tag->type,
             unique_id => $cf_tag->unique_id,
-            options   => { label => 'tag', multiple => 1, max => 3, min => 1 },
+            options => { label => 'tag', multiple => 1, max => 3, min => 1 },
         },
         {   id        => $cf_content_type2->id,
             label     => 1,
@@ -159,7 +159,10 @@ $ct3->fields(
             order     => 2,
             type      => $cf_content_type2->type,
             unique_id => $cf_content_type2->unique_id,
-            options   => { source => $ct->id, label => 'yet yet another content type label' },
+            options   => {
+                source => $ct->id,
+                label  => 'yet yet another content type label'
+            },
         },
     ]
 );
@@ -169,18 +172,14 @@ my $cd = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct2->id,
     label           => 'cd label',
-    data            => {
-        $cf_single_line->id => 'single line text',
-    },
+    data            => { $cf_single_line->id => 'single line text', },
 );
 
 my $cd2 = MT::Test::Permission->make_content_data(
     blog_id         => $blog_id,
     content_type_id => $ct2->id,
     label           => 'cd2 label',
-    data            => {
-        $cf_single_line->id => 'single line text2',
-    },
+    data            => { $cf_single_line->id => 'single line text2', },
 );
 
 my $cd3 = MT::Test::Permission->make_content_data(
@@ -232,37 +231,42 @@ $publisher->rebuild(
     TemplateMap => $template_map,
 );
 
-MT::Test::Tag->run_perl_tests($blog_id, sub {
-    my ($ctx, $block) = @_;
-    $ctx->{current_timestamp}     = '20180801000000';
-    $ctx->stash(template_map => $template_map);
-    if ($block->cd eq 'cd3') {
-        $ctx->stash(content => $cd3);
-        $ctx->stash(content_type => $ct);
+MT::Test::Tag->run_perl_tests(
+    $blog_id,
+    sub {
+        my ( $ctx, $block ) = @_;
+        $ctx->{current_timestamp} = '20180801000000';
+        $ctx->stash( template_map => $template_map );
+        if ( $block->cd eq 'cd3' ) {
+            $ctx->stash( content      => $cd3 );
+            $ctx->stash( content_type => $ct );
+        }
+        if ( $block->cd eq 'cd4' ) {
+            $ctx->stash( content      => $cd4 );
+            $ctx->stash( content_type => $ct3 );
+        }
     }
-    if ($block->cd eq 'cd4') {
-        $ctx->stash(content => $cd4);
-        $ctx->stash(content_type => $ct3);
-    }
-});
+);
 
-MT::Test::Tag->run_php_tests($blog_id, sub {
-    my $block = shift;
+MT::Test::Tag->run_php_tests(
+    $blog_id,
+    sub {
+        my $block = shift;
 
-    $template_map->build_type(3);
-    $template_map->save;
+        $template_map->build_type(3);
+        $template_map->save;
 
-    my ($cd_id, $ct_id);
-    if ($block->cd eq 'cd3') {
-        $cd_id = $cd3->id;
-        $ct_id = $ct->id;
-    }
-    if ($block->cd eq 'cd4') {
-        $cd_id = $cd4->id;
-        $ct_id = $ct3->id;
-    }
+        my ( $cd_id, $ct_id );
+        if ( $block->cd eq 'cd3' ) {
+            $cd_id = $cd3->id;
+            $ct_id = $ct->id;
+        }
+        if ( $block->cd eq 'cd4' ) {
+            $cd_id = $cd4->id;
+            $ct_id = $ct3->id;
+        }
 
-    return <<"PHP";
+        return <<"PHP";
 \$cd = \$ctx->mt->db()->fetch_content($cd_id);
 \$ct = \$ctx->mt->db()->fetch_content_type($ct_id);
 \$ctx->stash('current_timestamp', '20180801000000');
@@ -270,7 +274,8 @@ MT::Test::Tag->run_php_tests($blog_id, sub {
 \$ctx->stash('content', \$cd);
 \$ctx->stash('content_type', \$ct);
 PHP
-});
+    }
+);
 
 __END__
 

@@ -19,35 +19,37 @@ use MT::Test::Permission;
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    # Site
-    my $site = MT::Test::Permission->make_website( name => 'my website' );
+        # Site
+        my $site = MT::Test::Permission->make_website( name => 'my website' );
 
-    # Author
-    my $user = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
+        # Author
+        my $user = MT::Test::Permission->make_author(
+            name     => 'aikawa',
+            nickname => 'Ichiro Aikawa',
+        );
 
-    # Role
-    my $create_site_role = MT::Test::Permission->make_role(
-        name        => 'Create Child Site',
-        permissions => "'create_site'",
-    );
+        # Role
+        my $create_site_role = MT::Test::Permission->make_role(
+            name        => 'Create Child Site',
+            permissions => "'create_site'",
+        );
 
-    require MT::Association;
-    MT::Association->link( $user => $create_site_role => $site );
+        require MT::Association;
+        MT::Association->link( $user => $create_site_role => $site );
 
-});
+    }
+);
 
 require MT::Website;
-my $site             = MT::Website->load( { name => 'my website' } );
+my $site = MT::Website->load( { name => 'my website' } );
 
 require MT::Author;
-my $admin            = MT::Author->load(1);
-my $user             = MT::Author->load( { name => 'aikawa' } );
+my $admin = MT::Author->load(1);
+my $user  = MT::Author->load( { name => 'aikawa' } );
 
 require MT::Role;
 my $create_site_role = MT::Role->load( { name => 'Create Child Site' } );
@@ -67,7 +69,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save (new) by permitted user" );
 
     MT::Association->unlink( $user => $create_site_role => $site );
@@ -84,7 +86,7 @@ subtest 'mode = save (new)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!permission=1!i, "save (new) by permitted user" );
 
     done_testing();

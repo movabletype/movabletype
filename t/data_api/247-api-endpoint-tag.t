@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -452,12 +453,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/tags/2',
-            method => 'PUT',
-            params => { tag => { name => 'snow' }, },
+            path         => '/v2/sites/1/tags/2',
+            method       => 'PUT',
+            params       => { tag => { name => 'snow' }, },
             restrictions => { 1 => [qw/ edit_tags rename_tag /], },
             code         => 403,
-            error => 'Do not have permission to rename a tag.',
+            error        => 'Do not have permission to rename a tag.',
         },
 
         # rename_tag_for_site - normal tests
@@ -486,42 +487,42 @@ sub suite {
             },
         },
 
-#        # delete_tag - irregular tests
-#        {    # Non-existent tag.
-#            path   => '/v2/tags/100',
-#            method => 'DELETE',
-#            code   => 404,
-#            result => sub {
-#                +{  error => {
-#                        code    => 404,
-#                        message => 'Tag not found',
-#                    },
-#                };
-#            },
-#        },
-#        {    # Not logged in.
-#            path      => '/v2/tags/3',
-#            method    => 'DELETE',
-#            author_id => 0,
-#            code      => 401,
-#            error     => 'Unauthorized',
-#        },
-#        {    # No permissons.
-#            path         => '/v2/tags/3',
-#            method       => 'DELETE',
-#            restrictions => { 0 => [qw/ administer /], },
-#            code         => 403,
-#            error        => 'Do not have permission to delete a tag.',
-#        },
-#
-#        # delete_tag - normal tests
-#        {   path     => '/v2/tags/3',
-#            method   => 'DELETE',
-#            complete => sub {
-#                my $tag = MT->model('tag')->load(3);
-#                is( $tag, undef, 'Deleted "strolling" tag.' );
-#            },
-#        },
+       #        # delete_tag - irregular tests
+       #        {    # Non-existent tag.
+       #            path   => '/v2/tags/100',
+       #            method => 'DELETE',
+       #            code   => 404,
+       #            result => sub {
+       #                +{  error => {
+       #                        code    => 404,
+       #                        message => 'Tag not found',
+       #                    },
+       #                };
+       #            },
+       #        },
+       #        {    # Not logged in.
+       #            path      => '/v2/tags/3',
+       #            method    => 'DELETE',
+       #            author_id => 0,
+       #            code      => 401,
+       #            error     => 'Unauthorized',
+       #        },
+       #        {    # No permissons.
+       #            path         => '/v2/tags/3',
+       #            method       => 'DELETE',
+       #            restrictions => { 0 => [qw/ administer /], },
+       #            code         => 403,
+       #            error        => 'Do not have permission to delete a tag.',
+       #        },
+       #
+       #        # delete_tag - normal tests
+       #        {   path     => '/v2/tags/3',
+       #            method   => 'DELETE',
+       #            complete => sub {
+       #                my $tag = MT->model('tag')->load(3);
+       #                is( $tag, undef, 'Deleted "strolling" tag.' );
+       #            },
+       #        },
 
         # delete_tag_for_site - irregular tests
         {    # Non-existent tag.

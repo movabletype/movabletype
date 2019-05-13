@@ -12,7 +12,7 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
-        RebuildAtDelete => 1,
+        RebuildAtDelete      => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -30,7 +30,8 @@ filters {
     MT::Test::ArchiveType->filter_spec
 };
 
-my @maps = grep {$_->archive_type =~ /ContentType\-Category\-/} MT::Test::ArchiveType->template_maps;
+my @maps = grep { $_->archive_type =~ /ContentType\-Category\-/ }
+    MT::Test::ArchiveType->template_maps;
 
 MT::Test::ArchiveType->run_tests(@maps);
 

@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -143,7 +144,7 @@ foreach ( 1, 3, 27, 29, 30 ) {
 }
 
 $cat_filter = "NOT (aaa OR bbb)";
-@cats = ( @cats_hash{ 2, 26, 28 } );
+@cats       = ( @cats_hash{ 2, 26, 28 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
@@ -152,7 +153,7 @@ ok( !$expr->( { 26 => 1 } ), "$cat_filter: expr false for 26" );
 ok( !$expr->( { 28 => 1 } ), "$cat_filter: expr false for 28" );
 
 $cat_filter = "NOT (buz buz OR bbb)";
-@cats = ( @cats_hash{ 2, 26, 28, 31 } );
+@cats       = ( @cats_hash{ 2, 26, 28, 31 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;
@@ -162,7 +163,7 @@ ok( !$expr->( { 28 => 1 } ), "$cat_filter: expr false for 28" );
 ok( !$expr->( { 31 => 1 } ), "$cat_filter: expr false for 31" );
 
 $cat_filter = "buz buz OR bar";
-@cats = ( @cats_hash{ 2, 31 } );
+@cats       = ( @cats_hash{ 2, 31 } );
 $expr
     = $ctx->compile_category_filter( $cat_filter, \@cats, { children => 1 } );
 @cats = sort { $a->id <=> $b->id } @cats;

@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -75,7 +76,7 @@ sub suite {
             ],
             restrictions => { 1 => [qw/ upload /], },
             code         => 403,
-            error => 'Do not have permission to upload.',
+            error        => 'Do not have permission to upload.',
         },
 
         # upload_asset - normal tests
@@ -610,9 +611,11 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 3,
-                    items => MT::DataAPI::Resource->from_object( [$asset1, $asset2, $asset3] )
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3 ]
+                    )
                 };
             },
         },
@@ -707,9 +710,11 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 3,
-                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3 ]
+                    ),
                 };
                 return $res;
             },
@@ -808,9 +813,11 @@ sub suite {
                 my $asset2 = $app->model('asset')->load(7);
                 my $asset3 = $app->model('asset')->load(6);
                 my $asset4 = $app->model('asset')->load(5);
-                my $res = +{
+                my $res    = +{
                     totalResults => 4,
-                    items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
+                    items        => MT::DataAPI::Resource->from_object(
+                        [ $asset1, $asset2, $asset3, $asset4 ]
+                    ),
                 };
                 return $res;
             },

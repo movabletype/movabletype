@@ -131,8 +131,8 @@ ok( $categories && scalar @$categories == 2, "Multiple cateogires exist " );
 
 # Test attach_categories method
 my @entry_category_ids = map { $_->id } @$categories;
-my $cat3 = MT->model('category')->load(
-    { id => { not => \@entry_category_ids } },
+my $cat3               = MT->model('category')->load(
+    { id   => { not => \@entry_category_ids } },
     { sort => 'id', direction => 'ascend' },
 );
 my $attached = $entry->attach_categories($cat3);

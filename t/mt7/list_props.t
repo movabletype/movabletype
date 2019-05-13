@@ -1,15 +1,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -23,36 +25,38 @@ MT::Test->init_app;
 use MT::ContentData;
 use MT::ListProperty;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
+$test_env->prepare_fixture(
+    sub {
+        MT::Test->init_db;
 
-    my $content_type = MT::Test::Permission->make_content_type(
-        blog_id => 1,
-        name    => 'test content type',
-    );
+        my $content_type = MT::Test::Permission->make_content_type(
+            blog_id => 1,
+            name    => 'test content type',
+        );
 
-    my $content_field = MT::Test::Permission->make_content_field(
-        blog_id         => $content_type->blog_id,
-        content_type_id => $content_type->id,
-        name            => 'single text',
-        type            => 'single_line_text',
-    );
+        my $content_field = MT::Test::Permission->make_content_field(
+            blog_id         => $content_type->blog_id,
+            content_type_id => $content_type->id,
+            name            => 'single text',
+            type            => 'single_line_text',
+        );
 
-    my $fields = [
-        {   id      => $content_field->id,
-            order   => 1,
-            type    => $content_field->type,
-            options => {
-                display  => 'force',
-                hint     => '',
-                label    => 1,
-                required => 1,
-            },
-        }
-    ];
-    $content_type->fields($fields);
-    $content_type->save or die $content_type->errstr;
-});
+        my $fields = [
+            {   id      => $content_field->id,
+                order   => 1,
+                type    => $content_field->type,
+                options => {
+                    display  => 'force',
+                    hint     => '',
+                    label    => 1,
+                    required => 1,
+                },
+            }
+        ];
+        $content_type->fields($fields);
+        $content_type->save or die $content_type->errstr;
+    }
+);
 
 my $content_type = MT::ContentType->load( { name => 'test content type' } );
 
@@ -66,7 +70,8 @@ subtest 'make_list_props' => sub {
 };
 
 subtest 'make_title' => sub {
-    my $prop = MT::ListProperty->new( 'content_data.content_data_1', 'content_field_1' );
+    my $prop = MT::ListProperty->new( 'content_data.content_data_1',
+        'content_field_1' );
     my $content_data = MT::Test::Permission->make_content_data(
         blog_id         => $content_type->blog_id,
         author_id       => 1,

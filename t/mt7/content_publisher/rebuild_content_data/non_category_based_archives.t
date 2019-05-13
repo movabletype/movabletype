@@ -75,7 +75,7 @@ my $cs2_orange = MT::Test::Permission->make_category(
     label           => 'orange',
 );
 
-my $ct = MT::Test::Permission->make_content_type( blog_id => $blog_id );
+my $ct      = MT::Test::Permission->make_content_type( blog_id => $blog_id );
 my $cf_cat1 = MT::Test::Permission->make_content_field(
     blog_id            => $blog_id,
     content_type_id    => $ct->id,

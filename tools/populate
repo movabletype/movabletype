@@ -216,9 +216,11 @@ my %defs                   = (
                 'preferred_language',
                 sub {
                     $this_obj->type == 1
-                        ? ( $this_obj->name eq 'Melody'
+                        ? (
+                        $this_obj->name eq 'Melody'
                         ? 'en_US'
-                        : [ 'en_US', 'en_US', 'en-us', 'fr', 'de' ] )
+                        : [ 'en_US', 'en_US', 'en-us', 'fr', 'de' ]
+                        )
                         : undef;
                 },
                 2.5

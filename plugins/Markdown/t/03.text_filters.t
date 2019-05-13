@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../../../t/lib"; # t/lib
+use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval qq{ use Test::Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -135,7 +137,8 @@ run {
             unlike( $result2, qr/$unlike/, "unlike: $unlike" );
             $result2 = decode_entities($result2);
         }
-        is( $result2, $block->$text_filter, "content data " . $block->name . ' text_filter:' . $text_filter );
+        is( $result2, $block->$text_filter,
+            "content data " . $block->name . ' text_filter:' . $text_filter );
 
     }
 };

@@ -2,10 +2,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -57,8 +58,8 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
 
         # Remove 'Orientation' tag. (remove all tags)
         MT::Image->remove_metadata($tempfile);
-        
-        SKIP: {
+
+    SKIP: {
             my $img = MT::Image->new;
             skip( "no $driver for image $tempfile", 3 ) unless $img;
             ok( $img->init( Filename => $tempfile ) );

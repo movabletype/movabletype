@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -72,7 +73,7 @@ sub suite {
             method    => 'GET',
             author_id => 2,
             config => { DataAPICORSAllowOrigin => 'http://www.example.com', },
-            request_headers => { Origin => 'http://beta.example.com', },
+            request_headers  => { Origin => 'http://beta.example.com', },
             response_headers => \%empty_response_headers,
         },
         {   note =>

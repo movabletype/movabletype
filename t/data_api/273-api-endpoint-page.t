@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -524,7 +525,7 @@ __BODY__
             },
             restrictions => { 1 => [qw/ save_page /], },
             code         => 403,
-            error => 'Do not have permission to create a page.',
+            error        => 'Do not have permission to create a page.',
         },
         {    # Attach non-existent asset.
             path   => '/v2/sites/1/pages',
@@ -859,7 +860,7 @@ __BODY__
             },
             restrictions => { 1 => [qw/ save_page /], },
             code         => 403,
-            error => 'Do not have permission to update a page.',
+            error        => 'Do not have permission to update a page.',
         },
         {    # Basename is too long. (ascii)
             path   => '/v2/sites/1/pages/23',

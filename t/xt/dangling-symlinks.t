@@ -2,9 +2,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     if ( $^O eq 'MSWin32' ) {
         plan skip_all => 'These tests are not for Windows';
@@ -17,6 +18,7 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -37,6 +39,6 @@ sub test {
 
 find( \&test, getcwd );
 
-ok 1; # to pass when there's no symlink
+ok 1;    # to pass when there's no symlink
 
 done_testing;

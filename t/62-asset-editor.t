@@ -2,9 +2,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval 'use Test::Spec; 1'
         or plan skip_all => 'Test::Spec is not installed';
@@ -15,8 +16,10 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new(
+
         # to serve actual js libraries
         StaticFilePath => "MT_HOME/mt-static/",
 

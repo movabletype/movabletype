@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -91,7 +92,8 @@ my $expired_token = make_token(
 MT::App::DataAPI->purge_session_records();
 
 # Clear cache.
-$session_class->driver->Disabled(1) if $session_class->driver->can('Disabled');
+$session_class->driver->Disabled(1)
+    if $session_class->driver->can('Disabled');
 
 ok( $session_class->load( $effective->id ),
     'An effective session record is not purged'

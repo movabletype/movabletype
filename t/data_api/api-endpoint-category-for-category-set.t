@@ -29,7 +29,8 @@ $user->save;
 $app->user($user);
 
 # manage_content_types permission remove.
-my $system_perm = MT::Permission->load({author_id => $user->id, blog_id => 0});
+my $system_perm
+    = MT::Permission->load( { author_id => $user->id, blog_id => 0 } );
 my $permissions = $system_perm->permissions();
 $permissions =~ s/'manage_content_types',?//;
 $system_perm->permissions($permissions);
@@ -193,8 +194,7 @@ sub irregular_tests_for_create_category {
     );
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/categorySets/$category_set_id/categories",
+            path => "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'POST',
             params => { category => { label => 'create-category-3', }, },
             code   => 404,
@@ -663,8 +663,7 @@ sub normal_tests_for_permutate_categories {
 sub irregular_tests_for_list_categories {
     test_data_api(
         {   note => 'invalid site_id',
-            path =>
-                "/v4/sites/1000/categorySets/$category_set_id/categories",
+            path => "/v4/sites/1000/categorySets/$category_set_id/categories",
             method => 'GET',
             code   => 404,
         }

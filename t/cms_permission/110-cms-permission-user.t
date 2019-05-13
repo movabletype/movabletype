@@ -153,7 +153,7 @@ subtest 'mode = cfg_system_users' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out !~ m!permission=1!i, "cfg_system_users by admin" );
 
     $app = _run_app(
@@ -165,7 +165,7 @@ subtest 'mode = cfg_system_users' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!permission=1!i, "cfg_system_users by non permitted user" );
 };
 
@@ -179,7 +179,7 @@ subtest 'mode = dialog_grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
+    ok( $out, "Request: dialog_grant_role" );
     ok( $out !~ m!permission=1!i, "dialog_grant_role by admin" );
 
     $app = _run_app(
@@ -243,7 +243,7 @@ subtest 'mode = dialog_grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
+    ok( $out, "Request: dialog_grant_role" );
     ok( $out =~ m!permission=1!i, "dialog_grant_role by other blog" );
 
     $app = _run_app(
@@ -255,7 +255,7 @@ subtest 'mode = dialog_grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
+    ok( $out, "Request: dialog_grant_role" );
     ok( $out =~ m!permission=1!i, "dialog_grant_role by other permision" );
 };
 
@@ -269,7 +269,7 @@ subtest 'mode = dialog_select_author' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_select_author" );
+    ok( $out, "Request: dialog_select_author" );
     ok( $out !~ m!permission=1!i, "dialog_select_author by admin" );
 
     $app = _run_app(
@@ -353,7 +353,7 @@ subtest 'mode = dialog_select_sysadmin' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_select_sysadmin" );
+    ok( $out, "Request: dialog_select_sysadmin" );
     ok( $out !~ m!permission=1!i, "dialog_select_sysadmin by admin" );
 
     $app = _run_app(
@@ -382,7 +382,7 @@ subtest 'mode = disable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: disable_object" );
+    ok( $out, "Request: disable_object" );
     ok( $out !~ m!permission=1!i, "disable_object by admin" );
 
     $app = _run_app(
@@ -396,7 +396,7 @@ subtest 'mode = disable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: disable_object" );
+    ok( $out, "Request: disable_object" );
     ok( $out =~ m!permission=1!i, "disable_object by non permitted user" );
 };
 
@@ -411,7 +411,7 @@ subtest 'mode = edit_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit_role" );
+    ok( $out, "Request: edit_role" );
     ok( $out !~ m!permission=1!i, "edit_role by admin" );
 
     $app = _run_app(
@@ -424,7 +424,7 @@ subtest 'mode = edit_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit_role" );
+    ok( $out, "Request: edit_role" );
     ok( $out =~ m!permission=1!i, "edit_role by non permitted user" );
 };
 
@@ -440,7 +440,7 @@ subtest 'mode = enable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: enable_object" );
+    ok( $out, "Request: enable_object" );
     ok( $out !~ m!permission=1!i, "enable_object by admin" );
 
     $app = _run_app(
@@ -454,7 +454,7 @@ subtest 'mode = enable_object' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: enable_object" );
+    ok( $out, "Request: enable_object" );
     ok( $out =~ m!permission=1!i, "enable_object by non permitted user" );
 };
 
@@ -469,7 +469,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list by admin" );
 
     $app = _run_app(
@@ -482,7 +482,7 @@ subtest 'mode = list' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list by non permitted user" );
 };
 
@@ -498,7 +498,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by admin" );
 
     $app = _run_app(
@@ -512,7 +512,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by permitted user on blog" );
 
     $app = _run_app(
@@ -526,7 +526,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out !~ m!permission=1!i, "grant_role by permitted user on website" );
 
     $app = _run_app(
@@ -570,7 +570,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out =~ m!permission=1!i, "grant_role by other blog" );
 
     $app = _run_app(
@@ -584,7 +584,7 @@ subtest 'mode = grant_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
+    ok( $out, "Request: grant_role" );
     ok( $out =~ m!permission=1!i, "grant_role by other permision" );
 };
 
@@ -599,7 +599,7 @@ subtest 'mode = list (member)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list member by admin" );
 
     $app = _run_app(
@@ -612,7 +612,7 @@ subtest 'mode = list (member)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list member by permitted user on blog" );
 
     $app = _run_app(
@@ -667,7 +667,7 @@ subtest 'mode = list (member)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list member by other blog" );
 
     $app = _run_app(
@@ -680,7 +680,7 @@ subtest 'mode = list (member)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list member by other permision" );
 };
 
@@ -695,7 +695,7 @@ subtest 'mode = list (role)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out !~ m!permission=1!i, "list role by admin" );
 
     $app = _run_app(
@@ -708,7 +708,7 @@ subtest 'mode = list (role)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list" );
+    ok( $out, "Request: list" );
     ok( $out =~ m!permission=1!i, "list role by non permitted user" );
 };
 
@@ -724,7 +724,7 @@ subtest 'mode = recover_profile_password' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: recover_profile_password" );
+    ok( $out, "Request: recover_profile_password" );
     ok( $out !~ m!permission=1!i, "recover_profile_password by admin" );
 
     $app = _run_app(
@@ -753,7 +753,7 @@ subtest 'mode = remove_user_assoc' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_user_assoc" );
+    ok( $out, "Request: remove_user_assoc" );
     ok( $out !~ m!permission=1!i, "remove_user_assoc by admin" );
 
     MT::Association->link( $kemikawa => $edit_all_posts => $blog );
@@ -827,7 +827,7 @@ subtest 'mode = remove_user_assoc' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_user_assoc" );
+    ok( $out, "Request: remove_user_assoc" );
     ok( $out =~ m!permission=1!i, "remove_user_assoc by other blog" );
 
     MT::Association->link( $kemikawa => $edit_all_posts => $blog );
@@ -841,7 +841,7 @@ subtest 'mode = remove_user_assoc' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_user_assoc" );
+    ok( $out, "Request: remove_user_assoc" );
     ok( $out =~ m!permission=1!i, "remove_user_assoc by other permision" );
 };
 
@@ -856,7 +856,7 @@ subtest 'mode = remove_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_userpic" );
+    ok( $out, "Request: remove_userpic" );
     ok( $out !~ m!permission=1!i, "remove_userpic by admin" );
 
     $app = _run_app(
@@ -869,7 +869,7 @@ subtest 'mode = remove_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_userpic" );
+    ok( $out, "Request: remove_userpic" );
     ok( $out !~ m!permission=1!i, "remove_userpic by myself" );
 
     $app = _run_app(
@@ -882,7 +882,7 @@ subtest 'mode = remove_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_userpic" );
+    ok( $out, "Request: remove_userpic" );
     ok( $out =~ m!permission=1!i, "remove_userpic by other user" );
 };
 
@@ -904,7 +904,7 @@ subtest 'mode = upload_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: upload_userpic" );
+    ok( $out, "Request: upload_userpic" );
     ok( $out !~ m!permission=1!i, "upload_userpic by admin" );
 
     $app = _run_app(
@@ -923,7 +923,7 @@ subtest 'mode = upload_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: upload_userpic" );
+    ok( $out, "Request: upload_userpic" );
     ok( $out !~ m!permission=1!i, "upload_userpic by myself" );
 
     $app = _run_app(
@@ -942,7 +942,7 @@ subtest 'mode = upload_userpic' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: upload_userpic" );
+    ok( $out, "Request: upload_userpic" );
     ok( $out =~ m!permission=1!i, "upload_userpic by other user" );
 };
 
@@ -956,7 +956,7 @@ subtest 'mode = save_cfg_system_users' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save_cfg_system_users" );
+    ok( $out, "Request: save_cfg_system_users" );
     ok( $out !~ m!permission=1!i, "save_cfg_system_users by admin" );
 
     $app = _run_app(
@@ -984,7 +984,7 @@ subtest 'mode = save_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save_role" );
+    ok( $out, "Request: save_role" );
     ok( $out !~ m!permission=1!i, "save_role by admin" );
 
     $app = _run_app(
@@ -997,7 +997,7 @@ subtest 'mode = save_role' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save_role" );
+    ok( $out, "Request: save_role" );
     ok( $out =~ m!permission=1!i, "save_role by non permitted user" );
 };
 
@@ -1013,7 +1013,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save by admin" );
 
     $app = _run_app(
@@ -1027,7 +1027,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out !~ m!permission=1!i, "save own record" );
 
     $app = _run_app(
@@ -1041,7 +1041,7 @@ subtest 'mode = save' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!permission=1!i, "save by others" );
 };
 
@@ -1057,7 +1057,7 @@ subtest 'mode = save (type is commenter)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by admin" );
 
     $app = _run_app(
@@ -1071,7 +1071,7 @@ subtest 'mode = save (type is commenter)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save own record" );
 
     $app = _run_app(
@@ -1085,7 +1085,7 @@ subtest 'mode = save (type is commenter)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!Invalid request!i, "save by others" );
 };
 
@@ -1101,7 +1101,7 @@ subtest 'mode = save (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid request!i, "save by admin" );
 
     $app = _run_app(
@@ -1115,7 +1115,7 @@ subtest 'mode = save (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
+    ok( $out, "Request: save" );
     ok( $out =~ m!Invalid Request!i, "save own record" );
 
     $app = _run_app(
@@ -1129,7 +1129,7 @@ subtest 'mode = save (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!Invalid request!i, "save by others" );
 };
 
@@ -1145,7 +1145,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view by admin" );
 
     $app = _run_app(
@@ -1159,7 +1159,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view own record" );
 
     $app = _run_app(
@@ -1173,7 +1173,7 @@ subtest 'mode = view' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!permission=1!i, "view by others" );
 };
 
@@ -1189,7 +1189,7 @@ subtest 'mode = view (type is commenter)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out !~ m!permission=1!i, "view by admin" );
 
     $app = _run_app(
@@ -1224,7 +1224,7 @@ subtest 'mode = view (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!Invalid request!i, "view by admin" );
 
     $app = _run_app(
@@ -1238,7 +1238,7 @@ subtest 'mode = view (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: view" );
+    ok( $out, "Request: view" );
     ok( $out =~ m!Invalid Request!i, "view own record" );
 
     $app = _run_app(
@@ -1252,7 +1252,7 @@ subtest 'mode = view (type is user)' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: viwe" );
+    ok( $out, "Request: viwe" );
     ok( $out =~ m!Invalid request!i, "view by others" );
 };
 
@@ -1268,7 +1268,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out !~ m!permission=1!i, "delete by admin" );
 
     $app = _run_app(
@@ -1282,7 +1282,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!permission=1!i, "delete own record" );
 
     $app = _run_app(
@@ -1296,7 +1296,7 @@ subtest 'mode = delete' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                     "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!permission=1!i, "delete by others" );
 };
 
@@ -1312,7 +1312,7 @@ subtest 'mode = delete (type is commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by admin" );
 
     $app = _run_app(
@@ -1326,7 +1326,7 @@ subtest 'mode = delete (type is commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete own record" );
 
     $app = _run_app(
@@ -1340,7 +1340,7 @@ subtest 'mode = delete (type is commenter' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!Invalid request!i, "delete by others" );
 };
 
@@ -1356,7 +1356,7 @@ subtest 'mode = delete (type is user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete by admin" );
 
     $app = _run_app(
@@ -1370,7 +1370,7 @@ subtest 'mode = delete (type is user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
+    ok( $out, "Request: delete" );
     ok( $out =~ m!Invalid request!i, "delete own record" );
 
     $app = _run_app(
@@ -1384,7 +1384,7 @@ subtest 'mode = delete (type is user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: cfg_system_users" );
+    ok( $out, "Request: cfg_system_users" );
     ok( $out =~ m!Invalid request!i, "delete by others" );
 };
 
@@ -1404,7 +1404,7 @@ subtest 'action = recover_passwords' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: recover_passwords" );
+    ok( $out, "Request: recover_passwords" );
     ok( $out !~ m!not implemented!i, "recover_passwords by admin" );
 
     $app = _run_app(
@@ -1443,7 +1443,7 @@ subtest 'action = delete_user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete_user" );
+    ok( $out, "Request: delete_user" );
     ok( $out !~ m!not implemented!i, "delete_user by admin" );
 
     $app = _run_app(
@@ -1461,7 +1461,7 @@ subtest 'action = delete_user' => sub {
         }
     );
     $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete_user" );
+    ok( $out, "Request: delete_user" );
     ok( $out =~ m!not implemented!i, "delete_user by non permitted user" );
 };
 

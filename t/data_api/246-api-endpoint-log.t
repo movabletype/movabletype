@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -539,7 +540,7 @@ sub suite {
             },
             params => { log => { message => 'update-log-site-1', }, },
             code   => 403,
-            error => 'Do not have permission to update a log.',
+            error  => 'Do not have permission to update a log.',
         },
 
         # update_log - normal tests

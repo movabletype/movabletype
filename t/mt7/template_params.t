@@ -191,7 +191,7 @@ my $blog = MT::Blog->load( { name => 'test blog' } );
 my $content_type = MT::ContentType->load( { name => 'test content type' } );
 
 my $cf_category = MT::ContentField->load( { name => 'categories' } );
-my $category = MT::Category->load(
+my $category    = MT::Category->load(
     { label => 'category', category_set_id => \'> 0' } );
 my $plain_category = MT::Category->load( { label => 'plain_category' } );
 
@@ -354,7 +354,7 @@ for my $s (@suite) {
         $category, $map, $content_data->authored_on,
         $content_data->author );
     my $arch_root = $at eq 'Page' ? $blog->site_path : $blog->archive_path;
-    my $file = File::Spec->catfile( $arch_root, $file_name );
+    my $file      = File::Spec->catfile( $arch_root, $file_name );
 
     unlink $file if -e $file;
     $mt->request->reset;

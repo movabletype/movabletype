@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -233,7 +234,8 @@ sub suite {
                     'WidgetManager/WidgetManager.pl exists in PluginSwitch.'
                 );
                 is( $plugin_switch->{'WidgetManager/WidgetManager.pl'},
-                    1, 'PluginSwitch of WidgetManager/WidgetManager.pl is 1.' );
+                    1,
+                    'PluginSwitch of WidgetManager/WidgetManager.pl is 1.' );
             },
         },
 
@@ -299,7 +301,8 @@ sub suite {
                     'WidgetManager/WidgetManager.pl exists in PluginSwitch.'
                 );
                 is( $plugin_switch->{'WidgetManager/WidgetManager.pl'},
-                    0, 'PluginSwitch of WidgetManager/WidgetManager.pl is 0.' );
+                    0,
+                    'PluginSwitch of WidgetManager/WidgetManager.pl is 0.' );
 
                 $plugin_switch->{'WidgetManager/WidgetManager.pl'} = 1;
                 $app->config->PluginSwitch( $plugin_switch, 1 );

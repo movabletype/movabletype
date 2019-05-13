@@ -9,9 +9,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     plan skip_all => "Test for 'sqlite' is not actively maintained";
 
@@ -22,6 +23,7 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
     local $ENV{MT_TEST_BACKEND} = 'sqlite';
     $test_env = MT::Test::Env->new;

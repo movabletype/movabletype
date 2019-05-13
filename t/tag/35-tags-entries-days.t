@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -30,7 +31,7 @@ filters {
 
 $test_env->prepare_fixture('db');
 
-my $now = time;
+my $now   = time;
 my $today = epoch2ts( MT->model('blog')->load($blog_id), $now );
 my $yesterday
     = epoch2ts( MT->model('blog')->load($blog_id), $now - 60 * 60 * 25 );

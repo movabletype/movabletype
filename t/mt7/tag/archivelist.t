@@ -43,7 +43,8 @@ filters {
 
 my $blog
     = MT::Test::Permission->make_blog( parent_id => 0, name => 'test blog' );
-$blog->archive_type('ContentType-Author,ContentType-Category,ContentType-Category-Monthly');
+$blog->archive_type(
+    'ContentType-Author,ContentType-Category,ContentType-Category-Monthly');
 $blog->save;
 
 my $content_type_01 = MT::Test::Permission->make_content_type(
@@ -109,7 +110,6 @@ my $fields = [
 $content_type_01->fields($fields);
 $content_type_01->save or die $content_type_01->errstr;
 
-
 my $cf_category_03 = MT::Test::Permission->make_content_field(
     blog_id            => $content_type_03->blog_id,
     content_type_id    => $content_type_03->id,
@@ -140,9 +140,7 @@ my $content_data_01 = MT::Test::Permission->make_content_data(
     authored_on     => '20170927112314',
     identifier      => 'mtarchivelist-test-data 01',
     author_id       => $author_01->id,
-    data            => {
-        $cf_category->id => [ $category2->id ],
-    },
+    data            => { $cf_category->id => [ $category2->id ], },
 );
 
 my $content_data_02 = MT::Test::Permission->make_content_data(

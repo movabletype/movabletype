@@ -90,13 +90,13 @@ $test_env->prepare_fixture(
 );
 
 my $blog = MT::Blog->load($blog_id);
-$blog->archive_path(join "/", $test_env->root, "site/archive");
+$blog->archive_path( join "/", $test_env->root, "site/archive" );
 $blog->save;
 
 require MT::ContentPublisher;
 my $publisher = MT::ContentPublisher->new;
 $publisher->rebuild(
-    BlogID => $blog_id,
+    BlogID      => $blog_id,
     ArchiveType => 'ContentType-Author',
 );
 

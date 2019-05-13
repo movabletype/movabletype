@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -26,7 +27,7 @@ my $schema_version = 5.0034;
 sub make_xml {
     my ($params) = @_;
 
-    <<__XML__
+    <<__XML__;
 <?xml version='1.0'?>
 <movabletype xmlns='http://www.sixapart.com/ns/movabletype'
 backup_what='' backup_by='Melody(ID: 1)' schema_version='@{[ $params->{schema_version} ]}' backup_on='2012-10-02T00:50:29'>
@@ -38,9 +39,10 @@ __XML__
 sub parse {
     my ($params) = @_;
 
-    note( 'Parse XML: params: ' . JSON::to_json($params, {canonical => 1}) );
+    note( 'Parse XML: params: '
+            . JSON::to_json( $params, { canonical => 1 } ) );
 
-    my $objects = {};
+    my $objects  = {};
     my $callback = sub { };
 
     require MT::BackupRestore::BackupFileHandler;
@@ -54,7 +56,7 @@ sub parse {
     );
 
     my $parser = MT::Util::sax_parser();
-    $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
+    $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
 
     $parser->parse_string( make_xml($params) );

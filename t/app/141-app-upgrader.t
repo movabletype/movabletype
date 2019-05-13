@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -124,7 +125,7 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     is( scalar @$favorite_websites,
         3, 'Administrator has three favorite_websites.' );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter( { blog_id => $blog->id } );
     @roles = ();
     while ( my $r = $iter->() ) {
         push @roles, $r;
@@ -189,7 +190,7 @@ subtest 'Upgrade from MT5 to MT7' => sub {
     is( $admin->favorite_blogs->[0],
         $blog->id, "Favorite_blogs ID is " . $blog->id . "." );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter( { blog_id => $blog->id } );
     @roles = ();
     while ( my $r = $iter->() ) {
         push @roles, $r;
@@ -266,7 +267,7 @@ subtest 'Upgrade from MT6 to MT7' => sub {
     is( $admin->favorite_blogs->[0],
         $blog->id, "Favorite_blogs ID is " . $blog->id . "." );
 
-    $iter = $admin->role_iter( { blog_id => $blog->id } );
+    $iter  = $admin->role_iter( { blog_id => $blog->id } );
     @roles = ();
     while ( my $r = $iter->() ) {
         push @roles, $r;

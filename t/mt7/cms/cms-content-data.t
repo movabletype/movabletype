@@ -126,7 +126,7 @@ subtest 'preview without content_type archive' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out,             'Request: preview_content_data' );
+    ok( $out, 'Request: preview_content_data' );
     ok( $out !~ /error/i, 'No error occurred' );
 };
 
@@ -142,7 +142,7 @@ subtest 'preview with content_type archive' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out,                         'Request: preview_content_data' );
+    ok( $out, 'Request: preview_content_data' );
     ok( $out =~ /Status: 302 Found/i, 'Status: 302 Found' );
     ok( $out !~ /error|permission=1|dashboard=1/i, 'No error occurred' );
 };

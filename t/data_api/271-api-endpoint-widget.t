@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -44,7 +46,7 @@ $system_widget->set_values(
 $system_widget->save or die $system_widget->errstr;
 
 my $widget_class = $app->model('template');
-my $blog_widget = $widget_class->load( { blog_id => 1, type => 'widget' } )
+my $blog_widget  = $widget_class->load( { blog_id => 1, type => 'widget' } )
     or die $widget_class->errstr;
 my $website_widget = $widget_class->load( { blog_id => 2, type => 'widget' } )
     or die $widget_class->errstr;
@@ -509,12 +511,12 @@ sub suite {
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path   => '/v2/sites/1/widgets',
-            method => 'POST',
-            params => { widget => { name => 'create-widget', }, },
+            path         => '/v2/sites/1/widgets',
+            method       => 'POST',
+            params       => { widget => { name => 'create-widget', }, },
             restrictions => { 1 => [qw/ edit_templates /], },
             code         => 403,
-            error => 'Do not have permission to create a widget.',
+            error        => 'Do not have permission to create a widget.',
         },
 
         # create_widget - normal tests

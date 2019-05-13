@@ -2,9 +2,10 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval 'use Test::MockObject::Extends; 1'
         or plan skip_all => 'Test::MockObject::Extends is not installed';
@@ -13,6 +14,7 @@ BEGIN {
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -128,9 +130,9 @@ describe 'Uploaded asset (テスト.jpg)' => sub {
 sub upload_asset {
     my $file = shift;
 
-    if ($^O eq 'MSWin32') {
+    if ( $^O eq 'MSWin32' ) {
         require Encode;
-        $file = Encode::encode(cp932 => $file);
+        $file = Encode::encode( cp932 => $file );
     }
 
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';

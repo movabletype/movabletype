@@ -3,15 +3,17 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+
 BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -132,30 +134,30 @@ sub suite {
             params => { sortBy => 'modified_by' },
         },
 
-#        # list_all_widgetsets - normal tests
-#        {   path      => '/v2/widgetsets',
-#            method    => 'GET',
-#            callbacks => [
-#                {   name  => 'data_api_pre_load_filtered_list.template',
-#                    count => 2,
-#                },
-#            ],
-#            result => sub {
-#                my @ws = $app->model('template')->load(
-#                    { type => 'widgetset' },
-#                    { sort => 'blog_id', direction => 'ascend' },
-#                );
-#
-#                $app->user($author);
-#
-#                return +{
-#                    totalResults => scalar @ws,
-#                    items        => MT::DataAPI::Resource->from_object(
-#                        \@ws, \@ws_fields
-#                    ),
-#                };
-#            },
-#        },
+     #        # list_all_widgetsets - normal tests
+     #        {   path      => '/v2/widgetsets',
+     #            method    => 'GET',
+     #            callbacks => [
+     #                {   name  => 'data_api_pre_load_filtered_list.template',
+     #                    count => 2,
+     #                },
+     #            ],
+     #            result => sub {
+     #                my @ws = $app->model('template')->load(
+     #                    { type => 'widgetset' },
+     #                    { sort => 'blog_id', direction => 'ascend' },
+     #                );
+     #
+     #                $app->user($author);
+     #
+     #                return +{
+     #                    totalResults => scalar @ws,
+     #                    items        => MT::DataAPI::Resource->from_object(
+     #                        \@ws, \@ws_fields
+     #                    ),
+     #                };
+     #            },
+     #        },
 
         # get_widgetset - irregular tests
         {    # Non-existent widgetset.
@@ -320,7 +322,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ edit_templates /], },
             code         => 403,
-            error => 'Do not have permission to create a widgetset.',
+            error        => 'Do not have permission to create a widgetset.',
         },
 
         # create_widgetset - normal tests
@@ -454,7 +456,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ edit_templates /], },
             code         => 403,
-            error => 'Do not have permission to update a widgetset.',
+            error        => 'Do not have permission to update a widgetset.',
         },
 
         # update_widgetset - normal tests
