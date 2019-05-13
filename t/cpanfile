@@ -110,7 +110,7 @@ on 'test' => sub {
     requires 'Test::MockModule';
     requires 'Test::MockObject';
     requires 'Test::Perl::Critic';
-    requires 'Test::PerlTidy' if $^V->numify >= 5.14;
+    requires 'Test::PerlTidy' if $^V->numify >= 5.014;
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
     requires 'Text::Diff';
