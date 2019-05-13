@@ -857,7 +857,7 @@ sub site_list_widget {
 
         # Recent post - Content Data
         my $cd_class = MT->model('content_data');
-        my $cd_iter = $cd_class->load_iter( $terms, $args );
+        my $cd_iter  = $cd_class->load_iter( $terms, $args );
         my $is_relative
             = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
         while ( my $p = $cd_iter->() ) {

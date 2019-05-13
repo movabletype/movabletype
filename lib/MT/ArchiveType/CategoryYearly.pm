@@ -89,7 +89,7 @@ sub archive_title {
     my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
     my $start = start_end_year( $stamp, $ctx->stash('blog') );
-    my $year = MT::Template::Context::_hdlr_date( $ctx,
+    my $year  = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%Y" } );
     my $lang = lc MT->current_language || 'en_us';
     $lang = 'ja' if lc($lang) eq 'jp';
@@ -176,7 +176,7 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-        }
+    }
 }
 
 sub archive_group_entries {
@@ -186,7 +186,7 @@ sub archive_group_entries {
         = $param{year}
         ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
         : $ctx->{current_timestamp};
-    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $cat   = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
     $obj->dated_category_entries( $ctx, 'Category-Yearly', $cat, $ts,
         $limit );

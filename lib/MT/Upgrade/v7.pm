@@ -285,7 +285,7 @@ sub _v7_migrate_role {
     $self->progress(
         $self->translate_escape('Updating existing role name...') );
 
-    my @role_names = ( 'Designer', 'Author', 'Contributor', 'Editor' );
+    my @role_names    = ( 'Designer', 'Author', 'Contributor', 'Editor' );
     my @default_roles = $role_class->_default_roles();
     foreach my $r (@default_roles) {
         next unless grep { $r->{name} eq MT->translate($_) } @role_names;
@@ -328,7 +328,7 @@ sub _v7_migrate_role {
 
     # Website Administrator
     my $webadmin_role = MT->translate('Website Administrator');
-    my $iter = $role_class->load_iter( { name => $webadmin_role } );
+    my $iter          = $role_class->load_iter( { name => $webadmin_role } );
     while ( my $role = $iter->() ) {
         $self->progress(
             $self->translate_escape(
@@ -523,7 +523,7 @@ sub _migrate_site_archive_type {
     my ( $self, $site ) = @_;
 
     my @archive_type = split ',', $site->archive_type;
-    my %hash = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
+    my %hash         = map { $_, 1 } map { $_ =~ s/_/-/; $_; } @archive_type;
     my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );
     $site->save
@@ -894,7 +894,7 @@ sub v7_migrate_rebuild_trigger {
                     ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
                     : MT::RebuildTrigger::TARGET_BLOG();
                 my $target_blog_id = $id =~ /\d+/ ? $id : 0;
-                my $rt = MT->model('rebuild_trigger')->new;
+                my $rt             = MT->model('rebuild_trigger')->new;
                 $rt->blog_id($blog_id);
                 $rt->object_type($object_type);
                 $rt->action($action);
@@ -1453,12 +1453,12 @@ sub _v7_add_mobile_site_list_dashboard_widget {
 sub _v7_remove_sql_set_names {
     my $self      = shift;
     my $cfg_class = MT->model('config');
-    my $data = $cfg_class->load(1)->data;
+    my $data      = $cfg_class->load(1)->data;
     return 1 if $data =~ /SQLSetNames\s1/;
 
     $self->progress( $self->translate_escape('Remove SQLSetNames...') );
 
-    my $cfg       = MT->config;
+    my $cfg = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
 }

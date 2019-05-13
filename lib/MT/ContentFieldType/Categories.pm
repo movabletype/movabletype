@@ -107,7 +107,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $iter = MT::Category->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id              => @$data ? $data : 0,
             category_set_id => $options->{category_set}
         },
         { fetchonly => { id => 1 } }
@@ -118,7 +118,7 @@ sub ss_validator {
     }
     if ( my @invalid_cat_ids = grep { !$valid_cats{$_} } @{$data} ) {
         my $invalid_cat_ids = join ', ', sort(@invalid_cat_ids);
-        my $field_label = $options->{label};
+        my $field_label     = $options->{label};
         return $app->translate( 'Invalid Category IDs: [_1] in "[_2]" field.',
             $invalid_cat_ids, $field_label );
     }
@@ -185,7 +185,7 @@ sub terms {
 
         my @cat_ids;
         my $iter = MT::Category->load_iter(
-            {   label => { like => "%${string}%" },
+            {   label           => { like => "%${string}%" },
                 category_set_id => $field->related_cat_set_id,
             },
             { fetchonly => { id => 1 } },
@@ -225,7 +225,7 @@ sub tag_handler {
         MT->translate('No category_set setting in content field type.') );
 
     my $cat_terms = {
-        id => @$value ? $value : 0,
+        id              => @$value ? $value : 0,
         category_set_id => $category_set_id,
     };
     my $cat_args = {};
@@ -277,7 +277,7 @@ sub tag_handler {
     my $tokens  = $ctx->stash('tokens');
     my $glue    = $args->{glue};
     local $ctx->{inside_mt_categories} = 1;
-    my $i = 0;
+    my $i    = 0;
     my $vars = $ctx->{__stash}{vars} ||= {};
     MT::Meta::Proxy->bulk_load_meta_objects( \@ordered_categories );
 

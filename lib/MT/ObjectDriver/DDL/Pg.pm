@@ -106,13 +106,13 @@ sub column_defs {
     return undef unless $dbh;
 
     local $dbh->{RaiseError} = 0;
-    my $sth = $dbh->column_info( undef, undef, $table_name, undef );
+    my $sth  = $dbh->column_info( undef, undef, $table_name, undef );
     my $attr = $sth->fetchall_hashref('COLUMN_NAME') or return undef;
     return undef if $sth->err;
     return undef unless %$attr;
 
     my @key_column_names = $dbh->primary_key( undef, undef, $table_name );
-    my $key_columns = {};
+    my $key_columns      = {};
     foreach (@key_column_names) {
         $key_columns->{$_} = 1;
     }

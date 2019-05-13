@@ -229,7 +229,7 @@ sub load_file {
     # Find template via include_path
     unless ( File::Spec->file_name_is_absolute($real_file) ) {
         my @paths = @{ $tmpl->{include_path} || [] };
-        my $ok = 0;
+        my $ok    = 0;
         foreach my $path (@paths) {
             my $test_file = File::Spec->catfile( $path, $real_file );
             $test_file = MT::Util::canonicalize_path($test_file);
@@ -240,7 +240,7 @@ sub load_file {
             unless -e $real_file;
     }
 
-    my $ok = 0;
+    my $ok    = 0;
     my @paths = @{ $tmpl->{include_path} || [] };
 
     # Add plugin's load path for check

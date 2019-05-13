@@ -27,7 +27,7 @@ our %ArchiveTypes;
 
 sub init_archive_types {
     my $types = MT->registry("archive_types") || {};
-    my $mt = MT->instance;
+    my $mt    = MT->instance;
     while ( my ( $type, $typedata ) = each %$types ) {
         if ( 'HASH' eq ref $typedata ) {
             $typedata = MT::ArchiveType->new(%$typedata);
@@ -426,11 +426,11 @@ sub rebuild_content_categories {
             );
     }
     my %arg;
-    $arg{'sort'} = 'id';
+    $arg{'sort'}    = 'id';
     $arg{direction} = 'ascend';
-    $arg{offset} = $param{Offset} if $param{Offset};
-    $arg{limit}  = $param{Limit}  if $param{Limit};
-    my @caegory_set = MT::CategorySet->load( { blog_id => $blog->id } );
+    $arg{offset}    = $param{Offset} if $param{Offset};
+    $arg{limit}     = $param{Limit} if $param{Limit};
+    my @caegory_set     = MT::CategorySet->load( { blog_id => $blog->id } );
     my @category_set_id = map { $_->id } @caegory_set;
     my $cat_iter
         = MT::Category->load_iter(
@@ -496,7 +496,7 @@ sub _get_categories_for_rebuild {
     }
     else {
         $old_categories = {};
-        @field_ids = map { $_->{id} } @{ $ct->categories_fields };
+        @field_ids      = map { $_->{id} } @{ $ct->categories_fields };
     }
 
     my %categories_for_rebuild;
@@ -700,7 +700,7 @@ sub rebuild_content_data {
         ## Rebuild previous and next daily, weekly, and monthly archives;
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
-        my %at = map { $_ => 1 } split /,/, $blog->archive_type;
+        my %at    = map { $_ => 1 } split /,/, $blog->archive_type;
         my @db_at = grep {
             my $archiver = $mt->archiver($_);
             $archiver && $archiver->contenttype_date_based
@@ -864,7 +864,7 @@ sub _get_primary_category_of_content_data {
     my ($args) = @_;
     $args ||= {};
     my $cat_field_id = $args->{cat_field_id} or return;
-    my $cd_id = $args->{content_data_id};
+    my $cd_id        = $args->{content_data_id};
 
     my $obj_category = MT->model('objectcategory')->load(
         {   cf_id      => $cat_field_id,
@@ -1351,7 +1351,7 @@ sub rebuild_file {
         ## liberal directory permissions). So we have a config
         ## option to turn it off (NoTempFiles).
         my $use_temp_files = !$mt->{NoTempFiles};
-        my $temp_file = $use_temp_files ? "$file.new" : $file;
+        my $temp_file      = $use_temp_files ? "$file.new" : $file;
         unless ( defined $fmgr->put_data( $html, $temp_file ) ) {
             $timer->unpause if $timer;
             return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
@@ -2307,7 +2307,7 @@ sub publish_future_contents {
         MT->instance->request( '__published:' . $site->id, undef )
             if MT->instance->request( '__published:' . $site->id );
 
-        my @ts = MT::Util::offset_time_list( time, $site );
+        my @ts  = MT::Util::offset_time_list( time, $site );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
@@ -2420,7 +2420,7 @@ sub unpublish_past_contents {
         MT->instance->request( '__published:' . $site->id, undef )
             if MT->instance->request( '__published:' . $site->id );
 
-        my @ts = MT::Util::offset_time_list( time, $site );
+        my @ts  = MT::Util::offset_time_list( time, $site );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];

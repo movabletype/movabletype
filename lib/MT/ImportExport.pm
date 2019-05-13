@@ -32,7 +32,7 @@ sub import_contents {
     my $iter = $param{Iter};
     my $blog = $param{Blog}
         or return __PACKAGE__->error( MT->translate("No Blog") );
-    my $cb = $param{Callback} || sub { };
+    my $cb       = $param{Callback} || sub { };
     my $encoding = $param{Encoding};
 
     require MT::Permission;

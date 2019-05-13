@@ -432,8 +432,8 @@ BEGIN {
                         my $from   = $args->{from}   || '';
                         my $to     = $args->{to}     || '';
                         my $origin = $args->{origin} || '';
-                        $from =~ s/\D//g;
-                        $to =~ s/\D//g;
+                        $from   =~ s/\D//g;
+                        $to     =~ s/\D//g;
                         $origin =~ s/\D//g;
                         $from .= '000000' if $from;
                         $to   .= '235959' if $to;
@@ -518,7 +518,7 @@ BEGIN {
                             $from = undef unless $from =~ m/^\d{8}$/;
                             $to   = undef unless $to =~ m/^\d{8}$/;
                             $from =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
-                            $to =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
+                            $to   =~ s/^(\d{4})(\d{2})(\d{2})$/$1-$2-$3/;
                             $param
                                 = $from && $to
                                 ? {
@@ -687,7 +687,7 @@ BEGIN {
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $db_terms, $db_args ) = @_;
-                        my $col = $prop->col || $prop->type or die;
+                        my $col   = $prop->col || $prop->type or die;
                         my $value = $prop->normalized_value(@_);
 
                         if ( $col =~ /\./ ) {
@@ -1202,7 +1202,7 @@ BEGIN {
                     terms => sub {
                         my $prop = shift;
                         my ( $args, $load_terms, $load_args ) = @_;
-                        my $app = MT->app or return;
+                        my $app   = MT->app or return;
                         my $class = $prop->datasource;
                         my $col
                             = $class->has_column('author_id')
@@ -1254,11 +1254,11 @@ BEGIN {
                         my $query    = $args->{string};
                         my $and_or;
                         if ( 'contains' eq $option ) {
-                            $query = { like => "%$query%" };
+                            $query  = { like => "%$query%" };
                             $and_or = '-or';
                         }
                         elsif ( 'not_contains' eq $option ) {
-                            $query = { not_like => "%$query%" };
+                            $query  = { not_like => "%$query%" };
                             $and_or = '-and';
                         }
 
@@ -2622,7 +2622,7 @@ sub remove_compiled_template_files {
 
     foreach my $dir (@compile_dirs) {
         my $compile_glob = File::Spec->catfile( $dir, "*.php" );
-        my @files = glob($compile_glob);
+        my @files        = glob($compile_glob);
         foreach my $file (@files) {
             my $mod_time = $fmgr->file_mod_time($file);
             if ( $ttl < time - $mod_time ) {
@@ -2638,7 +2638,7 @@ sub remove_temporary_files {
 
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind  => 'TF', start => [ undef, time - 60 * 60 ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
     foreach my $f (@files) {
@@ -3321,7 +3321,7 @@ sub load_core_permissions {
                 'edit_new_site_config'       => 1,
                 'open_new_site_screen'       => 1,
                 'set_new_site_publish_paths' => 1,
-                }
+            }
 
         },
         'system.create_website' => {

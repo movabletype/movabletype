@@ -209,7 +209,7 @@ sub remove_revisions {
     my ($obj) = @_;
 
     my $rpkg = $obj->revision_pkg or return;
-    my $key = $obj->datasource . '_id';
+    my $key  = $obj->datasource . '_id';
     $rpkg->remove( { $key => $obj->id } );
 }
 

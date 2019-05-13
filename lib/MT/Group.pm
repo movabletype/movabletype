@@ -46,7 +46,7 @@ sub INACTIVE () {2}
 use Exporter;
 *import = \&Exporter::import;
 use vars qw(@EXPORT_OK %EXPORT_TAGS);
-@EXPORT_OK = qw(ACTIVE INACTIVE);
+@EXPORT_OK   = qw(ACTIVE INACTIVE);
 %EXPORT_TAGS = ( constants => [qw(ACTIVE INACTIVE)] );
 
 sub is_active { shift->status(@_) == ACTIVE; }
@@ -289,7 +289,7 @@ sub backup_plugin_cb {
 
     my $backuped_authors = ( $backuped_objs->{'MT::Author'} ||= [] );
     my %backuped_authors = map { ( $_ => 1 ) } @$backuped_authors;
-    my $out = '';
+    my $out              = '';
     my %authors_to_backup;
 
     if (@group_ids) {

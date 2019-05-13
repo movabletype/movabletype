@@ -112,7 +112,7 @@ sub purge_stale {
     my MT::Cache::Session $self = shift;
     my ($ttl) = @_;
     MT::Session->remove(
-        { kind => $self->{kind}, start => [ undef, time - $ttl ] },
+        { kind  => $self->{kind}, start => [ undef, time - $ttl ] },
         { range => { start => 1 } } );
     1;
 }

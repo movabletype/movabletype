@@ -16,7 +16,7 @@ use Sys::Hostname;
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (
-    Core     => [ 'Net::SMTPS',      'MIME::Base64' ],
+    Core     => [ 'Net::SMTPS', 'MIME::Base64' ],
     Auth     => ['Authen::SASL'],
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
@@ -221,8 +221,7 @@ sub _send_mt_smtp {
 
     return $class->error(
         MT->translate(
-            "Username and password is required for SMTP authentication."
-        )
+            "Username and password is required for SMTP authentication.")
         )
         if $auth
         and ( !$user or !$pass );

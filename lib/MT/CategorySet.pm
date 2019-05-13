@@ -28,7 +28,7 @@ __PACKAGE__->install_properties(
             blog_id => 1,
             name    => 1,
         },
-        defaults => { name => '', cat_count => 0, ct_count => 0 },
+        defaults      => { name => '', cat_count => 0, ct_count => 0 },
         child_of      => [ 'MT::Blog', 'MT::Website' ],
         audit         => 1,
         child_classes => ['MT::Category'],

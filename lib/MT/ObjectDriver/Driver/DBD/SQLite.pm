@@ -124,7 +124,7 @@ sub count {
     my $driver = shift;
     my ( $class, $terms, $args ) = @_;
 
-    my @joins = ( $args->{join}, @{ $args->{joins} || [] } );
+    my @joins  = ( $args->{join}, @{ $args->{joins} || [] } );
     my $select = 'COUNT(*)';
     for my $join (@joins) {
         if ( $join && $join->[3]->{unique} ) {

@@ -94,7 +94,7 @@ sub fields {
         {   name             => 'filePath',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
-                my $app = MT->instance;
+                my $app  = MT->instance;
                 my $user = $app->user or return;
 
                 if ( $user->is_superuser ) {

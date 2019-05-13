@@ -128,7 +128,7 @@ sub insert_from_sql {
     my @new_fields = keys %columns;
 
     # remove columns removed in new version
-    @fields_to = grep { exists $class_defs->{$_} } @fields_to;
+    @fields_to   = grep { exists $class_defs->{$_} } @fields_to;
     @fields_from = @fields_to;
 
     my $table_name = $class->table_name;
@@ -324,7 +324,7 @@ sub index_column_sql {
 
         # check to see if this lists our column in the list of
         # indexed columns
-        my $idx_info = $indexes->{$name};
+        my $idx_info    = $indexes->{$name};
         my $column_list = $idx_info->{columns} || [$name];
         if ( grep {$name} @$column_list ) {
 
@@ -350,7 +350,7 @@ sub index_column_sql {
 sub add_column_sql {
     my $ddl = shift;
     my ( $class, $name ) = @_;
-    my $sql = $ddl->column_sql( $class, $name );
+    my $sql        = $ddl->column_sql( $class, $name );
     my $table_name = $class->table_name;
     return "ALTER TABLE $table_name ADD $sql";
 }
@@ -358,7 +358,7 @@ sub add_column_sql {
 sub alter_column_sql {
     my $ddl = shift;
     my ( $class, $name ) = @_;
-    my $sql = $ddl->column_sql( $class, $name );
+    my $sql        = $ddl->column_sql( $class, $name );
     my $table_name = $class->table_name;
     return "ALTER TABLE $table_name MODIFY $sql";
 }

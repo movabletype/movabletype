@@ -67,7 +67,7 @@ sub archive_file {
 }
 
 sub archive_title {
-    my $obj = shift;
+    my $obj   = shift;
     my $stamp = ref $_[1] ? $_[1]->authored_on : $_[1];
     my ( $start, $end ) = start_end_week( $stamp, $_[0]->stash('blog') );
     MT::Template::Context::_hdlr_date( $_[0],

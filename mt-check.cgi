@@ -79,7 +79,7 @@ if ($cfg_path) {
 
 use File::Basename;
 my $script_name = basename($0);
-my $unsafe = ( $script_name =~ /^mt-check-unsafe.*$/ ) ? 1 : 0;
+my $unsafe      = ( $script_name =~ /^mt-check-unsafe.*$/ ) ? 1 : 0;
 if ($unsafe) {
     my @stats = stat($0);
     $unsafe = 0 if 60 * 10 < time() - $stats[10];    # ctime
@@ -480,11 +480,8 @@ my @CORE_REQ = (
         )
     ],
 
-    [   'HTML::Entities',
-        3.6.9, 1,
-        translate(
-            'HTML::Entities is required by CGI.pm'
-        )
+    [   'HTML::Entities', 3.6.9, 1,
+        translate('HTML::Entities is required by CGI.pm')
     ],
 
 );
@@ -707,8 +704,7 @@ my @CORE_OPT = (
     [   'Net::SMTP',
         0, 0,
         translate(
-            'Net::SMTP is required in order to send mail via an SMTP Server.'
-        )
+            'Net::SMTP is required in order to send mail via an SMTP Server.')
     ],
 
     [   'Authen::SASL',
@@ -786,8 +782,7 @@ my @CORE_OPT = (
     [   'Time::HiRes',
         0, 0,
         translate(
-            'This module is required for executing run-periodic-tasks.'
-        )
+            'This module is required for executing run-periodic-tasks.')
     ],
     [   'YAML::Syck',
         0, 0,
@@ -825,7 +820,7 @@ if ( $] < 5.008001 ) {    # our minimal requirement for support
 EOT
 }
 
-my $server = $ENV{SERVER_SOFTWARE};
+my $server   = $ENV{SERVER_SOFTWARE};
 my $inc_path = join "<br />\n", @INC;
 print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
@@ -842,11 +837,9 @@ if ($version) {
 </ul>
 INFO
 }
-eval {
-    require MT::Cloud::App::CMS;
-};
-if ( $@ ) {
-print_encode( trans_templ(<<INFO) );
+eval { require MT::Cloud::App::CMS; };
+if ($@) {
+    print_encode( trans_templ(<<INFO) );
 <ul id="path-info" class="list-unstyled">
 	<li><strong><__trans phrase="Current working directory:"></strong> <code>$cwd</code></li>
 	<li><strong><__trans phrase="MT home directory:"></strong> <code>$ENV{MT_HOME}</code></li>

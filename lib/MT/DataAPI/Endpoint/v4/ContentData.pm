@@ -360,7 +360,7 @@ sub _preview_common {
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load( { id => $preview_basename } );
+    my $sess          = $session_class->load( { id => $preview_basename } );
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 

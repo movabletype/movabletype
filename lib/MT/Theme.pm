@@ -67,7 +67,7 @@ sub new {
             delete $MT::Components{$id};
         }
         @MT::Components = grep { !$_->isa(__PACKAGE__) } @MT::Components;
-        %THEME_CACHE = ();
+        %THEME_CACHE    = ();
     }
 }
 
@@ -194,7 +194,7 @@ sub _load_from_themes_directory {
     require File::Spec;
     my ( $dir, $path );
     foreach my $base_dir (@dir_list) {
-        $dir = File::Spec->catdir( $base_dir, $theme_id );
+        $dir  = File::Spec->catdir( $base_dir, $theme_id );
         $path = File::Spec->catfile( $dir, 'theme.yaml' );
         last if -f $path;
     }
@@ -309,7 +309,7 @@ sub elements {
             theme => $theme,
             id    => $_,
             %{ $elements->{$_} },
-            )
+        )
         }
         sort { $eh->{$a}->{order} <=> $eh->{$b}->{order} }
         keys %$elements;
@@ -388,8 +388,8 @@ sub apply {
     MT->set_language($curr_lang);
 
     ## also do copy static files to mt-static directory.
-    my $src_dir = $theme->{static_path} || 'static';
-    my $src_path = File::Spec->catdir( $theme->path, $src_dir );
+    my $src_dir   = $theme->{static_path} || 'static';
+    my $src_path  = File::Spec->catdir( $theme->path, $src_dir );
     my $dest_path = File::Spec->catdir( MT->app->support_directory_path,
         'theme_static', $theme->id );
 
@@ -424,7 +424,7 @@ sub install_static_files {
         my ($suffix) = $name =~ m/^.*\.(\w+)$/;
         if ( $allowed{ lc $suffix } ) {
             my $rel = File::Spec->abs2rel( $dir, $src );
-            my $to = File::Spec->catdir( $dst, $rel );
+            my $to  = File::Spec->catdir( $dst, $rel );
             $fmgr->mkpath($to);
             my $to_file = File::Spec->catfile( $to, $filename );
             $fmgr->put( $name, $to_file, 'upload' )
@@ -587,7 +587,7 @@ sub _mk_thumbnail {
     }
     else {
         $original_file = $theme->{thumbnail_file};
-        $resize = 1 if $size ne 'large';
+        $resize        = 1 if $size ne 'large';
     }
     return unless $original_file;
     my $original_file_path

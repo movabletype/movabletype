@@ -9,7 +9,7 @@
 use strict;
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use MT::Bootstrap;
 use MT;
 
@@ -28,36 +28,38 @@ my $mt = MT->new() or die MT->errstr;
 
 die "This program must be run under Movable Type 4.\n"
     if $mt->version_number > 5.0;
-die "This program cannot be run if ObjectDriver is not 'Microsoft SQLServer.'\n"
+die
+    "This program cannot be run if ObjectDriver is not 'Microsoft SQLServer.'\n"
     if $mt->config->ObjectDriver !~ m/UMSSQLServer$/i;
 die "This program cannot be run if PublishCharset is utf-8.\n"
     if $mt->config->PublishCharset !~ m/utf-8/i;
 
-
 my $packages = $mt->registry('object_types');
-my @keys = keys %$packages;
+my @keys     = keys %$packages;
 my %packages;
 
-foreach my $class ( @keys ) {
+foreach my $class (@keys) {
     my $pkg = $packages->{$class};
     next if $packages{$pkg};
 
     eval "require $pkg;" or next;
     $packages{$pkg} = 1;
 
-    _verbose_print( "Migrating $class ..." );
+    _verbose_print("Migrating $class ...");
     my $iter = $pkg->load_iter();
     while ( my $obj = $iter->() ) {
-        my $data = $obj->{column_values};
-        my $cols = $obj->properties->{columns};
+        my $data     = $obj->{column_values};
+        my $cols     = $obj->properties->{columns};
         my $col_defs = $obj->column_defs;
         my $col_changed;
-        for my $col ( @$cols ) {
-            if ( $col_defs->{$col} && $col_defs->{$col}{type} =~ m/[text|string]/i ) {
-                my $v = $obj->column( $col );
+        for my $col (@$cols) {
+            if (   $col_defs->{$col}
+                && $col_defs->{$col}{type} =~ m/[text|string]/i )
+            {
+                my $v = $obj->column($col);
                 next unless $v;
 
-                $v = _decode( $v );
+                $v = _decode($v);
                 if ( defined $v ) {
                     $obj->column( $col, $v );
                     $col_changed = 1;
@@ -67,17 +69,16 @@ foreach my $class ( @keys ) {
 
         if ( $obj->has_meta ) {
             my @meta_columns = MT::Meta->metadata_by_class( ref $obj );
-            my @date_meta = grep {
-                   $_->{type} eq 'vchar'
-                || $_->{type} eq 'vchar_idx'
-            } @meta_columns;
-            META_FIELD: for my $f ( @date_meta ) {
+            my @date_meta
+                = grep { $_->{type} eq 'vchar' || $_->{type} eq 'vchar_idx' }
+                @meta_columns;
+        META_FIELD: for my $f (@date_meta) {
                 my $field = $f->{name};
                 my $value = $obj->$field;
                 next META_FIELD if !defined $value;
-                my $new_val = _decode( $value );
-                if( $new_val ) {
-                    $obj->$field( $new_val );
+                my $new_val = _decode($value);
+                if ($new_val) {
+                    $obj->$field($new_val);
                     $col_changed = 1;
                 }
             }
@@ -87,22 +88,20 @@ foreach my $class ( @keys ) {
         $obj->save if $col_changed && !$dry_run;
     }
 
-    _verbose_print( "done\n" );
+    _verbose_print("done\n");
 }
 
-_verbose_print( "finished\n" );
+_verbose_print("finished\n");
 
 sub _decode {
-    my ( $v ) = @_;
+    my ($v) = @_;
 
-    eval {
-        $v = Encode::decode( 'utf-8', $v );
-    };
+    eval { $v = Encode::decode( 'utf-8', $v ); };
     $@ ? undef : $v;
 }
 
 sub _verbose_print {
-    my ( $msg ) = @_;
+    my ($msg) = @_;
     return unless $verbose;
 
     print $msg;

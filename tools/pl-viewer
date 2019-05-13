@@ -3,7 +3,7 @@
 use strict;
 use Getopt::Long;
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use MT::Util::PerformanceData;
 
 GetOptions(

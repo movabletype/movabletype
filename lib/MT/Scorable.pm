@@ -85,7 +85,7 @@ sub set_score {
         object_id => $obj->id,
         object_ds => $obj->datasource,
     };
-    $term->{ip} = $ip if $ip && !$user;
+    $term->{ip}        = $ip       if $ip && !$user;
     $term->{author_id} = $user->id if $user;
 
     my $s = @{ $obj->_load_score_data($term) }[0];

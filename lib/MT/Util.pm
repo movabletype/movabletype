@@ -208,7 +208,7 @@ sub relative_date {
 
             # less than 1 day
             my $hours = int( $delta / 3600 );
-            my $min = int( ( $delta % 3600 ) / 60 );
+            my $min   = int( ( $delta % 3600 ) / 60 );
             if ($hours) {
                 return $future
                     ? MT->translate( "[quant,_1,hour,hours] from now",
@@ -226,7 +226,7 @@ sub relative_date {
         elsif ( $delta <= 604800 ) {
 
             # less than 1 week
-            my $days = int( $delta / 86400 );
+            my $days  = int( $delta / 86400 );
             my $hours = int( ( $delta % 86400 ) / 3600 );
             my $result;
             if ($days) {
@@ -264,7 +264,7 @@ sub relative_date {
 
             # less than 1 day
             my $hours = int( $delta / 3600 );
-            my $min = int( ( $delta % 3600 ) / 60 );
+            my $min   = int( ( $delta % 3600 ) / 60 );
             my $result;
             if ( $hours && $min ) {
                 $result
@@ -297,7 +297,7 @@ sub relative_date {
         elsif ( $delta <= 604800 ) {
 
             # less than 1 week
-            my $days = int( $delta / 86400 );
+            my $days  = int( $delta / 86400 );
             my $hours = int( ( $delta % 86400 ) / 3600 );
             my $result;
             if ( $days && $hours ) {
@@ -371,7 +371,7 @@ sub relative_date {
 
             # less than 1 day
             my $hours = int( $delta / 3600 );
-            my $min = int( ( $delta % 3600 ) / 60 );
+            my $min   = int( ( $delta % 3600 ) / 60 );
             my $result;
             if ( $hours && $min ) {
                 $result
@@ -404,7 +404,7 @@ sub relative_date {
         elsif ( $delta <= 604800 ) {
 
             # less than 1 week
-            my $days = int( $delta / 86400 );
+            my $days  = int( $delta / 86400 );
             my $hours = int( ( $delta % 86400 ) / 3600 );
             my $result;
             if ( $days && $hours ) {
@@ -471,11 +471,11 @@ sub format_ts {
         my $L  = $Languages{$lang};
         my @ts = @f{qw( Y m d H M S )}
             = map { $_ || 0 } unpack 'A4A2A2A2A2A2', $ts;
-        $f{w} = wday_from_ts( @ts[ 0 .. 2 ] );
-        $f{j} = yday_from_ts( @ts[ 0 .. 2 ] );
+        $f{w}   = wday_from_ts( @ts[ 0 .. 2 ] );
+        $f{j}   = yday_from_ts( @ts[ 0 .. 2 ] );
         $f{'y'} = substr $f{Y}, 2;
-        $f{b} = substr_wref $L->[1][ $f{'m'} - 1 ] || '', 0, 3;
-        $f{B} = $L->[1][ $f{'m'} - 1 ];
+        $f{b}   = substr_wref $L->[1][ $f{'m'} - 1 ] || '', 0, 3;
+        $f{B}   = $L->[1][ $f{'m'} - 1 ];
         if ( $lang eq 'ja' ) {
             $f{a} = substr $L->[0][ $f{w} ] || '', 0, 1;
         }
@@ -634,7 +634,7 @@ sub start_end_month {
 
 sub start_end_year {
     my ($ts) = @_;
-    my ($y) = unpack 'A4', $ts;
+    my ($y)  = unpack 'A4', $ts;
     my $start = sprintf "%04d0101000000", $y;
     return $start unless wantarray;
     my $end = sprintf "%04d1231235959", $y;
@@ -1250,7 +1250,7 @@ sub make_unique_category_basename {
         if $base eq '';    #FIXME when does this happen?
 
     my $cat_class = ref $cat;
-    my $terms = { category_set_id => $cat->category_set_id || 0 };
+    my $terms     = { category_set_id => $cat->category_set_id || 0 };
     return _get_basename( $cat_class, $base, $blog, $terms );
 }
 
@@ -1293,7 +1293,7 @@ sub _get_basename {
         $cache_key = sprintf '%s:%s:%s', 'BN', $class, $base;
     }
     my $column = $class eq 'MT::ContentData' ? 'identifier' : 'basename';
-    my $last = MT->request($cache_key);
+    my $last   = MT->request($cache_key);
     if ( defined $last ) {
         $last++;
         my $test = $class->load(
@@ -1353,7 +1353,7 @@ sub archive_file_for {
 sub strip_index {
     my ( $link, $blog ) = @_;
     my $index = MT->instance->config('IndexBasename');
-    my $ext = $blog->file_extension || '';
+    my $ext   = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
     $index .= $ext;
     if ( $link =~ /^(.*?)\/\Q$index\E(#.*)?$/ ) {
@@ -1883,7 +1883,7 @@ sub mark_odd_rows {
 );
 
 $Languages{en_US} = $Languages{en_us} = $Languages{"en-us"} = $Languages{en};
-$Languages{ja} = $Languages{jp};
+$Languages{ja}    = $Languages{jp};
 
 sub browser_language {
     my @browser_langs = ( $ENV{HTTP_ACCEPT_LANGUAGE} || '' ) =~ m{
@@ -2036,7 +2036,7 @@ sub start_background_task {
         while ( ( length $bin ) && ( $bin ne "\0" ) ) {
             ( $bin, $rem ) = divbindec( $bin, 10 );
             $result = $rem . $result;
-            $bin = substr( $bin, 1 ) if ( substr( $bin, 0, 1 ) eq "\0" );
+            $bin    = substr( $bin, 1 ) if ( substr( $bin, 0, 1 ) eq "\0" );
         }
         $result;
     }
@@ -2135,7 +2135,7 @@ sub perl_sha1_digest_base64 {
             $has_crypt_dsa = $@ ? 0 : 1;
         }
         if ( $has_crypt_dsa && !$param{ForcePerl} ) {
-            $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
+            $param{Key}       = bless $param{Key}, 'Crypt::DSA::Key';
             $param{Signature} = bless $param{Signature},
                 'Crypt::DSA::Signature';
             return Crypt::DSA->new->verify(%param);
@@ -2477,7 +2477,7 @@ sub get_newsbox_html {
 
     # allowed html
     my $spec = 'a href,* target style class id,ul,li,div,span,br';
-    $result = MT::Sanitize->sanitize( $result, $spec );
+    $result      = MT::Sanitize->sanitize( $result, $spec );
     $news_object = MT::Session->new();
     $news_object->set_values(
         {   id    => $kind,
@@ -2909,7 +2909,7 @@ sub build_upload_destination {
 
 sub asset_from_url {
     my ($image_url) = @_;
-    my $ua = MT->new_ua( { paranoid => 1, timeout => 10 } ) or return;
+    my $ua   = MT->new_ua( { paranoid => 1, timeout => 10 } ) or return;
     my $resp = $ua->get($image_url);
     return undef unless $resp->is_success;
     my $image = $resp->content;

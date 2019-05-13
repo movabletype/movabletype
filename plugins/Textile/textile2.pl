@@ -104,7 +104,7 @@ sub textile_2 {
         if ( $entry && $entry->id ) {
             my $link = $entry->permalink;
             $link =~ s/#.+$//;
-            $str =~ s/(<a .*?(?<=[ ])href=")(#fn(?:\d)+".*?>)/$1$link$2/g;
+            $str  =~ s/(<a .*?(?<=[ ])href=")(#fn(?:\d)+".*?>)/$1$link$2/g;
         }
     }
 
@@ -147,7 +147,7 @@ sub _new_textile {
 sub Textile {
     my ( $ctx, $args, $cond ) = @_;
     _init() unless $_initialized;
-    local $ctx->{__stash}{TextileObj} = _new_textile($ctx);
+    local $ctx->{__stash}{TextileObj}     = _new_textile($ctx);
     local $ctx->{__stash}{TextileOptions} = $args if keys %$args;
     my $str = $ctx->slurp;
     textile_2( $str, $ctx );

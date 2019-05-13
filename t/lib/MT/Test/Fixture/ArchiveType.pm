@@ -352,7 +352,7 @@ sub _template_type {
 
 sub _file_template {
     my $archiver = shift;
-    my $prefix = $archiver->name =~ /^ContentType/ ? "ct/" : "";
+    my $prefix   = $archiver->name =~ /^ContentType/ ? "ct/" : "";
     for my $archive_template ( @{ $archiver->default_archive_templates } ) {
         next unless $archive_template->{default};
         return $prefix . $archive_template->{template};
@@ -388,7 +388,7 @@ sub load_objs {
 
     my %objs;
     my @author_names = @{ $spec->{author} };
-    my @authors = MT::Author->load( { name => \@author_names } );
+    my @authors      = MT::Author->load( { name => \@author_names } );
     $objs{author} = { map { $_->name => $_ } @authors };
     $objs{author_id} = $authors[0]->id if @authors == 1;
 
@@ -424,7 +424,7 @@ sub load_objs {
     $objs{folder} = { map { $_->label => $_ } @folders };
 
     my @entry_names = map { $_->{basename} } @{ $spec->{entry} };
-    my @entries = MT::Entry->load(
+    my @entries     = MT::Entry->load(
         {   blog_id  => $blog_id,
             basename => \@entry_names,
         }
@@ -432,7 +432,7 @@ sub load_objs {
     $objs{entry} = { map { $_->basename => $_ } @entries };
 
     my @page_names = map { $_->{basename} } @{ $spec->{page} };
-    my @pages = MT::Page->load(
+    my @pages      = MT::Page->load(
         {   blog_id  => $blog_id,
             basename => \@page_names,
         }
@@ -447,7 +447,7 @@ sub load_objs {
     );
 
     my %category_set_map = map { $_->id => $_->name } @category_sets;
-    my @categories = MT::Category->load(
+    my @categories       = MT::Category->load(
         {   blog_id         => $blog_id,
             category_set_id => [ keys %category_set_map ],
         }

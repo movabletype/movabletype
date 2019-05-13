@@ -27,8 +27,8 @@ sub element_name { $ns_prefix ? $ns_prefix . ":entry" : 'entry' }
 sub _create_issued {
     my ( $ts, $blog ) = @_;
     my @co_list = unpack 'A4A2A2A2A2A2', $ts;
-    my $co = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", @co_list;
-    my $epoch = Time::Local::timegm(
+    my $co      = sprintf "%04d-%02d-%02dT%02d:%02d:%02d", @co_list;
+    my $epoch   = Time::Local::timegm(
         $co_list[5], $co_list[4],     $co_list[3],
         $co_list[2], $co_list[1] - 1, $co_list[0]
     );

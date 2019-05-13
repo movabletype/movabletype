@@ -207,7 +207,7 @@ sub import {
                 my $host = $ENV{SERVER_NAME} || $ENV{HTTP_HOST};
                 $host =~ s/:\d+//;
                 my $port = $ENV{SERVER_PORT};
-                my $uri = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
+                my $uri  = $ENV{REQUEST_URI} || $ENV{SCRIPT_NAME};
                 if ( $uri =~ m/(\/mt\.(f?cgi|f?pl)(\?.*)?)$/ ) {
                     my $script = $1;
                     my $ext    = $2;
@@ -227,7 +227,7 @@ sub import {
                         $uri =~ s/\Q$script\E//;
                         $uri .= $file;
 
-                        my $prot = $port == 443 ? 'https' : 'http';
+                        my $prot    = $port == 443 ? 'https' : 'http';
                         my $cgipath = "$prot://$host";
                         $cgipath .= ":$port"
                             unless $port == 443

@@ -174,7 +174,7 @@ sub upgrade_functions {
                     ( $_[0]->type == 1 )
                         && ( ( $_[0]->api_password || '' ) eq '' );
                 },
-                code => sub { $_[0]->api_password( $_[0]->password ) },
+                code  => sub { $_[0]->api_password( $_[0]->password ) },
                 label => 'Updating user web services passwords...',
             }
         },
@@ -231,8 +231,8 @@ sub upgrade_functions {
             updater       => {
                 type      => 'entry',
                 condition => sub { ( $_[0]->week_number || 0 ) < 54 },
-                code  => sub {1},
-                label => 'Updating entry week numbers...',
+                code      => sub {1},
+                label     => 'Updating entry week numbers...',
             }
         },
         'core_set_tag_permissions' => {

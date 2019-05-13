@@ -64,7 +64,7 @@ sub list_props {
                     return $opts->{asc_count};
                 }
                 else {
-                    my @ids = map { $_->id } @$objs;
+                    my @ids    = map { $_->id } @$objs;
                     my $c_iter = MT->model('association')->count_group_by(
                         { role_id => \@ids, },
                         { group   => ['role_id'], },
@@ -198,7 +198,7 @@ sub list_props {
 
 sub save {
     my $role = shift;
-    my $res = $role->SUPER::save(@_) or return;
+    my $res  = $role->SUPER::save(@_) or return;
 
     require MT::Association;
 
@@ -360,8 +360,7 @@ sub _default_roles {
         },
         {   name        => MT->translate('Content Designer'),
             description => MT->translate(
-                'Can manage content types, content data and category sets.'
-            ),
+                'Can manage content types, content data and category sets.'),
             perms => [
                 'manage_content_types', 'manage_content_data',
                 'manage_category_set'

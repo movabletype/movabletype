@@ -181,7 +181,7 @@ sub _system_permissions_bulk_from_object {
             my $perm;
             ( $perm->{id} = $key ) =~ s/^system\.//;
 
-            $perm->{order} = $perms->{$key}->{order};
+            $perm->{order}  = $perms->{$key}->{order};
             $perm->{can_do} = $obj->id ? $user_perms{$key} : undef;
 
             if ( exists $perms->{$key}->{inherit_from} ) {
@@ -229,7 +229,7 @@ sub _system_permissions_bulk_from_object {
 
 sub _system_permissions_type_to_object {
     my ( $hashes, $objs ) = @_;
-    my $app = MT->instance;
+    my $app  = MT->instance;
     my $user = $app->user or return;
 
     return if !$user->is_superuser;

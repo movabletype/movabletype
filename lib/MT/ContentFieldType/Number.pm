@@ -10,7 +10,7 @@ use warnings;
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
-    my $options = $field_data->{options};
+    my $options        = $field_data->{options};
     my $decimal_places = $options->{decimal_places} || 0;
     my $max_value
         = ( defined $options->{max_value} && $options->{max_value} ne '' )
@@ -22,7 +22,7 @@ sub field_html_params {
         : $app->config->NumberFieldMinValue;
 
     my $required = $options->{required} ? 'required' : '';
-    my $step = 1 / 10**$decimal_places;
+    my $step     = 1 / 10**$decimal_places;
 
     {   max      => qq{max="$max_value"},
         min      => qq{min="$min_value"},
@@ -40,7 +40,7 @@ sub ss_validator {
     my $options = $field_data->{options} || {};
 
     my $decimal_places = $options->{decimal_places} || 0;
-    my $field_label = $options->{label};
+    my $field_label    = $options->{label};
     my $max_value
         = ( defined $options->{max_value} && $options->{max_value} ne '' )
         ? $options->{max_value}
@@ -58,7 +58,7 @@ sub ss_validator {
     if ($decimal_places) {
         my ( $int, $frac ) = split /\./, $data;
         if ( length $frac > $decimal_places ) {
-            my $trimmed_frac = substr $frac, 0, $decimal_places;
+            my $trimmed_frac  = substr $frac, 0, $decimal_places;
             my $trimmed_value = "${int}.${trimmed_frac}";
             if ( $trimmed_value != $data ) {
                 return $app->translate(

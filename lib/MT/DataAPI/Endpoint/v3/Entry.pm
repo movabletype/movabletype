@@ -94,7 +94,7 @@ sub create {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $blog->id );
             if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
+                my @child_blogs    = @{ $blog->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }
@@ -174,7 +174,7 @@ sub update {
 
             # Restore order.
             my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
-            @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+            @update_cats    = map { $update_cats_hash{$_} } @cat_ids;
             $do_update_cats = 1;
         }
     }
@@ -193,7 +193,7 @@ sub update {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $blog->id );
             if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
+                my @child_blogs    = @{ $blog->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }

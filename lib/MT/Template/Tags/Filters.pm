@@ -85,7 +85,7 @@ sub _fltr_mteval {
     return $str unless $arg;
 
     my $builder = $ctx->stash('builder');
-    my $tokens = $builder->compile( $ctx, $str );
+    my $tokens  = $builder->compile( $ctx, $str );
     return $ctx->error( $builder->errstr ) unless defined $tokens;
     my $out = $builder->build( $ctx, $tokens );
     return $ctx->error( $builder->errstr ) unless defined $out;

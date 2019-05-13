@@ -31,7 +31,7 @@ sub set_unique_id {
     my ($obj) = @_;
     for my $i ( 1 .. $Max_retry_count ) {
         if ( $MT::DebugMode && $i > 1 ) {
-            my $class = MT->model( $obj->datasource );
+            my $class  = MT->model( $obj->datasource );
             my $obj_id = $obj->id || 0;
             warn "Try to generate unique_id of $class (ID:$obj_id) again";
         }

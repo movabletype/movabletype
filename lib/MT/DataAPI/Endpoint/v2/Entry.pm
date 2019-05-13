@@ -101,7 +101,7 @@ sub create {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $blog->id );
             if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
+                my @child_blogs    = @{ $blog->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }
@@ -179,7 +179,7 @@ sub update {
 
             # Restore order.
             my %update_cats_hash = map { +( $_->id => $_ ) } @update_cats;
-            @update_cats = map { $update_cats_hash{$_} } @cat_ids;
+            @update_cats    = map { $update_cats_hash{$_} } @cat_ids;
             $do_update_cats = 1;
         }
     }
@@ -198,7 +198,7 @@ sub update {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $blog->id );
             if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
+                my @child_blogs    = @{ $blog->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }
@@ -458,7 +458,7 @@ sub _check_import_parameters {
     }
     else {
         my $convert_breaks = $app->param('convert_breaks');
-        my %filter_keys = map { $_->{key} => 1 } @$text_filters;
+        my %filter_keys    = map { $_->{key} => 1 } @$text_filters;
         $filter_keys{1} = 1;
         if ( !$filter_keys{$convert_breaks} ) {
             return $app->error(
@@ -666,7 +666,7 @@ sub _preview_common {
 # TODO: Allow to make a preview content when Individual/Page mapping not found.
 # Currently, we cannot make preview content when templatemap could not be found.
     require MT::TemplateMap;
-    my $at = $entry->class eq 'page' ? 'Page' : 'Individual';
+    my $at       = $entry->class eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {   archive_type => $at,
             is_preferred => 1,
@@ -716,7 +716,7 @@ sub _preview_common {
     }
 
     my $session_class = MT->model('session');
-    my $sess = $session_class->load( { id => $preview_basename } );
+    my $sess          = $session_class->load( { id => $preview_basename } );
     return $app->error( $app->translate('Preview data not found.'), 404 )
         unless $sess;
 

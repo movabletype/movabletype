@@ -30,7 +30,7 @@ __PACKAGE__->install_properties(
 sub latest_touch {
     my $pkg = shift;
     my ( $blog_id, @types ) = @_;
-    my $user = grep { $_ eq 'author' } @types;
+    my $user   = grep { $_ eq 'author' } @types;
     my $latest = $pkg->load(
         { object_type => \@types,       blog_id   => $blog_id },
         { sort        => 'modified_on', direction => 'descend' }
@@ -56,7 +56,7 @@ sub touch {
         1900 + $y, $mo + 1, $d, $h, $m, $s );
     foreach my $type (@types) {
         my $rec = $pkg->get_by_key(
-            {   blog_id => ( $type eq 'author' ? 0 : $blog_id ),
+            {   blog_id     => ( $type eq 'author' ? 0 : $blog_id ),
                 object_type => $type
             }
         );

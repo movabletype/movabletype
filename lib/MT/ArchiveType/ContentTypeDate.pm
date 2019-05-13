@@ -180,7 +180,7 @@ sub dated_author_contents {
         }
     );
     my $dt_field_id = $map ? $map->dt_field_id : '';
-    my @contents = MT::ContentData->load(
+    my @contents    = MT::ContentData->load(
         {   blog_id   => $blog->id,
             author_id => $author->id,
             (   $content_type_id ? ( content_type_id => $content_type_id )
@@ -475,7 +475,7 @@ sub adjacent_archive_content_data {
                         {   content_data_id  => \'= cd_id',
                             content_field_id => $datetime_field_id,
                             value_datetime   => {
-                                op => $order eq 'descend' ? '<' : '>',
+                                op    => $order eq 'descend' ? '<' : '>',
                                 value => $ts,
                             },
                         },

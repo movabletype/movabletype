@@ -307,7 +307,7 @@ sub global_perms {
             }
         }
         if (@_) {
-            my $set = shift;
+            my $set   = shift;
             my @perms = grep { $_->[2] eq $set } @Perms;
             \@perms;
         }
@@ -449,7 +449,7 @@ sub can_do {
     return unless $self->permissions;
 
     my $action = shift;
-    my @perms = split /,/, $self->permissions;
+    my @perms  = split /,/, $self->permissions;
     for my $perm (@perms) {
         $perm =~ s/'(.+)'/$1/;
         return 1 if 'administer' eq $perm;
@@ -688,7 +688,7 @@ sub _static_rebuild {
         my $assoc = $obj;
         if ( $assoc->role_id && $assoc->blog_id ) {
             if ( $assoc->group_id ) {
-                my $grp = $assoc->group or return;
+                my $grp  = $assoc->group or return;
                 my $iter = $grp->user_iter;
                 while ( my $user = $iter->() ) {
                     my $perm = MT::Permission->get_by_key(
@@ -712,7 +712,7 @@ sub _static_rebuild {
         elsif ( $assoc->author_id && $assoc->group_id ) {
 
             # rebuild permissions for author
-            my $grp = $assoc->group or return;
+            my $grp       = $assoc->group or return;
             my $blog_iter = $grp->blog_iter;
             my @blogs;
             if ($blog_iter) {
@@ -796,7 +796,7 @@ sub load_same {
     my @roles = ();
     for my $key (@list) {
         $terms{permissions} = "%" . $key . "%";
-        $terms{id} = \@ids if scalar(@ids);
+        $terms{id}          = \@ids if scalar(@ids);
 
         my @tmp_roles = $pkg->load( \%terms, \%args );
         unless ( scalar @tmp_roles ) {
@@ -804,7 +804,7 @@ sub load_same {
             last;
         }
         delete $args{not};    # not is used only the first time
-        @ids = map { $_->id } @tmp_roles;
+        @ids   = map { $_->id } @tmp_roles;
         @roles = @tmp_roles;
     }
     return ( wantarray ? () : undef ) unless scalar(@roles);

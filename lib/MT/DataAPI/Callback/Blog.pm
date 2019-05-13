@@ -292,7 +292,7 @@ sub post_save {
     my $new_default_roles = $site_hash->{newCreatedUserRoles};
     if ( ref($new_default_roles) eq 'ARRAY' ) {
         my @hash_role_ids = grep {$_} map { $_->{id} } @$new_default_roles;
-        my @roles = MT->model('role')->load( { id => \@hash_role_ids } );
+        my @roles    = MT->model('role')->load( { id => \@hash_role_ids } );
         my @role_ids = map { $_->id } @roles;
 
         my @def = split ',', $app->config('DefaultAssignments');

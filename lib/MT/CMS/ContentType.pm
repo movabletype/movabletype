@@ -35,7 +35,7 @@ sub edit {
     return $app->return_to_dashboard( redirect => 1 )
         unless $app->blog;
 
-    my $id = $app->param('id') || undef;
+    my $id    = $app->param('id') || undef;
     my $class = $app->model('content_type');
 
     return $app->permission_denied
@@ -729,7 +729,7 @@ sub dialog_content_data_modal {
     if ($content_field_id) {
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
             my $options = $content_field->options;
-            $can_multi = $options->{multiple} ? 1 : 0;
+            $can_multi       = $options->{multiple} ? 1 : 0;
             $content_type_id = $content_field->related_content_type_id;
             if ( my $content_type = $content_field->related_content_type ) {
                 $content_type_name = $content_type->name;
@@ -786,7 +786,7 @@ sub dialog_list_content_data {
                         )
                     : (),
                 ),
-                can_multi => $content_field->options->{multiple} ? 1 : 0,
+                can_multi   => $content_field->options->{multiple} ? 1 : 0,
                 dialog_view => 1,
                 dialog      => $dialog,
                 no_insert   => $no_insert,
@@ -876,7 +876,7 @@ sub init_content_type {
     }
 
     my $core_tag_list_props = $core->registry( 'list_properties', 'tag' );
-    my $tag_list_props = MT->model('content_type')->make_tag_list_props;
+    my $tag_list_props      = MT->model('content_type')->make_tag_list_props;
     for my $key ( keys %$tag_list_props ) {
         $core_tag_list_props->{$key} = $tag_list_props->{$key};
     }

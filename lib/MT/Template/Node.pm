@@ -64,7 +64,7 @@ sub new {
 }
 
 sub nodeValue {
-    my $node = shift;
+    my $node  = shift;
     my $index = $node->[0] eq 'TEXT' ? EL_NODE_TEXT : EL_NODE_VALUE;
     $node->[$index] = shift if @_;
     $node->[$index];

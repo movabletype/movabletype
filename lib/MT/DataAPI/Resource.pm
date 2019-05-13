@@ -239,7 +239,7 @@ sub resource {
     {
         next unless $k;
         $resource_key = $k;
-        $res = $resources{$api_version}{$k} and last;
+        $res          = $resources{$api_version}{$k} and last;
     }
 
     return unless $res;

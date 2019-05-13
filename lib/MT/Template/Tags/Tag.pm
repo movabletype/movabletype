@@ -60,7 +60,7 @@ sub _tags_for_blog {
             #clear cached count
             $tag->{__entry_count} = 0 if exists $tag->{__entry_count};
         }
-        my %tags = map { $_->id => $_ } @tags;
+        my %tags      = map { $_->id => $_ } @tags;
         my $ext_terms = $class->terms_for_tags();
         $ext_terms->{content_type_id} = $content_type_id if $content_type_id;
 
@@ -96,7 +96,7 @@ sub _tags_for_blog {
 sub _tag_sort {
     my ( $tags, $column, $order ) = @_;
     $column ||= 'name';
-    $order ||= ( $column eq 'name' ? 'ascend' : 'descend' );
+    $order  ||= ( $column eq 'name' ? 'ascend' : 'descend' );
     no warnings;
     if ( $column eq 'rank' or $column eq 'count' ) {
         @$tags
@@ -352,7 +352,7 @@ sub _hdlr_tags {
     local $ctx->{__stash}{class_type}
         = $type eq 'content_type' ? 'cd' : $type;
     my $vars = $ctx->{__stash}{vars} ||= {};
-    my $i = 0;
+    my $i    = 0;
 
     foreach my $tag (@slice_tags) {
         $i++;

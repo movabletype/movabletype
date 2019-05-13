@@ -482,7 +482,7 @@ sub _set_stash {
         return ( undef, " this mapping is not for $ct_name" )
             unless $ct->id == $tmpl->content_type_id;
 
-        $stash{content} = $cd if $archiver->contenttype_based;
+        $stash{content}      = $cd if $archiver->contenttype_based;
         $stash{content_type} = $ct;
 
         $self->_update_map( $block, $map, $archiver, $objs, $ct, $cd,

@@ -103,8 +103,8 @@ __PACKAGE__->install_properties(
         primary_key     => 'id',
         audit           => 1,
         meta            => 1,
-        child_classes => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
-        child_of      => [ 'MT::Blog',              'MT::ContentType' ],
+        child_classes   => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
+        child_of        => [ 'MT::Blog', 'MT::ContentType' ],
     }
 );
 
@@ -185,7 +185,7 @@ sub to_hash {
         = sub { MT::Util::ts2iso( $self->blog_id, $self->authored_on ) };
 
     # Populate author info
-    my $auth = $self->author or return $hash;
+    my $auth      = $self->author or return $hash;
     my $auth_hash = $auth->to_hash;
     $hash->{"content_data.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 

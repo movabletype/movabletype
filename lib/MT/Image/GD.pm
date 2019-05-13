@@ -97,7 +97,7 @@ sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
     my $src = $image->{gd};
-    my $gd = GD::Image->new( $w, $h, 1 );    # True color image (24 bit)
+    my $gd  = GD::Image->new( $w, $h, 1 );    # True color image (24 bit)
     $gd->alphaBlending(0);
     $gd->saveAlpha(1);
     $gd->copyResampled( $src, 0, 0, 0, 0, $w, $h, $image->{width},

@@ -326,7 +326,7 @@ sub view_group {
         %param = %{ $obj->column_values };
         delete $param{external_id};
         $app->add_breadcrumb( $obj->name );
-        $param{nav_authors} = 1;
+        $param{nav_authors}    = 1;
         $param{status_enabled} = 1 if $obj->is_active;
         if ( $cfg->AuthenticationModule ne 'MT' ) {
             if ( $cfg->ExternalGroupManagement ) {
@@ -498,7 +498,7 @@ sub add_group {
         $app->translate( "Author load failed: [_1]", $author_id ) );
 
     if ($ids) {
-        my @id = split( /\,/, $ids );
+        my @id        = split( /\,/, $ids );
         my $grp_class = $app->model('group');
         foreach (@id) {
             my $group_id = $_;

@@ -136,7 +136,7 @@ sub extract {
     $path ||= MT->config->TempDir;
     for my $file ( $obj->files ) {
         my $file_enc = Encode::decode( 'Shift_JIS', $file );
-        my $f = File::Spec->catfile( $path, $file_enc );
+        my $f        = File::Spec->catfile( $path, $file_enc );
         $obj->{_arc}->extractMember( $file, MT::FileMgr::Local::_local($f) );
     }
     1;

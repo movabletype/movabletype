@@ -204,7 +204,7 @@ sub upgrade {
     my $install_mode;
     my %param;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
+    my $ver            = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
     if ( $] < 5.008001 ) {    # our minimal requirement for support
         $param{version_warning} = 1;
@@ -250,7 +250,7 @@ sub upgrade {
         $json_steps = MT::Util::to_json($steps);
     }
 
-    $param{up_to_date} = $json_steps ? 0 : 1;
+    $param{up_to_date}    = $json_steps ? 0 : 1;
     $param{initial_steps} = $json_steps;
     $param{mt_admin_url}
         = ( $app->config->AdminCGIPath || $app->config->CGIPath )
@@ -319,7 +319,7 @@ sub init_user {
                 return $app->build_page( 'install.tmpl', \%param );
             }
             else {
-                $initial_email = $app->param('email') || '';
+                $initial_email    = $app->param('email') || '';
                 $initial_nickname = $app->param('nickname');
                 if ( my $external_id = $app->param('external_id') ) {
                     $initial_external_id
@@ -820,7 +820,7 @@ sub main {
     my $app = shift;
     my ($param) = @_;
 
-    my $ver = $^V ? join( '.', unpack 'C*', $^V ) : $];
+    my $ver            = $^V ? join( '.', unpack 'C*', $^V ) : $];
     my $perl_ver_check = '';
     if ( $] < 5.008001 ) {    # our minimal requirement for support
         $param->{version_warning} = 1;

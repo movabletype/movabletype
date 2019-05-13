@@ -90,7 +90,7 @@ sub archive_title {
     my ( $ctx, $entry_or_ts ) = @_;
     my $stamp = ref $entry_or_ts ? $entry_or_ts->authored_on : $entry_or_ts;
     my $start = start_end_day( $stamp, $ctx->stash('blog') );
-    my $date = MT::Template::Context::_hdlr_date( $ctx,
+    my $date  = MT::Template::Context::_hdlr_date( $ctx,
         { ts => $start, 'format' => "%x" } );
     my $cat = $obj->display_name($ctx);
 
@@ -200,7 +200,7 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-        }
+    }
 }
 
 sub archive_group_entries {
@@ -211,7 +211,7 @@ sub archive_group_entries {
         ? sprintf( "%04d%02d%02d000000",
         $param{year}, $param{month}, $param{day} )
         : $ctx->{current_timestamp};
-    my $cat = $param{category} || $ctx->stash('archive_category');
+    my $cat   = $param{category} || $ctx->stash('archive_category');
     my $limit = $param{limit};
     $obj->dated_category_entries( $ctx, 'Category-Daily', $cat, $ts, $limit );
 }

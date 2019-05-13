@@ -192,7 +192,7 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-        }
+    }
 }
 
 sub archive_group_entries {
@@ -203,7 +203,7 @@ sub archive_group_entries {
         ? sprintf( "%04d%02d%02d000000", $param{year}, 1, 1 )
         : $ctx->{current_timestamp};
     my $author = $param{author} || $ctx->stash('author');
-    my $limit = $param{limit};
+    my $limit  = $param{limit};
     $obj->dated_author_entries( $ctx, 'Author-Yearly', $author, $ts, $limit );
 }
 

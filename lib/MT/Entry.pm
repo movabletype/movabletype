@@ -28,7 +28,7 @@ use MT::I18N qw( first_n_text const );
 use MT::EntryStatus qw(:all);
 
 use Exporter 'import';
-our @EXPORT_OK = qw( HOLD RELEASE FUTURE );
+our @EXPORT_OK   = qw( HOLD RELEASE FUTURE );
 our %EXPORT_TAGS = ( constants => [qw(HOLD RELEASE FUTURE)] );
 
 sub CATEGORY_CACHE_TIME () {604800}    ## 7 * 24 * 60 * 60 == 1 week
@@ -421,7 +421,7 @@ sub list_props {
                 my ( $objs, $app, $opts ) = @_;
                 return ( $opts->{bulk_cats}, $opts->{bulk_placements} )
                     if $opts->{bulk_cats};
-                my @entry_ids = map { $_->id } @$objs;
+                my @entry_ids  = map { $_->id } @$objs;
                 my @placements = MT->model('placement')->load(
                     {   entry_id   => \@entry_ids,
                         is_primary => 1,
@@ -440,7 +440,7 @@ sub list_props {
                 my %placements
                     = map { $_->entry_id => $_->category_id } @placements;
                 $opts->{bulk_placements} = \%placements;
-                my @cat_ids = map { $_->category_id } @placements;
+                my @cat_ids    = map { $_->category_id } @placements;
                 my @categories = MT->model( $prop->category_class )->load(
                     { id => \@cat_ids },
                     {   fetchonly => {
@@ -896,7 +896,7 @@ sub _nextprev {
         direction => $direction,
         terms => { blog_id => $obj->blog_id, class => $obj->class, %$terms },
         args  => $args,
-        by => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
+        by    => ( $class eq 'MT::Page' ) ? 'modified_on' : 'authored_on',
     );
     weaken( $obj->{$label} = $o ) if $o;
     return $o;
@@ -1124,7 +1124,7 @@ sub pinged_url_list {
     my $exclude_successes = $param{OnlyFailures};
     my $urls              = $entry->pinged_urls;
     return [] unless $urls && $urls =~ /\S/;
-    my %urls = map { $_ => 1 } split /\r?\n/, $urls;
+    my %urls    = map { $_ => 1 } split /\r?\n/, $urls;
     my %to_ping = map { $_ => 1 } @{ $entry->to_ping_url_list };
     foreach ( keys %to_ping ) {
         delete $urls{$_} if exists $urls{$_};
@@ -1174,7 +1174,7 @@ sub make_atom_id {
 # Deprecated (case #112321).
 sub sync_assets {
     my $entry = shift;
-    my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
+    my $text  = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
 
     require MT::ObjectAsset;
     my @assets = MT::ObjectAsset->load(
@@ -1219,7 +1219,7 @@ sub sync_assets {
 }
 
 sub save {
-    my $entry = shift;
+    my $entry  = shift;
     my $is_new = $entry->id ? 0 : 1;
 
     ## If there's no basename specified, create a unique basename.
@@ -1229,8 +1229,8 @@ sub save {
     }
 
     require bytes;
-    if ( bytes::length($entry->basename) > 246 ) {
-        return $entry->error( MT->translate("basename is too long." ) );
+    if ( bytes::length( $entry->basename ) > 246 ) {
+        return $entry->error( MT->translate("basename is too long.") );
     }
 
     if ( !$entry->id && !$entry->authored_on ) {
@@ -1334,7 +1334,7 @@ sub to_hash {
         = sub { MT::Util::ts2iso( $entry->blog_id, $entry->authored_on ) };
 
     # Populate author info
-    my $auth = $entry->author or return $hash;
+    my $auth      = $entry->author or return $hash;
     my $auth_hash = $auth->to_hash;
     $hash->{"entry.$_"} = $auth_hash->{$_} foreach keys %$auth_hash;
 
@@ -1496,7 +1496,7 @@ sub unpack_revision {
 
         if (@$rev_tags) {
             my $lookups = MT::Tag->lookup_multi($rev_tags);
-            my @tags = grep {defined} @$lookups;
+            my @tags    = grep {defined} @$lookups;
             $obj->{__tags}             = [ map { $_->name } @tags ];
             $obj->{__tag_objects}      = \@tags;
             $obj->{__missing_tags_rev} = 1
@@ -1537,7 +1537,7 @@ sub terms_for_tags {
 }
 
 sub attach_categories {
-    my $obj = shift;
+    my $obj  = shift;
     my @cats = @_ or return [];
 
     # Check whether or not all arguments are MT:Category objects.
@@ -1675,7 +1675,7 @@ sub update_categories {
 }
 
 sub attach_assets {
-    my $obj = shift;
+    my $obj    = shift;
     my @assets = @_ or return [];
 
     # Check whether or not all arguments are MT:Asset objects.

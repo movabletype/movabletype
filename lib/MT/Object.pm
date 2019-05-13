@@ -823,7 +823,7 @@ sub is_meta_column {
 
     $which ||= 'meta';
     my $which_fields = ( $which eq 'meta' ) ? 'fields' : 'summaries';
-    my $props = $obj->properties;
+    my $props        = $obj->properties;
     return unless $props->{ $which . '_installed' };
 
     my $meta = $obj->meta_pkg($which);
@@ -1463,7 +1463,7 @@ sub remove_children {
 
     my ($param) = @_;
     my $child_classes = $obj->properties->{child_classes} || {};
-    my @classes = keys %$child_classes;
+    my @classes       = keys %$child_classes;
     return 1 unless @classes;
 
     $param ||= {};
@@ -1504,7 +1504,7 @@ sub remove_children_multi {
 
     my ($terms) = @_;
     my $child_classes = $class->properties->{child_classes} || {};
-    my @classes = keys %$child_classes;
+    my @classes       = keys %$child_classes;
 
     my @ids = map { $_->id }
         $class->load( $terms, { fetchonly => ['id'], no_triggers => 1 } );
@@ -1636,7 +1636,7 @@ sub __parse_def {
         if ( $props->{primary_key} ) && ( $props->{primary_key} eq $col );
     $def{auto}       = 1 if $def =~ m/\bauto[_ ]increment\b/i;
     $def{revisioned} = 1 if $def =~ m/\brevisioned\b/i;
-    $def{default} = $props->{defaults}{$col}
+    $def{default}    = $props->{defaults}{$col}
         if exists $props->{defaults}{$col};
     \%def;
 }
@@ -1675,7 +1675,7 @@ sub cache_property {
 
 sub clear_cache {
     my $obj = shift;
-    my $oc = MT->request('object_cache') or return;
+    my $oc  = MT->request('object_cache') or return;
 
     my $pk = $obj->primary_key;
     $pk = join ":", @$pk if ref $pk;

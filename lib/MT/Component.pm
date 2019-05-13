@@ -492,7 +492,7 @@ sub _init_l10n_handle {
     $lang_tag =~ s/-/_/g;
     if ( $lang_tag ne 'en_us' ) {
         my $lexicon = $c->registry( 'l10n_lexicon', $lang_tag );
-        my $class = join '::', $base_class, $lang_tag;
+        my $class   = join '::', $base_class, $lang_tag;
         $c->_generate_l10n_module( $class, $en_us, $lexicon );
     }
     require Locale::Maketext;
@@ -546,7 +546,7 @@ sub _generate_l10n_module {
     }
     else {
         my $lexicon_code = $lexicon ? 'use vars qw( %Lexicon );' : '';
-        my $code = <<"CODE";
+        my $code         = <<"CODE";
 package $class;
 use base qw( $base );
 $lexicon_code

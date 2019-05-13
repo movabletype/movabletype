@@ -41,7 +41,7 @@ SQL
         if ( $sql
             =~ m/CREATE( UNIQUE)? INDEX (?:.+?) ON $table_name \((.+?)\)/i )
         {
-            $is_unique = $1 ? 'unique' eq lc($1) : 0;
+            $is_unique   = $1 ? 'unique' eq lc($1) : 0;
             $idx_columns = $2;
             for my $col ( split ',', $idx_columns ) {
                 $col =~ s/^\Q$field_prefix\E_//;
@@ -219,7 +219,7 @@ sub unique_constraint_sql {
                     unless exists( $idx_info->{unique} )
                     && $idx_info->{unique};
                 my $column_list = $idx_info->{columns} || [$name];
-                my $columns = '';
+                my $columns     = '';
                 foreach my $col (@$column_list) {
                     $columns .= ',' unless $columns eq '';
                     $columns .= $field_prefix . '_' . $col;

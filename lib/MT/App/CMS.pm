@@ -1380,7 +1380,7 @@ sub core_list_actions {
                 },
                 order     => 100,
                 condition => sub {
-                    my $app = MT->app;
+                    my $app       = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return 0 if $tmpl_type eq 'backup_templates';
                     my $blog = $app->blog;
@@ -1432,7 +1432,7 @@ sub core_list_actions {
 
                 },
                 condition => sub {
-                    my $app = MT->app;
+                    my $app       = MT->app;
                     my $tmpl_type = $app->param('filter_key') || '';
                     return
                           $tmpl_type eq 'system_templates' ? 0
@@ -1639,7 +1639,7 @@ sub core_user_actions {
 }
 
 sub _entry_label {
-    my $app = MT->instance;
+    my $app  = MT->instance;
     my $type = $app->param('type') || 'entry';
     $app->model($type)->class_label_plural;
 }
@@ -2363,7 +2363,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'entry' },
             permission => 'create_post',
-            view => [ "blog", "website" ],
+            view       => [ "blog", "website" ],
         },
         'page' => {
             id    => 'page',
@@ -2372,7 +2372,7 @@ sub core_compose_menus {
             mode  => 'view',
             args       => { _type => 'page' },
             permission => 'manage_pages',
-            view => [ "blog", 'website' ],
+            view       => [ "blog", 'website' ],
         },
         'asset' => {
             id         => 'asset',
@@ -2717,7 +2717,7 @@ sub set_default_tmpl_params {
     $param->{mt_feedback_url}   = $app->config('FeedbackURL');
     my $lang = lc MT->current_language || 'en_us';
     $param->{language_id} = ( $lang !~ /en[_-]us/ ) ? $lang : '';
-    $param->{mode} = $app->mode;
+    $param->{mode}        = $app->mode;
 
     my $blog_id = $app->param('blog_id') || 0;
     my $blog;
@@ -2834,7 +2834,7 @@ sub build_page {
         if ($blog_id) {
             if ($blog) {
                 my $scope_type = $blog->is_blog ? 'blog' : 'website';
-                my $class = $app->model($scope_type);
+                my $class      = $app->model($scope_type);
                 $param->{blog_name}          = $blog->name;
                 $param->{blog_id}            = $blog->id;
                 $param->{blog_url}           = $blog->site_url;
@@ -2995,7 +2995,7 @@ sub build_blog_selector {
         my $not_ids;
         push @$not_ids, @fav_websites;
         push @$not_ids, $blog->website->id if $blog && $blog->is_blog;
-        $terms{id} = { not => $not_ids } if scalar @$not_ids;
+        $terms{id}   = { not => $not_ids } if scalar @$not_ids;
         $args{limit} = $max_load
             - ( scalar @fav_websites );    # Don't load over 3 ~ 4 websites.
         my @sites = $website_class->load( \%terms, \%args );
@@ -3231,7 +3231,7 @@ sub build_menus {
                 }
             }
             $sub->{view_permit} = 1;
-            $sub->{'id'} = $sub_id;
+            $sub->{'id'}        = $sub_id;
             if ( my $cond = $sub->{condition} ) {
                 if ( !ref($cond) ) {
                     $cond = $sub->{condition}
@@ -3329,7 +3329,7 @@ sub build_menus {
             )
         {
             my $allowed = 0;
-            my @p = split /,/, $p;
+            my @p       = split /,/, $p;
             foreach my $p (@p) {
                 my $perm = 'can_' . $p;
                 $allowed = 1, last if ( $perms && $perms->$perm() ) || $admin;
@@ -3388,7 +3388,7 @@ sub build_menus {
                         )
                     {
                         my $allowed = 0;
-                        my @p = split /,/, $p;
+                        my @p       = split /,/, $p;
                         foreach my $p (@p) {
                             my $perm = 'can_' . $p;
                             $allowed = 1, last
@@ -3528,7 +3528,7 @@ sub build_user_menus {
     $active = '' unless defined $active;
     $param->{is_me} ||= $login_user->id == $user_id;
     my $reg_menus = $app->registry('user_menus');
-    my $menus = $app->filter_conditional_list( $reg_menus, $app, $param );
+    my $menus     = $app->filter_conditional_list( $reg_menus, $app, $param );
     my @menus;
 
     foreach my $key ( keys %$menus ) {
@@ -3566,7 +3566,7 @@ sub build_user_menus {
         else {
             $menu_item{label} = $item->{label};
         }
-        $menu_item{order} = $item->{order};
+        $menu_item{order}     = $item->{order};
         $menu_item{is_active} = $active eq $key ? 1 : 0;
         push @menus, \%menu_item;
     }
@@ -3668,10 +3668,10 @@ sub list_pref {
     }
 
     my $cookie = $app->cookie_val('mt_list_pref') || '';
-    my $mode = $app->mode;
+    my $mode   = $app->mode;
 
     # defaults:
-    my $d = $app->config->DefaultListPrefs || {};
+    my $d       = $app->config->DefaultListPrefs || {};
     my %default = (
         Rows       => 25,
         Format     => 'Compact',
@@ -3822,7 +3822,7 @@ sub show_error {
     # handle legacy scalar error string signature
     $param = { error => $param } unless ref($param) && ref($param) eq 'HASH';
     my $method_info = MT->request('method_info') || {};
-    my $mode = $app->mode;
+    my $mode        = $app->mode;
     if ( $app->param('xhr')
         or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
     {
@@ -3887,7 +3887,7 @@ sub show_error {
 }
 
 sub show_login {
-    my $app = shift;
+    my $app         = shift;
     my $method_info = MT->request('method_info') || {};
     if ( $app->param('xhr')
         or ( ( $method_info->{app_mode} || '' ) eq 'JSON' ) )
@@ -4099,7 +4099,7 @@ sub load_entry_prefs {
     if (   !exists $param{'disp_prefs_Default'}
         && !exists $param{'disp_prefs_Advanced'} )
     {
-        $param{'disp_prefs_Custom'} = 1;
+        $param{'disp_prefs_Custom'}      = 1;
         $param{disp_prefs_custom_fields} = \@custom_fields if @custom_fields;
     }
     if ( lc $pos eq 'both' ) {
@@ -4173,7 +4173,7 @@ sub autosave_session_obj {
 }
 
 sub autosave_object {
-    my $app = shift;
+    my $app      = shift;
     my $sess_obj = $app->autosave_session_obj(1) or return;
     $sess_obj->data('');
     my $type  = $app->param('_type');
@@ -4453,7 +4453,7 @@ sub rebuild_these {
         my $start_time = $app->param('start_time');
         $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;
-        my @set = keys %$rebuild_set;
+        my @set   = keys %$rebuild_set;
         my @rest;
         my $entries_per_rebuild = $app->config('EntriesPerRebuild');
         if ( scalar @set > $entries_per_rebuild ) {
@@ -4561,7 +4561,7 @@ sub rebuild_these_content_data {
         my $start_time = $app->param('start_time');
         $app->publisher->start_time($start_time) if $start_time;
         my %blogs = map { $_ => () } @blogs;
-        my @set = keys %$rebuild_set;
+        my @set   = keys %$rebuild_set;
         my @rest;
         my $entries_per_rebuild = $app->config('EntriesPerRebuild');
         if ( scalar @set > $entries_per_rebuild ) {
@@ -5027,7 +5027,7 @@ sub setup_editor_param {
         else {
             $rte = 'archetype';
         }
-        my $editors = $app->registry("richtext_editors");
+        my $editors  = $app->registry("richtext_editors");
         my $edit_reg = $editors->{$rte} || $editors->{archetype};
 
         my $rich_editor_tmpl;

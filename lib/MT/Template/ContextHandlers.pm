@@ -25,11 +25,11 @@ sub core_tags {
         block => {
 
             ## Core
-            Ignore    => sub {''},
-            'If?'     => \&MT::Template::Tags::Core::_hdlr_if,
-            'Unless?' => \&MT::Template::Tags::Core::_hdlr_unless,
-            'Else'    => \&MT::Template::Tags::Core::_hdlr_else,
-            'ElseIf'  => \&MT::Template::Tags::Core::_hdlr_elseif,
+            Ignore         => sub {''},
+            'If?'          => \&MT::Template::Tags::Core::_hdlr_if,
+            'Unless?'      => \&MT::Template::Tags::Core::_hdlr_unless,
+            'Else'         => \&MT::Template::Tags::Core::_hdlr_else,
+            'ElseIf'       => \&MT::Template::Tags::Core::_hdlr_elseif,
             'IfNonEmpty?'  => \&MT::Template::Tags::Core::_hdlr_if_nonempty,
             'IfNonZero?'   => \&MT::Template::Tags::Core::_hdlr_if_nonzero,
             Loop           => \&MT::Template::Tags::Core::_hdlr_loop,
@@ -393,7 +393,8 @@ sub core_tags {
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
-            ContentDataSearchScript => \&MT::Template::Tags::System::_hdlr_cd_search_script,
+            ContentDataSearchScript =>
+                \&MT::Template::Tags::System::_hdlr_cd_search_script,
             XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
             AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
@@ -913,7 +914,7 @@ sub core_tags {
 
             EntryRank => '$Core::MT::Template::Tags::Score::_hdlr_entry_rank',
             CommentRank => sub {''},
-            PingRank => sub {''},
+            PingRank    => sub {''},
             AssetRank => '$Core::MT::Template::Tags::Score::_hdlr_asset_rank',
             AuthorRank =>
                 '$Core::MT::Template::Tags::Score::_hdlr_author_rank',
@@ -1198,7 +1199,7 @@ sub _hdlr_pass_tokens_else { shift->else(@_) }
 
 sub build_date {
     my ( $ctx, $args ) = @_;
-    my $ts = $args->{ts} || $ctx->{current_timestamp};
+    my $ts  = $args->{ts} || $ctx->{current_timestamp};
     my $tag = $ctx->stash('tag');
     return $ctx->error(
         MT->translate(
@@ -1234,7 +1235,7 @@ sub build_date {
             60 * abs( $server_offset - int($server_offset) ) );
         require MT::DateTime;
         my $tz_secs = MT::DateTime->tz_offset_as_seconds($four_digit_offset);
-        my $ts_utc = Time::Local::timegm_nocheck( $s, $m, $h, $d, $mo, $y );
+        my $ts_utc  = Time::Local::timegm_nocheck( $s, $m, $h, $d, $mo, $y );
         $ts_utc -= $tz_secs;
         ( $s, $m, $h, $d, $mo, $y ) = gmtime($ts_utc);
         $y += 1900;
@@ -1276,7 +1277,7 @@ sub build_date {
                 =~ /(\d\d\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)[^\d]?(\d\d)/;
             $mo--;
             my $fds = format_ts( $args->{'format'}, $ts, $blog, $lang );
-            my $js = <<EOT;
+            my $js  = <<EOT;
 <script type="text/javascript">
 /* <![CDATA[ */
 document.write(mtRelativeDate(new Date($y,$mo,$d,$h,$m,$s), '$fds'));
@@ -2043,7 +2044,7 @@ currently in context.
 sub _hdlr_loop {
     my ( $ctx, $args, $cond ) = @_;
     my $name = $args->{name} || $args->{var};
-    my $var = $ctx->var($name);
+    my $var  = $ctx->var($name);
     return ''
         unless $var && ( ( ref($var) eq 'ARRAY' ) && ( scalar @$var ) )
         || ( ( ref($var) eq 'HASH' ) && ( scalar( keys %$var ) ) );
@@ -2407,7 +2408,7 @@ Then later:
 
 sub _hdlr_set_hashvar {
     my ( $ctx, $args ) = @_;
-    my $tag = lc $ctx->stash('tag');
+    my $tag  = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
     if ( $name =~ m/^\$/ ) {
         $name = $ctx->var($name);
@@ -2478,7 +2479,7 @@ for the template variable.
 
 sub _hdlr_set_var {
     my ( $ctx, $args ) = @_;
-    my $tag = lc $ctx->stash('tag');
+    my $tag  = lc $ctx->stash('tag');
     my $name = $args->{name} || $args->{var};
 
     return $ctx->error(
@@ -2938,7 +2939,7 @@ sub _hdlr_get_var {
 
                 # Pass through SetVarTemplate arguments as variables
                 # so that they do not affect the global stash
-                my $vars = $ctx->{__stash}{vars} ||= {};
+                my $vars  = $ctx->{__stash}{vars} ||= {};
                 my @names = keys %$args;
                 my @var_names;
                 push @var_names, lc $_ for @names;
@@ -3278,7 +3279,7 @@ sub _hdlr_app_widget {
             . $blog->id . q{" />};
         local $vars->{blog_id} = $blog->id;
     }
-    my $insides = $ctx->slurp( $args, $cond );
+    my $insides     = $ctx->slurp( $args, $cond );
     my $return_args = $app->make_return_args;
     $return_args = encode_html($return_args);
     my $cgi = $app->uri;
@@ -3369,7 +3370,7 @@ sub _hdlr_app_statusmsg {
     $class =~ s/\berror\b/danger/;
 
     my $hidden = $args->{hidden};
-    my $style = $hidden ? ' style="display: none;"' : '';
+    my $style  = $hidden ? ' style="display: none;"' : '';
 
     my $msg     = $ctx->slurp;
     my $rebuild = $args->{rebuild} || '';
@@ -3401,7 +3402,10 @@ sub _hdlr_app_statusmsg {
         )
         )
     {
-        $rebuild = '' if $rebuild ne 'cfg_prefs' && $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild = ''
+            if $rebuild ne 'cfg_prefs'
+            && $blog
+            && $blog->custom_dynamic_templates eq 'all';
         $rebuild
             = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'cfg_prefs';
@@ -3560,7 +3564,7 @@ sub _hdlr_app_listing {
     my $type = $args->{type} || $ctx->var('object_type');
     my $class;
     $class = MT->model($type) if $type;
-    my $loop = $args->{loop} || 'object_loop';
+    my $loop     = $args->{loop} || 'object_loop';
     my $loop_obj = $ctx->var($loop);
 
     unless ( ( ref($loop_obj) eq 'ARRAY' ) && (@$loop_obj) ) {
@@ -4488,7 +4492,7 @@ L<IncludeBlock> tag. If unassigned, the "contents" variable is used.
         local $ctx->{__stash}{vars}{ lc $name } = sub {
             local $ctx->{__stash}{vars}{ lc $name } = $contents;
             my $builder = $ctx->stash('builder');
-            my $html = $builder->build( $ctx, $tokens, $cond );
+            my $html    = $builder->build( $ctx, $tokens, $cond );
             die $ctx->error( $builder->errstr ) unless defined $html;
             return $html;
         };
@@ -4627,7 +4631,7 @@ B<Example:> Passing Parameters to a Template Module
         MT::Template::Context::_preprocess_multiblog(@_);
 
         # Pass through include arguments as variables to included template
-        my $vars = $ctx->{__stash}{vars} ||= {};
+        my $vars  = $ctx->{__stash}{vars} ||= {};
         my @names = keys %$arg;
         my @var_names;
         push @var_names, lc $_ for @names;
@@ -4947,7 +4951,7 @@ B<Example:> Passing Parameters to a Template Module
                 "You cannot include a file with this name: $base_filename");
         }
 
-        my $blog_id = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
+        my $blog_id  = $arg->{blog_id} || $ctx->{__stash}{blog_id} || 0;
         my $stash_id = 'template_file::' . $blog_id . '::' . $file;
         return $ctx->error( "Recursion attempt on file: [_1]", $file )
             if $include_stack{$stash_id};
@@ -5170,7 +5174,7 @@ sub _hdlr_section {
                     if ( my $wrap_tag = $args->{html_tag} ) {
                         my $id = $args->{id};
                         $id = " id=\"$id\"" if $id;
-                        $id = '' unless defined $id;
+                        $id  = '' unless defined $id;
                         $out = "<$wrap_tag$id>" . $out . "</$wrap_tag>";
                     }
                     return $out;
@@ -5207,7 +5211,7 @@ sub _hdlr_section {
     if ( my $wrap_tag = $args->{html_tag} ) {
         my $id = $args->{id};
         $id = " id=\"$id\"" if $id;
-        $id = '' unless defined $id;
+        $id  = '' unless defined $id;
         $out = "<$wrap_tag$id>" . $out . "</$wrap_tag>";
     }
     return $out;
@@ -5378,7 +5382,7 @@ sub _hdlr_canonical_link {
     my ( $ctx, $args ) = @_;
 
     my $handler = $ctx->handler_for('canonicalurl');
-    my $url = $handler->invoke( $ctx, $args ) or return '';
+    my $url     = $handler->invoke( $ctx, $args ) or return '';
 
     '<link rel="canonical" href="' . encode_html($url) . '" />';
 }
@@ -5555,7 +5559,7 @@ setting as a default.
 sub _hdlr_sys_date {
     my ( $ctx, $args ) = @_;
     unless ( $args->{ts} ) {
-        my $t = time;
+        my $t  = time;
         my @ts = offset_time_list( $t, $ctx->stash('blog_id') );
         $args->{ts} = sprintf "%04d%02d%02d%02d%02d%02d",
             $ts[5] + 1900, $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
@@ -6296,7 +6300,7 @@ B<Example:>
             ,    # year/month, used as default archive map
 
         );
-        $format =~ s!%y/%m!%_Z!g               if defined $format;
+        $format =~ s!%y/%m!%_Z!g if defined $format;
         $format =~ s!%([_-]?[A-Za-z])!$f{$1}!g if defined $format;
 
         # now build this template and return result

@@ -52,7 +52,7 @@ sub publish_common {
         $app->multi_param( 'blog_ids', split ',', $v );
     }
     my $start_time = $app->param('start_time');
-    my %ids = map { $_ => 1 }
+    my %ids        = map { $_ => 1 }
         grep {m/\A\d+\z/o} map { split ',', $_ } $app->multi_param('ids');
 
     $rebuild_these_sub->(

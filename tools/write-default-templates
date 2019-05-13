@@ -2,7 +2,7 @@
 use strict;
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use MT;
 use MT::Util qw( encode_html dirify );
 
@@ -13,15 +13,17 @@ my $tmpl = do 'lib/MT/default-templates.pl';
 print "<ul>\n";
 for my $t (@$tmpl) {
     next if $t->{name} eq 'Stylesheet';
-    printf qq(<li><a href="#%s">%s</a></li>\n), dirify($t->{name}), $t->{name};
+    printf qq(<li><a href="#%s">%s</a></li>\n), dirify( $t->{name} ),
+        $t->{name};
 }
 print "</ul>\n\n";
 
 print "\n<form>\n\n";
 for my $t (@$tmpl) {
     next if $t->{name} eq 'Stylesheet';
-    $t->{text} = $mt->translate_templatized($t->{text});
-    printf <<HTML, dirify($t->{name}), $t->{name}, encode_html($t->{text});
+    $t->{text} = $mt->translate_templatized( $t->{text} );
+    printf
+        <<HTML, dirify( $t->{name} ), $t->{name}, encode_html( $t->{text} );
 <div class="template">
 <a name="%s"><h4>%s</h4></a>
 <textarea cols="60" name="text" rows="20" wrap="virtual">

@@ -192,7 +192,7 @@ sub init_time {
     $CORE_TIME = time;
 
     no warnings 'redefine';
-    *CORE::GLOBAL::time = sub {$CORE_TIME};
+    *CORE::GLOBAL::time  = sub {$CORE_TIME};
     *CORE::GLOBAL::sleep = sub { $CORE_TIME += shift };
 }
 
@@ -262,7 +262,7 @@ sub init_memcached {
         return $self;
     };
     *MT::Memcached::is_available = sub {1};
-    *MT::Memcached::get = sub {
+    *MT::Memcached::get          = sub {
         my $self = shift;
         my ($key) = @_;
         $MEMCACHED_SEARCHED->{$key} = 1;
@@ -1998,7 +1998,7 @@ sub has_php {
     my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
     my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
     $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
-    if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
+    if ( MT->config->ObjectDriver =~ /u?mssqlserver/i ) {
         my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
         $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
     }

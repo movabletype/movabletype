@@ -21,7 +21,7 @@ sub cms_pre_load_filtered_list {
     }
 
     my $blog_id = exists $terms->{blog_id} ? delete $terms->{blog_id} : undef;
-    my $args = $load_options->{args};
+    my $args    = $load_options->{args};
     $args->{joins} ||= [];
 
     push @{ $args->{joins} },

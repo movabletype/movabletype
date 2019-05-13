@@ -147,7 +147,7 @@ sub _generate_code {
     # our acceptable characters
     foreach my $i ( 0 .. ( $len - 1 ) ) {
         my $byte = ord( pack( 'H2', substr( $genval, $i * 2, 2 ) ) );
-        my $x = ( $byte & 31 );
+        my $x    = ( $byte & 31 );
 
         $code .= substr( READABLECHARS(), $byte & 31, 1 );
     }

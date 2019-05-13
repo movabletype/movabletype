@@ -13,7 +13,7 @@ use MT::Memcached;
 sub new {
     my $class = shift;
     my (%param) = @_;
-    $param{ttl} ||= 0;
+    $param{ttl}       ||= 0;
     $param{memcached} ||= MT::Memcached->instance;
     my $self = bless \%param, $class;
     return $self;

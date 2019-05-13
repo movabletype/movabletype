@@ -93,7 +93,7 @@ __PACKAGE__->install_properties(
         datasource  => 'rebuild_trigger',
         primary_key => 'id',
         audit       => 1,
-        child_of => [ 'MT::Blog', 'MT::Website' ],
+        child_of    => [ 'MT::Blog', 'MT::Website' ],
     }
 );
 
@@ -108,7 +108,7 @@ sub class_label {
 sub get_config_value {
     my $self = shift;
     my ( $var, $blog_id ) = @_;
-    my $target_blog = MT->model('blog')->load($blog_id);
+    my $target_blog    = MT->model('blog')->load($blog_id);
     my $target_blog_id = $var == TARGET_BLOG() ? $blog_id : 0;
     my @rebuild_triggers
         = MT->model('rebuild_trigger')
@@ -131,7 +131,7 @@ sub get_config_value {
 
         my $trigger
             = type_text( $rt->object_type ) . '_' . event_text( $rt->event );
-        my $action = action_text( $rt->action );
+        my $action          = action_text( $rt->action );
         my $content_type_id = $rt->ct_id ? $rt->ct_id : 0;
 
         foreach my $blog_id (@blog_ids) {
@@ -183,7 +183,7 @@ sub post_content_save {
 sub post_content_pub {
     my $self = shift;
     my ( $cb, $app, $content ) = @_;
-    my $blog_id = $content->blog_id;
+    my $blog_id  = $content->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
@@ -207,7 +207,7 @@ sub post_content_pub {
 sub post_content_unpub {
     my $self = shift;
     my ( $cb, $app, $content ) = @_;
-    my $blog_id = $content->blog_id;
+    my $blog_id  = $content->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
@@ -406,7 +406,7 @@ sub post_entries_bulk_save {
 sub post_entry_save {
     my $self = shift;
     my ( $cb, $app, $entry ) = @_;
-    my $blog_id = $entry->blog_id;
+    my $blog_id  = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
@@ -431,7 +431,7 @@ sub post_entry_save {
 sub post_entry_pub {
     my $self = shift;
     my ( $cb, $app, $entry ) = @_;
-    my $blog_id = $entry->blog_id;
+    my $blog_id  = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {
@@ -452,7 +452,7 @@ sub post_entry_pub {
 sub post_entry_unpub {
     my $self = shift;
     my ( $cb, $app, $entry ) = @_;
-    my $blog_id = $entry->blog_id;
+    my $blog_id  = $entry->blog_id;
     my @blog_ids = $blog_id ? ( $blog_id, 0 ) : (0);
 
     my $code = sub {

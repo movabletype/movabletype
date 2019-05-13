@@ -19,7 +19,7 @@ use MT::Upgrade;
 sub usage {"\$ $0 [--dryrun] [--sql] [--name <name>]"}
 
 sub help {
-    return <<'HELP'
+    return <<'HELP';
   Installs or upgrades a database to the current MT schema.
   --quiet          Stop progress reports.
   --dryrun         Determine the upgrade steps required without
@@ -48,9 +48,8 @@ HELP
 }
 
 my ( $quiet, $dryrun, $name, $sqlonly );
-my ($username,   $password,         $nickname,
-    $email,      $use_system_email, $preferred_language,
-);
+my ( $username, $password, $nickname,
+    $email, $use_system_email, $preferred_language, );
 
 sub options {
     return (
@@ -152,6 +151,7 @@ sub main {
             User      => $new_user,
         );
         exit( $updated ? 0 : 1 ) if $dryrun;
+
         if ($use_system_email) {
             MT->config->set_internal( EmailAddressMain => $email, 1 );
             MT->config->save_config;

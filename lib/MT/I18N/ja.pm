@@ -140,7 +140,7 @@ sub wrap_text_encode {
         }
         elsif ( substr( $text, $i, 1 ) =~ /[\n\r]/ ) {
             $str = substr( $text, $i, 1 );
-            $b = 0;
+            $b   = 0;
         }
         elsif ( ord( substr( $text, $i, 1 ) ) < 0x80 ) {
             $str = substr( $text, $i, 1 );

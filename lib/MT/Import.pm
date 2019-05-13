@@ -17,7 +17,7 @@ use Symbol;
 
 sub new {
     my $class = shift;
-    my $obj = bless {}, $class;
+    my $obj   = bless {}, $class;
     $obj->init(@_);
     $obj;
 }
@@ -36,7 +36,7 @@ sub importer {
 }
 
 sub init {
-    my $self = shift;
+    my $self      = shift;
     my $importers = MT->instance->registry("import_formats") || {};
     %Importers = %$importers;
 }

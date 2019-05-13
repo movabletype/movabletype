@@ -70,7 +70,7 @@ our %fields = (
             my ( $objs, $hashes ) = @_;
 
             my @author_ids = grep {$_} map { $_->created_by } @$objs;
-            my %authors = ();
+            my %authors    = ();
             my @authors
                 = @author_ids
                 ? MT->model('author')->load( { id => \@author_ids, } )
@@ -79,7 +79,7 @@ our %fields = (
 
             my $size = scalar(@$objs);
             for ( my $i = 0; $i < $size; $i++ ) {
-                my $obj = $objs->[$i];
+                my $obj    = $objs->[$i];
                 my $author = $authors{ $obj->created_by || 0 } or next;
                 $hashes->[$i]{createdBy}
                     = MT::DataAPI::Resource->from_object( $author,
@@ -93,7 +93,7 @@ our %fields = (
             my ( $objs, $hashes ) = @_;
 
             my @author_ids = grep {$_} map { $_->modified_by } @$objs;
-            my %authors = ();
+            my %authors    = ();
             my @authors
                 = @author_ids
                 ? MT->model('author')->load( { id => \@author_ids, } )
@@ -102,7 +102,7 @@ our %fields = (
 
             my $size = scalar(@$objs);
             for ( my $i = 0; $i < $size; $i++ ) {
-                my $obj = $objs->[$i];
+                my $obj    = $objs->[$i];
                 my $author = $authors{ $obj->modified_by || 0 } or next;
                 $hashes->[$i]{modifiedBy}
                     = MT::DataAPI::Resource->from_object( $author,

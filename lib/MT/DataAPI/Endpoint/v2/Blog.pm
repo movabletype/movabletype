@@ -20,7 +20,7 @@ sub list {
     my ( $app, $endpoint ) = @_;
 
     my %terms = ( class => '*' );
-    my $res = filtered_list( $app, $endpoint, 'blog', \%terms ) or return;
+    my $res   = filtered_list( $app, $endpoint, 'blog', \%terms ) or return;
 
     +{  totalResults => $res->{count} + 0,
         items =>
@@ -34,7 +34,7 @@ sub list_by_parent {
     my ($blog) = context_objects(@_) or return;
 
     my %terms = ( class => 'blog', parent_id => $blog->id );
-    my $res = filtered_list( $app, $endpoint, 'blog', \%terms ) or return;
+    my $res   = filtered_list( $app, $endpoint, 'blog', \%terms ) or return;
 
     +{  totalResults => $res->{count} + 0,
         items =>
@@ -299,7 +299,7 @@ sub delete {
 
 sub _generate_commenter_authenticators {
     my @authenticators = qw( MovableType );
-    my @default_auth = split /,/, MT->config('DefaultCommenterAuth');
+    my @default_auth   = split /,/, MT->config('DefaultCommenterAuth');
     foreach my $auth (@default_auth) {
         my $a = MT->commenter_authenticator($auth);
         if ( !defined $a

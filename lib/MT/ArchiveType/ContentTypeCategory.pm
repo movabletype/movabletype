@@ -214,7 +214,7 @@ sub archive_group_contents {
 
     my $limit = $param->{limit};
     $limit = 0 if defined $limit && $limit eq 'none';
-    my $c = $ctx->stash('archive_category') || $ctx->stash('category');
+    my $c   = $ctx->stash('archive_category') || $ctx->stash('category');
     my $map = $obj->_get_preferred_map(
         {   blog_id         => $ctx->stash('blog')->id,
             content_type_id => $content_type_id,

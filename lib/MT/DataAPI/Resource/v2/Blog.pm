@@ -99,7 +99,7 @@ sub fields {
                 my ($obj) = @_;
                 return if !$obj->id;
 
-                my $app = MT->instance;
+                my $app  = MT->instance;
                 my $user = $app->user or return;
 
                 return $user->permissions( $obj->id )
@@ -356,7 +356,7 @@ sub fields {
         },
         {   name        => 'pageCustomPrefs',
             from_object => sub {
-                my $app = MT->instance;
+                my $app        = MT->instance;
                 my $pref_param = $app->load_entry_prefs( { type => 'page' } );
                 my @fields;
                 for my $f ( @{ $pref_param->{disp_prefs_default_fields} } ) {

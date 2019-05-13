@@ -210,7 +210,7 @@ sub save_config {
     my ( $app, $obj ) = @_;
     my $plugin = plugin();
 
-    my $scope = $obj ? ( 'blog:' . $obj->id ) : 'system';
+    my $scope  = $obj ? ( 'blog:' . $obj->id ) : 'system';
     my $config = $plugin->get_config_hash($scope);
 
     my $old_client_id  = $config->{client_id}  || '';
@@ -334,7 +334,7 @@ sub select_profile {
                         label       => $_->{name},
                         link        => $_->{websiteUrl},
                         description => $_->{webPropertyId},
-                        }
+                    }
                 } @$list
             ],
             complete_url => $app->uri(

@@ -74,8 +74,8 @@ sub list_props {
                 my $edit_link = $app->uri(
                     mode => 'view',
                     args => {
-                        _type => $type eq 'user' ? 'author' : 'group',
-                        id => $obj->$type->id,
+                        _type   => $type eq 'user' ? 'author' : 'group',
+                        id      => $obj->$type->id,
                         blog_id => 0,
                     },
                 );
@@ -119,11 +119,11 @@ sub list_props {
                     (     $a->type == MT::Association::USER_BLOG_ROLE()
                         ? $a->user->name
                         : $a->group->name
-                        ) cmp(
+                    ) cmp(
                         $b->type == MT::Association::USER_BLOG_ROLE()
                         ? $b->user->name
                         : $b->group->name
-                        )
+                    )
                 } @$objs;
             },
             sort => 0,
@@ -202,11 +202,11 @@ sub list_props {
                     (     $a->type == MT::Association::USER_BLOG_ROLE()
                         ? $a->user->name
                         : $a->group->name
-                        ) cmp(
+                    ) cmp(
                         $b->type == MT::Association::USER_BLOG_ROLE()
                         ? $b->user->name
                         : $b->group->name
-                        )
+                    )
                 } @$objs;
             },
         },
@@ -265,7 +265,7 @@ sub list_props {
                 my $prop = shift;
                 my ( $objs, $app ) = @_;
                 my %blog_ids = map { $_->blog_id => 1 } @$objs;
-                my @blogs = MT->model('blog')->load(
+                my @blogs    = MT->model('blog')->load(
                     { id => [ keys %blog_ids ], },
                     {   fetchonly => {
                             id   => 1,
@@ -388,14 +388,14 @@ sub list_props {
 
 sub save {
     my $assoc = shift;
-    my $res = $assoc->SUPER::save(@_) or return;
+    my $res   = $assoc->SUPER::save(@_) or return;
     $assoc->rebuild_permissions;
     $res;
 }
 
 sub remove {
     my $assoc = shift;
-    my $res = $assoc->SUPER::remove(@_) or return;
+    my $res   = $assoc->SUPER::remove(@_) or return;
     if ( ref $assoc ) {
         $assoc->rebuild_permissions;
     }

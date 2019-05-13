@@ -17,7 +17,7 @@ use MT::Util qw(extract_urls);
 
 sub new {
     my $class = shift || __PACKAGE__;
-    my $self = $class->SUPER::new(@_);
+    my $self  = $class->SUPER::new(@_);
     $self->{tests} = [];
     $self->{rules} = [];
     $self;

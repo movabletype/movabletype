@@ -85,7 +85,7 @@ sub field_html_params {
 
     my $asset_class = $app->model($type);
 
-    {   asset_loop => @asset_loop ? \@asset_loop : undef,
+    {   asset_loop           => @asset_loop ? \@asset_loop : undef,
         asset_type_for_field => $asset_class->class_type,
         multiple             => $multiple,
         required             => $required,
@@ -96,7 +96,7 @@ sub field_html_params {
 
 sub single_select_options {
     my $prop = shift;
-    my $app = shift || MT->app;
+    my $app  = shift || MT->app;
 
     my $cf_idx_join = MT::ContentFieldIndex->join_on(
         undef,
@@ -190,7 +190,7 @@ sub terms_author_status {
         { join => $author_join, }
     );
     my $join_args = { join => $asset_join };
-    my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+    my $cd_ids    = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
     { id => $cd_ids };
 }
 
@@ -204,7 +204,7 @@ sub terms_date {
         [ { id => \'= cf_idx_value_integer' }, $query ] );
 
     my $join_args = { join => $asset_join };
-    my $cd_ids = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
+    my $cd_ids    = get_cd_ids_by_inner_join( $prop, undef, $join_args, @_ );
     { id => $cd_ids };
 }
 
@@ -435,7 +435,7 @@ sub html {
 
     if ( $asset_count == 1 ) {
         my $can_double_encode = 1;
-        my $asset = MT::Asset->load( { id => \@asset_ids } );
+        my $asset             = MT::Asset->load( { id => \@asset_ids } );
         my $encoded_label
             = MT::Util::encode_html( $asset->label, $can_double_encode );
         my $edit_link = _edit_link( $app, $asset );
@@ -480,7 +480,7 @@ sub ss_validator {
     my $field_type_label = $field_data->{type_label};
 
     my $iter = MT::Asset->load_iter(
-        {   id => @$data ? $data : 0,
+        {   id      => @$data ? $data : 0,
             blog_id => $app->blog->id,
         },
         { fetchonly => { id => 1 } }
@@ -553,7 +553,7 @@ sub feed_value_handler {
         }
     }
     my @assets = MT->model('asset')->load(
-        { id => $asset_ids, class => '*' },
+        { id        => $asset_ids, class => '*' },
         { fetchonly => { id => 1, label => 1 } },
     );
     my %label_hash = map { $_->id => $_->label } @assets;

@@ -164,7 +164,7 @@ sub init_request {
     my $blog = $app->model('blog')->load($blog_id)
         or return $app->errtrans( 'Cannot load blog #[_1].',
         MT::Util::encode_html($blog_id) );
-    my $page = $app->param('page') || 1;
+    my $page  = $app->param('page') || 1;
     my $limit = $app->get_limit($blog);
     my $offset;
     $offset = ( $page - 1 ) * $limit if ( $page && $limit );
@@ -292,7 +292,7 @@ sub generate_cache_keys {
     my ( $key, $count_key );
     foreach my $p (@p) {
         foreach my $pp ( $app->multi_param($p) ) {
-            $key .= lc($p) . encode_url($pp);
+            $key       .= lc($p) . encode_url($pp);
             $count_key .= lc($p) . encode_url($pp)
                 if ( 'limit' ne lc($p) ) && ( 'offset' ne lc($p) );
         }
@@ -388,7 +388,7 @@ sub create_blog_list {
     ## set in that list from our final list.
     unless ( $blog_list{IncludeBlogs} ) {
         my $exclude = $blog_list{ExcludeBlogs};
-        my $iter = $app->model('blog')->load_iter( { class => '*' } );
+        my $iter    = $app->model('blog')->load_iter( { class => '*' } );
         while ( my $blog = $iter->() ) {
             push @{ $blog_list{IncludeBlogs} }, $blog->id
                 unless $exclude && grep { $_ == $blog->id } @$exclude;
@@ -545,7 +545,7 @@ sub search_terms {
         }
         else {
             my $search = $app->param('search');
-            my @words = split( / +/, $search );
+            my @words  = split( / +/, $search );
             if ( $limit eq 'any' ) {
                 $search = join( ' OR ', @words );
             }
@@ -801,7 +801,7 @@ sub prepare_context {
         $ctx->stash( 'template_id', $template );
     }
 
-    my $limit = $app->param('count') || $app->param('limit');
+    my $limit  = $app->param('count')      || $app->param('limit');
     my $offset = $app->param('startIndex') || $app->param('offset') || 0;
     my $format = $app->param('format');
 
@@ -1101,12 +1101,12 @@ sub _get_rvalue {
     $val =~ s/%/\\%/;
 
     my %rvalues = (
-        REQUIREDlike   => { like     => '%' . $val . '%' },
+        REQUIREDlike   => { like => '%' . $val . '%' },
         REQUIRED1      => $val,
-        NORMALlike     => { like     => '%' . $val . '%' },
+        NORMALlike     => { like => '%' . $val . '%' },
         NORMAL1        => $val,
         PROHIBITEDlike => { not_like => '%' . $val . '%' },
-        PROHIBITED1    => { not      => $val },
+        PROHIBITED1    => { not => $val },
     );
     $rvalues{ $_[0] };
 }
@@ -1285,13 +1285,13 @@ sub _query_parse_core {
 # add category filter to entry search
 sub _join_category {
     my ( $app, $term ) = @_;
-    my $query = $term->{term};
+    my $query            = $term->{term};
     my $can_search_by_id = $query && $query =~ /^[0-9]+$/ ? 1 : 0;
 
     my $make_alias = sub {
         my $length = shift @_ || 8;
-        my @seed = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-        my $str = '';
+        my @seed   = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
+        my $str    = '';
         while ( length $str < $length ) {
             $str .= @seed[ int rand( scalar @seed ) ];
         }
@@ -1333,7 +1333,7 @@ sub _join_category {
 sub _join_author {
     my ( $app, $term ) = @_;
 
-    my $query = $term->{term};
+    my $query            = $term->{term};
     my $can_search_by_id = $query && $query =~ /^[0-9]+$/ ? 1 : 0;
 
     delete $term->{field};

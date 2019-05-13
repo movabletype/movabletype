@@ -482,7 +482,7 @@ sub _v5_migrate_mtview {
     my $iter = $blog_class->load_iter( { class => 'blog' } );
     while ( my $blog = $iter->() ) {
         my $site_path = $blog->site_path;
-        my $mtview = File::Spec->catfile( $site_path, 'mtview.php' );
+        my $mtview    = File::Spec->catfile( $site_path, 'mtview.php' );
         if ( $fmgr->exists($mtview) ) {
             my $data = $fmgr->get_data($mtview);
             if ($data) {
@@ -653,7 +653,7 @@ sub _v5_generate_websites_place_blogs {
 
                 # could not find anything in common -
                 # try figure out a path from one of the blogs
-                my $blog_rec = $blogs->[0];
+                my $blog_rec  = $blogs->[0];
                 my $dir_depth = grep { defined($_) and length($_) }
                     split '/', $blog_rec->{url_path};
                 my ( $volume, $dirs, undef )

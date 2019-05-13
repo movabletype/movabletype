@@ -36,7 +36,7 @@ sub init {
 
     my $setting = MT->registry( listing_screens => $cls ) || {};
     my $object_type = $setting->{object_type} || $cls;
-    $self->{type} = $self->{id} = $id;
+    $self->{type}        = $self->{id} = $id;
     $self->{class}       = $cls;
     $self->{object_type} = $object_type;
     $self->{datasource}  = MT->model($object_type);
@@ -258,7 +258,7 @@ sub _scope_filter {
     my $prop = shift;
     my ( $area, $scope ) = @_;
     my $area_view = "view_$area";
-    my $view = $prop->$area_view || $prop->view
+    my $view      = $prop->$area_view || $prop->view
         or return 1;
     my %hash;
     $view = [$view] if !ref $view;

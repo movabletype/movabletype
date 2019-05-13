@@ -66,7 +66,7 @@ sub class_label_plural {
             my $filter = $self->column('items');
             return undef unless defined $filter;
             my $thawed = $ser->unserialize($filter);
-            my $ret = defined $thawed ? $$thawed : undef;
+            my $ret    = defined $thawed ? $$thawed : undef;
             return $ret;
         }
     }
@@ -202,11 +202,11 @@ sub list_props {
             screen_name => sub {
                 my $prop = shift;
                 my ($screen_id) = @_;
-                my $reg = MT->registry( listing_screens => $screen_id );
+                my $reg   = MT->registry( listing_screens => $screen_id );
                 my $label = $reg->{label} || $reg->{object_label};
                 if ( !$label ) {
                     my $class = $reg->{object_type} || $screen_id;
-                    my $cls = MT->model($class);
+                    my $cls   = MT->model($class);
                     $label
                         = $class
                         ? (
@@ -307,7 +307,7 @@ sub load_objects {
 
     ## Prepare properties
     for my $item (@$items) {
-        my $id = $item->{type};
+        my $id   = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
             or return $self->error(
             MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
@@ -459,7 +459,7 @@ sub count_objects {
 
     ## Prepare properties
     for my $item (@$items) {
-        my $id = $item->{type};
+        my $id   = $item->{type};
         my $prop = MT::ListProperty->instance( $ds, $id )
             or return $self->error(
             MT->translate( 'Invalid filter type [_1]:[_2]', $ds, $id ) );
@@ -557,7 +557,7 @@ sub pack_terms {
     require MT::ListProperty;
 
     for my $item (@$items) {
-        my $id = $item->{type};
+        my $id        = $item->{type};
         my $list_prop = MT::ListProperty->instance( $ds, $id )
             or die "Invalid Filter $id";
         $item->{prop} = $list_prop;
@@ -597,7 +597,7 @@ sub pack_grep {
     require MT::ListProperty;
 
     for my $item (@$items) {
-        my $id = $item->{type};
+        my $id        = $item->{type};
         my $list_prop = MT::ListProperty->instance( $ds, $id )
             or die "Invalid Filter $id";
         $item->{prop} = $list_prop;
@@ -625,7 +625,7 @@ sub pack_requires_grep {
     require MT::ListProperty;
 
     for my $item (@$items) {
-        my $id = $item->{type};
+        my $id        = $item->{type};
         my $list_prop = MT::ListProperty->instance( $ds, $id )
             or die "Invalid Filter $id";
         return 1 if $list_prop->has('grep');

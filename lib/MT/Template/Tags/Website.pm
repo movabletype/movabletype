@@ -256,7 +256,7 @@ sub _loop {
     elsif ( $terms{class} ) {
         delete $terms{class};
     }
-    $args{'sort'} = 'name';
+    $args{'sort'}    = 'name';
     $args{direction} = 'ascend';
 
     my @sites = MT->model('website')->load( \%terms, \%args );

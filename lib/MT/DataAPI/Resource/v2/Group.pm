@@ -108,7 +108,7 @@ sub fields {
         {   name             => 'updatable',
             bulk_from_object => sub {
                 my ( $objs, $hashes ) = @_;
-                my $app = MT->instance;
+                my $app  = MT->instance;
                 my $user = $app->user or return;
 
                 if ( $user->is_superuser ) {
@@ -135,7 +135,7 @@ sub _create_or_update_with_active {
     my $can_change_group = $app->request('can_change_group');
     return $can_change_group if defined $can_change_group;
 
-    my $json_group = $app->param('group') or return;
+    my $json_group     = $app->param('group') or return;
     my $resource_group = $app->current_format->{unserialize}->($json_group);
     return if !$resource_group || ref($resource_group) ne 'HASH';
 

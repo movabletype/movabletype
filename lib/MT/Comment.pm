@@ -304,7 +304,7 @@ sub to_hash {
                 || MT->config->GlobalSanitizeSpec;
             require MT::Sanitize;
             MT::Sanitize->sanitize( $txt, $sanitize_spec );
-            }
+        }
     }
     if ( my $entry = $cmt->entry ) {
         my $entry_hash = $entry->to_hash;
@@ -382,7 +382,7 @@ sub set_status_by_text {
 __PACKAGE__->add_trigger( 'post_remove', \&_update_parent_id );
 
 sub _update_parent_id {
-    my $comment = shift;
+    my $comment  = shift;
     my @children = MT::Comment->load( { parent_id => $comment->id } );
     for my $c (@children) {
         $c->parent_id(undef);

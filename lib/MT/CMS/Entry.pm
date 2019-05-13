@@ -108,7 +108,7 @@ sub edit {
             }
         }
         $blog_id = $obj->blog_id;
-        my $blog = $app->model('blog')->load($blog_id);
+        my $blog   = $app->model('blog')->load($blog_id);
         my $status = $app->param('status') || $obj->status;
         $status =~ s/\D//g;
         $param->{status} = $status;
@@ -759,7 +759,7 @@ sub _create_temp_entry {
     return $app->return_to_dashboard( permission => 1 )
         unless $perm && $perm->can_edit_entry( $entry, $app->user );
 
-    my $names = $entry->column_names;
+    my $names  = $entry->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
     delete $values{'id'} unless $app->param('id');
     ## Strip linefeed characters.
@@ -887,7 +887,7 @@ sub _build_entry_preview {
 
     require MT::TemplateMap;
     require MT::Template;
-    my $at = $type eq 'page' ? 'Page' : 'Individual';
+    my $at       = $type eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {   archive_type => $at,
             is_preferred => 1,
@@ -903,7 +903,7 @@ sub _build_entry_preview {
     if ($tmpl_map) {
         $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
-        $file_ext = $blog->file_extension || '';
+        $file_ext     = $blog->file_extension || '';
         $archive_file = $entry->archive_file;
 
         my $blog_path
@@ -1119,7 +1119,7 @@ sub _build_entry_preview {
     $param{object_label} = $entry_class->class_label;
 
     my $rev_numbers = $app->param('rev_numbers') || '';
-    my $collision = $app->param('collision');
+    my $collision   = $app->param('collision');
     $param{diff_view} = $rev_numbers || $collision;
     $param{collision} = 1;
     if ( my @rev_numbers = split /,/, $rev_numbers ) {
@@ -1165,7 +1165,7 @@ sub save {
         return $app->save_entries(@_);
     }
     my $author = $app->user;
-    my $type = $app->param('_type') || 'entry';
+    my $type   = $app->param('_type') || 'entry';
 
     my $class = $app->model($type)
         or return $app->errtrans("Invalid parameter");
@@ -1233,7 +1233,7 @@ sub save {
         else {
             return $app->errtrans("Invalid request.");
         }
-        $orig_obj = $obj->clone;
+        $orig_obj  = $obj->clone;
         $orig_file = archive_file_for( $orig_obj, $blog, $archive_type );
     }
     else {
@@ -1247,7 +1247,7 @@ sub save {
         $categories_old       = $orig_obj->categories;
     }
     my $status_old = $id ? $obj->status : 0;
-    my $names = $obj->column_names;
+    my $names      = $obj->column_names;
 
     ## Get rid of category_id param, because we don't want to just set it
     ## in the Entry record; save it for later when we will set the Placement.
@@ -1470,7 +1470,7 @@ sub save {
                     );
             }
             $param{show_input_unpublished_on} = 1 if $param{error};
-            $param{return_args} = $app->param('return_args');
+            $param{return_args}               = $app->param('return_args');
             return $app->forward( "view", \%param ) if $param{error};
             if ( $obj->unpublished_on ) {
                 $previous_old = $obj->previous(1);
@@ -1524,9 +1524,9 @@ sub save {
     require MT::Asset;
     require MT::ObjectAsset;
     my $include_asset_ids = $app->param('include_asset_ids') || '';
-    my @asset_ids  = split( ',', $include_asset_ids );
-    my $obj_assets = ();
-    my @obj_assets = MT::ObjectAsset->load(
+    my @asset_ids         = split( ',', $include_asset_ids );
+    my $obj_assets        = ();
+    my @obj_assets        = MT::ObjectAsset->load(
         { object_ds => 'entry', object_id => $obj->id } );
     foreach my $obj_asset (@obj_assets) {
         my $asset_id = $obj_asset->asset_id;
@@ -1734,7 +1734,7 @@ sub save_entries {
 
     my $perms = $app->permissions
         or $app->permission_denied();
-    my $type = $app->param('_type') || '';
+    my $type    = $app->param('_type') || '';
     my $blog_id = $app->param('blog_id');
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog_id;
@@ -2099,7 +2099,7 @@ sub open_batch_editor {
     @ids = grep { !$dupe{$_}++ } @ids;
 
     require MT::Entry;
-    my $type = $app->param('_type') || MT::Entry->class_type;
+    my $type         = $app->param('_type') || MT::Entry->class_type;
     my %type_allowed = (
         entry => 1,
         page  => 1,
@@ -2165,8 +2165,8 @@ sub open_batch_editor {
 
     # Loading objects
     my $iter = $pkg->load_iter(
-        { class => $type, id => \@ids, blog_id => \@blog_ids },
-        { sort => 'authored_on', direction => 'descend' }
+        { class => $type,         id        => \@ids, blog_id => \@blog_ids },
+        { sort  => 'authored_on', direction => 'descend' }
     );
 
     my $list_pref = $app->list_pref($type);
@@ -2335,7 +2335,7 @@ sub build_entry_table {
             $row->{category_id}       = '';
         }
         $row->{file_extension} = $obj->blog ? $obj->blog->file_extension : '';
-        $row->{title_short} = $obj->title;
+        $row->{title_short}    = $obj->title;
         if ( !defined( $row->{title_short} ) || $row->{title_short} eq '' ) {
             my $title = remove_html( $obj->text );
             $row->{title_short}
@@ -2528,7 +2528,7 @@ sub pre_save {
 
         require MT::Tag;
         my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $tags );
+        my @tags      = MT::Tag->split( $tag_delim, $tags );
         if (@tags) {
             $obj->set_tags(@tags);
         }

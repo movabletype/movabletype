@@ -590,7 +590,7 @@ sub legacy_init {
         my $r = $MT::plugin_registry;
         $r = $r->{applications} ||= {};
         foreach my $app ( keys %$actions ) {
-            my $app_id = $MT::Compat::app_ids{$app} or next;
+            my $app_id      = $MT::Compat::app_ids{$app} or next;
             my $app_actions = $actions->{$app};
             if ( ref($app_actions) eq 'ARRAY' ) {
                 foreach my $action (@$app_actions) {
@@ -628,7 +628,7 @@ sub legacy_init {
         my $r = $MT::plugin_registry;
         $r = $r->{applications} ||= {};
         foreach my $app ( keys %$actions ) {
-            my $app_id = $MT::Compat::app_ids{$app} or next;
+            my $app_id      = $MT::Compat::app_ids{$app} or next;
             my $app_actions = $actions->{$app};
             if ( ref($app_actions) eq 'ARRAY' ) {
                 foreach my $action (@$app_actions) {
@@ -657,7 +657,7 @@ sub legacy_init {
         my $r = $MT::plugin_registry;
         $r = $r->{applications} ||= {};
         foreach my $app ( keys %$methods ) {
-            my $app_id = $MT::Compat::app_ids{$app} or next;
+            my $app_id      = $MT::Compat::app_ids{$app} or next;
             my $app_methods = $methods->{$app};
             if ( ref($app_methods) eq 'HASH' ) {
                 foreach my $m ( keys %$app_methods ) {

@@ -114,7 +114,7 @@ sub install {
     }
 
     ## add inherited metadata fields...
-    my $key = $params->{key};
+    my $key       = $params->{key};
     my $inherited = $class->_load_inheritance( $pkg, $key );
 
     my $fields = delete $params->{fields};    # we'll reduce this big value
@@ -126,7 +126,7 @@ sub install {
     ## ... and save reduced fields in params (will be installed in properties)
     ##     while saving extra properties
     for (@$fields) {
-        $params->{fields}{ $_->{name} } = 1;
+        $params->{fields}{ $_->{name} }       = 1;
         $params->{blob_zip_cfg}{ $_->{name} } = $_->{zip} if $_->{zip};
     }
 

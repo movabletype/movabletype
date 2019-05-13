@@ -46,7 +46,7 @@ sub save_filter {
     }
 
     my $languages = MT::I18N::languages_list($app);
-    my @langs = map { $_->{l_tag} } @$languages;
+    my @langs     = map { $_->{l_tag} } @$languages;
     push @langs, 'en_us';
     if ( $obj->preferred_language
         && !( grep { lc( $obj->preferred_language ) eq $_ } @langs ) )
@@ -62,7 +62,7 @@ sub save_filter {
             $obj->date_format );
     }
 
-    my $filters = MT::App::CMS::load_text_filters( $app, 0, 'entry' );
+    my $filters     = MT::App::CMS::load_text_filters( $app, 0, 'entry' );
     my @filter_keys = map { $_->{key} } @$filters;
     if ( defined( $obj->text_format )
         && !( grep { $obj->text_format eq $_ } @filter_keys ) )

@@ -24,7 +24,7 @@ our $query_builder;
 
 sub save_object {
     my ( $app, $type, $obj, $original, $around_filter ) = @_;
-    $original ||= $app->model($type)->new;
+    $original      ||= $app->model($type)->new;
     $around_filter ||= sub { $_[0]->() };
 
     run_permission_filter( $app, 'data_api_save_permission_filter',
@@ -184,7 +184,9 @@ sub query_parser {
     [ grep $_, ( $_[0] =~ /\s*"([^"]+)"|\s*([^"\s]+)|\s*"([^"]+)/sg ) ];
 }
 
-sub query_builder { return sub { _query_builder(@_) } }
+sub query_builder {
+    return sub { _query_builder(@_) }
+}
 
 sub _query_builder {
     my ( $app, $search, $fields, $filter ) = @_;
@@ -343,9 +345,10 @@ sub filtered_list {
             } split ',', $specified;
         }
 
-        if (!$query_builder) {
+        if ( !$query_builder ) {
             my $handler
-                = $app->registry( 'applications', 'data_api', 'query_builder' );
+                = $app->registry( 'applications', 'data_api',
+                'query_builder' );
             if ( ref $handler eq 'ARRAY' ) {
                 $handler = $handler->[$#$handler];
             }
@@ -375,7 +378,7 @@ sub filtered_list {
                                         value  => $_,
                                     },
                                 };
-                                } grep {$_}
+                            } grep {$_}
                                 split( ',', $value )
                         ],
                     },
@@ -485,7 +488,7 @@ sub filtered_list {
     ## FIXME: take identifical column from column defs.
     my $cols
         = defined( $app->param('columns') ) ? $app->param('columns') : '';
-    my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
+    my @cols    = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
     my @subcols = ( '__id', grep {/\./} split( ',', $cols ) );
 
     my $endpoint_has_site_id
@@ -537,9 +540,9 @@ sub filtered_list {
     }
 
     my %load_options = (
-        terms => { %$terms, @blog_id_term },
-        args  => {%$args},
-        sort_by    => $app->param('sortBy')    || '',
+        terms      => { %$terms, @blog_id_term },
+        args       => {%$args},
+        sort_by    => $app->param('sortBy') || '',
         sort_order => $app->param('sortOrder') || '',
         limit      => $limit,
         offset     => $offset,
@@ -600,8 +603,8 @@ sub filtered_list {
         }
     }
 
-    +{  objects => $objs || [],
-        count => $count,
+    +{  objects        => $objs || [],
+        count          => $count,
         editable_count => $editable_count,
     };
 }

@@ -5,12 +5,12 @@ use strict;
 # establish blog id for cases where we process
 # a template from a file...
 my $blog_id = $ENV{MT_BLOG};
-if (!$blog_id) {
+if ( !$blog_id ) {
     die "Please specify a MT_BLOG shell parameter.";
 }
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use MT::Bootstrap;
 use MT;
 use MT::Template::Context;
@@ -28,40 +28,45 @@ while (<STDIN>) {
     $template .= $_;
 }
 
-if ($template =~ m/<MT_TRANS/) {
+if ( $template =~ m/<MT_TRANS/ ) {
     $template = MT->translate_templatized($template);
 }
 
 require MT::Blog;
 my $blog = MT::Blog->load($blog_id);
 
-if (!$blog) {
+if ( !$blog ) {
     print STDERR "failed to load blog $blog_id\n";
     exit 1;
 }
 
-my $ctx = MT::Template::Context->new;
+my $ctx     = MT::Template::Context->new;
 my $builder = MT::Builder->new;
-my $tokens = $builder->compile($ctx, $template);
-warn "Compile error: ".$builder->errstr if $builder->errstr;
+my $tokens  = $builder->compile( $ctx, $template );
+warn "Compile error: " . $builder->errstr if $builder->errstr;
 exit 2 unless defined $tokens;
 
 $ctx->{archive_type} = 'Individual';
-$ctx->stash('blog',$blog);
-$ctx->stash('blog_id',$blog->id);
+$ctx->stash( 'blog',    $blog );
+$ctx->stash( 'blog_id', $blog->id );
 my @lt = localtime;
-my $ts = sprintf("%04d%02d%02d%02d%02d%02d", $lt[5]+1900,$lt[4]+1,$lt[3],$lt[2],$lt[1],$lt[0]);
+my $ts = sprintf(
+    "%04d%02d%02d%02d%02d%02d",
+    $lt[5] + 1900,
+    $lt[4] + 1,
+    $lt[3], $lt[2], $lt[1], $lt[0]
+);
 $ctx->{current_timestamp} = $ts;
 
-my $out = $builder->build($ctx, $tokens, {});
+my $out = $builder->build( $ctx, $tokens, {} );
 
-warn "Builder error: ".$builder->errstr if $builder->errstr;
-warn "Context error: ".$ctx->errstr if $ctx->errstr;
+warn "Builder error: " . $builder->errstr if $builder->errstr;
+warn "Context error: " . $ctx->errstr     if $ctx->errstr;
 
 exit 2 unless defined $out;
-if ($out =~ m!</head>!) {
+if ( $out =~ m!</head>! ) {
     my $site_url = $blog->site_url;
-    if ($out !~ m/<base /) {
+    if ( $out !~ m/<base / ) {
         $out =~ s!</head>!<base href="$site_url" /></head>!;
     }
 }

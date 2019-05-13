@@ -157,7 +157,7 @@ sub save_filter {
         }
 
         my $type_registry = $registry->{ $field->{type} };
-        my $ss_validator = $type_registry->{ss_validator} or next;
+        my $ss_validator  = $type_registry->{ss_validator} or next;
         unless ( ref $ss_validator eq 'CODE' ) {
             $ss_validator = $app->handler_to_coderef($ss_validator);
         }

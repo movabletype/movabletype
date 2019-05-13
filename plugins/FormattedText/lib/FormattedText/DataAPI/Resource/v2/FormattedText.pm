@@ -33,7 +33,7 @@ sub fields {
             type             => 'MT::DataAPI::Resource::DataType::Boolean',
             bulk_from_object => sub {
                 my ( $objs, $hashs ) = @_;
-                my $app = MT->instance;
+                my $app  = MT->instance;
                 my $user = $app->user or return;
 
                 if ( $user->is_superuser ) {

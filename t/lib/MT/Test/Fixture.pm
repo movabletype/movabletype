@@ -164,11 +164,11 @@ sub prepare_customfield {
             }
             else {
                 %arg = (
-                    name => $item,
+                    name     => $item,
                     obj_type => 'entry',
-                    type => 'text',
+                    type     => 'text',
                     basename => $item,
-                    tag => $item,
+                    tag      => $item,
                 );
             }
             my $field = MT::Test::Permission->make_field(
@@ -256,7 +256,7 @@ sub prepare_page {
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}

@@ -272,7 +272,7 @@ sub bulk_update {
                 $_->id,
                 ( $_->parent || '0' ),
                 Encode::encode_utf8( $_->label ),
-                )
+            )
             }
             sort { $a->id <=> $b->id } @old_objects
     );
@@ -408,7 +408,7 @@ sub bulk_update {
     }
 
     my @ordered_ids = map { $_->id } @objects;
-    my $new_order = join ',', @ordered_ids;
+    my $new_order   = join ',', @ordered_ids;
     if ( $previous_order ne $new_order ) {
         $app->log(
             {   message => $app->translate(
@@ -543,7 +543,7 @@ sub js_add_category {
     }
     else {
         $order_field = "${type}_order";
-        @order = split ',', ( $blog->$order_field || '' );
+        @order       = split ',', ( $blog->$order_field || '' );
     }
     if ($parent) {
         @order = map { $_ == $parent->id ? ( $_, $obj->id ) : $_ } @order;
@@ -722,7 +722,7 @@ sub pre_delete {
     return 1 unless $app->config('DeleteFilesAtRebuild');
 
     my $blog = $app->blog or return;
-    my $at = $blog->archive_type;
+    my $at   = $blog->archive_type;
 
     return 1 unless $at && $at ne 'None';
 
@@ -843,7 +843,7 @@ sub template_param_list {
 
     if ( $param->{is_category_set} = $app->param('is_category_set') ) {
         my $set_id = $app->param('id');
-        my $set = MT->model('category_set')->load( $set_id || 0 );
+        my $set    = MT->model('category_set')->load( $set_id || 0 );
 
         if ($set) {
             $param->{id}       = $set->id;

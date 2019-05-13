@@ -130,10 +130,10 @@ sub run_cgi_without_buffering {
         syswrite $child_in, do {
             local $/;
             my $fh = $env->{'psgi.input'};
-            my $v = <$fh>;
+            my $v  = <$fh>;
             defined $v ? $v : '';
         };
-        my $s = IO::Select->new( $child_out, $child_err );
+        my $s      = IO::Select->new( $child_out, $child_err );
         my $header = '';
         my $header_sent;
         my $writer;
@@ -156,7 +156,7 @@ sub run_cgi_without_buffering {
                                     $res->[1] = [%header];
                                     my $body = delete $res->[2];
                                     $writer = $respond->($res);
-                                    $body = join '', @$body
+                                    $body   = join '', @$body
                                         if 'ARRAY' eq ref $body;
                                     $writer->write($body);
                                     $header_sent = 1;
@@ -263,7 +263,7 @@ sub mount_applications {
         $script = MT->handler_to_coderef($script) unless ref $script;
         $script = $script->();
         $script =~ s!^/!!;
-        my $url = $base . '/' . $script;
+        my $url      = $base . '/' . $script;
         my $psgi_app = $self->make_app($app) or next;
         $psgi_app = $self->apply_plack_middlewares( $app_id, $psgi_app );
         $urlmap->map( $url, $psgi_app );

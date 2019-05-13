@@ -13,7 +13,7 @@ sub apply {
     my $dirs = $element->{data} or return 1;
     for my $dir (@$dirs) {
         next if $dir =~ /[^\w\-\.]/;
-        my $src = File::Spec->catdir( $theme->path, 'blog_static', $dir );
+        my $src = File::Spec->catdir( $theme->path,     'blog_static', $dir );
         my $dst = File::Spec->catdir( $blog->site_path, $dir );
         my $result = $theme->install_static_files( $src, $dst );
     }

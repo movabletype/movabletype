@@ -674,7 +674,7 @@ sub theme {
 }
 
 sub raw_site_url {
-    my $blog = shift;
+    my $blog     = shift;
     my $site_url = $blog->column('site_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $site_url ) ) {
         if ( $subdomain ne $site_url ) {
@@ -788,7 +788,7 @@ sub site_path {
 }
 
 sub raw_archive_url {
-    my $blog = shift;
+    my $blog        = shift;
     my $archive_url = $blog->column('archive_url') || '';
     if ( my ( $subdomain, $path ) = split( '/::/', $archive_url ) ) {
         return ( $subdomain, $path );
@@ -1003,7 +1003,7 @@ sub file_mgr {
 }
 
 sub remove {
-    my $blog = shift;
+    my $blog    = shift;
     my $blog_id = ref $blog ? $blog->id : undef;
 
     # Load all the models explicitly.
@@ -1025,7 +1025,7 @@ sub flush_has_archive_type_cache {
     my ($type) = @_;
 
     my $cache_key = 'has_archive_type::blog:' . $blog->id;
-    my $cache = MT->request($cache_key) or return;
+    my $cache     = MT->request($cache_key) or return;
     delete $cache->{$type}
         if exists $cache->{$type};
     1;
@@ -1044,7 +1044,7 @@ sub has_archive_type {
     }
     $content_type_id ||= 0;
 
-    my $r = MT->request;
+    my $r     = MT->request;
     my $cache = $r->cache($cache_key) || {};
     $cache->{$type} ||= {};
 
@@ -1552,7 +1552,7 @@ sub clone_with_children {
             { blog_id => $old_blog_id, type => 'widgetset' } );
         while ( my $tmpl = $iter->() ) {
             my @old_widgets = split /,/, $tmpl->modulesets;
-            my $new_tmpl = $tmpl->clone();
+            my $new_tmpl    = $tmpl->clone();
             $tmpl_processor->(
                 $new_blog_id, \$counter, $tmpl, $new_tmpl, \%tmpl_map
             );
@@ -1581,7 +1581,7 @@ sub clone_with_children {
         $state = MT->translate("Cloning template maps for blog...");
         $callback->( $state, "tmplmaps" );
         require MT::TemplateMap;
-        $iter = MT::TemplateMap->load_iter( { blog_id => $old_blog_id } );
+        $iter    = MT::TemplateMap->load_iter( { blog_id => $old_blog_id } );
         $counter = 0;
         while ( my $map = $iter->() ) {
             $callback->(

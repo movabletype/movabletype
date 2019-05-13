@@ -174,12 +174,12 @@ sub upgrade_functions {
                 type      => 'blog',
                 label     => 'Removing unused template maps...',
                 condition => sub {
-                    my $blog = shift;
+                    my $blog    = shift;
                     my @blog_at = split /,/, $blog->archive_type;
                     require MT::TemplateMap;
                     MT::TemplateMap->remove(
                         { blog_id => $blog->id, archive_type => \@blog_at },
-                        { not => { archive_type => 1 } } )
+                        { not     => { archive_type => 1 } } )
                         if @blog_at;
                     return 0;
                 },
@@ -638,7 +638,7 @@ sub update_3x_system_search_templates {
     if ( my @blog_ids = keys %blogs ) {
         MT::Template->remove(
             { type => 'search_results', blog_id => \@blog_ids },
-            { not => { blog_id => 1 } } );
+            { not  => { blog_id => 1 } } );
     }
     0;
 }
@@ -1099,14 +1099,14 @@ sub core_upgrade_meta_for_table {
     return 0 unless $db_defs && exists( $db_defs->{$meta_col} );
 
     my $terms = { $meta_col => { not_null => 1 } };
-    my $args = {
+    my $args  = {
         'limit'     => 101,
         'fetchonly' => ['id'],   # meta is added to the select list separately
         'sort'      => 'id',
         'direction' => 'ascend',
         $offset ? ( 'offset' => $offset ) : ()
     };
-    my $stmt = $driver->prepare_statement( $class, $terms, $args );
+    my $stmt        = $driver->prepare_statement( $class, $terms, $args );
     my $db_meta_col = $dbd->db_column_name( $class->datasource, $meta_col );
     ## Meta column has to be added in here because it's already
     ## gone from the column_names - something fetchonly relies on
@@ -1267,7 +1267,7 @@ sub core_update_entry_counts {
     my $msg = $self->translate_escape(
         "Assigning entry comment and TrackBack counts...");
     my $offset = $param{offset} || 0;
-    my $count = $param{count};
+    my $count  = $param{count};
     if ( !$count ) {
         $count = $class->count( { class => '*' } );
     }

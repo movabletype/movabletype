@@ -531,7 +531,7 @@ sub textile {
                 }
                 if ( $params =~ m/{([^}]+)}/ ) {
                     $style = $1;
-                    $style =~ s/\n/ /g;
+                    $style  =~ s/\n/ /g;
                     $params =~ s/{[^}]+}//g;
                 }
                 if (   $params =~ m/\(([A-Za-z0-9_\-\ ]+?)(?:\#(.+?))?\)/
@@ -1020,7 +1020,7 @@ sub format_paragraph {
         $text =~ s!&lt;textile#(\d+)&gt;!<textile#$1>!g;
         $text =~ s!&amp;quot;!&#34;!g;
         $text =~ s!&amp;(([a-z]+|#\d+);)!&$1!g;
-        $text =~ s!&quot;!"!g;    #"
+        $text =~ s!&quot;!"!g;                             #"
 
     # These create markup with entities. Do first and 'save' result for later:
     # "text":url -> hyperlink
@@ -1536,7 +1536,7 @@ sub format_block {
 
     if ($filters) {
         my $filtreg = quotemeta($filters);
-        $str =~ s/^$filtreg//;
+        $str     =~ s/^$filtreg//;
         $filters =~ s/^\|//;
         $filters =~ s/\|$//;
         my @filters = split /\|/, $filters;
@@ -1688,7 +1688,7 @@ sub format_image {
         if ( $self->{css_mode} ) {
             my $alignment = _halign($align);
             $style .= qq{;float:$alignment} if $alignment;
-            $class .= ' ' . $alignment if $alignment;
+            $class .= ' ' . $alignment      if $alignment;
             $alignment = _valign($align);
             if ($alignment) {
                 my $imgvalign = (
@@ -1788,7 +1788,7 @@ sub format_image {
     if ( defined $link ) {
         $link =~ s/^://;
         $link = $self->format_url( url => $link );
-        $tag = '<a href="' . $link . '">' . $tag . '</a>';
+        $tag  = '<a href="' . $link . '">' . $tag . '</a>';
     }
 
     return $pre . $tag . $post;
@@ -1863,11 +1863,11 @@ sub format_table {
         $row =~ s/\.\s+//;
         $rows[0] = $row;
     }
-    my $out = '';
+    my $out  = '';
     my @cols = split /\|/, $rows[0] . ' ';
     my ( @colalign, @rowspans );
     foreach my $row (@rows) {
-        my @cols = split /\|/, $row . ' ';
+        my @cols     = split /\|/, $row . ' ';
         my $colcount = $#cols;
         pop @cols;
         my $colspan = 0;
@@ -1958,7 +1958,7 @@ sub format_table {
                         redo if $clsty;
                     }
                     if ( $colparams =~ m/^\\(\d+)/ ) {
-                        $colspan = $1;
+                        $colspan   = $1;
                         $colparams = substr( $colparams, length($1) + 1 );
                         redo if $1;
                     }
@@ -1971,7 +1971,7 @@ sub format_table {
                 }
             }
             if ( length($attrs) ) {
-                $header = 1 if $attrs =~ m/_/;
+                $header   = 1  if $attrs =~ m/_/;
                 $colalign = '' if $attrs =~ m/($alignre)/ && length($1);
 
                 # determine column alignment
@@ -2486,7 +2486,7 @@ sub _strip_borders {
             if (   ( ( $open eq '{' ) && ( $close eq '}' ) )
                 || ( ( $open eq '[' ) && ( $close eq ']' ) ) )
             {
-                ${$pre} = substr( ${$pre}, 1 );
+                ${$pre}  = substr( ${$pre},  1 );
                 ${$post} = substr( ${$post}, 0, length( ${$post} ) - 1 );
             }
         }

@@ -28,7 +28,7 @@ sub fields {
                         sort grep {
                             my $p = $_;
                             !grep { $_ eq $p } @restrictions
-                            } map { $_ =~ /'(.*)'/ } split ',',
+                        } map { $_ =~ /'(.*)'/ } split ',',
                         ( $objs->[$i]->permissions || '' )
                     ];
                 }

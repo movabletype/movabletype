@@ -38,7 +38,7 @@ sub upload {
             # Ignore path parameter, using default upload destination instead.
             my $path;
             if ( $site->upload_destination ) {
-                my $dest = $site->upload_destination;
+                my $dest       = $site->upload_destination;
                 my $extra_path = $site->extra_path || '';
                 $dest = MT::Util::build_upload_destination($dest);
                 $path = File::Spec->catdir( $dest, $extra_path );

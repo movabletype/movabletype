@@ -352,7 +352,7 @@ sub finalize {
 
     require MT::FileMgr;
     require File::Spec;
-    my $fmgr = MT::FileMgr->new('Local');
+    my $fmgr   = MT::FileMgr->new('Local');
     my $outdir = File::Spec->catdir( $tmpdir, 'templates' );
     $fmgr->mkpath($outdir)
         or return $app->error(
@@ -364,7 +364,7 @@ sub finalize {
 
     for my $t (@$templates) {
         my $tmpl_id = $t->identifier || 'template_' . $t->id;
-        my $path = File::Spec->catfile( $outdir, $tmpl_id . '.mtml' );
+        my $path    = File::Spec->catfile( $outdir, $tmpl_id . '.mtml' );
         defined $fmgr->put_data( $t->text, $path )
             or return $app->error(
             $app->translate(

@@ -53,7 +53,7 @@ sub _mk_term {
 sub add_freetext_where {
     my $stmt = shift;
     my ( $columns, $search_string ) = @_;
-    my $col = 'MATCH(' . join( ', ', @$columns ) . ')';
+    my $col  = 'MATCH(' . join( ', ', @$columns ) . ')';
     my $term = "($col AGAINST(? IN BOOLEAN MODE))";
     push @{ $stmt->{where} }, "($term)";
     push @{ $stmt->{bind} },  $search_string;

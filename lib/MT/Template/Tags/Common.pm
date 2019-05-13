@@ -45,7 +45,7 @@ sub hdlr_author_link {
 
             # Add vcard properties to email if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn email"' : '';
-            my $str = "mailto:" . encode_html( $a->email );
+            my $str   = "mailto:" . encode_html( $a->email );
             $str = spam_protect($str) if $args->{'spam_protect'};
             return sprintf qq(<a%s href="%s">%s</a>), $hcard, $str,
                 $displayname;

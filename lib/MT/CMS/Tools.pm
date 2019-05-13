@@ -76,7 +76,7 @@ sub get_syscheck_content {
     # Do not verify SSL certificate.
     $ua->ssl_opts( verify_hostname => 0 );
 
-    my $req = new HTTP::Request( GET => $syscheck_url );
+    my $req  = new HTTP::Request( GET => $syscheck_url );
     my $resp = $ua->request($req);
     return unless $resp->is_success();
     my $result = $resp->content();
@@ -129,7 +129,7 @@ sub recover_password {
     my $email    = $app->param('email') || '';
     my $username = $app->param('name');
 
-    $email = trim($email);
+    $email    = trim($email);
     $username = trim($username) if $username;
 
     if ( !$email ) {
@@ -191,7 +191,7 @@ sub recover_password {
                 From    => $app->config('EmailAddressMain') || $email,
                 Subject => $app->translate("Password Recovery")
             );
-            my $charset = $app->charset;
+            my $charset  = $app->charset;
             my $mail_enc = uc( $app->config('MailEncoding') || $charset );
             $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 
@@ -550,7 +550,7 @@ sub cfg_system_general {
 
     # for lockout settings
     if ( my $notify_to = $cfg->LockoutNotifyTo ) {
-        my @ids = split ';', $notify_to;
+        my @ids       = split ';', $notify_to;
         my @sysadmins = MT::Author->load(
             {   id   => \@ids,
                 type => MT::Author::AUTHOR()
@@ -568,7 +568,7 @@ sub cfg_system_general {
         foreach my $a (@sysadmins) {
             push @names, $a->name . '(' . $a->id . ')';
         }
-        $param{lockout_notify_ids} = $notify_to;
+        $param{lockout_notify_ids}   = $notify_to;
         $param{lockout_notify_names} = join ',', @names;
     }
 
@@ -1053,7 +1053,7 @@ sub start_backup {
         $app->add_breadcrumb( $app->translate('Export Sites') );
     }
     $param{system_overview_nav} = 1 unless $blog_id;
-    $param{nav_backup} = 1;
+    $param{nav_backup}          = 1;
     require MT::Util::Archive;
     my @formats = MT::Util::Archive->available_formats();
     $param{archive_formats} = \@formats;
@@ -1093,7 +1093,7 @@ sub start_restore {
     $app->add_breadcrumb( $app->translate('Import Sites') );
 
     $param{system_overview_nav} = 1 unless $blog_id;
-    $param{nav_backup} = 1;
+    $param{nav_backup}          = 1;
 
     eval "require XML::SAX";
     $param{missing_sax} = 1 if $@;
@@ -1313,7 +1313,7 @@ sub backup {
             require MT::FileMgr::Local;
             for my $id ( keys %$asset_files ) {
                 my $name = $id . '-' . $asset_files->{$id}->[2];
-                my $tmp = File::Spec->catfile( $temp_dir, $name );
+                my $tmp  = File::Spec->catfile( $temp_dir, $name );
                 unless (
                     copy(
                         MT::FileMgr::Local::_local(
@@ -1642,7 +1642,7 @@ sub restore {
             return $return_error->($@) if $@;
             if ( defined $blog_ids ) {
                 $param->{open_dialog} = 1;
-                $param->{blog_ids} = join( ',', @$blog_ids );
+                $param->{blog_ids}    = join( ',', @$blog_ids );
             }
         }
         else {
@@ -1711,7 +1711,7 @@ sub restore {
 
             if ( defined $blog_ids ) {
                 $param->{open_dialog} = 1;
-                $param->{blog_ids} = join( ',', @$blog_ids )
+                $param->{blog_ids}    = join( ',', @$blog_ids )
                     if defined $blog_ids;
                 $param->{asset_ids} = join( ',', @$asset_ids )
                     if defined $asset_ids;
@@ -1749,7 +1749,7 @@ sub restore {
         }
     }
     $param->{restore_success} = !$error;
-    $param->{error} = $error if $error;
+    $param->{error}           = $error if $error;
     if ( ( exists $param->{open_dialog} ) && ( $param->{open_dialog} ) ) {
         $param->{dialog_mode} = 'dialog_adjust_sitepath';
         $param->{dialog_params}
@@ -1786,7 +1786,7 @@ sub restore_premature_cancel {
     require JSON;
     my $deferred_json = $app->param('deferred_json');
     my $deferred = $deferred_json ? JSON::from_json($deferred_json) : undef;
-    my $param = { restore_success => 1 };
+    my $param    = { restore_success => 1 };
     if ( defined $deferred && ( scalar( keys %$deferred ) ) ) {
         _log_dirty_restore( $app, $deferred );
         my $log_url
@@ -1988,7 +1988,7 @@ sub adjust_sitepath {
 
         ## Change FileInfo
         my $fileinfo_class = $app->model('fileinfo');
-        my @fileinfo = $fileinfo_class->load( { blog_id => $id } );
+        my @fileinfo       = $fileinfo_class->load( { blog_id => $id } );
 
         my $delim = $^O eq 'MSWin32' ? '\\' : '/';
 
@@ -2391,7 +2391,7 @@ sub dialog_restore_upload {
             my @objs    = $class->load( { id => $newids } );
             for my $obj (@objs) {
                 my @old_ids = grep { $_->{newid} eq $obj->id } @$keymaps;
-                my $old_id = $old_ids[0]->{oldid};
+                my $old_id  = $old_ids[0]->{oldid};
                 $objects->{"$class#$old_id"} = $obj;
             }
         }
@@ -2760,7 +2760,7 @@ sub reset_password {
         From    => $app->config('EmailAddressMain') || $email,
         Subject => $app->translate("Password Recovery")
     );
-    my $charset = $app->charset;
+    my $charset  = $app->charset;
     my $mail_enc = uc( $app->config('MailEncoding') || $charset );
     $head{'Content-Type'} = qq(text/plain; charset="$mail_enc");
 

@@ -59,7 +59,7 @@ sub main {
 
     my $verbose;
     my $opts_good = GetOptions(
-        'help!' => sub { $class->show_usage(); $class->show_help(); exit; },
+        'help!'  => sub { $class->show_usage(); $class->show_help(); exit; },
         'usage!' => sub { $class->show_usage(); exit; },
         'verbose|v+' => \$verbose,
 

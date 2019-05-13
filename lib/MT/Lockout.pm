@@ -322,7 +322,7 @@ sub process_login_result {
     my ( $app, $remote_ip, $username, $result ) = @_;
 
     my @for_insert = ( MT::Auth::UNKNOWN(), MT::Auth::INVALID_PASSWORD(), );
-    my @for_clear = (
+    my @for_clear  = (
         MT::Auth::INACTIVE(),  MT::Auth::PENDING(),
         MT::Auth::DELETED(),   MT::Auth::REDIRECT_NEEDED(),
         MT::Auth::NEW_LOGIN(), MT::Auth::NEW_USER(),
@@ -366,7 +366,7 @@ sub lock {
     return if $user->locked_out;
 
     my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $salt = join '', map $alpha[ rand @alpha ], 1 .. 2;
+    my $salt  = join '', map $alpha[ rand @alpha ], 1 .. 2;
 
     $user->lockout_recover_salt($salt);
     $user->locked_out_time(time);

@@ -86,8 +86,7 @@ sub simple_request {
     if ($content) {
         $ENV{CONTENT_LENGTH} = length $request->content();
     }
-    run3 [$^X, "./$script_name"],
-        \$content, \my $output, undef,
+    run3 [ $^X, "./$script_name" ], \$content, \my $output, undef,
         { binmode_stdin => 1 }
         or die "Couldn't spawn ./$script_name";
     print STDERR "$script_name exit status: $?\n" if $?;

@@ -111,7 +111,7 @@ sub add {
 
     my $terms = {};
     if ( $type eq 'site' ) {
-        $terms->{id} = { not => [$blog_id] };
+        $terms->{id}    = { not => [$blog_id] };
         $terms->{class} = [ 'website', 'blog' ];
     }
     elsif ( my $select_blog_id = $app->param('select_blog_id') ) {
@@ -170,7 +170,7 @@ sub add {
             my $limit = $app->param('limit') || 25;
             my $terms = {};
             if ( $source eq 'blog' ) {
-                $terms->{id} = { not => [$blog_id] };
+                $terms->{id}    = { not => [$blog_id] };
                 $terms->{class} = [ 'website', 'blog' ];
             }
             elsif ( $source eq 'content_type' ) {
@@ -289,7 +289,7 @@ sub add {
         $params->{site_name}    = $app->blog->name;
 
         # Does a site have the content type?
-        my @sites = MT->model('blog')->load( { class => '*' } );
+        my @sites              = MT->model('blog')->load( { class => '*' } );
         my $count_content_type = 0;
         my @site_has_content_type = map {
             my $site = $_;
@@ -299,7 +299,7 @@ sub add {
             $count_content_type += $count;
             { id => $_->id, value => $count };
         } @sites;
-        $params->{site_has_content_type} = \@site_has_content_type;
+        $params->{site_has_content_type}  = \@site_has_content_type;
         $params->{"missing_content_type"} = 1 unless $count_content_type;
 
         $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
@@ -397,7 +397,7 @@ sub load_config {
                 name   => $_->{trigger_name},
                 object => $_->{trigger_object},
                 action => $_->{trigger_action}
-                }
+            }
         } @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop($app);
@@ -416,8 +416,7 @@ sub load_config {
                 {   action_name  => $actions{$action},
                     action_value => $action,
                     blog_name    => $app->translate(
-                        '(All sites and child sites in this system)'
-                    ),
+                        '(All sites and child sites in this system)'),
                     blog_id        => $id,
                     trigger_name   => $triggers{$trigger}{name},
                     trigger_object => $content_type_id
@@ -476,7 +475,7 @@ sub save {
     my $app = shift;
     $app->validate_magic or return;
     my $blog_id = $app->blog ? $app->blog->id : 0;
-    my @p = $app->multi_param;
+    my @p       = $app->multi_param;
 
     my @rebuild_triggers
         = MT->model('rebuild_trigger')->load( { blog_id => $blog_id } );

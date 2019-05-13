@@ -49,7 +49,7 @@ archive links, at least).
 sub _hdlr_archive_set {
     my ( $ctx, $args, $cond ) = @_;
     my $blog = $ctx->stash('blog');
-    my $at = $args->{type} || $args->{archive_type} || $blog->archive_type;
+    my $at   = $args->{type} || $args->{archive_type} || $blog->archive_type;
     return '' if !$at || $at eq 'None';
     my @at      = split /\s*,\s*/, $at;
     my $res     = '';
@@ -235,7 +235,7 @@ sub _hdlr_archives {
     my %args;
     my $sort_order
         = lc( $args->{sort_order} || '' ) eq 'ascend' ? 'ascend' : 'descend';
-    $args{'sort'} = 'authored_on';
+    $args{'sort'}    = 'authored_on';
     $args{direction} = $sort_order;
 
     my $tokens  = $ctx->stash('tokens');
@@ -585,7 +585,7 @@ sub _hdlr_archive_prev_next {
                     if $map && $arctype->contenttype_date_based;
                 if ( $arctype->contenttype_category_based ) {
                     $param->{category_field_id} = $map->cat_field_id if $map;
-                    $param->{category_id} = $ctx->stash('category')->id
+                    $param->{category_id}       = $ctx->stash('category')->id
                         if $ctx->stash('category');
                 }
             }
@@ -769,7 +769,7 @@ B<Example:>
 sub _hdlr_archive_type_enabled {
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    my $at = ( $args->{type} || $args->{archive_type} );
+    my $at   = ( $args->{type} || $args->{archive_type} );
 
     my $ct;
     if ( $at =~ /ContentType/ ) {
@@ -1177,7 +1177,7 @@ B<Example:>
 
 sub _hdlr_archive_count {
     my ( $ctx, $args, $cond ) = @_;
-    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $at       = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $archiver = MT->publisher->archiver($at);
     if ( $ctx->{inside_mt_categories}
         && !( $archiver && $archiver->date_based ) )
@@ -1196,7 +1196,7 @@ sub _hdlr_archive_count {
             if !$c && $ctx->stash('content');
         my @contents;
         @contents = @$c if ref($c) eq 'ARRAY';
-        $count = scalar @contents;
+        $count    = scalar @contents;
     }
     else {
         my $e = $ctx->stash('entries');
@@ -1204,7 +1204,7 @@ sub _hdlr_archive_count {
             if !$e && $ctx->stash('entry');
         my @entries;
         @entries = @$e if ref($e) eq 'ARRAY';
-        $count = scalar @entries;
+        $count   = scalar @entries;
     }
     return $ctx->count_format( $count, $args );
 }

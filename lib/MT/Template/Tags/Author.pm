@@ -471,7 +471,7 @@ AUTHOR: while ($next) {
         my $namespace = $args->{'namespace'};
         if ( 'score' eq $col ) {
             my $so = $args->{sort_order} || '';
-            my %a = map { $_->id => $_ } @authors;
+            my %a   = map { $_->id => $_ } @authors;
             my @aid = keys %a;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->sum_group_by(
@@ -501,7 +501,7 @@ AUTHOR: while ($next) {
         }
         elsif ( 'rate' eq $col ) {
             my $so = $args->{sort_order} || '';
-            my %a = map { $_->id => $_ } @authors;
+            my %a   = map { $_->id => $_ } @authors;
             my @aid = keys %a;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->avg_group_by(
@@ -531,7 +531,7 @@ AUTHOR: while ($next) {
         }
     }
 
-    my $res = '';
+    my $res  = '';
     my $vars = $ctx->{__stash}{vars} ||= {};
     $count = 0;
     MT::Meta::Proxy->bulk_load_meta_objects( \@authors );
@@ -818,7 +818,7 @@ sub _hdlr_author_auth_icon_url {
     }
     return $ctx->_no_author_error() unless $author;
     my $size = $args->{size} || 'logo_small';
-    my $url = $author->auth_icon_url($size);
+    my $url  = $author->auth_icon_url($size);
     if ( $url =~ m!^/! ) {
 
         # relative path, prepend blog domain

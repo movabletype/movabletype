@@ -676,7 +676,7 @@ sub start {
 }
 
 sub object_drivers {
-    my $app = shift;
+    my $app     = shift;
     my $drivers = $app->registry("object_drivers") || {};
     return $drivers;
 }
@@ -1001,7 +1001,7 @@ sub optional {
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
     $param{sendmail_path} = $sm_loc || '';
-    $param{smtp_server} = $mgr->default('SMTPServer')
+    $param{smtp_server}   = $mgr->default('SMTPServer')
         unless $param{smtp_server};
     $param{smtp_port} = 25
         unless $param{smtp_port};
@@ -1145,7 +1145,7 @@ sub seed {
             $new = '.' . $1;
         }
         my @scripts;
-        my $cfg = $app->config;
+        my $cfg      = $app->config;
         my @cfg_keys = grep {/Script$/} keys %{ $cfg->{__settings} };
         $param{mt_script} = $app->config->AdminScript;
         foreach my $key (@cfg_keys) {
@@ -1157,7 +1157,7 @@ sub seed {
             }
         }
         if (@scripts) {
-            $param{script_loop} = \@scripts if @scripts;
+            $param{script_loop}    = \@scripts if @scripts;
             $param{non_cgi_suffix} = 1;
         }
     }
@@ -1429,7 +1429,7 @@ sub is_valid_static_path {
     my ($cgihost) = ( $app->cgipath =~ m/^(https?:\/\/[^\/]+)(?:\/|$)/ );
     $cgihost =~ s/^http:/https:/;
     my $ssl_verify_peer = $path !~ m/^$cgihost/ ? 1 : 0;
-    my %ssl_opts = (
+    my %ssl_opts        = (
         verify_hostname => $ssl_verify_peer,
         $ssl_verify_peer
         ? ( SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2' )
@@ -1441,7 +1441,7 @@ sub is_valid_static_path {
 
     require LWP::UserAgent;
     my $ua = LWP::UserAgent->new( ssl_opts => \%ssl_opts );
-    my $request = HTTP::Request->new( GET => $path );
+    my $request  = HTTP::Request->new( GET => $path );
     my $response = $ua->request($request);
     $response->is_success
         and ( $response->content_length() != 0 )

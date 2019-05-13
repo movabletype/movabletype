@@ -115,7 +115,7 @@ sub list_props {
                     my $contents_type
                         = $obj_class eq 'category' ? 'entry' : 'page';
                     my $action = 'access_to_' . $contents_type . '_list';
-                    my $count = $count{ $obj->id } || 0;
+                    my $count  = $count{ $obj->id } || 0;
                     my $phrase
                         = $obj_class eq 'category'
                         ? MT->translate(
@@ -261,9 +261,9 @@ sub category_label_path {
     my $cat = shift;
     return $cat->{__label_path} if exists $cat->{__label_path};
     my $result = $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label;
-    my $orig = $cat;
+    my $orig   = $cat;
     do {
-        $cat = $cat->parent ? __PACKAGE__->load( $cat->parent ) : undef;
+        $cat    = $cat->parent ? __PACKAGE__->load( $cat->parent ) : undef;
         $result = join "/",
             ( $cat->label =~ m!/! ? '[' . $cat->label . ']' : $cat->label ),
             $result

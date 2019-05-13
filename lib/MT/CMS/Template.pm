@@ -559,7 +559,7 @@ sub edit {
 
                 # Default Archive Templates
                 my $index = $app->config('IndexBasename');
-                my $ext = $blog->file_extension || '';
+                my $ext   = $blog->file_extension || '';
                 $ext = '.' . $ext if $ext ne '';
                 my $tmpls     = $archiver->default_archive_templates;
                 my $tmpl_loop = [];
@@ -613,7 +613,7 @@ sub edit {
             my $cat_field = $app->param('cat_field');
             my $dt_field  = $app->param('dt_field');
 
-            my $ct = MT::ContentType->load( $obj->content_type_id );
+            my $ct     = MT::ContentType->load( $obj->content_type_id );
             my $fields = $ct ? $ct->fields : [];
 
             my $content_fields = {
@@ -662,7 +662,7 @@ sub edit {
                 $template_type = $1;
                 $template_type = 'custom' if $template_type eq 'module';
                 my $template_id = $2;
-                my $set = $blog ? $blog->template_set : undef;
+                my $set         = $blog ? $blog->template_set : undef;
                 require MT::DefaultTemplates;
                 my $def_tmpl = MT::DefaultTemplates->templates($set) || [];
                 my ($tmpl)
@@ -1000,7 +1000,7 @@ sub edit {
 
         # Content Field
         my $fields = $ct->fields;
-        my @cfs = MT::ContentField->load( { content_type_id => $ct->id } );
+        my @cfs    = MT::ContentField->load( { content_type_id => $ct->id } );
         foreach my $cf (@cfs) {
             my ($field) = grep { $_->{id} == $cf->id } @{$fields};
             my $label = $field->{options}{label};
@@ -1119,7 +1119,7 @@ sub list {
             ? 1
             : 0;
         $row->{template_type} = $template_type;
-        $row->{type} = 'entry' if $type eq 'individual';
+        $row->{type}          = 'entry' if $type eq 'individual';
         my $published_url = $obj->published_url;
         $row->{published_url} = $published_url if $published_url;
         $row->{name}          = ''             if !defined $row->{name};
@@ -1330,16 +1330,16 @@ sub _generate_list_widget_params {
     my $widget_loop = &build_template_table(
         $app,
         load_args => [
-            { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
-            { sort => 'name', direction => 'ascend' }
+            { type => 'widget', blog_id   => $blog_id ? [ $blog_id, 0 ] : 0 },
+            { sort => 'name',   direction => 'ascend' }
         ],
     );
 
     my $iter
         = $app->model('template')
         ->load_iter(
-        { type => 'widgetset', blog_id => $blog_id ? $blog_id : 0 },
-        { sort => 'name', direction => 'ascend' } );
+        { type => 'widgetset', blog_id   => $blog_id ? $blog_id : 0 },
+        { sort => 'name',      direction => 'ascend' } );
     my @widgetmanagers;
     while ( my $widgetset = $iter->() ) {
         next unless $widgetset;
@@ -1431,7 +1431,7 @@ sub preview {
         $tmpl->blog_id($blog_id);
     }
 
-    my $names = $tmpl->column_names;
+    my $names  = $tmpl->column_names;
     my %values = map { $_ => scalar $app->param($_) } @$names;
     delete $values{'id'} unless $id;
 
@@ -1472,7 +1472,7 @@ sub preview {
         $req->stash( $stash_id, [ $tmpl, $tmpl->tokens ] );
     }
     elsif ( ( $type eq 'individual' ) || ( $type eq 'page' ) ) {
-        my $ctx = $preview_tmpl->context;
+        my $ctx        = $preview_tmpl->context;
         my $entry_type = $type eq 'individual' ? 'entry' : 'page';
         my ($obj) = create_preview_content( $app, $blog, $entry_type, 1 );
         $obj->basename($preview_basename);
@@ -1484,7 +1484,7 @@ sub preview {
             $blog_url  = $blog->archive_url;
         }
         $archive_file = File::Spec->catfile( $blog_path, $obj->archive_file );
-        $archive_url = $obj->archive_url;
+        $archive_url  = $obj->archive_url;
 
         my $archiver
             = MT->publisher->archiver( $ctx->{current_archive_type} );
@@ -1547,7 +1547,7 @@ sub preview {
             $map->archive_type, $cat, $map, $ctx->{current_timestamp},
             $app->user );
         $archive_file = File::Spec->catfile( $blog_path, $file );
-        $archive_url = MT::Util::caturl( $blog_url, $file );
+        $archive_url  = MT::Util::caturl( $blog_url, $file );
     }
     elsif ( $type eq 'index' ) {
     }
@@ -1684,7 +1684,7 @@ sub preview {
 
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
-    $param{name} = $tmpl->name;
+    $param{name}       = $tmpl->name;
     if ( $type ne 'index' ) {
         $app->param( 'build_dynamic', $tmpl->build_dynamic );
         $app->param( 'build_type',    $tmpl->build_type );
@@ -1733,7 +1733,7 @@ sub create_preview_content {
         {   blog_id => $blog_id,
             status  => MT::Entry::RELEASE()
         },
-        {   limit => $number || 1,
+        {   limit     => $number || 1,
             direction => 'descend',
             'sort'    => 'authored_on',
             %$cat_args,
@@ -1807,7 +1807,7 @@ sub _populate_archive_loop {
     );
 
     my $index = $app->config('IndexBasename');
-    my $ext = $blog->file_extension || '';
+    my $ext   = $blog->file_extension || '';
     $ext = '.' . $ext if $ext ne '';
 
     require MT::TemplateMap;
@@ -2115,7 +2115,7 @@ sub pre_save {
 
     # update text heights if necessary
     if ($perms) {
-        my $prefs = $perms->template_prefs || '';
+        my $prefs       = $perms->template_prefs || '';
         my $text_height = $app->param('text_height');
         if ( defined $text_height ) {
             my ($pref_text_height) = $prefs =~ m/\btext:(\d+)\b/;
@@ -2193,7 +2193,7 @@ sub post_save {
     }
 
     my $dynamic = 0;
-    my $type = $app->param('type') || '';
+    my $type    = $app->param('type') || '';
 
     # FIXME: enumeration of types
     if (   $type eq 'custom'
@@ -2367,7 +2367,7 @@ sub build_template_table {
         $iter = $args{iter};
     }
     elsif ( $args{items} ) {
-        $iter = sub { pop @{ $args{items} } };
+        $iter  = sub { pop @{ $args{items} } };
         $limit = scalar @{ $args{items} };
     }
     return [] unless $iter;
@@ -2472,7 +2472,7 @@ sub dialog_refresh_templates {
             $param->{current_label} = $theme->label;
         }
         else {
-            my $set = $blog->template_set;
+            my $set      = $blog->template_set;
             my $tmpl_set = MT->registry( 'template_sets', $set );
             if ($tmpl_set) {
                 $param->{current_label} = $tmpl_set->{label};
@@ -2505,7 +2505,7 @@ sub refresh_all_templates {
         $backup = 1;
     }
     my $refresh_type = $app->param('refresh_type') || 'refresh';
-    my $t = time;
+    my $t            = time;
 
     my @id;
     if ( my $blog_id = $app->param('blog_id') ) {
@@ -2861,7 +2861,7 @@ sub refresh_individual_templates {
 
     require MT::Util;
 
-    my $user = $app->user;
+    my $user  = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $user->is_superuser()
@@ -3029,7 +3029,7 @@ sub refresh_individual_templates {
 sub clone_templates {
     my ($app) = @_;
 
-    my $user = $app->user;
+    my $user  = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
         unless $user->is_superuser()
@@ -3386,8 +3386,8 @@ sub edit_widget {
 
     my $iter
         = $tmpl_class->load_iter(
-        { type => 'widget', blog_id => $blog_id ? [ $blog_id, 0 ] : 0 },
-        { sort => 'name', direction => 'ascend' } );
+        { type => 'widget', blog_id   => $blog_id ? [ $blog_id, 0 ] : 0 },
+        { sort => 'name',   direction => 'ascend' } );
 
     my %all_widgets;
     while ( my $m = $iter->() ) {
@@ -3582,7 +3582,7 @@ sub save_template_prefs {
         unless $perms
         && $perms->can_do('save_template_prefs');
 
-    my $prefs = $perms->template_prefs || '';
+    my $prefs     = $perms->template_prefs || '';
     my $highlight = $app->param('syntax_highlight');
     if ( defined $highlight ) {
         my ($pref_highlight) = $prefs =~ m/\bsyntax:(\w+)\b/;

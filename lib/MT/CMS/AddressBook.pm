@@ -194,7 +194,7 @@ sub export {
     $enc = ( $app->charset || '' ) if ( !$enc );
 
     my $not_class = $app->model('notification');
-    my $iter = $not_class->load_iter( { blog_id => $blog->id },
+    my $iter      = $not_class->load_iter( { blog_id => $blog->id },
         { 'sort' => 'created_on', 'direction' => 'descend' } );
 
     my $file = '';

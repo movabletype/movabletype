@@ -9,7 +9,7 @@
 use strict;
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 
 my $daemonize = 0;
 my $sleep     = 5;
@@ -54,7 +54,7 @@ require MT::Bootstrap;
 require MT;
 
 my $mt = MT->new() or die MT->errstr;
-if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
+if ( defined( MT->config('RPTProcessCap') ) && $proc_process_table ) {
     my $t         = new Proc::ProcessTable;
     my $rpt_count = 0;
     my $cmndfile  = File::Basename::basename(__FILE__);
@@ -71,16 +71,14 @@ if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
 
 if ( MT->config('RPTFreeMemoryLimit') ) {
     my $limit = MT->config('RPTFreeMemoryLimit');
-    if ( $limit and ! MT::TheSchwartz::_has_enough_memory($limit) ) {
-        die
-            "Free memory below RPT limit; cancelling RPT launch\n";
+    if ( $limit and !MT::TheSchwartz::_has_enough_memory($limit) ) {
+        die "Free memory below RPT limit; cancelling RPT launch\n";
     }
 }
 if ( MT->config('RPTFreeSwapLimit') ) {
     my $swaplimit = MT->config('RPTSwapMemoryLimit');
-    if ( $swaplimit and ! MT::TheSchwartz::_has_enough_swap($swaplimit) ) {
-        die
-            "Free swap memory below RPT limit; cancelling RPT launch\n";
+    if ( $swaplimit and !MT::TheSchwartz::_has_enough_swap($swaplimit) ) {
+        die "Free swap memory below RPT limit; cancelling RPT launch\n";
     }
 }
 

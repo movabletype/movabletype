@@ -1279,7 +1279,7 @@ sub _TokenizeHTML {
     my $len = length $str;
     my @tokens;
 
-    my $depth = 6;
+    my $depth       = 6;
     my $nested_tags = join( '|', ('(?:<[a-z/!$](?:[^<>]') x $depth )
         . ( ')*>)' x $depth );
     my $match = qr/(?s: <! ( -- .*? -- \s* )+ > ) |  # comment

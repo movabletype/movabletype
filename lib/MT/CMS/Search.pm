@@ -109,7 +109,7 @@ sub core_search_apis {
                     ->load( { id => $content_type_id } )
                     || $app->model('content_type')->load(
                     { blog_id => $blog_id || \'> 0' },
-                    { sort => 'name', limit => 0 }
+                    { sort    => 'name', limit => 0 }
                     );
                 if ($content_type) {
                     $terms->{content_type_id} = $content_type->id;
@@ -795,7 +795,7 @@ sub search_replace {
         }
     }
 
-    my $tmpl = $app->load_tmpl( 'search_replace.tmpl', $param );
+    my $tmpl        = $app->load_tmpl( 'search_replace.tmpl', $param );
     my $placeholder = $tmpl->getElementById('search_results');
     $placeholder->innerHTML( delete $param->{results_template} );
     return $tmpl;
@@ -846,7 +846,7 @@ sub do_search_replace {
 
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
-    my $list_pref = $app->list_pref($type);
+    my $list_pref  = $app->list_pref($type);
     my $search_api = $app->registry( "search_apis", $type );
 
     $app->assert( $search_api, "Invalid request." ) or return;
@@ -873,7 +873,7 @@ sub do_search_replace {
             = $app->model('content_type')->load( { id => $content_type_id } )
             || $app->model('content_type')->load(
             { blog_id => $blog_id || \'> 0' },
-            { sort => 'name', limit => 1 },
+            { sort    => 'name', limit => 1 },
             );
 
         my $iter = $app->model('content_type')
@@ -1635,7 +1635,7 @@ sub do_search_replace {
         }
         if ( $timefrom && $timeto ) {
             $timefrom =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
-            $timeto =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
+            $timeto   =~ s/^(\d{2})(\d{2})(\d{2})$/$1:$2:$3/;
         }
     }
 
@@ -1697,12 +1697,12 @@ sub do_search_replace {
     $res{'tab_junk'} = 1 if $is_junk;
 
     my $search_cols = $search_api->{search_cols};
-    my %cols = map { $_ => 1 } @cols;
+    my %cols        = map { $_ => 1 } @cols;
     my @search_cols;
     for my $field ( keys %$search_cols ) {
         next if $field eq 'plugin';
         my %search_field;
-        $search_field{field} = $field;
+        $search_field{field}    = $field;
         $search_field{selected} = 1 if exists( $cols{$field} );
         $search_field{label}
             = 'CODE' eq ref( $search_cols->{$field} )

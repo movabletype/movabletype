@@ -129,7 +129,7 @@ sub list_for_role {
 sub _can_grant {
     my ( $app, $site, $role ) = @_;
     my $login_user = $app->user or return;
-    my $perms = $login_user->permissions( $site->id );
+    my $perms      = $login_user->permissions( $site->id );
 
     return 1 if $login_user->is_superuser;
 
@@ -247,7 +247,7 @@ sub grant_to_site {
 sub _can_revoke {
     my ( $app, $site, $role ) = @_;
     my $login_user = $app->user or return;
-    my $perms = $login_user->permissions( $site->id );
+    my $perms      = $login_user->permissions( $site->id );
 
     return 1 if $login_user->is_superuser;
 

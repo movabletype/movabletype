@@ -58,7 +58,7 @@ sub authorization {
 
     my $token = $app->make_magic_token;
 
-    my $redirect_url = $app->param('redirectUrl') || '';
+    my $redirect_url  = $app->param('redirectUrl') || '';
     my $redirect_type = check_redirect_url( $app, $redirect_url )
         or return $app->errtrans('Invalid parameter.');
     my $client_id = $app->current_client_id
@@ -154,7 +154,7 @@ sub _authentication {
         ( $app->param('mtDataApiLoginMagicToken') || '' ) )
     {
         my $remember = $session->get('remember') || '';
-        my %arg = (
+        my %arg      = (
             -name  => $app->user_cookie,
             -value => Encode::encode(
                 $app->charset,
@@ -233,7 +233,7 @@ sub _current_session_from_authorization_data {
     my $data = $app->mt_authorization_data;
     if ( $data && $data->{MTAuth}{sessionId} ) {
         MT::Session->load(
-            {   id => $data->{MTAuth}{sessionId} || '',
+            {   id   => $data->{MTAuth}{sessionId} || '',
                 kind => $app->session_kind,
             }
         ) or undef;

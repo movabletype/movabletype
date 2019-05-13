@@ -60,7 +60,7 @@ sub index_defs {
 
     my $defs = {};
     foreach my $key ( keys %$bags ) {
-        my $cols = $bags->{$key};
+        my $cols  = $bags->{$key};
         my %sizes = %{ $sizes->{$key} || {} };
         if ( $unique->{$key} ) {
             $defs->{$key} = {

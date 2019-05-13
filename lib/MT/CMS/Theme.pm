@@ -88,9 +88,9 @@ sub _build_theme_table {
         map { $theme{$_} = $theme->{$_} } @keys;
         delete $theme{author_link} if !is_valid_url( $theme{author_link} );
         $theme{theme_id} = $theme->id;
-        $theme{current} = $theme->id eq ( $current || '' ) ? 1 : 0;
+        $theme{current}  = $theme->id eq ( $current || '' ) ? 1 : 0;
         $theme{label} = ref $theme->label ? $theme->label->() : $theme->label;
-        $theme{name} = $theme->name || $theme->label;
+        $theme{name}  = $theme->name || $theme->label;
         $theme{theme_version} = $theme->version;
         $theme{theme_type}    = $theme->{type};
         $theme{protected}     = $theme->{protected};
@@ -205,7 +205,7 @@ sub export {
         or return $app->permission_denied();
     my %param;
     my $blog_id = $app->param('blog_id');
-    my $blog = $app->blog || MT->model('blog')->load($blog_id)
+    my $blog    = $app->blog || MT->model('blog')->load($blog_id)
         or return $app->return_to_dashboard( redirect => 1 );
     $param{theme_class} = $blog->class;
     $param{output}      = 'themedir';
@@ -301,7 +301,7 @@ sub element_dialog {
         or return $app->permission_denied();
 
     my $blog_id = $app->param('blog_id');
-    my $blog = $app->blog || MT->model('blog')->load($blog_id)
+    my $blog    = $app->blog || MT->model('blog')->load($blog_id)
         or return $app->error( MT->translate('Invalid request.') );
     my $exporter_id = $app->param('exporter_id')
         or return $app->error( $app->translate('Invalid request.') );
@@ -365,7 +365,7 @@ sub save_detail {
     my $fmgr        = MT::FileMgr->new('Local');
     my $exporter_id = $app->param('exporter_id');
     ## Abort if theme directory is not okey for output.
-    my $hdlrs = MT->registry('theme_element_handlers');
+    my $hdlrs    = MT->registry('theme_element_handlers');
     my $settings = $blog->theme_export_settings || {};
 
     my $exporter = MT->registry(
@@ -480,7 +480,7 @@ sub do_export {
     }
 
     ## Pick up settings.
-    my $hdlrs = MT->registry('theme_element_handlers');
+    my $hdlrs    = MT->registry('theme_element_handlers');
     my %includes = map { $_ => 1 } @include;
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
@@ -605,7 +605,7 @@ sub do_export {
             or die "Unknown archiver type : $arctype";
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
-        my $arc = MT::Util::Archive->new( $arctype, $arcfile )
+        my $arc     = MT::Util::Archive->new( $arctype, $arcfile )
             or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
         $arc->close;

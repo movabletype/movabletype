@@ -32,7 +32,7 @@ sub list {
 
     return +{
         totalResults => scalar(@$plugins) || 0,
-        items => $plugins,
+        items        => $plugins,
     };
 }
 

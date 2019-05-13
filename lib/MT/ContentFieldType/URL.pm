@@ -12,7 +12,7 @@ use MT::Util ();
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options = $field_data->{options} || {};
+    my $options     = $field_data->{options} || {};
     my $field_label = $options->{label};
 
     unless ( !defined $data || $data eq '' || MT::Util::is_url($data) ) {

@@ -117,7 +117,7 @@ sub scale {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
-    my @out = $image->_generate_converting_command( $pbm, $type );
+    my @out   = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
 
     if ( $type eq 'gif' ) {
@@ -161,7 +161,7 @@ sub crop_rectangle {
     );
 
     my @crop = ( "${pbm}pnmcut", $x, $y, $width, $height );
-    my @out = $image->_generate_converting_command( $pbm, $type );
+    my @out  = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
     if ( $type eq 'gif' ) {
         push @quant, ( [ "${pbm}ppmquant", 256 ], '|' );
@@ -200,7 +200,7 @@ sub flipHorizontal {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-lr' );
-    my @out = $image->_generate_converting_command( $pbm, $type );
+    my @out   = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
 
     if ( $type eq 'gif' ) {
@@ -235,7 +235,7 @@ sub flipVertical {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-tb' );
-    my @out = $image->_generate_converting_command( $pbm, $type );
+    my @out   = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
 
     if ( $type eq 'gif' ) {
@@ -276,7 +276,7 @@ sub rotate {
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );
     my @scale = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
-    my @out = $image->_generate_converting_command( $pbm, $type );
+    my @out   = $image->_generate_converting_command( $pbm, $type );
     my (@quant);
 
     if ( $type eq 'gif' ) {
@@ -302,7 +302,7 @@ sub convert {
     return $image->{data} if $type eq $outtype;
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = (
+    my @in  = (
         "$pbm${type}topnm",
         ( $type eq 'png' ? '-mix' : () ),    # Mix alpha channel if needed.
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
@@ -349,7 +349,7 @@ sub blob {
     my $type = $image->{type};
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
-    my @in = (
+    my @in  = (
         "$pbm${type}topnm",
         ( $image->{data} ? () : $image->{file} ? $image->{file} : () )
     );

@@ -115,7 +115,7 @@ sub session_credentials {
     my $auth = shift;
     my ($ctx) = @_;
 
-    my $app = $ctx->{app} or return;
+    my $app     = $ctx->{app} or return;
     my $cookies = $app->cookies;
     if ( $cookies->{ $app->user_cookie } ) {
         my $cookie = $cookies->{ $app->user_cookie }->value;

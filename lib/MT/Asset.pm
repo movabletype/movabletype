@@ -552,7 +552,7 @@ __FILTER_TMPL__
                 my ( $app, $val ) = @_;
                 my $content_data_id = $app->param('content_data_id') || 0;
                 +{  content_field_id => $val || 0,
-                    content_data_id => $content_data_id,
+                    content_data_id  => $content_data_id,
                 };
             },
             display         => 'none',
@@ -735,7 +735,7 @@ sub extensions {
 # This property is a meta-property.
 sub file_path {
     my $asset = shift;
-    my $path = $asset->column( 'file_path', @_ );
+    my $path  = $asset->column( 'file_path', @_ );
     return $path if defined($path) && ( $path !~ m!^\$! ) && ( -f $path );
 
     $path = $asset->cache_property(
@@ -760,7 +760,7 @@ sub file_path {
 
 sub url {
     my $asset = shift;
-    my $url = $asset->column( 'url', @_ );
+    my $url   = $asset->column( 'url', @_ );
     return $url
         if defined($url) && ( $url !~ m!^\%! ) && ( $url =~ m!^https?://! );
 
@@ -775,7 +775,7 @@ sub url {
                     : $1 eq 'r'  ? $blog->site_url
                     :              $blog->archive_url;
                 $root =~ s!/$!!;
-                $url =~ s!^\%[ras]!$root!;
+                $url  =~ s!^\%[ras]!$root!;
             }
             return $url;
         },
@@ -829,7 +829,7 @@ sub remove {
 
         # Remove MT::ObjectAsset records
         $class = MT->model('objectasset');
-        $iter = $class->load_iter( { asset_id => $asset->id } );
+        $iter  = $class->load_iter( { asset_id => $asset->id } );
         while ( my $o = $iter->() ) {
             $o->remove;
         }
@@ -890,7 +890,7 @@ sub remove_cached_files {
 }
 
 sub blog {
-    my $asset = shift;
+    my $asset   = shift;
     my $blog_id = $asset->blog_id or return undef;
     return $asset->{__blog}
         if $blog_id
@@ -1020,7 +1020,7 @@ sub thumbnail_url {
                     $path = MT::Util::caturl( $path, $p );
                 }
             }
-            $file = MT::Util::encode_url($file);
+            $file     = MT::Util::encode_url($file);
             $site_url = MT::Util::caturl( $site_url, $path, $file );
             $site_url .= '?ts=' . $asset->modified_on
                 if $param{Ts} and $asset->modified_on;
@@ -1171,7 +1171,7 @@ sub can_create_thumbnail {
     }
 
     my $real_thumb_path = File::Spec->catdir( $root_path, $path );
-    my $fmgr = MT::FileMgr->new('Local');
+    my $fmgr            = MT::FileMgr->new('Local');
 
     return $fmgr->exists($real_thumb_path)
         && !$fmgr->can_write($real_thumb_path) ? 0 : 1;

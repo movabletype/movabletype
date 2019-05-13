@@ -203,7 +203,7 @@ sub _apply_basename {
         my $req_url = $item->{permaLink};
         if ( $req_url =~ m{ \A \Q$pre\E (.*) \Q$post\E \z }xms ) {
             my $req_base = $1;
-            my @folders = split /\//, $req_base;
+            my @folders  = split /\//, $req_base;
             $basename = pop @folders;
             $param->{__permaLink_folders} = \@folders;
         }
@@ -437,7 +437,7 @@ sub _new_entry {
     if ( my $tags = $item->{mt_tags} ) {
         require MT::Tag;
         my $tag_delim = chr( $author->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $tags );
+        my @tags      = MT::Tag->split( $tag_delim, $tags );
         $entry->set_tags(@tags);
     }
     if ( my $urls = $item->{mt_tb_ping_urls} ) {
@@ -652,7 +652,7 @@ sub _edit_entry {
     if ( my $tags = $item->{mt_tags} ) {
         require MT::Tag;
         my $tag_delim = chr( $author->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $tags );
+        my @tags      = MT::Tag->split( $tag_delim, $tags );
         $entry->set_tags(@tags);
     }
     if ( my $urls = $item->{mt_tb_ping_urls} ) {
@@ -695,7 +695,7 @@ sub _edit_entry {
     my $old_categories = $entry->categories;
     $entry->clear_cache('categories');
     my $changed = $class->_save_placements( $entry, $item, \%param );
-    my @types = ($obj_type);
+    my @types   = ($obj_type);
     if ($changed) {
         push @types, 'folder';    # folders are the only type that can be
                                   # created in _save_placements
@@ -834,7 +834,7 @@ sub getUsersBlogs {
         }
         push @res,
             {
-            url => SOAP::Data->type( string => $blog->site_url || '' ),
+            url      => SOAP::Data->type( string => $blog->site_url || '' ),
             blogid   => SOAP::Data->type( string => $blog->id ),
             blogName => SOAP::Data->type( string => $blog->name || '' )
             };
@@ -912,7 +912,7 @@ sub _get_entries {
             unless ($titles_only) {
                 require MT::Tag;
                 my $tag_delim = chr( $author->entry_prefs->{tag_delim} );
-                my $tags = MT::Tag->join( $tag_delim, $entry->tags );
+                my $tags      = MT::Tag->join( $tag_delim, $entry->tags );
                 $row->{description}
                     = SOAP::Data->type( string => $entry->text );
                 my $link = $entry->permalink;
@@ -1115,7 +1115,7 @@ sub _get_entry {
     my $link = $entry->permalink;
     require MT::Tag;
     my $delim = chr( $author->entry_prefs->{tag_delim} );
-    my $tags = MT::Tag->join( $delim, $entry->tags );
+    my $tags  = MT::Tag->join( $delim, $entry->tags );
 
     my $cats     = [];
     my $cat_data = $entry->__load_category_data();
@@ -1236,7 +1236,7 @@ sub getCategoryList {
         push @data,
             {
             categoryName => SOAP::Data->type( string => $cat->label || '' ),
-            categoryId => SOAP::Data->type( string => $cat->id )
+            categoryId   => SOAP::Data->type( string => $cat->id )
             };
     }
     \@data;
@@ -1312,7 +1312,7 @@ sub getTagList {
         push @data,
             {
             tagName => SOAP::Data->type( string => $tag->name || '' ),
-            tagId => SOAP::Data->type( string => $tag->id )
+            tagId   => SOAP::Data->type( string => $tag->id )
             };
     }
     \@data;
@@ -1343,9 +1343,9 @@ sub getPostCategories {
         my $is_primary = $prim && $cat->id == $prim->id ? 1 : 0;
         push @data,
             {
-            categoryName => SOAP::Data->type( string => $cat->label || '' ),
-            categoryId => SOAP::Data->type( string => $cat->id ),
-            isPrimary => SOAP::Data->type( boolean => $is_primary ),
+            categoryName => SOAP::Data->type( string  => $cat->label || '' ),
+            categoryId   => SOAP::Data->type( string  => $cat->id ),
+            isPrimary    => SOAP::Data->type( boolean => $is_primary ),
             };
     }
     \@data;
@@ -1446,7 +1446,7 @@ sub runPeriodicTasks {
 
     _validate_params( [ $user, $pass ] ) or return;
 
-    my $mt = MT::XMLRPCServer::Util::mt_new();
+    my $mt     = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
 
@@ -1461,7 +1461,7 @@ sub publishScheduledFuturePosts {
 
     _validate_params( [ $blog_id, $user, $pass ] ) or return;
 
-    my $mt = MT::XMLRPCServer::Util::mt_new();
+    my $mt     = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
     my $blog = MT::Blog->load($blog_id)
@@ -1524,7 +1524,7 @@ sub getNextScheduled {
 
     _validate_params( [ $user, $pass ] ) or return;
 
-    my $mt = MT::XMLRPCServer::Util::mt_new();
+    my $mt     = MT::XMLRPCServer::Util::mt_new();
     my $author = $class->_login( $user, $pass );
     die _fault( MT->translate("Invalid login") ) unless $author;
 
@@ -1616,7 +1616,7 @@ sub newMediaObject {
         && !$blog->allow_to_change_at_upload )
     {
         if ( $blog->upload_destination ) {
-            my $dest = $blog->upload_destination;
+            my $dest       = $blog->upload_destination;
             my $extra_path = $blog->extra_path || '';
             my $root_path;
 

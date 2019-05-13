@@ -235,7 +235,7 @@ sub build_log_table {
                 }
             }
             $row->{created_on_relative} = relative_date( $ts, time );
-            $row->{log_detail} = $log->description;
+            $row->{log_detail}          = $log->description;
         }
         if ( my $uid = $log->author_id ) {
             my $user_class = $app->model('author');

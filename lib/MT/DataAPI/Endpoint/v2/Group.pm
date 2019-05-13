@@ -293,7 +293,7 @@ sub _retrieve_group_and_member {
     my $member;
     if ( my $member_id = $app->param('member_id') ) {
         my %terms = ( id => $member_id );
-        my %args = (
+        my %args  = (
             join => MT::Association->join_on(
                 'author_id',
                 {   type     => MT::Association::USER_GROUP(),
@@ -326,7 +326,7 @@ sub _retrieve_member {
     my $member;
     if ($group) {
         my %terms = ( id => $hash_member->{id} );
-        my %args = (
+        my %args  = (
             join => MT::Association->join_on(
                 'author_id',
                 {   type     => MT::Association::USER_GROUP(),

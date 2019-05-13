@@ -113,11 +113,11 @@ sub search_terms {
     my $app = shift;
 
     my $offset = $app->param('startIndex') || $app->param('offset') || 0;
-    my $limit = $app->param('count') || $app->param('limit');
-    my $max = $app->{searchparam}{SearchMaxResults};
+    my $limit  = $app->param('count')      || $app->param('limit');
+    my $max    = $app->{searchparam}{SearchMaxResults};
     $limit = $max if !$limit || ( $limit - $offset > $max );
 
-    my $tag_class = $app->model('tag');
+    my $tag_class     = $app->model('tag');
     my $search_string = $app->param('tag') || $app->param('search');
     $app->{search_string} = $search_string;
 
@@ -271,11 +271,11 @@ sub search_terms {
             || ( 'page' eq $app->{searchparam}{Type} ) )
         {
             $terms{authored_on} = [$mod_since];
-            $args{range} = { authored_on => 1 };
+            $args{range}        = { authored_on => 1 };
         }
         else {
             $terms{created_on} = [$mod_since];
-            $args{range} = { created_on => 1 };
+            $args{range}       = { created_on => 1 };
         }
     }
 

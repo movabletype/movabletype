@@ -50,7 +50,7 @@ content listed by a L<Contentss> tag is reached.
 sub _hdlr_contents {
     my ( $ctx, $args, $cond ) = @_;
 
-    my $at = $ctx->{current_archive_type} || $ctx->{archive_type};
+    my $at       = $ctx->{current_archive_type} || $ctx->{archive_type};
     my $archiver = MT->publisher->archiver($at);
     my $blog_id
         = $args->{site_id} || $args->{blog_id} || $ctx->stash('blog_id');
@@ -475,7 +475,7 @@ sub _hdlr_contents {
                         }
                     }
                     if ($cexpr) {
-                        my @cat_ids = map { $_->id } @$cats;
+                        my @cat_ids   = map { $_->id } @$cats;
                         my $preloader = sub {
                             my ($cd) = @_;
                             my @c_ids
@@ -521,7 +521,7 @@ sub _hdlr_contents {
                     my $terms;
                     if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
                         my @tags = MT::Tag->split( ',', $tag_arg );
-                        $terms = { name => \@tags };
+                        $terms   = { name => \@tags };
                         $tag_arg = join " or ", @tags;
                     }
                     my $tags = [
@@ -815,7 +815,7 @@ sub _hdlr_contents {
                     $a_field = '' unless defined $a_field;
                     $b_field = '' unless defined $b_field;
                     return $so * ( $a_field cmp $b_field );
-                    }
+                }
             }
         }
         elsif ( $type and $type =~ m/^(integer|float|double)$/ ) {
@@ -1367,7 +1367,7 @@ sub _hdlr_content_permalink {
     my $c = $ctx->stash('content')
         or return $ctx->_no_content_error();
     my $blog = $ctx->stash('blog');
-    my $at = $args->{type} || $args->{archive_type};
+    my $at   = $args->{type} || $args->{archive_type};
     if ($at) {
         return $ctx->error(
             MT->translate(
@@ -1472,8 +1472,8 @@ sub _hdlr_content_calendar {
     my $content_type_id = $cd_terms{content_type_id};
 
     my ($prefix);
-    my @ts = MT::Util::offset_time_list( time, $blog_id );
-    my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+    my @ts                = MT::Util::offset_time_list( time, $blog_id );
+    my $today             = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
     my $start_with_offset = 0;
     if ( my $start_with = lc( $args->{weeks_start_with} || '' ) ) {
         $start_with_offset = {
@@ -1757,7 +1757,7 @@ sub _hdlr_content_nextprev {
     my $cd = $ctx->stash('content')
         or return $ctx->_no_content_error();
     my $terms = { status => MT::ContentStatus::RELEASE() };
-    $terms->{by_author} = 1 if $args->{by_author};
+    $terms->{by_author}      = 1 if $args->{by_author};
     $terms->{category_field} = $args->{category_field}
         if $args->{category_field};
     $terms->{date_field} = $args->{date_field} if $args->{date_field};
@@ -1831,14 +1831,15 @@ sub _hdlr_content_field {
     local $ctx->{__stash}{content_field_data} = $field_data
         unless $ctx->stash('content_field_data');
 
-    my $value = $content_data->data->{ $field_data->{id} };
+    my $value       = $content_data->data->{ $field_data->{id} };
     my $check_value = defined $value ? $value : '';
 
-    if (ref $value eq 'ARRAY') {
+    if ( ref $value eq 'ARRAY' ) {
         $check_value = @$value ? $value->[0] : '';
     }
 
-    return $ctx->_hdlr_pass_tokens_else(@_) if !$check_value && $check_value eq '';
+    return $ctx->_hdlr_pass_tokens_else(@_)
+        if !$check_value && $check_value eq '';
 
     my $field_type
         = MT->registry('content_field_types')->{ $field_data->{type} }
@@ -2177,7 +2178,7 @@ sub _get_content_type {
 sub _search_content_field {
     my ($args) = @_;
     $args ||= {};
-    my $content_type_id = $args->{content_type_id} or return;
+    my $content_type_id   = $args->{content_type_id} or return;
     my $name_or_unique_id = $args->{name_or_unique_id};
     return unless defined $name_or_unique_id && $name_or_unique_id ne '';
     my $cf = MT->model('content_field')

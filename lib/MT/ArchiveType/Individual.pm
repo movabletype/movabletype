@@ -85,7 +85,7 @@ sub archive_group_iter {
             return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-        }
+    }
 }
 
 sub dynamic_template {

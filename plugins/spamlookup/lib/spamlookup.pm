@@ -491,7 +491,7 @@ sub reversedns {
     return $cache->{$ip} if exists $cache->{$ip};
     require Socket;
     my $iaddr = Socket::inet_aton($ip);
-    my $name = gethostbyaddr( $iaddr, Socket::AF_INET() );
+    my $name  = gethostbyaddr( $iaddr, Socket::AF_INET() );
     return undef unless $name;
     $cache->{$ip} = $name;
     MT::Request->instance->cache( 'reversedns_cache', $cache );
@@ -532,7 +532,7 @@ sub extract_domains {
         $$total++      if ( defined($total) );
         next           if $seen{$domain};
         if ( $mode == 0 ) {    # default mode, replicate for all subdomains
-            my $last = $#parts;
+            my $last  = $#parts;
             my $start = length( $parts[$last] ) < 3 ? 2 : 1;
             if ( $start > $last ) {
                 $seen{$domain} = 1;

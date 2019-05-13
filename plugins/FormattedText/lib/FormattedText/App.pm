@@ -99,7 +99,7 @@ sub cms_object_scope_filter {
 sub save_permission_filter {
     my ( $cb, $app, $id ) = @_;
     my $user = $app->user;
-    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $obj  = $id ? $app->model('formatted_text')->load($id) : undef;
     my $perms
         = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
     can_edit_formatted_text( $perms, $obj, $user );
@@ -108,7 +108,7 @@ sub save_permission_filter {
 sub view_permission_filter {
     my ( $cb, $app, $id ) = @_;
     my $user = $app->user;
-    my $obj = $id ? $app->model('formatted_text')->load($id) : undef;
+    my $obj  = $id ? $app->model('formatted_text')->load($id) : undef;
     my $perms
         = $obj ? $user->permissions( $obj->blog_id ) : $app->permissions;
     can_edit_formatted_text( $perms, $obj, $user );

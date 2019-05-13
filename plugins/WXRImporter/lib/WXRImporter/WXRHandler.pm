@@ -76,7 +76,7 @@ sub start_element {
             unless ( ( 'rss' eq $name )
             && ( '2.0' eq $attrs->{'{}version'}->{Value} ) )
             ;    ## FIXME: This is checking RSS2.
-        $self->{start} = 0;
+        $self->{start}    = 0;
         $self->{'bucket'} = [];
         return 1;
     }

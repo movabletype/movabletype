@@ -157,7 +157,7 @@ sub edit {
                     $param->{$_} = $values->{$_} for keys %$values;
                     $param->{loaded_revision} = 1;
                 }
-                $param->{rev_number} = $rn;
+                $param->{rev_number}  = $rn;
                 $param->{no_snapshot} = 1 if $app->param('no_snapshot');
             }
             $param->{rev_date} = MT::Util::format_ts(
@@ -307,7 +307,7 @@ sub edit {
             # TODO: fix after updating values option.
             if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkboxes' ) {
                 my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
-                my @values = split $delimiter,
+                my @values    = split $delimiter,
                     ( $_->{options}{initial_value} || '' );
                 $_->{value} = \@values;
             }
@@ -377,7 +377,7 @@ sub edit {
                 $_->{convert_breaks} = $_->{options}{input_format};
             }
 
-            if (defined $app->param($key) && $app->param($key) ne '') {
+            if ( defined $app->param($key) && $app->param($key) ne '' ) {
                 $_->{convert_breaks} = $app->param($key);
             }
 
@@ -513,7 +513,7 @@ sub save {
         if ( !$app->param('from_preview') ) {
             my $content_field_type = $content_field_types->{ $f->{type} };
             $data->{ $f->{id} }
-                = _get_form_data($app, $content_field_type, $f);
+                = _get_form_data( $app, $content_field_type, $f );
         }
         if ( $f->{type} eq 'multi_line_text' ) {
             $convert_breaks->{ $f->{id} } = $app->param(
@@ -706,7 +706,7 @@ sub save {
                     );
             }
             $param{show_input_unpublished_on} = 1 if $param{err_msg};
-            $param{return_args} = $app->param('return_args');
+            $param{return_args}               = $app->param('return_args');
             if ( $param{err_msg} ) {
                 $app->param( '_type',           'content_data' );
                 $app->param( 'reedit',          1 );
@@ -955,7 +955,7 @@ sub post_save {
         $sess_obj->remove if $sess_obj;
     }
 
-    my $ct = $obj->content_type or return;
+    my $ct     = $obj->content_type or return;
     my $author = $app->user;
     my $label
         = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
@@ -1006,7 +1006,7 @@ sub post_delete {
         $sess_obj->remove if $sess_obj;
     }
 
-    my $ct = $obj->content_type or return;
+    my $ct     = $obj->content_type or return;
     my $author = $app->user;
     my $label
         = $obj->label || MT->translate( 'No Label (ID:[_1])', $obj->id );
@@ -1151,7 +1151,7 @@ sub make_menus {
     my $iter = MT::ContentType->load_iter( undef, { sort => 'name' } );
     while ( my $ct = $iter->() ) {
         my $blog = MT::Blog->load( $ct->blog_id ) or next;
-        my $key = 'content_data:' . $ct->id;
+        my $key  = 'content_data:' . $ct->id;
         $menus->{$key} = {
             label        => $ct->name,
             no_translate => { label => 1, },
@@ -1294,7 +1294,7 @@ sub validate_content_fields {
     my %invalid_fields;
     if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
     {
-        $invalid_count = scalar @{$errors};
+        $invalid_count  = scalar @{$errors};
         %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
     }
 
@@ -1671,7 +1671,7 @@ sub _build_content_data_preview {
 
     $param{id} = $id if $id;
     $param{new_object} = $param{id} ? 0 : 1;
-    $param{status} = $content_data->status;
+    $param{status}     = $content_data->status;
 
     my @cols = qw(
         blog_id
@@ -1716,13 +1716,14 @@ sub _build_content_data_preview {
     my %param_hash = $app->param_hash;
     for my $param_key ( keys %param_hash ) {
         my $param_value = $app->param($param_key);
-        if ($param_key =~ /\Acontent-field-[0-9]+_convert_breaks\z/
-            || $param_key =~ /\A(date|time)-[0-9]+\z/
-        ) {
-            push @data, {
+        if (   $param_key =~ /\Acontent-field-[0-9]+_convert_breaks\z/
+            || $param_key =~ /\A(date|time)-[0-9]+\z/ )
+        {
+            push @data,
+                {
                 data_name  => $param_key,
                 data_value => $param_value,
-            };
+                };
         }
     }
 
@@ -1758,7 +1759,7 @@ sub _build_content_data_preview {
     $param{title}        = $content_data->label;
 
     my $rev_numbers = $app->param('rev_numbers') || '';
-    my $collision = $app->param('collision');
+    my $collision   = $app->param('collision');
     $param{diff_view} = $rev_numbers || $collision;
     $param{collision} = 1;
     if ( my @rev_numbers = split /,/, $rev_numbers ) {

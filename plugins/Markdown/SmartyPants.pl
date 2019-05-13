@@ -152,7 +152,7 @@ sub SmartyPants {
             }
         }
         else {
-            my $t = $cur_token->[1];
+            my $t         = $cur_token->[1];
             my $last_char = substr( $t, -1 )
                 ;    # Remember last char of this token before processing.
             if ( !$in_pre ) {
@@ -269,7 +269,7 @@ sub SmartQuotes {
             }
         }
         else {
-            my $t = $cur_token->[1];
+            my $t         = $cur_token->[1];
             my $last_char = substr( $t, -1 )
                 ;    # Remember last char of this token before processing.
             if ( !$in_pre ) {

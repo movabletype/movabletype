@@ -131,7 +131,7 @@ sub create {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $site->id );
             if ( !$site->is_blog ) {
-                my @child_blogs = @{ $site->blogs };
+                my @child_blogs    = @{ $site->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }
@@ -212,7 +212,7 @@ sub update {
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
             my @blog_ids = ( $site->id );
             if ( !$site->is_blog ) {
-                my @child_blogs = @{ $site->blogs };
+                my @child_blogs    = @{ $site->blogs };
                 my @child_blog_ids = map { $_->id } @child_blogs;
                 push @blog_ids, @child_blog_ids;
             }

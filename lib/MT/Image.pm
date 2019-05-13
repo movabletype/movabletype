@@ -164,7 +164,7 @@ sub get_image_info {
 }
 
 sub get_image_type {
-    my $class = shift;
+    my $class      = shift;
     my @image_size = $class->get_image_info( Fh => @_ );
 
     ( $image_size[0] && $image_size[1] && $image_size[2] )

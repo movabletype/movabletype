@@ -35,7 +35,7 @@ sub html {
     my $list_style_type
         = $bullet_or_numbered eq 'numbered' ? 'decimal' : 'disc';
 
-    my $values = $content_data->data->{ $prop->content_field_id } || [];
+    my $values      = $content_data->data->{ $prop->content_field_id } || [];
     my $values_html = join '', (
         map {
             qq{<li class="role-item" style="list-style-type: ${list_style_type}">$_</li>}
@@ -49,7 +49,7 @@ sub terms {
     my $prop = shift;
     my ( $args, $db_terms, $db_args ) = @_;
 
-    my $option = $args->{option} || '';
+    my $option    = $args->{option} || '';
     my $join_args = undef;
 
     if ( $option eq 'not_contains' ) {

@@ -71,7 +71,7 @@ sub apply {
 }
 
 sub validate_version {
-    my $element = shift;
+    my $element  = shift;
     my $importer = $_[0] || $element->importer
         or return undef;
     my $v     = $element->{schema_version}       || 1.0;

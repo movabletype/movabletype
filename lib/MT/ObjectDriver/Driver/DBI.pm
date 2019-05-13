@@ -146,7 +146,7 @@ sub count {
     my $driver = shift;
     my ( $class, $terms, $args ) = @_;
 
-    my @joins = ( $args->{join}, @{ $args->{joins} || [] } );
+    my @joins  = ( $args->{join}, @{ $args->{joins} || [] } );
     my $select = 'COUNT(*)';
     for my $join (@joins) {
         if ( $join && $join->[3]->{unique} ) {
@@ -257,7 +257,7 @@ sub _do_group_by {
     $terms ||= {};
     $args  ||= {};    # declare these for pre_search to work
     $class->call_trigger( 'pre_search', $terms, $args );
-    my $order = delete $args->{sort} || '';
+    my $order     = delete $args->{sort} || '';
     my $direction = delete $args->{direction};
     if ( $order =~ /\sdesc|asc/i ) {
         my @new_order;
@@ -388,7 +388,7 @@ sub _select_aggregate {
     $stmt->select_map(         {} );
     $stmt->select_map_reverse( {} );
     $stmt->add_select( $select => $select );
-    my $sql = $stmt->as_sql;
+    my $sql   = $stmt->as_sql;
     my $value = $driver->select_one( $sql, $stmt->bind );
     $class->call_trigger( 'post_select_aggregate', \$value )
         unless $orig_args->{no_triggers};
@@ -712,7 +712,7 @@ sub prepare_statement {
 
             $stmt->add_join(
                 $to_table,
-                {   table => $j_alias ? "$j_table $j_alias" : $j_table,
+                {   table     => $j_alias ? "$j_table $j_alias" : $j_table,
                     condition => $cond_query,
                     type      => $j_args->{type},
                 },

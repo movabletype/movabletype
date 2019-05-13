@@ -145,7 +145,7 @@ sub _list_for_entry {
         or return;
 
     my %terms = ( class => '*' );
-    my %args = (
+    my %args  = (
         join => MT->model('objectasset')->join_on(
             'asset_id',
             {   blog_id   => $blog->id,
@@ -173,7 +173,7 @@ sub list_for_tag {
         or return;
 
     my %terms = ( class => '*' );
-    my %args = (
+    my %args  = (
         join => MT->model('objecttag')->join_on(
             undef,
             {   object_id         => \'= asset_id',
@@ -205,7 +205,7 @@ sub list_for_site_and_tag {
         or return;
 
     my %terms = ( class => '*' );
-    my %args = (
+    my %args  = (
         join => MT->model('objecttag')->join_on(
             undef,
             {   object_id         => \'= asset_id',

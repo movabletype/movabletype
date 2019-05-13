@@ -20,7 +20,7 @@ sub JUNK ()    {'JUNK'}
 use Exporter;
 *import = \&Exporter::import;
 our ( @EXPORT_OK, %EXPORT_TAGS );
-@EXPORT_OK = qw(ABSTAIN HAM SPAM APPROVE JUNK);
+@EXPORT_OK   = qw(ABSTAIN HAM SPAM APPROVE JUNK);
 %EXPORT_TAGS = ( constants => [qw(ABSTAIN HAM SPAM APPROVE JUNK)] );
 
 sub core_filters {
@@ -149,7 +149,7 @@ sub score {
 sub task_expire_junk {
     my $pkg = shift;
     require MT::Blog;
-    my $iter = MT::Blog->load_iter( { class => '*' } );
+    my $iter    = MT::Blog->load_iter( { class => '*' } );
     my $removed = 0;
     my @blogs;
     my $blog;
@@ -212,7 +212,7 @@ sub _expire_commenter_registration {
 
     # remove commenter registration which has already expired (24 hrs)
     MT::Session->remove(
-        { kind => 'CR', start => [ undef, time - 60 * 60 * 24 ] },
+        { kind  => 'CR', start => [ undef, time - 60 * 60 * 24 ] },
         { range => { start => 1 } } );
     1;
 }

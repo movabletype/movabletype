@@ -47,7 +47,7 @@ sub new {
 sub start {
     my $self = shift;
     $self->{uri} = shift || '';
-    $self->{prev} = $self->{first} = Time::HiRes::time();
+    $self->{prev}    = $self->{first} = Time::HiRes::time();
     $self->{paused}  = [];
     $self->{elapsed} = 0;
     $self->{dur}     = [];

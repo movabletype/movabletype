@@ -553,7 +553,7 @@ sub post_upgrade_class {
         return 1 if $type eq 'website' || $type eq 'blog';
 
         my %step_param = ( type => $type );
-        $step_param{plugindata} = 1 if $type eq 'category';
+        $step_param{plugindata}  = 1 if $type eq 'category';
         $step_param{meta_column} = $pc->properties->{meta_column}
             if $pc->properties->{meta_column};
         $self->add_step( 'core_upgrade_meta_for_table', %step_param );

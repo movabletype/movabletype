@@ -94,7 +94,7 @@ sub archive_group_iter {
             return ( 1, entries => [$entry], entry => $entry );
         }
         undef;
-        }
+    }
 }
 
 sub default_archive_templates {

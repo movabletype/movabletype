@@ -25,7 +25,7 @@ sub work {
         my $meta_pkg = MT->model($summarizable)->meta_pkg('summary');
         my $summ_iter
             = $meta_pkg->search( { expired => MT::Summary::NEEDS_JOB(), } );
-        my $class = MT->model($summarizable);
+        my $class    = MT->model($summarizable);
         my $id_field = ( $class->class_type || $class->datasource ) . '_id';
         while ( my $summary = $summ_iter->() ) {
             my $priority

@@ -21,7 +21,7 @@ sub _rco_entries_iter {
     my ( $entry_terms, $entry_args, $blog_terms, $blog_args ) = @_;
 
     my $offset = 0;
-    my $limit = $entry_args->{limit} || 20;
+    my $limit  = $entry_args->{limit} || 20;
     my @entries;
     delete $entry_args->{direction}
         if exists $entry_args->{direction};
@@ -508,7 +508,7 @@ sub _hdlr_entries {
         if ($cexpr) {
             my %map;
             require MT::Placement;
-            my @cat_ids = map { $_->id } @$cats;
+            my @cat_ids   = map { $_->id } @$cats;
             my $preloader = sub {
                 my ($id) = @_;
                 my @c_ids = MT::Placement->load(
@@ -552,7 +552,7 @@ sub _hdlr_entries {
         my $terms;
         if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
             my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
+            $terms   = { name => \@tags };
             $tag_arg = join " or ", @tags;
         }
         my $tags = [
@@ -1048,7 +1048,7 @@ sub _hdlr_entries {
         my $col = $args->{sort_by} || 'authored_on';
         if ( 'score' eq $col ) {
             my $so = $args->{sort_order} || '';
-            my %e = map { $_->id => $_ } @entries;
+            my %e   = map { $_->id => $_ } @entries;
             my @eid = keys %e;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->sum_group_by(
@@ -1092,7 +1092,7 @@ sub _hdlr_entries {
         }
         elsif ( 'rate' eq $col ) {
             my $so = $args->{sort_order} || '';
-            my %e = map { $_->id => $_ } @entries;
+            my %e   = map { $_->id => $_ } @entries;
             my @eid = keys %e;
             require MT::ObjectScore;
             my $scores = MT::ObjectScore->avg_group_by(
@@ -1300,7 +1300,7 @@ sub _hdlr_entry_nextprev {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $terms = { status => MT::Entry::RELEASE() };
-    $terms->{by_author} = 1 if $args->{by_author};
+    $terms->{by_author}   = 1 if $args->{by_author};
     $terms->{by_category} = 1 if $args->{by_category} || $args->{by_folder};
     my $entry = $e->$meth($terms);
     my $res   = '';
@@ -1435,7 +1435,7 @@ sub _hdlr_entries_count {
     }
     else {
         my $class_type = $args->{class_type} || 'entry';
-        my $class = MT->model($class_type);
+        my $class      = MT->model($class_type);
         my $cat_class
             = MT->model( $class_type eq 'entry' ? 'category' : 'folder' );
 
@@ -1458,7 +1458,7 @@ sub _hdlr_entries_count {
         elsif ( $blog && ( $limit = $blog->entries_on_index ) ) {
             $args->{lastn} = $limit;
         }
-        $args{'sort'} = 'authored_on';
+        $args{'sort'}    = 'authored_on';
         $args{direction} = 'descend';
 
         my $iter = $class->load_iter( \%terms, \%args );
@@ -1963,7 +1963,7 @@ sub _hdlr_entry_permalink {
     my $e = $ctx->stash('entry')
         or return $ctx->_no_entry_error();
     my $blog = $ctx->stash('blog');
-    my $at = $args->{type} || $args->{archive_type};
+    my $at   = $args->{type} || $args->{archive_type};
     if ($at) {
         return $ctx->error(
             MT->translate(
@@ -2505,7 +2505,7 @@ B<Example:>
 
 sub _hdlr_entry_edit_link {
     my ( $ctx, $args ) = @_;
-    my $user = $ctx->stash('user') or return '';
+    my $user  = $ctx->stash('user') or return '';
     my $entry = $ctx->stash('entry')
         or return $ctx->error(
         MT->translate(
@@ -2524,7 +2524,7 @@ sub _hdlr_entry_edit_link {
         }
     );
     return '' unless $perms && $perms->can_edit_entry( $entry, $user );
-    my $app = MT->instance;
+    my $app       = MT->instance;
     my $edit_text = $args->{text} || $app->translate("Edit");
     return sprintf q([<a href="%s%s%s">%s</a>]), $url, $cfg->AdminScript,
         $app->uri_params(
@@ -2572,7 +2572,7 @@ currently in context.
 sub _hdlr_blog_entry_count {
     my ( $ctx, $args, $cond ) = @_;
     my $class_type = $args->{class_type} || 'entry';
-    my $class = MT->model($class_type);
+    my $class      = MT->model($class_type);
     my ( %terms, %args );
     $ctx->set_blog_load_context( $args, \%terms, \%args )
         or return $ctx->error( $ctx->errstr );

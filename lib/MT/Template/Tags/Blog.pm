@@ -227,8 +227,8 @@ sub _loop {
         if $args->{ignore_archive_context};
     local $ctx->{__stash}{inside_blogs} = 1;
 
-    $terms{class} = 'blog' unless $terms{class};
-    $args{'sort'} = 'name';
+    $terms{class}    = 'blog' unless $terms{class};
+    $args{'sort'}    = 'name';
     $args{direction} = 'ascend';
 
     my @sites = MT->model('blog')->load( \%terms, \%args );

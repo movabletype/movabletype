@@ -171,8 +171,8 @@ sub _nextprev {
             created_on => ( $next ? [ $ts, undef ] : [ undef, $ts ] ),
             %{$publish_only}
         },
-        {   'sort'      => 'created_on',
-            'direction' => $next ? 'ascend' : 'descend',
+        {   'sort'       => 'created_on',
+            'direction'  => $next ? 'ascend' : 'descend',
             'range_incl' => { 'created_on' => 1 },
             'limit'      => 10,
         }

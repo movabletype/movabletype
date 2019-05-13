@@ -103,7 +103,7 @@ sub purge {
     $class = ref($class) if ref($class);
 
     my $terms = { $kind ? ( kind => $kind ) : () };
-    my $args = {};
+    my $args  = {};
     if ($ttl) {
         $terms->{start} = [ undef, time - $ttl ];
         $args->{range} = { start => 1 };

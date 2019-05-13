@@ -50,7 +50,7 @@ sub description {
 
 sub settings {
     my $plugin = shift;
-    my $s = &MT::Component::_getset( $plugin, 'settings', @_ );
+    my $s      = &MT::Component::_getset( $plugin, 'settings', @_ );
     unless ( ref($s) eq 'MT::PluginSettings' ) {
         $s = MT::PluginSettings->new($s);
         &MT::Component::_getset( $plugin, 'settings', $s );
@@ -163,7 +163,7 @@ sub set_config_value {
         ( $variable, $value, $scope ) = @_;
         $vars = { $variable => $value };
     }
-    my $pdata_obj = $plugin->get_config_obj($scope);
+    my $pdata_obj     = $plugin->get_config_obj($scope);
     my $configuration = $pdata_obj->data() || {};
     $configuration->{$_} = $vars->{$_} for keys %$vars;
     $pdata_obj->data($configuration);

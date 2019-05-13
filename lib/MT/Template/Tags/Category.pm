@@ -63,7 +63,7 @@ sub _get_category_context {
             my $map = $ctx->stash('template_map');
             unless ($map) {
                 my $content_type_id = $content_data->content_type_id;
-                my $at = $ctx->{archive_type} || 'ContentType';
+                my $at              = $ctx->{archive_type} || 'ContentType';
                 ($map) = MT->model('templatemap')->load(
                     { archive_type => $at, is_preferred => 1 },
                     {   join => MT->model('template')->join_on(
@@ -250,7 +250,7 @@ sub _hdlr_categories {
         = lc( $args->{sort_order} || '' ) eq 'descend' ? 'descend' : 'ascend';
 
     my $class_type = $args->{class_type} || 'category';
-    my $class = MT->model($class_type);
+    my $class      = MT->model($class_type);
     my $entry_class
         = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
     my %counts;
@@ -259,7 +259,7 @@ sub _hdlr_categories {
         ? 'CategoryCount'
         : 'FolderCount';
     my $uncompiled = $ctx->stash('uncompiled') || '';
-    my $count_all = 0;
+    my $count_all  = 0;
 
     if ( !$args->{show_empty} || $uncompiled =~ /<\$?mt:?$count_tag/i ) {
         $count_all = 1;
@@ -702,7 +702,7 @@ sub _hdlr_sub_categories {
     my ( $ctx, $args, $cond ) = @_;
 
     my $class_type = $args->{class_type} || 'category';
-    my $class = MT->model($class_type);
+    my $class      = MT->model($class_type);
     my $entry_class
         = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
 
@@ -1864,7 +1864,7 @@ Or more simply:
 sub _hdlr_sub_cats_recurse {
     my ( $ctx, $args ) = @_;
     my $class_type = $args->{class_type} || 'category';
-    my $class = MT->model($class_type);
+    my $class      = MT->model($class_type);
     my $entry_class
         = MT->model( $class_type eq 'category' ? 'entry' : 'page' );
 
@@ -1885,7 +1885,7 @@ sub _hdlr_sub_cats_recurse {
 
     # Get the depth info
     my $max_depth = $args->{max_depth};
-    my $depth = $ctx->stash('subCatsDepth') || 0;
+    my $depth     = $ctx->stash('subCatsDepth') || 0;
 
     # Get the sorting info
     my $sort_method = $ctx->stash('subCatsSortMethod');

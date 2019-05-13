@@ -64,8 +64,8 @@ sub _hdlr_calendar {
     my ( $ctx, $args, $cond ) = @_;
     my $blog_id = $ctx->stash('blog_id');
     my ($prefix);
-    my @ts = offset_time_list( time, $blog_id );
-    my $today = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
+    my @ts                = offset_time_list( time, $blog_id );
+    my $today             = sprintf "%04d%02d", $ts[5] + 1900, $ts[4] + 1;
     my $start_with_offset = 0;
     if ( my $start_with = lc( $args->{weeks_start_with} || '' ) ) {
         $start_with_offset = {

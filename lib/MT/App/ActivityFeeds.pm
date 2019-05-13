@@ -142,7 +142,7 @@ sub session {
 # data is populated by callback, so plugins can intercept the feed
 # elements if so desired, or can append things to a feed as well.
 sub mode_default {
-    my $app = shift;
+    my $app  = shift;
     my $view = $app->param('view') || 'system';
 
     eval {
@@ -261,7 +261,7 @@ sub process_log_feed {
         my $ts_iso = time2isoz( ts2epoch( undef, $ts ) );
         $ts_iso =~ s/ /T/;
         $item->{'log.created_on_iso'} = $ts_iso;
-        my $id = $item->{'log.id'};
+        my $id   = $item->{'log.id'};
         my $year = substr( $ts, 0, 4 );
         $item->{'log.permalink'}
             = encode_xml( $log_view_url . '&filter=id&filter_val=' . $id );
@@ -561,7 +561,7 @@ sub _feed_system {
         }
     }
     $args->{_type} = 'log';
-    my $link = $app->base . $app->mt_uri( mode => 'list', args => $args );
+    my $link  = $app->base . $app->mt_uri( mode => 'list', args => $args );
     my $param = {
         feed_link  => $link,
         feed_title => $app->translate('Movable Type System Activity')

@@ -45,7 +45,7 @@ sub _login {
     }
 
     my $remember = $app->param('remember');
-    my $session = $app->make_session( $author, $remember ) or return;
+    my $session  = $app->make_session( $author, $remember ) or return;
 
     $app->user($author);
     $app->{session} = $session;

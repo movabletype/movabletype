@@ -12,7 +12,7 @@ use IO::File;
 
 sub new {
     my $class = shift;
-    my $self = bless {}, $class;
+    my $self  = bless {}, $class;
     $self->init(@_);
     $self;
 }

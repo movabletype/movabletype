@@ -92,7 +92,7 @@ sub list_props {
                 return @$objs unless @$objs;
                 my $content_type = $objs->[0]->content_type;
                 return @$objs unless $content_type;
-                my %obj_hash = map { $_->id => $_ } @$objs;
+                my %obj_hash  = map { $_->id => $_ } @$objs;
                 my @field_ids = map { $_->{id} } @{ $content_type->fields };
                 map      { $obj_hash{$_} }
                     grep { exists $obj_hash{$_} } @field_ids;
@@ -315,7 +315,7 @@ sub type_registry {
 }
 
 sub data_type {
-    my $self = shift;
+    my $self          = shift;
     my $type_registry = $self->type_registry or return;
     $type_registry->{data_type};
 }

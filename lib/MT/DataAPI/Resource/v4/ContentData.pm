@@ -79,7 +79,7 @@ sub fields {
 
                     for my $field ( @{ $content_type->fields } ) {
                         my $field_id = $field->{id};
-                        my $options = $field->{options} || {};
+                        my $options  = $field->{options} || {};
                         my ($field_hash_data)
                             = grep { $_->{id} && $_->{id} == $field_id }
                             @$hash_data;

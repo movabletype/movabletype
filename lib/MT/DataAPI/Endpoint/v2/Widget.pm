@@ -55,7 +55,7 @@ sub list_for_widgetset {
         or return;
 
     my @widget_ids = split ',', $ws->modulesets;
-    my %terms = (
+    my %terms      = (
         id   => \@widget_ids,
         type => 'widget',
     );
@@ -114,7 +114,7 @@ sub create {
     my $orig_widget = $app->model('template')->new;
     $orig_widget->set_values(
         {   blog_id => $site->id || 0,
-            type => 'widget',
+            type    => 'widget',
         }
     );
 

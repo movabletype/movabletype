@@ -10,13 +10,13 @@ package MT::Tool::RemoveOldSessions;
 use strict;
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use base qw( MT::Tool );
 
 use Carp qw(confess);
 use MT::Upgrade;
 
-sub usage { '[--ttl <days>] [--kind <comma,separated,list,of,kinds>]' }
+sub usage {'[--ttl <days>] [--kind <comma,separated,list,of,kinds>]'}
 
 sub help {
     return q{
@@ -37,7 +37,7 @@ sub help {
     };
 }
 
-my ($ttl, $kind);
+my ( $ttl, $kind );
 
 sub options {
     return (
@@ -46,19 +46,19 @@ sub options {
     );
 }
 
-
 sub main {
     my $class = shift;
     my ($verbose) = $class->SUPER::main(@_);
 
-    unless ( $ttl ) {
-        print "Please specify the duration (in days) of session records to be removed.  cf: remove_old_sessions --ttl 30";
+    unless ($ttl) {
+        print
+            "Please specify the duration (in days) of session records to be removed.  cf: remove_old_sessions --ttl 30";
         exit;
     }
 
-    my $days = $ttl * 60 * 60 * 24; # ttl comes in days
+    my $days = $ttl * 60 * 60 * 24;    # ttl comes in days
     my @kinds;
-    if ( $kind ) {
+    if ($kind) {
         @kinds = split ',', $kind;
     }
 
@@ -66,26 +66,27 @@ sub main {
         @kinds ? ( kind => \@kinds ) : (),
         start => [ undef, time - $days ],
     };
-    my $args = {
-        range => { start => 1 }
-    };
+    my $args = { range => { start => 1 } };
 
     require MT::Session;
     my %kinds;
-    my $group_iter = MT::Session->count_group_by(
-        $terms,
-        { %$args, group => [ 'kind' ] }
-    );
-    while ( my ($count, $kind ) = $group_iter->() ) {
+    my $group_iter = MT::Session->count_group_by( $terms,
+        { %$args, group => ['kind'] } );
+    while ( my ( $count, $kind ) = $group_iter->() ) {
+
         # Don't remove user session records in this script
         # unless explicitly specified
-        next if !@kinds && 
-             ( ( $kind eq 'US' ) || ( $kind eq 'UA' ) || ( $kind eq 'SI' ) );
+        next
+            if !@kinds
+            && ( ( $kind eq 'US' )
+            || ( $kind eq 'UA' )
+            || ( $kind eq 'SI' ) );
         $kinds{$kind} = $count;
     }
 
-    unless ( %kinds ) {
-        print "No records that are older than $ttl days found.  Quitting...\n";
+    unless (%kinds) {
+        print
+            "No records that are older than $ttl days found.  Quitting...\n";
         exit;
     }
 
@@ -94,8 +95,8 @@ sub main {
         print "\t$key: $val\n";
     }
     print "Proceed? [n]: ";
-    my $proceed = <STDIN>; 
-    chomp($proceed); 
+    my $proceed = <STDIN>;
+    chomp($proceed);
     exit unless $proceed =~ /^[Yy][Ee]?[Ss]?$/;
 
     $terms->{kind} = [ keys %kinds ] unless @kinds;

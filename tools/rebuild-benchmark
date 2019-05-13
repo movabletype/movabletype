@@ -2,7 +2,7 @@
 
 use strict;
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 binmode STDOUT, ":utf8";
 binmode STDERR, ":utf8";
 
@@ -18,13 +18,13 @@ use MT::Blog;
 # Set default option value
 my @blog_ids;
 my @templates;
-my $entry_id  = 0;
-my $count     = 1;
-my $mt_url    = '';
-my $username  = 'Melody';
-my $password  = 'Nelson';
-my $silent    = 0;
-my $usage     = 0;
+my $entry_id = 0;
+my $count    = 1;
+my $mt_url   = '';
+my $username = 'Melody';
+my $password = 'Nelson';
+my $silent   = 0;
+my $usage    = 0;
 
 GetOptions(
     'blog_id=s'  => \@blog_ids,
@@ -39,7 +39,7 @@ GetOptions(
 
 # Construct MT object
 my $mt = new MT
-  or die "Not MT object " . MT->errstr();
+    or die "Not MT object " . MT->errstr();
 
 # Validation of required options
 if (   $usage
@@ -53,14 +53,14 @@ if (   $usage
 
 # Parse and load blog
 if (@blog_ids) {
-    @blog_ids = split(/,/, join(',', @blog_ids));
+    @blog_ids = split( /,/, join( ',', @blog_ids ) );
 }
 my @blogs = MT::Blog->load( { ( @blog_ids ? ( id => @blog_ids ) : () ), } )
     or die "Couldn't load blogs. [" . Dumper(@blog_ids) . "]\n";
 
 # Parse template option
 if (@templates) {
-    @templates = split(/,/, join(',', @templates));
+    @templates = split( /,/, join( ',', @templates ) );
 }
 
 # Construct UserAgent object
@@ -76,9 +76,12 @@ my $scraper = scraper {
 };
 
 # call rebuild
-for ( my $count_i = 0 ; $count_i < $count ; $count_i++ ) {
+for ( my $count_i = 0; $count_i < $count; $count_i++ ) {
     foreach my $blog (@blogs) {
-        logging( "rebuilding (" . ($count_i + 1) . ") " . $blog->name . " ...\n" );
+        logging(  "rebuilding ("
+                . ( $count_i + 1 ) . ") "
+                . $blog->name
+                . " ...\n" );
         run_rebuild($blog);
     }
 }
@@ -133,8 +136,7 @@ sub run_rebuild {
                 };
                 $total = MT::Author->count(
                     undef,
-                    {
-                        join => MT::Entry->join_on(
+                    {   join => MT::Entry->join_on(
                             'author_id', $terms, { unique => 1 }
                         ),
                         unique => 1,
@@ -143,33 +145,33 @@ sub run_rebuild {
             }
         }
 
-        my $url =
-            $mt_url
-          . "?__mode=rebuild"
-          . "&blog_id="
-          . $blog->id
-          . "&next=0"
-          . "&offset=0"
-          . "&limit=20"
-          . "&entry_id="
-          . "&is_new="
-          . "&old_status="
-          . "&old_previous="
-          . "&old_next="
-          . "&total="
-          . $total
-          . "&type="
-          . $at;
+        my $url
+            = $mt_url
+            . "?__mode=rebuild"
+            . "&blog_id="
+            . $blog->id
+            . "&next=0"
+            . "&offset=0"
+            . "&limit=20"
+            . "&entry_id="
+            . "&is_new="
+            . "&old_status="
+            . "&old_previous="
+            . "&old_next="
+            . "&total="
+            . $total
+            . "&type="
+            . $at;
         do {
             $url .= "&username=" . $username;
             $url .= "&password=" . $password;
-            my $req = new HTTP::Request( GET => $url );
+            my $req  = new HTTP::Request( GET => $url );
             my $resp = $ua->request($req);
             if ( $resp->is_success ) {
                 my $res = $scraper->scrape( $resp->content() );
                 if ( $res->{status_publishing} ) {
-                    ( undef, $url ) =
-                      $resp->content() =~ /window.location='(.*)\?(.*)'/;
+                    ( undef, $url )
+                        = $resp->content() =~ /window.location='(.*)\?(.*)'/;
                     $url = $mt_url . "?" . $url;
                 }
                 elsif ( $res->{status_success} ) {
@@ -177,19 +179,19 @@ sub run_rebuild {
                     $url = undef;
                 }
                 elsif ( $res->{status_error} ) {
-                    logging("\t" 
-                          . $at
-                          . " built failed. "
-                          . $res->{status_error}
-                          . "\n" );
+                    logging(  "\t"
+                            . $at
+                            . " built failed. "
+                            . $res->{status_error}
+                            . "\n" );
                     $url = undef;
                 }
                 else {
-                    logging("\t" 
-                          . $at
-                          . " built failed.\n"
-                          . $resp->content()
-                          . "\n" );
+                    logging(  "\t"
+                            . $at
+                            . " built failed.\n"
+                            . $resp->content()
+                            . "\n" );
                     $url = undef;
                 }
             }
@@ -200,7 +202,9 @@ sub run_rebuild {
             }
         } while ($url);
 
-        logging( "\t  total build time:" . ( Time::HiRes::time() - $start ) . "\n" );
+        logging(  "\t  total build time:"
+                . ( Time::HiRes::time() - $start )
+                . "\n" );
     }
 }
 

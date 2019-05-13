@@ -41,7 +41,7 @@ sub _load_all_themes {
     }
 
     for (@themes) {
-        $_->{label} = $_->{label}->() if ref $_->{label};
+        $_->{label}      = $_->{label}->() if ref $_->{label};
         $_->{blog_count} = MT->model('blog')
             ->count( { class => '*', theme_id => $_->id } );
     }
@@ -445,7 +445,7 @@ sub export {
     }
 
     ## Pick up settings.
-    my $hdlrs = MT->registry('theme_element_handlers');
+    my $hdlrs    = MT->registry('theme_element_handlers');
     my %includes = map { $_ => 1 } ( $app->multi_param('include') );
     my %exporter;
     my $settings = $blog->theme_export_settings || {};
@@ -473,8 +473,8 @@ sub export {
             : ()
         ),
         author_link => $theme_author_link || '',
-        version => $theme_version,
-        class => ( $blog->is_blog ? 'blog' : 'website' ),
+        version     => $theme_version,
+        class       => ( $blog->is_blog ? 'blog' : 'website' ),
         description => $description || '',
     };
 
@@ -579,7 +579,7 @@ sub export {
             $app->translate( "Unknown archiver type: [_1]", $arctype ), 400 );
         require MT::Util::Archive;
         my $arcfile = File::Temp::tempnam( $tmproot, $theme_id );
-        my $arc = MT::Util::Archive->new( $arctype, $arcfile )
+        my $arc     = MT::Util::Archive->new( $arctype, $arcfile )
             or return $app->error(
             $app->translate(
                 "Cannot load archiver : " . MT::Util::Archive->errstr

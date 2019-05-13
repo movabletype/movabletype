@@ -24,7 +24,7 @@ sub is_ready {
 sub snipet {
     my $self = shift;
     my ( $ctx, $args ) = @_;
-    my $app = MT->instance;
+    my $app        = MT->instance;
     my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog )
         or return q();
     <<__HTML__;
@@ -83,7 +83,7 @@ sub _request {
 
     require GoogleAnalytics::OAuth2;
     my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog );
-    my $token = effective_token( $app, $plugindata )
+    my $token      = effective_token( $app, $plugindata )
         or return;
 
     my $config = $plugindata->data;
@@ -115,7 +115,7 @@ sub _request {
     my $data
         = MT::Util::from_json( Encode::decode( 'utf-8', $res->content ) );
 
-    my @headers = map { _name( $_->{name} ) } @{ $data->{columnHeaders} };
+    my @headers    = map { _name( $_->{name} ) } @{ $data->{columnHeaders} };
     my $date_index = undef;
     for ( my $i = 0; $i <= $#headers; $i++ ) {
         if ( $headers[$i] eq 'date' ) {

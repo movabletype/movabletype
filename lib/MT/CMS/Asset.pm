@@ -74,7 +74,7 @@ sub edit {
         my $appears_in_uneditables = 0;
         my $place_class            = $app->model('objectasset');
         my $place_iter             = $place_class->load_iter(
-            {   blog_id => $obj->blog_id || 0,
+            {   blog_id  => $obj->blog_id || 0,
                 asset_id => $obj->parent ? $obj->parent : $obj->id
             }
         );
@@ -172,7 +172,7 @@ sub dialog_list_asset {
 
     return dialog_asset_modal( $app, @_ ) unless $app->param('json');
 
-    my $blog_id = $app->param('blog_id');
+    my $blog_id      = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
         if !$blog_id && $mode_userpic ne 'upload_userpic';
@@ -345,8 +345,8 @@ sub insert {
     if ($extension_message) {
         $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
-            {   upload_html => $text || '',
-                edit_field => $edit_field,
+            {   upload_html       => $text || '',
+                edit_field        => $edit_field,
                 extension_message => $extension_message,
                 asset_type        => $asset->class,
             },
@@ -378,7 +378,7 @@ sub asset_userpic {
         $id = $asset->id;
     }
     else {
-        $id = $param->{asset_id} || $app->param('id');
+        $id    = $param->{asset_id} || $app->param('id');
         $asset = $app->model('asset')->lookup($id);
     }
 
@@ -494,7 +494,7 @@ sub js_upload_file {
     my $app = shift;
 
     my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
-    my $user_id = $app->param('user_id');
+    my $user_id    = $app->param('user_id');
     if ($is_userpic) {
         return $app->error(
             $app->json_error( $app->translate("Invalid Request.") ) )
@@ -528,7 +528,7 @@ sub js_upload_file {
     # Save as asset
     my ( $asset, $bytes ) = _upload_file(
         $app,
-        require_type => ( $app->param('require_type') || '' ),
+        require_type  => ( $app->param('require_type') || '' ),
         error_handler => sub {
             my ( $_app, %params ) = @_;
             return $app->error( $app->json_error( $params{error} ) );
@@ -838,7 +838,7 @@ sub complete_upload {
         if ( $param{tags} ) {
             require MT::Tag;
             my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-            my @tags = MT::Tag->split( $tag_delim, $param{tags} );
+            my @tags      = MT::Tag->split( $tag_delim, $param{tags} );
             $asset->set_tags(@tags);
         }
         $asset->save();
@@ -923,7 +923,7 @@ sub pre_save {
 
         require MT::Tag;
         my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-        my @tags = MT::Tag->split( $tag_delim, $tags );
+        my @tags      = MT::Tag->split( $tag_delim, $tags );
         if (@tags) {
             $obj->set_tags(@tags);
         }
@@ -1114,7 +1114,7 @@ sub build_asset_table {
         $iter = $args{iter};
     }
     elsif ( $args{items} ) {
-        $iter = sub { pop @{ $args{items} } };
+        $iter  = sub { pop @{ $args{items} } };
         $limit = scalar @{ $args{items} };
     }
     return [] unless $iter;
@@ -1165,7 +1165,7 @@ sub _process_post_upload {
         if ( $param{tags} ) {
             require MT::Tag;
             my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-            my @tags = MT::Tag->split( $tag_delim, $param{tags} );
+            my @tags      = MT::Tag->split( $tag_delim, $param{tags} );
             $asset->set_tags(@tags);
         }
         $asset->save();
@@ -1377,7 +1377,7 @@ sub _upload_file_compat {
     require MT::Image;
 
     my $app_id = $app->id;
-    my $eh = $upload_param{error_handler} || sub {
+    my $eh     = $upload_param{error_handler} || sub {
         start_upload(@_);
     };
     my $exists_handler = $upload_param{exists_handler} || sub {
@@ -1589,7 +1589,7 @@ sub _upload_file_compat {
                     $app->translate( "Invalid temp file name '[_1]'", $tmp ) )
                     unless _is_valid_tempfile_basename($tmp);
 
-                my $tmp_dir = $app->config('TempDir');
+                my $tmp_dir  = $app->config('TempDir');
                 my $tmp_file = File::Spec->catfile( $tmp_dir, $tmp );
                 if ( $app->param('overwrite_yes') ) {
                     $fh = gensym();
@@ -1716,7 +1716,7 @@ sub _upload_file_compat {
         my $i = 1;
         while ( $fmgr->exists($local_file) ) {
             $unique_stem = join q{-}, $stem, $i++;
-            $local_file = File::Spec->catfile( $param{support_path},
+            $local_file  = File::Spec->catfile( $param{support_path},
                 $unique_stem . $type );
         }
 
@@ -1813,8 +1813,8 @@ sub _upload_file_compat {
     ## Also, get rid of a slash at the front, if present.
     $relative_path =~ s!\\!/!g;
     $relative_path =~ s!^/!!;
-    $relative_url =~ s!\\!/!g;
-    $relative_url =~ s!^/!!;
+    $relative_url  =~ s!\\!/!g;
+    $relative_url  =~ s!^/!!;
     my $url = $base_url;
     $url .= '/' unless $url =~ m!/$!;
     $url .= $relative_url;
@@ -2351,8 +2351,8 @@ sub _upload_file {
     ## in to the templates. So, we want to replace all of the '\' characters
     ## with '/' characters so that it won't look like backslashed characters.
     ## Also, get rid of a slash at the front, if present.
-    $extra_path =~ s!\\!/!g;
-    $extra_path =~ s!^/!!;
+    $extra_path   =~ s!\\!/!g;
+    $extra_path   =~ s!^/!!;
     $relative_url =~ s!\\!/!g;
     $relative_url =~ s!^/!!;
     my $url = $base_url;
@@ -2631,7 +2631,7 @@ sub _check_thumbnail_dir {
         push @warnings, \%hash;
     }
     if ( $app->blog->column('archive_path') ) {
-        my $archive_path = $app->blog->archive_path;
+        my $archive_path       = $app->blog->archive_path;
         my $archive_thumb_path = File::Spec->catdir( $archive_path, $path );
         if ( $fmgr->exists($archive_thumb_path)
             && !$fmgr->can_write($archive_thumb_path) )
@@ -2737,8 +2737,8 @@ sub dialog_edit_asset {
 
     require MT::Tag;
     my $tag_delim = chr( $app->user->entry_prefs->{tag_delim} );
-    my $tags = MT::Tag->join( $tag_delim, $asset->tags );
-    $param->{tags} = $tags;
+    my $tags      = MT::Tag->join( $tag_delim, $asset->tags );
+    $param->{tags}                  = $tags;
     $param->{'auth_pref_tag_delim'} = $tag_delim
         if $tag_delim;
 
@@ -2832,7 +2832,7 @@ sub dialog_edit_image {
 
     my $asset;
 
-    my $id = $app->param('id');
+    my $id      = $app->param('id');
     my $blog_id = $app->param('blog_id') || 0;
     if ($id) {
         $asset
@@ -2885,7 +2885,7 @@ sub dialog_edit_image {
 sub thumbnail_image {
     my ($app) = @_;
 
-    my $id = $app->param('id');
+    my $id      = $app->param('id');
     my $blog_id = $app->param('blog_id') || 0;
 
     # Thumbnail size on "Edit Image" screen is 240.
@@ -2929,7 +2929,7 @@ sub transform_image {
     }
 
     # Load image.
-    my $id = $app->param('id');
+    my $id    = $app->param('id');
     my $asset = $app->model('asset')->load( { id => $id, class => 'image' } )
         or return $app->errtrans('Invalid request.');
 
@@ -2981,7 +2981,7 @@ sub transform_image {
 sub dialog_asset_modal {
     my $app = shift;
 
-    my $blog_id = $app->param('blog_id');
+    my $blog_id      = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
     return $app->return_to_dashboard( redirect => 1 )
         if !$blog_id && $mode_userpic ne 'upload_userpic';
@@ -3272,7 +3272,7 @@ sub insert_asset {
         my $tmpl = $app->load_tmpl(
             'dialog/asset_insert.tmpl',
             {   upload_html => $text || '',
-                edit_field => $edit_field,
+                edit_field  => $edit_field,
             },
         );
         my $ctx = $tmpl->context;

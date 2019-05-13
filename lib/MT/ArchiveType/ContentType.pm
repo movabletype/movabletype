@@ -112,7 +112,7 @@ sub archive_group_iter {
             return ( 1, contents => [$content], content => $content );
         }
         undef;
-        }
+    }
 }
 
 sub default_archive_templates {

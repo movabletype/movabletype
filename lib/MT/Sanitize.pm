@@ -61,7 +61,7 @@ sub sanitize {
     my $seq      = 0;
 
     while ( $s =~ m|<|gs ) {
-        my $start = ( pos $s ) - 1;
+        my $start  = ( pos $s ) - 1;
         my $inside = substr( $s, $start + 1, 5 );    # 5 chars should do it...
         if ( $last_pos < $start ) {
             $out .= substr( $s, $last_pos, $start - $last_pos );

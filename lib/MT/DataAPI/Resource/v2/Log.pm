@@ -89,7 +89,7 @@ sub fields {
                 my ( $objs, $hashes ) = @_;
 
                 my @author_ids = grep {$_} map { $_->author_id } @$objs;
-                my %authors = ();
+                my %authors    = ();
                 my @authors
                     = @author_ids
                     ? MT->model('author')->load( { id => \@author_ids, } )
@@ -98,7 +98,7 @@ sub fields {
 
                 my $size = scalar(@$objs);
                 for ( my $i = 0; $i < $size; $i++ ) {
-                    my $obj = $objs->[$i];
+                    my $obj    = $objs->[$i];
                     my $author = $authors{ $obj->author_id || 0 } or next;
                     $hashes->[$i]{by}
                         = MT::DataAPI::Resource->from_object( $author,

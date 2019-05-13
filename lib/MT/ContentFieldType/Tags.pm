@@ -135,7 +135,7 @@ sub html {
 sub ss_validator {
     my ( $app, $field_data, $data ) = @_;
 
-    my $options = $field_data->{options} || {};
+    my $options     = $field_data->{options} || {};
     my $field_label = $options->{label};
 
     my $iter = MT::Tag->load_iter( { name => @$data ? $data : 0 },

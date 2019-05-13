@@ -210,7 +210,7 @@ sub archive_group_iter {
             return ( $count, %hash );
         }
         undef;
-        }
+    }
 }
 
 sub archive_group_contents {
@@ -221,7 +221,7 @@ sub archive_group_contents {
         ? sprintf( "%04d%02d%02d000000",
         week2ymd( $param->{year}, $param->{week} ) )
         : $ctx->{current_timestamp};
-    my $cat = $param->{category} || $ctx->stash('archive_category');
+    my $cat   = $param->{category} || $ctx->stash('archive_category');
     my $limit = $param->{limit};
     $obj->dated_category_contents( $ctx, $obj->name, $cat, $ts,
         $limit, $content_type_id );

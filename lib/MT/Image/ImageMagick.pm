@@ -264,7 +264,7 @@ sub blob {
 
 sub _set_quality {
     my ( $image, $quality ) = @_;
-    my $type = $image->{type} or return 1;
+    my $type   = $image->{type} or return 1;
     my $magick = $image->{magick};
 
     if ( !defined $quality ) {

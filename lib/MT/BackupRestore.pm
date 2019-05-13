@@ -397,7 +397,7 @@ sub _loop_through_objects {
             @metacolumns = MT::Meta->metadata_by_class($class);
         }
         my $records = 0;
-        my $state = MT->translate( 'Exporting [_1] records:', $class );
+        my $state   = MT->translate( 'Exporting [_1] records:', $class );
         $progress->( $state, $class->class_type || $class->datasource );
         my $limit         = 50;
         my $offset        = 0;
@@ -567,7 +567,7 @@ sub restore_process_single_file {
 
     $parser = MT::Util::sax_parser();
     $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
-    $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
+    $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
     if ( my $e = $@ ) {
@@ -652,7 +652,7 @@ sub restore_directory {
     my @blog_ids;
     my @asset_ids;
     for my $file (@$files) {
-        my $fh = gensym;
+        my $fh       = gensym;
         my $filepath = File::Spec->catfile( $dir, $file );
         open $fh, "<", $filepath
             or push @$errors, MT->translate("Cannot open [_1]."), next;
@@ -917,7 +917,7 @@ sub cb_restore_objects {
             my $old_fields = $content_type->fields;
             my @new_fields;
             for my $f (@$old_fields) {
-                my $old_id = $f->{id} or next;
+                my $old_id    = $f->{id} or next;
                 my $new_field = $all_objects->{"MT::ContentField#$old_id"}
                     or next;
                 $f->{id}        = $new_field->id;
@@ -1093,7 +1093,7 @@ sub _sync_asset_url {
         $_->id => {
             'filename' => quotemeta( encode_url( $_->file_name ) ),
             'url'      => $_->url
-            }
+        }
     } @children;
 
     $text
@@ -1707,7 +1707,7 @@ package MT::ContentField;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id         => [ MT->model('blog'), MT->model('website') ],
         content_type_id => [ MT->model('content_type') ],
         related_content_type_id =>
             { class => MT->model('content_type'), optional => 1 },
@@ -1845,7 +1845,7 @@ package MT::Permission;
 
 sub parents {
     my $obj = shift;
-    {   blog_id => [ MT->model('blog'), MT->model('website') ],
+    {   blog_id   => [ MT->model('blog'), MT->model('website') ],
         author_id => { class => MT->model('author'), optional => 1 },
     };
 }

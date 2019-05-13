@@ -134,7 +134,7 @@ sub get_auth_info {
     my $app = shift;
     my %param;
     if ( $app->{is_soap} ) {
-        my $xml = $app->xml_body;
+        my $xml  = $app->xml_body;
         my $auth = first( $xml, NS_WSSE, 'UsernameToken' );
         $param{Username}       = textValue( $auth, NS_WSSE, 'Username' );
         $param{PasswordDigest} = textValue( $auth, NS_WSSE, 'Password' );
@@ -496,7 +496,7 @@ sub get_weblogs {
     require XML::XPath::Node::Namespace;
     require XML::XPath::Node::Text;
 
-    my $doc = XML::XPath::Node::Element->new('service');
+    my $doc    = XML::XPath::Node::Element->new('service');
     my $app_ns = XML::XPath::Node::Namespace->new( '#default' => NS_APP() );
     $doc->appendNamespace($app_ns);
     my $atom_ns = XML::XPath::Node::Namespace->new(
@@ -520,7 +520,7 @@ sub get_weblogs {
         my $workspace = XML::XPath::Node::Element->new('workspace');
         $doc->appendChild($workspace);
 
-        my $title = XML::XPath::Node::Element->new( 'atom:title', 'atom' );
+        my $title    = XML::XPath::Node::Element->new( 'atom:title', 'atom' );
         my $blogname = $blog->name;
         $title->appendChild( XML::XPath::Node::Text->new($blogname) );
         $workspace->appendChild($title);
@@ -558,7 +558,7 @@ sub get_categories {
     require XML::XPath::Node::Namespace;
     require XML::XPath::Node::Text;
 
-    my $doc = XML::XPath::Node::Element->new('categories');
+    my $doc    = XML::XPath::Node::Element->new('categories');
     my $app_ns = XML::XPath::Node::Namespace->new( '#default' => NS_APP() );
     $doc->appendNamespace($app_ns);
     my $atom_ns = XML::XPath::Node::Namespace->new(
@@ -677,7 +677,7 @@ sub new_post {
                 require MT::Asset;
                 my $a = MT::Asset->load($asset_id);
                 next unless $a;
-                my $pkg = MT::Asset->handler_for_file( $a->file_name );
+                my $pkg   = MT::Asset->handler_for_file( $a->file_name );
                 my $asset = bless $a, $pkg;
                 $img_html .= $asset->as_html( { include => 1 } );
             }
@@ -1101,7 +1101,7 @@ sub _upload_to_asset {
                 $base_path = '%a';
             }
             my $extra_path = $blog->extra_path || '';
-            $dest = MT::Util::build_upload_destination( $dest, $user );
+            $dest        = MT::Util::build_upload_destination( $dest, $user );
             $middle_path = File::Spec->catdir( $dest, $extra_path );
             ( $middle_url = $middle_path ) =~ s!\\!/!g;
             $upload_dest = File::Spec->catdir( $root_path, $middle_path );
@@ -1121,7 +1121,7 @@ sub _upload_to_asset {
         ? File::Spec->catfile( $base_path, $middle_path, $fname )
         : File::Spec->catfile( $base_path, $fname );
     my $local = File::Spec->catfile( $upload_dest, $fname );
-    my $fmgr = $blog->file_mgr;
+    my $fmgr  = $blog->file_mgr;
     my $path;
     ( $base, $path, $ext ) = File::Basename::fileparse( $local, '\.[^\.]*' );
     $ext = $MIME2EXT{$type} unless $ext;
@@ -1629,7 +1629,7 @@ sub _comments_in_atom {
     my $app = shift;
     my ( $feed, $terms, $args ) = @_;
     require MT::Comment;
-    my $iter = MT::Comment->load_iter( $terms, $args );
+    my $iter        = MT::Comment->load_iter( $terms, $args );
     my $latest_date = 0;
     my @comments;
     while ( my $comment = $iter->() ) {

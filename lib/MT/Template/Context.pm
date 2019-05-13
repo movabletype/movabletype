@@ -224,7 +224,7 @@ sub handler_for {
         return ref($v) eq 'ARRAY' ? @h : $h[0];
     }
     else {
-        my @h = ref($v) eq 'ARRAY' ? @$v : $v;
+        my @h    = ref($v) eq 'ARRAY' ? @$v : $v;
         my $hdlr = MT::Template::Handler->new(@h);
         return $ctx->{__handlers}{$tag} = $hdlr;
     }
@@ -337,7 +337,7 @@ sub else {
 sub build {
     my ( $ctx, $tmpl, $cond ) = @_;
     my $builder = $ctx->stash('builder');
-    my $tokens = $builder->compile( $ctx, $tmpl )
+    my $tokens  = $builder->compile( $ctx, $tmpl )
         or return $ctx->error( $builder->errstr );
     local $ctx->{stash}{tokens} = $tokens;
     my $result = $builder->build( $ctx, $tokens, $cond );
@@ -440,7 +440,7 @@ sub set_blog_load_context {
         else {
             my $term_ids = $terms->{$col};
             $term_ids = [$term_ids] unless ref $term_ids eq 'ARRAY';
-            my %seen = map { $_ => 1 } @$allow;
+            my %seen   = map  { $_ => 1 } @$allow;
             my @allows = grep { $seen{$_} } @$term_ids;
             if (@allows) {
                 $terms->{$col} = \@allows;

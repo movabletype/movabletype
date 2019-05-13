@@ -66,9 +66,9 @@ sub list_props {
             html      => \&_make_name_html,
         },
         author_name => { base => '__virtual.author_name', order => 300 },
-        created_on => {
-            base    => '__virtual.created_on',
-            order   => 350,
+        created_on  => {
+            base  => '__virtual.created_on',
+            order => 350,
         },
         modified_on => {
             base    => '__virtual.modified_on',
@@ -413,7 +413,7 @@ sub _publish_content_data_permission {
     my $self = shift;
 
     my @permissions = ( $self->_create_content_data_permission, );
-    my @perms = grep { ref $_ ne 'HASH' } @permissions;
+    my @perms       = grep { ref $_ ne 'HASH' } @permissions;
 
     my $permission_name = 'blog.publish_content_data:' . $self->unique_id;
     (   $permission_name => {
@@ -508,7 +508,7 @@ sub permission_groups {
     my @groups = map {
         +{  ct_perm_group_unique_id => $_->unique_id,
             ct_perm_group_label     => $_->permission_group,
-            }
+        }
     } grep { $_->blog } @{ $class->load_all };
     return \@groups;
 }
@@ -731,7 +731,7 @@ sub _make_tag_list_prop_count {
             raw => sub {
                 my ( $prop, $obj ) = @_;
                 my $blog_id = MT->app->param('blog_id') || 0;
-                my $iter = MT->model('objecttag')->count_group_by(
+                my $iter    = MT->model('objecttag')->count_group_by(
                     {   $blog_id ? ( blog_id => $blog_id ) : (),
                         tag_id            => $obj->id,
                         object_datasource => 'content_data',
@@ -851,7 +851,7 @@ sub _make_tag_system_filter {
             label => sub {
                 MT->translate( 'Tags with [_1]', $self->name );
             },
-            view => [ 'website', 'blog' ],
+            view      => [ 'website', 'blog' ],
             items     => [ { type => "for_site_${blog_id}_id_${id}" } ],
             order     => $order,
             condition => sub {

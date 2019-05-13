@@ -21,7 +21,7 @@ sub field_html_params {
         }
     }
 
-    my $options = $field_data->{options};
+    my $options        = $field_data->{options};
     my $options_values = $options->{values} || [];
 
     if (%values) {

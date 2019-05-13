@@ -741,7 +741,7 @@ sub save_tags {
     $t->pause_partial if $t;
 
     $obj->{__tag_objects} = [];
-    my $blog_id = $obj->has_column('blog_id') ? $obj->blog_id : 0;
+    my $blog_id       = $obj->has_column('blog_id') ? $obj->blog_id : 0;
     my @existing_tags = MT::ObjectTag->load(
         {   object_id         => $obj->id,
             object_datasource => $obj->datasource
@@ -900,11 +900,11 @@ sub tagged_count {
     my ( $tag_id, $terms ) = @_;
     $terms ||= {};
     my $jterms = {};
-    my $pkg = ref $obj ? ref $obj : $obj;
+    my $pkg    = ref $obj ? ref $obj : $obj;
     if ( defined $tag_id && ( $tag_id =~ m/\D/ ) ) {
         my $n8d_tag = MT::Tag->normalize($tag_id);
         my $tag     = MT::Tag->load(
-            { name => [ $tag_id, $n8d_tag ] },
+            { name   => [ $tag_id, $n8d_tag ] },
             { binary => { name => 1 } }
         );
         return 0 unless $tag;
@@ -918,7 +918,7 @@ sub tagged_count {
         $jterms->{blog_id} = $terms->{blog_id} if $terms->{blog_id};
     }
     $jterms->{object_datasource} = $pkg->datasource;
-    $jterms->{tag_id} = $tag_id if $tag_id;
+    $jterms->{tag_id}            = $tag_id if $tag_id;
     my $args
         = {
         join => [ 'MT::ObjectTag', 'object_id', $jterms, { unique => 1 } ]

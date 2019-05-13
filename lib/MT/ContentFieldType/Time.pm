@@ -96,7 +96,7 @@ sub terms {
     my ( $args, $db_terms, $db_args ) = @_;
 
     my $data_type = $prop->{data_type};
-    my $query = _generate_query( $prop, @_ );
+    my $query     = _generate_query( $prop, @_ );
 
     my $cd_ids
         = get_cd_ids_by_left_join( $prop, { "value_${data_type}" => $query },
@@ -116,8 +116,8 @@ sub _generate_query {
     my $from   = $args->{from}   || '';
     my $to     = $args->{to}     || '';
     my $origin = $args->{origin} || '';
-    $from =~ s/\D//g;
-    $to =~ s/\D//g;
+    $from   =~ s/\D//g;
+    $to     =~ s/\D//g;
     $origin =~ s/\D//g;
     $from   = '19700101' . $from   if $from;
     $to     = '19700101' . $to     if $to;

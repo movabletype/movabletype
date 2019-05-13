@@ -627,7 +627,7 @@ sub multikey_unique : Tests(1) {
     my $dbd    = $driver->dbd;
 
     my $table_name = Ddltest::Multikey->table_name;
-    my $sql = join q{ }, 'INSERT INTO', $table_name, '(',
+    my $sql        = join q{ }, 'INSERT INTO', $table_name, '(',
         join( q{, },
         map { $dbd->db_column_name( $table_name, $_ ) }
             qw( fkey type value ) ),

@@ -55,7 +55,7 @@ sub make_website {
     my %params = @_;
 
     my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
-    my $values = {
+    my $values    = {
         name                     => 'Test site',
         site_url                 => 'http://narnia.na/',
         site_path                => $test_root,
@@ -109,7 +109,7 @@ sub make_blog {
     my %params = @_;
 
     my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
-    my $values = {
+    my $values    = {
         name         => 'none',
         site_url     => '/::/nana/',
         archive_url  => '/::/nana/archives/',
@@ -1036,10 +1036,10 @@ sub make_content_data {
 
     require MT::ContentStatus;
     my $values = {
-        blog_id        => 2,
-        status         => MT::ContentStatus::RELEASE(),
-        author_id      => 1,
-        authored_on    => '20170530163600',
+        blog_id     => 2,
+        status      => MT::ContentStatus::RELEASE(),
+        author_id   => 1,
+        authored_on => '20170530163600',
         %params,
     };
 
@@ -1065,7 +1065,9 @@ sub make_content_data {
         $mock_permission->mock(
             'perms_from_registry',
             sub {
-                my %perms = %{ $mock_permission->original('perms_from_registry')->() };
+                my %perms
+                    = %{ $mock_permission->original('perms_from_registry')->()
+                    };
                 my $content_type_perm
                     = MT->app->model('content_type')->all_permissions;
                 foreach my $k ( keys %$content_type_perm ) {
@@ -1083,9 +1085,9 @@ sub make_filter {
     my %params = @_;
 
     my $values = {
-        blog_id     => 1,
-        author_id  => 1,
-        label => 'Test filter',
+        blog_id   => 1,
+        author_id => 1,
+        label     => 'Test filter',
         object_ds => 'entry',
         %params,
     };

@@ -190,7 +190,7 @@ sub edit {
         }
         $param->{'auth_pref_tag_delim'} = $delim;
     }
-    $param->{'nav_authors'} = 1;
+    $param->{'nav_authors'}    = 1;
     $param->{active_user_menu} = 'profile';
 
     $param->{'email_is_blank'} = 1
@@ -667,7 +667,7 @@ sub cfg_system_users {
     if ( $registration->{Allow} ) {
         $param{registration} = 1;
         if ( my $ids = $registration->{Notify} ) {
-            my @ids = split ',', $ids;
+            my @ids       = split ',', $ids;
             my @sysadmins = MT::Author->load(
                 {   id   => \@ids,
                     type => MT::Author::AUTHOR()
@@ -685,7 +685,7 @@ sub cfg_system_users {
             foreach my $a (@sysadmins) {
                 push @names, $a->name . '(' . $a->id . ')';
             }
-            $param{notify_user_id} = $ids;
+            $param{notify_user_id}   = $ids;
             $param{notify_user_name} = join ',', @names;
         }
     }
@@ -764,7 +764,7 @@ sub save_cfg_system_users {
     my $registration = $cfg->CommenterRegistration;
 
     if ( my $reg = $app->param('registration') ) {
-        $registration->{Allow} = $reg ? 1 : 0;
+        $registration->{Allow}  = $reg ? 1 : 0;
         $registration->{Notify} = $app->param('notify_user_id');
         $cfg->CommenterRegistration( $registration, 1 );
     }
@@ -976,10 +976,10 @@ sub _grant_role_for_group {
     my $app = shift;
     my ( $blogs, $roles ) = @_;
 
-    my $groups = $app->param('group') || '';
+    my $groups   = $app->param('group') || '';
     my $group_id = $app->param('group_id');
 
-    my @groups = split /,/, $groups;
+    my @groups    = split /,/, $groups;
     my $grp_class = $app->model("group");
 
     push @groups, $group_id if $group_id;
@@ -1189,7 +1189,7 @@ PERMCHECK: {
 
     my $hasher = sub {
         my ( $obj, $row ) = @_;
-        $row->{label} = $row->{name};
+        $row->{label}       = $row->{name};
         $row->{description} = $row->{nickname} if exists $row->{nickname};
         my $type = $app->param('type') || '';
         if ( $type && $type eq 'site' ) {
@@ -1318,7 +1318,7 @@ PERMCHECK: {
                 ? 1
                 : ( $app->param('search') ? 1 : 0 );
             $app->multi_listing(
-                {   args => { sort => 'name' },
+                {   args         => { sort => 'name' },
                     type         => [ 'group', 'author' ],
                     code         => $hasher,
                     params       => $params,
@@ -2005,7 +2005,7 @@ sub build_author_table {
         push @author, $row;
     }
     return [] unless @author;
-    my $type = $app->param('entry_type') || 'entry';
+    my $type        = $app->param('entry_type') || 'entry';
     my $entry_class = $app->model($type);
     my $author_entry_count_iter
         = $entry_class->count_group_by(

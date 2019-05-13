@@ -113,7 +113,7 @@ sub _hdlr_assets {
         && ( !exists $args->{namespace} ) );
 
     my $class_type = $args->{class_type} || 'asset';
-    my $class = MT->model($class_type);
+    my $class      = MT->model($class_type);
     my $assets;
     my $tag = lc $ctx->stash('tag');
     if ( $tag eq 'entryassets' || $tag eq 'pageassets' ) {
@@ -193,7 +193,7 @@ sub _hdlr_assets {
         my $terms;
         if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
             my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
+            $terms   = { name => \@tags };
             $tag_arg = join " or ", @tags;
 
             my $count = MT::Tag->count(
@@ -419,7 +419,7 @@ sub _hdlr_assets {
 
         # TBD: check column being sorted; if it is numeric, use numeric sort
         if ( $args->{lastn} ) {
-            @$assets = sort { $b->$col() cmp $a->$col() } @$assets;
+            @$assets   = sort { $b->$col() cmp $a->$col() } @$assets;
             $no_resort = 0;
         }
         else {
@@ -611,7 +611,7 @@ sub _hdlr_asset {
     return '' if $assets;
 
     require MT::Asset;
-    my $out = '';
+    my $out   = '';
     my $asset = MT::Asset->load( { id => $args->{id} } );
 
     if ($asset) {

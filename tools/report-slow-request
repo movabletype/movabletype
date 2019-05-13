@@ -10,7 +10,7 @@ package MT::Tool::ReportSlowRequest;
 use strict;
 
 use FindBin;
-use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use lib ( "$FindBin::Bin/../lib", "$FindBin::Bin/../extlib" );
 use base qw( MT::Tool );
 
 use List::Util qw( min );
@@ -19,7 +19,7 @@ use MT;
 use MT::Util::LogProcessor;
 use Data::Dumper;
 
-my ($arg_day, $arg_logdir, $arg_sample, $arg_slow, $arg_debug, $arg_dump);
+my ( $arg_day, $arg_logdir, $arg_sample, $arg_slow, $arg_debug, $arg_dump );
 
 sub help {
     return q{
@@ -57,8 +57,7 @@ sub main {
     $arg_slow ||= 2;
 
     my $proc = MT::Util::LogProcessor->new(
-        {
-            debug        => $arg_debug,
+        {   debug        => $arg_debug,
             logdir       => $arg_logdir || '.',
             sample       => $arg_sample,
             day          => $arg_day || 'yesterday',
@@ -85,8 +84,8 @@ sub main {
     );
 
     printf "Processed %d records in %.02f seconds; speed: %.02f recs/sec\n",
-      $total_records, $elapsed, $total_records / ( $elapsed || 1 )
-      if $arg_debug;
+        $total_records, $elapsed, $total_records / ( $elapsed || 1 )
+        if $arg_debug;
 
     for my $bucket ( 0 .. $#{ $stash{by_seconds} } ) {
         my $count = $stash{by_seconds}[$bucket] || 0;
@@ -99,8 +98,8 @@ sub main {
         };
     }
 
-    $stash{slow} =
-      [ sort { $b->{time_total} <=> $a->{time_total} } @{ $stash{slow} || [] } ];
+    $stash{slow} = [ sort { $b->{time_total} <=> $a->{time_total} }
+            @{ $stash{slow} || [] } ];
 
     report( \%stash );
 }
@@ -110,7 +109,8 @@ sub report {
 
     print "Response time histogram:\n";
     for my $row ( @{ $stash->{restime_histogram} } ) {
-        printf "%s: %s (%s%%)\n", $row->{range}, $row->{count}, $row->{percent};
+        printf "%s: %s (%s%%)\n", $row->{range}, $row->{count},
+            $row->{percent};
     }
 
     print "Slowest requests:\n";
@@ -120,10 +120,10 @@ sub report {
             next if $key !~ /^time_/;
             my $secs = $row->{$key};
             next
-              if $key eq 'time_mem_start'
-              || $key eq 'time_mem_end'
-              || $key eq 'time_total'
-              || $secs < 0.01;
+                if $key eq 'time_mem_start'
+                || $key eq 'time_mem_end'
+                || $key eq 'time_total'
+                || $secs < 0.01;
             printf "%s: %s\n", $key, $secs;
         }
     }

@@ -37,7 +37,7 @@ sub apply {
             description =>
                 $theme->translate_templatized( $ct_value->{description} ),
             user_disp_option => $ct_value->{user_disp_option} ? 1 : 0,
-            blog_id => $blog->id,
+            blog_id          => $blog->id,
         );
         MT->set_language($current_lang);
 

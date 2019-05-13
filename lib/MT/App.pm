@@ -157,11 +157,11 @@ sub filter_conditional_list {
                     }
 
                     $include_all = $action->{include_all} || 0;
-                    $action = $action->{permit_action};
+                    $action      = $action->{permit_action};
                 }
                 if ( $include_all and $blog and !$blog->is_blog ) {
                     my $blogs = $blog->blogs;
-                    my @map = map { $_->id } @$blogs;
+                    my @map   = map { $_->id } @$blogs;
                     push @$blog_ids, map { $_->id } @{ $blog->blogs };
                 }
 
@@ -180,7 +180,7 @@ sub filter_conditional_list {
                 my $iter = MT->model('permission')->load_iter($terms);
 
                 my @actions = split /,/, $action;
-                my $cond = 0;
+                my $cond    = 0;
                 while ( my $p = $iter->() ) {
                     my $allowed;
                     foreach my $act (@actions) {
@@ -201,7 +201,7 @@ sub filter_conditional_list {
 
             if ( $system_perms && ( my $sp = $item->{system_permission} ) ) {
                 my $allowed = 0;
-                my @sp = split /,/, $sp;
+                my @sp      = split /,/, $sp;
                 foreach my $sp_ (@sp) {
                     $sp_ =~ s/'(.+)'/$1/;
                     my $perm = 'can_' . $sp_;
@@ -216,7 +216,7 @@ sub filter_conditional_list {
             else {
                 if ( my $p = $item->{permission} ) {
                     my $allowed = 0;
-                    my @p = split /,/, $p;
+                    my @p       = split /,/, $p;
                     foreach my $p_ (@p) {
                         my $perm = 'can_' . $p_;
                         $allowed = 1, last
@@ -349,7 +349,7 @@ sub content_actions {
             mode => $action->{mode},
             args => {
                 %args,
-                blog_id => ( $app->blog ? $app->blog->id : 0 ),
+                blog_id     => ( $app->blog ? $app->blog->id : 0 ),
                 magic_token => $app->current_magic,
             },
         ) if $action->{mode};
@@ -691,7 +691,7 @@ sub multi_listing {
     my $app_search_type = $app->param('search_type');
 
     my $no_html = $opt->{no_html} || $opt->{NoHTML};
-    my $search = $app->param('search');
+    my $search  = $app->param('search');
     my $no_limit
         = exists( $opt->{no_limit} )
         ? $opt->{no_limit}
@@ -706,7 +706,7 @@ sub multi_listing {
         return $app->listing(@_);
     }
     my $all_object_loop = [];
-    my $page_limit = $app->param('limit') || 0;
+    my $page_limit      = $app->param('limit') || 0;
     foreach my $type (@$types) {
         my $options = $opt;
         $options->{type} = $type;
@@ -850,7 +850,7 @@ sub response_content {
 }
 
 sub set_x_frame_options_header {
-    my $app = shift;
+    my $app             = shift;
     my $x_frame_options = $app->config->XFrameOptions || '';
 
     # If set as NONE MT should not output X-Frame-Options header.
@@ -1077,7 +1077,7 @@ sub init_request {
     if ( MT::Util::is_mod_perl1() ) {
         require Apache::Request;
         $app->{apache} = $param{ApacheObject} || Apache->request;
-        $app->{query} = Apache::Request->instance( $app->{apache},
+        $app->{query}  = Apache::Request->instance( $app->{apache},
             POST_MAX => $app->config->CGIMaxUpload );
     }
     else {
@@ -1220,7 +1220,7 @@ sub init_query {
 
 sub registry {
     my $app = shift;
-    my $ar = $app->SUPER::registry( "applications", $app->id, @_ );
+    my $ar  = $app->SUPER::registry( "applications", $app->id, @_ );
     my $gr;
     $gr = $app->SUPER::registry(@_) if @_;
     if ($ar) {
@@ -1254,7 +1254,7 @@ sub _cb_mark_blog {
         || $obj_type eq 'MT::Session'
         || $obj_type eq 'MT::Touch'
         || ( ( $obj_type ne 'MT::Blog' ) && !$obj->has_column('blog_id') ) );
-    my $mt_req = MT->instance->request;
+    my $mt_req        = MT->instance->request;
     my $blogs_touched = $mt_req->stash('blogs_touched') || {};
 
     # Issue MT::Touch touches for specific types we track
@@ -1300,7 +1300,7 @@ sub touch_blogs {
         next unless $blog_id;
         my $blog = MT::Blog->load($blog_id);
         next unless ($blog);
-        my $th = $blogs_touched->{$blog_id} || {};
+        my $th    = $blogs_touched->{$blog_id} || {};
         my @types = keys %$th;
         $blog->touch(@types);
         $blog->save() or die $blog->errstr;
@@ -1421,7 +1421,7 @@ sub _commenter_state {
         };
         if ( $blog_id && $blog ) {
             my $blog_perms = $commenter->blog_perm($blog_id);
-            my $banned = $commenter->is_banned($blog_id) ? 1 : 0;
+            my $banned     = $commenter->is_banned($blog_id) ? 1 : 0;
             $banned = 0 if $blog_perms && $blog_perms->can_administer;
             $banned ||= 1 if $commenter->status == MT::Author::BANNED();
             $c->{is_banned} = $banned;
@@ -1552,7 +1552,7 @@ sub get_commenter_session {
     my $cfg = $app->config;
     require MT::Session;
     my $sess_obj = MT::Session->load( { id => $session_key, kind => 'SI' } );
-    my $timeout = $cfg->CommentSessionTimeout;
+    my $timeout  = $cfg->CommentSessionTimeout;
     my ( $user_id, $user );
     $user_id = $sess_obj->get('author_id') if $sess_obj;
     $user    = MT::Author->load($user_id)  if $user_id;
@@ -1705,7 +1705,7 @@ sub bake_commenter_cookie {
     );
     $app->bake_cookie(%name_kookee);
 
-    my $blog = $app->blog;
+    my $blog    = $app->blog;
     my $blog_id = $blog ? $blog->id : '0';
     my ( $state, $commenter )
         = $app->_commenter_state( $blog, $sess_obj, $user );
@@ -1741,7 +1741,7 @@ sub commenter_session_cookie_name {
     my $app               = shift;
     my $user_session_name = MT->config->UserSessionCookieName;
     if ( !MT->config->SingleCommunity ) {
-        my $blog = $app->blog or return;
+        my $blog    = $app->blog or return;
         my $blog_id = $blog->id;
         $user_session_name =~ s/%b/$blog_id/;
     }
@@ -1853,7 +1853,7 @@ sub start_session {
     }
     $remember ||= '';
     my $session = make_session( $author, $remember );
-    my %arg = (
+    my %arg     = (
         -name  => $app->user_cookie,
         -value => Encode::encode(
             $app->charset,
@@ -2020,7 +2020,7 @@ sub _is_commenter {
         next unless $permissions;
         if ( $permissions eq "'comment'" ) {
             $commenter_blog_id = $perm->blog_id unless $commenter_blog_id;
-            $commenter = 1;
+            $commenter         = 1;
             next;
         }
         return 0;
@@ -2092,7 +2092,7 @@ sub login {
         return;
     }
 
-    my $res = MT::Auth->validate_credentials($ctx) || MT::Auth::UNKNOWN();
+    my $res  = MT::Auth->validate_credentials($ctx) || MT::Auth::UNKNOWN();
     my $user = $ctx->{username};
 
     if ( $res == MT::Auth::UNKNOWN() ) {
@@ -2641,7 +2641,7 @@ sub _send_sysadmins_email {
     my ( $ids, $email_id, $body, $subject, $from ) = @_;
     my $cfg = $app->config;
 
-    my @ids = split ',', $ids;
+    my @ids       = split ',', $ids;
     my @sysadmins = MT::Author->load(
         {   id   => \@ids,
             type => MT::Author::AUTHOR()
@@ -3044,7 +3044,7 @@ sub do_reboot {
         if ( my $watchfile = MT->config->IISFastCGIMonitoringFilePath ) {
             require MT::FileMgr;
             my $fmgr = MT::FileMgr->new('Local');
-            my $res = $fmgr->put_data( '', $watchfile );
+            my $res  = $fmgr->put_data( '', $watchfile );
             if ( !defined($res) ) {
                 $app->log(
                     $app->translate(
@@ -3712,7 +3712,7 @@ sub update_widget_prefs {
     }
 
     if ( $action eq 'add' ) {
-        my $set = $app->param('widget_set') || 'main';
+        my $set         = $app->param('widget_set') || 'main';
         my $all_widgets = $app->registry("widgets");
         if ( my $widget = $all_widgets->{$widget_id} ) {
             my $widget_inst = $widget_id;
@@ -3732,7 +3732,7 @@ sub update_widget_prefs {
             foreach my $widget_id ( keys %$these_widgets ) {
                 if ( my $widget = $all_widgets->{$widget_id} ) {
                     my @widget_scopes = split ':', $widget_scope;
-                    my $order = $widget->{order};
+                    my $order         = $widget->{order};
                     $order
                         = $order && ref $order eq 'HASH'
                         ? $widget->{order}{ $widget_scopes[1] }
@@ -3752,7 +3752,7 @@ sub update_widget_prefs {
 
     if ( ( $action eq 'save' ) && $these_widgets ) {
         my %all_params = $app->param_hash;
-        my $refresh = $all_params{widget_refresh} ? 1 : 0;
+        my $refresh    = $all_params{widget_refresh} ? 1 : 0;
         delete $all_params{$_}
             for
             qw( json widget_id widget_action __mode widget_set widget_singular widget_refresh magic_token widget_scope return_args );
@@ -4216,7 +4216,7 @@ sub is_valid_redirect_target {
     if ( ( $static eq '' ) || ( $static eq '1' ) ) {
         require MT::Entry;
         my $entry_id = $app->param('entry_id') || 0;
-        my $entry = MT::Entry->load($entry_id)
+        my $entry    = MT::Entry->load($entry_id)
             or return $app->error(
             $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
         $target = $entry->archive_url;
@@ -4360,7 +4360,7 @@ sub trace {
 sub remote_ip {
     my $app = shift;
 
-    my $trusted = $app->config->TransparentProxyIPs || 0;
+    my $trusted   = $app->config->TransparentProxyIPs || 0;
     my $remote_ip = (
         MT::Util::is_mod_perl1()
         ? $app->{apache}->connection->remote_ip
@@ -4395,7 +4395,7 @@ sub remote_ip {
                 # IP or subnet addresses to exclude as trusted IPs
                 # TransparentProxyIPs 10.1.1., 12.34.56.78
             my @trusted = split /\s*,\s*/, $trusted;
-            my @iplist = reverse split /\s*,\s*/, $ip;
+            my @iplist  = reverse split /\s*,\s*/, $ip;
             while ( @iplist && grep( { $iplist[0] =~ m/^\Q$_\E/ } @trusted ) )
             {
                 shift @iplist;

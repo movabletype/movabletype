@@ -18,7 +18,7 @@ sub endpoints {
 
     my $endpoint_data = $app->endpoints( $app->current_api_version );
     my @results       = map {
-        my $e = $_;
+        my $e        = $_;
         my %endpoint = map { $_ => $e->{$_} }
             qw(id route version resources format verb);
         my $c    = $e->{component};

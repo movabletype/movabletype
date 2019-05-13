@@ -844,7 +844,7 @@ sub ranges : Tests(9) {
     $tmp
         = Foo->load(
         { created_on => [ undef, $foo[1]->column('created_on') - 1 ] },
-        { range => { created_on => 1 } } );
+        { range      => { created_on => 1 } } );
     is_object( $tmp, $foo[0],
         "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1"
     );

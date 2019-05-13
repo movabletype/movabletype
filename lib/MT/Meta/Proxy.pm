@@ -201,7 +201,7 @@ sub save {
             $meta_obj->$pkey($pval);
         }
 
-        my $pkg = $proxy->{pkg};
+        my $pkg  = $proxy->{pkg};
         my $meta = $proxy->META_CLASS()->metadata_by_name( $pkg, $field )
             or next; # XXX: Carp::croak("Metadata $field on $pkg not found.");
         my $type = $meta->{type};
@@ -375,7 +375,7 @@ sub bulk_load_meta_objects {
                     $meta_obj->$type( _db2ts( $meta_obj->$type ) );
                 }
 
-                my $enc = MT->config->PublishCharset || 'UTF-8';
+                my $enc  = MT->config->PublishCharset || 'UTF-8';
                 my $data = $meta_obj->$type;
                 unless ( ref $data ) {
                     $data = Encode::decode( $enc, $data )
@@ -434,7 +434,7 @@ sub prepare_objects {
                 $meta_obj->$type( _db2ts( $meta_obj->$type ) );
             }
 
-            my $enc = MT->config->PublishCharset || 'UTF-8';
+            my $enc  = MT->config->PublishCharset || 'UTF-8';
             my $data = $meta_obj->$type;
             unless ( ref $data ) {
                 $data = Encode::decode( $enc, $data )
