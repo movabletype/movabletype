@@ -40,7 +40,7 @@ env:
 script:
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.30" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:perl-5.30-full bash -c "TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.30" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:perl-5.30-full bash -c "$TEST_COMMAND" ; fi
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:centos6-full bash -c "yum -y install git && $TEST_COMMAND"; fi
 
