@@ -25,6 +25,7 @@ workflows:
              branches:
                only:
                  - develop
+                 - support-6.5x
      jobs:
        - coveralls
 
