@@ -20,7 +20,7 @@ workflows:
    nightly:
      triggers:
        - schedule:
-           cron: "0 18 * * *"
+           cron: "0 18 * * *"  # 3 AM JST
            filters:
              branches:
                only:
