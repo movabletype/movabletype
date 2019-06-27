@@ -41,15 +41,10 @@ sub init {
     }
 
     my $ftp = $fmgr->{ftp} = Net::FTPSSL->new( $_[0], %options )
-        or return $fmgr->error("FTPS connection failed: " . $Net::FTPSSL::ERRSTR);
+        or return $fmgr->error("FTPS connection failed: $@");
     $ftp->login( @_[ 1, 2 ] )
         or return $fmgr->error( 'FTPS login failed: ' . $ftp->message );
     $fmgr;
-}
-
-sub last_status {
-  my $fmgr = shift;
-  $fmgr->{ftp}->last_status_code();
 }
 
 1;
