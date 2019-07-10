@@ -15,6 +15,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Util 'encode_html';
 use JSON;
 
 MT::Test->init_app;
@@ -59,6 +60,23 @@ my @suite = (
             limit        => 20,
         },
         expected => qr/id="entry-@{[ $entry->id ]}"/,
+    },
+    {   label  => 'No error occurs without search string (MTC-26732)',
+        params => {
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+        },
+        expected   => qr|<h1[^>]*>Instructions</h1>|,
+        unexpected => _create_qr_for_undefined_error(),
+    },
+    {   label  => 'No error occurs with empty search string (MTC-26732)',
+        params => {
+            search       => '',
+            IncludeBlogs => $blog->id,
+            limit        => 20,
+        },
+        expected   => qr|<h1[^>]*>Instructions</h1>|,
+        unexpected => _create_qr_for_undefined_error(),
     },
 );
 
@@ -115,3 +133,10 @@ for my $data (@suite) {
 }
 
 done_testing();
+
+sub _create_qr_for_undefined_error {
+    my $err = quotemeta(
+        encode_html('Can\'t call method "end" on an undefined value') );
+    qr/$err/;
+}
+
