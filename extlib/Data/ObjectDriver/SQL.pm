@@ -186,7 +186,7 @@ sub _parse_array_terms {
             foreach my $t2 ( keys %$t ) {
                 my ($term, $bind, $col) = $stmt->_mk_term($t2, $t->{$t2});
                 $stmt->where_values->{$col} = $t->{$t2};
-                push @out, $term;
+                push @out, "($term)";
                 push @bind, @$bind;
             }
             $out .= '(' . join(" AND ", @out) . ")";
