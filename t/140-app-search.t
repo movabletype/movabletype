@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -74,7 +75,16 @@ for my $data (@suite) {
 
     note( $data->{label} );
     ok( $out, 'Request: ' . $params_str );
-    like( $out, $data->{expected} );
+    if ( $data->{expected} ) {
+        like( $out, $data->{expected} );
+    }
+    if ( $data->{unexpected} ) {
+        unlike( $out, $data->{unexpected} );
+    }
+
+    unless ( $data->{expected} || $data->{unexpected} ) {
+        die 'no test';
+    }
 }
 
 {
@@ -84,7 +94,7 @@ for my $data (@suite) {
     %MT::mt_inst = ();
 
     my %params = ( search => 'a' );
-    my $app = _run_app(
+    my $app    = _run_app(
         'MT::App::Search',
         {   __request_method => 'GET',
             %params,
