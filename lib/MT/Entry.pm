@@ -766,7 +766,7 @@ sub list_props {
 sub system_filters {
     return {
         current_website => {
-            label => 'Entries in This Website',
+            label => 'Entries in This Site',
             items => [ { type => 'current_context' } ],
             order => 50,
             view  => 'website',
