@@ -1573,7 +1573,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'ブログが不正です。',
 	'Global' => 'グローバル',
 	'You must specify a template type when creating a template' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
-	'contnt type' => 'コンテンツタイプ',
+	'content type' => 'コンテンツタイプ',
 	'Content Type Archive' => 'コンテンツタイプアーカイブ',
 	'Create Widget' => 'ウィジェットを作成',
 	'Create Template' => 'テンプレートの作成',

@@ -1536,7 +1536,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'Ongeldige blog',
 	'Global' => 'Globaal',
 	'You must specify a template type when creating a template' => 'U moet een sjabloontype opgeven bij het aanmaken van een sjabloon.',
-	'contnt type' => 'inhoudstype',
+	'content type' => 'inhoudstype',
 	'Content Type Archive' => 'Inhoudstypesjabloon',
 	'Create Widget' => 'Widget aanmaken',
 	'Create Template' => 'Sjabloon aanmaken',
