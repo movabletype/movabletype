@@ -177,17 +177,6 @@ sub create_common {
     my $new_category = $app->resource_object( $class, $orig_category )
         or return;
 
-    if (   !defined( $new_category->basename )
-        || $new_category->basename eq ''
-        || $app->model($class)->exist(
-            { blog_id => $blog->id, basename => $new_category->basename }
-        )
-        )
-    {
-        $new_category->basename(
-            MT::Util::make_unique_category_basename($new_category) );
-    }
-
     save_object( $app, $class, $new_category )
         or return;
 
