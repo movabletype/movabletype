@@ -727,12 +727,13 @@ sub _log_search {
     unless ( $app->param('Template')
         && ( 'feed' eq $app->param('Template') ) )
     {
+        my $search_string = defined $app->{search_string} ? $app->{search_string} : '';
         my $blog_id = $app->first_blog_id();
         require MT::Log;
         $app->log(
             {   message => $app->translate(
                     "Search: query for '[_1]'",
-                    $app->{search_string}
+                    $search_string,
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'search',
