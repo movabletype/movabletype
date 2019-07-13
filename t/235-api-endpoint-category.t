@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -14,6 +15,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::DataAPI;
+use MT::Test::Permission;
 
 $test_env->prepare_fixture('db_data');
 
@@ -26,6 +28,8 @@ $author->save;
 
 my $suite = suite();
 test_data_api($suite);
+
+test_data_api( suite_mtc_26757() );
 
 done_testing;
 
@@ -197,7 +201,7 @@ sub suite {
                 { category => { label => 'test-api-permission-category' }, },
             restrictions => { 1 => [qw/ save_category /], },
             code         => 403,
-            error => 'Do not have permission to create a category.',
+            error        => 'Do not have permission to create a category.',
         },
 
         # create_category - normal tests
@@ -382,7 +386,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ save_category /], },
             code         => 403,
-            error => 'Do not have permission to update a category.',
+            error        => 'Do not have permission to update a category.',
         },
 
         # update_category - normal tests
@@ -757,7 +761,7 @@ sub suite {
             },
             restrictions => { 1 => [qw/ edit_categories /], },
             code         => 403,
-            error => 'Do not have permission to permutate categories.',
+            error        => 'Do not have permission to permutate categories.',
         },
 
         # permutate_categories - normal tests
@@ -776,7 +780,7 @@ sub suite {
                 },
             ],
             result => sub {
-                my $site = $app->model('blog')->load(1);
+                my $site           = $app->model('blog')->load(1);
                 my @category_order = split ',', $site->category_order;
 
                 $app->user($author);
@@ -843,6 +847,65 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('category')->load(1);
                 is( $deleted, undef, 'deleted' );
+            },
+        },
+    ];
+}
+
+sub suite_mtc_26757 {
+    my $same_basename_category = MT::Test::Permission->make_category(
+        basename => 'same_basename',
+        blog_id  => 1,
+        label    => 'same_basename',
+    );
+
+    return [
+        {   note   => 'create category with duplicated basename',
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => {
+                category => {
+                    basename => 'same_basename',
+                    label    => 'same_basename',
+                },
+            },
+            code => 409,
+            error =>
+                "Save failed: The category name 'same_basename' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.\n",
+        },
+        {   note   => 'create category whose basename is same as parent\'s',
+            path   => '/v2/sites/1/categories',
+            method => 'POST',
+            params => {
+                category => {
+                    basename => 'same_basename',
+                    label    => 'same_basename',
+                    parent   => $same_basename_category->id,
+                },
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_save_permission_filter.category',
+                    count => 1,
+                },
+                {   name => 'MT::App::DataAPI::data_api_save_filter.category',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_pre_save.category',
+                    count => 1,
+                },
+                {   name  => 'MT::App::DataAPI::data_api_post_save.category',
+                    count => 1,
+                },
+            ],
+            result => sub {
+                MT->model('category')->load(
+                    {   basename => 'same_basename',
+                        blog_id  => 1,
+                        label    => 'same_basename',
+                        parent   => $same_basename_category->id,
+                    }
+                );
             },
         },
     ];
