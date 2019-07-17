@@ -2518,6 +2518,7 @@ use vars qw( @ISA %Lexicon );
 	'Level' => 'レベル',
 	'Metadata' => 'メタデータ',
 	'Logs on This Website' => 'ウェブサイトのログ',
+	'Logs on This Site' => 'このサイトのログ',
 	'Show only errors' => 'エラーだけを表示',
 
 ## lib/MT/Mail.pm
@@ -6920,6 +6921,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry/Page Status' => '記事/ウェブページの公開状態',
 	'Date Commented' => 'コメント日',
 	'Comments in This Website' => 'ウェブサイトのコメント',
+	'Comments in This Site' => 'このサイトのコメント',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
 	'Pending comments' => '保留中のコメント',
