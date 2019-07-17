@@ -853,11 +853,13 @@ sub site_list_widget {
             limit     => $MAX_POSTS,
             sort      => 'created_on',
             direction => 'descend',
+            join      => $app->model('content_type')
+                ->join_on( undef, { id => \'= cd_content_type_id' }, ),
         };
 
         # Recent post - Content Data
         my $cd_class = MT->model('content_data');
-        my $cd_iter = $cd_class->load_iter( $terms, $args );
+        my $cd_iter  = $cd_class->load_iter( $terms, $args );
         my $is_relative
             = ( $app->user->date_format || 'relative' ) eq 'relative' ? 1 : 0;
         while ( my $p = $cd_iter->() ) {
