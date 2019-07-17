@@ -1531,7 +1531,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'Ungültiges Blog',
 	'Global' => 'Global',
 	'You must specify a template type when creating a template' => 'Bitte geben Sie den Typ der neuen Vorlage an.',
-	'content type' => 'Inhaltstyp',
+	'contnt type' => 'Inhaltstyp',
 	'Content Type Archive' => 'Inhaltstyp-Archiv',
 	'Create Widget' => 'Widget anlegen',
 	'Create Template' => 'Vorlage anlegen',

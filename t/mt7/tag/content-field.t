@@ -211,7 +211,6 @@ $test_env->prepare_fixture(
             mime_type    => 'image/jpeg',
             label        => 'Sample Image 2',
             description  => 'Sample photo',
-            parent       => $image1->id,
         );
 
         my $fields = [

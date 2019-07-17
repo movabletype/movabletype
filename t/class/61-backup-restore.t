@@ -21,7 +21,6 @@ use MT::Category;
 use MT::Entry;
 use MT::TBPing;
 use MT::Comment;
-use MT::Association;
 use MT::Test;
 use MT::Test::Permission;
 
@@ -31,12 +30,6 @@ use MT::BackupRestore;
 use Data::Dumper;
 
 $test_env->prepare_fixture('db_data');
-
-# MTC-26702
-my $group = MT::Test::Permission->make_group;
-my $site  = MT::Blog->load( 1 ) or die; 
-my $role  = MT::Role->load or die;
-MT::Association->link( $group, $site, $role );
 
 my @emails = ( 'fumiakiy@sixapart.jp', 'fyoshimatsu@sixapart.com' );
 my $chuck = MT::Author->load( { name => 'Chuck D' } );

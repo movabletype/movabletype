@@ -388,8 +388,11 @@ sub tag_handler_asset {
     my $asset_terms = {
         id     => @$value ? $value : 0,
         class  => '*',
+        parent => \'IS NULL',
     };
-    my $iter = MT->model('asset')->load_iter( $asset_terms );
+    my $asset_args = { null => { parent => 1 } };
+
+    my $iter = MT->model('asset')->load_iter( $asset_terms, $asset_args );
     my %assets;
     while ( my $asset = $iter->() ) {
         $assets{ $asset->id } = $asset;

@@ -1,7 +1,7 @@
 /*
  * Movable Type DataAPI SDK for JavaScript v4
  * https://github.com/movabletype/mt-data-api-sdk-js
- * Copyright (c) 2013-2019 Six Apart Ltd.
+ * Copyright (c) 2013-2019 Six Apart, Ltd.
  * This program is distributed under the terms of the MIT license.
  *
  * Includes jQuery JavaScript Library in some parts.
@@ -4218,9 +4218,9 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
-        "id": "authorize",
-        "route": "/authorization",
-        "verb": "GET",
+        "id": "authenticate",
+        "route": "/authentication",
+        "verb": "POST",
         "resources": null
     },
     {
@@ -4274,15 +4274,49 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
+        "id": "create_entry",
+        "route": "/sites/:site_id/entries",
+        "verb": "POST",
+        "resources": [
+            "entry"
+        ]
+    },
+    {
         "id": "get_entry",
         "route": "/sites/:site_id/entries/:entry_id",
         "verb": "GET",
         "resources": null
     },
     {
+        "id": "update_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "PUT",
+        "resources": [
+            "entry"
+        ]
+    },
+    {
         "id": "delete_entry",
         "route": "/sites/:site_id/entries/:entry_id",
         "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "list_categories",
+        "route": "/sites/:site_id/categories",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "upload_asset",
+        "route": "/sites/:site_id/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "list_permissions_for_user",
+        "route": "/users/:user_id/permissions",
+        "verb": "GET",
         "resources": null
     },
     {
@@ -4468,6 +4502,18 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
+        "id": "upload_asset",
+        "route": "/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "upload_asset_for_site",
+        "route": "/sites/:site_id/assets/upload",
+        "verb": "POST",
+        "resources": null
+    },
+    {
         "id": "get_asset",
         "route": "/sites/:site_id/assets/:asset_id",
         "verb": "GET",
@@ -4510,6 +4556,22 @@ DataAPI.on('initialize', function() {
         "route": "/sites/:site_id/tags/:tag_id/entries",
         "verb": "GET",
         "resources": null
+    },
+    {
+        "id": "create_entry",
+        "route": "/sites/:site_id/entries",
+        "verb": "POST",
+        "resources": [
+            "entry"
+        ]
+    },
+    {
+        "id": "update_entry",
+        "route": "/sites/:site_id/entries/:entry_id",
+        "verb": "PUT",
+        "resources": [
+            "entry"
+        ]
     },
     {
         "id": "import_entries",
@@ -4722,6 +4784,12 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
+        "id": "search",
+        "route": "/search",
+        "verb": "GET",
+        "resources": null
+    },
+    {
         "id": "list_logs",
         "route": "/sites/:site_id/logs",
         "verb": "GET",
@@ -4834,6 +4902,18 @@ DataAPI.on('initialize', function() {
         "resources": null
     },
     {
+        "id": "list_templates",
+        "route": "/sites/:site_id/templates",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
         "id": "create_template",
         "route": "/sites/:site_id/templates",
         "verb": "POST",
@@ -4842,8 +4922,40 @@ DataAPI.on('initialize', function() {
         ]
     },
     {
+        "id": "update_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "PUT",
+        "resources": [
+            "template"
+        ]
+    },
+    {
+        "id": "delete_template",
+        "route": "/sites/:site_id/templates/:template_id",
+        "verb": "DELETE",
+        "resources": null
+    },
+    {
+        "id": "publish_template",
+        "route": "/sites/:site_id/templates/:template_id/publish",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "refresh_template",
+        "route": "/sites/:site_id/templates/:template_id/refresh",
+        "verb": "POST",
+        "resources": null
+    },
+    {
         "id": "refresh_templates_for_site",
         "route": "/sites/:site_id/refresh_templates",
+        "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "clone_template",
+        "route": "/sites/:site_id/templates/:template_id/clone",
         "verb": "POST",
         "resources": null
     },
@@ -4857,6 +4969,40 @@ DataAPI.on('initialize', function() {
         "id": "preview_template",
         "route": "/sites/:site_id/templates/preview",
         "verb": "POST",
+        "resources": null
+    },
+    {
+        "id": "list_templatemaps",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "get_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "GET",
+        "resources": null
+    },
+    {
+        "id": "create_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps",
+        "verb": "POST",
+        "resources": [
+            "templatemap"
+        ]
+    },
+    {
+        "id": "update_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "PUT",
+        "resources": [
+            "templatemap"
+        ]
+    },
+    {
+        "id": "delete_templatemap",
+        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
+        "verb": "DELETE",
         "resources": null
     },
     {
@@ -5291,166 +5437,6 @@ DataAPI.on('initialize', function() {
         "id": "search",
         "route": "/search",
         "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "list_templates",
-        "route": "/sites/:site_id/templates",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "get_template",
-        "route": "/sites/:site_id/templates/:template_id",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "update_template",
-        "route": "/sites/:site_id/templates/:template_id",
-        "verb": "PUT",
-        "resources": [
-            "template"
-        ]
-    },
-    {
-        "id": "delete_template",
-        "route": "/sites/:site_id/templates/:template_id",
-        "verb": "DELETE",
-        "resources": null
-    },
-    {
-        "id": "publish_template",
-        "route": "/sites/:site_id/templates/:template_id/publish",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "refresh_template",
-        "route": "/sites/:site_id/templates/:template_id/refresh",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "clone_template",
-        "route": "/sites/:site_id/templates/:template_id/clone",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "list_templatemaps",
-        "route": "/sites/:site_id/templates/:template_id/templatemaps",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "get_templatemap",
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "create_templatemap",
-        "route": "/sites/:site_id/templates/:template_id/templatemaps",
-        "verb": "POST",
-        "resources": [
-            "templatemap"
-        ]
-    },
-    {
-        "id": "update_templatemap",
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
-        "verb": "PUT",
-        "resources": [
-            "templatemap"
-        ]
-    },
-    {
-        "id": "delete_templatemap",
-        "route": "/sites/:site_id/templates/:template_id/templatemaps/:templatemap_id",
-        "verb": "DELETE",
-        "resources": null
-    },
-    {
-        "id": "list_groups",
-        "route": "/groups",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "list_groups_for_user",
-        "route": "/users/:user_id/groups",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "get_group",
-        "route": "/groups/:group_id",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "create_group",
-        "route": "/groups",
-        "verb": "POST",
-        "resources": [
-            "group"
-        ]
-    },
-    {
-        "id": "update_group",
-        "route": "/groups/:group_id",
-        "verb": "PUT",
-        "resources": [
-            "group"
-        ]
-    },
-    {
-        "id": "delete_group",
-        "route": "/groups/:group_id",
-        "verb": "DELETE",
-        "resources": null
-    },
-    {
-        "id": "list_permissions_for_group",
-        "route": "/groups/:group_id/permissions",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "grant_permission_to_group",
-        "route": "/groups/:group_id/permissions/grant",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "revoke_permission_from_group",
-        "route": "/groups/:group_id/permissions/revoke",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "list_members_for_group",
-        "route": "/groups/:group_id/members",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "get_member_for_group",
-        "route": "/groups/:group_id/members/:member_id",
-        "verb": "GET",
-        "resources": null
-    },
-    {
-        "id": "add_member_to_group",
-        "route": "/groups/:group_id/members",
-        "verb": "POST",
-        "resources": null
-    },
-    {
-        "id": "remove_member_from_group",
-        "route": "/groups/:group_id/members/:member_id",
-        "verb": "DELETE",
         "resources": null
     },
     {

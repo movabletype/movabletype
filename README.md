@@ -1,10 +1,6 @@
 Welcome to Movable Type
 =============
 
-[![Build Status](https://travis-ci.org/movabletype/movabletype.svg?branch=develop)](https://travis-ci.org/movabletype/movabletype)
-[![CircleCI](https://circleci.com/gh/movabletype/movabletype/tree/develop.svg?style=svg&circle-token=698358bf40b4ca0bda1e4e9571ffce0cb5584d41)](https://circleci.com/gh/movabletype/movabletype/tree/develop)
-[![Coverage Status](https://coveralls.io/repos/github/movabletype/movabletype/badge.svg?branch=develop)](https://coveralls.io/github/movabletype/movabletype?branch=develop)
-
 Thank you for choosing Movable Type, the premiere solution for your blogging and website management needs.
 This file will explain how to get up and running; click on the highlighted sections for more information on that subject.
 

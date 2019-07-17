@@ -1326,8 +1326,6 @@ sub init_plugins {
             $PluginAlias{$alias} = $plugin_sig if $alias ne $plugin_sig;
         }
         $mt->config->PluginAlias( \%PluginAlias, 1 );
-
-        $mt->config->save_config;
     }
     return 1;
 }

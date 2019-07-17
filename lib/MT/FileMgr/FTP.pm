@@ -12,6 +12,16 @@ use MT::FileMgr;
 @MT::FileMgr::FTP::ISA = qw( MT::FileMgr );
 
 use Net::FTP;
+use Exporter 'import';
+our @EXPORT_OK
+    = qw( CMD_INFO CMD_OK CMD_MORE CMD_REJECT CMD_ERROR CMD_PENDING );
+
+sub CMD_INFO ()   {1}
+sub CMD_OK()      {2}
+sub CMD_MORE()    {3}
+sub CMD_REJECT()  {4}
+sub CMD_ERROR()   {5}
+sub CMD_PENDING() {0}
 
 sub init {
     my $fmgr = shift;
@@ -159,6 +169,11 @@ sub list {
     $fmgr->{ftp}->list($path);
 }
 
+sub last_status {
+    my $fmgr = shift;
+    $fmgr->{ftp}->status();
+}
+
 sub DESTROY { $_[0]->{ftp}->quit if $_[0]->{ftp} }
 
 package MT::FileMgr::FTP::StringTie;
@@ -189,5 +204,6 @@ sub PRINT {
 sub BINMODE {1}
 sub _min    { $_[0] < $_[1] ? $_[0] : $_[1] }
 sub buffer  { $_[0]->{buf} }
+
 
 1;

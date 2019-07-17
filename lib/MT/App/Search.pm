@@ -475,14 +475,14 @@ sub process {
     $out = $app->$method( $count, $iter );
     unless ( defined $out ) {
         MT::Util::Log->info('--- End   search process. No out.');
-        $iter->end if $iter;
+        $iter->end;
         return $app->error( $app->errstr );
     }
 
     my $result;
     if ( ref($out) && eval { $out->isa('MT::Template') } ) {
         unless ( defined( $result = $out->build() ) ) {
-            $iter->end if $iter;
+            $iter->end;
             return $app->error( $out->errstr );
         }
     }
@@ -492,7 +492,7 @@ sub process {
 
     $app->run_callbacks( 'search_post_render', $app, $count, $result );
     MT::Util::Log->info('--- End   search process.');
-    $iter->end if $iter;
+    $iter->end;
     $result;
 }
 
@@ -727,13 +727,12 @@ sub _log_search {
     unless ( $app->param('Template')
         && ( 'feed' eq $app->param('Template') ) )
     {
-        my $search_string = defined $app->{search_string} ? $app->{search_string} : '';
         my $blog_id = $app->first_blog_id();
         require MT::Log;
         $app->log(
             {   message => $app->translate(
                     "Search: query for '[_1]'",
-                    $search_string,
+                    $app->{search_string}
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'search',

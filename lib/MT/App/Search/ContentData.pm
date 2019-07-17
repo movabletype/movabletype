@@ -138,11 +138,9 @@ sub query_parse {
         $orig_terms );
     my $joins = $app->_query_parse_filter( $lucene_struct, $filter_types );
 
-    my $return = { $terms && @$terms ? ( terms => $terms ) : () };
-    if ( $joins && @$joins ) {
-        $return->{args} = { joins => $joins };
-    }
-    $return;
+    +{  terms => $terms,
+        args  => { ( $joins && @$joins ) ? ( joins => $joins ) : (), },
+    };
 }
 
 sub _query_parse_filter {
@@ -299,7 +297,7 @@ sub search_terms {
         }
         else {
             my $search = $app->param('search');
-            my @words  = split( / +/, $search );
+            my @words = split( / +/, $search );
             if ( $limit eq 'any' ) {
                 $search = join( ' OR ', @words );
             }
@@ -551,7 +549,7 @@ sub _get_not_ids_common {
     my @normal_ids = @{ $app->$method( $value, $orig_terms ) };
     return unless @normal_ids;
     my $terms = [ $orig_terms, { id => { not => \@normal_ids } }, ];
-    my $args  = {
+    my $args = {
         fetchonly => { id => 1 },
         unique    => 1,
     };

@@ -37,7 +37,7 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "dependencies": {
     "jquery-ui-touch-punch": "^0.2.3",
-    "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
+    "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git#develop",
     "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
     "popper.js": "^1.12.1",
     "riot": "^3.6.1",
