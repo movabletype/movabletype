@@ -2295,6 +2295,7 @@ use vars qw( @ISA %Lexicon );
 	'Author ID' => 'ID des Autors',
 	'My Entries' => 'Meine Einträge',
 	'Entries in This Website' => 'Einträge auf dieser Website',
+	'Entries in This Site' => 'Einträge auf dieser Website',
 	'Published Entries' => 'Veröffentlichte Einträge',
 	'Draft Entries' => 'Eintrags-Entwürfe',
 	'Unpublished Entries' => 'Unveröffentlichte Einträge',
@@ -2455,6 +2456,7 @@ use vars qw( @ISA %Lexicon );
 	'Level' => 'Stufe',
 	'Metadata' => 'Metadaten',
 	'Logs on This Website' => 'Logs dieser Website',
+	'Logs on This Site' => 'Logs dieser Website',
 	'Show only errors' => 'Nur Fehlermeldungen anzeigen',
 
 ## lib/MT/Mail.pm
@@ -2495,6 +2497,7 @@ use vars qw( @ISA %Lexicon );
 	'(root)' => '(Wurzel)',
 	'My Pages' => 'Meine Seiten',
 	'Pages in This Website' => 'Seiten in dieser Website',
+	'Pages in This Site' => 'Seiten in dieser Website',
 	'Published Pages' => 'Veröffentlichte Seiten',
 	'Draft Pages' => 'Seiten-Entwürfe',
 	'Unpublished Pages' => 'Unveröffentlichte Seiten',
@@ -7173,6 +7176,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Entry/Page Status' => 'Eintrags-/Seiten-Status',
 	'Date Commented' => 'Kommentardatum',
 	'Comments in This Website' => 'Kommentare auf dieser Website',
+	'Comments in This Site' => 'Kommentare auf dieser Website',
 	'Non-spam comments' => 'Gültige Kommentare',
 	'Non-spam comments on this website' => 'Gültige Kommentare auf dieser Website',
 	'Pending comments' => 'Zu moderierende Kommentare',

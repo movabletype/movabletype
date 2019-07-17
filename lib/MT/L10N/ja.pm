@@ -2359,6 +2359,7 @@ use vars qw( @ISA %Lexicon );
 	'Author ID' => 'ユーザーID',
 	'My Entries' => '自分の記事',
 	'Entries in This Website' => 'ウェブサイトの記事',
+	'Entries in This Site' => 'このサイトの記事',
 	'Published Entries' => '公開されている記事',
 	'Draft Entries' => '下書きの記事',
 	'Unpublished Entries' => '公開が終了している記事',
@@ -2517,6 +2518,7 @@ use vars qw( @ISA %Lexicon );
 	'Level' => 'レベル',
 	'Metadata' => 'メタデータ',
 	'Logs on This Website' => 'ウェブサイトのログ',
+	'Logs on This Site' => 'このサイトのログ',
 	'Show only errors' => 'エラーだけを表示',
 
 ## lib/MT/Mail.pm
@@ -2557,6 +2559,7 @@ use vars qw( @ISA %Lexicon );
 	'(root)' => '(root)',
 	'My Pages' => '自分のウェブページ',
 	'Pages in This Website' => 'ウェブサイトのウェブページ',
+	'Pages in This Site' => 'このサイトのウェブページ',
 	'Published Pages' => '公開されているウェブページ',
 	'Draft Pages' => '下書きのウェブページ',
 	'Unpublished Pages' => '公開が終了しているウェブページ',
@@ -6918,6 +6921,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry/Page Status' => '記事/ウェブページの公開状態',
 	'Date Commented' => 'コメント日',
 	'Comments in This Website' => 'ウェブサイトのコメント',
+	'Comments in This Site' => 'このサイトのコメント',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
 	'Pending comments' => '保留中のコメント',
