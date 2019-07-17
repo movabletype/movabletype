@@ -12,9 +12,6 @@ use MT::FileMgr;
 @MT::FileMgr::FTP::ISA = qw( MT::FileMgr );
 
 use Net::FTP;
-use Exporter 'import';
-our @EXPORT_OK
-    = qw( CMD_INFO CMD_OK CMD_MORE CMD_REJECT CMD_ERROR CMD_PENDING );
 
 sub CMD_INFO ()   {1}
 sub CMD_OK()      {2}
