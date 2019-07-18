@@ -13,13 +13,6 @@ use MT::FileMgr;
 
 use Net::FTP;
 
-sub CMD_INFO ()   {1}
-sub CMD_OK()      {2}
-sub CMD_MORE()    {3}
-sub CMD_REJECT()  {4}
-sub CMD_ERROR()   {5}
-sub CMD_PENDING() {0}
-
 sub init {
     my $fmgr = shift;
     $fmgr->SUPER::init(@_);
