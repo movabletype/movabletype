@@ -97,6 +97,12 @@ sub write_config {
         MTReleaseNumber     => MT->release_number,
     );
 
+    if ( $ENV{TEST_VERBOSE} ) {
+        $config{LoggerModule} ||= 'Test';
+        $config{LoggerPath}   ||= 'TEST_ROOT/mt.log';
+        $config{LoggerLevel}  ||= 'DEBUG';
+    }
+
     if ($extra) {
         for my $key ( keys %$extra ) {
             my $value = $extra->{$key};
