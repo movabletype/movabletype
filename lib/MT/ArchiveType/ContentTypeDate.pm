@@ -446,6 +446,7 @@ sub adjacent_archive_content_data {
         $ts ||= $cd->authored_on;
 
         $terms->{blog_id}         = $cd->blog_id;
+        $terms->{content_type_id} = $cd->content_type_id;
     }
 
     my ( $start, $end ) = $obj->date_range($ts);
