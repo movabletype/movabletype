@@ -417,8 +417,16 @@ sub adjacent_archive_content_data {
 
     my $order = ( $param->{order} eq 'previous' ) ? 'descend' : 'ascend';
 
-    my $author;
-    $author = $param->{author} if $obj->author_based;
+    my $terms = { status => MT::ContentStatus::RELEASE() };
+
+    $terms->{author_id} = $param->{author}->id if $obj->author_based;
+
+    if ( $param->{blog_id} ) {
+        $terms->{blog_id} = $param->{blog_id};
+    }
+    elsif ( $param->{blog} ) {
+        $terms->{blog_id} = $param->{blog}->id;
+    }
 
     my ( $category_field_id, $category_id );
     if ( $obj->category_based ) {
@@ -428,9 +436,7 @@ sub adjacent_archive_content_data {
 
     my $datetime_field_id = $param->{datetime_field_id};
 
-    my $ts      = $param->{ts};
-    my $blog_id = $param->{blog_id}
-        || ( $param->{blog} ? $param->{blog}->id : undef );
+    my $ts = $param->{ts};
 
     # if $param->{content_data} given, override $ts and $blog_id.
     if ( my $cd = $param->{content_data} ) {
@@ -439,17 +445,11 @@ sub adjacent_archive_content_data {
         }
         $ts ||= $cd->authored_on;
 
-        $blog_id = $cd->blog_id;
+        $terms->{blog_id}         = $cd->blog_id;
     }
 
     my ( $start, $end ) = $obj->date_range($ts);
     $ts = ( $order eq 'descend' ) ? $start : $end;
-
-    my $terms = {
-        status => MT::ContentStatus::RELEASE(),
-        $blog_id ? ( blog_id   => $blog_id )    : (),
-        $author  ? ( author_id => $author->id ) : (),
-    };
 
     my $category_join;
     if ( $category_field_id && $category_id ) {
