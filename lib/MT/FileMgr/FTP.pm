@@ -158,6 +158,11 @@ sub list {
     $fmgr->{ftp}->list($path);
 }
 
+sub last_status {
+    my $fmgr = shift;
+    $fmgr->{ftp}->status();
+}
+
 sub DESTROY { $_[0]->{ftp}->quit if $_[0]->{ftp} }
 
 package MT::FileMgr::FTP::StringTie;
