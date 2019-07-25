@@ -255,6 +255,8 @@ sub _macrowave {
     my $len  = length $frozen;
     my ( @stack, $value );
     my $enc = MT->app->config('PublishCharset') || 'UTF-8';
+    $enc = Encode::find_encoding($enc) or die "unknown encoding: $enc";
+
     while ( $pos < $len ) {
         my $type = substr( $frozen, $pos, 1 );
         $pos++;
@@ -280,7 +282,7 @@ sub _macrowave {
             : $type eq 'S' ? do {    # scalarref
             my $slen = unpack 'N', substr( $frozen, $pos, 4 );
             my $col_val = substr( $frozen, $pos + 4, $slen );
-            $col_val = Encode::decode( $enc, $col_val )
+            $col_val = $enc->decode($col_val)
                 if !( Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             push @$refs, \$col_val;
@@ -295,7 +297,7 @@ sub _macrowave {
             : $type eq '-' ? do {    # scalar value
             my $slen = unpack 'N', substr( $frozen, $pos, 4 );
             my $col_val = substr( $frozen, $pos + 4, $slen );
-            $col_val = Encode::decode( $enc, $col_val )
+            $col_val = $enc->decode($col_val)
                 if !( Encode::is_utf8($col_val) );
             $pos += 4 + $slen;
             $col_val;
