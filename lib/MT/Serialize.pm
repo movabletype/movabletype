@@ -254,8 +254,9 @@ sub _macrowave {
     my $refs = [undef];
     my $len  = length $frozen;
     my ( @stack, $value );
-    my $enc = MT->app->config('PublishCharset') || 'UTF-8';
-    $enc = Encode::find_encoding($enc) or die "unknown encoding: $enc";
+    my $encoding = MT->app->config('PublishCharset') || 'UTF-8';
+    my $enc = Encode::find_encoding($encoding)
+        or die "unknown encoding: $encoding";
 
     while ( $pos < $len ) {
         my $type = substr( $frozen, $pos, 1 );
