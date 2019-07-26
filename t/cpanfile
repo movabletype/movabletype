@@ -111,6 +111,7 @@ on 'test' => sub {
     requires 'Test::MockObject';
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
+    requires 'Test::Requires';
     requires 'Test::Spec';
     requires 'Text::Diff';
     requires 'Time::Piece';
