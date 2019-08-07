@@ -28,6 +28,10 @@ sub list {
         my $offset = $app->param('offset');
         my $limit  = $app->param('limit');
 
+        if ( $limit !~ /[0-9]+/ || $offset !~ /[0-9]+/ ) {
+            return $app->errtrans('Invalid parameter.');
+        }
+
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';
         $filter_keys =~ s/blogIds/ids/ if $filter_keys;

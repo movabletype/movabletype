@@ -184,7 +184,9 @@ sub query_parser {
     [ grep $_, ( $_[0] =~ /\s*"([^"]+)"|\s*([^"\s]+)|\s*"([^"]+)/sg ) ];
 }
 
-sub query_builder { return sub { _query_builder(@_) } }
+sub query_builder {
+    return sub { _query_builder(@_) }
+}
 
 sub _query_builder {
     my ( $app, $search, $fields, $filter ) = @_;
@@ -343,9 +345,10 @@ sub filtered_list {
             } split ',', $specified;
         }
 
-        if (!$query_builder) {
+        if ( !$query_builder ) {
             my $handler
-                = $app->registry( 'applications', 'data_api', 'query_builder' );
+                = $app->registry( 'applications', 'data_api',
+                'query_builder' );
             if ( ref $handler eq 'ARRAY' ) {
                 $handler = $handler->[$#$handler];
             }
@@ -481,6 +484,10 @@ sub filtered_list {
 
     my $limit  = $app->param('limit')  || 50;
     my $offset = $app->param('offset') || 0;
+
+    if ( $limit !~ /[0-9]+/ || $offset !~ /[0-9]+/ ) {
+        return $app->errtrans('Invalid parameter.');
+    }
 
     ## FIXME: take identifical column from column defs.
     my $cols
