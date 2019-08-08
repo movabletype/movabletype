@@ -53,20 +53,21 @@ sub suite {
             error  => qr/Invalid parameter./,
         },
 
-        # list_entries_for_category - limit - ascii and number
+        # list_entries_for_category - limit - SQL injection pattern
         {   path   => '/v2/sites/1/categories/1/entries',
             method => 'GET',
-            params => { limit => 'a1', },
+            params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
             error  => qr/Invalid parameter./,
         },
 
-        # list_entries_for_category - offset - ascii and number
+        # list_entries_for_category - offset - SQL injection pattern
         {   path   => '/v2/sites/1/categories/1/entries',
             method => 'GET',
-            params => { offset => 'a1', },
-            code   => 500,
-            error  => qr/Invalid parameter./,
+            params =>
+                { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
+            code  => 500,
+            error => qr/Invalid parameter./,
         },
 
         # list_pages_for_folder - limit - ascii only
@@ -88,17 +89,18 @@ sub suite {
         # list_pages_for_folder - limit - ascii  and number
         {   path   => '/v2/sites/1/folders/' . $blog_folder->id . '/pages',
             method => 'GET',
-            params => { limit => 'a1', },
+            params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
             error  => qr/Invalid parameter./,
         },
 
-        # list_pages_for_folder - offset  - ascii and number
+        # list_pages_for_folder - offset  - SQL injection pattern
         {   path   => '/v2/sites/1/folders/' . $blog_folder->id . '/pages',
             method => 'GET',
-            params => { offset => 'a1', },
-            code   => 500,
-            error  => qr/Invalid parameter./,
+            params =>
+                { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
+            code  => 500,
+            error => qr/Invalid parameter./,
         },
 
         # permission - limit - ascii only
@@ -119,22 +121,23 @@ sub suite {
             error        => qr/Invalid parameter./,
         },
 
-        # permission - limit - ascii and number
+        # permission - limit - SQL injection pattern
         {   path         => '/v1/users/2/permissions',
             method       => 'GET',
             is_superuser => 1,
-            params       => { limit => 'a1', },
-            code         => 500,
-            error        => qr/Invalid parameter./,
+            params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
+            code   => 500,
+            error  => qr/Invalid parameter./,
         },
 
-        # permission - offset  - ascii and number
+        # permission - offset  - SQL injection pattern
         {   path         => '/v1/users/2/permissions',
             method       => 'GET',
             is_superuser => 1,
-            params       => { offset => 'a1', },
-            code         => 500,
-            error        => qr/Invalid parameter./,
+            params =>
+                { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
+            code  => 500,
+            error => qr/Invalid parameter./,
         },
 
         # stats - limit - ascii only
@@ -153,21 +156,23 @@ sub suite {
             error  => qr/Invalid parameter./,
         },
 
-        # stats - limit - ascii and number
+        # stats - limit - SQL injection pattern
         {   path   => '/v1/sites/1/stats/path/pageviews',
             method => 'GET',
-            params => { limit => 'a1', },
+            params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
             error  => qr/Invalid parameter./,
         },
 
-        # stats - offset - ascii and number
+        # stats - offset - SQL injection pattern
         {   path   => '/v1/sites/1/stats/path/pageviews',
             method => 'GET',
-            params => { offset => 'a1', },
-            code   => 500,
-            error  => qr/Invalid parameter./,
+            params =>
+                { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
+            code  => 500,
+            error => qr/Invalid parameter./,
         },
+
     ];
 }
 
