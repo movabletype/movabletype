@@ -33,7 +33,10 @@ sub _invoke {
         limit     => scalar( $app->param('limit') ),
         offset    => scalar( $app->param('offset') ),
     };
-    if ( $params->{limit} !~ /[0-9]+/ || $params->{offset} !~ /[0-9]+/ ) {
+    if (   ( defined $params->{limit} && $params->{limit} !~ /\A[0-9]+\z/ )
+        || ( defined $params->{offset} && $params->{offset} !~ /\A[0-9]+\z/ )
+        )
+    {
         return $app->errtrans('Invalid parameter.');
     }
     $params->{path} = do {

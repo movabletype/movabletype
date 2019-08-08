@@ -494,7 +494,7 @@ sub filtered_list {
     my $limit  = $q->param('limit')  || 50;
     my $offset = $q->param('offset') || 0;
 
-    if ( $limit !~ /[0-9]+/ || $offset !~ /[0-9]+/ ) {
+    if ( $limit !~ /\A[0-9]+\z/ || $offset !~ /\A[0-9]+\z/ ) {
         return $app->errtrans('Invalid parameter.');
     }
 
