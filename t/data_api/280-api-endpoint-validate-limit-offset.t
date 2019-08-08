@@ -42,7 +42,7 @@ sub suite {
             method => 'GET',
             params => { limit => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_entries_for_category - offset - ascii only
@@ -50,7 +50,7 @@ sub suite {
             method => 'GET',
             params => { offset => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
         # list_entries_for_category - limit - SQL injection pattern 1
@@ -58,7 +58,7 @@ sub suite {
             method => 'GET',
             params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_entries_for_category - offset - SQL injection pattern 1
@@ -67,7 +67,7 @@ sub suite {
             params =>
                 { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code  => 500,
-            error => qr/Invalid parameter./,
+            error => qr/offset must be a number./,
         },
 
         # list_entries_for_category - limit - SQL injection pattern 2
@@ -75,7 +75,7 @@ sub suite {
             method => 'GET',
             params => { limit => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_entries_for_category - offset - SQL injection pattern 2
@@ -83,7 +83,7 @@ sub suite {
             method => 'GET',
             params => { offset => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
         # list_pages_for_folder - limit - ascii only
@@ -91,7 +91,7 @@ sub suite {
             method => 'GET',
             params => { limit => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_pages_for_folder - offset - ascii only
@@ -99,7 +99,7 @@ sub suite {
             method => 'GET',
             params => { offset => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
         # list_pages_for_folder - limit - SQL injection pattern 1
@@ -107,7 +107,7 @@ sub suite {
             method => 'GET',
             params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_pages_for_folder - offset - SQL injection pattern 1
@@ -116,7 +116,7 @@ sub suite {
             params =>
                 { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code  => 500,
-            error => qr/Invalid parameter./,
+            error => qr/offset must be a number./,
         },
 
         # list_pages_for_folder - limit - SQL injection pattern 2
@@ -124,7 +124,7 @@ sub suite {
             method => 'GET',
             params => { limit => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # list_pages_for_folder - offset - SQL injection pattern 2
@@ -132,7 +132,7 @@ sub suite {
             method => 'GET',
             params => { offset => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
         # permission - limit - ascii only
@@ -141,7 +141,7 @@ sub suite {
             is_superuser => 1,
             params       => { limit => 'a', },
             code         => 500,
-            error        => qr/Invalid parameter./,
+            error        => qr/limit must be a number./,
         },
 
         # permission - offset - ascii only
@@ -150,7 +150,7 @@ sub suite {
             is_superuser => 1,
             params       => { offset => 'a', },
             code         => 500,
-            error        => qr/Invalid parameter./,
+            error        => qr/offset must be a number./,
         },
 
         # permission - limit - SQL injection pattern 1
@@ -159,7 +159,7 @@ sub suite {
             is_superuser => 1,
             params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # permission - offset - SQL injection pattern 1
@@ -169,7 +169,7 @@ sub suite {
             params =>
                 { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code  => 500,
-            error => qr/Invalid parameter./,
+            error => qr/offset must be a number./,
         },
 
         # permission - limit - SQL injection pattern 2
@@ -178,7 +178,7 @@ sub suite {
             is_superuser => 1,
             params       => { limit => '1\' or \'1\' = \'1\';-- ', },
             code         => 500,
-            error        => qr/Invalid parameter./,
+            error        => qr/limit must be a number./,
         },
 
         # permission - offset - SQL injection pattern 2
@@ -187,7 +187,7 @@ sub suite {
             is_superuser => 1,
             params       => { offset => '1\' or \'1\' = \'1\';-- ', },
             code         => 500,
-            error        => qr/Invalid parameter./,
+            error        => qr/offset must be a number./,
         },
 
         # stats - limit - ascii only
@@ -195,7 +195,7 @@ sub suite {
             method => 'GET',
             params => { limit => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # stats - offset - ascii only
@@ -203,7 +203,7 @@ sub suite {
             method => 'GET',
             params => { offset => 'a', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
         # stats - limit - SQL injection pattern 1
@@ -211,7 +211,7 @@ sub suite {
             method => 'GET',
             params => { limit => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # stats - offset - SQL injection pattern 1
@@ -220,7 +220,7 @@ sub suite {
             params =>
                 { offset => '\' OR 1 = 1; DELETE FROM mt_author; -- ', },
             code  => 500,
-            error => qr/Invalid parameter./,
+            error => qr/offset must be a number./,
         },
 
         # stats - limit - SQL injection pattern 2
@@ -228,7 +228,7 @@ sub suite {
             method => 'GET',
             params => { limit => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/limit must be a number./,
         },
 
         # stats - offset - SQL injection pattern 2
@@ -236,7 +236,7 @@ sub suite {
             method => 'GET',
             params => { offset => '1\' or \'1\' = \'1\';-- ', },
             code   => 500,
-            error  => qr/Invalid parameter./,
+            error  => qr/offset must be a number./,
         },
 
     ];

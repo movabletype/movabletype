@@ -28,9 +28,10 @@ sub list {
         my $offset = $app->param('offset');
         my $limit  = $app->param('limit');
 
-        if ( $limit !~ /\A[0-9]+\z/ || $offset !~ /\A[0-9]+\z/ ) {
-            return $app->errtrans('Invalid parameter.');
-        }
+        return $app->errtrans( '[_1] must be a number.', 'limit' )
+            if ( $limit !~ /\A[0-9]+\z/ );
+        return $app->errtrans( '[_1] must be a number.', 'offset' )
+            if ( $offset !~ /\A[0-9]+\z/ );
 
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';

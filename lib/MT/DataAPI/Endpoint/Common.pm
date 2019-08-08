@@ -485,9 +485,10 @@ sub filtered_list {
     my $limit  = $app->param('limit')  || 50;
     my $offset = $app->param('offset') || 0;
 
-    if ( $limit !~ /\A[0-9]+\z/ || $offset !~ /\A[0-9]+\z/ ) {
-        return $app->errtrans('Invalid parameter.');
-    }
+    return $app->errtrans( '[_1] must be a number.', 'limit' )
+        if ( $limit !~ /\A[0-9]+\z/ );
+    return $app->errtrans( '[_1] must be a number.', 'offset' )
+        if ( $offset !~ /\A[0-9]+\z/ );
 
     ## FIXME: take identifical column from column defs.
     my $cols
