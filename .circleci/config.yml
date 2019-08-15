@@ -8,7 +8,7 @@ jobs:
       - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
       - run: rm t/34-sqlite.t t/90-podcoverage.t plugins/MultiBlog/t/02.tags.t
       - run: cp t/mysql-test.cfg mt-config.cgi
-      - run: prove t plugins/*/t
+      - run: PERL_JSON_BACKEND=0 prove t plugins/*/t
 
   coveralls:
     docker:
