@@ -1,31 +1,42 @@
 version: 2
 jobs:
-  build:
+  test_internal:
     docker:
       - image: masiuchi/docker-mt-test:trusty-full
     steps:
       - checkout
-      - run:
-          name: Install CPAN modules
-          command: |
-            cpm install --global --cpanfile=t/cpanfile
-      - run:
-          name: Remove skip tests
-          command: |
-            rm t/34-sqlite.t
-            rm t/90-podcoverage.t
-            rm plugins/MultiBlog/t/02.tags.t
-      - run:
-          name: Copy mt-config.cgi
-          command: |
-            cp t/mysql-test.cfg mt-config.cgi
-      - run:
-          name: Run test
-          command: |
-            find /var/lib/mysql -type f | xargs touch
-            service mysql start
-            service memcached start
+      - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
+      - run: prove t plugins/*/t
 
-            PERL_JSON_BACKEND=0 prove t plugins/*/t
-            phpunit
+  coveralls:
+    docker:
+      - image: masiuchi/docker-mt-test:trusty-full
+    steps:
+      - checkout
+      - run: cpm install -g Devel::Cover::Report::Coveralls
+      - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
+      - run: rm t/34-sqlite.t plugins/MultiBlog/t/02.tags.t
+      - run: rm t/80-serialize-leak.t t/120-object-leak.t
+      - run:
+          name: Test and send coverage report
+          command: |
+            set +e
+            HARNESS_PERL_SWITCHES=-MDevel::Cover=+ignore,^extlib,+ignore,^t prove -j4 -PMySQLPool=MT::Test::Env -It/lib t plugins/*/t
+            cover -report coveralls
+workflows:
+  version: 2
+  test_internal:
+    jobs:
+      - test_internal
+  # nightly:
+  #   triggers:
+  #     - schedule:
+  #         cron: "0 18 * * *"  # 3 AM JST
+  #         filters:
+  #           branches:
+  #             only:
+  #               - develop
+  #               - support-6.5x
+  #   jobs:
+  #     - coveralls
 
