@@ -4206,38 +4206,74 @@ sub redirect {
 }
 
 sub is_valid_redirect_target {
-    my $app = shift;
-    my $static
-        = $app->param('static')
-        || $app->param('return_url')
-        || $app->param('return_to')
-        || '';
-    my $target;
-    if ( ( $static eq '' ) || ( $static eq '1' ) ) {
-        require MT::Entry;
-        my $entry_id = $app->param('entry_id') || 0;
-        my $entry = MT::Entry->load($entry_id)
-            or return $app->error(
-            $app->translate( 'Cannot load entry #[_1].', $entry_id ) );
-        $target = $entry->archive_url;
-    }
-    else {
-        $target = $static;
-    }
-    $target =~ s!#.*$!!;    # strip off any existing anchor
+    my ( $app, $target ) = @_;
 
-    require URI;
-    my $redirect_uri = URI->new($target);
-    my @ok_uris;
+    my @urls;
     my $blog_id = $app->param('blog_id');
     if ( $blog_id && $blog_id !~ /\D/ ) {
-        my $blog     = MT::Blog->load($blog_id);
-        my $blog_uri = URI->new( $blog->site_url );
-        push @ok_uris, $blog_uri;
+        my $blog = MT::Blog->load($blog_id)
+            or return $app->errtrans( 'Cannot load site #[_1].', $blog_id );
+        push @urls, $blog->site_url;
     }
-    push @ok_uris, URI->new( $app->base );
-    for my $ok_uri (@ok_uris) {
-        return 1 if $ok_uri->host eq $redirect_uri->host;
+    else {
+        my @sites = MT::Blog->load( { class => '*' } );
+        for my $site (@sites) {
+            push @urls, $site->site_url;
+        }
+    }
+    if ( my $base = $app->base ) {
+        push @urls, $base;
+    }
+    if ( MT->config->ReturnToURL ) {
+        push @urls, MT->config->ReturnToURL;
+    }
+
+    require URI;
+
+    my @authorities;
+    my %seen;
+    for my $url (@urls) {
+        my $uri = URI->new( $url, 'http' )->canonical;
+        next unless $uri->isa('URI::http');
+        my $authority = $uri->authority or next;
+        next if $seen{$authority}++;
+        push @authorities, $authority;
+    }
+
+    if ( defined $target ) {
+        return $app->_is_valid_redirect_target( $target, \@authorities );
+    }
+    else {
+        ## for backward compatibility
+        my @targets = grep defined,
+            map { scalar $app->param($_) } qw/static return_url return_to/;
+        push @targets, '' unless @targets;
+        for my $target (@targets) {
+            if ( ( $target eq '' ) || ( $target eq '1' ) ) {
+                require MT::Entry;
+                my $entry_id = $app->param('entry_id') || 0;
+                my $entry    = MT::Entry->load($entry_id)
+                    or return $app->error(
+                    $app->translate( 'Cannot load entry #[_1].', $entry_id )
+                    );
+                $target = $entry->archive_url;
+            }
+            $app->_is_valid_redirect_target( $target, \@authorities )
+                or return;
+        }
+        ## now all of the targets are validated
+        return 1;
+    }
+}
+
+sub _is_valid_redirect_target {
+    my ( $app, $target, $allowed_authorities ) = @_;
+    my $uri       = URI->new( $target, 'http' )->canonical;
+    my $authority = $uri->authority;
+    return   unless $uri->isa('URI::http');
+    return 1 unless defined $authority;       # relative URL
+    for my $allowed ( @{ $allowed_authorities || [] } ) {
+        return 1 if $allowed eq $authority;
     }
     return;
 }
