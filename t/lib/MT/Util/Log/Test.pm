@@ -19,6 +19,8 @@ sub new {
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
         Test::More::note $message;
+        open my $fh, '>>', $log_file or die "$log_file: $!";
+        print $fh $message, "\n";
     };
 
     my $level = $logger_level || MT->config->Loggerlevel;
