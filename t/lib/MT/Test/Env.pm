@@ -95,13 +95,10 @@ sub write_config {
         ImageDriver         => $image_driver,
         MTVersion           => MT->version_number,
         MTReleaseNumber     => MT->release_number,
+        LoggerModule        => 'Test',
+        LoggerPath          => 'TEST_ROOT/log',
+        LoggerLevel         => 'DEBUG',
     );
-
-    if ( $ENV{TEST_VERBOSE} ) {
-        $config{LoggerModule} ||= 'Test';
-        $config{LoggerPath}   ||= 'TEST_ROOT/mt.log';
-        $config{LoggerLevel}  ||= 'DEBUG';
-    }
 
     if ($extra) {
         for my $key ( keys %$extra ) {
