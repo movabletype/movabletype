@@ -522,17 +522,18 @@ sub prepare_template {
                     my @cat_fields = grep { $_->{type} eq 'categories' }
                         @{ $ct->fields };
                     my ($cat)
-                        = grep { $_->name eq $cat_field_name } @cat_fields;
+                        = grep { $_->{name} eq $cat_field_name } @cat_fields;
 
-                    $map->{cat_field_id} = $cat->id if $cat;
+                    $map->{cat_field_id} = $cat->{id} if $cat;
                 }
 
                 if ( my $dt_field_name = delete $map->{dt_field} ) {
                     my @dt_fields
                         = grep { $_->{type} =~ /date/ } @{ $ct->fields };
-                    my ($dt) = grep { $_->name eq $dt_field_name } @dt_fields;
+                    my ($dt)
+                        = grep { $_->{name} eq $dt_field_name } @dt_fields;
 
-                    $map->{dt_field_id} = $dt->id if $dt;
+                    $map->{dt_field_id} = $dt->{id} if $dt;
                 }
 
                 my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
