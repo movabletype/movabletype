@@ -205,7 +205,7 @@ sub prepare_entry {
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -257,7 +257,7 @@ sub prepare_page {
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -512,7 +512,7 @@ sub prepare_template {
             $mapping = [$mapping] if ref $mapping eq 'HASH';
             for my $map (@$mapping) {
                 $map->{file_template} ||= _file_template($archiver);
-                $map->{build_type} ||= 1;
+                $map->{build_type}    ||= 1;
                 $map->{is_preferred} = $preferred;
                 $map->{template_id}  = $tmpl->id;
                 $map->{blog_id}      = $blog_id;
@@ -557,7 +557,7 @@ sub _template_type {
 
 sub _file_template {
     my $archiver = shift;
-    my $prefix = $archiver->name =~ /^ContentType/ ? "ct/" : "";
+    my $prefix   = $archiver->name =~ /^ContentType/ ? "ct/" : "";
     for my $archive_template ( @{ $archiver->default_archive_templates } ) {
         next unless $archive_template->{default};
         return $prefix . $archive_template->{template};

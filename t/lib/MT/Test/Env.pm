@@ -30,7 +30,7 @@ use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
-    my $root = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
+    my $root     = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
@@ -391,7 +391,7 @@ sub _find_addons_and_plugins {
     $self->{addons_and_plugins} = [
         sort
         grep { !$seen{$_}++ }
-        map { $_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1 } @files
+        map  { $_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1 } @files
     ];
 }
 
@@ -405,7 +405,7 @@ sub _find_file {
 
 sub load_schema_and_fixture {
     my ( $self, $fixture_id ) = @_;
-    my $schema_file = $self->_find_file( $self->_schema_file ) or return;
+    my $schema_file  = $self->_find_file( $self->_schema_file ) or return;
     my $fixture_file = $self->_find_file( $self->_fixture_file($fixture_id) )
         or return;
     return
@@ -415,7 +415,7 @@ sub load_schema_and_fixture {
     my ( $s, $m, $h, $d, $mo, $y ) = gmtime;
     my $now = sprintf( "%04d%02d%02d%02d%02d%02d",
         $y + 1900, $mo + 1, $d, $h, $m, $s );
-    my @pool = ( 'a' .. 'z', 0 .. 9 );
+    my @pool     = ( 'a' .. 'z', 0 .. 9 );
     my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
     my $salt     = join '', map { $pool[ rand @pool ] } 1 .. 16;
 
@@ -775,7 +775,7 @@ sub schema_version {
 sub plugin_schema_version {
     my $self = shift;
     return map { $_->id => $_->schema_version }
-        grep { defined $_->schema_version && $_->schema_version ne '' }
+        grep   { defined $_->schema_version && $_->schema_version ne '' }
         @MT::Plugins;
 }
 
