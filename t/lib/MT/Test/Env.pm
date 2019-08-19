@@ -7,6 +7,7 @@ use Test::More;
 use File::Spec;
 use Cwd ();
 use Fcntl qw/:flock/;
+use File::Find ();
 use File::Path 'mkpath';
 use File::Temp 'tempdir';
 use File::Basename 'dirname';
@@ -776,6 +777,23 @@ sub plugin_schema_version {
     return map { $_->id => $_->schema_version }
         grep { defined $_->schema_version && $_->schema_version ne '' }
         @MT::Plugins;
+}
+
+sub ls {
+    my ( $self, $root, $callback ) = @_;
+    $callback ||= sub {
+        my $file = shift;
+        note $file if -f $file;
+    };
+    File::Find::find(
+        {   wanted => sub {
+                $callback->($File::Find::name);
+            },
+            preprocess => sub { sort @_ },
+            no_chdir   => 1,
+        },
+        $root || $self->root
+    );
 }
 
 sub remove_logfile {
