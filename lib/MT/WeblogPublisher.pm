@@ -35,7 +35,7 @@ sub new {
 
 sub init_archive_types {
     my $types = MT->registry("archive_types") || {};
-    my $mt = MT->instance;
+    my $mt    = MT->instance;
     while ( my ( $type, $typedata ) = each %$types ) {
         if ( 'HASH' eq ref $typedata ) {
             $typedata = MT::ArchiveType->new(%$typedata);
@@ -287,12 +287,12 @@ sub rebuild_categories {
             );
     }
     my %arg;
-    $arg{'sort'} = 'id';
+    $arg{'sort'}    = 'id';
     $arg{direction} = 'ascend';
-    $arg{offset} = $param{Offset} if $param{Offset};
-    $arg{limit}  = $param{Limit}  if $param{Limit};
+    $arg{offset}    = $param{Offset} if $param{Offset};
+    $arg{limit}     = $param{Limit} if $param{Limit};
     my $cat_iter = MT::Category->load_iter( { blog_id => $blog->id }, \%arg );
-    my $fcb = $param{FilterCallback};
+    my $fcb      = $param{FilterCallback};
 
     while ( my $cat = $cat_iter->() ) {
         if ($fcb) {
@@ -334,11 +334,11 @@ sub rebuild_authors {
             );
     }
     my %arg;
-    $arg{'sort'} = 'id';
+    $arg{'sort'}    = 'id';
     $arg{direction} = 'ascend';
-    $arg{offset} = $param{Offset} if $param{Offset};
-    $arg{limit}  = $param{Limit}  if $param{Limit};
-    $arg{unique} = 1;
+    $arg{offset}    = $param{Offset} if $param{Offset};
+    $arg{limit}     = $param{Limit} if $param{Limit};
+    $arg{unique}    = 1;
     my %terms;
     $terms{status} = MT::Author::ACTIVE();
     require MT::Entry;
@@ -351,7 +351,7 @@ sub rebuild_authors {
         { unique => 1 }
     );
     my $auth_iter = MT::Author->load_iter( \%terms, \%arg );
-    my $fcb = $param{FilterCallback};
+    my $fcb       = $param{FilterCallback};
 
     while ( my $a = $auth_iter->() ) {
         if ($fcb) {
@@ -752,7 +752,7 @@ sub rebuild_entry {
         ## Rebuild previous and next daily, weekly, and monthly archives;
         ## adding a new entry could cause changes to the intra-archive
         ## navigation.
-        my %at = map { $_ => 1 } split /,/, $blog->archive_type;
+        my %at    = map { $_ => 1 } split /,/, $blog->archive_type;
         my @db_at = grep {
             my $archiver = $mt->archiver($_);
             $archiver && $archiver->date_based
@@ -1472,7 +1472,7 @@ sub rebuild_file {
         }
 
         my $html = undef;
-        $ctx->stash( 'blog', $blog );
+        $ctx->stash( 'blog',  $blog );
         $ctx->stash( 'entry', $entry ) if $entry;
         $ctx->stash( '_basename',
             fileparse( $map->{__saved_output_file}, qr/\.[^.]*/ ) );
@@ -1584,7 +1584,7 @@ sub rebuild_file {
         ## liberal directory permissions). So we have a config
         ## option to turn it off (NoTempFiles).
         my $use_temp_files = !$mt->{NoTempFiles};
-        my $temp_file = $use_temp_files ? "$file.new" : $file;
+        my $temp_file      = $use_temp_files ? "$file.new" : $file;
         unless ( defined $fmgr->put_data( $html, $temp_file ) ) {
             $timer->unpause if $timer;
             return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
@@ -1634,7 +1634,7 @@ sub rebuild_file {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info( ' Rebuilded ' . $file );
+    MT::Util::Log->info( ' Rebuilt ' . $file );
 
     1;
 }
@@ -1879,7 +1879,7 @@ sub rebuild_indexes {
 
         ## Update the published file.
         my $use_temp_files = !$mt->{NoTempFiles};
-        my $temp_file = $use_temp_files ? "$file.new" : $file;
+        my $temp_file      = $use_temp_files ? "$file.new" : $file;
         unless ( defined( $fmgr->put_data( $html, $temp_file ) ) ) {
             $timer->unpause if $timer;
             return $mt->trans_error( "Writing to '[_1]' failed: [_2]",
@@ -1920,7 +1920,7 @@ sub rebuild_indexes {
                 . ";file:$file]" )
             if $timer;
 
-        MT::Util::Log->info( ' Rebuilded ' . $file );
+        MT::Util::Log->info( ' Rebuilt ' . $file );
     }
 
     MT::Util::Log->info('--- End   rebuild_indexes.');
@@ -2066,7 +2066,7 @@ sub publish_future_posts {
         MT->instance->request( '__published:' . $blog->id, undef )
             if MT->instance->request( '__published:' . $blog->id );
 
-        my @ts = MT::Util::offset_time_list( time, $blog );
+        my @ts  = MT::Util::offset_time_list( time, $blog );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
@@ -2174,13 +2174,14 @@ sub unpublish_past_entries {
     my @sites         = MT->model('website')->load();
     my @blogs         = MT->model('blog')->load();
     push @sites, @blogs;
+
     foreach my $site (@sites) {
 
         # Clear cache
         MT->instance->request( '__published:' . $site->id, undef )
             if MT->instance->request( '__published:' . $site->id );
 
-        my @ts = MT::Util::offset_time_list( time, $site );
+        my @ts  = MT::Util::offset_time_list( time, $site );
         my $now = sprintf "%04d%02d%02d%02d%02d%02d", $ts[5] + 1900,
             $ts[4] + 1,
             @ts[ 3, 2, 1, 0 ];
@@ -2375,7 +2376,7 @@ sub _delete_archive_file {
             $at ? $at : 'None',
             $cat && $cat->id ? $cat->id : '0',
             $map && $map->id ? $map->id : '0',
-            $timestamp ? $timestamp : '0',
+            $timestamp             ? $timestamp  : '0',
             $author && $author->id ? $author->id : '0'
             );
     }
