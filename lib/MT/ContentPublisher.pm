@@ -1403,7 +1403,7 @@ sub rebuild_file {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info( ' Rebuilded ' . $file );
+    MT::Util::Log->info( ' Rebuilt ' . $file );
 
     1;
 }
