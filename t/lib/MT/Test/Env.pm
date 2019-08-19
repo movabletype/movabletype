@@ -778,6 +778,22 @@ sub plugin_schema_version {
         @MT::Plugins;
 }
 
+sub remove_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    unlink $logfile;
+}
+
+sub slurp_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    open my $fh, '<', $logfile or die $!;
+    local $/;
+    <$fh>;
+}
+
 sub DESTROY {
     my $self = shift;
     if ( my @disabled = keys %{ $self->{disabled_addons} || {} } ) {
