@@ -779,6 +779,20 @@ sub plugin_schema_version {
         @MT::Plugins;
 }
 
+sub utime_r {
+    my ( $self, $root, $utime ) = @_;
+    $utime ||= int( time - 86400 );    # 1 day old
+    File::Find::find(
+        {   wanted => sub {
+                return unless -f $File::Find::name;
+                utime $utime, $utime, $File::Find::name or warn $!;
+            },
+            no_chdir => 1,
+        },
+        $root || $self->root
+    );
+}
+
 sub ls {
     my ( $self, $root, $callback ) = @_;
     $callback ||= sub {
