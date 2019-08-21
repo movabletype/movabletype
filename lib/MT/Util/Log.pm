@@ -168,7 +168,7 @@ sub _write_log {
 sub _get_message {
     my ( $level, $message ) = @_;
 
-    my $memory;
+    my $memory = '';
     my $cmd = MT->config->ProcessMemoryCommand;
     if ($cmd) {
         my $re;
