@@ -88,17 +88,18 @@ sub write_config {
                 MT_HOME/themes/
                 )
         ],
-        DefaultLanguage     => 'en_US',
-        StaticWebPath       => '/mt-static/',
-        StaticFilePath      => 'TEST_ROOT/mt-static',
-        EmailAddressMain    => 'mt@localhost',
-        WeblogTemplatesPath => 'MT_HOME/default_templates',
-        ImageDriver         => $image_driver,
-        MTVersion           => MT->version_number,
-        MTReleaseNumber     => MT->release_number,
-        LoggerModule        => 'Test',
-        LoggerPath          => 'TEST_ROOT/log',
-        LoggerLevel         => 'DEBUG',
+        DefaultLanguage      => 'en_US',
+        StaticWebPath        => '/mt-static/',
+        StaticFilePath       => 'TEST_ROOT/mt-static',
+        EmailAddressMain     => 'mt@localhost',
+        WeblogTemplatesPath  => 'MT_HOME/default_templates',
+        ImageDriver          => $image_driver,
+        MTVersion            => MT->version_number,
+        MTReleaseNumber      => MT->release_number,
+        LoggerModule         => 'Test',
+        LoggerPath           => 'TEST_ROOT/log',
+        LoggerLevel          => 'DEBUG',
+        ProcessMemoryCommand => 0,  ## disable process check
     );
 
     if ($extra) {
