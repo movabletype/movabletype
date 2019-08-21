@@ -913,8 +913,7 @@ sub rebuild_archives {
                 my $cat = MT::Category->load($cat_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$cat_id} } ) {
-                        my $r = $recipe->{$at}{$cat_id}{$key};
+                    for my $r ( values %{ $recipe->{$at}->{$cat_id} } ) {
                         $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
@@ -945,8 +944,7 @@ sub rebuild_archives {
                 my $author = MT::Author->load($auth_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$auth_id} } ) {
-                        my $r = $recipe->{$at}{$auth_id}{$key};
+                    for my $r ( values %{ $recipe->{$at}->{$auth_id} } ) {
                         $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
@@ -972,8 +970,7 @@ sub rebuild_archives {
             }
         }
         elsif ( $archiver->date_based() ) {
-            for my $key ( keys %{ $recipe->{$at} } ) {
-                my $r = $recipe->{$at}{$key};
+            for my $r ( values %{ $recipe->{$at} } ) {
                 $mt->$rebuild_method(
                     NoStatic    => 0,
                     Force       => ( $param{Force} ? 1 : 0 ),
