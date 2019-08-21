@@ -1183,6 +1183,7 @@ sub rebuild_file {
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1
         if ( $content_data
+        && $archiver->contenttype_based
         && $content_data->status != MT::ContentStatus::RELEASE() );
     return 1 unless ( $map->build_type );
 
