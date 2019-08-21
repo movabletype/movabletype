@@ -1051,12 +1051,12 @@ sub rebuild_file {
         $terms{startdate} = $start
             if $archiver->date_based
             && ( !$archiver->entry_based )
-            && ( !$any_contenttype_based );
+            && ( !$archiver->contenttype_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
         $terms{cd_id}          = $content_data->id
             if $content_data
-            and $any_contenttype_based;
+            and $archiver->contenttype_based;
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
