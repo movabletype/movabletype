@@ -2184,10 +2184,15 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'End'} = $end;
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'Timestamp'} = $target_dt;
+                            $rebuild_recipe{$at}{ $cat->id }
+                                { $start . $end }{'ContentData'}
+                                = $content_data;
                         }
                         else {
                             $rebuild_recipe{$at}{ $cat->id }{id}
                                 = $cat->id;
+                            $rebuild_recipe{$at}{ $cat->id }{ContentData}
+                                = $content_data;
                         }
                     }
                 }
@@ -2255,10 +2260,14 @@ sub rebuild_deleted_content_data {
                             { $start . $end }{'End'} = $end;
                         $rebuild_recipe{$at}{ $content_data->author->id }
                             { $start . $end }{'Timestamp'} = $target_dt;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            { $start . $end }{'ContentData'} = $content_data;
                     }
                     else {
                         $rebuild_recipe{$at}{ $content_data->author->id }{id}
                             = $content_data->author->id;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            {ContentData} = $content_data;
                     }
                 }
                 elsif ( $archiver->date_based ) {
@@ -2267,6 +2276,8 @@ sub rebuild_deleted_content_data {
                     $rebuild_recipe{$at}{ $start . $end }{'End'} = $end;
                     $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
                         = $target_dt;
+                    $rebuild_recipe{$at}{ $start . $end }{'ContentData'}
+                        = $content_data;
                 }
 
                 if ( my $prev = $content_data->previous(1) ) {

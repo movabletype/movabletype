@@ -914,27 +914,27 @@ sub rebuild_archives {
                     or next;
                 if ( $archiver->date_based() ) {
                     for my $key ( keys %{ $recipe->{$at}->{$cat_id} } ) {
+                        my $r = $recipe->{$at}{$cat_id}{$key};
                         $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Category    => $cat,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$cat_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$cat_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$cat_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$cat_id};
+                    delete $r->{id};
                     $mt->$rebuild_method(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Category    => $cat,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
@@ -946,41 +946,40 @@ sub rebuild_archives {
                     or next;
                 if ( $archiver->date_based() ) {
                     for my $key ( keys %{ $recipe->{$at}->{$auth_id} } ) {
+                        my $r = $recipe->{$at}{$auth_id}{$key};
                         $mt->$rebuild_method(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Author      => $author,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$auth_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$auth_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$auth_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$auth_id};
+                    delete $r->{id};
                     $mt->$rebuild_method(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Author      => $author,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
         }
         elsif ( $archiver->date_based() ) {
             for my $key ( keys %{ $recipe->{$at} } ) {
+                my $r = $recipe->{$at}{$key};
                 $mt->$rebuild_method(
                     NoStatic    => 0,
                     Force       => ( $param{Force} ? 1 : 0 ),
                     Blog        => $blog,
                     ArchiveType => $at,
-                    Start       => $recipe->{$at}->{$key}->{Start},
-                    End         => $recipe->{$at}->{$key}->{End},
-                    Timestamp   => $recipe->{$at}->{$key}->{Timestamp},
+                    %$r,
                 ) or return;
             }
         }
