@@ -824,7 +824,7 @@ sub remove {
         my $iter  = __PACKAGE__->load_iter(
             { parent => $asset->id, class => '*' } );
         while ( my $a = $iter->() ) {
-            $a->remove;
+            $a->SUPER::remove;
         }
 
         # Remove MT::ObjectAsset records
