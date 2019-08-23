@@ -4230,18 +4230,18 @@ sub is_valid_redirect_target {
 
     require URI;
 
-    my @authorities;
+    my @hosts;
     my %seen;
     for my $url (@urls) {
         my $uri = URI->new( $url, 'http' )->canonical;
         next unless $uri->isa('URI::http');
-        my $authority = $uri->authority or next;
-        next if $seen{$authority}++;
-        push @authorities, $authority;
+        my $host = $uri->host or next;
+        next if $seen{$host}++;
+        push @hosts, $host;
     }
 
     if ( defined $target ) {
-        return $app->_is_valid_redirect_target( $target, \@authorities );
+        return $app->_is_valid_redirect_target( $target, \@hosts );
     }
     else {
         ## for backward compatibility
@@ -4258,7 +4258,7 @@ sub is_valid_redirect_target {
                     );
                 $target = $entry->archive_url;
             }
-            $app->_is_valid_redirect_target( $target, \@authorities )
+            $app->_is_valid_redirect_target( $target, \@hosts )
                 or return;
         }
         ## now all of the targets are validated
@@ -4267,13 +4267,15 @@ sub is_valid_redirect_target {
 }
 
 sub _is_valid_redirect_target {
-    my ( $app, $target, $allowed_authorities ) = @_;
-    my $uri       = URI->new( $target, 'http' )->canonical;
-    my $authority = $uri->authority;
+    my ( $app, $target, $allowed_hosts ) = @_;
+    my $uri  = URI->new( $target, 'http' )->canonical;
+    my $host = $uri->host;
+    my $path = $uri->path_query;
     return   unless $uri->isa('URI::http');
-    return 1 unless defined $authority;       # relative URL
-    for my $allowed ( @{ $allowed_authorities || [] } ) {
-        return 1 if $allowed eq $authority;
+    return   unless substr( $path, 0, 1 ) eq '/';
+    return 1 unless defined $host;                  # relative URL
+    for my $allowed ( @{ $allowed_hosts || [] } ) {
+        return 1 if $allowed eq $host;
     }
     return;
 }
