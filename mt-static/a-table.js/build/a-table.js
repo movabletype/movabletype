@@ -5,24 +5,18 @@
  * a-table:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: appleple
- *   version: 1.5.4
+ *   version: 1.5.9
  *
  * a-template:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: steelydylan
- *   version: 0.5.3
- *
- * array.prototype.find:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Paul Miller <http://paulmillr.com>
- *   contributors: Duncan Hall <himself@duncanhall.net>
- *   version: 2.0.4
+ *   version: 0.5.4
  *
  * base64-js:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: T. Jameson Little <t.jameson.little@gmail.com>
  *   homepage: https://github.com/beatgammit/base64-js
- *   version: 1.2.0
+ *   version: 1.3.0
  *
  * buffer:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -33,86 +27,37 @@
  *
  * clone:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Paul Vorbach <paul@vorba.ch> (http://paul.vorba.ch/)
- *   contributors: Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/), Tian You <axqd001@gmail.com> (http://blog.axqd.net/), George Stagas <gstagas@gmail.com> (http://stagas.com/), Tobiasz Cudnik <tobiasz.cudnik@gmail.com> (https://github.com/TobiaszCudnik), Pavel Lang <langpavel@phpskelet.org> (https://github.com/langpavel), Dan MacTough (http://yabfog.com/), w1nk (https://github.com/w1nk), Hugh Kennedy (http://twitter.com/hughskennedy), Dustin Diaz (http://dustindiaz.com), Ilya Shaisultanov (https://github.com/diversario), Nathan MacInnes <nathan@macinn.es> (http://macinn.es/), Benjamin E. Coe <ben@npmjs.com> (https://twitter.com/benjamincoe), Nathan Zadoks (https://github.com/nathan7), Róbert Oroszi <robert+gh@oroszi.net> (https://github.com/oroce), Aurélio A. Heckert (http://softwarelivre.org/aurium), Guy Ellis (http://www.guyellisrocks.com/), fscherwi (https://fscherwi.github.io), rictic (https://github.com/rictic), Martin Jurča (https://github.com/jurca), Misery Lee <miserylee@foxmail.com> (https://github.com/miserylee)
- *   version: 2.1.0
+ *   author: Paul Vorbach <paul@vorba.ch>
+ *   contributors: Blake Miner <miner.blake@gmail.com>, Tian You <axqd001@gmail.com>, George Stagas <gstagas@gmail.com>, Tobiasz Cudnik <tobiasz.cudnik@gmail.com>, Pavel Lang <langpavel@phpskelet.org>, Dan MacTough, w1nk, Hugh Kennedy, Dustin Diaz, Ilya Shaisultanov, Nathan MacInnes <nathan@macinn.es>, Benjamin E. Coe <ben@npmjs.com>, Nathan Zadoks, Róbert Oroszi <robert+gh@oroszi.net>, Aurélio A. Heckert, Guy Ellis, fscherwi, rictic, Martin Jurča, Misery Lee <miserylee@foxmail.com>, Clemens Wolff
+ *   homepage: https://github.com/pvorb/node-clone#readme
+ *   version: 2.1.2
  *
  * custom-event-polyfill:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: NO AUTHOR!
- *   contributors: Frank Panetta (http://www.savvi.io), Mikhail Reenko <reenko@yandex.ru>, Joscha Feth <joscha@feth.com> (http://www.feth.com)
+ *   contributors: Frank Panetta, Mikhail Reenko <reenko@yandex.ru>, Joscha Feth <joscha@feth.com>
+ *   homepage: https://github.com/krambuhl/custom-event-polyfill#readme
  *   version: 0.3.0
  *
  * deep-extend:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   licenses: MIT (http://opensource.org/licenses/MIT)
  *   author: Viacheslav Lotsmanov <lotsmanov89@gmail.com>
- *   contributors: Romain Prieto, Max Maximov, Marshall Bowers
+ *   contributors: Romain Prieto, Max Maximov, Marshall Bowers, Misha Wakerman
  *   homepage: https://github.com/unclechu/node-deep-extend
- *   version: 0.5.0
+ *   version: 0.5.1
  *
- * define-properties:
+ * ie-array-find-polyfill:
  *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband
- *   version: 1.1.2
- *
- * es-abstract:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband <ljharb@gmail.com>
- *   contributors: Jordan Harband <ljharb@gmail.com>
- *   version: 1.7.0
- *
- * es-to-primitive:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband
- *   version: 1.1.1
- *
- * foreach:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Manuel Stofer <manuel@takimata.ch>
- *   contributors: Manuel Stofer, Jordan Harband
- *   version: 2.0.5
- *
- * function-bind:
- *   licenses: MIT (http://opensource.org/licenses/MIT)
- *   author: Raynos <raynos2@gmail.com>
- *   contributors: Raynos, Jordan Harband
- *   homepage: https://github.com/Raynos/function-bind
+ *   author: Carlos Abdalla
+ *   homepage: https://github.com/abdalla/ie-array-find-polyfill#readme
  *   version: 1.1.0
- *
- * has:
- *   licenses: MIT (http://opensource.org/licenses/MIT)
- *   author: Thiago de Arruda <tpadilha84@gmail.com>
- *   homepage: https://github.com/tarruda/has
- *   version: 1.0.1
  *
  * ieee754:
  *   license: BSD-3-Clause (http://opensource.org/licenses/BSD-3-Clause)
  *   author: Feross Aboukhadijeh <feross@feross.org>
  *   contributors: Romain Beauxis <toots@rastageeks.org>
- *   version: 1.1.8
- *
- * is-callable:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband <ljharb@gmail.com>
- *   contributors: Jordan Harband <ljharb@gmail.com>
- *   version: 1.1.3
- *
- * is-date-object:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband
- *   version: 1.0.1
- *
- * is-regex:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband
- *   homepage: https://github.com/ljharb/is-regex
- *   version: 1.0.4
- *
- * is-symbol:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband
- *   version: 1.0.1
+ *   homepage: https://github.com/feross/ieee754#readme
+ *   version: 1.1.12
  *
  * isarray:
  *   license: MIT (http://opensource.org/licenses/MIT)
@@ -123,17 +68,12 @@
  * morphdom:
  *   license: MIT (http://opensource.org/licenses/MIT)
  *   author: Patrick Steele-Idem <pnidem@gmail.com>
- *   version: 2.3.1
- *
- * object-keys:
- *   license: MIT (http://opensource.org/licenses/MIT)
- *   author: Jordan Harband <ljharb@gmail.com>
- *   contributors: Jordan Harband <ljharb@gmail.com>, Raynos <raynos2@gmail.com>, Nathan Rajlich <nathan@tootallnate.net>, Ivan Starkov <istarkov@gmail.com>, Gary Katsevman <git@gkatsev.com>
- *   version: 1.0.11
+ *   homepage: https://github.com/patrick-steele-idem/morphdom#readme
+ *   version: 2.3.3
  *
  * This header is generated by licensify (https://github.com/twada/licensify)
  */
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.aTable = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.aTable = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -142,14 +82,19 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+require('ie-array-find-polyfill');
+
+var _morphdom = require('morphdom');
+
+var _morphdom2 = _interopRequireDefault(_morphdom);
+
 var _util = require('./util');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var morphdom = require('morphdom');
-var find = require('array.prototype.find');
 
 var eventType = 'input paste copy click change keydown keyup keypress contextmenu mouseup mousedown mousemove touchstart touchend touchmove compositionstart compositionend focus';
 var bindType = 'input change click';
@@ -546,7 +491,7 @@ var aTemplate = function () {
   }, {
     key: 'getHtml',
     value: function getHtml(query, row) {
-      var template = find(this.atemplate, function (item) {
+      var template = this.atemplate.find(function (item) {
         return item.id === query;
       });
       var html = '';
@@ -608,11 +553,11 @@ var aTemplate = function () {
           var doc = document.createElement('div');
           doc.innerHTML = html;
           var partHtml = doc.querySelector(part).outerHTML;
-          morphdom(target.querySelector(part), partHtml);
+          (0, _morphdom2.default)(target.querySelector(part), partHtml);
         } else {
-          morphdom(target, '<div data-id=\'' + tem + '\'>' + html + '</div>');
+          (0, _morphdom2.default)(target, '<div data-id=\'' + tem + '\'>' + html + '</div>');
         }
-        var template = find(_this5.atemplate, function (item) {
+        var template = _this5.atemplate.find(function (item) {
           return item.id === tem;
         });
         if (!template.binded) {
@@ -711,7 +656,7 @@ var aTemplate = function () {
 
 exports.default = aTemplate;
 module.exports = exports['default'];
-},{"./util":2,"array.prototype.find":4,"morphdom":34}],2:[function(require,module,exports){
+},{"./util":2,"ie-array-find-polyfill":8,"morphdom":11}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -755,91 +700,6 @@ var on = exports.on = function on(element, query, eventNames, fn) {
   });
 };
 },{}],3:[function(require,module,exports){
-'use strict';
-
-var ES = require('es-abstract/es6');
-
-module.exports = function find(predicate) {
-	var list = ES.ToObject(this);
-	var length = ES.ToInteger(ES.ToLength(list.length));
-	if (!ES.IsCallable(predicate)) {
-		throw new TypeError('Array#find: predicate must be a function');
-	}
-	if (length === 0) {
-		return undefined;
-	}
-	var thisArg = arguments[1];
-	for (var i = 0, value; i < length; i++) {
-		value = list[i];
-		if (ES.Call(predicate, thisArg, [value, i, list])) {
-			return value;
-		}
-	}
-	return undefined;
-};
-
-},{"es-abstract/es6":14}],4:[function(require,module,exports){
-'use strict';
-
-var define = require('define-properties');
-var ES = require('es-abstract/es6');
-
-var implementation = require('./implementation');
-var getPolyfill = require('./polyfill');
-var shim = require('./shim');
-
-var slice = Array.prototype.slice;
-
-var polyfill = getPolyfill();
-
-var boundFindShim = function find(array, predicate) { // eslint-disable-line no-unused-vars
-	ES.RequireObjectCoercible(array);
-	var args = slice.call(arguments, 1);
-	return polyfill.apply(array, args);
-};
-
-define(boundFindShim, {
-	getPolyfill: getPolyfill,
-	implementation: implementation,
-	shim: shim
-});
-
-module.exports = boundFindShim;
-
-},{"./implementation":3,"./polyfill":5,"./shim":6,"define-properties":12,"es-abstract/es6":14}],5:[function(require,module,exports){
-'use strict';
-
-module.exports = function getPolyfill() {
-	// Detect if an implementation exists
-	// Detect early implementations which skipped holes in sparse arrays
-  // eslint-disable-next-line no-sparse-arrays
-	var implemented = Array.prototype.find && [, 1].find(function () {
-		return true;
-	}) !== 1;
-
-  // eslint-disable-next-line global-require
-	return implemented ? Array.prototype.find : require('./implementation');
-};
-
-},{"./implementation":3}],6:[function(require,module,exports){
-'use strict';
-
-var define = require('define-properties');
-var getPolyfill = require('./polyfill');
-
-module.exports = function shimArrayPrototypeFind() {
-	var polyfill = getPolyfill();
-
-	define(Array.prototype, { find: polyfill }, {
-		find: function () {
-			return Array.prototype.find !== polyfill;
-		}
-	});
-
-	return polyfill;
-};
-
-},{"./polyfill":5,"define-properties":12}],7:[function(require,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -856,68 +716,102 @@ for (var i = 0, len = code.length; i < len; ++i) {
   revLookup[code.charCodeAt(i)] = i
 }
 
+// Support decoding URL-safe base64 strings, as Node.js does.
+// See: https://en.wikipedia.org/wiki/Base64#URL_applications
 revLookup['-'.charCodeAt(0)] = 62
 revLookup['_'.charCodeAt(0)] = 63
 
-function placeHoldersCount (b64) {
+function getLens (b64) {
   var len = b64.length
+
   if (len % 4 > 0) {
     throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
-  // the number of equal signs (place holders)
-  // if there are two placeholders, than the two characters before it
-  // represent one byte
-  // if there is only one, then the three characters before it represent 2 bytes
-  // this is just a cheap hack to not do indexOf twice
-  return b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
+  // Trim off extra bytes after placeholder bytes are found
+  // See: https://github.com/beatgammit/base64-js/issues/42
+  var validLen = b64.indexOf('=')
+  if (validLen === -1) validLen = len
+
+  var placeHoldersLen = validLen === len
+    ? 0
+    : 4 - (validLen % 4)
+
+  return [validLen, placeHoldersLen]
 }
 
+// base64 is 4/3 + up to two characters of the original data
 function byteLength (b64) {
-  // base64 is 4/3 + up to two characters of the original data
-  return b64.length * 3 / 4 - placeHoldersCount(b64)
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
+}
+
+function _byteLength (b64, validLen, placeHoldersLen) {
+  return ((validLen + placeHoldersLen) * 3 / 4) - placeHoldersLen
 }
 
 function toByteArray (b64) {
-  var i, j, l, tmp, placeHolders, arr
-  var len = b64.length
-  placeHolders = placeHoldersCount(b64)
+  var tmp
+  var lens = getLens(b64)
+  var validLen = lens[0]
+  var placeHoldersLen = lens[1]
 
-  arr = new Arr(len * 3 / 4 - placeHolders)
+  var arr = new Arr(_byteLength(b64, validLen, placeHoldersLen))
+
+  var curByte = 0
 
   // if there are placeholders, only get up to the last complete 4 chars
-  l = placeHolders > 0 ? len - 4 : len
+  var len = placeHoldersLen > 0
+    ? validLen - 4
+    : validLen
 
-  var L = 0
-
-  for (i = 0, j = 0; i < l; i += 4, j += 3) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp >> 16) & 0xFF
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  for (var i = 0; i < len; i += 4) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 18) |
+      (revLookup[b64.charCodeAt(i + 1)] << 12) |
+      (revLookup[b64.charCodeAt(i + 2)] << 6) |
+      revLookup[b64.charCodeAt(i + 3)]
+    arr[curByte++] = (tmp >> 16) & 0xFF
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
-  if (placeHolders === 2) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
-    arr[L++] = tmp & 0xFF
-  } else if (placeHolders === 1) {
-    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
-    arr[L++] = (tmp >> 8) & 0xFF
-    arr[L++] = tmp & 0xFF
+  if (placeHoldersLen === 2) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 2) |
+      (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[curByte++] = tmp & 0xFF
+  }
+
+  if (placeHoldersLen === 1) {
+    tmp =
+      (revLookup[b64.charCodeAt(i)] << 10) |
+      (revLookup[b64.charCodeAt(i + 1)] << 4) |
+      (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[curByte++] = (tmp >> 8) & 0xFF
+    arr[curByte++] = tmp & 0xFF
   }
 
   return arr
 }
 
 function tripletToBase64 (num) {
-  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+  return lookup[num >> 18 & 0x3F] +
+    lookup[num >> 12 & 0x3F] +
+    lookup[num >> 6 & 0x3F] +
+    lookup[num & 0x3F]
 }
 
 function encodeChunk (uint8, start, end) {
   var tmp
   var output = []
   for (var i = start; i < end; i += 3) {
-    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    tmp =
+      ((uint8[i] << 16) & 0xFF0000) +
+      ((uint8[i + 1] << 8) & 0xFF00) +
+      (uint8[i + 2] & 0xFF)
     output.push(tripletToBase64(tmp))
   }
   return output.join('')
@@ -927,35 +821,38 @@ function fromByteArray (uint8) {
   var tmp
   var len = uint8.length
   var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
-  var output = ''
   var parts = []
   var maxChunkLength = 16383 // must be multiple of 3
 
   // go through the array every three bytes, we'll deal with trailing stuff later
   for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
-    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+    parts.push(encodeChunk(
+      uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)
+    ))
   }
 
   // pad the end with zeros, but make sure to not forget the extra bytes
   if (extraBytes === 1) {
     tmp = uint8[len - 1]
-    output += lookup[tmp >> 2]
-    output += lookup[(tmp << 4) & 0x3F]
-    output += '=='
+    parts.push(
+      lookup[tmp >> 2] +
+      lookup[(tmp << 4) & 0x3F] +
+      '=='
+    )
   } else if (extraBytes === 2) {
-    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
-    output += lookup[tmp >> 10]
-    output += lookup[(tmp >> 4) & 0x3F]
-    output += lookup[(tmp << 2) & 0x3F]
-    output += '='
+    tmp = (uint8[len - 2] << 8) + uint8[len - 1]
+    parts.push(
+      lookup[tmp >> 10] +
+      lookup[(tmp >> 4) & 0x3F] +
+      lookup[(tmp << 2) & 0x3F] +
+      '='
+    )
   }
-
-  parts.push(output)
 
   return parts.join('')
 }
 
-},{}],8:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -2748,10 +2645,14 @@ function isnan (val) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":7,"ieee754":28,"isarray":33}],9:[function(require,module,exports){
+},{"base64-js":3,"ieee754":9,"isarray":10}],5:[function(require,module,exports){
 (function (Buffer){
 var clone = (function() {
 'use strict';
+
+function _instanceof(obj, type) {
+  return type != null && obj instanceof type;
+}
 
 var nativeMap;
 try {
@@ -2832,11 +2733,11 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       return parent;
     }
 
-    if (parent instanceof nativeMap) {
+    if (_instanceof(parent, nativeMap)) {
       child = new nativeMap();
-    } else if (parent instanceof nativeSet) {
+    } else if (_instanceof(parent, nativeSet)) {
       child = new nativeSet();
-    } else if (parent instanceof nativePromise) {
+    } else if (_instanceof(parent, nativePromise)) {
       child = new nativePromise(function (resolve, reject) {
         parent.then(function(value) {
           resolve(_clone(value, depth - 1));
@@ -2852,10 +2753,16 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
     } else if (clone.__isDate(parent)) {
       child = new Date(parent.getTime());
     } else if (useBuffer && Buffer.isBuffer(parent)) {
-      child = new Buffer(parent.length);
+      if (Buffer.allocUnsafe) {
+        // Node.js >= 4.5.0
+        child = Buffer.allocUnsafe(parent.length);
+      } else {
+        // Older Node.js versions
+        child = new Buffer(parent.length);
+      }
       parent.copy(child);
       return child;
-    } else if (parent instanceof Error) {
+    } else if (_instanceof(parent, Error)) {
       child = Object.create(parent);
     } else {
       if (typeof prototype == 'undefined') {
@@ -2878,28 +2785,18 @@ function clone(parent, circular, depth, prototype, includeNonEnumerable) {
       allChildren.push(child);
     }
 
-    if (parent instanceof nativeMap) {
-      var keyIterator = parent.keys();
-      while(true) {
-        var next = keyIterator.next();
-        if (next.done) {
-          break;
-        }
-        var keyChild = _clone(next.value, depth - 1);
-        var valueChild = _clone(parent.get(next.value), depth - 1);
+    if (_instanceof(parent, nativeMap)) {
+      parent.forEach(function(value, key) {
+        var keyChild = _clone(key, depth - 1);
+        var valueChild = _clone(value, depth - 1);
         child.set(keyChild, valueChild);
-      }
+      });
     }
-    if (parent instanceof nativeSet) {
-      var iterator = parent.keys();
-      while(true) {
-        var next = iterator.next();
-        if (next.done) {
-          break;
-        }
-        var entryChild = _clone(next.value, depth - 1);
+    if (_instanceof(parent, nativeSet)) {
+      parent.forEach(function(value) {
+        var entryChild = _clone(value, depth - 1);
         child.add(entryChild);
-      }
+      });
     }
 
     for (var i in parent) {
@@ -3009,7 +2906,7 @@ if (typeof module === 'object' && module.exports) {
 }
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],10:[function(require,module,exports){
+},{"buffer":4}],6:[function(require,module,exports){
 // Polyfill for creating CustomEvents on IE9/10/11
 
 // code pulled from:
@@ -3055,7 +2952,7 @@ try {
   window.CustomEvent = CustomEvent; // expose definition to window
 }
 
-},{}],11:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 (function (Buffer){
 /*!
  * @description Recursive object extending
@@ -3064,7 +2961,7 @@ try {
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2013-2015 Viacheslav Lotsmanov
+ * Copyright (c) 2013-2018 Viacheslav Lotsmanov
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -3096,7 +2993,9 @@ function isSpecificValue(val) {
 
 function cloneSpecificValue(val) {
 	if (val instanceof Buffer) {
-		var x = new Buffer(val.length);
+		var x = Buffer.alloc
+			? Buffer.alloc(val.length)
+			: new Buffer(val.length);
 		val.copy(x);
 		return x;
 	} else if (val instanceof Date) {
@@ -3127,6 +3026,10 @@ function deepCloneArray(arr) {
 		}
 	});
 	return clone;
+}
+
+function safeGetProperty(object, property) {
+	return property === '__proto__' ? undefined : object[property];
 }
 
 /**
@@ -3161,8 +3064,8 @@ var deepExtend = module.exports = function (/*obj_1, [obj_2], [obj_N]*/) {
 		}
 
 		Object.keys(obj).forEach(function (key) {
-			src = target[key]; // source value
-			val = obj[key]; // new value
+			src = safeGetProperty(target, key); // source value
+			val = safeGetProperty(obj, key); // new value
 
 			// recursion prevention
 			if (val === target) {
@@ -3200,731 +3103,46 @@ var deepExtend = module.exports = function (/*obj_1, [obj_2], [obj_N]*/) {
 	});
 
 	return target;
-}
+};
 
 }).call(this,require("buffer").Buffer)
-},{"buffer":8}],12:[function(require,module,exports){
+},{"buffer":4}],8:[function(require,module,exports){
 'use strict';
-
-var keys = require('object-keys');
-var foreach = require('foreach');
-var hasSymbols = typeof Symbol === 'function' && typeof Symbol() === 'symbol';
-
-var toStr = Object.prototype.toString;
-
-var isFunction = function (fn) {
-	return typeof fn === 'function' && toStr.call(fn) === '[object Function]';
-};
-
-var arePropertyDescriptorsSupported = function () {
-	var obj = {};
-	try {
-		Object.defineProperty(obj, 'x', { enumerable: false, value: obj });
-        /* eslint-disable no-unused-vars, no-restricted-syntax */
-        for (var _ in obj) { return false; }
-        /* eslint-enable no-unused-vars, no-restricted-syntax */
-		return obj.x === obj;
-	} catch (e) { /* this is IE 8. */
-		return false;
-	}
-};
-var supportsDescriptors = Object.defineProperty && arePropertyDescriptorsSupported();
-
-var defineProperty = function (object, name, value, predicate) {
-	if (name in object && (!isFunction(predicate) || !predicate())) {
-		return;
-	}
-	if (supportsDescriptors) {
-		Object.defineProperty(object, name, {
-			configurable: true,
-			enumerable: false,
-			value: value,
-			writable: true
-		});
-	} else {
-		object[name] = value;
-	}
-};
-
-var defineProperties = function (object, map) {
-	var predicates = arguments.length > 2 ? arguments[2] : {};
-	var props = keys(map);
-	if (hasSymbols) {
-		props = props.concat(Object.getOwnPropertySymbols(map));
-	}
-	foreach(props, function (name) {
-		defineProperty(object, name, map[name], predicates[name]);
-	});
-};
-
-defineProperties.supportsDescriptors = !!supportsDescriptors;
-
-module.exports = defineProperties;
-
-},{"foreach":24,"object-keys":35}],13:[function(require,module,exports){
-'use strict';
-
-var $isNaN = require('./helpers/isNaN');
-var $isFinite = require('./helpers/isFinite');
-
-var sign = require('./helpers/sign');
-var mod = require('./helpers/mod');
-
-var IsCallable = require('is-callable');
-var toPrimitive = require('es-to-primitive/es5');
-
-// https://es5.github.io/#x9
-var ES5 = {
-	ToPrimitive: toPrimitive,
-
-	ToBoolean: function ToBoolean(value) {
-		return Boolean(value);
-	},
-	ToNumber: function ToNumber(value) {
-		return Number(value);
-	},
-	ToInteger: function ToInteger(value) {
-		var number = this.ToNumber(value);
-		if ($isNaN(number)) { return 0; }
-		if (number === 0 || !$isFinite(number)) { return number; }
-		return sign(number) * Math.floor(Math.abs(number));
-	},
-	ToInt32: function ToInt32(x) {
-		return this.ToNumber(x) >> 0;
-	},
-	ToUint32: function ToUint32(x) {
-		return this.ToNumber(x) >>> 0;
-	},
-	ToUint16: function ToUint16(value) {
-		var number = this.ToNumber(value);
-		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
-		var posInt = sign(number) * Math.floor(Math.abs(number));
-		return mod(posInt, 0x10000);
-	},
-	ToString: function ToString(value) {
-		return String(value);
-	},
-	ToObject: function ToObject(value) {
-		this.CheckObjectCoercible(value);
-		return Object(value);
-	},
-	CheckObjectCoercible: function CheckObjectCoercible(value, optMessage) {
-		/* jshint eqnull:true */
-		if (value == null) {
-			throw new TypeError(optMessage || 'Cannot call method on ' + value);
-		}
-		return value;
-	},
-	IsCallable: IsCallable,
-	SameValue: function SameValue(x, y) {
-		if (x === y) { // 0 === -0, but they are not identical.
-			if (x === 0) { return 1 / x === 1 / y; }
-			return true;
-		}
-		return $isNaN(x) && $isNaN(y);
-	},
-
-	// http://www.ecma-international.org/ecma-262/5.1/#sec-8
-	Type: function Type(x) {
-		if (x === null) {
-			return 'Null';
-		}
-		if (typeof x === 'undefined') {
-			return 'Undefined';
-		}
-		if (typeof x === 'function' || typeof x === 'object') {
-			return 'Object';
-		}
-		if (typeof x === 'number') {
-			return 'Number';
-		}
-		if (typeof x === 'boolean') {
-			return 'Boolean';
-		}
-		if (typeof x === 'string') {
-			return 'String';
-		}
-	}
-};
-
-module.exports = ES5;
-
-},{"./helpers/isFinite":16,"./helpers/isNaN":17,"./helpers/mod":19,"./helpers/sign":20,"es-to-primitive/es5":21,"is-callable":29}],14:[function(require,module,exports){
-'use strict';
-
-var toStr = Object.prototype.toString;
-var hasSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol';
-var symbolToStr = hasSymbols ? Symbol.prototype.toString : toStr;
-
-var $isNaN = require('./helpers/isNaN');
-var $isFinite = require('./helpers/isFinite');
-var MAX_SAFE_INTEGER = Number.MAX_SAFE_INTEGER || Math.pow(2, 53) - 1;
-
-var assign = require('./helpers/assign');
-var sign = require('./helpers/sign');
-var mod = require('./helpers/mod');
-var isPrimitive = require('./helpers/isPrimitive');
-var toPrimitive = require('es-to-primitive/es6');
-var parseInteger = parseInt;
-var bind = require('function-bind');
-var strSlice = bind.call(Function.call, String.prototype.slice);
-var isBinary = bind.call(Function.call, RegExp.prototype.test, /^0b[01]+$/i);
-var isOctal = bind.call(Function.call, RegExp.prototype.test, /^0o[0-7]+$/i);
-var nonWS = ['\u0085', '\u200b', '\ufffe'].join('');
-var nonWSregex = new RegExp('[' + nonWS + ']', 'g');
-var hasNonWS = bind.call(Function.call, RegExp.prototype.test, nonWSregex);
-var invalidHexLiteral = /^[-+]0x[0-9a-f]+$/i;
-var isInvalidHexLiteral = bind.call(Function.call, RegExp.prototype.test, invalidHexLiteral);
-
-// whitespace from: http://es5.github.io/#x15.5.4.20
-// implementation from https://github.com/es-shims/es5-shim/blob/v3.4.0/es5-shim.js#L1304-L1324
-var ws = [
-	'\x09\x0A\x0B\x0C\x0D\x20\xA0\u1680\u180E\u2000\u2001\u2002\u2003',
-	'\u2004\u2005\u2006\u2007\u2008\u2009\u200A\u202F\u205F\u3000\u2028',
-	'\u2029\uFEFF'
-].join('');
-var trimRegex = new RegExp('(^[' + ws + ']+)|([' + ws + ']+$)', 'g');
-var replace = bind.call(Function.call, String.prototype.replace);
-var trim = function (value) {
-	return replace(value, trimRegex, '');
-};
-
-var ES5 = require('./es5');
-
-var hasRegExpMatcher = require('is-regex');
-
-// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-abstract-operations
-var ES6 = assign(assign({}, ES5), {
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-call-f-v-args
-	Call: function Call(F, V) {
-		var args = arguments.length > 2 ? arguments[2] : [];
-		if (!this.IsCallable(F)) {
-			throw new TypeError(F + ' is not a function');
-		}
-		return F.apply(V, args);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toprimitive
-	ToPrimitive: toPrimitive,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toboolean
-	// ToBoolean: ES5.ToBoolean,
-
-	// http://www.ecma-international.org/ecma-262/6.0/#sec-tonumber
-	ToNumber: function ToNumber(argument) {
-		var value = isPrimitive(argument) ? argument : toPrimitive(argument, 'number');
-		if (typeof value === 'symbol') {
-			throw new TypeError('Cannot convert a Symbol value to a number');
-		}
-		if (typeof value === 'string') {
-			if (isBinary(value)) {
-				return this.ToNumber(parseInteger(strSlice(value, 2), 2));
-			} else if (isOctal(value)) {
-				return this.ToNumber(parseInteger(strSlice(value, 2), 8));
-			} else if (hasNonWS(value) || isInvalidHexLiteral(value)) {
-				return NaN;
-			} else {
-				var trimmed = trim(value);
-				if (trimmed !== value) {
-					return this.ToNumber(trimmed);
-				}
-			}
-		}
-		return Number(value);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tointeger
-	// ToInteger: ES5.ToNumber,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint32
-	// ToInt32: ES5.ToInt32,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint32
-	// ToUint32: ES5.ToUint32,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint16
-	ToInt16: function ToInt16(argument) {
-		var int16bit = this.ToUint16(argument);
-		return int16bit >= 0x8000 ? int16bit - 0x10000 : int16bit;
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint16
-	// ToUint16: ES5.ToUint16,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toint8
-	ToInt8: function ToInt8(argument) {
-		var int8bit = this.ToUint8(argument);
-		return int8bit >= 0x80 ? int8bit - 0x100 : int8bit;
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint8
-	ToUint8: function ToUint8(argument) {
-		var number = this.ToNumber(argument);
-		if ($isNaN(number) || number === 0 || !$isFinite(number)) { return 0; }
-		var posInt = sign(number) * Math.floor(Math.abs(number));
-		return mod(posInt, 0x100);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-touint8clamp
-	ToUint8Clamp: function ToUint8Clamp(argument) {
-		var number = this.ToNumber(argument);
-		if ($isNaN(number) || number <= 0) { return 0; }
-		if (number >= 0xFF) { return 0xFF; }
-		var f = Math.floor(argument);
-		if (f + 0.5 < number) { return f + 1; }
-		if (number < f + 0.5) { return f; }
-		if (f % 2 !== 0) { return f + 1; }
-		return f;
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tostring
-	ToString: function ToString(argument) {
-		if (typeof argument === 'symbol') {
-			throw new TypeError('Cannot convert a Symbol value to a string');
-		}
-		return String(argument);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-toobject
-	ToObject: function ToObject(value) {
-		this.RequireObjectCoercible(value);
-		return Object(value);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-topropertykey
-	ToPropertyKey: function ToPropertyKey(argument) {
-		var key = this.ToPrimitive(argument, String);
-		return typeof key === 'symbol' ? symbolToStr.call(key) : this.ToString(key);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-tolength
-	ToLength: function ToLength(argument) {
-		var len = this.ToInteger(argument);
-		if (len <= 0) { return 0; } // includes converting -0 to +0
-		if (len > MAX_SAFE_INTEGER) { return MAX_SAFE_INTEGER; }
-		return len;
-	},
-
-	// http://www.ecma-international.org/ecma-262/6.0/#sec-canonicalnumericindexstring
-	CanonicalNumericIndexString: function CanonicalNumericIndexString(argument) {
-		if (toStr.call(argument) !== '[object String]') {
-			throw new TypeError('must be a string');
-		}
-		if (argument === '-0') { return -0; }
-		var n = this.ToNumber(argument);
-		if (this.SameValue(this.ToString(n), argument)) { return n; }
-		return void 0;
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-requireobjectcoercible
-	RequireObjectCoercible: ES5.CheckObjectCoercible,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isarray
-	IsArray: Array.isArray || function IsArray(argument) {
-		return toStr.call(argument) === '[object Array]';
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-iscallable
-	// IsCallable: ES5.IsCallable,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isconstructor
-	IsConstructor: function IsConstructor(argument) {
-		return typeof argument === 'function' && !!argument.prototype; // unfortunately there's no way to truly check this without try/catch `new argument`
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isextensible-o
-	IsExtensible: function IsExtensible(obj) {
-		if (!Object.preventExtensions) { return true; }
-		if (isPrimitive(obj)) {
-			return false;
-		}
-		return Object.isExtensible(obj);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-isinteger
-	IsInteger: function IsInteger(argument) {
-		if (typeof argument !== 'number' || $isNaN(argument) || !$isFinite(argument)) {
-			return false;
-		}
-		var abs = Math.abs(argument);
-		return Math.floor(abs) === abs;
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-ispropertykey
-	IsPropertyKey: function IsPropertyKey(argument) {
-		return typeof argument === 'string' || typeof argument === 'symbol';
-	},
-
-	// http://www.ecma-international.org/ecma-262/6.0/#sec-isregexp
-	IsRegExp: function IsRegExp(argument) {
-		if (!argument || typeof argument !== 'object') {
-			return false;
-		}
-		if (hasSymbols) {
-			var isRegExp = argument[Symbol.match];
-			if (typeof isRegExp !== 'undefined') {
-				return ES5.ToBoolean(isRegExp);
-			}
-		}
-		return hasRegExpMatcher(argument);
-	},
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevalue
-	// SameValue: ES5.SameValue,
-
-	// https://people.mozilla.org/~jorendorff/es6-draft.html#sec-samevaluezero
-	SameValueZero: function SameValueZero(x, y) {
-		return (x === y) || ($isNaN(x) && $isNaN(y));
-	},
-
-	/**
-	 * 7.3.2 GetV (V, P)
-	 * 1. Assert: IsPropertyKey(P) is true.
-	 * 2. Let O be ToObject(V).
-	 * 3. ReturnIfAbrupt(O).
-	 * 4. Return O.[[Get]](P, V).
-	 */
-	GetV: function GetV(V, P) {
-		// 7.3.2.1
-		if (!this.IsPropertyKey(P)) {
-			throw new TypeError('Assertion failed: IsPropertyKey(P) is not true');
-		}
-
-		// 7.3.2.2-3
-		var O = this.ToObject(V);
-
-		// 7.3.2.4
-		return O[P];
-	},
-
-	/**
-	 * 7.3.9 - http://www.ecma-international.org/ecma-262/6.0/#sec-getmethod
-	 * 1. Assert: IsPropertyKey(P) is true.
-	 * 2. Let func be GetV(O, P).
-	 * 3. ReturnIfAbrupt(func).
-	 * 4. If func is either undefined or null, return undefined.
-	 * 5. If IsCallable(func) is false, throw a TypeError exception.
-	 * 6. Return func.
-	 */
-	GetMethod: function GetMethod(O, P) {
-		// 7.3.9.1
-		if (!this.IsPropertyKey(P)) {
-			throw new TypeError('Assertion failed: IsPropertyKey(P) is not true');
-		}
-
-		// 7.3.9.2
-		var func = this.GetV(O, P);
-
-		// 7.3.9.4
-		if (func == null) {
-			return undefined;
-		}
-
-		// 7.3.9.5
-		if (!this.IsCallable(func)) {
-			throw new TypeError(P + 'is not a function');
-		}
-
-		// 7.3.9.6
-		return func;
-	},
-
-	/**
-	 * 7.3.1 Get (O, P) - http://www.ecma-international.org/ecma-262/6.0/#sec-get-o-p
-	 * 1. Assert: Type(O) is Object.
-	 * 2. Assert: IsPropertyKey(P) is true.
-	 * 3. Return O.[[Get]](P, O).
-	 */
-	Get: function Get(O, P) {
-		// 7.3.1.1
-		if (this.Type(O) !== 'Object') {
-			throw new TypeError('Assertion failed: Type(O) is not Object');
-		}
-		// 7.3.1.2
-		if (!this.IsPropertyKey(P)) {
-			throw new TypeError('Assertion failed: IsPropertyKey(P) is not true');
-		}
-		// 7.3.1.3
-		return O[P];
-	},
-
-	Type: function Type(x) {
-		if (typeof x === 'symbol') {
-			return 'Symbol';
-		}
-		return ES5.Type(x);
-	},
-
-	// http://www.ecma-international.org/ecma-262/6.0/#sec-speciesconstructor
-	SpeciesConstructor: function SpeciesConstructor(O, defaultConstructor) {
-		if (this.Type(O) !== 'Object') {
-			throw new TypeError('Assertion failed: Type(O) is not Object');
-		}
-		var C = O.constructor;
-		if (typeof C === 'undefined') {
-			return defaultConstructor;
-		}
-		if (this.Type(C) !== 'Object') {
-			throw new TypeError('O.constructor is not an Object');
-		}
-		var S = hasSymbols && Symbol.species ? C[Symbol.species] : undefined;
-		if (S == null) {
-			return defaultConstructor;
-		}
-		if (this.IsConstructor(S)) {
-			return S;
-		}
-		throw new TypeError('no constructor found');
-	}
-});
-
-delete ES6.CheckObjectCoercible; // renamed in ES6 to RequireObjectCoercible
-
-module.exports = ES6;
-
-},{"./es5":13,"./helpers/assign":15,"./helpers/isFinite":16,"./helpers/isNaN":17,"./helpers/isPrimitive":18,"./helpers/mod":19,"./helpers/sign":20,"es-to-primitive/es6":22,"function-bind":26,"is-regex":31}],15:[function(require,module,exports){
-var has = Object.prototype.hasOwnProperty;
-module.exports = Object.assign || function assign(target, source) {
-	for (var key in source) {
-		if (has.call(source, key)) {
-			target[key] = source[key];
-		}
-	}
-	return target;
-};
-
-},{}],16:[function(require,module,exports){
-var $isNaN = Number.isNaN || function (a) { return a !== a; };
-
-module.exports = Number.isFinite || function (x) { return typeof x === 'number' && !$isNaN(x) && x !== Infinity && x !== -Infinity; };
-
-},{}],17:[function(require,module,exports){
-module.exports = Number.isNaN || function isNaN(a) {
-	return a !== a;
-};
-
-},{}],18:[function(require,module,exports){
-module.exports = function isPrimitive(value) {
-	return value === null || (typeof value !== 'function' && typeof value !== 'object');
-};
-
-},{}],19:[function(require,module,exports){
-module.exports = function mod(number, modulo) {
-	var remain = number % modulo;
-	return Math.floor(remain >= 0 ? remain : remain + modulo);
-};
-
-},{}],20:[function(require,module,exports){
-module.exports = function sign(number) {
-	return number >= 0 ? 1 : -1;
-};
-
-},{}],21:[function(require,module,exports){
-'use strict';
-
-var toStr = Object.prototype.toString;
-
-var isPrimitive = require('./helpers/isPrimitive');
-
-var isCallable = require('is-callable');
-
-// https://es5.github.io/#x8.12
-var ES5internalSlots = {
-	'[[DefaultValue]]': function (O, hint) {
-		var actualHint = hint || (toStr.call(O) === '[object Date]' ? String : Number);
-
-		if (actualHint === String || actualHint === Number) {
-			var methods = actualHint === String ? ['toString', 'valueOf'] : ['valueOf', 'toString'];
-			var value, i;
-			for (i = 0; i < methods.length; ++i) {
-				if (isCallable(O[methods[i]])) {
-					value = O[methods[i]]();
-					if (isPrimitive(value)) {
-						return value;
-					}
-				}
-			}
-			throw new TypeError('No default value');
-		}
-		throw new TypeError('invalid [[DefaultValue]] hint supplied');
-	}
-};
-
-// https://es5.github.io/#x9
-module.exports = function ToPrimitive(input, PreferredType) {
-	if (isPrimitive(input)) {
-		return input;
-	}
-	return ES5internalSlots['[[DefaultValue]]'](input, PreferredType);
-};
-
-},{"./helpers/isPrimitive":23,"is-callable":29}],22:[function(require,module,exports){
-'use strict';
-
-var hasSymbols = typeof Symbol === 'function' && typeof Symbol.iterator === 'symbol';
-
-var isPrimitive = require('./helpers/isPrimitive');
-var isCallable = require('is-callable');
-var isDate = require('is-date-object');
-var isSymbol = require('is-symbol');
-
-var ordinaryToPrimitive = function OrdinaryToPrimitive(O, hint) {
-	if (typeof O === 'undefined' || O === null) {
-		throw new TypeError('Cannot call method on ' + O);
-	}
-	if (typeof hint !== 'string' || (hint !== 'number' && hint !== 'string')) {
-		throw new TypeError('hint must be "string" or "number"');
-	}
-	var methodNames = hint === 'string' ? ['toString', 'valueOf'] : ['valueOf', 'toString'];
-	var method, result, i;
-	for (i = 0; i < methodNames.length; ++i) {
-		method = O[methodNames[i]];
-		if (isCallable(method)) {
-			result = method.call(O);
-			if (isPrimitive(result)) {
-				return result;
-			}
-		}
-	}
-	throw new TypeError('No default value');
-};
-
-var GetMethod = function GetMethod(O, P) {
-	var func = O[P];
-	if (func !== null && typeof func !== 'undefined') {
-		if (!isCallable(func)) {
-			throw new TypeError(func + ' returned for property ' + P + ' of object ' + O + ' is not a function');
-		}
-		return func;
-	}
-};
-
-// http://www.ecma-international.org/ecma-262/6.0/#sec-toprimitive
-module.exports = function ToPrimitive(input, PreferredType) {
-	if (isPrimitive(input)) {
-		return input;
-	}
-	var hint = 'default';
-	if (arguments.length > 1) {
-		if (PreferredType === String) {
-			hint = 'string';
-		} else if (PreferredType === Number) {
-			hint = 'number';
-		}
-	}
-
-	var exoticToPrim;
-	if (hasSymbols) {
-		if (Symbol.toPrimitive) {
-			exoticToPrim = GetMethod(input, Symbol.toPrimitive);
-		} else if (isSymbol(input)) {
-			exoticToPrim = Symbol.prototype.valueOf;
-		}
-	}
-	if (typeof exoticToPrim !== 'undefined') {
-		var result = exoticToPrim.call(input, hint);
-		if (isPrimitive(result)) {
-			return result;
-		}
-		throw new TypeError('unable to convert exotic object to primitive');
-	}
-	if (hint === 'default' && (isDate(input) || isSymbol(input))) {
-		hint = 'string';
-	}
-	return ordinaryToPrimitive(input, hint === 'default' ? 'number' : hint);
-};
-
-},{"./helpers/isPrimitive":23,"is-callable":29,"is-date-object":30,"is-symbol":32}],23:[function(require,module,exports){
-arguments[4][18][0].apply(exports,arguments)
-},{"dup":18}],24:[function(require,module,exports){
-
-var hasOwn = Object.prototype.hasOwnProperty;
-var toString = Object.prototype.toString;
-
-module.exports = function forEach (obj, fn, ctx) {
-    if (toString.call(fn) !== '[object Function]') {
-        throw new TypeError('iterator must be a function');
-    }
-    var l = obj.length;
-    if (l === +l) {
-        for (var i = 0; i < l; i++) {
-            fn.call(ctx, obj[i], i, obj);
-        }
-    } else {
-        for (var k in obj) {
-            if (hasOwn.call(obj, k)) {
-                fn.call(ctx, obj[k], k, obj);
+if (!Array.prototype.find) {
+    Object.defineProperty(Array.prototype, 'find', {
+        value: function (predicate) {
+
+            if (this == null) {
+                throw new TypeError('this is null or not defined');
             }
-        }
-    }
-};
 
+            var obj = Object(this);
+            var len = obj.length >>> 0;
 
-},{}],25:[function(require,module,exports){
-var ERROR_MESSAGE = 'Function.prototype.bind called on incompatible ';
-var slice = Array.prototype.slice;
-var toStr = Object.prototype.toString;
-var funcType = '[object Function]';
-
-module.exports = function bind(that) {
-    var target = this;
-    if (typeof target !== 'function' || toStr.call(target) !== funcType) {
-        throw new TypeError(ERROR_MESSAGE + target);
-    }
-    var args = slice.call(arguments, 1);
-
-    var bound;
-    var binder = function () {
-        if (this instanceof bound) {
-            var result = target.apply(
-                this,
-                args.concat(slice.call(arguments))
-            );
-            if (Object(result) === result) {
-                return result;
+            if (typeof predicate !== 'function') {
+                throw new TypeError('predicate must be a function');
             }
-            return this;
-        } else {
-            return target.apply(
-                that,
-                args.concat(slice.call(arguments))
-            );
+
+            var thisArg = arguments[1];
+
+            var index = 0;
+
+            while (index < len) {
+                var iValue = obj[index];
+                if (predicate.call(thisArg, iValue, index, obj)) {
+                    return iValue;
+                }
+                index++;
+            }
+
+            return undefined;
         }
-    };
-
-    var boundLength = Math.max(0, target.length - args.length);
-    var boundArgs = [];
-    for (var i = 0; i < boundLength; i++) {
-        boundArgs.push('$' + i);
-    }
-
-    bound = Function('binder', 'return function (' + boundArgs.join(',') + '){ return binder.apply(this,arguments); }')(binder);
-
-    if (target.prototype) {
-        var Empty = function Empty() {};
-        Empty.prototype = target.prototype;
-        bound.prototype = new Empty();
-        Empty.prototype = null;
-    }
-
-    return bound;
-};
-
-},{}],26:[function(require,module,exports){
-var implementation = require('./implementation');
-
-module.exports = Function.prototype.bind || implementation;
-
-},{"./implementation":25}],27:[function(require,module,exports){
-var bind = require('function-bind');
-
-module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
-
-},{"function-bind":26}],28:[function(require,module,exports){
+    });
+}
+},{}],9:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var nBits = -7
@@ -3937,12 +3155,12 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   e = s & ((1 << (-nBits)) - 1)
   s >>= (-nBits)
   nBits += eLen
-  for (; nBits > 0; e = e * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; e = (e * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   m = e & ((1 << (-nBits)) - 1)
   e >>= (-nBits)
   nBits += mLen
-  for (; nBits > 0; m = m * 256 + buffer[offset + i], i += d, nBits -= 8) {}
+  for (; nBits > 0; m = (m * 256) + buffer[offset + i], i += d, nBits -= 8) {}
 
   if (e === 0) {
     e = 1 - eBias
@@ -3957,7 +3175,7 @@ exports.read = function (buffer, offset, isLE, mLen, nBytes) {
 
 exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   var e, m, c
-  var eLen = nBytes * 8 - mLen - 1
+  var eLen = (nBytes * 8) - mLen - 1
   var eMax = (1 << eLen) - 1
   var eBias = eMax >> 1
   var rt = (mLen === 23 ? Math.pow(2, -24) - Math.pow(2, -77) : 0)
@@ -3990,7 +3208,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
       m = 0
       e = eMax
     } else if (e + eBias >= 1) {
-      m = (value * c - 1) * Math.pow(2, mLen)
+      m = ((value * c) - 1) * Math.pow(2, mLen)
       e = e + eBias
     } else {
       m = value * Math.pow(2, eBias - 1) * Math.pow(2, mLen)
@@ -4007,147 +3225,14 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],29:[function(require,module,exports){
-'use strict';
-
-var fnToStr = Function.prototype.toString;
-
-var constructorRegex = /^\s*class /;
-var isES6ClassFn = function isES6ClassFn(value) {
-	try {
-		var fnStr = fnToStr.call(value);
-		var singleStripped = fnStr.replace(/\/\/.*\n/g, '');
-		var multiStripped = singleStripped.replace(/\/\*[.\s\S]*\*\//g, '');
-		var spaceStripped = multiStripped.replace(/\n/mg, ' ').replace(/ {2}/g, ' ');
-		return constructorRegex.test(spaceStripped);
-	} catch (e) {
-		return false; // not a function
-	}
-};
-
-var tryFunctionObject = function tryFunctionObject(value) {
-	try {
-		if (isES6ClassFn(value)) { return false; }
-		fnToStr.call(value);
-		return true;
-	} catch (e) {
-		return false;
-	}
-};
-var toStr = Object.prototype.toString;
-var fnClass = '[object Function]';
-var genClass = '[object GeneratorFunction]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
-
-module.exports = function isCallable(value) {
-	if (!value) { return false; }
-	if (typeof value !== 'function' && typeof value !== 'object') { return false; }
-	if (hasToStringTag) { return tryFunctionObject(value); }
-	if (isES6ClassFn(value)) { return false; }
-	var strClass = toStr.call(value);
-	return strClass === fnClass || strClass === genClass;
-};
-
-},{}],30:[function(require,module,exports){
-'use strict';
-
-var getDay = Date.prototype.getDay;
-var tryDateObject = function tryDateObject(value) {
-	try {
-		getDay.call(value);
-		return true;
-	} catch (e) {
-		return false;
-	}
-};
-
-var toStr = Object.prototype.toString;
-var dateClass = '[object Date]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
-
-module.exports = function isDateObject(value) {
-	if (typeof value !== 'object' || value === null) { return false; }
-	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
-};
-
-},{}],31:[function(require,module,exports){
-'use strict';
-
-var has = require('has');
-var regexExec = RegExp.prototype.exec;
-var gOPD = Object.getOwnPropertyDescriptor;
-
-var tryRegexExecCall = function tryRegexExec(value) {
-	try {
-		var lastIndex = value.lastIndex;
-		value.lastIndex = 0;
-
-		regexExec.call(value);
-		return true;
-	} catch (e) {
-		return false;
-	} finally {
-		value.lastIndex = lastIndex;
-	}
-};
-var toStr = Object.prototype.toString;
-var regexClass = '[object RegExp]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
-
-module.exports = function isRegex(value) {
-	if (!value || typeof value !== 'object') {
-		return false;
-	}
-	if (!hasToStringTag) {
-		return toStr.call(value) === regexClass;
-	}
-
-	var descriptor = gOPD(value, 'lastIndex');
-	var hasLastIndexDataProperty = descriptor && has(descriptor, 'value');
-	if (!hasLastIndexDataProperty) {
-		return false;
-	}
-
-	return tryRegexExecCall(value);
-};
-
-},{"has":27}],32:[function(require,module,exports){
-'use strict';
-
-var toStr = Object.prototype.toString;
-var hasSymbols = typeof Symbol === 'function' && typeof Symbol() === 'symbol';
-
-if (hasSymbols) {
-	var symToStr = Symbol.prototype.toString;
-	var symStringRegex = /^Symbol\(.*\)$/;
-	var isSymbolObject = function isSymbolObject(value) {
-		if (typeof value.valueOf() !== 'symbol') { return false; }
-		return symStringRegex.test(symToStr.call(value));
-	};
-	module.exports = function isSymbol(value) {
-		if (typeof value === 'symbol') { return true; }
-		if (toStr.call(value) !== '[object Symbol]') { return false; }
-		try {
-			return isSymbolObject(value);
-		} catch (e) {
-			return false;
-		}
-	};
-} else {
-	module.exports = function isSymbol(value) {
-		// this environment does not support Symbols.
-		return false;
-	};
-}
-
-},{}],33:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 var toString = {}.toString;
 
 module.exports = Array.isArray || function (arr) {
   return toString.call(arr) == '[object Array]';
 };
 
-},{}],34:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 var range; // Create a range object for efficently rendering strings to elements.
@@ -4354,14 +3439,17 @@ var specialElHandlers = {
             fromEl.value = newValue;
         }
 
-        if (fromEl.firstChild) {
+        var firstChild = fromEl.firstChild;
+        if (firstChild) {
             // Needed for IE. Apparently IE sets the placeholder as the
             // node value and vise versa. This ignores an empty update.
-            if (newValue === '' && fromEl.firstChild.nodeValue === fromEl.placeholder) {
+            var oldValue = firstChild.nodeValue;
+
+            if (oldValue == newValue || (!newValue && oldValue == fromEl.placeholder)) {
                 return;
             }
 
-            fromEl.firstChild.nodeValue = newValue;
+            firstChild.nodeValue = newValue;
         }
     },
     SELECT: function(fromEl, toEl) {
@@ -4672,7 +3760,10 @@ function morphdomFactory(morphAttrs) {
                                 isCompatible = true;
                                 // Simply update nodeValue on the original node to
                                 // change the text value
-                                curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
+                                if (curFromNodeChild.nodeValue !== curToNodeChild.nodeValue) {
+                                    curFromNodeChild.nodeValue = curToNodeChild.nodeValue;
+                                }
+
                             }
                         }
 
@@ -4771,7 +3862,10 @@ function morphdomFactory(morphAttrs) {
                 }
             } else if (morphedNodeType === TEXT_NODE || morphedNodeType === COMMENT_NODE) { // Text or comment node
                 if (toNodeType === morphedNodeType) {
-                    morphedNode.nodeValue = toNode.nodeValue;
+                    if (morphedNode.nodeValue !== toNode.nodeValue) {
+                        morphedNode.nodeValue = toNode.nodeValue;
+                    }
+
                     return morphedNode;
                 } else {
                     // Text node to something else
@@ -4822,168 +3916,7 @@ var morphdom = morphdomFactory(morphAttrs);
 
 module.exports = morphdom;
 
-},{}],35:[function(require,module,exports){
-'use strict';
-
-// modified from https://github.com/es-shims/es5-shim
-var has = Object.prototype.hasOwnProperty;
-var toStr = Object.prototype.toString;
-var slice = Array.prototype.slice;
-var isArgs = require('./isArguments');
-var isEnumerable = Object.prototype.propertyIsEnumerable;
-var hasDontEnumBug = !isEnumerable.call({ toString: null }, 'toString');
-var hasProtoEnumBug = isEnumerable.call(function () {}, 'prototype');
-var dontEnums = [
-	'toString',
-	'toLocaleString',
-	'valueOf',
-	'hasOwnProperty',
-	'isPrototypeOf',
-	'propertyIsEnumerable',
-	'constructor'
-];
-var equalsConstructorPrototype = function (o) {
-	var ctor = o.constructor;
-	return ctor && ctor.prototype === o;
-};
-var excludedKeys = {
-	$console: true,
-	$external: true,
-	$frame: true,
-	$frameElement: true,
-	$frames: true,
-	$innerHeight: true,
-	$innerWidth: true,
-	$outerHeight: true,
-	$outerWidth: true,
-	$pageXOffset: true,
-	$pageYOffset: true,
-	$parent: true,
-	$scrollLeft: true,
-	$scrollTop: true,
-	$scrollX: true,
-	$scrollY: true,
-	$self: true,
-	$webkitIndexedDB: true,
-	$webkitStorageInfo: true,
-	$window: true
-};
-var hasAutomationEqualityBug = (function () {
-	/* global window */
-	if (typeof window === 'undefined') { return false; }
-	for (var k in window) {
-		try {
-			if (!excludedKeys['$' + k] && has.call(window, k) && window[k] !== null && typeof window[k] === 'object') {
-				try {
-					equalsConstructorPrototype(window[k]);
-				} catch (e) {
-					return true;
-				}
-			}
-		} catch (e) {
-			return true;
-		}
-	}
-	return false;
-}());
-var equalsConstructorPrototypeIfNotBuggy = function (o) {
-	/* global window */
-	if (typeof window === 'undefined' || !hasAutomationEqualityBug) {
-		return equalsConstructorPrototype(o);
-	}
-	try {
-		return equalsConstructorPrototype(o);
-	} catch (e) {
-		return false;
-	}
-};
-
-var keysShim = function keys(object) {
-	var isObject = object !== null && typeof object === 'object';
-	var isFunction = toStr.call(object) === '[object Function]';
-	var isArguments = isArgs(object);
-	var isString = isObject && toStr.call(object) === '[object String]';
-	var theKeys = [];
-
-	if (!isObject && !isFunction && !isArguments) {
-		throw new TypeError('Object.keys called on a non-object');
-	}
-
-	var skipProto = hasProtoEnumBug && isFunction;
-	if (isString && object.length > 0 && !has.call(object, 0)) {
-		for (var i = 0; i < object.length; ++i) {
-			theKeys.push(String(i));
-		}
-	}
-
-	if (isArguments && object.length > 0) {
-		for (var j = 0; j < object.length; ++j) {
-			theKeys.push(String(j));
-		}
-	} else {
-		for (var name in object) {
-			if (!(skipProto && name === 'prototype') && has.call(object, name)) {
-				theKeys.push(String(name));
-			}
-		}
-	}
-
-	if (hasDontEnumBug) {
-		var skipConstructor = equalsConstructorPrototypeIfNotBuggy(object);
-
-		for (var k = 0; k < dontEnums.length; ++k) {
-			if (!(skipConstructor && dontEnums[k] === 'constructor') && has.call(object, dontEnums[k])) {
-				theKeys.push(dontEnums[k]);
-			}
-		}
-	}
-	return theKeys;
-};
-
-keysShim.shim = function shimObjectKeys() {
-	if (Object.keys) {
-		var keysWorksWithArguments = (function () {
-			// Safari 5.0 bug
-			return (Object.keys(arguments) || '').length === 2;
-		}(1, 2));
-		if (!keysWorksWithArguments) {
-			var originalKeys = Object.keys;
-			Object.keys = function keys(object) {
-				if (isArgs(object)) {
-					return originalKeys(slice.call(object));
-				} else {
-					return originalKeys(object);
-				}
-			};
-		}
-	} else {
-		Object.keys = keysShim;
-	}
-	return Object.keys || keysShim;
-};
-
-module.exports = keysShim;
-
-},{"./isArguments":36}],36:[function(require,module,exports){
-'use strict';
-
-var toStr = Object.prototype.toString;
-
-module.exports = function isArguments(value) {
-	var str = toStr.call(value);
-	var isArgs = str === '[object Arguments]';
-	if (!isArgs) {
-		isArgs = str !== '[object Array]' &&
-			value !== null &&
-			typeof value === 'object' &&
-			typeof value.length === 'number' &&
-			value.length >= 0 &&
-			toStr.call(value.callee) === '[object Function]';
-	}
-	return isArgs;
-};
-
-},{}],37:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5478,6 +4411,7 @@ var aTable = function (_aTemplate) {
           obj.value = '';
           if (html) {
             obj.value = html.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+            obj.value = obj.value.replace(/\\/g, '&#92;');
           }
           var classAttr = cell.getAttribute('class');
           var cellClass = '';
@@ -5575,19 +4509,7 @@ var aTable = function (_aTemplate) {
       elem.focus();
       if (typeof window.getSelection !== 'undefined' && typeof document.createRange !== 'undefined') {
         var range = document.createRange();
-        if (aTable.getBrowser() === 'firefox' && elem.hasChildNodes() && elem.lastChild.tagName === 'BR') {
-          range.setEndBefore(elem.lastChild);
-        } else if (aTable.getBrowser() === 'ie11' && elem.hasChildNodes() && elem.lastChild.tagName === 'P' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
-          range.setEndBefore(elem.lastChild.lastChild);
-        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes()) {
-          if (elem.lastChild.lastChild.tagName === 'BR') {
-            range.setEndBefore(elem.lastChild.lastChild);
-          } else {
-            range.setEndAfter(elem.lastChild.lastChild);
-          }
-        } else {
-          range.selectNodeContents(elem);
-        }
+        range.selectNodeContents(elem);
         range.collapse(false);
         var sel = window.getSelection();
         sel.removeAllRanges();
@@ -5705,9 +4627,7 @@ var aTable = function (_aTemplate) {
       data.mode = 'col';
       data.selectedColNo = -1;
       data.selectedRowNo = i;
-      if (data.increaseDecreaseRows) {
-        this.contextmenu();
-      }
+      this.contextmenu();
       this.update();
     }
   }, {
@@ -5733,9 +4653,7 @@ var aTable = function (_aTemplate) {
       data.mode = 'row';
       data.selectedRowNo = -1;
       data.selectedColNo = i;
-      if (data.increaseDecreaseColumns) {
-        this.contextmenu();
-      }
+      this.contextmenu();
       this.update();
     }
   }, {
@@ -5763,9 +4681,6 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'removeRow',
@@ -5891,17 +4806,22 @@ var aTable = function (_aTemplate) {
         if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
           data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+          data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
         }
         if (this.afterEntered) {
           this.afterEntered();
         }
-      } else if (type === 'keyup' && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge')) {
-        if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
-          data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
-        }
-        if (this.afterEntered) {
-          this.afterEntered();
+      } else if (type === 'keyup') {
+        var browser = aTable.getBrowser();
+        if (browser.indexOf('ie') !== -1 || browser === 'edge') {
+          if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
+            data.history.push((0, _clone2.default)(data.row));
+            data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+            data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
+          }
+          if (this.afterEntered) {
+            this.afterEntered();
+          }
         }
       }
     }
@@ -5938,10 +4858,12 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'pasteTable',
     value: function pasteTable(e) {
-      var pastedData = void 0;
-      var data = this.data;
       if (e.clipboardData) {
-        this.processPaste(e.clipboardData.getData('text/html'));
+        var html = e.clipboardData.getData('text/html');
+        if (!html) {
+          html = e.clipboardData.getData('text/plain');
+        }
+        this.processPaste(html);
       } else if (window.clipboardData) {
         this.getClipBoardData();
       }
@@ -5982,7 +4904,7 @@ var aTable = function (_aTemplate) {
       var e = this.e;
       e.preventDefault();
       var selectedPoint = this.getSelectedPoint();
-      var tableHtml = pastedData.match(/<table(.*)>(([\n\r\t]|.)*?)<\/table>/i);
+      var tableHtml = pastedData.match(/<table(([\n\r\t]|.)*?)>(([\n\r\t]|.)*?)<\/table>/i);
       var data = this.data;
       if (tableHtml && tableHtml[0]) {
         var newRow = this.parse(tableHtml[0], 'text');
@@ -6185,9 +5107,6 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'insertColLeft',
@@ -6214,9 +5133,6 @@ var aTable = function (_aTemplate) {
         }
         data.history.push((0, _clone2.default)(data.row));
         self.update();
-        if (this.afterAction) {
-          this.afterAction();
-        }
         return;
       }
       targetPoints.forEach(function (point) {
@@ -6234,9 +5150,6 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'beforeUpdated',
@@ -6373,9 +5286,6 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'splitCell',
@@ -6458,9 +5368,6 @@ var aTable = function (_aTemplate) {
       data.history.push((0, _clone2.default)(data.row));
       data.splited = true;
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'changeCellTypeTo',
@@ -6476,9 +5383,6 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'align',
@@ -6494,9 +5398,6 @@ var aTable = function (_aTemplate) {
       data.showMenu = false;
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'getStyleByAlign',
@@ -6564,9 +5465,6 @@ var aTable = function (_aTemplate) {
       });
       data.history.push((0, _clone2.default)(data.row));
       this.update();
-      if (this.afterAction) {
-        this.afterAction();
-      }
     }
   }, {
     key: 'changeSelectOption',
@@ -6649,7 +5547,7 @@ var aTable = function (_aTemplate) {
 exports.default = aTable;
 module.exports = exports['default'];
 
-},{"./util.js":38,"a-template":1,"clone":9,"deep-extend":11}],38:[function(require,module,exports){
+},{"./util.js":13,"a-template":1,"clone":5,"deep-extend":7}],13:[function(require,module,exports){
 'use strict';
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -6744,5 +5642,5 @@ module.exports.removeIndentNewline = function (str) {
   return str.replace(/(\n|\t)/g, '');
 };
 
-},{"custom-event-polyfill":10}]},{},[37])(37)
+},{"custom-event-polyfill":6}]},{},[12])(12)
 });

@@ -1,6 +1,6 @@
 {
   "name": "a-table",
-  "version": "1.5.4",
+  "version": "1.5.9",
   "main": "lib/index.js",
   "description": "Editable table library",
   "author": "appleple",
@@ -21,11 +21,10 @@
     "major": "npm run test && npm version major && npm run build:js && node ./tools/index.js"
   },
   "dependencies": {
-    "a-template": "^0.5.1",
+    "a-template": "^0.5.4",
     "clone": "^2.0.0",
     "custom-event-polyfill": "^0.3.0",
-    "deep-extend": "^0.5.0",
-    "zepto-browserify": "^1.1.6-1"
+    "deep-extend": "^0.5.0"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
