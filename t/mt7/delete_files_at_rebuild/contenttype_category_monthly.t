@@ -8,8 +8,6 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 
-BEGIN { plan skip_all => 'TODO: Skip tentatively'; }
-
 BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
