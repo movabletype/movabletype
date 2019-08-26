@@ -582,6 +582,62 @@ sub save {
         %categories_old = map { $_ => $orig_data->{$_} || [] } @cat_field_ids;
     }
 
+    ## keep old archive information before content fields are actually updated
+    ## (ie. before the old dt_field value is lost)
+    my @old_archive_params;
+    if ( $orig->id ) {
+        my $archive_root = $blog->archive_path;
+
+        my @maps = MT->model('templatemap')->load(
+            { blog_id => $blog_id },
+            {   join => MT->model('template')->join_on(
+                    undef,
+                    {   id              => \'= templatemap_template_id',
+                        content_type_id => $content_type_id,
+                    },
+                ),
+            }
+        );
+
+        my @cats;
+        for my $cat_id ( keys %categories_old ) {
+            my $cat = MT->model('category')->load($cat_id) or next;
+            push @cats, $cat;
+        }
+
+        for my $map (@maps) {
+            my $at       = $map->archive_type;
+            my $archiver = $app->publisher->archiver($at);
+            for my $cat ( $archiver->category_based ? @cats : undef ) {
+                my $file
+                    = MT::Util::archive_file_for( $orig, $blog, $at, $cat,
+                    $map )
+                    or next;
+
+                $file = File::Spec->catfile( $archive_root, $file );
+
+                ## params for _delete_archive_file
+                my %params = (
+                    Blog        => $blog,
+                    File        => $file,
+                    ArchiveType => $at,
+                    ContentData => $orig,
+                );
+
+                ## ignore if fileinfo does not exist
+                $params{FileInfo} = MT->model('fileinfo')->load(
+                    {   blog_id        => $blog_id,
+                        file_path      => $file,
+                        templatemap_id => $map->id,
+                        archive_type   => $at,
+                    }
+                ) or next;
+
+                push @old_archive_params, \%params;
+            }
+        }
+    }
+
     my $filter_result
         = $app->run_callbacks( 'cms_save_filter.content_data', $app );
 
@@ -764,6 +820,10 @@ sub save {
                 ContentData => $orig,
                 ArchiveType => $archive_type,
             );
+        }
+        for my $param (@old_archive_params) {
+            $app->publisher->_delete_archive_file(%$param);
+            $param->{FileInfo}->remove if $param->{FileInfo};
         }
     }
 
