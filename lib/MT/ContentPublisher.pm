@@ -1676,7 +1676,7 @@ sub _rebuild_content_archive_type {
     for my $map (@map) {
 
         # SKIP no relation content data
-        if ( $at eq 'ContentType' ) {
+        if ( $at =~ /^ContentType/ ) {
             my $template = MT->model('template')->load( $map->template_id );
             next
                 if $template
