@@ -1897,7 +1897,7 @@ sub _rebuild_content_archive_type {
 
         if ( $obj && !$timestamp ) {
             $timestamp
-                = $archiver->contenttype_date_based && $map && $map->dt_field_id
+                = $at =~ /^ContentType/ && $map && $map->dt_field_id
                 ? $obj->data->{ $map->dt_field_id }
                 : $obj->authored_on();
         }
