@@ -126,7 +126,7 @@ subtest 'preview without content_type archive' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out,             'Request: preview_content_data' );
+    ok( $out, 'Request: preview_content_data' );
     ok( $out !~ /error/i, 'No error occurred' );
 };
 
@@ -142,7 +142,7 @@ subtest 'preview with content_type archive' => sub {
     );
     $out = delete $app->{__test_output};
 
-    ok( $out,                         'Request: preview_content_data' );
+    ok( $out, 'Request: preview_content_data' );
     ok( $out =~ /Status: 302 Found/i, 'Status: 302 Found' );
     ok( $out !~ /error|permission=1|dashboard=1/i, 'No error occurred' );
 };
@@ -190,6 +190,44 @@ subtest 'listing with tags_field filter' => sub {
     ok( $json->{result}{count} == 0, 'unmatch filter: count = 0' );
     unlike( $json->{result}{objects}[0][1],
         qr/test cd/, 'unmatch filter: keyword is not included' );
+};
+
+# https://movabletype.atlassian.net/browse/MTC-26597
+subtest 'remove content_data related to invalid content_field from' => sub {
+    my $blog_id   = $content_type->blog_id;
+    my $remove_ct = MT::Test::Permission->make_content_type(
+        blog_id => $blog_id,
+        name    => 'content type to be removed',
+    );
+    MT::Test::Permission->make_content_field(
+        blog_id                 => $blog_id,
+        content_type_id         => undef,
+        name                    => 'missing content field',
+        related_content_type_id => $remove_ct->id,
+        type                    => 'content_type',
+    );
+
+    my $return_args
+        = "__mode=list&blog_id=$blog_id&_type=content_type&does_act=1";
+    my $encoded_return_args = quotemeta $return_args;
+
+    $app = _run_app(
+        'MT::App::CMS',
+        {   __test_user      => $admin,
+            __request_method => 'POST',
+            __mode           => 'itemset_action',
+            _type            => 'content_type',
+            action_name      => 'delete',
+            blog_id          => $blog_id,
+            return_args      => $return_args,
+            id               => $remove_ct->id,
+        },
+    );
+    $out = delete $app->{__test_output};
+    ok( $out && $out =~ /$return_args/ && $out !~ /&not_deleted=1/,
+        'no error message is showed' );
+    is( $app->model('content_type')->load( $remove_ct->id ),
+        undef, 'content_type has been removed' );
 };
 
 done_testing;

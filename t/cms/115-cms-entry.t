@@ -698,8 +698,8 @@ SKIP: {
 
         like(
             $out,
-            qr/Entries in This Website/,
-            'System filter "Entries in This Website" exists'
+            qr/Entries in This Site/,
+            'System filter "Entries in This Site" exists'
         );
 
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
