@@ -119,6 +119,35 @@ $admin->save;
     like $out => qr!href="/path"!, 'valid return_to';
 }
 
+{   ## absolute without scheme
+    my $app = _run_app(
+        'MT::App::CMS',
+        {
+            __mode => 'recover',
+            email => $admin->email,
+            return_to => '//narnia.na',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    unlike $out => qr!Invalid request!, 'not invalid request';
+    like $out => qr!href="//narnia.na"!, 'valid return_to';
+}
+
+{
+    my $app = _run_app(
+        'MT::App::CMS',
+        {
+            __mode => 'recover',
+            email => $admin->email,
+            return_to => '//foo',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    like $out => qr!Invalid request!, 'invalid request at recover';
+    unlike $out => qr!href="http://foo"!, 'no invalid return_to link';
+    unlike $out => qr!"//foo"!, 'no invalid return_to link';
+}
+
 {   ## weird uri that URI module happens to consider relative
     my $app = _run_app(
         'MT::App::CMS',
@@ -131,6 +160,20 @@ $admin->save;
     my $out = delete $app->{__test_output};
     like $out => qr!Invalid request!, 'invalid request';
     unlike $out => qr!href=":\@"!, 'no invalid return_to';
+}
+
+{   ## weird uri that URI module happens to consider relative
+    my $app = _run_app(
+        'MT::App::CMS',
+        {
+            __mode => 'recover',
+            email => $admin->email,
+            return_to => '://narnia.na',
+        },
+    );
+    my $out = delete $app->{__test_output};
+    like $out => qr!Invalid request!, 'invalid request';
+    unlike $out => qr!href="://narnia.na"!, 'no invalid return_to';
 }
 
 done_testing;
