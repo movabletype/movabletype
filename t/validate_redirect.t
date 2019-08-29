@@ -8,6 +8,9 @@ use Test::More;
 
 use MT::Test qw/:app :db :data/;
 
+my $mt = MT->new() or die MT->errstr;
+$mt->config('MailTransfer', 'debug');
+
 my $admin = MT::Author->load(1);
 $admin->email('test@localhost.localdomain');
 $admin->save;
