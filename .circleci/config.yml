@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: masiuchi/docker-mt-test:trusty-full
+      - image: movabletype/test:trusty
     steps:
       - checkout
       - run:
