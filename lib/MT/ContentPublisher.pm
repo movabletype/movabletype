@@ -1051,12 +1051,12 @@ sub rebuild_file {
         $terms{startdate} = $start
             if $archiver->date_based
             && ( !$archiver->entry_based )
-            && ( !$any_contenttype_based );
+            && ( !$archiver->contenttype_based );
         $terms{archive_type}   = $at;
         $terms{templatemap_id} = $map->id;
         $terms{cd_id}          = $content_data->id
             if $content_data
-            and $any_contenttype_based;
+            and $archiver->contenttype_based;
         my @finfos = MT::FileInfo->load( \%terms );
 
         if (   ( scalar @finfos == 1 )
@@ -1183,6 +1183,7 @@ sub rebuild_file {
     return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1
         if ( $content_data
+        && $archiver->contenttype_based
         && $content_data->status != MT::ContentStatus::RELEASE() );
     return 1 unless ( $map->build_type );
 
@@ -1675,7 +1676,7 @@ sub _rebuild_content_archive_type {
     for my $map (@map) {
 
         # SKIP no relation content data
-        if ( $at eq 'ContentType' ) {
+        if ( $at =~ /^ContentType/ ) {
             my $template = MT->model('template')->load( $map->template_id );
             next
                 if $template
@@ -1896,7 +1897,7 @@ sub _rebuild_content_archive_type {
 
         if ( $obj && !$timestamp ) {
             $timestamp
-                = $at eq 'ContentType' && $map && $map->dt_field_id
+                = $at =~ /^ContentType/ && $map && $map->dt_field_id
                 ? $obj->data->{ $map->dt_field_id }
                 : $obj->authored_on();
         }
@@ -2183,10 +2184,15 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'End'} = $end;
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'Timestamp'} = $target_dt;
+                            $rebuild_recipe{$at}{ $cat->id }
+                                { $start . $end }{'ContentData'}
+                                = $content_data;
                         }
                         else {
                             $rebuild_recipe{$at}{ $cat->id }{id}
                                 = $cat->id;
+                            $rebuild_recipe{$at}{ $cat->id }{ContentData}
+                                = $content_data;
                         }
                     }
                 }
@@ -2254,10 +2260,14 @@ sub rebuild_deleted_content_data {
                             { $start . $end }{'End'} = $end;
                         $rebuild_recipe{$at}{ $content_data->author->id }
                             { $start . $end }{'Timestamp'} = $target_dt;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            { $start . $end }{'ContentData'} = $content_data;
                     }
                     else {
                         $rebuild_recipe{$at}{ $content_data->author->id }{id}
                             = $content_data->author->id;
+                        $rebuild_recipe{$at}{ $content_data->author->id }
+                            {ContentData} = $content_data;
                     }
                 }
                 elsif ( $archiver->date_based ) {
@@ -2266,6 +2276,8 @@ sub rebuild_deleted_content_data {
                     $rebuild_recipe{$at}{ $start . $end }{'End'} = $end;
                     $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
                         = $target_dt;
+                    $rebuild_recipe{$at}{ $start . $end }{'ContentData'}
+                        = $content_data;
                 }
 
                 if ( my $prev = $content_data->previous(1) ) {
