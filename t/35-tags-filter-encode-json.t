@@ -2,11 +2,14 @@
 
 use strict;
 use warnings;
+use utf8;
+use Encode;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -129,13 +132,17 @@ SKIP:
             skip $block->skip, 1 if $block->skip;
 
             open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( _unescape( $block->template ),
-                $block->text );
+            my $template = _unescape( $block->template );
+            $template = Encode::encode_utf8($template)
+                if Encode::is_utf8($template);
+            print $php_out &php_test_script( $template, $block->text );
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
             $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+            $php_result = Encode::decode_utf8($php_result);
 
             my $expected = _unescape( $block->expected );
+
             # CR is converted to LF.
             $expected =~ s/\\r/\\n/g;
             $expected =~ s/\r/\n/g;
@@ -226,3 +233,12 @@ foo\\tbar
 <MTVar name="string" encode_json="1">
 --- expected
 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012344567890
+
+=== Japanese characters
+--- template _unescape
+<MTSetVarBlock name="string">あい\うえお</MTSetVarBlock>
+<MTVar name="string">
+<MTVar name="string" encode_json="1">
+--- expected _unescape
+あい\うえお
+あい\\うえお
