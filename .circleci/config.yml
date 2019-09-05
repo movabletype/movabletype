@@ -10,7 +10,7 @@ jobs:
 
   coveralls:
     docker:
-      - image: masiuchi/docker-mt-test:trusty-full
+      - image: movabletype/test:trusty
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls
