@@ -102,6 +102,12 @@ sub start_recover {
         = $app->param('return_to')
         || $cfg->ReturnToURL
         || '';
+
+    if ( $param->{return_to} ) {
+        $app->is_valid_redirect_target( $param->{return_to} )
+            or return $app->errtrans("Invalid request.");
+    }
+
     if ( $param->{recovered} ) {
         $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
     }
@@ -174,10 +180,15 @@ sub recover_password {
             my $token   = MT::Util::perl_sha1_digest_hex(
                 $salt . $expires . $app->config->SecretToken );
 
+            my $return_to = $app->param('return_to');
+            if ($return_to) {
+                $app->is_valid_redirect_target($return_to)
+                    or return $app->errtrans("Invalid request.");
+            }
+
             $user->password_reset($salt);
             $user->password_reset_expires($expires);
-            $user->password_reset_return_to( $app->param('return_to') )
-                if $app->param('return_to');
+            $user->password_reset_return_to($return_to) if $return_to;
             $user->save;
 
             # Send mail to user
@@ -306,6 +317,9 @@ sub new_password {
                 }
                 $app->make_commenter_session($user);
                 if ($redirect) {
+                    ## just in case
+                    $app->is_valid_redirect_target($redirect)
+                        or return $app->errtrans("Invalid request.");
                     return $app->redirect( MT::Util::encode_html($redirect) );
                 }
                 else {
