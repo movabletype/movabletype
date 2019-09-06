@@ -594,6 +594,8 @@ var aTable = function (_aTemplate) {
           range.setEndBefore(elem.lastChild);
         } else if (aTable.getBrowser() === 'ie11' && elem.hasChildNodes() && elem.lastChild.tagName === 'P' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
           range.setEndBefore(elem.lastChild.lastChild);
+        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild.lastChild);
         } else {
           range.selectNodeContents(elem);
         }

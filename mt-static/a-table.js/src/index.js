@@ -544,6 +544,11 @@ export default class aTable extends aTemplate {
         && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
       {
         range.setEndBefore(elem.lastChild.lastChild);
+      } else if (aTable.getBrowser() === 'edge'
+        && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV'
+        && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
+      {
+        range.setEndBefore(elem.lastChild.lastChild);
       } else {
         range.selectNodeContents(elem);
       }
