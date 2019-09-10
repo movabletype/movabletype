@@ -57,6 +57,7 @@ sub login {
 
 sub request {
     my ($self, $params) = @_;
+    local $ENV{HTTP_HOST} = 'localhost';  ## for app->base
     CGI::initialize_globals();
     my $app_params = $self->_app_params($params);
     my $cgi = $self->_create_cgi_object($params);
