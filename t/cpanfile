@@ -46,7 +46,6 @@ requires 'Imager';
 requires 'IPC::Run';
 requires 'Storable';
 requires 'Crypt::DSA';
-requires 'Crypt::SSLeay';
 
 # TODO: libdb-dev is needed for installing Cache::File.
 #requires 'Cache::File';
@@ -105,5 +104,4 @@ on 'test' => sub {
     requires 'Test::MockObject';
     requires 'Test::Pod::Coverage';
     requires 'Test::Spec';
-    requires 'Wight';
 };
