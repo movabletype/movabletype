@@ -33,6 +33,15 @@ sub list {
         return $app->errtrans( '[_1] must be a number.', 'offset' )
             if ( $offset !~ /\A[0-9]+\z/ );
 
+        return $app->errtrans(
+            '[_1] must be an integer and between [_2] and [_3].',
+            'limit', 1, 2147483647 )
+            if ( $limit < 1 || $limit > 2147483647 );
+        return $app->errtrans(
+            '[_1] must be an integer and between [_2] and [_3].',
+            'offset', 0, 2147483647 )
+            if ( $offset < 0 || $offset > 2147483647 );
+
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';
         $filter_keys =~ s/blogIds/ids/;
