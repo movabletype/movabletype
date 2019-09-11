@@ -12,7 +12,7 @@ use URI::QueryParam;
 my $Initialized;
 
 sub init {
-    my ($class, $app_class) = @_;
+    my ( $class, $app_class ) = @_;
 
     return if $Initialized;
 
@@ -41,44 +41,47 @@ sub init {
 
 sub new {
     my $class = shift;
-    my %args = (@_ == 1) ? (app_class => shift) : @_;
+    my %args  = ( @_ == 1 ) ? ( app_class => shift ) : @_;
 
     $args{app_class} ||= $ENV{MT_APP} || 'MT::App';
 
-    $class->init($args{app_class}) unless $Initialized;
+    $class->init( $args{app_class} ) unless $Initialized;
 
     bless \%args, $class;
 }
 
 sub login {
-    my ($self, $user) = @_;
+    my ( $self, $user ) = @_;
     $self->{user} = $user;
 }
 
 sub request {
-    my ($self, $params) = @_;
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
     CGI::initialize_globals();
     my $app_params = $self->_app_params($params);
-    my $cgi = $self->_create_cgi_object($params);
-    my $app = $self->{app_class}->new( CGIObject => $cgi );
+    my $cgi        = $self->_create_cgi_object($params);
+    my $app        = $self->{app_class}->new( CGIObject => $cgi );
     MT->set_instance($app);
     $app->{init_request} = 0;
     $app->init_request( CGIObject => $cgi );
-    for my $key (keys %$app_params) {
+
+    for my $key ( keys %$app_params ) {
         $app->{$key} = $app_params->{$key};
     }
 
     my $login;
-    if (my $user = $self->{user}) {
-        if (!$self->{session}) {
-            $app->start_session($user, 1);
+    if ( my $user = $self->{user} ) {
+        if ( !$self->{session} ) {
+            $app->start_session( $user, 1 );
             $self->{session} = $app->{session}->id;
-        } else {
-            $app->session_user($user, $self->{session});
+        }
+        else {
+            $app->session_user( $user, $self->{session} );
         }
         $app->param( 'magic_token', $self->{session} );
         $app->user($user);
-        $login = sub { return ($user, 0) };
+        $login = sub { return ( $user, 0 ) };
     }
     no warnings 'redefine';
     local *MT::App::login = $login if $login;
@@ -90,14 +93,16 @@ sub request {
 
     # redirect?
     my $redirect;
-    if ($res->code =~ /^30/) {
+    if ( $res->code =~ /^30/ ) {
         $redirect = $res->headers->header('Location');
-    }    elsif ($res->decoded_content =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
+    }
+    elsif ( $res->decoded_content =~ /window\.location\s*=\s*(['"])(\S+)\1/ )
+    {
         $redirect = $2;
     }
     if ($redirect) {
         Test::More::note "REDIRECTING TO $redirect";
-        my $uri = URI->new($redirect);
+        my $uri    = URI->new($redirect);
         my $params = $uri->query_form_hash;
 
         $self->_clear_cache;
@@ -112,45 +117,45 @@ sub request {
 }
 
 sub get {
-    my ($self, $params) = @_;
+    my ( $self, $params ) = @_;
     $params->{__request_method} = 'GET';
     $self->request($params);
 }
 
 sub post {
-    my ($self, $params) = @_;
+    my ( $self, $params ) = @_;
     $params->{__request_method} = 'POST';
     $self->request($params);
 }
 
 my %app_params_mapping = (
     __request_method => 'request_method',
-    __path_info => '__path_info',
+    __path_info      => '__path_info',
 );
 
 sub _app_params {
-    my ($self, $params) = @_;
+    my ( $self, $params ) = @_;
     my %app_params;
-    for my $key (keys %app_params_mapping) {
+    for my $key ( keys %app_params_mapping ) {
         next unless exists $params->{$key};
-        $app_params{$app_params_mapping{$key}} = delete $params->{$key};
+        $app_params{ $app_params_mapping{$key} } = delete $params->{$key};
     }
     \%app_params;
 }
 
 sub _create_cgi_object {
-    my ($self, $params) = @_;
+    my ( $self, $params ) = @_;
     my $cgi = CGI->new;
-    while(my ($k, $v) = each %$params) {
-        if ($k eq '__test_upload') {
-            my ($key, $src) = @$v;
+    while ( my ( $k, $v ) = each %$params ) {
+        if ( $k eq '__test_upload' ) {
+            my ( $key, $src ) = @$v;
             require CGI::File::Temp;
-            my $fh = CGI::File::Temp->new(UNLINK => 1)
+            my $fh = CGI::File::Temp->new( UNLINK => 1 )
                 or die "CGI::File::Temp: $!";
             my $basename = basename($src);
-            if ($^O eq 'MSWin32') {
+            if ( $^O eq 'MSWin32' ) {
                 require Encode;
-                Encode::from_to($basename, 'cp932', 'utf8');
+                Encode::from_to( $basename, 'cp932', 'utf8' );
             }
             $fh->_mp_filename($basename);
             binmode $fh;
@@ -161,9 +166,10 @@ sub _create_cgi_object {
             close $in;
             print $fh $body;
             seek $fh, 0, 0;
-            $cgi->param($key, $fh);
-        } else {
-            $cgi->param($k, ref $v eq 'ARRAY' ? @$v : $v);
+            $cgi->param( $key, $fh );
+        }
+        else {
+            $cgi->param( $k, ref $v eq 'ARRAY' ? @$v : $v );
         }
     }
     $cgi;
