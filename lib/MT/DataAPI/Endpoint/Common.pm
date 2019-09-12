@@ -487,6 +487,20 @@ sub filtered_list {
     my $limit  = $q->param('limit')  || 50;
     my $offset = $q->param('offset') || 0;
 
+    return $app->errtrans( '[_1] must be a number.', 'limit' )
+        if ( $limit !~ /\A[0-9]+\z/ );
+    return $app->errtrans( '[_1] must be a number.', 'offset' )
+        if ( $offset !~ /\A[0-9]+\z/ );
+
+    return $app->errtrans(
+        '[_1] must be an integer and between [_2] and [_3].',
+        'limit', 1, 2147483647 )
+        if ( $limit < 1 || $limit > 2147483647 );
+    return $app->errtrans(
+        '[_1] must be an integer and between [_2] and [_3].',
+        'offset', 0, 2147483647 )
+        if ( $offset < 0 || $offset > 2147483647 );
+
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
