@@ -174,7 +174,6 @@ sub suite {
         },
 
         # list_entries_for_category - offset - one
-        # TBD:
         {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => 1, },
@@ -264,7 +263,6 @@ sub suite {
         },
 
         # list_entries_for_category - offset - Int32 Max
-        # TBD:
         {   path   => '/v2/sites/1/categories/' . $cat->id . '/entries',
             method => 'GET',
             params => { offset => INT32_MAX, },
@@ -472,7 +470,6 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - one
-        # TBD:
         {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => 1, },
@@ -563,7 +560,6 @@ sub suite {
         },
 
         # list_pages_for_folder - offset - Int32 Max
-        # TBD:
         {   path   => '/v2/sites/1/folders/' . $folder->id . '/pages',
             method => 'GET',
             params => { offset => INT32_MAX, },
@@ -945,7 +941,6 @@ sub suite {
         },
 
         # permission - offset - Int32 Max
-        # TBD:
         {   path         => '/v1/users/me/permissions',
             method       => 'GET',
             is_superuser => 1,
