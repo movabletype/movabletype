@@ -703,52 +703,49 @@ sub suite {
             method       => 'GET',
             is_superuser => 1,
             params       => { offset => 0, },
-            result       => +{
+            complete     => sub {
+                my ( $data, $body ) = @_;
+                my $result = MT::Util::from_json($body);
+            },
+            result => +{
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
-                            'administer',           'create_blog',
-                            'create_site',          'create_website',
-                            'edit_templates',       'manage_content_data',
-                            'manage_content_types', 'manage_plugins',
-                            'manage_users_groups',  'sign_in_cms',
-                            'sign_in_data_api',     'view_log'
+                            'administer',     'create_blog',
+                            'create_website', 'edit_templates',
+                            'manage_plugins', 'view_log'
                         ],
                         'blog' => undef
                     },
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -766,12 +763,9 @@ sub suite {
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
-                            'administer',           'create_blog',
-                            'create_site',          'create_website',
-                            'edit_templates',       'manage_content_data',
-                            'manage_content_types', 'manage_plugins',
-                            'manage_users_groups',  'sign_in_cms',
-                            'sign_in_data_api',     'view_log'
+                            'administer',     'create_blog',
+                            'create_website', 'edit_templates',
+                            'manage_plugins', 'view_log'
                         ],
                         'blog' => undef
                     },
@@ -788,38 +782,34 @@ sub suite {
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '2' }
                     }
@@ -895,48 +885,41 @@ sub suite {
                 'totalResults' => 3,
                 'items'        => [
                     {   'permissions' => [
-                            'administer',           'create_blog',
-                            'create_site',          'create_website',
-                            'edit_templates',       'manage_content_data',
-                            'manage_content_types', 'manage_plugins',
-                            'manage_users_groups',  'sign_in_cms',
-                            'sign_in_data_api',     'view_log'
+                            'administer',     'create_blog',
+                            'create_website', 'edit_templates',
+                            'manage_plugins', 'view_log'
                         ],
                         'blog' => undef
                     },
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '1' }
                     },
                     {   'permissions' => [
-                            'administer_blog',     'administer_site',
-                            'administer_website',  'comment',
-                            'create_post',         'create_site',
-                            'edit_all_posts',      'edit_assets',
-                            'edit_categories',     'edit_config',
-                            'edit_notifications',  'edit_tags',
-                            'edit_templates',      'manage_category_set',
-                            'manage_content_data', 'manage_content_types',
-                            'manage_feedback',     'manage_member_blogs',
-                            'manage_pages',        'manage_themes',
-                            'manage_users',        'publish_post',
-                            'rebuild',             'send_notifications',
-                            'set_publish_paths',   'upload',
-                            'view_blog_log'
+                            'administer_blog',    'administer_site',
+                            'administer_website', 'comment',
+                            'create_post',        'edit_all_posts',
+                            'edit_assets',        'edit_categories',
+                            'edit_config',        'edit_notifications',
+                            'edit_tags',          'edit_templates',
+                            'manage_feedback',    'manage_member_blogs',
+                            'manage_pages',       'manage_themes',
+                            'manage_users',       'publish_post',
+                            'rebuild',            'save_image_defaults',
+                            'send_notifications', 'set_publish_paths',
+                            'upload',             'view_blog_log'
                         ],
                         'blog' => { 'id' => '2' }
                     }
