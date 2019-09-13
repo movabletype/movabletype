@@ -91,7 +91,7 @@ sub write_config {
         DefaultLanguage      => 'en_US',
         StaticWebPath        => '/mt-static/',
         StaticFilePath       => 'TEST_ROOT/mt-static',
-        EmailAddressMain     => 'mt@localhost',
+        EmailAddressMain     => 'mt@localhost.localdomain',
         WeblogTemplatesPath  => 'MT_HOME/default_templates',
         ImageDriver          => $image_driver,
         MTVersion            => MT->version_number,
