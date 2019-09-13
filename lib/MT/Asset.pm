@@ -821,15 +821,13 @@ sub remove {
 
         # remove children.
         my $class = ref $asset;
-        my $iter  = __PACKAGE__->load_iter(
+        my @parents = __PACKAGE__->load(
             { parent => $asset->id, class => '*' } );
-        while ( my $a = $iter->() ) {
-            $a->remove;
-        }
+        $_->remove for @parents;
 
         # Remove MT::ObjectAsset records
         $class = MT->model('objectasset');
-        $iter = $class->load_iter( { asset_id => $asset->id } );
+        my $iter = $class->load_iter( { asset_id => $asset->id } );
         while ( my $o = $iter->() ) {
             $o->remove;
         }
