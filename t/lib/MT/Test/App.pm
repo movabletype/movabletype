@@ -86,7 +86,6 @@ sub request {
     no warnings 'redefine';
     local *MT::App::login = $login if $login;
 
-    $app->config->MailTransfer('debug');
     $app->run;
 
     my $out = delete $app->{__test_output};
