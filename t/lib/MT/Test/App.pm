@@ -9,12 +9,12 @@ use HTTP::Response;
 use URI;
 use URI::QueryParam;
 
-my $Initialized;
+my %Initialized;
 
 sub init {
     my ( $class, $app_class ) = @_;
 
-    return if $Initialized;
+    return if $Initialized{$app_class};
 
     eval "require $app_class; 1;" or die "Can't load $app_class";
 
@@ -36,7 +36,7 @@ sub init {
             $app->{__test_output} .= join( '', @_ );
         };
     }
-    $Initialized = 1;
+    $Initialized{$app_class} = 1;
 }
 
 sub new {
@@ -45,7 +45,7 @@ sub new {
 
     $args{app_class} ||= $ENV{MT_APP} || 'MT::App';
 
-    $class->init( $args{app_class} ) unless $Initialized;
+    $class->init( $args{app_class} );
 
     bless \%args, $class;
 }
