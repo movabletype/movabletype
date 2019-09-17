@@ -8,8 +8,7 @@
 
 use strict;
 
-use lib './lib';
-use lib './extlib';
+use lib ( './', './lib', './extlib' );
 $| = 1;
 
 use Getopt::Long;
