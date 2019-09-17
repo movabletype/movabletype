@@ -138,6 +138,9 @@ sub login_form {
         return $app->errtrans("Invalid request");
     }
 
+    ## XXX: return_url may contain an invalid url, but it's not exposed here (until do_login)
+    ## return $app->errtrans("Invalid request") unless $app->is_valid_redirect_target;
+
     my $param = {
         blog_id    => ( $app->param('blog_id')    || 0 ),
         static     => ( $app->param('static')     || '' ),
@@ -347,6 +350,9 @@ sub signup {
     my $app = shift;
     my %opt = @_;
 
+    ## XXX: return_url may contain an invalid url, but it's not exposed here (until do_signup)
+    ## return $app->errtrans("Invalid request") unless $app->is_valid_redirect_target;
+
     my $param = {};
     $param->{$_} = $app->param($_)
         foreach qw(blog_id entry_id static username return_url );
@@ -376,6 +382,9 @@ sub do_signup {
 
     return $app->error( $app->translate("Invalid request") )
         if $app->request_method() ne 'POST';
+
+    return $app->errtrans("Invalid request")
+        unless $app->is_valid_redirect_target;
 
     my $param = {};
     $param->{$_} = $q->param($_)
@@ -1077,6 +1086,8 @@ sub post {
         else {
             $static =~ s/[\r\n].*$//s;
             $comment_link = $static . '#comment-' . $comment->id;
+            return $app->errtrans("Invalid request")
+                unless $app->is_valid_redirect_target;
         }
     }
 
@@ -1860,14 +1871,18 @@ sub do_preview {
             );
         }
         else {
+            my $return_url = $app->param('return_url') || '';
+            return $app->errtrans("Invalid request")
+                unless $app->is_valid_redirect_target($return_url);
+
             $ctx->stash( 'error_message', $err );
             $tmpl->context($ctx);
             $tmpl->param(
                 {   'body_class'                => 'mt-comment-error',
                     'comment_response_template' => 1,
                     'comment_error'             => 1,
-                    'return_to'       => $app->param('return_url') || '',
-                    'system_template' => 1
+                    'return_to'                 => $return_url,
+                    'system_template'           => 1
                 }
             );
         }
@@ -1929,8 +1944,10 @@ sub edit_commenter_profile {
             $url = $entry->permalink;
         }
         else {
-            $url = is_valid_url( $app->param('static')
-                    || $app->param('return_url') );
+            $url = $app->param('static') || $app->param('return_url');
+            $url = is_valid_url($url);
+            return $app->errtrans("Invalid request")
+                if $url && !$app->is_valid_redirect_target($url);
         }
 
         my $blog_id = $app->param('blog_id');
@@ -1975,6 +1992,9 @@ sub save_commenter_profile {
 
     my %param = map { $_ => scalar( $q->param($_) ) }
         qw( name nickname email password pass_verify url entry_url return_url external_auth blog_id );
+    return $app->errtrans("Invalid request")
+        unless $app->is_valid_redirect_target;
+
     $param{blog_id} =~ s/\D//g if defined $param{blog_id};
 
     $param{ 'auth_mode_' . $cmntr->auth_type } = 1;
