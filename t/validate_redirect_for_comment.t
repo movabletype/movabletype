@@ -60,7 +60,7 @@ sub _login_as_commenter {
 
     $app->login($user);
 
-    my $session = MT::App::make_session($melody);
+    my $session = MT::App::make_session($user);
     $app->{session} = $session->id;
 
     my $mock = Test::MockModule->new('MT::App');
