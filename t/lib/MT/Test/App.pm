@@ -92,17 +92,17 @@ sub request {
     my $res = HTTP::Response->parse($out);
 
     # redirect?
-    my $redirect;
+    my $location;
     if ( $res->code =~ /^30/ ) {
-        $redirect = $res->headers->header('Location');
+        $location = $res->headers->header('Location');
     }
     elsif ( $res->decoded_content =~ /window\.location\s*=\s*(['"])(\S+)\1/ )
     {
-        $redirect = $2;
+        $location = $2;
     }
-    if ($redirect) {
-        Test::More::note "REDIRECTING TO $redirect";
-        my $uri    = URI->new($redirect);
+    if ( $location && !$self->{no_redirect} ) {
+        Test::More::note "REDIRECTING TO $location";
+        my $uri    = URI->new($location);
         my $params = $uri->query_form_hash;
 
         $self->_clear_cache;
