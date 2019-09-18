@@ -920,9 +920,9 @@ ms@^2.1.1:
     form-data "~0.0.10"
     xmlhttprequest "git://github.com/usualoma/node-XMLHttpRequest.git"
 
-"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git#fix/MTC-26598":
+"mt7-style-guide@git+ssh://git@github.com:movabletype/mt7-style-guide.git":
   version "1.0.0"
-  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#022efb33c15e1ccce45538f40865498cac498662"
+  resolved "git+ssh://git@github.com:movabletype/mt7-style-guide.git#a587238d72b622850ec31d0770f7c7ea7b019ec4"
   dependencies:
     bootstrap "^4.0.0"
     winston "^2.3.1"
