@@ -661,9 +661,10 @@ sub save_fixture {
     close $fh;
 }
 
-sub _cut_created_on {
+sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
     $schema;
 }
 
@@ -681,7 +682,7 @@ sub test_schema {
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_cut_created_on($generated_schema) eq _cut_created_on($saved_schema) )
+    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
     {
         pass "schema is up-to-date";
     }
