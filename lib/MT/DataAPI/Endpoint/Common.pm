@@ -193,7 +193,9 @@ sub query_parser {
     [ grep $_, ( $_[0] =~ /\s*"([^"]+)"|\s*([^"\s]+)|\s*"([^"]+)/sg ) ];
 }
 
-sub query_builder { return sub { _query_builder(@_) } }
+sub query_builder {
+    return sub { _query_builder(@_) }
+}
 
 sub _query_builder {
     my ( $app, $search, $fields, $filter ) = @_;
@@ -353,9 +355,10 @@ sub filtered_list {
             } split ',', $specified;
         }
 
-        if (!$query_builder) {
+        if ( !$query_builder ) {
             my $handler
-                = $app->registry( 'applications', 'data_api', 'query_builder' );
+                = $app->registry( 'applications', 'data_api',
+                'query_builder' );
             if ( ref $handler eq 'ARRAY' ) {
                 $handler = $handler->[$#$handler];
             }
@@ -490,6 +493,8 @@ sub filtered_list {
 
     my $limit  = $q->param('limit')  || 50;
     my $offset = $q->param('offset') || 0;
+
+    return unless $app->has_valid_limit_and_offset( $limit, $offset );
 
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
