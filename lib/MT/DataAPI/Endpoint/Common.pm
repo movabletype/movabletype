@@ -487,6 +487,8 @@ sub filtered_list {
     my $limit  = $q->param('limit')  || 50;
     my $offset = $q->param('offset') || 0;
 
+    return unless $app->has_valid_limit_and_offset( $limit, $offset );
+
     ## FIXME: take identifical column from column defs.
     my $cols = defined( $q->param('columns') ) ? $q->param('columns') : '';
     my @cols = ( '__id', grep {/^[^\.]+$/} split( ',', $cols ) );
