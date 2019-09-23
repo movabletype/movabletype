@@ -628,7 +628,8 @@ sub preview_handler {
               <div class="mt-user">
                 <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">
                 <div class="mt-user__badge--warning">
-                  <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
+                  <svg class="mt-icon--inverse mt-icon--sm">
+                    <title>Warning</title>
                     <use xlink:href="${static_uri}images/sprite.svg#ic_error">
                   </svg>
                 </div>
@@ -657,4 +658,3 @@ sub site_data_import_handler {
 }
 
 1;
-

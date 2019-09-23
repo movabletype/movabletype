@@ -83,7 +83,8 @@ sub list_props {
                 return qq{
                                     <a href="$edit_link">$name</a>
                                     <span class="target-type $type">
-                                        <svg title="$type" role="img" class="mt-icon mt-icon--sm">
+                                        <svg role="img" class="mt-icon mt-icon--sm">
+                                            <title>$type</title>
                                             <use xlink:href="${static_uri}images/sprite.svg#$icon_type">
                                         </svg>
                                     </span>

@@ -581,7 +581,8 @@ sub _bulk_author_name_html {
                 </div>
                 <div class="col pl-4">
                      <span class="icon status $status_label">
-                         <svg title="$translated_status_label" role="img" class="mt-icon mt-icon--sm">
+                         <svg role="img" class="mt-icon mt-icon--sm">
+                             <title>$translated_status_label</title>
                              <use xlink:href="${static_uri}images/sprite.svg#ic_user">
                          </svg>
                      </span>
@@ -610,7 +611,8 @@ sub _bulk_author_name_html {
             if ($email) {
                 $out .= qq{
                     <li class="user-info-item user-email">
-                        <svg title="Mail" role="img" class="mt-icon mt-icon--sm">
+                        <svg role="img" class="mt-icon mt-icon--sm">
+                            <title>Mail</title>
                             <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
                         </svg>
                         <a href="mailto:$email" title="$email">$email</a>
@@ -620,7 +622,8 @@ sub _bulk_author_name_html {
             if ($url) {
                 $out .= qq{
                     <li class="user-info-item user-url">
-                        <svg title="Website" role="img" class="mt-icon mt-icon--sm">
+                        <svg role="img" class="mt-icon mt-icon--sm">
+                            <title>Website</title>
                             <use xlink:href="${static_uri}images/sprite.svg#ic_link">
                         </svg>
                         <a href="$url" title="$url">$url</a>

@@ -268,7 +268,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       <div class="mt-collapse__container align-items-center">
         <div class="col">
     <mt:if name="plugin_disabled">
-          <svg title="Disabled" role="img" class="mt-icon mt-pluginpanel__icon">
+          <svg role="img" class="mt-icon mt-pluginpanel__icon">
+            <title>Disabled</title>
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty" />
           </svg>
           <span class="plugin-name-disabled text-muted">
@@ -280,7 +281,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             </mt:if>
           </span>
     <mt:else>
-          <svg title="Enabled" role="img" class="mt-icon--secondary mt-pluginpanel__icon">
+          <svg role="img" class="mt-icon--secondary mt-pluginpanel__icon">
+            <title>Enabled</title>
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_plugin" />
           </svg>
           <a id="plugin-<mt:var name="plugin_id" escape="html">" data-toggle="collapse" href="#collapse-plugin-<mt:var name="plugin_id" escape="html">-content" aria-expanded="false" aria-controls="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
@@ -314,7 +316,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             </a>
           <mt:else>
             <span class="text-muted icon-left icon-neutral">
-              <svg title="<__trans phrase="Disabled">" role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
+              <svg role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
+                <title><__trans phrase="Disabled"></title>
                 <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove" />
               </svg>
               <__trans phrase="Disabled">

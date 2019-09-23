@@ -63,7 +63,8 @@ sub status_icon {
     my $static_uri              = MT->static_path;
     return '' unless $status_icon_id;
     return qq{
-        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+        <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+          <title>$status_class</title>
           <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
         </svg>
     };
@@ -256,4 +257,3 @@ Returns UNPUBLISH (6)
 Please see the L<MT> manpage for author, copyright, and license information.
 
 =cut
-

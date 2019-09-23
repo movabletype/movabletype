@@ -479,8 +479,8 @@ sub preview_handler {
 
         my $icon
             = $is_primary
-            ? qq{<svg title="Primary" role="img" class="mt-icon--success mt-icon--sm"><use xlink:href="${static_uri}images/sprite.svg#ic_fav"></svg>}
-            : qq{<svg title="Blank" role="img" class="mt-icon mt-icon--sm"><use xlink:href="${static_uri}images/sprite.svg#ic_blank"></svg>};
+            ? qq{<svg role="img" class="mt-icon--success mt-icon--sm"><title>Primary</title><use xlink:href="${static_uri}images/sprite.svg#ic_fav"></svg>}
+            : qq{<svg role="img" class="mt-icon mt-icon--sm"><title>Blank</title><use xlink:href="${static_uri}images/sprite.svg#ic_blank"></svg>};
 
         $contents .= "<li>$icon&nbsp;$encoded_label (ID:$id)</li>";
         $is_primary = 0;
