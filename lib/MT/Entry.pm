@@ -292,7 +292,7 @@ sub list_props {
                     $status_img = qq{
                         <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
                             <title>$status_class</title>
-                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
                         </svg>
                     };
                 }
@@ -307,7 +307,7 @@ sub list_props {
                       <a href="$permalink" class="d-inline-block" target="_blank">
                         <svg role="img" class="mt-icon mt-icon--sm">
                           <title>$view_link_text</title>
-                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink"></use>
                         </svg>
                       </a>
                     </span>

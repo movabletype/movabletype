@@ -630,7 +630,7 @@ sub preview_handler {
                 <div class="mt-user__badge--warning">
                   <svg class="mt-icon--inverse mt-icon--sm">
                     <title>Warning</title>
-                    <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                    <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
                   </svg>
                 </div>
               </div>

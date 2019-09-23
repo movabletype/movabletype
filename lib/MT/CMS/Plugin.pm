@@ -211,7 +211,7 @@ sub build_plugin_table {
         $icon = qq{
             <svg role="img" class="mt-icon">
                 <title>$icon_title</title>
-                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin">
+                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin"></use>
             </svg>
         };
 

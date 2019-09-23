@@ -583,7 +583,7 @@ sub _bulk_author_name_html {
                      <span class="icon status $status_label">
                          <svg role="img" class="mt-icon mt-icon--sm">
                              <title>$translated_status_label</title>
-                             <use xlink:href="${static_uri}images/sprite.svg#ic_user">
+                             <use xlink:href="${static_uri}images/sprite.svg#ic_user"></use>
                          </svg>
                      </span>
         };
@@ -613,7 +613,7 @@ sub _bulk_author_name_html {
                     <li class="user-info-item user-email">
                         <svg role="img" class="mt-icon mt-icon--sm">
                             <title>Mail</title>
-                            <use xlink:href="${static_uri}images/sprite.svg#ic_mail">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_mail"></use>
                         </svg>
                         <a href="mailto:$email" title="$email">$email</a>
                     </li>
@@ -624,7 +624,7 @@ sub _bulk_author_name_html {
                     <li class="user-info-item user-url">
                         <svg role="img" class="mt-icon mt-icon--sm">
                             <title>Website</title>
-                            <use xlink:href="${static_uri}images/sprite.svg#ic_link">
+                            <use xlink:href="${static_uri}images/sprite.svg#ic_link"></use>
                         </svg>
                         <a href="$url" title="$url">$url</a>
                     </li>

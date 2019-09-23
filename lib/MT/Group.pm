@@ -404,7 +404,7 @@ sub list_props {
                       <span class="status $status">
                           <svg role="img" class="mt-icon mt-icon--sm">
                               <title>$status_label</title>
-                              <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                              <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                           </svg>
                       </span>
                       <span class="groupname">
@@ -419,7 +419,7 @@ sub list_props {
                       <span class="status $status">
                           <svg role="img" class="mt-icon mt-icon--sm">
                               <title>$status</title>
-                              <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                              <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                           </svg>
                       </span>
                       <span class="groupname">
@@ -643,7 +643,7 @@ sub member_list_props {
                         <span class="status $status">
                             <svg role="img" class="mt-icon mt-icon--sm">
                                 <title>group</title>
-                                <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                             </svg>
                         </span>
                         <span class="groupname">

@@ -85,7 +85,7 @@ sub list_props {
                                     <span class="target-type $type">
                                         <svg role="img" class="mt-icon mt-icon--sm">
                                             <title>$type</title>
-                                            <use xlink:href="${static_uri}images/sprite.svg#$icon_type">
+                                            <use xlink:href="${static_uri}images/sprite.svg#$icon_type"></use>
                                         </svg>
                                     </span>
                                 };
