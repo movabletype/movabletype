@@ -8,6 +8,7 @@ use File::Spec;
 use HTTP::Response;
 use URI;
 use URI::QueryParam;
+use Test::More;
 
 my %Initialized;
 
@@ -94,12 +95,14 @@ sub request {
     my $out = delete $app->{__test_output};
     my $res = HTTP::Response->parse($out);
 
+    $self->{content} = $res->decoded_content // '';
+
     # redirect?
     my $location;
     if ( $res->code =~ /^30/ ) {
         $location = $res->headers->header('Location');
     }
-    elsif ( $res->decoded_content =~ /window\.location\s*=\s*(['"])(\S+)\1/ ) {
+    elsif ( $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/ ) {
         $location = $2;
     }
     if ( $location && !$self->{no_redirect} ) {
@@ -153,7 +156,7 @@ sub _create_cgi_object {
             my ( $key, $src ) = @$v;
             require CGI::File::Temp;
             my $fh = CGI::File::Temp->new( UNLINK => 1 )
-              or die "CGI::File::Temp: $!";
+                or die "CGI::File::Temp: $!";
             my $basename = basename($src);
             if ( $^O eq 'MSWin32' ) {
                 require Encode;
@@ -181,6 +184,37 @@ sub _clear_cache {
     my $self = shift;
     MT::Object->driver->clear_cache;
     MT->instance->request->reset;
+}
+
+sub status_is {
+    my ( $self, $code ) = @_;
+    is $self->{res}->code, $code, "status is $code";
+}
+
+sub status_isnt {
+    my ( $self, $code ) = @_;
+    isnt $self->{res}->code, $code, "status isn't $code";
+}
+
+sub content { shift->{content} // '' }
+
+sub content_like {
+    my ( $self, $pattern ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->content =~ /$pattern/, "content contains $pattern";
+}
+
+sub content_unlike {
+    my ( $self, $pattern ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->content !~ /$pattern/, "content doesn't contain $pattern";
+}
+
+sub content_doesnt_expose {
+    my ( $self, $url ) = @_;
+    ok $self->content
+        !~ /(<(a|form|meta|link|img|script)\s[^>]+\Q$url\E[^>]+>)/s
+        or note "$url is exposed as $1";
 }
 
 1;
