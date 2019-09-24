@@ -6,7 +6,8 @@ use FindBin;
 use lib "$FindBin::Bin/lib"; # t/lib
 use Test::More;
 
-use MT::Test qw/:app :db :data/;
+use MT::Test qw/:db :data/;
+use MT::Test::App;
 
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
@@ -15,158 +16,184 @@ my $admin = MT::Author->load(1);
 $admin->email('test@localhost.localdomain');
 $admin->save;
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'start_recover',
+sub _contains {
+    my ( $html, $str ) = @_;
+    ok $html =~ /\Q$str\E/, "contains $str";
+}
+
+sub _doesnt_contain {
+    my ( $html, $str ) = @_;
+    ok $html !~ /\Q$str\E/, "doesn't contain $str";
+}
+
+sub _bad_url_isnt_exposed {
+    my ( $html, $url ) = @_;
+    ok $html !~ qr/(<(a|form|meta)\s[^>]+\Q$url\E[^>]+>)/s
+        or note "$url is exposed as $1";
+}
+
+subtest 'invalid start_recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'start_recover',
             return_to => 'http://foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at start_recover';
-    unlike $out => qr!"http://foo"!, 'no invalid return_to link';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _doesnt_contain( $html, 'Reset Password' );
+    _contains( $html, 'Invalid request' );
+    _bad_url_isnt_exposed( $html, 'http://foo' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'start_recover',
+subtest 'valid start_recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'start_recover',
             return_to => 'http://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not an invalid request at start_recover';
-    like $out => qr!value="http://narnia.na"!, 'valid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Reset Password' );
+    _doesnt_contain( $html, 'Invalid request' );
+    _contains( $html, 'http://narnia.na' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at recover';
-    unlike $out => qr!href="http://foo"!, 'no invalid return_to link';
-    unlike $out => qr!"http://foo"!, 'no invalid return_to link';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Invalid request' );
+    _doesnt_contain( $html, 'Reset Password' );
+    _doesnt_contain( $html, 'http://foo' );
+    _bad_url_isnt_exposed( $html, 'http://foo' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="http://narnia.na"!, 'valid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _doesnt_contain( $html, 'Invalid request' );
+    _contains( $html, 'Reset Password' );
+    _contains( $html, 'http://narnia.na' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover with userinfo' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo:bar@narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="http://foo:bar\@narnia.na"!, 'valid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _doesnt_contain( $html, 'Invalid request' );
+    _contains( $html, 'Reset Password' );
+    _contains( $html ,'http://foo:bar@narnia.na' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover with userinfo' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo:bar@foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href="http://foo:bar\@foo"!, 'no invalid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Invalid request' );
+    _doesnt_contain( $html, 'Reset Password' );
+    _doesnt_contain( $html, 'http://foo:bar@foo' );
+    _bad_url_isnt_exposed( $html, 'http://foo:bar@foo' );
+};
 
-{   ## relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '/path',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="/path"!, 'valid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _doesnt_contain( $html, 'Invalid request' );
+    _contains( $html, '/path' );
+    _contains( $html, 'Reset Password' );
+};
 
-{   ## absolute without scheme
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover without scheme' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '//narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="//narnia.na"!, 'valid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _doesnt_contain( $html, 'Invalid request' );
+    _contains( $html, '//narnia.na' );
+    _contains( $html, 'Reset Password' );
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover without scheme' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '//foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at recover';
-    unlike $out => qr!href="http://foo"!, 'no invalid return_to link';
-    unlike $out => qr!"//foo"!, 'no invalid return_to link';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Invalid request' );
+    _doesnt_contain( $html, '//foo' );
+    _bad_url_isnt_exposed( $html, '//foo' );
+};
 
-{   ## weird uri that URI module happens to consider relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'weird uri that URI module happens to consider relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => ':@',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href=":\@"!, 'no invalid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Invalid request' );
+    _doesnt_contain( $html, ':@' );
+    _bad_url_isnt_exposed( $html, ':@' );
+};
 
-{   ## weird uri that URI module happens to consider relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'weird uri that URI module happens to consider relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    my $res = $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href="://narnia.na"!, 'no invalid return_to';
-}
+    is $res->code => 200;
+    my $html = $res->decoded_content;
+    _contains( $html, 'Invalid request' );
+    _doesnt_contain( $html, '://narnia.na' );
+};
 
 done_testing;
