@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -39,22 +39,6 @@ sub _new_commenter {
     MT::Test::Permission->make_author(@_);
 }
 
-sub _contains {
-    my ( $html, $str ) = @_;
-    ok $html =~ /\Q$str\E/, "contains $str";
-}
-
-sub _doesnt_contain {
-    my ( $html, $str ) = @_;
-    ok $html !~ /\Q$str\E/, "doesn't contain $str";
-}
-
-sub _bad_url_isnt_exposed {
-    my $html = shift;
-    ok $html !~ qr/(<(a|form|meta)\s[^>]+$BAD_URL[^>]+>)/s
-        or note "BAD_URL is exposed as $1";
-}
-
 sub _login_as_commenter {
     my ( $app, $user ) = @_;
 
@@ -89,12 +73,11 @@ subtest 'valid post' => sub {
             text     => 'Comment Text',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'Confirmation' );
-    _contains( $html, 'Your comment has been submitted' );
-    _doesnt_contain( $html, 'Comment Submission Error' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_like('Confirmation');
+    $app->content_like('Your comment has been submitted');
+    $app->content_unlike('Comment Submission Error');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL wasn't exposed in <a> if $blog is configured to use confirmation;
@@ -124,12 +107,11 @@ subtest 'invalid post' => sub {
     );
     is $res->code                          => 200;
     isnt $res->headers->header('Location') => $BAD_URL;
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'Confirmation' );
-    _doesnt_contain( $html, 'Your comment has been submitted' );
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->content_unlike('Confirmation');
+    $app->content_unlike('Your comment has been submitted');
+    $app->content_like('An error occurred');
+    $app->content_like('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 
     ## restore configuration
     $blog->use_comment_confirmation(1);
@@ -144,10 +126,9 @@ subtest 'valid login_form (get)' => sub {
             return_url => $GOOD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL wasn't exposed
@@ -159,12 +140,11 @@ subtest 'invalid login_form (get)' => sub {
             return_url => $BAD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
+    $app->status_is(200);
     ## XXX: should be an error?
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid login_form (post)' => sub {
@@ -178,13 +158,11 @@ subtest 'valid login_form (post)' => sub {
             password      => 'Nelson',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'http-equiv="refresh"' );    ## redirect
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
-    _doesnt_contain( $html,
-        'You are trying to redirect to external resources' );
+    $app->status_is(200);
+    $app->content_like('http-equiv="refresh"');    ## redirect
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_unlike('You are trying to redirect to external resources');
 };
 
 ## BAD_URL was exposed in an error message, but it was not clickable
@@ -200,11 +178,10 @@ subtest 'invalid login_form (post)' => sub {
             password      => 'Nelson',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'You are trying to redirect to external resources' );
-    _bad_url_isnt_exposed($html);
+    $app->status_is(200);
+    $app->content_like('An error occurred');
+    $app->content_like('You are trying to redirect to external resources');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid signup (get)' => sub {
@@ -215,10 +192,9 @@ subtest 'valid signup (get)' => sub {
             return_url => $GOOD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL wasn't exposed
@@ -230,12 +206,11 @@ subtest 'invalid signup (get)' => sub {
             return_url => $BAD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
+    $app->status_is(200);
     ## XXX: should be an error?
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid signup (post)' => sub {
@@ -253,12 +228,11 @@ subtest 'valid signup (post)' => sub {
             url           => '',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'Thanks for signing up' );
-    _contains( $html, 'To complete the registration process' );
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_like('Thanks for signing up');
+    $app->content_like('To complete the registration process');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL was exposed in <a>
@@ -277,11 +251,10 @@ subtest 'invalid signup (post)' => sub {
             url           => '',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->status_is(200);
+    $app->content_like('An error occurred');
+    $app->content_like('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid start_recover (get)' => sub {
@@ -291,10 +264,9 @@ subtest 'valid start_recover (get)' => sub {
             return_url => $GOOD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL wasn't exposed
@@ -305,12 +277,11 @@ subtest 'invalid start_recover (get)' => sub {
             return_url => $BAD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
+    $app->status_is(200);
     ## XXX: should be an error?
-    ## _contains( $html, 'An error occurred' );
-    ## _contains( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    ## $app->content_like( 'An error occurred' );
+    ## $app->content_like( 'Invalid request' );
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid edit_profile (get)' => sub {
@@ -324,11 +295,10 @@ subtest 'valid edit_profile (get)' => sub {
             return_url => $GOOD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'Your Profile' );
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_like('Your Profile');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL was exposed in <a>
@@ -343,13 +313,12 @@ subtest 'invalid edit_profile (get)' => sub {
             return_url => $BAD_URL,
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
+    $app->status_is(200);
     ## XXX: should be an error?
-    _doesnt_contain( $html, 'Your Profile' );
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->content_unlike('Your Profile');
+    $app->content_like('An error occurred');
+    $app->content_like('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid save_profile (post)' => sub {
@@ -371,12 +340,11 @@ subtest 'valid save_profile (post)' => sub {
             url         => '',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'Your Profile' );
-    _contains( $html, 'Commenter profile has successfully been updated.' );
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_like('Your Profile');
+    $app->content_like('Commenter profile has successfully been updated.');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 ## BAD_URL was exposed in <a>
@@ -399,14 +367,12 @@ subtest 'invalid save_profile (post)' => sub {
             url         => '',
         }
     );
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'Your Profile' );
-    _doesnt_contain( $html,
-        'Commenter profile has successfully been updated.' );
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'Invalid request' );
-    _bad_url_isnt_exposed($html);
+    $app->status_is(200);
+    $app->content_unlike('Your Profile');
+    $app->content_unlike('Commenter profile has successfully been updated.');
+    $app->content_like('An error occurred');
+    $app->content_like('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
 };
 
 subtest 'valid do_register (get)' => sub {
@@ -425,7 +391,7 @@ subtest 'valid do_register (get)' => sub {
             url           => '',
         }
     );
-    is $res->code => 200;
+    $app->status_is(200);
 
     ok my $session = MT::Session->load(
         {   kind  => 'CR',
@@ -441,12 +407,10 @@ subtest 'valid do_register (get)' => sub {
             static  => $GOOD_URL,
         }
     );
-    is $res->code => 200;
-
-    my $html = $res->decoded_content;
-    _contains( $html, 'Thanks for the confirmation.' );
-    _doesnt_contain( $html, 'An error occurred' );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_like('Thanks for the confirmation.');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
 };
 
 subtest 'invalid do_register (get)' => sub {
@@ -465,7 +429,7 @@ subtest 'invalid do_register (get)' => sub {
             url           => '',
         }
     );
-    is $res->code => 200;
+    $app->status_is(200);
 
     ok my $session = MT::Session->load(
         {   kind  => 'CR',
@@ -481,51 +445,49 @@ subtest 'invalid do_register (get)' => sub {
             static  => $BAD_URL,
         }
     );
-    is $res->code => 200;
-
-    my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'Thanks for the confirmation.' );
-    _contains( $html, 'An error occurred' );
-    _contains( $html, 'Invalid request' );
+    $app->status_is(200);
+    $app->content_unlike('Thanks for the confirmation.');
+    $app->content_like('An error occurred');
+    $app->content_like('Invalid request');
 };
 
 subtest 'valid reply (via dialog_post_comment) from CMS' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($melody);
 
-    my $comment = MT::Comment->load({blog_id => 1});
+    my $comment = MT::Comment->load( { blog_id => 1 } );
 
-    my $res = $app->post({
-        __mode => 'do_reply',
-        reply_to => $comment->id,
-        blog_id => 1,
-        return_url => $GOOD_URL,
-        'comment-reply' => 'my test reply',
-    });
-    is $res->code => 200;
-    my $html = $res->decoded_content;
+    my $res = $app->post(
+        {   __mode          => 'do_reply',
+            reply_to        => $comment->id,
+            blog_id         => 1,
+            return_url      => $GOOD_URL,
+            'comment-reply' => 'my test reply',
+        }
+    );
+    $app->status_is(200);
     ## the following changes window.top.location
-    _contains( $html, "jQuery\.fn\.mtDialog\.close('$GOOD_URL')" );
-    _doesnt_contain( $html, 'Invalid request' );
+    $app->content_like("jQuery\.fn\.mtDialog\.close('$GOOD_URL')");
+    $app->content_unlike('Invalid request');
 };
 
 subtest 'invalid reply (via dialog_post_comment) from CMS' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($melody);
 
-    my $comment = MT::Comment->load({blog_id => 1});
+    my $comment = MT::Comment->load( { blog_id => 1 } );
 
-    my $res = $app->post({
-        __mode => 'do_reply',
-        reply_to => $comment->id,
-        blog_id => 1,
-        return_url => $BAD_URL,
-        'comment-reply' => 'my test reply',
-    });
-    is $res->code => 200;
-    my $html = $res->decoded_content;
-    _contains( $html, 'Invalid request' );
-    _doesnt_contain( $html, "jQuery\.fn\.mtDialog\.close('$BAD_URL')" );
+    my $res = $app->post(
+        {   __mode          => 'do_reply',
+            reply_to        => $comment->id,
+            blog_id         => 1,
+            return_url      => $BAD_URL,
+            'comment-reply' => 'my test reply',
+        }
+    );
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike("jQuery\.fn\.mtDialog\.close('$BAD_URL')");
 };
 
 done_testing;
