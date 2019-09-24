@@ -11607,6 +11607,10 @@ fieldset.form-group {
   font-weight: normal;
 }
 
+.form-control, .mt-contentblock__textarea {
+  height: auto;
+}
+
 .form-control option, .mt-contentblock__textarea option {
   padding: 2px 4px;
 }
