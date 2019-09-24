@@ -106,11 +106,6 @@ sub start_recover {
         || $cfg->ReturnToURL
         || '';
 
-    if ( $param->{return_to} ) {
-        $app->is_valid_redirect_target( $param->{return_to} )
-            or return $app->errtrans("Invalid request.");
-    }
-
     if ( $param->{recovered} ) {
         $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
     }

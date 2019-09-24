@@ -46,8 +46,8 @@ subtest 'invalid start_recover' => sub {
     );
     is $res->code => 200;
     my $html = $res->decoded_content;
-    _doesnt_contain( $html, 'Reset Password' );
-    _contains( $html, 'Invalid request' );
+    _contains( $html, 'Reset Password' );
+    _doesnt_contain( $html, 'Invalid request' );
     _bad_url_isnt_exposed( $html, 'http://foo' );
 };
 
