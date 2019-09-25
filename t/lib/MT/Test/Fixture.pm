@@ -480,9 +480,12 @@ sub prepare_template {
             my %arg
                 = ref $item eq 'HASH' ? %$item : ( archive_type => $item );
             my $archive_type = delete $arg{archive_type};
-            my $archiver     = MT->publisher->archiver($archive_type)
-                or croak "unknown archive_type: $archive_type";
-            $arg{type} = _template_type($archive_type);
+            my $archiver;
+            if ($archive_type) {
+                $archiver = MT->publisher->archiver($archive_type)
+                    or croak "unknown archive_type: $archive_type";
+                $arg{type} = _template_type($archive_type);
+            }
             my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
                 or croak "blog_id is required: template: $arg{type}";
 
