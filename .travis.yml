@@ -32,7 +32,7 @@ script:
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.30" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora bash -c "$TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt --entrypoint='' movabletype/test:centos6 bash -c "$TEST_COMMAND"; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "rokocha" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:centos6 bash -c "$TEST_COMMAND"; fi
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ -z $PERL_VERSION ]; then $TEST_COMMAND; fi
 
