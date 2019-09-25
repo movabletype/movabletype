@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: movabletype/test:trusty
+      - image: movabletype/test:jessie
     steps:
       - checkout
       - run:
