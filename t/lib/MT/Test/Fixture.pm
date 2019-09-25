@@ -436,10 +436,7 @@ sub prepare_content_data {
                         "content_field is required: content_data: $cf_name";
                     my $cf_type = $cf->type;
                     my $cf_arg  = $arg{data}{$cf_name};
-                    if ( $cf_type =~ /date/ ) {
-                        $data{ $cf->id } = $cf_arg;
-                    }
-                    elsif ( $cf_type eq 'categories' ) {
+                    if ( $cf_type eq 'categories' ) {
                         my $set_id = $cf->related_cat_set_id;
                         my @sets   = values %{ $objs->{category_set} };
                         my ($set)
@@ -454,6 +451,9 @@ sub prepare_content_data {
                             push @cat_ids, $cat->id;
                         }
                         $data{ $cf->id } = \@cat_ids;
+                    }
+                    else {
+                        $data{ $cf->id } = $cf_arg;
                     }
                 }
                 $arg{data} = \%data;
