@@ -502,6 +502,13 @@ sub prepare_template {
 
             my $mapping = delete $arg{mapping};
 
+            ## Remove (to replace) if a template identifier is specified
+            if ( $arg{identifier} ) {
+                MT::Template->remove(
+                    { blog_id => $blog_id, identifier => $arg{identifier} },
+                    { nofetch => 1 } );
+            }
+
             my $tmpl = MT::Test::Permission->make_template(
                 blog_id => $blog_id,
                 %arg,
