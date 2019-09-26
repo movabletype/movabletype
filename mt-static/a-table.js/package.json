@@ -1,6 +1,6 @@
 {
   "name": "a-table",
-  "version": "1.5.4",
+  "version": "1.5.9",
   "main": "lib/index.js",
   "description": "Editable table library",
   "author": "appleple",
@@ -21,7 +21,7 @@
     "major": "npm run test && npm version major && npm run build:js && node ./tools/index.js"
   },
   "dependencies": {
-    "a-template": "^0.5.1",
+    "a-template": "^0.5.4",
     "clone": "^2.0.0",
     "custom-event-polyfill": "^0.3.0",
     "deep-extend": "^0.6.0",
@@ -41,7 +41,7 @@
     "eslint-config-airbnb": "^14.1.0",
     "eslint-plugin-import": "^2.2.0",
     "fs-extra": "^2.1.2",
-    "http-server": "^0.9.0",
+    "http-server": "^0.11.1",
     "licensify": "^3.1.2",
     "mocha": "^3.3.0",
     "nightmare": "^2.8.1",

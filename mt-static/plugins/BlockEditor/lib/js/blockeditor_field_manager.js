@@ -103,7 +103,7 @@
                     var icon = field.get_icon();
                     var label = field.get_label();
                     var sorter = $('<div id="draggable-' + field_id + '" class="mt-draggable sort-enabled" draggable="true" aria-grabbed="false">');
-                    sorter.append('<div class="col-auto mt-ic_move"><svg title="' + trans('Move') + '" role="img" class="mt-icon"><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_move" /></svg></div>');
+                    sorter.append('<div class="col-auto mt-ic_move"><svg role="img" class="mt-icon"><title>' + trans('Move') + '</title><use xlink:href="' + StaticURI + 'images/sprite.svg#ic_move" /></svg></div>');
                     sorter.append('<div class="col">' + icon + label + '</div></div>');
                     sorter.append('<div class="block-field"></div>');
                     $('#contentblock-' + field_id + '-wrapper').before(sorter);

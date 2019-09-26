@@ -402,8 +402,9 @@ sub list_props {
                 if ( $app->can_do('edit_groups') ) {
                     return qq{
                       <span class="status $status">
-                          <svg title="$status_label" role="img" class="mt-icon mt-icon--sm">
-                              <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                          <svg role="img" class="mt-icon mt-icon--sm">
+                              <title>$status_label</title>
+                              <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                           </svg>
                       </span>
                       <span class="groupname">
@@ -416,8 +417,9 @@ sub list_props {
                 else {
                     return qq{
                       <span class="status $status">
-                          <svg title="$status" role="img" class="mt-icon mt-icon--sm">
-                              <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                          <svg role="img" class="mt-icon mt-icon--sm">
+                              <title>$status</title>
+                              <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                           </svg>
                       </span>
                       <span class="groupname">
@@ -639,8 +641,9 @@ sub member_list_props {
                 my $static_uri = $app->static_path;
                 return qq{
                         <span class="status $status">
-                            <svg title="group" role="img" class="mt-icon mt-icon--sm">
-                                <use xlink:href="${static_uri}images/sprite.svg#ic_member">
+                            <svg role="img" class="mt-icon mt-icon--sm">
+                                <title>group</title>
+                                <use xlink:href="${static_uri}images/sprite.svg#ic_member"></use>
                             </svg>
                         </span>
                         <span class="groupname">

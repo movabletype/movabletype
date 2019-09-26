@@ -4,13 +4,13 @@
     $.extend(BEF.Image, {
         label: trans('image'),
         icon_url: StaticURI + 'images/sprite.svg#ic_image',
-        icon: '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>',
+        icon: '<svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + this.icon_url + '"></use></svg>',
         type: 'image',
         create_button: function () {
           return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
         get_icon: function(){
-            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+            return '<svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + this.icon_url + '"></use></svg>';
         }
     });
     $.extend(BEF.Image.prototype, BEF.prototype, {

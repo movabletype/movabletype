@@ -3,18 +3,18 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 $test_env->prepare_fixture('db_data');
 
@@ -22,158 +22,157 @@ my $admin = MT::Author->load(1);
 $admin->email('test@localhost.localdomain');
 $admin->save;
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'start_recover',
+subtest 'invalid start_recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'start_recover',
             return_to => 'http://foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at start_recover';
-    unlike $out => qr!"http://foo"!, 'no invalid return_to link';
-}
+    $app->status_is(200);
+    $app->content_like('Reset Password');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose('http://foo');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'start_recover',
+subtest 'valid start_recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'start_recover',
             return_to => 'http://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not an invalid request at start_recover';
-    like $out => qr!value="http://narnia.na"!, 'valid return_to';
-}
+    $app->status_is(200);
+    $app->content_like('Reset Password');
+    $app->content_unlike('Invalid request');
+    $app->content_like('http://narnia.na');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at recover';
-    unlike $out => qr!href="http://foo"!, 'no invalid return_to link';
-    unlike $out => qr!"http://foo"!, 'no invalid return_to link';
-}
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike('Reset Password');
+    $app->content_unlike('http://foo');
+    $app->content_doesnt_expose('http://foo');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="http://narnia.na"!, 'valid return_to';
-}
+    $app->status_is(200);
+    $app->content_unlike('Invalid request');
+    $app->content_like('Reset Password');
+    $app->content_like('http://narnia.na');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover with userinfo' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo:bar@narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="http://foo:bar\@narnia.na"!, 'valid return_to';
-}
+    $app->status_is(200);
+    $app->content_unlike('Invalid request');
+    $app->content_like('Reset Password');
+    $app->content_like('http://foo:bar@narnia.na');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover with userinfo' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => 'http://foo:bar@foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href="http://foo:bar\@foo"!, 'no invalid return_to';
-}
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike('Reset Password');
+    $app->content_unlike('http://foo:bar@foo');
+    $app->content_doesnt_expose('http://foo:bar@foo');
+};
 
-{   ## relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '/path',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="/path"!, 'valid return_to';
-}
+    $app->status_is(200);
+    $app->content_unlike('Invalid request');
+    $app->content_like('/path');
+    $app->content_like('Reset Password');
+};
 
-{   ## absolute without scheme
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'valid recover without scheme' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '//narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    unlike $out => qr!Invalid request!, 'not invalid request';
-    like $out => qr!href="//narnia.na"!, 'valid return_to';
-}
+    $app->status_is(200);
+    $app->content_unlike('Invalid request');
+    $app->content_like('//narnia.na');
+    $app->content_like('Reset Password');
+};
 
-{
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'invalid recover without scheme' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '//foo',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request at recover';
-    unlike $out => qr!href="http://foo"!, 'no invalid return_to link';
-    unlike $out => qr!"//foo"!, 'no invalid return_to link';
-}
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike('//foo');
+    $app->content_doesnt_expose('//foo');
+};
 
-{   ## weird uri that URI module happens to consider relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'weird uri that URI module happens to consider relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => ':@',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href=":\@"!, 'no invalid return_to';
-}
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike(':@');
+    $app->content_doesnt_expose(':@');
+};
 
-{   ## weird uri that URI module happens to consider relative
-    my $app = _run_app(
-        'MT::App::CMS',
-        {
-            __mode => 'recover',
-            email => $admin->email,
+subtest 'weird uri that URI module happens to consider relative' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
             return_to => '://narnia.na',
         },
     );
-    my $out = delete $app->{__test_output};
-    like $out => qr!Invalid request!, 'invalid request';
-    unlike $out => qr!href="://narnia.na"!, 'no invalid return_to';
-}
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike('://narnia.na');
+};
 
 done_testing;

@@ -106,11 +106,6 @@ sub start_recover {
         || $cfg->ReturnToURL
         || '';
 
-    if ( $param->{return_to} ) {
-        $app->is_valid_redirect_target( $param->{return_to} )
-            or return $app->errtrans("Invalid request.");
-    }
-
     if ( $param->{recovered} ) {
         $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
     }
@@ -173,6 +168,12 @@ sub recover_password {
     }
     $user = pop @authors;
 
+    my $return_to = $app->param('return_to');
+    if ($return_to) {
+        $app->is_valid_redirect_target($return_to)
+            or return $app->errtrans("Invalid request.");
+    }
+
     MT::Util::start_background_task(
         sub {
 
@@ -184,10 +185,6 @@ sub recover_password {
                 $salt . $expires . $app->config->SecretToken );
 
             my $return_to = $app->param('return_to');
-            if ($return_to) {
-                $app->is_valid_redirect_target($return_to)
-                    or return $app->errtrans("Invalid request.");
-            }
 
             $user->password_reset($salt);
             $user->password_reset_expires($expires);

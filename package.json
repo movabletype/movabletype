@@ -50,7 +50,7 @@
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
     "popper.js": "^1.12.1",
-    "riot": "^3.6.1",
+    "riot": "3.7.4",
     "svg4everybody": "^2.1.9"
   }
 }

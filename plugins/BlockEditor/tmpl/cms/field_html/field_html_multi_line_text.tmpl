@@ -2,7 +2,7 @@
 <div class="form-group">
   <div class="row no-gutters align-items-center">
     <div class="col">
-      <ul class="nav nav-tabs d-flex mb-3" role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
+      <ul class="nav nav-tabs d-flex mb-3" data-role="tablist" id=blockeidor_menus-<mt:var name="content_field_id">>
         <mt:if name="options{label}"><li class="mr-auto"><label for="contentblock1"><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label></li></mt:if>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link active" href="#prev"><__trans phrase="Preview"></a></li>
         <li class="nav-item" <mt:if name="convert_breaks" ne="blockeditor">hidden</mt:if>><a class="nav-link" href="#sort"><__trans phrase="Sort"></a></li>
@@ -38,7 +38,7 @@
       <p class="text-center mb-0" hidden><__trans phrase="No block in this field."></p>
     </div>
     <div id="blockeditor_add-<mt:var name="content_field_id">" class="pt-3" hidden>
-      <a href="javascript:void(0)" class="mt-contentblock__add"><svg title="追加" role="img" class="mt-icon"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
+      <a href="javascript:void(0)" class="mt-contentblock__add"><svg role="img" class="mt-icon"><title><__trans phrase="Add"></title><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_add"></use></svg></a>
     </div>
   </div>
 </div>
@@ -48,8 +48,8 @@
 
 <input type="hidden" name="block_editor_data" id="block_editor_data" value="">
 
-<div class="modal modal-blockeditor" role="dialog" aria-labelledby="exampleModal" aria-hidden="true" >
- <div class="modal-dialog modal-lg" role="document">
+<div class="modal modal-blockeditor" data-role="dialog" aria-labelledby="exampleModal" aria-hidden="true" >
+ <div class="modal-dialog modal-lg" data-role="document">
    <div class="modal-content">
      <div class="modal-header">
        <h4 class="modal-title"></h4>

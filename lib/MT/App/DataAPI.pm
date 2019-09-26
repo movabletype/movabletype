@@ -3351,7 +3351,7 @@ sub show_error {
 
     if ( !$error ) {
         $error = {
-            code    => $param->{status} || 500,
+            code => $param->{status} || 500,
             message => $param->{error},
         };
     }
@@ -3508,6 +3508,27 @@ sub api {
     else {
         $response;
     }
+}
+
+sub has_valid_limit_and_offset {
+    my ($app) = shift;
+    my ( $limit, $offset ) = @_;
+
+    return $app->errtrans( '[_1] must be a number.', 'limit' )
+        if ( defined $limit && $limit !~ /\A[0-9]+\z/ );
+    return $app->errtrans( '[_1] must be a number.', 'offset' )
+        if ( defined $offset && $offset !~ /\A[0-9]+\z/ );
+
+    return $app->errtrans(
+        '[_1] must be an integer and between [_2] and [_3].',
+        'limit', 1, 2147483647 )
+        if ( defined $limit && ( $limit < 1 || $limit > 2147483647 ) );
+    return $app->errtrans(
+        '[_1] must be an integer and between [_2] and [_3].',
+        'offset', 0, 2147483647 )
+        if ( defined $offset && ( $offset < 0 || $offset > 2147483647 ) );
+
+    1;
 }
 
 # MT::App::CMS
