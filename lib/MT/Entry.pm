@@ -290,8 +290,9 @@ sub list_props {
                 if ($status_icon_id) {
                     my $static_uri = MT->static_path;
                     $status_img = qq{
-                        <svg title="$status_class" role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
-                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id">
+                        <svg role="img" class="mt-icon mt-icon--sm$status_icon_color_class">
+                            <title>$status_class</title>
+                            <use xlink:href="${static_uri}images/sprite.svg#$status_icon_id"></use>
                         </svg>
                     };
                 }
@@ -304,8 +305,9 @@ sub list_props {
                     ? qq{
                     <span class="view-link">
                       <a href="$permalink" class="d-inline-block" target="_blank">
-                        <svg title="$view_link_text" role="img" class="mt-icon mt-icon--sm">
-                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink">
+                        <svg role="img" class="mt-icon mt-icon--sm">
+                          <title>$view_link_text</title>
+                          <use xlink:href="${static_uri}images/sprite.svg#ic_permalink"></use>
                         </svg>
                       </a>
                     </span>

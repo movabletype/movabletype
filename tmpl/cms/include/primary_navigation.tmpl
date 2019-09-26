@@ -22,7 +22,8 @@
       <img src="<mt:var name="static_uri">images/user-default.svg" alt="" widht="32" height="32" class="mr-1">
   </mt:if>
       <mt:var name="user_screen_name">
-      <svg title="<__trans phrase="Open Panel">" role="img" class="mt-icon mt-user-control">
+      <svg role="img" class="mt-icon mt-user-control">
+        <title><__trans phrase="Open Panel"></title>
         <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open" />
       </svg>
     </button>
@@ -125,7 +126,7 @@ function stopPropagation(e) {
     </mt:if>
             <mt:var name="escaped_label">
           </a>
-          <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" role="tabpanel">
+          <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
             <ul class="mt-primaryNavigation__child">
     <mt:loop name="sub_nav_loop">
       <mt:if name="allowed">
