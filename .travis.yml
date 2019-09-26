@@ -48,17 +48,17 @@ env:
     - PERL_VERSION="5.26" TEST_COMMAND="phpunit && make test-php-lint"
 
 script:
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:trusty bash -c "$TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.24" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:stretch-full bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.24" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:stretch bash -c "$TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.26" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt --entrypoint='' masiuchi/docker-mt-test:bionic-full bash -c "cpm install -g --test PPI@1.246 && bash /docker-entrypoint.sh $TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.26" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt --entrypoint='' movabletype/test:bionic bash -c "cpm install -g --test PPI@1.246 && bash /docker-entrypoint.sh $TEST_COMMAND" ; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:centos6-full bash -c "yum -y install git && $TEST_COMMAND"; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt --entrypoint='' movabletype/test:centos6 bash -c "cpanm --installdeps ./t && service mysqld start && service memcached start && $TEST_COMMAND"; fi
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ -z $PERL_VERSION ]; then $TEST_COMMAND; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -t -v $PWD:/mt -w /mt masiuchi/docker-mt-test:trusty-full bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.18" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -t -v $PWD:/mt -w /mt movabletype/test:trusty bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:
