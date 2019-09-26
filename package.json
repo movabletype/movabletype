@@ -42,7 +42,6 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "dependencies": {
     "jquery": "^3.4.1",
-    "jquery-bgiframe": "^3.0.1",
     "jquery-json": "^2.6.0",
     "jquery-migrate": "^3.1.0",
     "jquery-ui-touch-punch": "^0.2.3",
