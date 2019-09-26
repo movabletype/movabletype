@@ -811,11 +811,6 @@ isstream@0.1.x:
   resolved "https://registry.yarnpkg.com/isstream/-/isstream-0.1.2.tgz#47e63f7af55afa6f92e1500e690eb8b8529c099a"
   integrity sha1-R+Y/evVa+m+S4VAOaQ64uFKcCZo=
 
-jquery-bgiframe@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/jquery-bgiframe/-/jquery-bgiframe-3.0.1.tgz#e2ad3021f091dd5e67d48ca3902cb7df017e130d"
-  integrity sha1-4q0wIfCR3V5n1IyjkCy33wF+Ew0=
-
 jquery-json@^2.6.0:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/jquery-json/-/jquery-json-2.6.0.tgz#14e60ba6586f9e59505a30b69399c20bd7d5d98c"
