@@ -58,11 +58,6 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <!--[if lte IE 6]>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 <mt:else>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
@@ -70,11 +65,6 @@
   <script type="text/javascript" src="<$mt:var name="static_uri"$>js/mt_core_compact.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.validate.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.json.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <!--[if lte IE 6]>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.bgiframe.min.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.exfixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <script type="text/javascript" src="<$mt:var name="static_uri"$>jquery/jquery.pngfix.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-  <![endif]-->
   <script type="text/javascript" src="<$mt:var name="static_uri"$>jqueryui/jquery-ui.min.js?v=<$mt:var name="mt_version_id" escape="url"$>"></script>
 </mt:unless>
 </mt:setvarblock>
@@ -184,7 +174,7 @@
   </mt:if>
   <mt:if name="count_notification_dashboard">
   <div id="notification-indicator">
-    <div id="notification-indicator-content"> 
+    <div id="notification-indicator-content">
       <p class="msg-text"><mt:unless name="scope_type" eq="user"><a href="<$mt:var name="mt_url"$>?__mode=dashboard"></mt:unless><__trans phrase="You have <strong>[quant,_1,message,messages]</strong> from the system." params="<mt:var name="count_notification_dashboard">"><mt:unless name="scope_type" eq="user"></a></mt:unless></p>
     </div>
   </div>
@@ -262,5 +252,3 @@
 
       <div class="line" id="content-body">
         <div class="unit size1of1" id="main-content">
-
-
