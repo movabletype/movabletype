@@ -1,25 +1,27 @@
-/**
- * jquery.dump.js
- * @author Torkild Dyvik Olsen
- * @version 1.0
- * 
- * A simple debug function to gather information about an object.
- * Returns a nested tree with information.
- * 
- */
+//     jquery.dump.js
+
+//     (c) 2012 Torkild Dyvik Olsen
+//     This program may be freely distributed under the MIT license.
+
+// A simple debug function to dump information about an object. Returns a
+// string of a nested tree of the object dumped.
 (function($) {
 
+// Returns the dump of the current jQuery object (`this`).
 $.fn.dump = function() {
    return $.dump(this);
 }
 
+// Dumps any object passed as the only parameter.
 $.dump = function(object) {
+   // The recursion function, used to determine each object and it's children
+   // in the passed tree.
    var recursion = function(obj, level) {
       if(!level) level = 0;
       var dump = '', p = '';
       for(i = 0; i < level; i++) p += "\t";
-      
-      t = type(obj);
+
+      var t = type(obj);
       switch(t) {
          case "string":
             return '"' + obj + '"';
@@ -34,7 +36,7 @@ $.dump = function(object) {
          case "array":
             dump += 'Array ( \n';
             $.each(obj, function(k,v) {
-               dump += p +'\t' + k + ' => ' + recursion(v, level + 1) + '\n';
+               dump += p + '\t' + k + ' => ' + recursion(v, level + 1) + '\n';
             });
             dump += p + ')';
             break;
@@ -87,17 +89,18 @@ $.dump = function(object) {
             dump += 'N/A: ' + t;
             break;
       }
-      
+
       return dump;
    }
-   
+
+   // Returns the type of the object passed as the only parameter.
    var type = function(obj) {
       var type = typeof(obj);
-      
+
       if(type != "object") {
          return type;
       }
-      
+
       switch(obj) {
          case null:
             return 'null';
@@ -110,11 +113,11 @@ $.dump = function(object) {
          default:
             break;
       }
-      
+
       if(obj.jquery) {
          return 'jquery';
       }
-      
+
       switch(obj.constructor) {
          case Array:
             return 'array';
@@ -133,7 +136,7 @@ $.dump = function(object) {
          default:
             break;
       }
-      
+
       switch(obj.nodeType) {
          case 1:
             return 'domelement';
@@ -143,23 +146,17 @@ $.dump = function(object) {
          default:
             break;
       }
-      
+
       return 'Unknown';
    }
-   
+
+   // Start and return the recursion on the object
    return recursion(object);
 }
 
-function trim(str) {
-   return ltrim(rtrim(str));
-}
-
-function ltrim(str) {
-   return str.replace(new RegExp("^[\\s]+", "g"), "");
-}
-
-function rtrim(str) {
-   return str.replace(new RegExp("[\\s]+$", "g"), "");
-}
+// Trim strings
+function trim(str) { return ltrim(rtrim(str)); }
+function ltrim(str) { return str.replace(new RegExp("^[\\s]+", "g"), ""); }
+function rtrim(str) { return str.replace(new RegExp("[\\s]+$", "g"), ""); }
 
 })(jQuery);
