@@ -3610,6 +3610,9 @@ sub SearchScript {
     if ( MT->app && MT->app->isa('MT::App::Search::FreeText') ) {
         return $mgr->get_internal('FreeTextSearchScript');
     }
+    elsif ( MT->app && MT->app->isa('MT::App::Search::ContentData') ) {
+        return $mgr->get_internal('ContentDataSearchScript');
+    }
     else {
         return $mgr->get_internal('SearchScript');
     }
