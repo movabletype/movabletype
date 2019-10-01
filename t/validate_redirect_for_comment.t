@@ -156,6 +156,9 @@ subtest 'valid login_form (post)' => sub {
             external_auth => 1,
             username      => 'Melody',
             password      => 'Nelson',
+            remember      => 1,
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
@@ -176,6 +179,9 @@ subtest 'invalid login_form (post)' => sub {
             external_auth => 1,
             username      => 'Melody',
             password      => 'Nelson',
+            remember      => 1,
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
@@ -189,6 +195,7 @@ subtest 'valid signup (get)' => sub {
     my $res = $app->get(
         {   __mode     => 'signup',
             blog_id    => 1,
+            entry_id   => '',
             return_url => $GOOD_URL,
         }
     );
@@ -203,6 +210,7 @@ subtest 'invalid signup (get)' => sub {
     my $res = $app->get(
         {   __mode     => 'signup',
             blog_id    => 1,
+            entry_id   => '',
             return_url => $BAD_URL,
         }
     );
@@ -219,13 +227,14 @@ subtest 'valid signup (post)' => sub {
         {   __mode        => 'do_signup',
             blog_id       => 1,
             return_url    => $GOOD_URL,
-            external_auth => 1,
             username      => 'new commenter',
             nickname      => 'new commenter',
             email         => 'new_commenter@example.com',
             password      => 'Nelson',
             pass_verify   => 'Nelson',
             url           => '',
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
@@ -242,13 +251,14 @@ subtest 'invalid signup (post)' => sub {
         {   __mode        => 'do_signup',
             blog_id       => 1,
             return_url    => $BAD_URL,
-            external_auth => 1,
             username      => 'new commenter2',
             nickname      => 'new commenter2',
             email         => 'new_commenter2@example.com',
             password      => 'Nelson',
             pass_verify   => 'Nelson',
             url           => '',
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
@@ -382,13 +392,14 @@ subtest 'valid do_register (get)' => sub {
         {   __mode        => 'do_signup',
             blog_id       => 1,
             return_url    => $GOOD_URL,
-            external_auth => 1,
             username      => 'new commenter3',
             nickname      => 'new commenter3',
             email         => $email,
             password      => 'Nelson',
             pass_verify   => 'Nelson',
             url           => '',
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
@@ -420,13 +431,14 @@ subtest 'invalid do_register (get)' => sub {
         {   __mode        => 'do_signup',
             blog_id       => 1,
             return_url    => $GOOD_URL,
-            external_auth => 1,
             username      => 'new commenter4',
             nickname      => 'new commenter4',
             email         => $email,
             password      => 'Nelson',
             pass_verify   => 'Nelson',
             url           => '',
+            entry_id      => '',
+            static        => '',
         }
     );
     $app->status_is(200);
