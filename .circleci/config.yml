@@ -2,7 +2,7 @@ version: 2
 jobs:
   test_internal:
     docker:
-      - image: movabletype/test:trusty
+      - image: movabletype/test:jessie
     steps:
       - checkout
       - run: bash /docker-entrypoint.sh echo 'run docker-entrypoint.sh'
@@ -12,7 +12,7 @@ jobs:
 
   coveralls:
     docker:
-      - image: masiuchi/docker-mt-test:trusty-full
+      - image: movabletype/test:jessie
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls
