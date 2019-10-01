@@ -35,12 +35,12 @@ $.mtMenu = function(options) {
     opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
     $('.top-menu .toggle-button')
-        .on('mousedown', function(event) {
+        .mousedown(function(event) {
             $(this).parents('li.top-menu').toggleClass('top-menu-open active');
             $(this).parents('li.top-menu').find('.sub-menu').toggle();
             return false;
         })
-        .on('click', function(event) {
+        .click(function(event) {
             return false;
         });
 };
@@ -61,11 +61,11 @@ $.mtSelector = function(options) {
     $('#selector-nav').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
     $('#selector-nav .toggle-button ')
-        .on('mousedown', function(event) {
+        .mousedown(function(event) {
             $(this).parent('#selector-nav').toggleClass('show-selector active');
             return false;
         })
-        .on('click', function(event) {
+        .click(function(event) {
             return false;
         });
     $(document).mousedown(function(event) {
@@ -499,8 +499,8 @@ function close_dialog(url, fn) {
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
     }
-    $(document).off('keyup.mt-dialog');
-    $('.mt-dialog').off('close');
+    $(document).unbind('keyup.mt-dialog');
+    $('.mt-dialog').unbind('close');
     $('.mt-dialog').hide();
 
     // Removing "iframe" in delay.
@@ -1112,8 +1112,8 @@ $.mtValidator('default', {
         var focus = jQuery.data( $target.get(0), 'validate_focus'),
             blur  = jQuery.data( $target.get(0), 'validate_blur');
         $target
-            .off('focus', focus)
-            .off('blur', blur);
+            .unbind('focus', focus)
+            .unbind('blur', blur);
     },
     doFocus: false
 });
