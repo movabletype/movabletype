@@ -516,7 +516,7 @@ sub prepare_template {
 
             $objs->{template}{ $tmpl->name } = $tmpl;
 
-            next unless $mapping;
+            next unless $archive_type && $mapping;
 
             my $preferred = 1;
             $mapping = [$mapping] if ref $mapping eq 'HASH';
