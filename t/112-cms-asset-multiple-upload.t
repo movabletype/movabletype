@@ -7,7 +7,6 @@ use open ':std', ':encoding(utf8)';
 use Test::More;
 
 use File::Spec;
-use JSON;
 
 BEGIN {
     eval 'use Test::MockObject::Extends; 1'
@@ -21,6 +20,7 @@ BEGIN {
 use lib qw( lib extlib t/lib );
 use MT::Test qw( :app :db :data );
 use MT;
+use JSON;
 
 my $admin   = MT->model('author')->load(1);
 my $blog_id = 1;
