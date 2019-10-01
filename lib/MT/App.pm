@@ -4237,7 +4237,7 @@ sub is_valid_redirect_target {
     }
     else {
         ## for backward compatibility
-        my @targets = grep defined,
+        my @targets = grep { defined $_ && $_ ne '' }
             map { scalar $app->param($_) } qw/static return_url return_to/;
         push @targets, '' unless @targets;
         for my $target (@targets) {
