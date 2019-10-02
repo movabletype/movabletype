@@ -159,10 +159,10 @@ do {
                 }
             }
         }
-        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
+        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q\{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
             my($msg, %args);
             my $p = $1;
-            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q{((?:[^}\\]+|\\.)*)}/gs) {
+            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q\{((?:[^}\\]+|\\.)*)}/gs) {
                 $args{'phrase'} .= ($1 || $2 || $3);
             }
             my $trans = '';
