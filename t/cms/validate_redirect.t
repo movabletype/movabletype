@@ -50,7 +50,7 @@ subtest 'valid start_recover' => sub {
 
 subtest 'invalid recover' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => 'http://foo',
@@ -65,7 +65,7 @@ subtest 'invalid recover' => sub {
 
 subtest 'valid recover' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => 'http://narnia.na',
@@ -79,7 +79,7 @@ subtest 'valid recover' => sub {
 
 subtest 'valid recover with userinfo' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => 'http://foo:bar@narnia.na',
@@ -93,7 +93,7 @@ subtest 'valid recover with userinfo' => sub {
 
 subtest 'invalid recover with userinfo' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => 'http://foo:bar@foo',
@@ -108,7 +108,7 @@ subtest 'invalid recover with userinfo' => sub {
 
 subtest 'relative' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => '/path',
@@ -122,7 +122,7 @@ subtest 'relative' => sub {
 
 subtest 'valid recover without scheme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => '//narnia.na',
@@ -136,7 +136,7 @@ subtest 'valid recover without scheme' => sub {
 
 subtest 'invalid recover without scheme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => '//foo',
@@ -150,7 +150,7 @@ subtest 'invalid recover without scheme' => sub {
 
 subtest 'weird uri that URI module happens to consider relative' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => ':@',
@@ -164,7 +164,7 @@ subtest 'weird uri that URI module happens to consider relative' => sub {
 
 subtest 'weird uri that URI module happens to consider relative' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
-    $app->get(
+    $app->post(
         {   __mode    => 'recover',
             email     => $admin->email,
             return_to => '://narnia.na',
