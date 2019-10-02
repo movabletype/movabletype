@@ -298,12 +298,7 @@ sub save_config {
 
     my $cfg_class = MT->model('config') or return;
 
-    my $config;
-    eval { $config = $cfg_class->load(); };
-
-    if ($@) {
-        $config = $cfg_class->new;
-    }
+    my ($config) = $cfg_class->load() || $cfg_class->new;
 
     if ( $data !~ m/^schemaversion/im ) {
         if ( $config->id
