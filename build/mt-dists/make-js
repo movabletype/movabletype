@@ -108,7 +108,7 @@ foreach my $lang (qw(en_us ja de nl fr es)) {
     foreach my $addon (@addons) {
         eval {
             unshift @INC, "addons/$addon.pack/lib";
-            require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm";
+            require "./addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm";
         };
         next if $@;
         my $conv;
