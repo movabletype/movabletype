@@ -29,6 +29,7 @@ Getopt::Long::GetOptions(
     "randomly"     => \$randomize_jobs,
     "verbose"      => \$verbose,
     "leak"         => \$trace_objects,
+    "quiet"        => sub { $verbose = 0 },
 );
 require MT::TheSchwartz;
 
