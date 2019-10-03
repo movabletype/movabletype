@@ -4204,7 +4204,7 @@ sub is_valid_redirect_target {
     my $blog_id = $app->param('blog_id');
     if ( $blog_id && $blog_id !~ /\D/ ) {
         my $blog = MT::Blog->load($blog_id)
-            or return $app->errtrans( 'Cannot load site #[_1].', $blog_id );
+            or return $app->errtrans( 'Cannot load blog #[_1].', $blog_id );
         push @urls, $blog->site_url;
     }
     else {
