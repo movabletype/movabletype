@@ -15,7 +15,7 @@ my $daemonize = 0;
 my $sleep     = 5;
 my $help      = 0;
 my $load      = 10;
-my $verbose   = 0;
+my $verbose   = 1;
 my $scoreboard;
 my $randomize_jobs = 0;
 my $trace_objects  = 0;
