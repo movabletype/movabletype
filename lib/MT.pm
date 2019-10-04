@@ -1327,7 +1327,7 @@ sub init_plugins {
         }
         $mt->config->PluginAlias( \%PluginAlias, 1 );
 
-        $mt->config->save_config;
+        $mt->config->save_config unless $mt->isa('MT::App::Wizard');
     }
     return 1;
 }
