@@ -25,7 +25,7 @@
     "copy-mt7-style-guide-svg": "cp -rf node_modules/mt7-style-guide/html/images/*.svg mt-static/images/",
     "copy-mt7-style-guide-icons": "rm -rf mt-static/image/icons/* && cp -rf node_modules/mt7-style-guide/html/images/icons/* mt-static/images/icons/",
     "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-json && yarn copy-jquery-validation",
-    "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.* mt-static/jquery/",
+    "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.js mt-static/jquery/ && cp -rf node_modules/jquery/dist/jquery.min.* mt-static/jquery/",
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-json": "cp -rf node_modules/jquery-json/src/jquery.json.* mt-static/jquery/ && cp -rf node_modules/jquery-json/dist/jquery.json.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
