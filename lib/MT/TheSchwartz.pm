@@ -37,6 +37,7 @@ sub default_logger {
 
     # suppress TheSchwartz::Job's 'job completed'
     return if $msg eq 'job completed';
+    return if $msg eq 'TheSchwartz::work_once found no jobs';
 
     $msg =~ s/\s+$//;
     print STDERR "$msg\n";
