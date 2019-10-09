@@ -1127,7 +1127,7 @@ function saveTemplatePrefs( sync ) {
         return false;
     });
 <mt:if name="disp_prefs_syntax" ne="off">
-    jQuery('#code-highlight-switch').attr('checked', 'checked');
+    jQuery('#code-highlight-switch').prop('checked', 'checked');
 <mt:else>
     setSyntaxHighlight('off');
 </mt:if>

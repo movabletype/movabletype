@@ -24,7 +24,8 @@
     "a-template": "^0.5.4",
     "clone": "^2.0.0",
     "custom-event-polyfill": "^0.3.0",
-    "deep-extend": "^0.6.0"
+    "deep-extend": "^0.6.0",
+    "zepto-browserify": "^1.1.6-1"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
