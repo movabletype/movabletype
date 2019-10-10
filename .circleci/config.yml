@@ -2,7 +2,7 @@ version: 2
 jobs:
   coveralls:
     docker:
-      - image: movabletype/test:jessie
+      - image: movabletype/test:buster
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls
