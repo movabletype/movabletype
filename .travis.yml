@@ -11,7 +11,7 @@ before_script:
   - cp t/mysql-test.cfg mt-config.cgi
 
 script:
-  - docker run -t -v $PWD:/mt -w /mt movabletype/test:jessie bash -c "PERL_JSON_BACKEND=0 prove t plugins/*/t"
+  - docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "PERL_JSON_BACKEND=0 prove t plugins/*/t"
 
 notifications:
   slack:

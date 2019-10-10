@@ -1,4 +1,4 @@
-box: movabletype/test:jessie
+box: movabletype/test:buster
 
 build:
   steps:
