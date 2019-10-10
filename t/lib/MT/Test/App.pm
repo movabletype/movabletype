@@ -60,6 +60,8 @@ sub request {
     my ( $self, $params ) = @_;
     local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
     CGI::initialize_globals();
+    $self->_clear_cache;
+
     my $app_params = $self->_app_params($params);
     my $cgi        = $self->_create_cgi_object($params);
     my $app        = $self->{app_class}->new( CGIObject => $cgi );
@@ -107,8 +109,6 @@ sub request {
         Test::More::note "REDIRECTING TO $location";
         my $uri    = URI->new($location);
         my $params = $uri->query_form_hash;
-
-        $self->_clear_cache;
 
         # avoid processing multiple requests in a second
         sleep 1;
