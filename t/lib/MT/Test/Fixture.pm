@@ -22,6 +22,7 @@ sub prepare {
     $class->prepare_category_set( $spec, \%objs );
     $class->prepare_content_type( $spec, \%objs );
     $class->prepare_content_data( $spec, \%objs );
+    $class->prepare_template( $spec, \%objs );
 
     \%objs;
 }
@@ -164,11 +165,11 @@ sub prepare_customfield {
             }
             else {
                 %arg = (
-                    name => $item,
+                    name     => $item,
                     obj_type => 'entry',
-                    type => 'text',
+                    type     => 'text',
                     basename => $item,
-                    tag => $item,
+                    tag      => $item,
                 );
             }
             my $field = MT::Test::Permission->make_field(
@@ -197,14 +198,14 @@ sub prepare_entry {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::Entry;
-                    $arg{status} = MT::Entry::status_int($status);
+                    require MT::EntryStatus;
+                    $arg{status} = MT::EntryStatus::status_int($status);
                 }
             }
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -249,14 +250,14 @@ sub prepare_page {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::Entry;
-                    $arg{status} = MT::Entry::status_int($status);
+                    require MT::EntryStatus;
+                    $arg{status} = MT::EntryStatus::status_int($status);
                 }
             }
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -382,12 +383,13 @@ sub prepare_content_type {
 
                     push @fields,
                         {
-                        id      => $cf->id,
-                        label   => 1,
-                        name    => $cf->name,
-                        type    => $cf_type,
-                        order   => @fields + 1,
-                        options => \%options,
+                        id        => $cf->id,
+                        label     => 1,
+                        name      => $cf->name,
+                        type      => $cf_type,
+                        order     => @fields + 1,
+                        options   => \%options,
+                        unique_id => $cf->unique_id,
                         };
                 }
             }
@@ -434,10 +436,7 @@ sub prepare_content_data {
                         "content_field is required: content_data: $cf_name";
                     my $cf_type = $cf->type;
                     my $cf_arg  = $arg{data}{$cf_name};
-                    if ( $cf_type =~ /date/ ) {
-                        $data{ $cf->id } = $cf_arg;
-                    }
-                    elsif ( $cf_type eq 'categories' ) {
+                    if ( $cf_type eq 'categories' ) {
                         my $set_id = $cf->related_cat_set_id;
                         my @sets   = values %{ $objs->{category_set} };
                         my ($set)
@@ -453,6 +452,9 @@ sub prepare_content_data {
                         }
                         $data{ $cf->id } = \@cat_ids;
                     }
+                    else {
+                        $data{ $cf->id } = $cf_arg;
+                    }
                 }
                 $arg{data} = \%data;
 
@@ -466,6 +468,109 @@ sub prepare_content_data {
                 $objs->{content_data}{ $cd->label } = $cd;
             }
         }
+    }
+}
+
+sub prepare_template {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{template};
+
+    if ( ref $spec->{template} eq 'ARRAY' ) {
+        for my $item ( @{ $spec->{template} } ) {
+            my %arg
+                = ref $item eq 'HASH' ? %$item : ( archive_type => $item );
+            my $archive_type = delete $arg{archive_type};
+            my $archiver;
+            if ($archive_type) {
+                $archiver = MT->publisher->archiver($archive_type)
+                    or croak "unknown archive_type: $archive_type";
+                $arg{type} = _template_type($archive_type);
+            }
+            my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: template: $arg{type}";
+
+            my $ct;
+            if ( my $ct_name = delete $arg{content_type} ) {
+                $ct = $objs->{content_type}{$ct_name}{content_type}
+                    or croak "content_type is not found: $ct_name";
+                $arg{content_type_id} = $ct->id;
+            }
+            if ( !$arg{name} ) {
+                ( my $archive_type_name = $archive_type ) =~ tr/A-Z-/a-z_/;
+                $arg{name} = "tmpl_$archive_type_name";
+            }
+
+            my $mapping = delete $arg{mapping};
+
+            ## Remove (to replace) if a template identifier is specified
+            if ( $arg{identifier} ) {
+                MT::Template->remove(
+                    { blog_id => $blog_id, identifier => $arg{identifier} },
+                    { nofetch => 1 } );
+            }
+
+            my $tmpl = MT::Test::Permission->make_template(
+                blog_id => $blog_id,
+                %arg,
+            );
+
+            $objs->{template}{ $tmpl->name } = $tmpl;
+
+            next unless $archive_type && $mapping;
+
+            my $preferred = 1;
+            $mapping = [$mapping] if ref $mapping eq 'HASH';
+            for my $map (@$mapping) {
+                $map->{file_template} ||= _file_template($archiver);
+                $map->{build_type}    ||= 1;
+                $map->{is_preferred} = $preferred;
+                $map->{template_id}  = $tmpl->id;
+                $map->{blog_id}      = $blog_id;
+                $map->{archive_type} = $archive_type;
+
+                if ( my $cat_field_name = delete $map->{cat_field} ) {
+                    my @cat_fields = grep { $_->{type} eq 'categories' }
+                        @{ $ct->fields };
+                    my ($cat)
+                        = grep { $_->{name} eq $cat_field_name } @cat_fields;
+
+                    $map->{cat_field_id} = $cat->{id} if $cat;
+                }
+
+                if ( my $dt_field_name = delete $map->{dt_field} ) {
+                    my @dt_fields
+                        = grep { $_->{type} =~ /date/ } @{ $ct->fields };
+                    my ($dt)
+                        = grep { $_->{name} eq $dt_field_name } @dt_fields;
+
+                    $map->{dt_field_id} = $dt->{id} if $dt;
+                }
+
+                my $tmpl_map = MT::Test::Permission->make_templatemap(%$map);
+
+                $objs->{templatemap}{ $tmpl_map->file_template } = $tmpl_map;
+
+                $preferred = 0;
+            }
+        }
+    }
+}
+
+sub _template_type {
+    my $archive_type = shift;
+    return 'individual' if $archive_type eq 'Individual';
+    return 'page'       if $archive_type eq 'Page';
+    return 'ct'         if $archive_type eq 'ContentType';
+    return 'ct_archive' if $archive_type =~ /^ContentType/;
+    return 'archive';    # and custom?
+}
+
+sub _file_template {
+    my $archiver = shift;
+    my $prefix   = $archiver->name =~ /^ContentType/ ? "ct/" : "";
+    for my $archive_template ( @{ $archiver->default_archive_templates } ) {
+        next unless $archive_template->{default};
+        return $prefix . $archive_template->{template};
     }
 }
 
