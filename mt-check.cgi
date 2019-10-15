@@ -481,7 +481,7 @@ my @CORE_REQ = (
     ],
 
     [   'HTML::Entities',
-        3.6.9, 1,
+        3.69, 1,
         translate(
             'HTML::Entities is required by CGI.pm'
         )
