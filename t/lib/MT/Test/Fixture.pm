@@ -198,8 +198,8 @@ sub prepare_entry {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::EntryStatus;
-                    $arg{status} = MT::EntryStatus::status_int($status);
+                    require MT::Entry;
+                    $arg{status} = MT::Entry::status_int($status);
                 }
             }
             else {
@@ -250,8 +250,8 @@ sub prepare_page {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::EntryStatus;
-                    $arg{status} = MT::EntryStatus::status_int($status);
+                    require MT::Entry;
+                    $arg{status} = MT::Entry::status_int($status);
                 }
             }
             else {
