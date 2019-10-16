@@ -314,7 +314,7 @@ sub search_terms {
     if ( $app->param('archive_type') ) {
         my $at       = $app->param('archive_type');
         my $archiver = MT->publisher->archiver($at);
-        return return $app->errtrans('Invalid archive type')
+        return $app->errtrans('Invalid archive type')
             unless ( $archiver || $at eq 'Index' );
     }
 
