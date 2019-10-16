@@ -3175,6 +3175,8 @@ this blog, only to trackbacks register on this entry.
 
 An I<MT::Entry> object corresponding to the entry that was updated.
 
+=back
+
 =head2 $mt->ping_and_save( %args )
 
 Handles the task of issuing any pending ping operations for a given
