@@ -29,7 +29,7 @@
     <mt:include name="include/editor_multi.tmpl">
     <mt:else>
     <div class="editor-content<mt:if name="convert_breaks" ne="richtext"> editor-plaintext</mt:if>">
-      <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
+      <textarea id="editor-input-content-field-<mt:var name="content_field_id">"  name="content-field-<mt:var name="content_field_id">" class="form-control text high content-field editorfield group" mt:raw-name="1" <mt:if name="options{full_rich_text}">data-full_rich_text="1"</mt:if><mt:if name="options{required}">required</mt:if>><mt:var name="value" escape="html"></textarea>
     </div>
     </mt:unless>
 
@@ -122,9 +122,7 @@ div.group-container.multi_line_text-field-container>.form-group {
 
         var setFormat = app.editors[this]['setFormat'];
         app.editors[this]['setFormat'] = function(format) {
-            jQuery.each(app.editors, function() {
-                setFormat.apply(this, [format]);
-            });
+            setFormat.apply(this, [format]);
         };
     });
   }

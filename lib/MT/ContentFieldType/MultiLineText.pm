@@ -16,9 +16,12 @@ sub field_html_params {
     my $options      = $field_data->{options};
     my $input_format = $options->{input_format};
     my $required     = $options->{required} ? 'data-mt-required="1"' : '';
+    my $full_rich_text
+        = defined $options->{full_rich_text} ? $options->{full_rich_text} : 1;
 
     {   convert_breaks => $input_format,
         required       => $required,
+        full_rich_text => $full_rich_text,
     };
 
 }
