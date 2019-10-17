@@ -825,10 +825,11 @@ sub site_list_widget {
         my $row;
 
         # basic information
-        $row->{site_name}        = $site->name;
-        $row->{parent_site_name} = $site->is_blog ? $site->website->name : '';
-        $row->{site_url}         = $site->site_url;
-        $row->{blog_id}          = $site->id;
+        $row->{site_name} = $site->name;
+        $row->{parent_site_name}
+            = $site->is_blog && $site->website ? $site->website->name : '';
+        $row->{site_url} = $site->site_url;
+        $row->{blog_id}  = $site->id;
 
         # Action link
         $row->{can_edit_template}
