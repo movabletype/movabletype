@@ -39,12 +39,12 @@ sub theme_data_import_handler {
 sub data_load_handler {
     my ( $app, $field_data ) = @_;
     my $field_id = $field_data->{id};
-    my $options = $field_data->{options} || {};
+    my $options  = $field_data->{options} || {};
     my $convert_breaks
         = $app->param("content-field-${field_id}_convert_breaks");
     $convert_breaks = '' unless defined $convert_breaks;
 
-    if ( $convert_breaks eq 'richtext' && !$options->{full_rich_text}  ) {
+    if ( $convert_breaks eq 'richtext' && !$options->{full_rich_text} ) {
         return scalar $app->param("editor-input-content-field-$field_id");
     }
     else {

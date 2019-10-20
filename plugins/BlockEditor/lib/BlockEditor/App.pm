@@ -115,7 +115,7 @@ sub data_load_handler {
     my ( $app, $field_data ) = @_;
 
     my $field_id = $field_data->{id};
-    my $options = $field_data->{options} || {};
+    my $options  = $field_data->{options} || {};
     my $convert_breaks
         = $app->param("content-field-${field_id}_convert_breaks");
     $convert_breaks = '' unless defined $convert_breaks;
