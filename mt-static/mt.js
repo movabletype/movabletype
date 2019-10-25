@@ -1532,6 +1532,11 @@ MT.App = new Class( App, {
         for( var i = 0; i < forms.length; i++ ) {
             forms[ i ].submitted = false;
             DOM.addEventListener( forms[ i ], "submit", this.getIndirectEventListener( "eventSubmit" ) );
+            var inputs = forms[ i ].getElementsByTagName( "input" );
+            for ( var inputCount = 0; inputCount < inputs.length; inputCount++ ) {
+                DOM.addEventListener( inputs[ inputCount ], "keydown", this.getIndirectEventListener( "eventKeyDownEnter" ) );
+            }
+
             var tareas = forms[ i ].getElementsByTagName( "textarea" );
             var tabs = 0;
             for ( var j = 0; j < tareas.length; j++ ) {
@@ -1780,6 +1785,12 @@ MT.App = new Class( App, {
         }
     },
 
+    eventKeyDownEnter: function( event ) {
+        if ( event.keyCode == 13 ) {
+            event.preventDefault();
+            return false;
+        }
+    },
 
     resizeComplete: function( target, xStart, yStart, x, y, width, height ) {
 
