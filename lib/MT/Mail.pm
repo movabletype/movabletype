@@ -130,6 +130,10 @@ sub send {
     $hdrs{'MIME-Version'} ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+    if ( !$hdrs{From} ) {
+        return $class->error(
+            MT->translate("System Email Address is not configured.") );
+    }
 
     if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
         && eval { require MIME::Base64 } )
