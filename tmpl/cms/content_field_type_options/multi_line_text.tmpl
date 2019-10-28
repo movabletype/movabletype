@@ -26,4 +26,21 @@
       this.options.input_formats[this.options.input_format] = "selected"
   </mtapp:ContentFieldOptionScript>
 
+  <mtapp:ContentFieldOption
+    id="multi_line_text-full_rich_text"
+    label="<__trans phrase="Use all rich text decoration buttons">">
+      <input ref="full_rich_text" type="checkbox" class="mt-switch form-control" id="multi_line_text-full_rich_text" name="full_rich_text" checked={ options.full_rich_text } onclick={ changeStateFullRichText }><label for="multi_line_text-full_rich_text"><__trans phrase="Use all rich text decoration buttons"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+  if ( this.isNew )
+    this.options.full_rich_text = 1
+
+  if ( this.options.full_rich_text === "0" )
+    this.options.full_rich_text = 0
+
+  changeStateFullRichText(e) {
+    this.options.full_rich_text = e.target.checked
+  }
+  </mtapp:ContentFieldOptionScript>
 </mt:app:ContentFieldOptionGroup>

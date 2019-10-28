@@ -187,14 +187,16 @@
 
             var text_format = $('[data-target=' + adapter.id+']').val();
             if( text_format == 'richtext'){
-                config.theme = "inlite";
-                config.inline = true;
-            } else {
-                config.theme = "modern";
-                config.inline = false;
+                if ($('#'+adapter.id).attr('data-full_rich_text')) {
+                    config.theme = "modern";
+                    config.inline = false;
+                } else {
+                    config.theme = "inlite";
+                    config.inline = true;
+                }
             }
 
-            if( text_format == 'richtext') {
+            if( text_format == 'richtext' && config.inline) {
                 if( $('#' + adapter.id).prop('nodeName') == 'TEXTAREA' ) {
                     var textarea  = $('#' + adapter.id);
                     var attrs = {};
