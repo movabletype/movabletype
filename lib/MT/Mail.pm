@@ -247,21 +247,20 @@ sub _send_mt_smtp {
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
-        (   $do_ssl
-            ? ( doSSL           => $do_ssl,
+        (
+            $do_ssl
+            ? (
+                doSSL           => $do_ssl,
                 SSL_verify_mode => $ssl_verify_mode,
-                $ssl_verify_mode
-                ? ( SSL_version => MT->config->SSLVersion
-                        || MT->config->SMTPSSLVersion
-                        || 'SSLv23:!SSLv3:!SSLv2' )
+                SSL_version     => MT->config->SSLVersion
+                  || MT->config->SMTPSSLVersion
+                  || 'SSLv23:!SSLv3:!SSLv2',
+                ( eval { require Mozilla::CA; 1 } )
+                ? ( SSL_ca_file => Mozilla::CA::SSL_ca_file(), )
                 : (),
-                ( $ssl_verify_mode && eval { require Mozilla::CA; 1 } )
-                ? ( SSL_verifycn_name   => $host,
-                    SSL_verifycn_scheme => 'smtp',
-                    SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
-                    )
-                : (),
-                )
+                SSL_verifycn_name   => $host,
+                SSL_verifycn_scheme => 'smtp'
+              )
             : ()
         ),
         ( $MT::DebugMode ? ( Debug => 1 ) : () ),
