@@ -2704,14 +2704,15 @@ sub new_ua {
     }
 
     my $ua = $lwp_class->new;
-    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
-        $ua->ssl_opts( verify_hostname => 0 );
-    }
-    else {
+    my $verify_hostname = ( MT->config->SSLVerifyNone
+            || !( eval { require Mozilla::CA; 1 } ) ) ? 0 : 1;
+
         $ua->ssl_opts(
-            verify_hostname => 1,
+        verify_hostname => $verify_hostname,
             SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+        SSL_ca_file     => eval { require Mozilla::CA; 1 }
+        ? Mozilla::CA::SSL_ca_file()
+        : '',
         );
     }
     $ua->max_size($max_size) if $ua->can('max_size');
