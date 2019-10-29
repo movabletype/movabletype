@@ -2714,7 +2714,7 @@ sub new_ua {
         ? Mozilla::CA::SSL_ca_file()
         : '',
         );
-    }
+
     $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
