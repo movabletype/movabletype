@@ -93,7 +93,7 @@ sub save {
     if ( !$author->is_superuser ) {
         if ( ( $type ne 'author' ) && ( $type ne 'template' ) )
         {    # for authors, blog-ctx $perms is not relevant
-            return return $app->permission_denied()
+            return $app->permission_denied()
                 if !$perms && $id;
         }
 
