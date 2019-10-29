@@ -26,7 +26,7 @@ my %conv;
 my %lconv;
 
 eval {
-    require "$L10N_FILE";
+    require "./$L10N_FILE";
 };
 if ($@) {
     die "Failed to load $L10N_FILE: $@";
@@ -68,7 +68,7 @@ do {
                 unshift @INC, "plugins/$plugin/lib";
             };
             eval {
-                require "plugins/$plugin/lib/$plugin/L10N/$lang.pm";
+                require "./plugins/$plugin/lib/$plugin/L10N/$lang.pm";
             };
             if ($@) {
                 # Deep dive into sub directories to find L10N
@@ -76,7 +76,7 @@ do {
                 $path = find_l10n_dir($path);
                 if ( $path && ($path =~ /L10N$/) ) {
                     eval {
-                        require "$path/$lang.pm";
+                        require "./$path/$lang.pm";
                     };
                     if ($@) {
                         $plugin = undef;
@@ -105,7 +105,7 @@ do {
             my $addon = $1;
             eval {
                 unshift @INC, "addons/$addon.pack/lib";
-                require "addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm"
+                require "./addons/$addon.pack/lib/MT/$addon/L10N/$lang.pm"
             };
             unless ($@) {
                 %conv = (
@@ -158,10 +158,10 @@ do {
                 }
             }
         }
-        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
+        while ($text =~ /(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q\{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
             my($msg, %args);
             my $p = $1;
-            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q{((?:[^}\\]+|\\.)*)}/gs) {
+            while ($p =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q\{((?:[^}\\]+|\\.)*)}/gs) {
                 $args{'phrase'} .= ($1 || $2 || $3);
             }
             my $trans = '';
