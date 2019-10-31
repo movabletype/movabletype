@@ -2349,17 +2349,19 @@ sub new_ua {
     }
 
     my $ua              = $lwp_class->new;
-    my $verify_hostname = ( MT->config->SSLVerifyNone
-            || !( eval { require Mozilla::CA; 1 } ) ) ? 0 : 1;
+    my $verify_hostname = 1;
+    my %ssl_opts_args = (SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2');
 
-    $ua->ssl_opts(
-        verify_hostname => $verify_hostname,
-        SSL_version     => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-        SSL_ca_file     => eval { require Mozilla::CA; 1 }
-        ? Mozilla::CA::SSL_ca_file()
-        : '',
-    );
+    if (eval { require Mozilla::CA; 1 }) {
+        $verify_hostname = 0 if MT->config->SSLVerifyNone;
+        $ssl_opts_args{SSL_ca_file} = Mozilla::CA::SSL_ca_file();
+    } else {
+        $verify_hostname = 0; MT->config->SSLVerifyNone ? 0 : 1;
+    }
 
+    $ssl_opts_args{verify_hostname} = $verify_hostname;
+
+    $ua->ssl_opts(%ssl_opts_args);
     $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
