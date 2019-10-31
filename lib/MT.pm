@@ -42,7 +42,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.1.3',                '__PRODUCT_VERSION_ID__',
+        '7.1.3',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -119,7 +119,7 @@ sub portal_url {
 # Default id method turns MT::App::CMS => cms; Foo::Bar => foo/bar
 sub id {
     my $pkg = shift;
-    my $id = ref($pkg) || $pkg;
+    my $id  = ref($pkg) || $pkg;
 
     # ignore the MT::App prefix as part of the identifier
     $id =~ s/^MT::App:://;
@@ -165,7 +165,7 @@ sub instance_of {
 
 sub construct {
     my $class = shift;
-    my $mt = bless {}, $class;
+    my $mt    = bless {}, $class;
     local $mt_inst = $mt;
     $mt->init(@_)
         or die $mt->errstr;
@@ -338,7 +338,7 @@ sub config {
 }
 
 sub request {
-    my $pkg = shift;
+    my $pkg  = shift;
     my $inst = ref($pkg) ? $pkg : $pkg->instance;
     unless ( $inst->{request} ) {
         require MT::Request;
@@ -387,7 +387,7 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode('locale',
+    print STDERR Encode::encode( 'locale',
         MT->translate( "Message: [_1]", $log->message ) . "\n" )
         if $MT::DebugMode;
 
@@ -1690,7 +1690,7 @@ sub update_ping_list {return}
 
     sub translate {
         my $this = shift;
-        my $app = ref($this) ? $this : $this->app;
+        my $app  = ref($this) ? $this : $this->app;
         if ( $app->{component} ) {
             if ( my $c = $app->component( $app->{component} ) ) {
                 local $app->{component} = undef;
@@ -1706,7 +1706,7 @@ sub update_ping_list {return}
     }
 
     sub translate_templatized {
-        my $mt = shift;
+        my $mt  = shift;
         my $app = ref($mt) ? $mt : $mt->app;
         if ( $app->{component} ) {
             if ( my $c = $app->component( $app->{component} ) ) {
@@ -2248,7 +2248,7 @@ sub build_page {
 
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
-        $tmpl = $file;
+        $tmpl      = $file;
         $tmpl_file = ( exists $file->{__file} ) ? $file->{__file} : '';
     }
     else {
@@ -2325,7 +2325,7 @@ sub new_ua {
     }
     eval "require $lwp_class;";
     return undef if $@;
-    my $cfg = $class->config;
+    my $cfg      = $class->config;
     my $max_size = exists $opt->{max_size} ? $opt->{max_size} : 100_000;
     my $timeout = exists $opt->{timeout} ? $opt->{timeout} : $cfg->HTTPTimeout
         || $cfg->PingTimeout;
@@ -2350,13 +2350,16 @@ sub new_ua {
 
     my $ua              = $lwp_class->new;
     my $verify_hostname = 1;
-    my %ssl_opts_args = (SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2');
+    my %ssl_opts_args
+        = ( SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2' );
 
-    if (eval { require Mozilla::CA; 1 }) {
+    if ( eval { require Mozilla::CA; 1 } ) {
         $verify_hostname = 0 if MT->config->SSLVerifyNone;
         $ssl_opts_args{SSL_ca_file} = Mozilla::CA::SSL_ca_file();
-    } else {
-        $verify_hostname = 0; MT->config->SSLVerifyNone ? 0 : 1;
+    }
+    else {
+        $verify_hostname = 0;
+        MT->config->SSLVerifyNone ? 0 : 1;
     }
 
     $ssl_opts_args{verify_hostname} = $verify_hostname;
@@ -2470,7 +2473,7 @@ sub get_next_sched_post_for_user {
 our $Commenter_Auth;
 
 sub init_commenter_authenticators {
-    my $self = shift;
+    my $self  = shift;
     my $auths = $self->registry("commenter_authenticators") || {};
     $Commenter_Auth = {%$auths};
     my $app = $self->app;
@@ -2631,7 +2634,7 @@ sub core_captcha_providers {
 }
 
 sub init_captcha_providers {
-    my $self = shift;
+    my $self      = shift;
     my $providers = $self->registry("captcha_providers") || {};
     foreach my $provider ( keys %$providers ) {
         delete $providers->{$provider}
@@ -2777,7 +2780,7 @@ sub handler_to_coderef {
                     return $hdlr->(@_);
                 }
                 return undef;
-                }
+            }
         }
         else {
             no strict 'refs';
