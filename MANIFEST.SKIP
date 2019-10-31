@@ -351,6 +351,7 @@ build-language-stamp
 ^package-lock.json
 ^package.json
 ^node_modules/
+^\.node-version
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
