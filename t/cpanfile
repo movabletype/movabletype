@@ -56,7 +56,7 @@ requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip';
+requires 'Archive::Zip', '!=1.66, !=1.67';
 requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
