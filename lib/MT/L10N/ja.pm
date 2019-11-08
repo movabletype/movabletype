@@ -6844,7 +6844,7 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Alt' => '代替テキスト',
-	'Caption' => 'タイトル',
+	'Caption' => 'キャプション',
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'コメント機能を提供します。',
