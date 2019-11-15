@@ -1,4 +1,4 @@
-box: masiuchi/docker-mt-test:trusty-full
+box: movabletype/test:buster
 
 build:
   steps:
