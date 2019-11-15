@@ -2,6 +2,7 @@
 
 use strict;
 use warnings;
+use utf8;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
@@ -124,3 +125,12 @@ foo\\tbar
 <MTVar name="string" encode_json="1">
 --- expected _unescape
 abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ012344567890
+
+=== Japanese characters
+--- template _unescape
+<MTSetVarBlock name="string">あい\うえお</MTSetVarBlock>
+<MTVar name="string">
+<MTVar name="string" encode_json="1">
+--- expected _unescape
+あい\うえお
+あい\\うえお

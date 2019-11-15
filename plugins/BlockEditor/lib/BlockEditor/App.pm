@@ -115,10 +115,10 @@ sub data_load_handler {
     my ( $app, $field_data ) = @_;
 
     my $field_id = $field_data->{id};
+    my $options  = $field_data->{options} || {};
     my $convert_breaks
         = $app->param("content-field-${field_id}_convert_breaks");
     $convert_breaks = '' unless defined $convert_breaks;
-
     if ( $convert_breaks eq 'blockeditor' ) {
         my $data_json = $app->param('block_editor_data');
         my $data_obj;
@@ -141,7 +141,7 @@ sub data_load_handler {
         }
         return $html;
     }
-    elsif ( $convert_breaks eq 'richtext' ) {
+    elsif ( $convert_breaks eq 'richtext' && !$options->{full_rich_text} ) {
         return scalar $app->param("editor-input-content-field-$field_id");
     }
     else {

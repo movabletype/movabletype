@@ -4114,7 +4114,7 @@ sub _hdlr_app_svg_icon {
 
     my $title_attr = '';
     if ( defined $title && $title ne '' ) {
-        $title_attr = qq{ title="$title"};
+        $title_attr = q{<title>$title</title>};
     }
     my $color_class_suffix = '';
     if ( defined $color && $color ne '' ) {
@@ -4127,7 +4127,7 @@ sub _hdlr_app_svg_icon {
 
     my $static_uri = MT->static_path;
 
-    qq{<svg$title_attr role="img" class="mt-icon${color_class_suffix}${size_class}"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+    qq{<svg role="img" class="mt-icon${color_class_suffix}${size_class}">$title_attr<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
 }
 
 ###########################################################################

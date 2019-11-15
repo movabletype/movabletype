@@ -209,8 +209,9 @@ sub build_plugin_table {
         my $icon_title = $app->translate('Plugin');
         my $static_uri = $app->static_path;
         $icon = qq{
-            <svg title="$icon_title" role="img" class="mt-icon">
-                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin">
+            <svg role="img" class="mt-icon">
+                <title>$icon_title</title>
+                <use xlink:href="${static_uri}images/sprite.svg#ic_plugin"></use>
             </svg>
         };
 

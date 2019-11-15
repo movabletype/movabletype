@@ -772,6 +772,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/CMS/Common.pm
 	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
 
+## lib/MT/App/DataAPI.pm
+        '[_1] must be an integer and between [_2] and [_3].' => '[_1]は[_2]以上、[_3]以下の整数である必要があります。',
+
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -4231,6 +4234,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/multi_line_text.tmpl
 	'Input format' => '入力フォーマット',
+	'Use all rich text decoration buttons' => 'リッチテキストの装飾ボタンをすべて利用する',
+	
 
 ## tmpl/cms/content_field_type_options/number.tmpl
 	'Min Value' => '最小値',

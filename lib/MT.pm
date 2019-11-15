@@ -42,7 +42,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.1.3',                '__PRODUCT_VERSION_ID__',
+        '7.1.4',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -60,11 +60,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 3;
+        $RELEASE_NUMBER = 4;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4602';
+        $RELEASE_VERSION_ID = 'r.4603';
     }
 
     $DebugMode = 0;
@@ -1327,7 +1327,7 @@ sub init_plugins {
         }
         $mt->config->PluginAlias( \%PluginAlias, 1 );
 
-        $mt->config->save_config;
+        $mt->config->save_config unless $mt->isa('MT::App::Wizard');
     }
     return 1;
 }

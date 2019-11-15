@@ -190,13 +190,53 @@ yes
 --- expected
 &#8220;foo&#8221;
 
-
-=== smart_quotes
+=== smart_quotes = 1 Double quotation
 --- template
 <mt:Unless smart_quotes="1">"foo"</mt:Unless>
 --- expected
 &#8220;foo&#8221;
+--- php
+yes
 
+=== smart_quotes = 1 Double Single quotation
+--- template
+<mt:Unless smart_quotes="1">'foo'</mt:Unless>
+--- expected
+&#8216;foo&#8217;
+--- php
+yes
+
+=== smart_quotes = 1 Back quotation
+--- template
+<mt:Unless smart_quotes="1">``foo``</mt:Unless>
+--- expected
+``foo``
+--- php
+yes
+
+=== smart_quotes = 2 Double quotation
+--- template
+<mt:Unless smart_quotes="2">"foo"</mt:Unless>
+--- expected
+&#8220;foo&#8221;
+--- php
+yes
+
+=== smart_quotes = 2 Single quotation
+--- template
+<mt:Unless smart_quotes="2">'foo'</mt:Unless>
+--- expected
+&#8216;foo&#8217;
+--- php
+yes
+
+=== smart_quotes = 2 Back quotation
+--- template
+<mt:Unless smart_quotes="2">``foo``</mt:Unless>
+--- expected
+&#8220;foo&#8220;
+--- php
+yes
 
 === smart_dashes
 --- template

@@ -71,7 +71,7 @@ sub field_type_icon {
     my $static_uri = MT->static_path;
 
     return
-        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
 }
 
 sub _get_cd_ids {

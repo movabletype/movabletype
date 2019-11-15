@@ -202,8 +202,9 @@ sub list_props {
                                     <div class="mt-user">
                                         $svg
                                         <div class="mt-user__badge--warning">
-                                            <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
-                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                            <svg class="mt-icon--inverse mt-icon--sm">
+                                                <title>Warning</title>
+                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
                                             </svg>
                                         </div>
                                     </div>
@@ -214,8 +215,9 @@ sub list_props {
                                         <div class="mt-user">
                                             $svg
                                             <div class="mt-user__badge--warning">
-                                                <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
-                                                    <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                                <svg class="mt-icon--inverse mt-icon--sm">
+                                                    <title>Warning</title>
+                                                    <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
                                                 </svg>
                                             </div>
                                         </div>
@@ -271,8 +273,9 @@ sub list_props {
                                 <div class="mt-user">
                                     $svg
                                     <div class="mt-user__badge--warning">
-                                        <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
-                                            <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                        <svg class="mt-icon--inverse mt-icon--sm">
+                                            <title>Warning</title>
+                                            <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
                                         </svg>
                                     </div>
                                 </div>
@@ -283,8 +286,9 @@ sub list_props {
                                     <div class="mt-user">
                                         $svg
                                         <div class="mt-user__badge--warning">
-                                            <svg title="Warning" class="mt-icon--inverse mt-icon--sm">
-                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error">
+                                            <svg class="mt-icon--inverse mt-icon--sm">
+                                                <title>Warning</title>
+                                                <use xlink:href="${static_uri}images/sprite.svg#ic_error"></use>
                                             </svg>
                                         </div>
                                     </div>
@@ -821,15 +825,13 @@ sub remove {
 
         # remove children.
         my $class = ref $asset;
-        my $iter  = __PACKAGE__->load_iter(
+        my @parents = __PACKAGE__->load(
             { parent => $asset->id, class => '*' } );
-        while ( my $a = $iter->() ) {
-            $a->remove;
-        }
+        $_->remove for @parents;
 
         # Remove MT::ObjectAsset records
         $class = MT->model('objectasset');
-        $iter = $class->load_iter( { asset_id => $asset->id } );
+        my $iter = $class->load_iter( { asset_id => $asset->id } );
         while ( my $o = $iter->() ) {
             $o->remove;
         }

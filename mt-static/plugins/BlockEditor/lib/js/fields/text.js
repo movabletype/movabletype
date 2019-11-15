@@ -9,7 +9,7 @@
             return $('<button type="button" class="btn btn-contentblock">' + this.get_icon() + this.label + '</button>');
         },
         get_icon: function(){
-            return '<svg title="' + this.label + '" role="img" class="mt-icon"><use xlink:href="' + this.icon_url + '"></use></svg>';
+            return '<svg role="img" class="mt-icon"><title>' + this.label + '</title><use xlink:href="' + this.icon_url + '"></use></svg>';
         }
     });
     $.extend(BEF.Text.prototype, BEF.prototype, {
