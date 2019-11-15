@@ -124,7 +124,6 @@ class ContentFieldTypeTagHandler {
             } else {
                 $where = "asset_id = ".$db->Param(0);
             }
-            $where = $where . " AND asset_parent IS NULL";
 
             require_once("class.mt_asset.php");
             $asset_class = new Asset;

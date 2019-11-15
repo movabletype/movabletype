@@ -33,6 +33,11 @@ sub _invoke {
         limit     => scalar( $app->param('limit') ),
         offset    => scalar( $app->param('offset') ),
     };
+
+    return
+        unless $app->has_valid_limit_and_offset( $params->{limit},
+        $params->{offset} );
+
     $params->{path} = do {
         if ( defined( my $path = $app->param('path') ) ) {
             $path;

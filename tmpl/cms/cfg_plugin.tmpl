@@ -268,7 +268,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       <div class="mt-collapse__container align-items-center">
         <div class="col">
     <mt:if name="plugin_disabled">
-          <svg title="Disabled" role="img" class="mt-icon mt-pluginpanel__icon">
+          <svg role="img" class="mt-icon mt-pluginpanel__icon">
+            <title>Disabled</title>
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_empty" />
           </svg>
           <span class="plugin-name-disabled text-muted">
@@ -280,7 +281,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             </mt:if>
           </span>
     <mt:else>
-          <svg title="Enabled" role="img" class="mt-icon--secondary mt-pluginpanel__icon">
+          <svg role="img" class="mt-icon--secondary mt-pluginpanel__icon">
+            <title>Enabled</title>
             <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_plugin" />
           </svg>
           <a id="plugin-<mt:var name="plugin_id" escape="html">" data-toggle="collapse" href="#collapse-plugin-<mt:var name="plugin_id" escape="html">-content" aria-expanded="false" aria-controls="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
@@ -314,7 +316,8 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
             </a>
           <mt:else>
             <span class="text-muted icon-left icon-neutral">
-              <svg title="<__trans phrase="Disabled">" role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
+              <svg role="img" class="mt-icon--secondary mt-icon--sm" style="margin: 0;">
+                <title><__trans phrase="Disabled"></title>
                 <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_remove" />
               </svg>
               <__trans phrase="Disabled">
@@ -379,15 +382,15 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       <div class="collapse mt-collapse__content" id="collapse-plugin-<mt:var name="plugin_id" escape="html">-content">
         <div class="row pb-2">
           <div class="col">
-            <ul class="nav mt-tabs" id="plugin-<mt:var name="plugin_id" escape="html">-tab" role="tablist">
+            <ul class="nav mt-tabs" id="plugin-<mt:var name="plugin_id" escape="html">-tab" data-role="tablist">
               <li class="nav-item">
-                <a id="plugin-<mt:var name="plugin_id" escape="html">-info-tab" class="nav-link active" href="#plugin-<mt:var name="plugin_id" escape="html">-info" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-info" aria-selected="true">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-info-tab" class="nav-link active" href="#plugin-<mt:var name="plugin_id" escape="html">-info" data-toggle="tab" data-role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-info" aria-selected="true">
                   <__trans phrase="Info">
                 </a>
               </li>
       <mt:if name="plugin_resources">
               <li class="nav-item">
-                <a id="plugin-<mt:var name="plugin_id" escape="html">-resources-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-resources" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-resources" aria-selected="false">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-resources-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-resources" data-toggle="tab" data-role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-resources" aria-selected="false">
                   <__trans phrase="Resources">
                 </a>
               </li>
@@ -395,14 +398,14 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
               <li class="nav-item">
-                <a id="plugin-<mt:var name="plugin_id" escape="html">-config-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-config" data-toggle="tab" role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-config" aria-selected="false">
+                <a id="plugin-<mt:var name="plugin_id" escape="html">-config-tab" class="nav-link" href="#plugin-<mt:var name="plugin_id" escape="html">-config" data-toggle="tab" data-role="tab" aria-control="plugin-<mt:var name="plugin_id" escape="html">-config" aria-selected="false">
                   <__trans phrase="Settings">
                 </a>
               </li>
         </mt:if>
         <mt:if name="plugin_config_link">
               <li class="nav-item">
-                <a id="tabContent4-tab" class="nav-link" href="#tabContent4" data-toggle="tab" role="tab" aria-control="tabContent4" aria-selected="false">
+                <a id="tabContent4-tab" class="nav-link" href="#tabContent4" data-toggle="tab" data-role="tab" aria-control="tabContent4" aria-selected="false">
                   <__trans phrase="Run [_1]" params="<mt:var name="plugin_name" escape="html">">
                 </a>
               </li>
@@ -453,7 +456,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
       </mt:if>
 
       <mt:if name="plugin_resources">
-              <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane pt-3<mt:unless name="plugin_infos"> active</mt:unless> resources" role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-resources-tab">
+              <div id="plugin-<mt:var name="plugin_id">-resources" class="tab-pane pt-3<mt:unless name="plugin_infos"> active</mt:unless> resources" data-role="tabpanel" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-resources-tab">
                 <ul class="list-unstyled">
         <mt:if name="plugin_tags">
                   <li><strong><__trans phrase="Tags:"></strong></li>
@@ -493,7 +496,7 @@ jQuery('.collapse.mt-collapse__content').on('show.bs.collapse', function (e) {
 
       <mt:if name="can_config">
         <mt:if name="plugin_config_html">
-              <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane p-3<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-config-tab" role="tabpanel">
+              <div id="plugin-<mt:var name="plugin_id">-config" class="tab-pane p-3<mt:unless name="plugin_infos"><mt:unless name="plugin_resources"> active</mt:unless></mt:unless> config" aria-labelledby="plugin-<mt:var name="plugin_id" escape="html">-config-tab" data-role="tabpanel">
                 <form method="post" action="<mt:var name="script_url">" id="plugin-<mt:var name="plugin_id">-form">
                   <input type="hidden" name="__mode" value="save_plugin_config" />
                 <mt:if name="blog_id">

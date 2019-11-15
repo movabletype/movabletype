@@ -716,7 +716,7 @@ sub edit {
         }
         elsif ( $template_type eq 'ct' || $template_type eq 'ct_archive' ) {
             $tab                           = 'ct';
-            $param->{template_group_trans} = $app->translate('contnt type');
+            $param->{template_group_trans} = $app->translate('content type');
             $param->{type_ct_archive}      = 1;
             my @types = (
                 {   key   => 'ct_archive',

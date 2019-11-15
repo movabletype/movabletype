@@ -221,6 +221,7 @@ sub save {
     if ( !$self->id && !defined $self->unique_id ) {
         MT::ContentType::UniqueID::set_unique_id($self);
     }
+    delete $self->{__cached_fields};
 
     $self->SUPER::save(@_);
 }
@@ -237,17 +238,21 @@ sub save {
             $obj->column( 'fields', $data );
         }
         else {
+            return $obj->{__cached_fields}
+                if exists $obj->{__cached_fields}
+                && !$obj->is_changed('fields');
             my $raw_data = $obj->column('fields');
-            return [] unless defined $raw_data;
+            return $obj->{__cached_fields} = [] unless defined $raw_data;
             if ( $raw_data =~ /^SERG/ ) {
                 my $fields = $ser->unserialize( $obj->column('fields') );
-                _sort_fields( $fields ? $$fields : [] );
+                $obj->{__cached_fields}
+                    = _sort_fields( $fields ? $$fields : [] );
             }
             else {
                 require JSON;
                 my $fields = eval { JSON::decode_json($raw_data) } || [];
                 warn $@ if $@ && $MT::DebugMode;
-                _sort_fields($fields);
+                $obj->{__cached_fields} = _sort_fields($fields);
             }
         }
     }

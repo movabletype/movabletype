@@ -71,7 +71,7 @@ sub field_type_icon {
     my $static_uri = MT->static_path;
 
     return
-        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></svg>};
+        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
 }
 
 sub _get_cd_ids {
@@ -388,11 +388,8 @@ sub tag_handler_asset {
     my $asset_terms = {
         id     => @$value ? $value : 0,
         class  => '*',
-        parent => \'IS NULL',
     };
-    my $asset_args = { null => { parent => 1 } };
-
-    my $iter = MT->model('asset')->load_iter( $asset_terms, $asset_args );
+    my $iter = MT->model('asset')->load_iter( $asset_terms );
     my %assets;
     while ( my $asset = $iter->() ) {
         $assets{ $asset->id } = $asset;

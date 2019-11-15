@@ -772,6 +772,9 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/App/CMS/Common.pm
 	'Some websites were not deleted. You need to delete blogs under the website first.' => '削除できないウェブサイトがありました。ウェブサイト内のブログを先に削除する必要があります。',
 
+## lib/MT/App/DataAPI.pm
+        '[_1] must be an integer and between [_2] and [_3].' => '[_1]は[_2]以上、[_3]以下の整数である必要があります。',
+
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',
@@ -985,8 +988,8 @@ use vars qw( @ISA %Lexicon );
 	'Type' => '種類',
 	'Filename' => 'ファイル名',
 	'File Extension' => 'ファイルの拡張子',
-	'Pixel Width' => '高さ (px)',
-	'Pixel Height' => '幅 (px)',
+	'Pixel Width' => '幅 (px)',
+	'Pixel Height' => '高さ (px)',
 	'Except Userpic' => 'プロフィール画像を除外する',
 	'Author Status' => 'ユーザーの状態',
 	'Missing File' => 'ファイルの存在有無',
@@ -1573,7 +1576,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid Blog' => 'ブログが不正です。',
 	'Global' => 'グローバル',
 	'You must specify a template type when creating a template' => 'テンプレートを作成するためのtypeパラメータが指定されていません。',
-	'contnt type' => 'コンテンツタイプ',
+	'content type' => 'コンテンツタイプ',
 	'Content Type Archive' => 'コンテンツタイプアーカイブ',
 	'Create Widget' => 'ウィジェットを作成',
 	'Create Template' => 'テンプレートの作成',
@@ -2359,6 +2362,7 @@ use vars qw( @ISA %Lexicon );
 	'Author ID' => 'ユーザーID',
 	'My Entries' => '自分の記事',
 	'Entries in This Website' => 'ウェブサイトの記事',
+	'Entries in This Site' => 'このサイトの記事',
 	'Published Entries' => '公開されている記事',
 	'Draft Entries' => '下書きの記事',
 	'Unpublished Entries' => '公開が終了している記事',
@@ -2517,6 +2521,7 @@ use vars qw( @ISA %Lexicon );
 	'Level' => 'レベル',
 	'Metadata' => 'メタデータ',
 	'Logs on This Website' => 'ウェブサイトのログ',
+	'Logs on This Site' => 'このサイトのログ',
 	'Show only errors' => 'エラーだけを表示',
 
 ## lib/MT/Mail.pm
@@ -2557,6 +2562,7 @@ use vars qw( @ISA %Lexicon );
 	'(root)' => '(root)',
 	'My Pages' => '自分のウェブページ',
 	'Pages in This Website' => 'ウェブサイトのウェブページ',
+	'Pages in This Site' => 'このサイトのウェブページ',
 	'Published Pages' => '公開されているウェブページ',
 	'Draft Pages' => '下書きのウェブページ',
 	'Unpublished Pages' => '公開が終了しているウェブページ',
@@ -4228,6 +4234,8 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/multi_line_text.tmpl
 	'Input format' => '入力フォーマット',
+	'Use all rich text decoration buttons' => 'リッチテキストの装飾ボタンをすべて利用する',
+	
 
 ## tmpl/cms/content_field_type_options/number.tmpl
 	'Min Value' => '最小値',
@@ -6918,6 +6926,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry/Page Status' => '記事/ウェブページの公開状態',
 	'Date Commented' => 'コメント日',
 	'Comments in This Website' => 'ウェブサイトのコメント',
+	'Comments in This Site' => 'このサイトのコメント',
 	'Non-spam comments' => 'スパムでないコメント',
 	'Non-spam comments on this website' => 'ウェブサイトのスパムでないコメント',
 	'Pending comments' => '保留中のコメント',

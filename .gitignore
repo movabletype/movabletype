@@ -59,6 +59,8 @@ yarn-error.log
 
 .perl-version
 perltidy.LOG
+*.tdy
+*.ERR
 
 cover_db/
 

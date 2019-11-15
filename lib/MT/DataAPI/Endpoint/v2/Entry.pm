@@ -272,9 +272,10 @@ sub list_for_category_common {
     );
     my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
-    +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
+        items => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res ? $res->{objects} : {}
+        ),
     };
 }
 
@@ -305,9 +306,10 @@ sub list_for_asset_common {
     );
     my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
-    +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
+        items => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res ? $res->{objects} : {}
+        ),
     };
 }
 
@@ -337,9 +339,10 @@ sub list_for_tag_common {
     );
     my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
-    +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
+        items => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res ? $res->{objects} : {}
+        ),
     };
 }
 
@@ -372,9 +375,10 @@ sub list_for_site_and_tag_common {
     );
     my $res = filtered_list( $app, $endpoint, $class, undef, \%args );
 
-    +{  totalResults => $res->{count} + 0,
-        items =>
-            MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    +{  totalResults => ( $res ? $res->{count} : 0 ) + 0,
+        items => MT::DataAPI::Resource::Type::ObjectList->new(
+            $res ? $res->{objects} : {}
+        ),
     };
 }
 
