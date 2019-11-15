@@ -2159,11 +2159,29 @@ sub login {
     {
 
         # Login invlaid (password error, etc...)
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error( $app->translate('Invalid login.') );
     }
     elsif ( $res == MT::Auth::DELETED() ) {
 
         # Login invalid; auth layer says user record has been removed
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by deleted user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error(
             $app->translate(
                 'This account has been deleted. Please see your Movable Type system administrator for access.'
@@ -2171,6 +2189,15 @@ sub login {
         );
     }
     elsif ( $res == MT::Auth::LOCKED_OUT() ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by locked-out user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error( $app->translate('Invalid login.') );
     }
     elsif ( $res == MT::Auth::REDIRECT_NEEDED() ) {

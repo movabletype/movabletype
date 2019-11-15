@@ -560,7 +560,7 @@ sub search_terms {
     if ( $app->param('archive_type') ) {
         my $at       = $app->param('archive_type');
         my $archiver = MT->publisher->archiver($at);
-        return return $app->errtrans('Invalid archive type')
+        return $app->errtrans('Invalid archive type')
             unless ( $archiver || $at eq 'Index' );
     }
 
@@ -926,8 +926,7 @@ sub load_search_tmpl {
 
             if ( my $at = $app->param('archive_type') ) {
                 my $archiver = MT->publisher->archiver($at);
-                return
-                    return $app->errtrans(
+                return $app->errtrans(
                     'You must pass a valid archive_type with the template_id')
                     unless ( $archiver || $at eq 'Index' );
 

@@ -608,7 +608,10 @@ use vars qw( @ISA %Lexicon );
 	'Failed login attempt by disabled user \'[_1]\'' => '無効なユーザー [_1] がサインインしようとしました。',
 	'This account has been disabled. Please see your Movable Type system administrator for access.' => 'このアカウントは無効にされています。システム管理者に問い合わせてください。',
 	'Failed login attempt by pending user \'[_1]\'' => '保留中のユーザー「[_1]」がサインインしようとしました。',
+	'Failed login attempt by user \'[_1]\'' => 'ユーザー「[_1]」がサインインに失敗しました。',
+	'Failed login attempt by deleted user \'[_1]\'' => '削除済みのユーザー「[_1]」がサインインしようとしました。',
 	'This account has been deleted. Please see your Movable Type system administrator for access.' => 'このアカウントは削除されました。システム管理者に問い合わせてください。',
+	'Failed login attempt by locked-out user \'[_1]\'' => 'ロックされたユーザー「[_1]」がサインインしようとしました。',
 	'User cannot be created: [_1].' => 'ユーザーを登録できません: [_1]',
 	'User \'[_1]\' has been created.' => 'ユーザー「[_1]」が作成されました。',
 	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
@@ -6846,7 +6849,7 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Alt' => '代替テキスト',
-	'Caption' => 'タイトル',
+	'Caption' => 'キャプション',
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'コメント機能を提供します。',

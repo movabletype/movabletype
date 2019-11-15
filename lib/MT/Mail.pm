@@ -131,6 +131,10 @@ sub send {
     $hdrs{'MIME-Version'} ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+    if ( !$hdrs{From} ) {
+        return $class->error(
+            MT->translate("System Email Address is not configured.") );
+    }
 
     if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
         && eval { require MIME::Base64 } )
@@ -250,17 +254,16 @@ sub _send_mt_smtp {
         (   $do_ssl
             ? ( doSSL           => $do_ssl,
                 SSL_verify_mode => $ssl_verify_mode,
-                $ssl_verify_mode
-                ? ( SSL_version => MT->config->SSLVersion
+                SSL_version => MT->config->SSLVersion
                         || MT->config->SMTPSSLVersion
-                        || 'SSLv23:!SSLv3:!SSLv2' )
-                : (),
-                ( $ssl_verify_mode && eval { require Mozilla::CA; 1 } )
-                ? ( SSL_verifycn_name   => $host,
-                    SSL_verifycn_scheme => 'smtp',
+                        || 'SSLv23:!SSLv3:!SSLv2' ,
+                ( eval { require Mozilla::CA; 1 } )
+                ? (
                     SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
                     )
                 : (),
+                SSL_verifycn_name   => $host,
+                SSL_verifycn_scheme => 'smtp'
                 )
             : ()
         ),
