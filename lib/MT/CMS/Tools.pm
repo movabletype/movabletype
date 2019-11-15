@@ -105,6 +105,7 @@ sub start_recover {
         = $app->param('return_to')
         || $cfg->ReturnToURL
         || '';
+
     if ( $param->{recovered} ) {
         $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
     }
@@ -166,6 +167,12 @@ sub recover_password {
         return $app->start_recover( { not_unique_email => 1, } );
     }
     $user = pop @authors;
+
+    my $return_to = $app->param('return_to');
+    if ($return_to) {
+        $app->is_valid_redirect_target($return_to)
+            or return $app->errtrans("Invalid request.");
+    }
 
     MT::Util::start_background_task(
         sub {
@@ -310,6 +317,9 @@ sub new_password {
                 }
                 $app->make_commenter_session($user);
                 if ($redirect) {
+                    ## just in case
+                    $app->is_valid_redirect_target($redirect)
+                        or return $app->errtrans("Invalid request.");
                     return $app->redirect( MT::Util::encode_html($redirect) );
                 }
                 else {

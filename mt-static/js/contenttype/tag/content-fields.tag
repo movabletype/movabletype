@@ -12,8 +12,8 @@
       <div class="col">
         <div if={ opts.id }  id="name-field" class="form-group">
           <h3>{opts.name} <button type="button" class="btn btn-link" data-toggle="modal" data-target="#editDetail">{ trans('Edit') }</button></h3>
-          <div id="editDetail" class="modal" role="dialog" aria-labelledby="editDetail" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+          <div id="editDetail" class="modal" data-role="dialog" aria-labelledby="editDetail" aria-hidden="true">
+            <div class="modal-dialog modal-lg" data-role="document">
               <div class="modal-content">
                 <div class="modal-header">
                   <h4 class="modal-title">{ trans('Content Type') }</h4>

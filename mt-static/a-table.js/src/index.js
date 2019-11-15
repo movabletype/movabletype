@@ -443,6 +443,7 @@ export default class aTable extends aTemplate {
         obj.value = '';
         if (html) {
           obj.value = html.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+          obj.value = obj.value.replace(/\\/g, '&#92;');
         }
         const classAttr = cell.getAttribute('class');
         let cellClass = '';
@@ -545,13 +546,9 @@ export default class aTable extends aTemplate {
         range.setEndBefore(elem.lastChild.lastChild);
       } else if (aTable.getBrowser() === 'edge'
         && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV'
-        && elem.lastChild.hasChildNodes())
+        && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR')
       {
-        if (elem.lastChild.lastChild.tagName === 'BR') {
-          range.setEndBefore(elem.lastChild.lastChild);
-        } else {
-          range.setEndAfter(elem.lastChild.lastChild);
-        }
+        range.setEndBefore(elem.lastChild.lastChild);
       } else {
         range.selectNodeContents(elem);
       }
@@ -843,19 +840,22 @@ export default class aTable extends aTemplate {
       if (util.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === `${b}-${a}`) {
         data.history.push(clone(data.row));
         data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+        data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
       }
       if (this.afterEntered) {
         this.afterEntered();
       }
-    } else if (type === 'keyup'
-      && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge'))
-    {
-      if (util.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === `${b}-${a}`) {
-        data.history.push(clone(data.row));
-        data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
-      }
-      if (this.afterEntered) {
-        this.afterEntered();
+    } else if (type === 'keyup') {
+      const browser = aTable.getBrowser();
+      if (browser.indexOf('ie') !== -1 || browser === 'edge') {
+        if (util.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === `${b}-${a}`) {
+          data.history.push(clone(data.row));
+          data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+          data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
+        }
+        if (this.afterEntered) {
+          this.afterEntered();
+        }
       }
     }
   }
@@ -890,10 +890,12 @@ export default class aTable extends aTemplate {
   }
 
   pasteTable(e) {
-    let pastedData;
-    const data = this.data;
     if (e.clipboardData) {
-      this.processPaste(e.clipboardData.getData('text/html'));
+      let html = e.clipboardData.getData('text/html');
+      if (!html) {
+        html = e.clipboardData.getData('text/plain');
+      }
+      this.processPaste(html);
     } else if (window.clipboardData) {
       this.getClipBoardData();
     }
@@ -929,7 +931,7 @@ export default class aTable extends aTemplate {
     const e = this.e;
     e.preventDefault();
     const selectedPoint = this.getSelectedPoint();
-    const tableHtml = pastedData.match(/<table(.*)>(([\n\r\t]|.)*?)<\/table>/i);
+    const tableHtml = pastedData.match(/<table(([\n\r\t]|.)*?)>(([\n\r\t]|.)*?)<\/table>/i);
     const data = this.data;
     if (tableHtml && tableHtml[0]) {
       const newRow = this.parse(tableHtml[0],'text');

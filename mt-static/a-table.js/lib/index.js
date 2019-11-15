@@ -492,6 +492,7 @@ var aTable = function (_aTemplate) {
           obj.value = '';
           if (html) {
             obj.value = html.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+            obj.value = obj.value.replace(/\\/g, '&#92;');
           }
           var classAttr = cell.getAttribute('class');
           var cellClass = '';
@@ -593,12 +594,8 @@ var aTable = function (_aTemplate) {
           range.setEndBefore(elem.lastChild);
         } else if (aTable.getBrowser() === 'ie11' && elem.hasChildNodes() && elem.lastChild.tagName === 'P' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
           range.setEndBefore(elem.lastChild.lastChild);
-        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes()) {
-          if (elem.lastChild.lastChild.tagName === 'BR') {
-            range.setEndBefore(elem.lastChild.lastChild);
-          } else {
-            range.setEndAfter(elem.lastChild.lastChild);
-          }
+        } else if (aTable.getBrowser() === 'edge' && elem.hasChildNodes() && elem.lastChild.tagName === 'DIV' && elem.lastChild.hasChildNodes() && elem.lastChild.lastChild.tagName === 'BR') {
+          range.setEndBefore(elem.lastChild.lastChild);
         } else {
           range.selectNodeContents(elem);
         }
@@ -905,17 +902,22 @@ var aTable = function (_aTemplate) {
         if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
           data.history.push((0, _clone2.default)(data.row));
           data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+          data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
         }
         if (this.afterEntered) {
           this.afterEntered();
         }
-      } else if (type === 'keyup' && (aTable.getBrowser().indexOf('ie') !== -1 || aTable.getBrowser() === 'edge')) {
-        if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
-          data.history.push((0, _clone2.default)(data.row));
-          data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
-        }
-        if (this.afterEntered) {
-          this.afterEntered();
+      } else if (type === 'keyup') {
+        var browser = aTable.getBrowser();
+        if (browser.indexOf('ie') !== -1 || browser === 'edge') {
+          if (_util2.default.hasClass(this.e.target, 'a-table-editable') && this.e.target.parentNode.getAttribute('data-cell-id') === b + '-' + a) {
+            data.history.push((0, _clone2.default)(data.row));
+            data.row[a].col[b].value = this.e.target.innerHTML.replace(/{(.*?)}/g, '&lcub;$1&rcub;');
+            data.row[a].col[b].value = data.row[a].col[b].value.replace(/\\/g, '&#92;');
+          }
+          if (this.afterEntered) {
+            this.afterEntered();
+          }
         }
       }
     }
@@ -952,10 +954,12 @@ var aTable = function (_aTemplate) {
   }, {
     key: 'pasteTable',
     value: function pasteTable(e) {
-      var pastedData = void 0;
-      var data = this.data;
       if (e.clipboardData) {
-        this.processPaste(e.clipboardData.getData('text/html'));
+        var html = e.clipboardData.getData('text/html');
+        if (!html) {
+          html = e.clipboardData.getData('text/plain');
+        }
+        this.processPaste(html);
       } else if (window.clipboardData) {
         this.getClipBoardData();
       }
@@ -996,7 +1000,7 @@ var aTable = function (_aTemplate) {
       var e = this.e;
       e.preventDefault();
       var selectedPoint = this.getSelectedPoint();
-      var tableHtml = pastedData.match(/<table(.*)>(([\n\r\t]|.)*?)<\/table>/i);
+      var tableHtml = pastedData.match(/<table(([\n\r\t]|.)*?)>(([\n\r\t]|.)*?)<\/table>/i);
       var data = this.data;
       if (tableHtml && tableHtml[0]) {
         var newRow = this.parse(tableHtml[0], 'text');

@@ -401,7 +401,7 @@ function generateMobilePageLink(page, setMrAuto, current) {
 function generateMobilePageLinkTriangle(page, setMrAuto, next) {
   var mrAutoClass = setMrAuto ? ' mr-auto' : '';
   var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
-  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg title="next" role="img" class="mt-icon--inverse mt-icon--sm"><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg role="img" class="mt-icon--inverse mt-icon--sm"><title>next</title><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
 }
 
 function saveChecked(page) {
