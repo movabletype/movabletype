@@ -28,6 +28,8 @@ sub list {
         my $offset = $app->param('offset');
         my $limit  = $app->param('limit');
 
+        return unless $app->has_valid_limit_and_offset( $limit, $offset );
+
         my $filter_keys = $app->param('filterKeys');
         my $blog_ids = $app->param('blogIds') || '';
         $filter_keys =~ s/blogIds/ids/;

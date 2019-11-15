@@ -1929,9 +1929,7 @@ sub tmpl_out_unlike {
 }
 
 sub _run_rpt {
-    `perl ./tools/run-periodic-tasks`;
-
-    1;
+    `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
 }
 
 sub _run_tasks {

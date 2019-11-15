@@ -629,6 +629,10 @@ sub do_reply {
 
     my $q = $app->param;
 
+    my $return_url = $q->param('return_url');
+    return $app->errtrans("Invalid request")
+        if $return_url && !$app->is_valid_redirect_target($return_url);
+
     my $param = {
         reply_to    => $q->param('reply_to'),
         magic_token => $q->param('magic_token'),
@@ -682,7 +686,7 @@ sub do_reply {
         }
     );
     return $app->build_page( 'dialog/comment_reply.tmpl',
-        { closing => 1, return_url => scalar( $q->param('return_url') ) } );
+        { closing => 1, return_url => $return_url } );
 }
 
 sub reply_preview {

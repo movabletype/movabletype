@@ -813,6 +813,9 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'コメント投稿者のユーザー情報を更新しました。',
 	'Commenter profile could not be updated: [_1]' => 'コメント投稿者のユーザー情報を更新できませんでした: [_1]',
 
+## lib/MT/App/DataAPI.pm
+        '[_1] must be an integer and between [_2] and [_3].' => '[_1]は[_2]以上、[_3]以下の整数である必要があります。',
+
 ## lib/MT/App/Search.pm
 	'Invalid type: [_1]' => '不正なtypeです: [_1]',
 	'Failed to cache search results.  [_1] is not available: [_2]' => '結果をキャッシュできませんでした。[_1]を利用できません: [_2]',

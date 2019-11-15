@@ -93,6 +93,7 @@ sub write_config {
         ImageDriver         => $image_driver,
         MTVersion           => MT->version_number,
         MTReleaseNumber     => MT->release_number,
+        MailTransfer        => 'debug',
     );
 
     if ($extra) {
