@@ -2703,17 +2703,20 @@ sub new_ua {
         );
     }
 
-    my $ua = $lwp_class->new;
-    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
-        $ua->ssl_opts( verify_hostname => 0 );
+    my %ssl_opts = (
+        verify_hostname => MT->config->SSLVerifyNone ? 0 : 1,
+        SSL_version     => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+    );
+
+    if ( eval { require Mozilla::CA; 1 } ) {
+        $ssl_opts{SSL_ca_file} = Mozilla::CA::SSL_ca_file();
     }
     else {
-        $ua->ssl_opts(
-            verify_hostname => 1,
-            SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
-        );
+        $ssl_opts{verify_hostname} = 0;
     }
+
+    my $ua = $lwp_class->new;
+    $ua->ssl_opts(%ssl_opts);
     $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
