@@ -774,7 +774,7 @@
         getInfo : function() {
             return {
                 longname : 'MovableType',
-                author : 'Six Apart, Ltd',
+                author : 'Six Apart Ltd',
                 authorurl : '',
                 infourl : '',
                 version : '1.0'

@@ -1003,7 +1003,7 @@ Both of these methods can be used to register a new permission with
 Movable Type.
 
 Note: It is not advisable to call these method to register custom permissions
-without having preregistered for one from Six Apart, Ltd. This will
+without having preregistered for one from Six Apart Ltd. This will
 reserve your permission and allow it to coexist with other plugins and
 future permissions defined by Movable Type itself.
 

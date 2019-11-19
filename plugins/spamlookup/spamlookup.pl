@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -24,7 +24,7 @@ sub BEGIN {
             description =>
                 '<MT_TRANS phrase="SpamLookup module for using blacklist lookup services to filter feedback.">',
             doc_link        => 'http://www.spamlookup.com/wiki/LookupFilter',
-            author_name     => 'Six Apart, Ltd.',
+            author_name     => 'Six Apart Ltd.',
             author_link     => 'http://www.movabletype.org/',
             config_template => 'lookup_config.tmpl',
             l10n_class      => 'spamlookup::L10N',

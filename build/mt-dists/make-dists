@@ -228,7 +228,7 @@ EOT
     chomp($license);
 
     if ($content =~ s{$open (\d+(-\d+)?).*?$close}
-        { '# Movable Type (r) (C) ' . $1 . ' Six Apart, Ltd. All Rights Reserved.' . $license }se
+        { '# Movable Type (r) (C) ' . $1 . ' Six Apart Ltd. All Rights Reserved.' . $license }se
         )
     {
 
