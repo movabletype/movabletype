@@ -2,7 +2,7 @@
 Client Library
 $Id: Client.js 250 2007-12-07 21:52:56Z ydnar $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

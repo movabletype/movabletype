@@ -1,7 +1,7 @@
 /* 
 $Id: Iframe.js 271 2009-10-22 01:46:46Z auno $
 
-Copyright Six Apart, Ltd. All rights reserved.
+Copyright Six Apart Ltd. All rights reserved.
 Redistribution and use in source and binary forms is
 subject to the Six Apart JavaScript license:
 

@@ -19,7 +19,7 @@
         getInfo : function() {
             return {
                 longname : 'MTInlinepopups',
-                author : 'Six Apart, Ltd',
+                author : 'Six Apart Ltd',
                 authorurl : '',
                 infourl : '',
                 version : '1.0'

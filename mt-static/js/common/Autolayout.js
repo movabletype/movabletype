@@ -2,7 +2,7 @@
 DOM Autolayout Interface
 $Id: Autolayout.js 206 2007-05-30 20:57:07Z ddavis $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
