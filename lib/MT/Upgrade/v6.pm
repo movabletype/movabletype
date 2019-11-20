@@ -19,7 +19,7 @@ sub upgrade_functions {
                     my $blog = $_[0];
                     $blog->class eq 'blog' && !$blog->parent_id;
                 },
-                code  => sub { $_[0]->class('website') },
+                code => sub { $_[0]->class('website') },
                 label => "Migrating current blog to a website...",
                 sql   => <<__SQL__,
 UPDATE mt_blog
@@ -122,6 +122,11 @@ __SQL__
             version_limit => '6.0021',
             priority      => 3.1,
             code          => \&_v6_remove_sql_set_names,
+        },
+        'v6_update_release_number' => {
+            version_limit => '6.0022',
+            priority      => 3.1,
+            code          => \&_v6_update_release_number,
         },
     };
 }
@@ -283,6 +288,16 @@ sub _v6_remove_sql_set_names {
 
     my $cfg = MT->config;
     $cfg->SQLSetNames( undef, 1 );
+    $cfg->save_config;
+}
+
+sub _v6_update_release_number {
+    my $self = shift;
+
+    $self->progress( $self->translate_escape('Fix MTReleaseNumber...') );
+
+    my $cfg = MT->config;
+    $cfg->MTReleaseNumber( MT->release_number, 1 );
     $cfg->save_config;
 }
 
