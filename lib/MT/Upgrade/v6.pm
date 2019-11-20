@@ -294,7 +294,7 @@ sub _v6_remove_sql_set_names {
 sub _v6_update_release_number {
     my $self = shift;
 
-    $self->progress( $self->translate_escape('Fix MTReleaseNumber...') );
+    $self->progress( $self->translate_escape('Fixing MTReleaseNumber...') );
 
     my $cfg = MT->config;
     $cfg->MTReleaseNumber( MT->release_number, 1 );

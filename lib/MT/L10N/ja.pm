@@ -2718,6 +2718,7 @@ _4]\'から削除しました。',
 	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
 	'Reordering dashboard widgets...' => 'ダッシュボードウィジェットの並び順を設定しています...',
 	'Rebuilding permission records...' => '権限を再構築しています...',
+        'Fixing MTReleaseNumber...' => 'MTReleaseNumber を更新しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',
