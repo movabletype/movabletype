@@ -301,7 +301,7 @@ sub save_config {
     my $config;
     eval { $config = $cfg_class->load(); };
     if ($@) {
-        warn 'An error occurred when loading the config class: ' . $@;
+        warn "An error occurred when loading the config class: $@" if $MT::DebugMode;
         return;
     }
     unless ($config) {
