@@ -695,9 +695,13 @@ sub init_permissions {
     require MT::Permission;
     MT::Permission->init_permissions;
 
-    $app->component('core')
-        ->registry( 'permissions',
-        $app->model('content_type')->all_permissions );
+    my $ct_permissions = eval { $app->model('content_type')->all_permissions };
+    if ($@) {
+        warn "An error occurred when loading the content_type class: $@" if $MT::DebugMode;
+        return;
+    }
+
+    $app->component('core')->registry( 'permissions', $ct_permissions );
 }
 
 sub init_config {
