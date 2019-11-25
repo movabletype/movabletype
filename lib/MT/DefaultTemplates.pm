@@ -149,7 +149,6 @@ BEGIN {
             'signin'               => { label => 'Sign In', },
             'syndication'          => { label => 'Syndication', },
             'tag_cloud'            => { label => 'Tag Cloud', },
-            'technorati_search'    => { label => 'Technorati Search', },
             'date_based_author_archives' =>
                 { label => 'Date-Based Author Archives', },
             'date_based_category_archives' =>
