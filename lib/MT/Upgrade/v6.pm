@@ -250,7 +250,11 @@ SQL
 
         $driver->sql( [ "alter table mt_ts_error drop constraint $pkey", ] );
     }
-    elsif ( $driver->dbd =~ m/::mysql$|::Oracle$/ ) {
+    elsif ( $driver->dbd =~ m/::mysql$/ ) {
+        return unless $dbh->selectrow_arrayref("show index in mt_ts_error where Key_name = ?", undef, 'PRIMARY');
+        $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
+    }
+    elsif ( $driver->dbd =~ m/::Oracle$/ ) {
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {
