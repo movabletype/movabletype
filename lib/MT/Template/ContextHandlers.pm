@@ -393,7 +393,8 @@ sub core_tags {
             TrackbackScript =>
                 \&MT::Template::Tags::System::_hdlr_trackback_script,
             SearchScript => \&MT::Template::Tags::System::_hdlr_search_script,
-            ContentDataSearchScript => \&MT::Template::Tags::System::_hdlr_cd_search_script,
+            ContentDataSearchScript =>
+                \&MT::Template::Tags::System::_hdlr_cd_search_script,
             XMLRPCScript => \&MT::Template::Tags::System::_hdlr_xmlrpc_script,
             AtomScript   => \&MT::Template::Tags::System::_hdlr_atom_script,
             CGIHost      => \&MT::Template::Tags::System::_hdlr_cgi_host,
@@ -3401,7 +3402,10 @@ sub _hdlr_app_statusmsg {
         )
         )
     {
-        $rebuild = '' if $rebuild ne 'cfg_prefs' && $blog && $blog->custom_dynamic_templates eq 'all';
+        $rebuild = ''
+            if $rebuild ne 'cfg_prefs'
+            && $blog
+            && $blog->custom_dynamic_templates eq 'all';
         $rebuild
             = qq{<__trans phrase="[_1]Publish[_2] your site to see these changes take effect, even when publishing profile is dynamic publishing." params="<a href="<mt:var name="mt_url">?__mode=rebuild_confirm&blog_id=<mt:var name="blog_id">" class="mt-rebuild alert-link">%%</a>">}
             if $rebuild eq 'cfg_prefs';
@@ -4114,7 +4118,7 @@ sub _hdlr_app_svg_icon {
 
     my $title_attr = '';
     if ( defined $title && $title ne '' ) {
-        $title_attr = q{<title>$title</title>};
+        $title_attr = qq{<title>$title</title>};
     }
     my $color_class_suffix = '';
     if ( defined $color && $color ne '' ) {
