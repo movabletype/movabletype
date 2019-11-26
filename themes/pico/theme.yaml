@@ -162,8 +162,6 @@ elements:
                         label: Syndication
                     tag_cloud:
                         label: Tag Cloud
-                    technorati_search:
-                        label: Technorati Search
                 widgetset:
                     related_content:
                         label: 'Related Content'
