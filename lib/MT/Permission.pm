@@ -119,8 +119,13 @@ sub global_perms {
         my $regs = MT::Component->registry('permissions');
         my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
-        %perms = +( %perms,
-            %{ MT->app->model('content_type')->all_permissions } );
+
+        my $ct_permissions = eval { MT->app->model('content_type')->all_permissions };
+        if ( $@ && $MT::DebugMode ) {
+            warn "An error occurred when loading the config class: $@";
+        }
+
+        %perms = +( %perms, %$ct_permissions ) if $ct_permissions;
 
         \%perms;
     }

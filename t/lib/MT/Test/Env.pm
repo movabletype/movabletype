@@ -100,6 +100,7 @@ sub write_config {
         LoggerPath          => 'TEST_ROOT/log',
         LoggerLevel         => 'DEBUG',
         MailTransfer        => 'debug',
+        DBIRaiseError       => 1,
         ProcessMemoryCommand => 0,    ## disable process check
     );
 
