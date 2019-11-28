@@ -234,6 +234,7 @@ sub listing_screens {
             permit_action => 'access_to_formatted_text_list',
             inherit       => 0,
         },
+        condition => sub { is_enabled( MT->instance ) },
         template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_formatted_text.tmpl'
@@ -280,6 +281,16 @@ sub content_actions {
             label     => 'Create New',
             order     => 100,
             condition => sub { MT->instance->blog },
+        },
+    };
+}
+
+sub enable_object_methods {
+    return +{
+        formatted_text => {
+            delete => sub { is_enabled( MT->instance ) },
+            edit   => sub { is_enabled( MT->instance ) },
+            save   => sub { is_enabled( MT->instance ) },
         },
     };
 }
