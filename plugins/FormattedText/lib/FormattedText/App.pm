@@ -31,6 +31,8 @@ sub is_enabled {
     $status;
 }
 
+sub _is_enabled { is_enabled( MT->instance ) }
+
 sub _load_formatted_text_to_param {
     my ( $key, $cb, $app, $param, $tmpl ) = @_;
 
@@ -234,6 +236,7 @@ sub listing_screens {
             permit_action => 'access_to_formatted_text_list',
             inherit       => 0,
         },
+        condition => \&_is_enabled,
         template => File::Spec->catfile(
             plugin()->{full_path}, 'tmpl',
             'cms',                 'list_formatted_text.tmpl'
@@ -280,6 +283,16 @@ sub content_actions {
             label     => 'Create New',
             order     => 100,
             condition => sub { MT->instance->blog },
+        },
+    };
+}
+
+sub enable_object_methods {
+    return +{
+        formatted_text => {
+            delete => \&_is_enabled,
+            edit   => \&_is_enabled,
+            save   => \&_is_enabled,
         },
     };
 }
