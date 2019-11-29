@@ -12,6 +12,7 @@ object_types:
 
 applications:
     cms:
+        disable_object_methods: '$FormattedText::FormattedText::App::disable_object_methods'
         menus:
             entry:manage_formatted_text:
                 label: Boilerplate
