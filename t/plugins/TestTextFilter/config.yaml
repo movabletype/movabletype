@@ -1,5 +1,0 @@
-id: TestTextFilter
-name: TestTextFilter
-text_filters:
-    nonexistent:
-        label: 'vacuum'
