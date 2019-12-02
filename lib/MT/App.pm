@@ -3438,7 +3438,7 @@ sub handlers_for_mode {
             my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
-                    if $hdlr->{code} =~ m/^\$?(\w+)::/;
+                    if $handler =~ m/^\$?(\w+)::/;
             }
         }
         else {
