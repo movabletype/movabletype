@@ -4276,6 +4276,7 @@ sub is_valid_redirect_target {
             map { scalar $app->param($_) } qw/static return_url return_to/;
         push @targets, '' unless @targets;
         for my $target (@targets) {
+            next if $target eq '0';
             if ( ( $target eq '' ) || ( $target eq '1' ) ) {
                 require MT::Entry;
                 my $entry_id = $app->param('entry_id') || 0;
