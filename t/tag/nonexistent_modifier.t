@@ -6,8 +6,23 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        PluginPath => [qw(
+            MT_HOME/plugins
+            MT_HOME/t/plugins
+            TEST_ROOT/plugins
+        )]
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    my $config_yaml = 'plugins/TestTextFilter/config.yaml';
+    $test_env->save_file( $config_yaml, <<'YAML' );
+id: TestTextFilter
+name: TestTextFilter
+text_filters:
+    nonexistent:
+        label: 'vacuum'
+YAML
 }
 
 use MT::Test::Tag;
