@@ -203,8 +203,6 @@ sub process_log_feed {
 
     require MT::Log;
     my $cfg  = $app->config;
-    my @data = MT::Log->load( $terms,
-        { 'sort' => 'id', 'direction' => 'descend' } );
     my $iter = MT::Log->load_iter( $terms,
         { 'sort' => 'id', 'direction' => 'descend' } );
     my $count = 0;
