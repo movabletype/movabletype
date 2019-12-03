@@ -94,6 +94,7 @@ sub write_config {
         MTVersion           => MT->version_number,
         MTReleaseNumber     => MT->release_number,
         MailTransfer        => 'debug',
+        DBIRaiseError       => 1,
     );
 
     if ($extra) {

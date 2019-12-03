@@ -201,16 +201,6 @@ sub init_time {
 sub init_testdb {
     my $pkg = shift;
 
-    # This is a bit of MT::Upgrade magic to prevent the full
-    # instantiation of the MT schema. We force the classes list
-    # to only contain the test 'Foo', 'Bar' classes and neuter
-    # the
-    require MT::Upgrade;
-
-    # Add our test 'Foo' and 'Bar' classes to the list of
-    # object classes to install.
-    %MT::Upgrade::classes = ( foo => 'Foo', bar => 'Bar', baz => 'Baz' );
-
     #MT::Upgrade->register_class(['Foo', 'Bar']);
     MT->instance;
     my $registry = MT->component('core')->registry;
@@ -218,24 +208,7 @@ sub init_testdb {
     $registry->{object_types}->{bar} = 'Bar';
     $registry->{object_types}->{baz} = 'Baz';
 
-    # Replace the standard seed_database/install_template functions
-    # with stubs since we're not creating a full schema.
-    my $fns = MT->component('core')->registry('upgrade_functions');
-    MT->component('core')->registry(
-        'upgrade_functions',
-        {   %$fns,
-            core_seed_database => {
-                code => sub {1}
-            },
-            core_upgrade_templates => {
-                code => sub {1}
-            },
-            core_finish => {
-                code => sub {1}
-            },
-        }
-    );
-    $pkg->init_db();
+    $pkg->init_newdb;
 }
 
 our $MEMCACHED_SEARCHED;

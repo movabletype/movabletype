@@ -164,7 +164,7 @@ sub count_group_by : Tests(34) {
     ok( ( $count, $bfid ) = $cgb_iter5->(), 'set' );
     is( $bfid,  2, 'id-8' );
     is( $count, 2, 'count-8' );
-    ok( !$cgb_iter2->(), 'no $iter' );
+    ok( !$cgb_iter5->(), 'no $iter' );
 }
 
 sub sum_group_by : Tests(7) {
