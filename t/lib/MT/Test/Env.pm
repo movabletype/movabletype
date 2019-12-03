@@ -133,6 +133,18 @@ sub write_config {
     close $fh;
 }
 
+sub save_file {
+    my ( $self, $path, $body ) = @_;
+
+    my $file = $self->path($path);
+    my $dir  = dirname($file);
+    mkpath $dir unless -d $dir;
+
+    open my $fh, '>', $file or die $!;
+    binmode $fh;
+    print $fh $body;
+}
+
 sub connect_info {
     my $self   = shift;
     my $driver = $self->{driver};
