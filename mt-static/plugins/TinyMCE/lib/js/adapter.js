@@ -147,7 +147,8 @@
 
             content_css: '',
             body_class: '',
-            body_id: ''
+            body_id: '',
+            content_security_policy: "script-src 'none';",
         }
     });
 
