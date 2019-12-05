@@ -1828,7 +1828,7 @@ BEGIN {
             'HTTPNoProxy'            => { default => 'localhost', },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
-            'ImageQualityJpeg'       => { default => 75 },
+            'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
             'AutoChangeImageQuality' => { default => 1 },
             'NetPBMPath'             => undef,
