@@ -9,6 +9,7 @@ use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use LWP::UserAgent::Local;
 use HTTP::Request;
 use Data::Dumper;
+use Encode;
 use Getopt::Long;
 use Web::Scraper;
 use MT;
@@ -47,6 +48,17 @@ if ($elapse) {
 
 ### Creates MT object.
 my $mt = MT->new() or die MT->errstr;
+
+### Decide terminal's encoding
+my $encoding;
+if ( eval { require Term::Encoding } ) {
+    $encoding = Term::Encoding::get_encoding();
+}
+else {
+    $encoding = $^O eq 'MSWin32' ? 'cp932' : 'utf8';
+}
+my $enc = Encode::find_encoding($encoding)
+    or die "unknown encoding: $encoding";
 
 ### Loads blogs
 if (!@blog_ids) {
@@ -198,7 +210,7 @@ sub run_rebuild {
 
 sub logging {
     my ($msg) = @_;
-    print $msg if !$silent;
+    print $enc->encode($msg) if !$silent;
 }
 
 1;
