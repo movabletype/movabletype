@@ -20,6 +20,9 @@ plan tests => 2 * blocks;
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use POSIX;
+use POSIX qw( strftime );
+
 my $app = MT->instance;
 
 my $blog_id = 1;
@@ -135,11 +138,26 @@ my $cd4 = MT::Test::Permission->make_content_data(
     data            => { $cf_category->id => [ $category1->id ], },
 );
 
+
+my $current_datetime = strftime( "%Y%m%d%H%M%S", localtime );
+my $current_date = strftime( "%Y%m", localtime );
+my $current_day = strftime( "%d", localtime );
+$current_day =~ s/^0//;
+
+my $cd5 = MT::Test::Permission->make_content_data(
+    blog_id         => $blog_id,
+    content_type_id => $ct->id,
+    authored_on     => $current_datetime,
+    data            => { $cf_category->id => [ $category1->id ], },
+);
+
 $vars->{ct_uid}          = $ct->unique_id;
 $vars->{ct_name}         = $ct->name;
 $vars->{ct_id}           = $ct->id;
 $vars->{cat_label}       = $category2->label;
 $vars->{category_set_id} = $category_set->id;
+$vars->{current_date} = $current_date;
+$vars->{current_day} = $current_day;
 
 MT::Test::Tag->run_perl_tests($blog_id);
 
@@ -381,3 +399,9 @@ __END__
 
 30
 
+=== MT::ContentCalendar unset month
+--- template
+<mt:ContentCalendar content_type="test content data">
+<mt:CalendarIfContents><mt:CalendarDate format="%Y%m">-<mt:CalendarDay></mt:CalendarIfContents></mt:ContentCalendar>
+--- expected
+[% current_date %]-[% current_day %]
