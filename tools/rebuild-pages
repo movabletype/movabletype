@@ -70,9 +70,9 @@ my @blogs = MT::Blog->load( { id => \@blog_ids } )
 
 # Creates scraper object
 my $scraper = scraper {
-    process "div.msg-publishing", status_publishing => 'TEXT';
-    process "div.msg-error",      status_error      => 'TEXT';
-    process "div.msg-success",    status_success    => 'TEXT';
+    process "div.alert-publishing", status_publishing => 'TEXT';
+    process "div.alert-error",      status_error      => 'TEXT';
+    process "div.alert-success",    status_success    => 'TEXT';
 
     result 'status_publishing', 'status_error', 'status_success';
 };
@@ -169,10 +169,11 @@ sub run_rebuild {
             my $req = new HTTP::Request( GET => $url );
             my $resp = $ua->request($req);
             if ( $resp->is_success ) {
-                my $res = $scraper->scrape( $resp->content() );
+                my $content = $resp->decoded_content;
+                my $res = $scraper->scrape($content);
                 if ( $res->{status_publishing} ) {
                     ( undef, $url ) =
-                      $resp->content() =~ /window.location='(.*)\?(.*)'/;
+                      $content =~ /window.location='(.*)\?(.*)'/;
                     $url = "http://$hostname$script_path" . $mt->config->AdminScript . "?" . $url;
                 }
                 elsif ( $res->{status_success} ) {
@@ -191,7 +192,7 @@ sub run_rebuild {
                     logging("\t"
                           . $at
                           . " built failed.\n"
-                          . $resp->content()
+                          . $content
                           . "\n" );
                     $url = undef;
                 }
