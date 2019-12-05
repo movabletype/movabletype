@@ -2687,6 +2687,7 @@ sub update_entry_status {
         my $original   = $entry->clone;
         my $old_status = $entry->status;
         $entry->status($new_status);
+        $entry->modified_by( $app_author->id );
         $entry->save() and $rebuild_these{$id} = 1;
 
         # Clear cache for site stats dashboard widget.
