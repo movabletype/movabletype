@@ -64,7 +64,10 @@ sub suite {
             params => { dateFrom => '1979-01-01', },
             result => sub {
                 my @entries = MT->model('entry')->load(
-                    { blog_id => 1, modified_on => \'>= 19790101000000' },
+                    {   blog_id => 1,
+                        modified_on =>
+                            { op => '>=', value => '19790101000000' }
+                    },
                     { sort => 'authored_on', direction => 'descend' },
                 );
                 return +{
@@ -79,7 +82,10 @@ sub suite {
             params => { dateTo => '1962-12-31', },
             result => sub {
                 my @entries = MT->model('entry')->load(
-                    { blog_id => 1, modified_on => \'<= 19621231125959' },
+                    {   blog_id => 1,
+                        modified_on =>
+                            { op => '<=', value => '19621231125959' }
+                    },
                     { sort => 'authored_on', direction => 'descend' },
                 );
                 return +{
@@ -94,9 +100,13 @@ sub suite {
             params => { dateFrom => '1962-01-01', dateTo => '1965-12-31', },
             result => sub {
                 my @entries = MT->model('entry')->load(
-                    [   { blog_id     => 1, },
-                        { modified_on => \'>= 19620101000000' },
-                        { modified_on => \'<= 19651231125959' },
+                    [   { blog_id => 1, },
+                        {   modified_on =>
+                                { op => '>=', value => '19620101000000' }
+                        },
+                        {   modified_on =>
+                                { op => '<=', value => '19651231125959' }
+                        },
                     ],
                     { sort => 'authored_on', direction => 'descend' },
                 );
@@ -114,7 +124,10 @@ sub suite {
             result => sub {
 
    #                my @entries = MT->model('entry')->load(
-   #                    { blog_id => 1, authored_on => \'>= 19790101000000' },
+   #                    {   blog_id => 1,
+   #                        authored_on =>
+   #                            { op => '>=', value => '19790101000000' }
+   #                    },
    #                    { sort => 'authored_on', direction => 'descend' },
    #                );
                 return +{
@@ -130,8 +143,10 @@ sub suite {
             is_superuser => 1,
             result       => sub {
                 my @authors = MT->model('author')->load(
-                    { modified_on => \'>= 19790101000000', },
-                    { sort        => 'name', direction => 'ascend' }
+                    {   modified_on =>
+                            { op => '>=', value => '19790101000000' },
+                    },
+                    { sort => 'name', direction => 'ascend' }
                 );
                 return +{
                     totalResults => 1,
