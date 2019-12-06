@@ -30,13 +30,7 @@ sub create {
             allow_comments => $blog->allow_comments_default,
             allow_pings    => $blog->allow_pings_default,
             convert_breaks => $blog->convert_paras,
-            status         => (
-                (          $app->can_do('publish_own_entry')
-                        || $app->can_do('publish_all_entry')
-                )
-                ? MT::Entry::RELEASE()
-                : MT::Entry::HOLD()
-            )
+            status         => $blog->status_default,
         }
     );
 
