@@ -216,7 +216,7 @@ sub test_data_api {
                 }
             }
 
-            if ( my $c = $cb->{count} ) {
+            if ( defined( my $c = $cb->{count} ) ) {
                 is( @$params_list, $c,
                     $cb->{name} . ' was called ' . $c . ' time(s)' );
             }

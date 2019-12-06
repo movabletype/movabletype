@@ -195,6 +195,9 @@ sub update {
                     class   => 'folder',
                 }
             );
+
+            return $app->error( "'folder' parameter is invalid.", 400 )
+                if !$update_folder;
         }
     }
 
