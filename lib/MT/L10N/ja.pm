@@ -4237,7 +4237,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/multi_line_text.tmpl
 	'Input format' => '入力フォーマット',
-	'Use all rich text decoration buttons' => 'リッチテキストの装飾ボタンをすべて利用する',
+	'Use all rich text decoration buttons' => 'リッチテキストの入力支援ボタンをすべて利用する',
 	
 
 ## tmpl/cms/content_field_type_options/number.tmpl
