@@ -564,6 +564,7 @@ use_ok('MT::DataAPI::Endpoint::v2::Group');
 use_ok('MT::DataAPI::Endpoint::v3::Auth');
 use_ok('MT::DataAPI::Endpoint::v3::Asset');
 use_ok('MT::DataAPI::Endpoint::v3::Entry');
+use_ok('MT::DataAPI::Endpoint::v3::Page');
 
 use_ok('MT::DataAPI::Resource::v3::Blog');
 use_ok('MT::DataAPI::Resource::v3::Website');
