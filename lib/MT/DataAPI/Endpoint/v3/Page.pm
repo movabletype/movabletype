@@ -17,20 +17,20 @@ use MT::DataAPI::Resource;
 sub create {
     my ( $app, $endpoint ) = @_;
 
-    my ($blog) = context_objects(@_);
+    my ($site) = context_objects(@_);
     return $app->error( $app->translate('Site not found'), 404 )
-        unless $blog && $blog->id;
+        unless $site && $site->id;
 
     my $author = $app->user;
 
     my $orig_page = $app->model('page')->new;
     $orig_page->set_values(
-        {   blog_id        => $blog->id,
+        {   blog_id        => $site->id,
             author_id      => $author->id,
-            allow_comments => $blog->allow_comments_default,
-            allow_pings    => $blog->allow_pings_default,
-            convert_breaks => $blog->convert_paras,
-            status         => $blog->status_default,
+            allow_comments => $site->allow_comments_default,
+            allow_pings    => $site->allow_pings_default,
+            convert_breaks => $site->convert_paras,
+            status         => $site->status_default,
         }
     );
 
@@ -39,7 +39,7 @@ sub create {
 
     if (  !$new_page->basename
         || $app->model('page')
-        ->exist( { blog_id => $blog->id, basename => $new_page->basename } )
+        ->exist( { blog_id => $site->id, basename => $new_page->basename } )
         )
     {
         $new_page->basename( MT::Util::make_unique_basename($new_page) );
@@ -47,7 +47,7 @@ sub create {
     MT::Util::translate_naughty_words($new_page);
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not assets can attach.
@@ -63,7 +63,7 @@ sub create {
 
         $attach_folder = MT->model('folder')->load(
             {   id      => $page_hash->{folder}{id},
-                blog_id => $blog->id,
+                blog_id => $site->id,
                 class   => 'folder',
             }
         );
@@ -80,15 +80,15 @@ sub create {
         if ( scalar @$assets_hash > 0 ) {
             my @asset_ids = map { $_->{id} }
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-            my @blog_ids = ( $blog->id );
-            if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
-                my @child_blog_ids = map { $_->id } @child_blogs;
-                push @blog_ids, @child_blog_ids;
+            my @site_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_sites = @{ $site->blogs };
+                my @child_site_ids = map { $_->id } @child_sites;
+                push @site_ids, @child_site_ids;
             }
             @attach_assets = MT->model('asset')->load(
                 {   id      => \@asset_ids,
-                    blog_id => \@blog_ids,
+                    blog_id => \@site_ids,
                 }
             );
 
@@ -124,13 +124,13 @@ sub create {
 sub update {
     my ( $app, $endpoint ) = @_;
 
-    my ( $blog, $orig_page ) = context_objects(@_)
+    my ( $site, $orig_page ) = context_objects(@_)
         or return;
     my $new_page = $app->resource_object( 'page', $orig_page )
         or return;
 
     my $post_save
-        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $blog,
+        = MT::DataAPI::Endpoint::Entry::build_post_save_sub( $app, $site,
         $new_page, $orig_page );
 
     # Check whether or not assets can attach/detach.
@@ -144,7 +144,7 @@ sub update {
         if ( exists $folder_hash->{id} ) {
             $update_folder = MT->model('folder')->load(
                 {   id      => $folder_hash->{id},
-                    blog_id => $blog->id,
+                    blog_id => $site->id,
                     class   => 'folder',
                 }
             );
@@ -166,15 +166,15 @@ sub update {
         else {
             my @asset_ids = map { $_->{id} }
                 grep { ref $_ eq 'HASH' && $_->{id} } @$assets_hash;
-            my @blog_ids = ( $blog->id );
-            if ( !$blog->is_blog ) {
-                my @child_blogs = @{ $blog->blogs };
-                my @child_blog_ids = map { $_->id } @child_blogs;
-                push @blog_ids, @child_blog_ids;
+            my @site_ids = ( $site->id );
+            if ( !$site->is_blog ) {
+                my @child_sites = @{ $site->blogs };
+                my @child_site_ids = map { $_->id } @child_sites;
+                push @site_ids, @child_site_ids;
             }
             @update_assets = MT->model('asset')->load(
                 {   id      => \@asset_ids,
-                    blog_id => \@blog_ids,
+                    blog_id => \@site_ids,
                 }
             );
 
