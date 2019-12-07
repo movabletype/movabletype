@@ -670,6 +670,10 @@ use vars qw( @ISA %Lexicon );
 	'Blog' => 'Blog',
 	'Permissions' => 'Permisos',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] debe ser un número.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] debe ser un entero entre [_2] y [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
 	'Cannot load blog #[_1]' => 'No se pudo cargar el blog #[_1]',
@@ -6978,6 +6982,13 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error switching directory.' => 'Error cambiando de directorio.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Ha finalizado con éxito la sincronización ([_1]) con un servidor externo ([_2]).',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Falló la sincronización ([_1]) con un servidor externo ([_2]).',
+	'FTP Server' => 'Servidor FTP',
+	'Port' => 'Puerto',
+	'Start Directory' => 'Directorio de inicio',
+	'Rsync Destination' => 'Destino de Rsync',
+	'Rsync Additional Options' => 'Opciones adicionales de Rsync',
+	'Synchronization has successfully finished.' => 'La sincronización finalizó correctamente.',
+	'  tried [_1] times but failed. ([_2]): [_3]' => ' intentó [_1] veces pero falló. ([_2]): [_3]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'No se puede escribir en el directorio temporal [_1].',
@@ -6987,6 +6998,26 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Lista de ficheros para sincronizar',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'Sync Logs' => 'Sincronizar registros',
+	'Sync setting is not specified.' => 'No se ha especificado la opción de sincronización.',
+	'Invalid email address: [_1]' => 'Dirección de correo no válida: [_1]',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error al enviar el correol ([_1]); ¿Intente otra configuración de MailTransfer?',
+	'Sync Type' => 'Tipo de sincronización',
+	'Sync Result' => 'Resultado de sincronización',
+	'*Sync setting deleted*' => '*Opción de sincronización borrada*',
+	'Parallel' => 'Paralelo',
+	'FTP' => 'FTP',
+	'Rsync' => 'Rsync',
+	'Are you sure you want to reset the sync log?' => '¿Está seguro de que desea reiniciar el registro de sincronización?',
+	'Start Time' => 'Hora inicial',
+	'Start Date' => 'Fecha inicial',
+	'Finish Time' => 'Hora final',
+	'Finish Date' => 'Fecha final',
+	'Destination Name' => 'Nombre del destino',
+	'Clear Sync Log' => 'Borrar registro de sincronización',
+	'Download Sync Log (CSV)' => 'Descargar registro de sincronización (CSV)',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Configuración de la sincronización',
@@ -7011,6 +7042,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Ocurrió un error al intentar conectar con el servidor FTP \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Ocurrió un error al intentar copiar el directorio actual desde \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Ocurrió un error al intentar copiar la lista de directorios de \'[_1]\'',
+	'Synchronization log for site \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Registro de sincronización del sitio \'[_1]\' (ID:[_2]) reiniciado por \'[_3]\'',
+	'Synchronization log reset by \'[_1]\'' => 'Registro de sincronización reiniciado por \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Falló el borrado de la lista de archivos de sincronización "[_1]": [_2]',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Se eliminó la lista de archivos de sincronizaciones previas. [_1] por [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Eliminando todas las tareas de sincronización de contenidos...',
@@ -7049,6 +7084,15 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid time.' => 'Fecha no válida.',
 	'You must make one or more destination settings.' => 'Debe indicar una o más opciones de destino.',
 	'Are you sure you want to remove this settings?' => '¿Está seguro de que desea eliminar estas opciones?',
+	'View sync log' => 'Ver registro de sincronización',
+	'Clear the previous synchronization file list' => 'Borrr la lista de archivos de sincronizaciones previas',
+	'Sync all files' => 'Sincronizar todos los ficheros',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Después de ejecutar un trabajo de sincronización, se enviará una notificación por correo electrónico al usuario que registró el trabajo y al administrador del sistema (por defecto) o al destinatario especificado arriba.',
+	'Are you sure you want to clear the previous synchronization file list?' => '¿Está seguro de que desea borrar la lista de archivos de sincronizaciones previas?',
+	'Destination name should be shorter than [_1] characters.' => 'El nombre del destino debe tener menos de [_1] caracteres.',
+	'A duplicate destination name exists.' => 'Existe un nombre de destino duplicado.',
+	'Deleting...' => 'Borrando...',
+	'The previous synchronization file list has been cleared.' => 'La lista de ficheros de sincronizaciones previas ha sido borrada.',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => '¡Sincronizar ahora!',
@@ -7056,6 +7100,11 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Synchronizing...' => 'Sincronizando...',
 	'Finish!' => '¡Finalizó!',
 	'The synchronization was interrupted. Unable to resume.' => 'Se interrumpió la sincronización. No es posible continuar.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Synchronization success notification' => 'Notificación de sincronización exitosa',
+	'Synchronization error notification' => 'Notificación de error de sincronización',
+	'Executer' => 'Ejecutor',
 
 ## plugins/BlockEditor/config.yaml
 	'Block Editor.' => 'Editor de bloques.',

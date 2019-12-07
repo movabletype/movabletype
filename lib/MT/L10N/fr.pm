@@ -670,6 +670,10 @@ use vars qw( @ISA %Lexicon );
 	'Blog' => 'Blog',
 	'Permissions' => 'Autorisations',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] doit être un nombre.',
+	'[_1] must be an integer and between [_2] and [_3].' => '_1] doit être un entier entre [_2] et [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Requête erronée : jeu de caractères corrompu [_1]',
 	'Cannot load blog #[_1]' => 'Impossible de charge le blog  #[_1]',
@@ -6993,6 +6997,13 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error switching directory.' => 'Erreur au changement de répertoire.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'La synchronisation ([_1]) avec un serveur externe ([_2]) s\'est terminée avec succès.',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Impossible de synchroniser ([_1]) avec un serveur externe ([_2]).',
+	'FTP Server' => 'Serveur FTP',
+	'Port' => 'Port',
+	'Start Directory' => 'Répertoire de départ',
+	'Rsync Destination' => 'Destination rsync',
+	'Rsync Additional Options' => 'Options rsync aditionnelles',
+	'Synchronization has successfully finished.' => 'La synchronisation s\'est correctement terminée.',
+	'  tried [_1] times but failed. ([_2]): [_3]' => '  [_1] tentatives en échec. ([_2]) : [_3]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Le répertoire Temp [_1] n\'est pas ouvert en écriture.',
@@ -7002,6 +7013,26 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Liste des fichiers à synchroniser',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'Sync Logs' => 'Logs de synchronisation',
+	'Sync setting is not specified.' => 'Réglage de synchronisation manquant.',
+	'Invalid email address: [_1]' => 'Adresse e-mail invalide : [_1]',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Erreur d\'envoi d\'e-mail ([_1]). Tentez avec un autre paramètre MailTransfer.',
+	'Sync Type' => 'Type de synchronisation',
+	'Sync Result' => 'Résultat de synchronisation',
+	'*Sync setting deleted*' => '*Paramètre de synchronisation supprimé*',
+	'Parallel' => 'Parallèle',
+	'FTP' => 'FTP',
+	'Rsync' => 'Rsync',
+	'Are you sure you want to reset the sync log?' => 'Voulez-vous vraiment réinitialiser le log de synchronisation ?',
+	'Start Time' => 'Horaire de démarrage',
+	'Start Date' => 'Date de démarrage',
+	'Finish Time' => 'Horaire de fin',
+	'Finish Date' => 'Date de fin',
+	'Destination Name' => 'Nom de destination',
+	'Clear Sync Log' => 'Vider le log de synchronisation',
+	'Download Sync Log (CSV)' => 'Télécharger le log de synchronisation (CSV)',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Paramètres de synchronisation',
@@ -7026,6 +7057,10 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Une erreur est survenue lors de la connexion avec le serveur FTP \'[_1]\' : [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération du répertoire courant depuis \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération de la liste des répertoires depuis \'[_1]\'',
+	'Synchronization log for site \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Log de synchronisation du site \'[_1]\' (ID :[_2]) réinitialisé par \'[_3]\'',
+	'Synchronization log reset by \'[_1]\'' => 'Log de synchronisation réinitialisé par \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'La suppression de la liste des fichiers à synchroniser a échoué "[_1]" : [_2]',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'La précédente liste des fichiers à synchroniser a été supprimée. [_1] par [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...',
@@ -7064,6 +7099,15 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid time.' => 'Temps invalide.',
 	'You must make one or more destination settings.' => 'Vous devez créer au moins une destination.',
 	'Are you sure you want to remove this settings?' => 'Voulez-vous vraiment supprimer ces paramètres ?',
+	'View sync log' => 'Voir le log de synchronisation',
+	'Clear the previous synchronization file list' => 'Vider la précédente liste des fichiers à synchroniser',
+	'Sync all files' => 'synchroniser tous les fichiers',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Après qu\'une synchronisation a été effectuée, un e-mail de notification sera envoyé à l\'utilisateur qui l\'a déclenchée, et à l\'administrateur système (par défaut) ou le destinataire spécifié ci-dessus.',
+	'Are you sure you want to clear the previous synchronization file list?' => 'Vouslez-vous vraiment supprimer la précédente liste des fichiers à synchroniser ?',
+	'Destination name should be shorter than [_1] characters.' => 'Le nom de destination devrait faire moins de [_1] caractères.',
+	'A duplicate destination name exists.' => 'Le nom de destination existe déjà.',
+	'Deleting...' => 'Suppression…',
+	'The previous synchronization file list has been cleared.' => 'La précédente liste des fichiers à synchroniser a été vidée.',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => 'Synchroniser maintenant !',
@@ -7071,6 +7115,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Synchronizing...' => 'Synchronisation...',
 	'Finish!' => 'Terminé !',
 	'The synchronization was interrupted. Unable to resume.' => 'La synchronisation a été interrompue. Impossible de reprendre.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Synchronization success notification' => 'Notification de succès de la synchronisation',
+	'Synchronization error notification' => 'Notification d\'échec de la synchronisation',
+	'Executer' => 'Éxecuter',
 
 ## plugins/BlockEditor/config.yaml
 	'Block Editor.' => 'Éditeur de bloc.',

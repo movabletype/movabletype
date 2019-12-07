@@ -675,6 +675,10 @@ use vars qw( @ISA %Lexicon );
 	'Blog' => 'Blog',
 	'Permissions' => 'Permissies',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] moet een getal zijn.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] moet een integer zijn tussen [_2] en [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'ï¾ƒã�¤ï½¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Cannot load blog #[_1]' => 'Kan blog niet laden #[_1]',
@@ -6972,6 +6976,13 @@ use vars qw( @ISA %Lexicon );
 	'Error switching directory.' => 'Fout bij wisselen van map.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Synchronisatie ([_1]) met een externe server ([_2]) werd met succes afgerond.',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisatie ([_1]) met een externe server ([_2]) is niet gelukt.',
+	'FTP Server' => 'FTP Server',
+	'Port' => 'Poort',
+	'Start Directory' => 'Beginmap',
+	'Rsync Destination' => 'Rsync bestemming',
+	'Rsync Additional Options' => 'Rrsync bijkomende opties',
+	'Synchronization has successfully finished.' => 'Synchronisatie met succes afgerond.',
+	'  tried [_1] times but failed. ([_2]): [_3]' => ' probeerde [_1] keer maar lukte niet.  ([_2]): [_3]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
@@ -6981,6 +6992,26 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Bestandslijst synchronisatie',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'Sync Logs' => 'Sync logs',
+	'Sync setting is not specified.' => 'Sync instelling niet opgegeven.',
+	'Invalid email address: [_1]' => 'Ongeldig email adres: [_1]',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); probeer een andere MailTransfer instelling?',
+	'Sync Type' => 'Sync type',
+	'Sync Result' => 'Sync resulaat',
+	'*Sync setting deleted*' => 'Sync instelling verwijderd',
+	'Parallel' => 'Paralel',
+	'FTP' => 'FTP',
+	'Rsync' => 'Rsync',
+	'Are you sure you want to reset the sync log?' => 'Zeker dat u het sync log wil leegmaken?',
+	'Start Time' => 'Starttijd',
+	'Start Date' => 'Begindatum',
+	'Finish Time' => 'Eindtijd',
+	'Finish Date' => 'Einddatum',
+	'Destination Name' => 'Naam bestemming',
+	'Clear Sync Log' => 'Sync log leegmaken',
+	'Download Sync Log (CSV)' => 'Sync log downloaden (CSV)',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Instellingen synchronisatie',
@@ -7005,6 +7036,10 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het verbinden met de FTP server \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de huidige map van \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de lijst van mappen van \'[_1]\'',
+	'Synchronization log for site \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Synchronisatielog voor site \'[_1]\' (ID:[_2]) leeggemaakt door \'[_3]\'',
+	'Synchronization log reset by \'[_1]\'' => 'Synchronisatielog leeggemaakt door \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Verwijderen sync bestandenlijst mislukt "[_1]": [_2]',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'De vorige lijst met synchronisatiebestanden werd leeggemaakt. [_1] door [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...',
@@ -7043,6 +7078,15 @@ use vars qw( @ISA %Lexicon );
 	'Invalid time.' => 'Ongeldig tijdstip;',
 	'You must make one or more destination settings.' => 'U moet Ã©Ã©n of meer bestemmingen instellen.',
 	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?',
+	'View sync log' => 'Sync log bekijken',
+	'Clear the previous synchronization file list' => 'Vorige lijst synchronisatiebestanden leegaken',
+	'Sync all files' => 'Alle bestanden synchroniseren',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Nadat een sync job afgerond is zal een email notificatie worden verstuurd naar de gebruiker die deze job registreerde en naar de systeembeheerder (standaard) of de ontvanger die hierboven werd opgegeven.',
+	'Are you sure you want to clear the previous synchronization file list?' => 'Bent u zeker dat u de lijst met de vorige synchronisatiebestanden wenst te verwijderen?',
+	'Destination name should be shorter than [_1] characters.' => 'Naam bestemming moet minder dan [_1] karakters lang zijn.',
+	'A duplicate destination name exists.' => 'Er bestaat reeds een identieke bestemmingsnaam.',
+	'Deleting...' => 'Verwijderen...',
+	'The previous synchronization file list has been cleared.' => 'De lijst met vorige synchronisatiebestanden is leeggemaakt.',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => 'Nu synchroniseren!',
@@ -7050,6 +7094,11 @@ use vars qw( @ISA %Lexicon );
 	'Synchronizing...' => 'Synchroniseren...',
 	'Finish!' => 'Klaar!',
 	'The synchronization was interrupted. Unable to resume.' => 'De synchronisatie werd onderbroken.  Hervatten niet mogelijk.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Synchronization success notification' => 'Succesbericht synchronisatie',
+	'Synchronization error notification' => 'Foutbericht synchronisatie',
+	'Executer' => 'Uitvoerder',
 
 ## plugins/BlockEditor/config.yaml
 	'Block Editor.' => 'Blok editor.',
