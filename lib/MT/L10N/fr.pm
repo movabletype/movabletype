@@ -7817,7 +7817,7 @@ atégorie \'[_4]\'',
     'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Une tâche de synchronization immédiate a été programmée. Cette tâche sera exécutée au prochain déclenchement des tâches programmées (run-periodic-tasks).', # Translate - New
     'Immediate sync job has been registered.' => 'Une tâche de synchronization immédiate a été programmée.', # Translate - New
     'Register immediate sync job' => 'Programmer une tâche de synchronization immédiate', # Translate - New
-    'Are you sure you want to register immediate sync job?' => 'Voulez-vous programmer cette tâche de synchronization immédiate ?', # Translate - New	
+    'Are you sure you want to register immediate sync job?' => 'Voulez-vous programmer cette tâche de synchronization immédiate ?', # Translate - New
 
 );
 
