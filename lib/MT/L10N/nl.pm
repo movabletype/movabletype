@@ -57,7 +57,7 @@ use vars qw( @ISA %Lexicon );
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'InhoudsType Categorie per week',
 
 ## php/lib/block.mtarchives.php
-	'ArchiveType not found - [_1]' => 'Archieftype niet gevonden - [_1]', # Translate - New
+	'ArchiveType not found - [_1]' => 'Archieftype niet gevonden - [_1]',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace',
@@ -592,7 +592,7 @@ use vars qw( @ISA %Lexicon );
 	'Updates' => 'Updates',
 	'Activity Log' => 'Activiteitenlog',
 	'Site List' => 'Lijst websites',
-	'Site List for Mobile' => 'Lijst websites voor mobiel gebruik', # Translate - New
+	'Site List for Mobile' => 'Lijst websites voor mobiel gebruik',
 	'Refresh Templates' => 'Sjablonen verversen',
 	'Use Publishing Profile' => 'Publicatieprofiel gebruiken',
 	'Create Role' => 'Rol aanmaken',
@@ -1860,7 +1860,7 @@ use vars qw( @ISA %Lexicon );
 	'Video Asset' => 'Videobestand',
 	'Image Asset' => 'Afbeeldingsbestand',
 	'Embedded Text' => 'Ingebedde tekst',
-	'__LIST_FIELD_LABEL' => 'Lijst', # Translate - New
+	'__LIST_FIELD_LABEL' => 'Lijst',
 	'Table' => 'Tabel',
 
 ## lib/MT/ContentFieldType/RadioButton.pm
@@ -2423,7 +2423,7 @@ use vars qw( @ISA %Lexicon );
 	'Cannot initialize list property [_1].[_2].' => 'Kan lijsteigenschap [_1] niet initialiseren. [_2].',
 	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Kon auto list eigenschap niet initialiseren [_1].[_2]: Kan definitie van kolom [_3] niet vinden.',
 	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'Kon auto list eigenschap niet initialiseren [_1].[_2]: kolomtype niet ondersteund.',
-	'[_1] (id:[_2])' => '[_1] (id:[_2])', # Translate - Case
+	'[_1] (id:[_2])' => '[_1] (id:[_2])',
 
 ## lib/MT/Lockout.pm
 	'Cannot find author for id \'[_1]\'' => 'Kan geen auteur vinden voor id \'[_1]\'',
@@ -2662,7 +2662,7 @@ use vars qw( @ISA %Lexicon );
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van de website; Misschien plaatste u die tag per ongeluk buiten een \'MTWebsites\' container tag?',
 	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => 'U gebruikte een \'[_1]\' tag in de context van een blog die geen deel uitmaakt van een website; Misschien is er een probleem met de gegevens van deze blog?',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van de blog; Misschien plaatste u die tag per ongeluk buiten een \'MTBlogs\' container tag?',
-	'You used an \'[_1]\' tag outside of the context of the site;' => 'U gebruikte een \'[_1]\' tag buiten de context van de site;', # Translate - New
+	'You used an \'[_1]\' tag outside of the context of the site;' => 'U gebruikte een \'[_1]\' tag buiten de context van de site;',
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een reactie; Misschien plaatste u die tag per ongeluik buiten een \'MTComments\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een ping; Mogelijk plaatste u die per ongeluk buiten een \'MTPings\' container tag?',
 	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => 'U gebruikte een \'[_1]\' tag buiten de context van een mediabestand; Misschien plaatste u dit per ongeluk buiten een \'MTAssets\' container tag?',
@@ -3014,8 +3014,8 @@ use vars qw( @ISA %Lexicon );
 	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...',
 	'Migrating Max Length option of Single Line Text fields...' => 'Bezig de opties voor maximale lengte van enkellijnstekstvelden te migreren...',
 	'Reset default dashboard widgets...' => 'Standaard dashboard widgets terugzetten...',
-	'Rebuilding Content Type count of Category Sets...' => 'Bezig telling van inhoudstypes van categoriesets opnieuw te publiceren...', # Translate - New
-	'Adding site list dashboard widget for mobile...' => '', # Translate - New
+	'Rebuilding Content Type count of Category Sets...' => 'Bezig telling van inhoudstypes van categoriesets opnieuw te publiceren...',
+	'Adding site list dashboard widget for mobile...' => '',
 
 ## lib/MT/Util/Archive.pm
 	'Type must be specified' => 'Type moet worden opgegeven',
@@ -3026,9 +3026,9 @@ use vars qw( @ISA %Lexicon );
 	'Could not read from filehandle.' => 'Kon filehandle niet lezen.',
 	'File [_1] is not a tgz file.' => 'Bestand [_1] is geen tgz bestand.',
 	'File [_1] exists; could not overwrite.' => 'Bestand [_1] bestaat; kon niet worden overschreven.',
-	'[_1] in the archive is not a regular file' => '[_1] in het archief is geen gewoon bestand', # Translate - New
-	'[_1] in the archive is an absolute path' => '[_1] in het archief is een absoluut pad', # Translate - New
-	'[_1] in the archive contains ..' => '[_1] in het archief bevat ..', # Translate - New
+	'[_1] in the archive is not a regular file' => '[_1] in het archief is geen gewoon bestand',
+	'[_1] in the archive is an absolute path' => '[_1] in het archief is een absoluut pad',
+	'[_1] in the archive contains ..' => '[_1] in het archief bevat ..',
 	'Cannot extract from the object' => 'Kan extractie uit object niet uitvoeren',
 	'Cannot write to the object' => 'Kan niet schrijven naar het object',
 	'Both data and file name must be specified.' => 'Zowel data gen bestandsnaam moeten worden opgegeven.',
@@ -3124,16 +3124,16 @@ use vars qw( @ISA %Lexicon );
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Sjabloonmethodes zijn niet geïmplementeerd wegens het verschil tussen de Blogger API en de Movable Type API.',
 
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
-	'A configuration directive is required.' => 'Er is een configuratiedirectief vereist.', # Translate - New
-	'[_1] cannot be updated.' => '[_1] kan niet bijgewerkt worden', # Translate - New
-	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Hoewel Movable Type [_1] kan bijwerken, kan dit niet via dit scherm.', # Translate - New
-	'[_1] already exists.' => '[_1] bestaat al.', # Translate - New
-	'A configuration value is required.' => 'Een waarde voor deze instelling is nodig.', # Translate - New
-	'The HASH type configuration directive should be in the format of "key=value"' => 'Een configuratiedirectief van het type HASH moet volgend formaat hebben "sleutel=waarde"', # Translate - New
-	'[_1] for [_2] already exists.' => '[_1] voor [_2] bestaat al.', # Translate - New
+	'A configuration directive is required.' => 'Er is een configuratiedirectief vereist.',
+	'[_1] cannot be updated.' => '[_1] kan niet bijgewerkt worden',
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Hoewel Movable Type [_1] kan bijwerken, kan dit niet via dit scherm.',
+	'[_1] already exists.' => '[_1] bestaat al.',
+	'A configuration value is required.' => 'Een waarde voor deze instelling is nodig.',
+	'The HASH type configuration directive should be in the format of "key=value"' => 'Een configuratiedirectief van het type HASH moet volgend formaat hebben "sleutel=waarde"',
+	'[_1] for [_2] already exists.' => '[_1] voor [_2] bestaat al.',
 	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
-	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?', # Translate - New
-	'configuration directive' => 'configuratiedirectief', # Translate - New
+	'Are you sure you want to remove [_1]?' => 'Bent u zeker dat u [_1] wenst te verwijderen?',
+	'configuration directive' => 'configuratiedirectief',
 
 ## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => 'Doorgaan',
@@ -3239,7 +3239,7 @@ use vars qw( @ISA %Lexicon );
 	'User Display Option is disabled now.' => 'Gebruikersweergaveopties zijn nu uitgeschakeld',
 
 ## mt-static/js/listing/tag/list-actions-for-mobile.tag
-	'Select action' => 'Selecteer actie', # Translate - New
+	'Select action' => 'Selecteer actie',
 	'Plugin Actions' => 'Plugin-mogelijkheden',
 
 ## mt-static/js/listing/tag/list-actions-for-pc.tag
@@ -3268,7 +3268,7 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/listing/tag/list-table.tag
 	'Loading...' => 'Laden...',
 	'Select All' => 'Alles selecteren',
-	'All' => 'Alle', # Translate - Case
+	'All' => 'Alle',
 	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] van [_3]',
 	'Select all [_1] items' => 'Selecteer alle [_1] items',
 	'All [_1] items are selected' => 'Alle [_1] items zijn geselecteerd',
@@ -5000,7 +5000,7 @@ use vars qw( @ISA %Lexicon );
 	'Draggable' => 'Sleepbaar',
 	'Share' => 'Delen',
 	'Format:' => 'Formaat:',
-	'Rich Text(HTML mode)' => 'Verrijkte tekst (HTML modus)', # Translate - New
+	'Rich Text(HTML mode)' => 'Verrijkte tekst (HTML modus)',
 	q{(comma-delimited list)} => q{(lijst gescheiden met komma's)},
 	'(space-delimited list)' => '(lijst gescheiden met spaties)',
 	q{(delimited by '[_1]')} => q{(gescheiden door '[_1]')},
@@ -5196,7 +5196,7 @@ use vars qw( @ISA %Lexicon );
 	'Add sub category' => 'Subcategorie toevoegen',
 
 ## tmpl/cms/field_html/field_html_content_type.tmpl
-	'No field data.' => 'Geen veldgegevens.', # Translate - New
+	'No field data.' => 'Geen veldgegevens.',
 	'No [_1]' => 'Geen [_1]',
 	'This field is disabled because valid Content Type is not selected in this field.' => 'Dit veld is uitgeschakeld omdat er geen geldig inhoudstype werd geselecteerd in dit veld.',
 	'[_1] less than or equal to [_2] must be selected' => '[_1] kleiner dan of gelijk aan [_2] moet worden geselecteerd',
@@ -5307,9 +5307,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/async_asset_upload.tmpl
 	'Choose files to upload or drag files.' => 'Kies bestanden om te uploaden of sleep ze hierheen',
 	'Choose file to upload or drag file.' => 'Kies bestand om te uploaden of sleep het hierheen',
-	'Choose files to upload.' => 'Kies bestanden om te uploaden.', # Translate - New
-	'Choose file to upload.' => 'Kies bestand op te uploaden.', # Translate - New
-	'Upload Settings' => 'Instellingen voor uploaden', # Translate - New
+	'Choose files to upload.' => 'Kies bestanden om te uploaden.',
+	'Choose file to upload.' => 'Kies bestand op te uploaden.',
+	'Upload Settings' => 'Instellingen voor uploaden',
 	'Upload Options' => 'Upload opties',
 	'Operation for a file exists' => 'Actie als een bestand al bestaat',
 	'Drag and drop here' => 'Klik en sleep hierheen',
@@ -5508,7 +5508,7 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/mobile_global_menu.tmpl
 	'Select another site...' => 'Selecteer een andere site...',
 	'Select another child site...' => 'Selecteer een andere subsite...',
-	'PC View' => 'PC uitzicht', # Translate - New
+	'PC View' => 'PC uitzicht',
 
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Toegevoegd',
@@ -5692,8 +5692,8 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => 'U hebt [_1] toegevoegd aan uw lijst met uitgesloten IP adressen.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'U hebt de geselecteerde IP adressen uit de lijst is verwijderd.',
-	'' => '', # Translate - New
-	'The IP you entered is already banned for this site.' => 'Het IP dat u heeft ingevuld is reeds uitgesloten voor deze site.', # Translate - New
+	'' => '',
+	'The IP you entered is already banned for this site.' => 'Het IP dat u heeft ingevuld is reeds uitgesloten voor deze site.',
 	'Invalid IP address.' => 'Ongeldig IP adres',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
@@ -6217,198 +6217,198 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Cloud.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
-	'Cloud Services' => 'Clouddiensten', # Translate - New
-	'Basic Authentication' => 'Basic authenticatie', # Translate - New
-	'Redirect' => 'Doorverwijzing', # Translate - New
-	'Auto Update' => 'Automatische Update', # Translate - New
-	'FTPS Password' => 'FTPS Wachtwoord', # Translate - New
-	'SSL Certificates' => 'SSL Certificaat', # Translate - New
-	'IP Restriction' => 'IP Beperking', # Translate - New
-	'Full Restore' => 'Volledig Herstel', # Translate - New
-	'Config Directives' => 'Configuratiedirectieven', # Translate - New
-	'Disk Usage' => 'Schijfgebruik', # Translate - New
+	'Cloud Services' => 'Clouddiensten',
+	'Basic Authentication' => 'Basic authenticatie',
+	'Redirect' => 'Doorverwijzing',
+	'Auto Update' => 'Automatische Update',
+	'FTPS Password' => 'FTPS Wachtwoord',
+	'SSL Certificates' => 'SSL Certificaat',
+	'IP Restriction' => 'IP Beperking',
+	'Full Restore' => 'Volledig Herstel',
+	'Config Directives' => 'Configuratiedirectieven',
+	'Disk Usage' => 'Schijfgebruik',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
-	'Owner' => 'Eigenaar', # Translate - New
-	'Creator' => 'Maker', # Translate - New
-	'FTP passowrd for [_1] has successfully been updated.' => 'Het FTP wachtwoord voor [_1] werd met succes bijgewerkt.', # Translate - New
-	'Unable to reset [_1] FTPS password.' => 'Kan FTP wachtwoord voor [_1] niet bijwerken.', # Translate - New
-	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'Bijwerken van [_1] niet gelukt: enkele [_2] werden gewijzigd sinds u dit scherm opende.', # Translate - New
-	'Basic Authentication setting' => 'Instellingen basic authenticatie', # Translate - New
-	'Cannot access to this uri: [_1]' => 'Geen toegang tot deze uri: [_1]', # Translate - New
-	'Basic authentication for site has successfully been updated.' => 'Basic authenticatie voor deze site werd bijgewerkt.', # Translate - New
-	'Unable to update Basic Authentication settings.' => 'Bijwerken basic authenticatie voor deze site niet gelukt.', # Translate - New
-	'Administration Screen Setting' => 'Instelling administratiescherm', # Translate - New
-	'The URL you specified is not available.' => 'De URL die u opgaf is niet beschikbaar.', # Translate - New
-	'Unable to update Admin Screen URL settings.' => 'Bijwerken URL administratiescherm niet gelukt.', # Translate - New
-	'The URL for administration screen has successfully been updated.' => 'De URL voor het administratiescherm werd met succes bijgewerkt.', # Translate - New
-	'Cannot delete basicauth_admin file.' => 'Kan basicauth_admin bestand niet verwijderen.', # Translate - New
-	'Basic authentication for administration screen has successfully been cleared.' => 'Basic authenticatie voor administratiescherm werd met succes leeggemaakt.', # Translate - New
-	'User ID is required.' => 'Gebruikers ID is vereist.', # Translate - New
-	'Password is required.' => 'Wachtwoord is vereist.', # Translate - New
-	'Unable to update basic authentication for administration screen.' => 'Bijwerken basic authenticatie voor administratiescherm mislukt.', # Translate - New
-	'Unable to write temporary file.' => 'Onmogelijk tijdelijk bestand te schrijven.', # Translate - New
-	'Basic authentication for administration screen has successfully been updated.' => 'Basic authenticatie voor administratiescherm met succes bijgewerkt.', # Translate - New
-	'Cannot delete ip_restriction_[_1] file.' => 'Kan ip_restriction_[_1] bestand niet verwijderen.', # Translate - New
-	'IP restriction for administration screen has successfully been cleared.' => 'IP restricties voor administratiescherm met succes leeg gemaakt.', # Translate - New
-	'[_1] is not a valid IP address.' => '[_1] is geen geldig IP adres.', # Translate - New
-	'Unable to write allowed IP addresses file.' => 'Schrijven naar bestand met toegestane IP adressen mislukt.', # Translate - New
-	'IP restriction white list for administration screen  has successfully been updated.' => 'IP restricties whitelist voor administratiescherm met succes bijgewerkt.', # Translate - New
-	'HTTP Redirect' => 'HTTP omleidingen', # Translate - New
-	'HTTP Redirect setting' => 'Instelling voor HTTP omleidingen', # Translate - New
-	'HTTP redirect settings has successfully updated.' => 'Instelling voor HTTP omleiding met succes bijgewerkt.', # Translate - New
-	'Unable to update HTTP Redirect settings.' => 'Kon instelling voor HTTP omleiding niet bijwerken.', # Translate - New
-	'Update SSL Certification' => 'SSL certificaat bijwerken', # Translate - New
-	'__SSL_CERT_UPDATE' => 'bijwerken', # Translate - New
-	'__SSL_CERT_INSTALL' => 'installeren', # Translate - New
-	'Cannot copy default cert file.' => 'Kan standaard cert bestand niet kopiëren.', # Translate - New
-	'Unable to create temporary path: [_1]' => 'Kan tijdelijk pad niet aanmaken: [_1]', # Translate - New
-	'SSL certification has successfully been updated.' => 'SSL certificaat met succes bijgewerkt.', # Translate - New
-	'Unable to update SSL certification.' => 'Kan SSL certificaat niet bijwerken.', # Translate - New
-	'Manage Configuration Directives' => 'Configuratiedirectieven beheren', # Translate - New
-	'Config Directive' => 'Conf. directief', # Translate - New
-	'Movable Type environment settings has successfully been updated.' => 'Omgevingsinstellingen van Movable Type met succes bijgewerkt.', # Translate - New
-	'Restoring Backup Data' => 'Backupgegevens aan het terugzetten', # Translate - New
-	'backup data' => 'backupgegevens', # Translate - New
-	'Invalid backup file name.' => 'Ongeldige bestandsnaam backupbestand.', # Translate - New
-	'Cannot copy backup file to workspace.' => 'Kan backupbestand niet kopiëren naar de werkruimte.', # Translate - New
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website-instellingen niet opslaan omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website niet aanmaken omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.', # Translate - New
-	'Auto Update Settings' => 'Instellingen voor automatisch bijwerken', # Translate - New
-	'Unable to write AUTOUPDATE file: [_1]' => 'Kon geen AUTOUPDATE bestand schrijven: [_1]', # Translate - New
-	'Auto update settings has successfully been updated.' => 'Instellingen voor automatisch bijwerken werden met succes bijgewerkt.', # Translate - New
-	'IP Restriction Settings' => 'Instellingen voor IP beperkingen', # Translate - New
-	'IP Restriction settings' => 'Instellingen voor IP beperkingen', # Translate - New
-	'Domain, Path and IP addresses are required.' => 'Domein, pad en IP adres zijn vereist.', # Translate - New
-	'\'[_1]\' does not exist.' => '\'[_1]\' bestaat niet', # Translate - New
-	'\'[_1]\' is invalid path.' => '\'[_1]\' is een ongeldig pad', # Translate - New
-	'Unable to create acl path: [_1]' => 'Kon acl pad niet aanmaken: [_1]', # Translate - New
-	'Cannot write to acl directory: [_1]' => 'Kon niet schrijven naar acl map: [_1]', # Translate - New
-	'Cannot write to acl file: [_1]' => 'Kon niet schrijven naar acl bestand: [_1]', # Translate - New
-	'IP restriction for site has successfully been updated.' => 'IP beperkingen voor de site werden met succes bijgewerkt.', # Translate - New
-	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'Kan instellingen voor toegangsbeperking niet opslaan.  Misschien is het pad of het IP adres dat u invoerde niet geldig.', # Translate - New
-	'Unable to remove acl file.' => 'Kon acl bestand niet verwijderen.', # Translate - New
+	'Owner' => 'Eigenaar',
+	'Creator' => 'Maker',
+	'FTP passowrd for [_1] has successfully been updated.' => 'Het FTP wachtwoord voor [_1] werd met succes bijgewerkt.',
+	'Unable to reset [_1] FTPS password.' => 'Kan FTP wachtwoord voor [_1] niet bijwerken.',
+	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'Bijwerken van [_1] niet gelukt: enkele [_2] werden gewijzigd sinds u dit scherm opende.',
+	'Basic Authentication setting' => 'Instellingen basic authenticatie',
+	'Cannot access to this uri: [_1]' => 'Geen toegang tot deze uri: [_1]',
+	'Basic authentication for site has successfully been updated.' => 'Basic authenticatie voor deze site werd bijgewerkt.',
+	'Unable to update Basic Authentication settings.' => 'Bijwerken basic authenticatie voor deze site niet gelukt.',
+	'Administration Screen Setting' => 'Instelling administratiescherm',
+	'The URL you specified is not available.' => 'De URL die u opgaf is niet beschikbaar.',
+	'Unable to update Admin Screen URL settings.' => 'Bijwerken URL administratiescherm niet gelukt.',
+	'The URL for administration screen has successfully been updated.' => 'De URL voor het administratiescherm werd met succes bijgewerkt.',
+	'Cannot delete basicauth_admin file.' => 'Kan basicauth_admin bestand niet verwijderen.',
+	'Basic authentication for administration screen has successfully been cleared.' => 'Basic authenticatie voor administratiescherm werd met succes leeggemaakt.',
+	'User ID is required.' => 'Gebruikers ID is vereist.',
+	'Password is required.' => 'Wachtwoord is vereist.',
+	'Unable to update basic authentication for administration screen.' => 'Bijwerken basic authenticatie voor administratiescherm mislukt.',
+	'Unable to write temporary file.' => 'Onmogelijk tijdelijk bestand te schrijven.',
+	'Basic authentication for administration screen has successfully been updated.' => 'Basic authenticatie voor administratiescherm met succes bijgewerkt.',
+	'Cannot delete ip_restriction_[_1] file.' => 'Kan ip_restriction_[_1] bestand niet verwijderen.',
+	'IP restriction for administration screen has successfully been cleared.' => 'IP restricties voor administratiescherm met succes leeg gemaakt.',
+	'[_1] is not a valid IP address.' => '[_1] is geen geldig IP adres.',
+	'Unable to write allowed IP addresses file.' => 'Schrijven naar bestand met toegestane IP adressen mislukt.',
+	'IP restriction white list for administration screen  has successfully been updated.' => 'IP restricties whitelist voor administratiescherm met succes bijgewerkt.',
+	'HTTP Redirect' => 'HTTP omleidingen',
+	'HTTP Redirect setting' => 'Instelling voor HTTP omleidingen',
+	'HTTP redirect settings has successfully updated.' => 'Instelling voor HTTP omleiding met succes bijgewerkt.',
+	'Unable to update HTTP Redirect settings.' => 'Kon instelling voor HTTP omleiding niet bijwerken.',
+	'Update SSL Certification' => 'SSL certificaat bijwerken',
+	'__SSL_CERT_UPDATE' => 'bijwerken',
+	'__SSL_CERT_INSTALL' => 'installeren',
+	'Cannot copy default cert file.' => 'Kan standaard cert bestand niet kopiëren.',
+	'Unable to create temporary path: [_1]' => 'Kan tijdelijk pad niet aanmaken: [_1]',
+	'SSL certification has successfully been updated.' => 'SSL certificaat met succes bijgewerkt.',
+	'Unable to update SSL certification.' => 'Kan SSL certificaat niet bijwerken.',
+	'Manage Configuration Directives' => 'Configuratiedirectieven beheren',
+	'Config Directive' => 'Conf. directief',
+	'Movable Type environment settings has successfully been updated.' => 'Omgevingsinstellingen van Movable Type met succes bijgewerkt.',
+	'Restoring Backup Data' => 'Backupgegevens aan het terugzetten',
+	'backup data' => 'backupgegevens',
+	'Invalid backup file name.' => 'Ongeldige bestandsnaam backupbestand.',
+	'Cannot copy backup file to workspace.' => 'Kan backupbestand niet kopiëren naar de werkruimte.',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website-instellingen niet opslaan omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'Kon website niet aanmaken omdat het aantal domeinnamen dat werd gebruikt groter is dan het aantal domeinnamen dat beschikbaar kan zijn.',
+	'Auto Update Settings' => 'Instellingen voor automatisch bijwerken',
+	'Unable to write AUTOUPDATE file: [_1]' => 'Kon geen AUTOUPDATE bestand schrijven: [_1]',
+	'Auto update settings has successfully been updated.' => 'Instellingen voor automatisch bijwerken werden met succes bijgewerkt.',
+	'IP Restriction Settings' => 'Instellingen voor IP beperkingen',
+	'IP Restriction settings' => 'Instellingen voor IP beperkingen',
+	'Domain, Path and IP addresses are required.' => 'Domein, pad en IP adres zijn vereist.',
+	'\'[_1]\' does not exist.' => '\'[_1]\' bestaat niet',
+	'\'[_1]\' is invalid path.' => '\'[_1]\' is een ongeldig pad',
+	'Unable to create acl path: [_1]' => 'Kon acl pad niet aanmaken: [_1]',
+	'Cannot write to acl directory: [_1]' => 'Kon niet schrijven naar acl map: [_1]',
+	'Cannot write to acl file: [_1]' => 'Kon niet schrijven naar acl bestand: [_1]',
+	'IP restriction for site has successfully been updated.' => 'IP beperkingen voor de site werden met succes bijgewerkt.',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'Kan instellingen voor toegangsbeperking niet opslaan.  Misschien is het pad of het IP adres dat u invoerde niet geldig.',
+	'Unable to remove acl file.' => 'Kon acl bestand niet verwijderen.',
 
 ## addons/Cloud.pack/lib/Cloud/App.pm
-	'Your Movable Type will be automatically updated on [_1].' => 'Uw Movable Type zal automatisch worden bijgewerkt op [_1].', # Translate - New
-	'New version of Movable Type has been released on [_1].' => 'Nieuwe versie van Movable Type werd uitgebracht op [_1].', # Translate - New
-	'Disk usage rate is [_1]%.' => 'Percentage schijfgebruik is [_1]%.', # Translate - New
-	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Opgeslagen schijfgebruikgegevens vernieuwen.</a>', # Translate - New
-	'An error occurred while reading version information.' => 'Er deed zich een fout voor bij het lezen van de versie-informatie.', # Translate - New
+	'Your Movable Type will be automatically updated on [_1].' => 'Uw Movable Type zal automatisch worden bijgewerkt op [_1].',
+	'New version of Movable Type has been released on [_1].' => 'Nieuwe versie van Movable Type werd uitgebracht op [_1].',
+	'Disk usage rate is [_1]%.' => 'Percentage schijfgebruik is [_1]%.',
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Opgeslagen schijfgebruikgegevens vernieuwen.</a>',
+	'An error occurred while reading version information.' => 'Er deed zich een fout voor bij het lezen van de versie-informatie.',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
-	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unificeer het bestaan van www. <a href="[_1]">Detail</a>', # Translate - New
-	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.com/documentation/cloud/guide/multi-domain.html', # Translate - New
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'Website\' root of \'Archief\' root werd aangepast.  U moet bestaande inhoud verhuizen.', # Translate - New
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unificeer het bestaan van www. <a href="[_1]">Detail</a>',
+	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.com/documentation/cloud/guide/multi-domain.html',
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => '\'Website\' root of \'Archief\' root werd aangepast.  U moet bestaande inhoud verhuizen.',
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
-	'Disabling any plugins...' => 'Bezig plugins uit te schakelen...', # Translate - New
+	'Disabling any plugins...' => 'Bezig plugins uit te schakelen...',
 
 ## addons/Cloud.pack/lib/Cloud/Util.pm
-	'Cannot read resource file.' => 'Kan bronbestand niet laden.', # Translate - New
-	'Cannot get the resource data.' => 'Kan brongegevens niet verkrijgen.', # Translate - New
-	'Unknown CPU type.' => 'Onbekend type CPU', # Translate - New
+	'Cannot read resource file.' => 'Kan bronbestand niet laden.',
+	'Cannot get the resource data.' => 'Kan brongegevens niet verkrijgen.',
+	'Unknown CPU type.' => 'Onbekend type CPU',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
-	'Auto update setting have been saved.' => 'Instellingen voor automatisch bijwerken werden opgeslagen.', # Translate - New
-	'Current installed version of Movable Type is the latest version.' => 'Huidige geïnstalleerde versie van Movable Type is de meest recente.', # Translate - New
-	'New version of Movable Type is available.' => 'Nieuwe versie van Movable Type beschikbaar.', # Translate - New
-	'Last Update' => 'Laatste update', # Translate - Case
-	'Movable Type [_1] on [_2]' => 'Movable Type [_1] op [_2]', # Translate - New
-	'Available version' => 'Beschikbare versie', # Translate - New
-	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (uitgebracht op [_2])', # Translate - New
-	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Uw Movable Type installatie zal automatisch worden bijgewerkt op [_1], zonder rekening te houden met uw instellingen.', # Translate - New
-	'Auto update' => 'Automatisch bijwerken', # Translate - New
-	'Enable	automatic update of Movable Type' => 'Automatisch bijwerken van Movable Type inschakelen', # Translate - New
+	'Auto update setting have been saved.' => 'Instellingen voor automatisch bijwerken werden opgeslagen.',
+	'Current installed version of Movable Type is the latest version.' => 'Huidige geïnstalleerde versie van Movable Type is de meest recente.',
+	'New version of Movable Type is available.' => 'Nieuwe versie van Movable Type beschikbaar.',
+	'Last Update' => 'Laatste update',
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] op [_2]',
+	'Available version' => 'Beschikbare versie',
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (uitgebracht op [_2])',
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Uw Movable Type installatie zal automatisch worden bijgewerkt op [_1], zonder rekening te houden met uw instellingen.',
+	'Auto update' => 'Automatisch bijwerken',
+	'Enable	automatic update of Movable Type' => 'Automatisch bijwerken van Movable Type inschakelen',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
-	'Manage Basic Authentication' => 'Basic authenticatie beheren.', # Translate - New
-	'/path/to/authentication' => '/pad/naar/authenticatie', # Translate - New
-	'User ID' => 'Gebruikers ID', # Translate - New
-	'URI is required.' => 'URI is vereist.', # Translate - New
-	'Invalid URI.' => 'Ongeldige URI', # Translate - New
-	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'Gebruikers ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).', # Translate - New
-	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'Wachtwoord ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).', # Translate - New
-	'basic authentication setting' => 'instelling voor basic authenticatie', # Translate - New
-	'basic authentication settings' => 'instellingen voor basic authenticatie', # Translate - New
+	'Manage Basic Authentication' => 'Basic authenticatie beheren.',
+	'/path/to/authentication' => '/pad/naar/authenticatie',
+	'User ID' => 'Gebruikers ID',
+	'URI is required.' => 'URI is vereist.',
+	'Invalid URI.' => 'Ongeldige URI',
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'Gebruikers ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).',
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'Wachtwoord ID mag enkel bestaan uit letters, cijfers of symbolen (uitgezonderd backslash).',
+	'basic authentication setting' => 'instelling voor basic authenticatie',
+	'basic authentication settings' => 'instellingen voor basic authenticatie',
 
 ## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
-	'Configuration directive' => 'Configuratiedirectief', # Translate - New
-	'Configuration value' => 'Configuratiewaarde', # Translate - New
-	'Reference' => 'Referentie', # Translate - New
+	'Configuration directive' => 'Configuratiedirectief',
+	'Configuration value' => 'Configuratiewaarde',
+	'Reference' => 'Referentie',
 
 ## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
-	'User Contents Files' => 'Inhoudsbestanden gebruiker', # Translate - New
-	'Buckup Files' => 'Backupbestanden', # Translate - New
-	'Free Disk Space' => 'Vrije schijfruimte', # Translate - New
-	'User Contents' => 'Inhoud gebruiker', # Translate - New
-	'Backup' => 'Backup', # Translate - Case
-	'Others' => 'Andere', # Translate - New
-	'Free' => 'Vrij', # Translate - New
+	'User Contents Files' => 'Inhoudsbestanden gebruiker',
+	'Buckup Files' => 'Backupbestanden',
+	'Free Disk Space' => 'Vrije schijfruimte',
+	'User Contents' => 'Inhoud gebruiker',
+	'Backup' => 'Backup',
+	'Others' => 'Andere',
+	'Free' => 'Vrij',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
-	'Reset FTPS Password' => 'FTPS wachtwoord opnieuw instellen', # Translate - New
-	'Please select the account for which you want to reset the password.' => 'Selecteer de account waarvoor u het wachtwoord opnieuw wenst in te stellen.', # Translate - New
-	'Owner Password' => 'Wachtwoord gebruiker', # Translate - New
-	'Creator Password' => 'Wachtwoord aanmaker', # Translate - New
-	'Password has been saved.' => 'Wachtwoord werd opgeslagen.', # Translate - New
+	'Reset FTPS Password' => 'FTPS wachtwoord opnieuw instellen',
+	'Please select the account for which you want to reset the password.' => 'Selecteer de account waarvoor u het wachtwoord opnieuw wenst in te stellen.',
+	'Owner Password' => 'Wachtwoord gebruiker',
+	'Creator Password' => 'Wachtwoord aanmaker',
+	'Password has been saved.' => 'Wachtwoord werd opgeslagen.',
 
 ## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
-	'Manage HTTP Redirect' => 'HTTP redirects instellen', # Translate - New
-	'/path/of/redirect' => '/pad/naar/redirect', # Translate - New
-	'http://example.com or /path/to/redirect' => 'http://voorbeeld.com of /pad/naar/redirect', # Translate - New
-	'Redirect URL is required.' => 'Redirect URL is vereist.', # Translate - New
-	'Redirect url is same as URI' => 'Redirect url is identiek aan URI', # Translate - New
-	'HTTP redirect setting' => 'HTTP redirect instelling', # Translate - New
-	'HTTP redirect settings' => 'HTPP redirect instellingen', # Translate - New
+	'Manage HTTP Redirect' => 'HTTP redirects instellen',
+	'/path/of/redirect' => '/pad/naar/redirect',
+	'http://example.com or /path/to/redirect' => 'http://voorbeeld.com of /pad/naar/redirect',
+	'Redirect URL is required.' => 'Redirect URL is vereist.',
+	'Redirect url is same as URI' => 'Redirect url is identiek aan URI',
+	'HTTP redirect setting' => 'HTTP redirect instelling',
+	'HTTP redirect settings' => 'HTPP redirect instellingen',
 
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
-	'Administration screen settings have been saved.' => 'Instellingen voor administratiescherm zijn opgeslagen.', # Translate - New
-	'Domain name like example.com' => 'Domeinnaam zoals voorbeeld.com', # Translate - New
-	'Path begin with / like /path' => 'Pad begint met /, bijvoorbeeld /pad', # Translate - New
-	'IP addresses that are allowed to access' => 'IP adressen die toestemming hebben voor toegang', # Translate - New
-	'Domain is required.' => 'Domein is vereist.', # Translate - New
-	'"[_1]" does not exist.' => '"[_1]" bestaat niet.', # Translate - New
-	'Invalid Path.' => 'Ongeldig pad.', # Translate - New
-	'This combination of domain and path already exists.' => 'Deze combinatie van domein en pad bestaat al.', # Translate - New
-	'IP is required.' => 'IP is vereist.', # Translate - New
-	'[_1] is invalid IP Address.' => '[_1] is een ongeldig IP adres.', # Translate - New
-	'IP restriction settings' => 'Instellingen voor IP restricties', # Translate - New
+	'Administration screen settings have been saved.' => 'Instellingen voor administratiescherm zijn opgeslagen.',
+	'Domain name like example.com' => 'Domeinnaam zoals voorbeeld.com',
+	'Path begin with / like /path' => 'Pad begint met /, bijvoorbeeld /pad',
+	'IP addresses that are allowed to access' => 'IP adressen die toestemming hebben voor toegang',
+	'Domain is required.' => 'Domein is vereist.',
+	'"[_1]" does not exist.' => '"[_1]" bestaat niet.',
+	'Invalid Path.' => 'Ongeldig pad.',
+	'This combination of domain and path already exists.' => 'Deze combinatie van domein en pad bestaat al.',
+	'IP is required.' => 'IP is vereist.',
+	'[_1] is invalid IP Address.' => '[_1] is een ongeldig IP adres.',
+	'IP restriction settings' => 'Instellingen voor IP restricties',
 
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
-	'Administration screen setting have been saved.' => 'nstellingen voor administratiescherm zijn opgeslagen.', # Translate - New
-	'Administration screen url have been reset to default.' => 'URL voor administratiescherm is teruggezet naar de standaardwaarde.', # Translate - New
-	'Admin Screen URL' => 'URL voor administratiescherm', # Translate - New
-	'Protect administration screen by Basic Authentication' => 'Administratiescherm afschermen met basic authenticatie', # Translate - New
-	'Access Restriction' => 'Toegangsrestrictie', # Translate - New
-	'Restricts IP addresses that can access to administration screen.' => 'Beperkt welke IP adressen toegang hebben tot het administratiescherm.', # Translate - New
-	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Gelieve de IP adressen die toegang moeten krijgen toe te voegen aan bovenstaande lijst.  U kunt meerdere IP adressen invullen gescheiden door komma\'s of line breaks.  Vergeet niet uw huidige IP adres in te geven of het kan zijn dat u toegang verliest tot het administratiescherm.  Voor details.', # Translate - New
-	'Your IP address is [_1].' => 'Uw IP adres is [_1].', # Translate - New
-	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Beperkt de IP adressen die toegang hebben tot publieke CGI scripts zoals zoekresultaten en de Data API.', # Translate - New
-	'IP address list is required.' => 'Lijst met IP adressen is vereist.', # Translate - New
-	'administration screen' => 'administratiescherm', # Translate - New
-	' and ' => ' en ', # Translate - New
-	'public access CGI' => 'publieke CGI scripts', # Translate - New
-	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'Uw huidige IP adres is niet inbegrepen in de toegangslijst ([_1]). Bent u zeker dat u geen toegang wenst te geven aan uw huidige IP adres?', # Translate - New
-	'Are you sure you want to save restrict access settings?' => 'Bent u zeker dat u de instellingen voor toegangsbeperking wenst op te slaan?', # Translate - New
+	'Administration screen setting have been saved.' => 'nstellingen voor administratiescherm zijn opgeslagen.',
+	'Administration screen url have been reset to default.' => 'URL voor administratiescherm is teruggezet naar de standaardwaarde.',
+	'Admin Screen URL' => 'URL voor administratiescherm',
+	'Protect administration screen by Basic Authentication' => 'Administratiescherm afschermen met basic authenticatie',
+	'Access Restriction' => 'Toegangsrestrictie',
+	'Restricts IP addresses that can access to administration screen.' => 'Beperkt welke IP adressen toegang hebben tot het administratiescherm.',
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Gelieve de IP adressen die toegang moeten krijgen toe te voegen aan bovenstaande lijst.  U kunt meerdere IP adressen invullen gescheiden door komma\'s of line breaks.  Vergeet niet uw huidige IP adres in te geven of het kan zijn dat u toegang verliest tot het administratiescherm.  Voor details.',
+	'Your IP address is [_1].' => 'Uw IP adres is [_1].',
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Beperkt de IP adressen die toegang hebben tot publieke CGI scripts zoals zoekresultaten en de Data API.',
+	'IP address list is required.' => 'Lijst met IP adressen is vereist.',
+	'administration screen' => 'administratiescherm',
+	' and ' => ' en ',
+	'public access CGI' => 'publieke CGI scripts',
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'Uw huidige IP adres is niet inbegrepen in de toegangslijst ([_1]). Bent u zeker dat u geen toegang wenst te geven aan uw huidige IP adres?',
+	'Are you sure you want to save restrict access settings?' => 'Bent u zeker dat u de instellingen voor toegangsbeperking wenst op te slaan?',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
-	'Install SSL Certification' => 'SSL certificaat installeren', # Translate - New
-	'SSL certification have been updated.' => 'SSL certificatie werd bijgewerkt.', # Translate - New
-	'SSL certification have been reset to default.' => 'SSL certificatie werd teruggezet naar de standaardinstelling.', # Translate - New
-	'The current server certification is as follows.' => 'De huidige servercertificatie is als volgt.', # Translate - New
-	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Om het servercertificaat te [_1], gelieve de vereiste informatie in te vullen in volgende velden. Om terug te keren naar het originele certificaat klikt u op de knop 'SSL Certificaat Verwijderen'.  Het wachtwoord voor 'Geheime Sleutel' moet worden vrijgegeven.}, # Translate - New
-	'Server Certification' => 'Servercertificatie', # Translate - New
-	'Secret Key' => 'Geheime Sleutel', # Translate - New
-	'Intermediate Certification' => 'Tussentijdse certificatie', # Translate - New
-	'Remove SSL Certification' => 'SSL Certificaat Verwijderen', # Translate - New
+	'Install SSL Certification' => 'SSL certificaat installeren',
+	'SSL certification have been updated.' => 'SSL certificatie werd bijgewerkt.',
+	'SSL certification have been reset to default.' => 'SSL certificatie werd teruggezet naar de standaardinstelling.',
+	'The current server certification is as follows.' => 'De huidige servercertificatie is als volgt.',
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Om het servercertificaat te [_1], gelieve de vereiste informatie in te vullen in volgende velden. Om terug te keren naar het originele certificaat klikt u op de knop 'SSL Certificaat Verwijderen'.  Het wachtwoord voor 'Geheime Sleutel' moet worden vrijgegeven.},
+	'Server Certification' => 'Servercertificatie',
+	'Secret Key' => 'Geheime Sleutel',
+	'Intermediate Certification' => 'Tussentijdse certificatie',
+	'Remove SSL Certification' => 'SSL Certificaat Verwijderen',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
-	'Restoring Full Backup Data' => 'Bezig volledige backupgegevens te herstellen', # Translate - New
-	q{Restored backup data from '[_1]' at [_2]} => q{Voledige backup hersteld van '[_1]' om [_2]}, # Translate - New
-	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Wanneer gegevens worden hersteld uit een backup zal alle inhoud teruggezet worden naar het moment waarop de backup werd aangemaakt.  Merk op dat alle wijzigingen die werden gemaakt aan de gegevens, inhoud en ontvangen reacties en trackbacks na dit herstelpunt verloren zullen gaan. Bijkomend zal tijdens het terugzetten een automatische backup worden gemaakt van de huidige gegevens.  Nadat herstel is afgerond is het nog mogelijk om terug te keren naar de status van de gegevens voor het herstel werd uitgevoerd.', # Translate - New
-	'Restore' => 'Herstel', # Translate - New
-	'Are you sure you want restore from selected backup file?' => 'Bent u zeker dat u wenst te herstellen uit het geselecteerde backupbestand?', # Translate - New
+	'Restoring Full Backup Data' => 'Bezig volledige backupgegevens te herstellen',
+	q{Restored backup data from '[_1]' at [_2]} => q{Voledige backup hersteld van '[_1]' om [_2]},
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Wanneer gegevens worden hersteld uit een backup zal alle inhoud teruggezet worden naar het moment waarop de backup werd aangemaakt.  Merk op dat alle wijzigingen die werden gemaakt aan de gegevens, inhoud en ontvangen reacties en trackbacks na dit herstelpunt verloren zullen gaan. Bijkomend zal tijdens het terugzetten een automatische backup worden gemaakt van de huidige gegevens.  Nadat herstel is afgerond is het nog mogelijk om terug te keren naar de status van de gegevens voor het herstel werd uitgevoerd.',
+	'Restore' => 'Herstel',
+	'Are you sure you want restore from selected backup file?' => 'Bent u zeker dat u wenst te herstellen uit het geselecteerde backupbestand?',
 
 ## addons/Commercial.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
@@ -6986,8 +6986,8 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
-	'Incomplete file copy to Temp Directory.' => 'Onvolledige bestandskopie naar de tijdelijke map', # Translate - New
-	'Failed to remove "[_1]": [_2]' => 'Verwijderen van "[_1]" mislukt: [_2]', # Translate - New
+	'Incomplete file copy to Temp Directory.' => 'Onvolledige bestandskopie naar de tijdelijke map',
+	'Failed to remove "[_1]": [_2]' => 'Verwijderen van "[_1]" mislukt: [_2]',
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'Fout tijdens rsync: commando (exitcode [_1]): [_2]',
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
@@ -7116,8 +7116,8 @@ use vars qw( @ISA %Lexicon );
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
-	'Sort' => 'Sorteren', # Translate - New
-	'No block in this field.' => 'Geen blok in dit veld', # Translate - New
+	'Sort' => 'Sorteren',
+	'No block in this field.' => 'Geen blok in dit veld',
 	'Changing to plain text is not possible to return to the block edit.' => 'Na veranderen naar gewone tekst is het niet mogelijk de inhoud terug te brengen naar blok edit modus.',
 	'Changing to block editor is not possible to result return to your current document.' => 'Na veranderen naar de blok editor is niet mogelijk om resultaat terug te brengen naar uw huidige document.',
 
@@ -7787,15 +7787,13 @@ richt \'[_4]\'',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Vereist het gebruik van een cronjob om attachments van een WordPress blog te downloaden op de achtergrond.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Attachments (afbeeldingen en bestanden) downloaden van de geÏmporteerde WordPress blog.',
 
-	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Synchronisatie ([_1]) met externe server ([_2]) met succes gestart.', # Translate - New
-    'This email is to notify you that synchronization with an external server has been successfully started.' => 'Deze mail dient om u op de hoogte te brengen dat synchronisatie met een externe server met succes is gestart.', # Translate - New
-    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Onmiddelijke sync job wordt geregistreerd.  Deze job zal worden uitgevoerd de volgende keer dat run-periodic-tasks wordt uitgevoerd.', # Translate - New
-    'Immediate sync job has been registered.' => 'Onmiddelijke sync job wordt geregistreerd.', # Translate - New
-    'Register immediate sync job' => 'Onmiddellijke sync job registreren', # Translate - New
-    'Are you sure you want to register immediate sync job?' => 'Bent u zeker dat u een onmiddellijke sync job wenst te registreren?', # Translate - New
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Synchronisatie ([_1]) met externe server ([_2]) met succes gestart.',
+    'This email is to notify you that synchronization with an external server has been successfully started.' => 'Deze mail dient om u op de hoogte te brengen dat synchronisatie met een externe server met succes is gestart.',
+    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Onmiddelijke sync job wordt geregistreerd.  Deze job zal worden uitgevoerd de volgende keer dat run-periodic-tasks wordt uitgevoerd.',
+    'Immediate sync job has been registered.' => 'Onmiddelijke sync job wordt geregistreerd.',
+    'Register immediate sync job' => 'Onmiddellijke sync job registreren',
+    'Are you sure you want to register immediate sync job?' => 'Bent u zeker dat u een onmiddellijke sync job wenst te registreren?',
 
 );
-
-## New words: 1146
 
 1;
