@@ -45,7 +45,7 @@ $test_env->prepare_fixture(
             blog_id   => $blog->id,
             author_id => $ishikawa->id,
             title     => 'my entry',
-            status    => MT::EntryStatus::status_int('Draft'),
+            status    => MT::Entry::status_int('Draft'),
         );
     }
 );
