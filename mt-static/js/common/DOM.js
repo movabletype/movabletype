@@ -2,7 +2,7 @@
 DOM Library
 $Id: DOM.js 257 2007-12-19 20:16:39Z ddavis $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

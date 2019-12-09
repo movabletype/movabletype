@@ -44,7 +44,7 @@ it under the same terms as Perl itself.
 
 =head1 AUTHOR & COPYRIGHT
 
-Copyright 2013, Six Apart, Ltd. All rights reserved.
+Copyright 2013, Six Apart Ltd. All rights reserved.
 
 =cut
 

@@ -1,7 +1,7 @@
 /* 
 $Id: Test.js 185 2007-05-04 20:45:03Z ydnar $
 
-Copyright Six Apart, Ltd. All rights reserved.
+Copyright Six Apart Ltd. All rights reserved.
 Redistribution and use in source and binary forms is
 subject to the Six Apart JavaScript license:
 

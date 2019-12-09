@@ -1,7 +1,7 @@
 /* 
 $Id: Toolbar.js 194 2007-05-16 00:05:47Z ydnar $
 
-Copyright Six Apart, Ltd. All rights reserved.
+Copyright Six Apart Ltd. All rights reserved.
 Redistribution and use in source and binary forms is
 subject to the Six Apart JavaScript license:
 

@@ -2,7 +2,7 @@
 JavasSript Object Notation (JSON) - Copyright 2005 Six Apart
 $Id: JSON.js 264 2008-06-11 22:46:16Z ddavis $
 
-Copyright (c) 2005-2006, Six Apart, Ltd.
+Copyright (c) 2005-2006, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

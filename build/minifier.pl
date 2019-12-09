@@ -7,7 +7,7 @@ my $copyright;
 my $year = ( localtime(time) )[5] + 1900;
 
 $copyright
-    = "Movable Type (r) (C) 2001-$year Six Apart, Ltd. All Rights Reserved";
+    = "Movable Type (r) (C) 2001-$year Six Apart Ltd. All Rights Reserved";
 
 my %types = (
     css => 'CSS::Minifier',

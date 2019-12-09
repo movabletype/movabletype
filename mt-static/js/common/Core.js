@@ -2,7 +2,7 @@
 Core JavaScript Library
 $Id: Core.js 251 2007-12-11 02:27:38Z ydnar $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
