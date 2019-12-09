@@ -53,7 +53,7 @@ use vars qw( @ISA %Lexicon );
 	'CONTENTTYPE-CATEGORY-WEEKLY_ADV' => 'ContentType categoría semanal',
 
 ## php/lib/block.mtarchives.php
-	'ArchiveType not found - [_1]' => 'ArchiveType no encontrado - [_1]', # Translate - New
+	'ArchiveType not found - [_1]' => 'ArchiveType no encontrado - [_1]',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score" debe usarse junto al espacio de nombres.',
@@ -588,7 +588,7 @@ use vars qw( @ISA %Lexicon );
 	'Updates' => 'Actualizaciones',
 	'Activity Log' => 'Actividad',
 	'Site List' => 'Lista del sitio',
-	'Site List for Mobile' => 'Lista del sitio para móviles', # Translate - New
+	'Site List for Mobile' => 'Lista del sitio para móviles',
 	'Refresh Templates' => 'Refrescar plantillas',
 	'Use Publishing Profile' => 'Utilizar perfil de publicación',
 	'Create Role' => 'Crear rol',
@@ -669,6 +669,10 @@ use vars qw( @ISA %Lexicon );
 	'Website' => 'Website',
 	'Blog' => 'Blog',
 	'Permissions' => 'Permisos',
+
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] debe ser un número.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] debe ser un entero entre [_2] y [_3].',
 
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
@@ -1852,7 +1856,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Video Asset' => 'Fichero de vídeo',
 	'Image Asset' => 'Ficher de imagen',
 	'Embedded Text' => 'Texto empotrado',
-	'__LIST_FIELD_LABEL' => 'Lista', # Translate - New
+	'__LIST_FIELD_LABEL' => 'Lista',
 	'Table' => 'Tabla',
 
 ## lib/MT/ContentFieldType/RadioButton.pm
@@ -2415,7 +2419,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot initialize list property [_1].[_2].' => 'No se pudo inicializar la propiedad de listas [_1].[_2].',
 	'Failed to initialize auto list property [_1].[_2]: Cannot find definition of column [_3].' => 'Falló al inicializar automáticamente la lista de propiedades [_1]. [_2] No se pudo encontrar la definición de la columna [_3].',
 	'Failed to initialize auto list property [_1].[_2]: unsupported column type.' => 'Falló al inicializar automáticamente la lista de propiedades [_1]. [_2]: Tipo de columna no soportada.',
-	'[_1] (id:[_2])' => '[_1] (ID:[_2])', # Translate - Case
+	'[_1] (id:[_2])' => '[_1] (ID:[_2])',
 
 ## lib/MT/Lockout.pm
 	'Cannot find author for id \'[_1]\'' => 'No se pudo encontrar al autor con el id \'[_1]\'',
@@ -2654,7 +2658,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'You used an \'[_1]\' tag outside of the context of the website; Perhaps you mistakenly placed it outside of an \'MTWebsites\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de una sitio web. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTWebsites\'?',
 	'You used an \'[_1]\' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?' => 'Ha utilizado una etiqueta \'[_1]\' en el contexto de un blog que no tiene un sitio web raíz. ¿Quizás el registro del blog está mal?',
 	'You used an \'[_1]\' tag outside of the context of the blog; Perhaps you mistakenly placed it outside of an \'MTBlogs\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un blog. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTBlogs\'?',
-	'You used an \'[_1]\' tag outside of the context of the site;' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto del sitio;', # Translate - New
+	'You used an \'[_1]\' tag outside of the context of the site;' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto del sitio;',
 	'You used an \'[_1]\' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an \'MTComments\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un comentario. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTComments\'?',
 	'You used an \'[_1]\' tag outside of the context of a ping; Perhaps you mistakenly placed it outside of an \'MTPings\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un ping. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTPings\'?',
 	'You used an \'[_1]\' tag outside of the context of an asset; Perhaps you mistakenly placed it outside of an \'MTAssets\' container tag?' => 'Utilizó una etiqueta \'[_1]\' fuera del contexto de un recurso multimedia. ¿Quizás la situó por error fuera de la etiqueta contenedor \'MTAssets\'?',
@@ -3006,8 +3010,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Truncating values of value_varchar column...' => 'Acortando los valores de la columna value_varchar...',
 	'Migrating Max Length option of Single Line Text fields...' => 'Migrando la opción Max Lenght de los campos de una línea...',
 	'Reset default dashboard widgets...' => 'Reinicio del panel de control predefinido de widgets...',
-	'Rebuilding Content Type count of Category Sets...' => 'Reconstruyendo las estadísticas del tipo de contenido de los conjuntos de categorías...', # Translate - New
-	'Adding site list dashboard widget for mobile...' => 'Añadiendo el widget para móviles de la lista del sitio...', # Translate - New
+	'Rebuilding Content Type count of Category Sets...' => 'Reconstruyendo las estadísticas del tipo de contenido de los conjuntos de categorías...',
+	'Adding site list dashboard widget for mobile...' => 'Añadiendo el widget para móviles de la lista del sitio...',
 
 ## lib/MT/Util/Archive.pm
 	'Type must be specified' => 'Debe especificar el tipo',
@@ -3018,9 +3022,9 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Could not read from filehandle.' => 'No se pudo leer desde el manejador de ficheros',
 	'File [_1] is not a tgz file.' => 'El fichero [_1] no es un tgz.',
 	'File [_1] exists; could not overwrite.' => 'El fichero [_1] existe: no puede sobreescribirse.',
-	'[_1] in the archive is not a regular file' => '[_1] en el archivo no es un fichero normal', # Translate - New
-	'[_1] in the archive is an absolute path' => '[_1] en el archivo es una ruta absoluta', # Translate - New
-	'[_1] in the archive contains ..' => '[_1] en el archivo contiene...', # Translate - New
+	'[_1] in the archive is not a regular file' => '[_1] en el archivo no es un fichero normal',
+	'[_1] in the archive is an absolute path' => '[_1] en el archivo es una ruta absoluta',
+	'[_1] in the archive contains ..' => '[_1] en el archivo contiene...',
 	'Cannot extract from the object' => 'No se pudo extraer usando el objeto',
 	'Cannot write to the object' => 'No se pudo escribir en el objeto',
 	'Both data and file name must be specified.' => 'Se deben especificar tanto los datos como el nombre del fichero.',
@@ -3116,16 +3120,16 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Los métodos de las plantillas no están implementados, debido a las diferencias entre Blogger API y Movable Type API.',
 
 ## mt-static/addons/Cloud.pack/js/cfg_config_directives.js
-	'A configuration directive is required.' => 'Se necesita una directiva de configuración.', # Translate - New
-	'[_1] cannot be updated.' => '[_1] no se puede actualizar.', # Translate - New
-	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Aunque Movable Type puede actualizar [_1], no se puede actualizar desde esta pantalla.', # Translate - New
-	'[_1] already exists.' => '[_1] ya existe.', # Translate - New
-	'A configuration value is required.' => 'Es obligatorio un valor para la configuración.', # Translate - New
-	'The HASH type configuration directive should be in the format of "key=value"' => 'La directiva de configuración de tipo HASH debe tener el formato "clave=valor"', # Translate - New
-	'[_1] for [_2] already exists.' => '[_1] para [_2] ya existe.', # Translate - New
+	'A configuration directive is required.' => 'Se necesita una directiva de configuración.',
+	'[_1] cannot be updated.' => '[_1] no se puede actualizar.',
+	'Although [_1] can be updated by Movable Type, it cannot be updated on this screen.' => 'Aunque Movable Type puede actualizar [_1], no se puede actualizar desde esta pantalla.',
+	'[_1] already exists.' => '[_1] ya existe.',
+	'A configuration value is required.' => 'Es obligatorio un valor para la configuración.',
+	'The HASH type configuration directive should be in the format of "key=value"' => 'La directiva de configuración de tipo HASH debe tener el formato "clave=valor"',
+	'[_1] for [_2] already exists.' => '[_1] para [_2] ya existe.',
 	'https://www.movabletype.org/documentation/[_1]' => 'https://www.movabletype.org/documentation/[_1]',
-	'Are you sure you want to remove [_1]?' => '¿Está seguro de que desea eliminar [_1]?', # Translate - New
-	'configuration directive' => 'directiva de configuración', # Translate - New
+	'Are you sure you want to remove [_1]?' => '¿Está seguro de que desea eliminar [_1]?',
+	'configuration directive' => 'directiva de configuración',
 
 ## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => 'Continuar',
@@ -3231,7 +3235,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'User Display Option is disabled now.' => 'Se ha deshabilitado la opción de mostrar.',
 
 ## mt-static/js/listing/tag/list-actions-for-mobile.tag
-	'Select action' => 'Seleccione acción', # Translate - New
+	'Select action' => 'Seleccione acción',
 	'Plugin Actions' => 'Acciones de extensiones',
 
 ## mt-static/js/listing/tag/list-actions-for-pc.tag
@@ -3260,7 +3264,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## mt-static/js/listing/tag/list-table.tag
 	'Loading...' => 'Cargando...',
 	'Select All' => 'Seleccionar todos',
-	'All' => 'Todos', # Translate - Case
+	'All' => 'Todos',
 	'[_1] &ndash; [_2] of [_3]' => '[_1] &ndash; [_2] of [_3]',
 	'Select all [_1] items' => 'Seleccionar los [_1] elementos',
 	'All [_1] items are selected' => 'Todos los [_1] elementos están seleccionados',
@@ -4869,7 +4873,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'A saved version of this content data was auto-saved [_2]. <a href="[_1]" class="alert-link">Recover auto-saved content</a>' => 'Se guardó una versión de estos datos de contenido [_2]. <a href="[_1]" class="alert-link">Recuperar el contenido auto-guardado</a>',
 	'An error occurred while trying to recover your saved content data.' => 'Ocurrió un error cuando se intentaba recuperar los datos de contenido guardados.',
 	'This [_1] has been saved.' => 'Se ha guardado [_1].',
-	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Crear [_2]?</a>', # Translate - New
+	'<a href="[_1]" >Create another [_2]?</a>' => '<a href="[_1]" >Crear [_2]?</a>',
 	'Revision: <strong>[_1]</strong>' => 'Revisión: <strong>[_1]</strong>',
 	'View revisions of this [_1]' => 'Ver revisiones de este [_1]',
 	'View revisions' => 'Ver revisiones',
@@ -4989,7 +4993,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Draggable' => 'Arrastrable',
 	'Share' => 'Compartir',
 	'Format:' => 'Formato:',
-	'Rich Text(HTML mode)' => 'Texto con formato (modo HTML)', # Translate - New
+	'Rich Text(HTML mode)' => 'Texto con formato (modo HTML)',
 	'(comma-delimited list)' => '(lista separada por comas)',
 	'(space-delimited list)' => '(lista separada por espacios)',
 	q{(delimited by '[_1]')} => q{(separado por '[_1]')},
@@ -5184,7 +5188,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Add sub category' => 'Añadir sub categoría',
 
 ## tmpl/cms/field_html/field_html_content_type.tmpl
-	'No field data.' => 'Campo sin datos.', # Translate - New
+	'No field data.' => 'Campo sin datos.',
 	'No [_1]' => 'Ningún [_1]',
 	'This field is disabled because valid Content Type is not selected in this field.' => 'Este campo está deshabilitado porque no se ha seleccionado un tipo de contenido válido en este campo.',
 	'[_1] less than or equal to [_2] must be selected' => 'Debe seleccionar [_2] o menos [_1]',
@@ -5295,9 +5299,9 @@ No se pudo escribir el fichero. Disco lleno.",
 ## tmpl/cms/include/async_asset_upload.tmpl
 	'Choose files to upload or drag files.' => 'Seleccione los ficheros para subir o arrástrelos.',
 	'Choose file to upload or drag file.' => 'Seleccione los ficheros a subir o arrástrelos.',
-	'Choose files to upload.' => 'Seleccione los ficheros a transferir.', # Translate - New
-	'Choose file to upload.' => 'Seleccione fichero a transferir.', # Translate - New
-	'Upload Settings' => 'Transferir configuración', # Translate - New
+	'Choose files to upload.' => 'Seleccione los ficheros a transferir.',
+	'Choose file to upload.' => 'Seleccione fichero a transferir.',
+	'Upload Settings' => 'Transferir configuración',
 	'Upload Options' => 'Configuración transferencias',
 	'Operation for a file exists' => 'Acción para ficheros existentes',
 	'Drag and drop here' => 'Arrastrar y solar aquí',
@@ -5496,7 +5500,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## tmpl/cms/include/mobile_global_menu.tmpl
 	'Select another site...' => 'Seleccionar otro sitio...',
 	'Select another child site...' => 'Seleccionar otro sitio hijo...',
-	'PC View' => 'Vista PC', # Translate - New
+	'PC View' => 'Vista PC',
 
 ## tmpl/cms/include/notification_table.tmpl
 	'Date Added' => 'Fecha de creación',
@@ -5680,8 +5684,8 @@ No se pudo escribir el fichero. Disco lleno.",
 ## tmpl/cms/listing/banlist_list_header.tmpl
 	'You have added [_1] to your list of banned IP addresses.' => 'Agregó [_1] a su lista de direcciones IP bloqueadas.',
 	'You have successfully deleted the selected IP addresses from the list.' => 'Eliminó correctamente las direcciones IP seleccionadas.',
-	'' => '', # Translate - New
-	'The IP you entered is already banned for this site.' => 'La IP que introdujo ya está bloqueada en este sitio.', # Translate - New
+	'' => '',
+	'The IP you entered is already banned for this site.' => 'La IP que introdujo ya está bloqueada en este sitio.',
 	'Invalid IP address.' => 'Dirección IP no válida.',
 
 ## tmpl/cms/listing/blog_list_header.tmpl
@@ -6205,199 +6209,199 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## addons/Cloud.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
-	'Cloud Services' => 'Servicios en la nube', # Translate - New
-	'Basic Authentication' => 'Autentifiación básica', # Translate - New
-	'Redirect' => 'Redirección', # Translate - New
-	'Auto Update' => 'Actualización automática', # Translate - New
-	'FTPS Password' => 'Clave FTPS', # Translate - New
-	'SSL Certificates' => 'Certificados SSL', # Translate - New
-	'IP Restriction' => 'Restricción de IPs', # Translate - New
-	'Full Restore' => 'Restauración completa', # Translate - New
-	'Config Directives' => 'Directivas de configuración', # Translate - New
-	'Disk Usage' => 'Uso de almacenamiento', # Translate - New
+	'Cloud Services' => 'Servicios en la nube',
+	'Basic Authentication' => 'Autentifiación básica',
+	'Redirect' => 'Redirección',
+	'Auto Update' => 'Actualización automática',
+	'FTPS Password' => 'Clave FTPS',
+	'SSL Certificates' => 'Certificados SSL',
+	'IP Restriction' => 'Restricción de IPs',
+	'Full Restore' => 'Restauración completa',
+	'Config Directives' => 'Directivas de configuración',
+	'Disk Usage' => 'Uso de almacenamiento',
 
 ## addons/Cloud.pack/lib/Cloud/App/CMS.pm
-	'Owner' => 'Dueño', # Translate - New
-	'Creator' => 'Creador', # Translate - New
-	'FTP passowrd for [_1] has successfully been updated.' => 'Se ha actualizado correctamente la contraseña de FTP de [_1].', # Translate - New
-	'Unable to reset [_1] FTPS password.' => 'No se pudo reiniciar la contraseña de FTPS de [_1].', # Translate - New
-	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'No se pudo actualizar [_1]: algunos de los [_2] se modificaron después de que abriera esta pantalla.', # Translate - New
-	'Basic Authentication setting' => 'Configuración de autentificación básica', # Translate - New
-	'Cannot access to this uri: [_1]' => 'No se pudo acceder a esta dirección: [_1]', # Translate - New
-	'Basic authentication for site has successfully been updated.' => 'Se ha actualizado correctamente la autentificación básica de este sitio.', # Translate - New
-	'Unable to update Basic Authentication settings.' => 'No se pudo actualizar la configuración de autentificación básica.', # Translate - New
-	'Administration Screen Setting' => 'Configuración de la pantalla de Administración.', # Translate - New
-	'The URL you specified is not available.' => 'La URL que especificó no está disponible.', # Translate - New
-	'Unable to update Admin Screen URL settings.' => 'No se pudo actualizar la configuración de la URL de la pantalla de Administración.', # Translate - New
-	'The URL for administration screen has successfully been updated.' => 'La URL de la pantalla de administración se ha actualizado correctamente.', # Translate - New
-	'Cannot delete basicauth_admin file.' => 'No se pudo borrar el fichero basicauth_admin.', # Translate - New
-	'Basic authentication for administration screen has successfully been cleared.' => 'La autentificación básica para la pantalla de administración se ha reiniciado correctamente.', # Translate - New
-	'User ID is required.' => 'Es obligatorio el ID de usuario.', # Translate - New
-	'Password is required.' => 'La contraseña es obligatoria.', # Translate - New
-	'Unable to update basic authentication for administration screen.' => 'No se pudo actualizar la autentificación básica de la pantalla de administración.', # Translate - New
-	'Unable to write temporary file.' => 'No se pudo crear un fichero temporal.', # Translate - New
-	'Basic authentication for administration screen has successfully been updated.' => 'Se ha actualizado correctamente la autentificación básica de la pantalla de administración.', # Translate - New
-	'Cannot delete ip_restriction_[_1] file.' => 'No se pudo borrar el fichero ip_restriction_[_1].', # Translate - New
-	'IP restriction for administration screen has successfully been cleared.' => 'La restricción de IPs de la pantalla de administración se ha reiniciado correctamente.', # Translate - New
-	'[_1] is not a valid IP address.' => '[_1] no es una dirección IP válida.', # Translate - New
-	'Unable to write allowed IP addresses file.' => 'No se pudo en el fichero de direcciones IP permitidas.', # Translate - New
-	'IP restriction white list for administration screen  has successfully been updated.' => 'Se ha actualizado correctamente la lista blanca de restricción de IPs de la pantalla de administración.', # Translate - New
-	'HTTP Redirect' => 'Redirección HTTP', # Translate - New
-	'HTTP Redirect setting' => 'Configuración de redirección HTTP', # Translate - New
-	'HTTP redirect settings has successfully updated.' => 'Se ha actualizado correctamente la configuración de redirección HTTP.', # Translate - New
-	'Unable to update HTTP Redirect settings.' => 'No se pudo actualizar la configuración de la redirección HTTP.', # Translate - New
-	'Update SSL Certification' => 'Actualizar certificados SSL', # Translate - New
-	'__SSL_CERT_UPDATE' => 'actualizar', # Translate - New
-	'__SSL_CERT_INSTALL' => 'instalar', # Translate - New
-	'Cannot copy default cert file.' => 'No se pudo copiar el fichero de certificados por defecto.', # Translate - New
+	'Owner' => 'Dueño',
+	'Creator' => 'Creador',
+	'FTP passowrd for [_1] has successfully been updated.' => 'Se ha actualizado correctamente la contraseña de FTP de [_1].',
+	'Unable to reset [_1] FTPS password.' => 'No se pudo reiniciar la contraseña de FTPS de [_1].',
+	'Failed to update [_1]: some of [_2] were changed after you opened this screen.' => 'No se pudo actualizar [_1]: algunos de los [_2] se modificaron después de que abriera esta pantalla.',
+	'Basic Authentication setting' => 'Configuración de autentificación básica',
+	'Cannot access to this uri: [_1]' => 'No se pudo acceder a esta dirección: [_1]',
+	'Basic authentication for site has successfully been updated.' => 'Se ha actualizado correctamente la autentificación básica de este sitio.',
+	'Unable to update Basic Authentication settings.' => 'No se pudo actualizar la configuración de autentificación básica.',
+	'Administration Screen Setting' => 'Configuración de la pantalla de Administración.',
+	'The URL you specified is not available.' => 'La URL que especificó no está disponible.',
+	'Unable to update Admin Screen URL settings.' => 'No se pudo actualizar la configuración de la URL de la pantalla de Administración.',
+	'The URL for administration screen has successfully been updated.' => 'La URL de la pantalla de administración se ha actualizado correctamente.',
+	'Cannot delete basicauth_admin file.' => 'No se pudo borrar el fichero basicauth_admin.',
+	'Basic authentication for administration screen has successfully been cleared.' => 'La autentificación básica para la pantalla de administración se ha reiniciado correctamente.',
+	'User ID is required.' => 'Es obligatorio el ID de usuario.',
+	'Password is required.' => 'La contraseña es obligatoria.',
+	'Unable to update basic authentication for administration screen.' => 'No se pudo actualizar la autentificación básica de la pantalla de administración.',
+	'Unable to write temporary file.' => 'No se pudo crear un fichero temporal.',
+	'Basic authentication for administration screen has successfully been updated.' => 'Se ha actualizado correctamente la autentificación básica de la pantalla de administración.',
+	'Cannot delete ip_restriction_[_1] file.' => 'No se pudo borrar el fichero ip_restriction_[_1].',
+	'IP restriction for administration screen has successfully been cleared.' => 'La restricción de IPs de la pantalla de administración se ha reiniciado correctamente.',
+	'[_1] is not a valid IP address.' => '[_1] no es una dirección IP válida.',
+	'Unable to write allowed IP addresses file.' => 'No se pudo en el fichero de direcciones IP permitidas.',
+	'IP restriction white list for administration screen  has successfully been updated.' => 'Se ha actualizado correctamente la lista blanca de restricción de IPs de la pantalla de administración.',
+	'HTTP Redirect' => 'Redirección HTTP',
+	'HTTP Redirect setting' => 'Configuración de redirección HTTP',
+	'HTTP redirect settings has successfully updated.' => 'Se ha actualizado correctamente la configuración de redirección HTTP.',
+	'Unable to update HTTP Redirect settings.' => 'No se pudo actualizar la configuración de la redirección HTTP.',
+	'Update SSL Certification' => 'Actualizar certificados SSL',
+	'__SSL_CERT_UPDATE' => 'actualizar',
+	'__SSL_CERT_INSTALL' => 'instalar',
+	'Cannot copy default cert file.' => 'No se pudo copiar el fichero de certificados por defecto.',
 
-	'Unable to create temporary path: [_1]' => 'No se pudo crear la ruta temporal: [_1]', # Translate - New
-	'SSL certification has successfully been updated.' => 'La certificación SSL se ha actualizado correctamente.', # Translate - New
-	'Unable to update SSL certification.' => 'No se pudo actualizar la certificación SSL.', # Translate - New
-	'Manage Configuration Directives' => 'Administrar directivas de configuración', # Translate - New
-	'Config Directive' => 'Directiva de configuración', # Translate - New
-	'Movable Type environment settings has successfully been updated.' => 'Se ha actualizado correctamente el entorno de configuración de Movable Type.', # Translate - New
-	'Restoring Backup Data' => 'Restaurar copia de seguridad', # Translate - New
-	'backup data' => 'copia de seguridad', # Translate - New
-	'Invalid backup file name.' => 'El nombre del fichero de la copia de seguridad no es válido.', # Translate - New
-	'Cannot copy backup file to workspace.' => 'No se pudo copiar el fichero de la copia de seguridad al espacio de trabajo.', # Translate - New
-	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo guardar la configuración del sitio web porque el número de dominios en uso excede el número de dominios que pueden estar disponibles.', # Translate - New
-	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo crear el sitio web porque el número de dominios que se han creado excede el número de dominios que pueden estar disponibles.', # Translate - New
-	'Auto Update Settings' => 'Actualización automática de configuración', # Translate - New
-	'Unable to write AUTOUPDATE file: [_1]' => 'No se pudo escribir en el fichero AUTOUPDATE: [_1]', # Translate - New
-	'Auto update settings has successfully been updated.' => 'Se ha actualizado correctamente la configuración de la actualización automática.', # Translate - New
-	'IP Restriction Settings' => 'Configuración de la restricción de IPs', # Translate - New
-	'IP Restriction settings' => 'Configuración de la restricción de IPs', # Translate - New
-	'Domain, Path and IP addresses are required.' => 'El dominio, la ruta y la dirección IP son obligatorios.', # Translate - New
-	'\'[_1]\' does not exist.' => '\'[_1]\' no existe.', # Translate - New
-	'\'[_1]\' is invalid path.' => '\'[_1]\' es una ruta no válida.', # Translate - New
-	'Unable to create acl path: [_1]' => 'No se pudo crear la ruta acl: [_1]', # Translate - New
-	'Cannot write to acl directory: [_1]' => 'No se pudo escribir en el directorio acl: [_1]', # Translate - New
-	'Cannot write to acl file: [_1]' => 'No se pudo escribir en el fichero acl: [_1]', # Translate - New
-	'IP restriction for site has successfully been updated.' => 'Se ha actualizado correctamente la restricción de IPs.', # Translate - New
-	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'No se pudo aplicar la configuración de la restricción de acceso. Quizás la ruta o la dirección IP introducida no son válidas.', # Translate - New
-	'Unable to remove acl file.' => 'No se pudo eliminar el fichero acl.', # Translate - New
+	'Unable to create temporary path: [_1]' => 'No se pudo crear la ruta temporal: [_1]',
+	'SSL certification has successfully been updated.' => 'La certificación SSL se ha actualizado correctamente.',
+	'Unable to update SSL certification.' => 'No se pudo actualizar la certificación SSL.',
+	'Manage Configuration Directives' => 'Administrar directivas de configuración',
+	'Config Directive' => 'Directiva de configuración',
+	'Movable Type environment settings has successfully been updated.' => 'Se ha actualizado correctamente el entorno de configuración de Movable Type.',
+	'Restoring Backup Data' => 'Restaurar copia de seguridad',
+	'backup data' => 'copia de seguridad',
+	'Invalid backup file name.' => 'El nombre del fichero de la copia de seguridad no es válido.',
+	'Cannot copy backup file to workspace.' => 'No se pudo copiar el fichero de la copia de seguridad al espacio de trabajo.',
+	'Could not save the website settings because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo guardar la configuración del sitio web porque el número de dominios en uso excede el número de dominios que pueden estar disponibles.',
+	'Could not create the website because the number of domains that have been used exceeds the number of domains which can be available.' => 'No se pudo crear el sitio web porque el número de dominios que se han creado excede el número de dominios que pueden estar disponibles.',
+	'Auto Update Settings' => 'Actualización automática de configuración',
+	'Unable to write AUTOUPDATE file: [_1]' => 'No se pudo escribir en el fichero AUTOUPDATE: [_1]',
+	'Auto update settings has successfully been updated.' => 'Se ha actualizado correctamente la configuración de la actualización automática.',
+	'IP Restriction Settings' => 'Configuración de la restricción de IPs',
+	'IP Restriction settings' => 'Configuración de la restricción de IPs',
+	'Domain, Path and IP addresses are required.' => 'El dominio, la ruta y la dirección IP son obligatorios.',
+	'\'[_1]\' does not exist.' => '\'[_1]\' no existe.',
+	'\'[_1]\' is invalid path.' => '\'[_1]\' es una ruta no válida.',
+	'Unable to create acl path: [_1]' => 'No se pudo crear la ruta acl: [_1]',
+	'Cannot write to acl directory: [_1]' => 'No se pudo escribir en el directorio acl: [_1]',
+	'Cannot write to acl file: [_1]' => 'No se pudo escribir en el fichero acl: [_1]',
+	'IP restriction for site has successfully been updated.' => 'Se ha actualizado correctamente la restricción de IPs.',
+	'Cannot apply access restriction settings. Perhaps, the path or IP address you entered is not a valid.' => 'No se pudo aplicar la configuración de la restricción de acceso. Quizás la ruta o la dirección IP introducida no son válidas.',
+	'Unable to remove acl file.' => 'No se pudo eliminar el fichero acl.',
 
 ## addons/Cloud.pack/lib/Cloud/App.pm
-	'Your Movable Type will be automatically updated on [_1].' => 'Su instalación de Movable Type se actualizará automáticamente el [_1].', # Translate - New
-	'New version of Movable Type has been released on [_1].' => 'Se ha publicado una nueva versión de Movable Type el [_1].', # Translate - New
-	'Disk usage rate is [_1]%.' => 'El uso de almacenamiento es [_1]%.', # Translate - New
-	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Refrescar los datos de uso de disco</a>.', # Translate - New
-	'An error occurred while reading version information.' => 'Ocurrió un error durante la lectura de los datos de la versión.', # Translate - New
+	'Your Movable Type will be automatically updated on [_1].' => 'Su instalación de Movable Type se actualizará automáticamente el [_1].',
+	'New version of Movable Type has been released on [_1].' => 'Se ha publicado una nueva versión de Movable Type el [_1].',
+	'Disk usage rate is [_1]%.' => 'El uso de almacenamiento es [_1]%.',
+	'<a href="[_1]">Refresh cached disk usage rate data.</a>' => '<a href="[_1]">Refrescar los datos de uso de disco</a>.',
+	'An error occurred while reading version information.' => 'Ocurrió un error durante la lectura de los datos de la versión.',
 
 ## addons/Cloud.pack/lib/Cloud/Template.pm
-	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unifique la existencia de www. <a href="[_1]">Más información</a>', # Translate - New
-	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html', # Translate - New
-	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Se ha modificado el \'Sitio web raíz\' o la \'Raíz de los archivos\'. Debe mover los contenidos existentes.', # Translate - New
+	'Unify the existence of www. <a href="[_1]">Detail</a>' => 'Unifique la existencia de www. <a href="[_1]">Más información</a>',
+	'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html' => 'https://www.movabletype.jp/documentation/cloud/guide/multi-domain.html',
+	'\'Website Root\' or \'Archive Root\' has been changed. You must move existing contents.' => 'Se ha modificado el \'Sitio web raíz\' o la \'Raíz de los archivos\'. Debe mover los contenidos existentes.',
 
 ## addons/Cloud.pack/lib/Cloud/Upgrade.pm
-	'Disabling any plugins...' => 'Deshabilitando las extensiones...', # Translate - New
+	'Disabling any plugins...' => 'Deshabilitando las extensiones...',
 
 ## addons/Cloud.pack/lib/Cloud/Util.pm
-	'Cannot read resource file.' => 'No se puede guardar el fichero de recursos.', # Translate - New
-	'Cannot get the resource data.' => 'No se pudo obtener el fichero de recursos.', # Translate - New
-	'Unknown CPU type.' => 'Tipo de CPU desconocida.', # Translate - New
+	'Cannot read resource file.' => 'No se puede guardar el fichero de recursos.',
+	'Cannot get the resource data.' => 'No se pudo obtener el fichero de recursos.',
+	'Unknown CPU type.' => 'Tipo de CPU desconocida.',
 
 ## addons/Cloud.pack/tmpl/cfg_auto_update.tmpl
-	'Auto update setting have been saved.' => 'Se ha actualizado la configuración de las actualizaciones automáticas.', # Translate - New
-	'Current installed version of Movable Type is the latest version.' => 'La versión de Movable Type es la más reciente.', # Translate - New
-	'New version of Movable Type is available.' => 'Está disponible una nueva versión de Movable Type.', # Translate - New
-	'Last Update' => 'Última actualización', # Translate - Case
-	'Movable Type [_1] on [_2]' => 'Movable Type [_1] el [_2]', # Translate - New
-	'Available version' => 'Versión disponible', # Translate - New
-	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (publicado el [_2])', # Translate - New
-	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Se actualizrá automáticamente Movable Type en [_1], independientemente de la configuración.', # Translate - New
-	'Auto update' => 'Actualización automática', # Translate - New
-	'Enable	automatic update of Movable Type' => 'Activar la actualización automática de Movable Type', # Translate - New
+	'Auto update setting have been saved.' => 'Se ha actualizado la configuración de las actualizaciones automáticas.',
+	'Current installed version of Movable Type is the latest version.' => 'La versión de Movable Type es la más reciente.',
+	'New version of Movable Type is available.' => 'Está disponible una nueva versión de Movable Type.',
+	'Last Update' => 'Última actualización',
+	'Movable Type [_1] on [_2]' => 'Movable Type [_1] el [_2]',
+	'Available version' => 'Versión disponible',
+	'Movable Type [_1] (released on [_2])' => 'Movable Type [_1] (publicado el [_2])',
+	'Your Movable Type will be automatically updated on [_1], regardless of your settings.' => 'Se actualizrá automáticamente Movable Type en [_1], independientemente de la configuración.',
+	'Auto update' => 'Actualización automática',
+	'Enable	automatic update of Movable Type' => 'Activar la actualización automática de Movable Type',
 
 ## addons/Cloud.pack/tmpl/cfg_basic_authentication.tmpl
-	'Manage Basic Authentication' => 'Administrar la autentificación básica', # Translate - New
-	'/path/to/authentication' => '/ruta/a/la/autentificación', # Translate - New
-	'User ID' => 'ID de usuario', # Translate - New
-	'URI is required.' => 'Se necesita dirección URI', # Translate - New
-	'Invalid URI.' => 'URI no válida.', # Translate - New
-	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'El ID de usuario sólo puede estar compuesto de letras, números o símbolos (sin incluir la barra invertida).', # Translate - New
-	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'La contraseña sólo puede contener letras, números o símbolos (sin incluir la barra invertida).', # Translate - New
-	'basic authentication setting' => 'configuración de la autentificación básica', # Translate - New
-	'basic authentication settings' => 'configuración de la autentificación básica', # Translate - New
+	'Manage Basic Authentication' => 'Administrar la autentificación básica',
+	'/path/to/authentication' => '/ruta/a/la/autentificación',
+	'User ID' => 'ID de usuario',
+	'URI is required.' => 'Se necesita dirección URI',
+	'Invalid URI.' => 'URI no válida.',
+	'User ID must be with alphabet, number or symbols (excludes back slash) only.' => 'El ID de usuario sólo puede estar compuesto de letras, números o símbolos (sin incluir la barra invertida).',
+	'Password must be with alphabet, number or symbols (excludes back slash) only.' => 'La contraseña sólo puede contener letras, números o símbolos (sin incluir la barra invertida).',
+	'basic authentication setting' => 'configuración de la autentificación básica',
+	'basic authentication settings' => 'configuración de la autentificación básica',
 
 ## addons/Cloud.pack/tmpl/cfg_config_directives.tmpl
-	'Configuration directive' => 'Directiva de configuración', # Translate - New
-	'Configuration value' => 'Valor de configuración', # Translate - New
-	'Reference' => 'Referencia', # Translate - New
+	'Configuration directive' => 'Directiva de configuración',
+	'Configuration value' => 'Valor de configuración',
+	'Reference' => 'Referencia',
 
 ## addons/Cloud.pack/tmpl/cfg_disk_usage.tmpl
-	'User Contents Files' => 'Ficheros de contenido de usuarios', # Translate - New
-	'Buckup Files' => 'Ficheros de copias de seguridad', # Translate - New
-	'Free Disk Space' => 'Espacio de disco libre', # Translate - New
-	'User Contents' => 'Contenidos de usuarios', # Translate - New
-	'Backup' => 'Copia de seguridad', # Translate - Case
-	'Others' => 'Otros', # Translate - New
-	'Free' => 'Libre', # Translate - New
+	'User Contents Files' => 'Ficheros de contenido de usuarios',
+	'Buckup Files' => 'Ficheros de copias de seguridad',
+	'Free Disk Space' => 'Espacio de disco libre',
+	'User Contents' => 'Contenidos de usuarios',
+	'Backup' => 'Copia de seguridad',
+	'Others' => 'Otros',
+	'Free' => 'Libre',
 
 ## addons/Cloud.pack/tmpl/cfg_ftps_password.tmpl
-	'Reset FTPS Password' => 'Reiniciar la contraseña FTPS', # Translate - New
-	'Please select the account for which you want to reset the password.' => 'Por favor, seleccione la cuenta para la que desea reiniciar la contraseña.', # Translate - New
-	'Owner Password' => 'Contraseña de dueño', # Translate - New
-	'Creator Password' => 'Contraseña de creador', # Translate - New
-	'Password has been saved.' => 'Se ha guardado la contraseña.', # Translate - New
+	'Reset FTPS Password' => 'Reiniciar la contraseña FTPS',
+	'Please select the account for which you want to reset the password.' => 'Por favor, seleccione la cuenta para la que desea reiniciar la contraseña.',
+	'Owner Password' => 'Contraseña de dueño',
+	'Creator Password' => 'Contraseña de creador',
+	'Password has been saved.' => 'Se ha guardado la contraseña.',
 
 ## addons/Cloud.pack/tmpl/cfg_http_redirect.tmpl
-	'Manage HTTP Redirect' => 'Administrar redirección HTTP', # Translate - New
-	'/path/of/redirect' => '/ruta/a/la/redirección', # Translate - New
-	'http://example.com or /path/to/redirect' => 'http://ejemplo.com o /ruta/a/la/redirección', # Translate - New
-	'Redirect URL is required.' => 'La URL de redirección es obligatoria.', # Translate - New
-	'Redirect url is same as URI' => 'La URL de redirección es la misma URI.', # Translate - New
-	'HTTP redirect setting' => 'Configuración de redirección HTTP', # Translate - New
-	'HTTP redirect settings' => 'Configuración de redirección HTTP', # Translate - New
+	'Manage HTTP Redirect' => 'Administrar redirección HTTP',
+	'/path/of/redirect' => '/ruta/a/la/redirección',
+	'http://example.com or /path/to/redirect' => 'http://ejemplo.com o /ruta/a/la/redirección',
+	'Redirect URL is required.' => 'La URL de redirección es obligatoria.',
+	'Redirect url is same as URI' => 'La URL de redirección es la misma URI.',
+	'HTTP redirect setting' => 'Configuración de redirección HTTP',
+	'HTTP redirect settings' => 'Configuración de redirección HTTP',
 
 ## addons/Cloud.pack/tmpl/cfg_ip_restriction.tmpl
-	'Administration screen settings have been saved.' => 'Se ha guardado la configuración de la pantalla de administración.', # Translate - New
-	'Domain name like example.com' => 'Nombre de dominio como ejemplo.com.', # Translate - New
-	'Path begin with / like /path' => 'La ruta comienza con una barra, como /ruta', # Translate - New
-	'IP addresses that are allowed to access' => 'Las direcciones IP a las que se les permite el acceso', # Translate - New
-	'Domain is required.' => 'El dominio es obligatorio.', # Translate - New
-	'"[_1]" does not exist.' => '"[_1]" no existe.', # Translate - New
-	'Invalid Path.' => 'Ruta no válida.', # Translate - New
-	'This combination of domain and path already exists.' => 'Esta combinación de dominio y ruta ya existe.', # Translate - New
-	'IP is required.' => 'La dirección IP es obligatoria.', # Translate - New
-	'[_1] is invalid IP Address.' => '[_1] no es una dirección IP válida.', # Translate - New
-	'IP restriction settings' => 'Configuración de restricción de IPs', # Translate - New
+	'Administration screen settings have been saved.' => 'Se ha guardado la configuración de la pantalla de administración.',
+	'Domain name like example.com' => 'Nombre de dominio como ejemplo.com.',
+	'Path begin with / like /path' => 'La ruta comienza con una barra, como /ruta',
+	'IP addresses that are allowed to access' => 'Las direcciones IP a las que se les permite el acceso',
+	'Domain is required.' => 'El dominio es obligatorio.',
+	'"[_1]" does not exist.' => '"[_1]" no existe.',
+	'Invalid Path.' => 'Ruta no válida.',
+	'This combination of domain and path already exists.' => 'Esta combinación de dominio y ruta ya existe.',
+	'IP is required.' => 'La dirección IP es obligatoria.',
+	'[_1] is invalid IP Address.' => '[_1] no es una dirección IP válida.',
+	'IP restriction settings' => 'Configuración de restricción de IPs',
 
 ## addons/Cloud.pack/tmpl/cfg_security.tmpl
-	'Administration screen setting have been saved.' => 'Se ha guardado la configuración de la pantalla de administración.', # Translate - New
-	'Administration screen url have been reset to default.' => 'Se ha reiniciado la URL de la pantalla de administración a su valor por defecto.', # Translate - New
-	'Admin Screen URL' => 'URL de la pantalla de administración', # Translate - New
-	'Protect administration screen by Basic Authentication' => 'Proteger la pantalla de administración mediante autentificación básica', # Translate - New
-	'Access Restriction' => 'Restricción de acceso', # Translate - New
-	'Restricts IP addresses that can access to administration screen.' => 'Restringe las direcciones IP a las que se puede acceder a la pantalla de administración.', # Translate - New
-	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Por favor, añada las direcciones IP a las que se les permite el acceso en la lista de arriba. Puede especificar varias direcciones separadas por coma o líneas nuevas. Cuando la dirección IP actual no se incluye puede impedir el acceso a la pantalla de administración. Para más información.', # Translate - New
-	'Your IP address is [_1].' => 'Su dirección IP es [_1].', # Translate - New
-	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Restringe las direcciones IP que pueden acceder a CGI públicos tales como la búsqueda y la API de datos.', # Translate - New
-	'IP address list is required.' => 'La lista de direcciones IP es obligatoria.', # Translate - New
-	'administration screen' => 'pantalla de administración', # Translate - New
-	' and ' => ' y ', # Translate - New
-	'public access CGI' => 'CGI de acceso público', # Translate - New
-	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'La dirección IP remota no está incluída en la lista blanca ([_1]). ¿Está seguro de que desea restringir la dirección IP remota actual?', # Translate - New
-	'Are you sure you want to save restrict access settings?' => '¿Está seguro de que desea guardar la configuración de restricción de acceso?', # Translate - New
+	'Administration screen setting have been saved.' => 'Se ha guardado la configuración de la pantalla de administración.',
+	'Administration screen url have been reset to default.' => 'Se ha reiniciado la URL de la pantalla de administración a su valor por defecto.',
+	'Admin Screen URL' => 'URL de la pantalla de administración',
+	'Protect administration screen by Basic Authentication' => 'Proteger la pantalla de administración mediante autentificación básica',
+	'Access Restriction' => 'Restricción de acceso',
+	'Restricts IP addresses that can access to administration screen.' => 'Restringe las direcciones IP a las que se puede acceder a la pantalla de administración.',
+	'Please add the IP address which allows access to the upper list. You can specify multiple IP addresses separated by commas or line breaks. When the current remote IP address  is not contained, it may become impossible to access an administration screen. For details.' => 'Por favor, añada las direcciones IP a las que se les permite el acceso en la lista de arriba. Puede especificar varias direcciones separadas por coma o líneas nuevas. Cuando la dirección IP actual no se incluye puede impedir el acceso a la pantalla de administración. Para más información.',
+	'Your IP address is [_1].' => 'Su dirección IP es [_1].',
+	'Restricts IP address that can access to public CGI such as Search and Data API.' => 'Restringe las direcciones IP que pueden acceder a CGI públicos tales como la búsqueda y la API de datos.',
+	'IP address list is required.' => 'La lista de direcciones IP es obligatoria.',
+	'administration screen' => 'pantalla de administración',
+	' and ' => ' y ',
+	'public access CGI' => 'CGI de acceso público',
+	'The remote IP address is not included in the white list ([_1]). Are you sure you want to restrict the current remote IP address?' => 'La dirección IP remota no está incluída en la lista blanca ([_1]). ¿Está seguro de que desea restringir la dirección IP remota actual?',
+	'Are you sure you want to save restrict access settings?' => '¿Está seguro de que desea guardar la configuración de restricción de acceso?',
 
 ## addons/Cloud.pack/tmpl/cfg_ssl_certification.tmpl
-	'Install SSL Certification' => 'Instalar certificación SSL', # Translate - New
-	'SSL certification have been updated.' => 'Se ha actualizado la certificación SSL', # Translate - New
-	'SSL certification have been reset to default.' => 'Se ha reiniciado la certificación SSL a la configuración por defecto.', # Translate - New
-	'The current server certification is as follows.' => 'El servidor actual de certificación está indicado a continuación.', # Translate - New
-	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Para [_1] el servidor de certificados, por favor, introduzca la información requerida en los campos siguientes. Para reiniciar la configuración al certificado original, por favor presione el botón 'Eliminar la certificación SSL'. Deberá indicar la contraseña para la 'Clave secreta'.}, # Translate - New
-	'Server Certification' => 'Servidor de certificados', # Translate - New
-	'Secret Key' => 'Contraseña secreta', # Translate - New
-	'Intermediate Certification' => 'Certificación intermedia', # Translate - New
-	'Remove SSL Certification' => 'Eliminar la certificación SSL', # Translate - New
+	'Install SSL Certification' => 'Instalar certificación SSL',
+	'SSL certification have been updated.' => 'Se ha actualizado la certificación SSL',
+	'SSL certification have been reset to default.' => 'Se ha reiniciado la certificación SSL a la configuración por defecto.',
+	'The current server certification is as follows.' => 'El servidor actual de certificación está indicado a continuación.',
+	q{To [_1] the server certificate, please enter the required information in the following fields. To revert back to the initial certificate, please press the 'Remove SSL Certification' button. The passphrase for 'Secret Key' must be released.} => q{Para [_1] el servidor de certificados, por favor, introduzca la información requerida en los campos siguientes. Para reiniciar la configuración al certificado original, por favor presione el botón 'Eliminar la certificación SSL'. Deberá indicar la contraseña para la 'Clave secreta'.},
+	'Server Certification' => 'Servidor de certificados',
+	'Secret Key' => 'Contraseña secreta',
+	'Intermediate Certification' => 'Certificación intermedia',
+	'Remove SSL Certification' => 'Eliminar la certificación SSL',
 
 ## addons/Cloud.pack/tmpl/full_restore.tmpl
-	'Restoring Full Backup Data' => 'Restauración de la copia de seguridad completa', # Translate - New
-	q{Restored backup data from '[_1]' at [_2]} => q{}, # Translate - New
-	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Cuando vaya a restaurar una copia de seguridad, los contenidos volverán al punto en el que se realizó la copia de seguridad. Por favor, tenga en cuenta que se descartarán los cambios realizados a los datos, contenidos, comentarios y trackbacks recibidos después del punto de la restauración. Además, mientras se realiza la restauración, cualquiera dato presente se guardará automáticamente. Una vez finalice la restauración es posible volver al estado anterior a su ejecución', # Translate - New
-	'Restore' => 'Restaurar', # Translate - New
-	'Are you sure you want restore from selected backup file?' => '¿Desea restaurar la copia de seguridad desde el fichero seleccionado?', # Translate - New
+	'Restoring Full Backup Data' => 'Restauración de la copia de seguridad completa',
+	q{Restored backup data from '[_1]' at [_2]} => q{},
+	'When restoring back-up data, the contents will revert to the point when the back-up data was created. Please note that any changes made to the data, contents, and received comments and trackback after this restoration point will be discarded. Also, while in the process of restoration, any present data will be backed up automatically. After restoration is complete, it is possible to return to the status of the data before restoration was executed.' => 'Cuando vaya a restaurar una copia de seguridad, los contenidos volverán al punto en el que se realizó la copia de seguridad. Por favor, tenga en cuenta que se descartarán los cambios realizados a los datos, contenidos, comentarios y trackbacks recibidos después del punto de la restauración. Además, mientras se realiza la restauración, cualquiera dato presente se guardará automáticamente. Una vez finalice la restauración es posible volver al estado anterior a su ejecución',
+	'Restore' => 'Restaurar',
+	'Are you sure you want restore from selected backup file?' => '¿Desea restaurar la copia de seguridad desde el fichero seleccionado?',
 
 ## addons/Commercial.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
@@ -6978,15 +6982,42 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error switching directory.' => 'Error cambiando de directorio.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Ha finalizado con éxito la sincronización ([_1]) con un servidor externo ([_2]).',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Falló la sincronización ([_1]) con un servidor externo ([_2]).',
+	'FTP Server' => 'Servidor FTP',
+	'Port' => 'Puerto',
+	'Start Directory' => 'Directorio de inicio',
+	'Rsync Destination' => 'Destino de Rsync',
+	'Rsync Additional Options' => 'Opciones adicionales de Rsync',
+	'Synchronization has successfully finished.' => 'La sincronización finalizó correctamente.',
+	'  tried [_1] times but failed. ([_2]): [_3]' => ' intentó [_1] veces pero falló. ([_2]): [_3]',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'No se puede escribir en el directorio temporal [_1].',
-	'Incomplete file copy to Temp Directory.' => 'Copia de fichero incompleta en el directorio temporal.', # Translate - New
-	'Failed to remove "[_1]": [_2]' => 'Fallo al borrar "[_1]": [_2]', # Translate - New
+	'Incomplete file copy to Temp Directory.' => 'Copia de fichero incompleta en el directorio temporal.',
+	'Failed to remove "[_1]": [_2]' => 'Fallo al borrar "[_1]": [_2]',
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'Error durante rsync: Comando (código de salida [_1]): [_2]',
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Lista de ficheros para sincronizar',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'Sync Logs' => 'Sincronizar registros',
+	'Sync setting is not specified.' => 'No se ha especificado la opción de sincronización.',
+	'Invalid email address: [_1]' => 'Dirección de correo no válida: [_1]',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error al enviar el correol ([_1]); ¿Intente otra configuración de MailTransfer?',
+	'Sync Type' => 'Tipo de sincronización',
+	'Sync Result' => 'Resultado de sincronización',
+	'*Sync setting deleted*' => '*Opción de sincronización borrada*',
+	'Parallel' => 'Paralelo',
+	'FTP' => 'FTP',
+	'Rsync' => 'Rsync',
+	'Are you sure you want to reset the sync log?' => '¿Está seguro de que desea reiniciar el registro de sincronización?',
+	'Start Time' => 'Hora inicial',
+	'Start Date' => 'Fecha inicial',
+	'Finish Time' => 'Hora final',
+	'Finish Date' => 'Fecha final',
+	'Destination Name' => 'Nombre del destino',
+	'Clear Sync Log' => 'Borrar registro de sincronización',
+	'Download Sync Log (CSV)' => 'Descargar registro de sincronización (CSV)',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Configuración de la sincronización',
@@ -7011,6 +7042,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Ocurrió un error al intentar conectar con el servidor FTP \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Ocurrió un error al intentar copiar el directorio actual desde \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Ocurrió un error al intentar copiar la lista de directorios de \'[_1]\'',
+	'Synchronization log for site \'[_1]\' (ID:[_2]) reset by \'[_3]\'' => 'Registro de sincronización del sitio \'[_1]\' (ID:[_2]) reiniciado por \'[_3]\'',
+	'Synchronization log reset by \'[_1]\'' => 'Registro de sincronización reiniciado por \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Falló el borrado de la lista de archivos de sincronización "[_1]": [_2]',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Se eliminó la lista de archivos de sincronizaciones previas. [_1] por [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Eliminando todas las tareas de sincronización de contenidos...',
@@ -7049,6 +7084,15 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid time.' => 'Fecha no válida.',
 	'You must make one or more destination settings.' => 'Debe indicar una o más opciones de destino.',
 	'Are you sure you want to remove this settings?' => '¿Está seguro de que desea eliminar estas opciones?',
+	'View sync log' => 'Ver registro de sincronización',
+	'Clear the previous synchronization file list' => 'Borrr la lista de archivos de sincronizaciones previas',
+	'Sync all files' => 'Sincronizar todos los ficheros',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Después de ejecutar un trabajo de sincronización, se enviará una notificación por correo electrónico al usuario que registró el trabajo y al administrador del sistema (por defecto) o al destinatario especificado arriba.',
+	'Are you sure you want to clear the previous synchronization file list?' => '¿Está seguro de que desea borrar la lista de archivos de sincronizaciones previas?',
+	'Destination name should be shorter than [_1] characters.' => 'El nombre del destino debe tener menos de [_1] caracteres.',
+	'A duplicate destination name exists.' => 'Existe un nombre de destino duplicado.',
+	'Deleting...' => 'Borrando...',
+	'The previous synchronization file list has been cleared.' => 'La lista de ficheros de sincronizaciones previas ha sido borrada.',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => '¡Sincronizar ahora!',
@@ -7056,6 +7100,11 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Synchronizing...' => 'Sincronizando...',
 	'Finish!' => '¡Finalizó!',
 	'The synchronization was interrupted. Unable to resume.' => 'Se interrumpió la sincronización. No es posible continuar.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Synchronization success notification' => 'Notificación de sincronización exitosa',
+	'Synchronization error notification' => 'Notificación de error de sincronización',
+	'Executer' => 'Ejecutor',
 
 ## plugins/BlockEditor/config.yaml
 	'Block Editor.' => 'Editor de bloques.',
@@ -7073,8 +7122,8 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/BlockEditor/tmpl/cms/dialog/multi_asset_options.tmpl
 
 ## plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl
-	'Sort' => 'Ordenar', # Translate - New
-	'No block in this field.' => 'Sin bloqueo en este campo.', # Translate - New
+	'Sort' => 'Ordenar',
+	'No block in this field.' => 'Sin bloqueo en este campo.',
 	'Changing to plain text is not possible to return to the block edit.' => 'Si cambia al texto plano no será posible regresar a la edición de bloques.',
 	'Changing to block editor is not possible to result return to your current document.' => 'Si cambiar al editor de bloques no será posible regresar al documento actual.',
 
@@ -7743,15 +7792,13 @@ trada \'[_4]\'',
 	'Download attachments' => 'Descargar adjuntos',
 	'Requires the use of a cron job to download attachments from WordPress powered blog in the background.' => 'Necesita el uso de una tarea del cron para descargar los adjuntos de un blog de WordPress en segundo plano.',
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
-	
-	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Se inició la sincronización ([_1]) con un servidor externo ([_2]).', # Translate - New
-    'This email is to notify you that synchronization with an external server has been successfully started.' => 'El propósito de este correo es notificarle que se inició correctamente la sincronización con un servidor externo.', # Translate - New
-    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Se ha registrado un trabajo de sincronización inmediata. Este trabajo se ejecutará en la próxima ejecución de  run-periodic-tasks.', # Translate - New
-    'Immediate sync job has been registered.' => 'Se ha registrado un trabajo de sincronización inmediata.', # Translate - New
-    'Register immediate sync job' => 'Registrar trabajo de sincronización inmediata', # Translate - New
-    'Are you sure you want to register immediate sync job?' => '¿Está seguro de que desea registrar un trabajo de sincronización inmediata?', # Translate - New
-);
 
-## New words: 1154
+	'Synchronization([_1]) with an external server([_2]) has been successfully started.' => 'Se inició la sincronización ([_1]) con un servidor externo ([_2]).',
+    'This email is to notify you that synchronization with an external server has been successfully started.' => 'El propósito de este correo es notificarle que se inició correctamente la sincronización con un servidor externo.',
+    'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => 'Se ha registrado un trabajo de sincronización inmediata. Este trabajo se ejecutará en la próxima ejecución de  run-periodic-tasks.',
+    'Immediate sync job has been registered.' => 'Se ha registrado un trabajo de sincronización inmediata.',
+    'Register immediate sync job' => 'Registrar trabajo de sincronización inmediata',
+    'Are you sure you want to register immediate sync job?' => '¿Está seguro de que desea registrar un trabajo de sincronización inmediata?',
+);
 
 1;
