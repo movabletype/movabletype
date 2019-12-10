@@ -443,6 +443,11 @@
                         }
                     }
                 });
+
+                ed.parser.addNodeFilter('link,meta', function(nodes, name) {
+                  node.remove();
+                });
+
             });
 
             if (ed.settings['plugin_mt_tainted_input'] && tinymce.isIE) {
