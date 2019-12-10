@@ -43,6 +43,7 @@ use File::Spec;
 use Getopt::Long;
 use IO::File;
 use Sys::Hostname;
+use Config;
 
 sub new {
     my $class = shift;
@@ -300,7 +301,7 @@ sub make {
         );
     }
     else {
-        $self->verbose_command('make');
+        $self->verbose_command($Config{make});
     }
 
     if ( !$self->{'debug'} && $self->{'workspace!'} ) {
