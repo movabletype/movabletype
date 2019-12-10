@@ -367,12 +367,20 @@
                 });
             }
 
+            function insertContentSecurityPolicy() {
+                var win = ed.getWin();
+                var csp = win.document.createElement('META');
+                csp.setAttribute('http-equiv', 'Content-Security-Policy');
+                csp.setAttribute('content', "script-src 'self'");
+                win.document.head.appendChild(csp);
+            }
 
             ed.onInit.add(function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
                 initSourceButtons();
                 ed.theme.resizeBy(0, 0);
+                insertContentSecurityPolicy();
             });
 
             ed.onPreInit.add(function() {
