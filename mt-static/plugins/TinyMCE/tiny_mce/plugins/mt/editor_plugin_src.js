@@ -371,7 +371,7 @@
                 var win = ed.getWin();
                 var csp = win.document.createElement('META');
                 csp.setAttribute('http-equiv', 'Content-Security-Policy');
-                csp.setAttribute('content', "script-src 'self'");
+                csp.setAttribute('content', "script-src 'none'");
                 win.document.head.appendChild(csp);
             }
 
