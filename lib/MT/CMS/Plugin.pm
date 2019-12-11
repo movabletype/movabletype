@@ -129,6 +129,23 @@ sub plugin_control {
         if ( exists $MT::Plugins{$plugin_sig} ) {
             $cfg->PluginSwitch(
                 $plugin_sig . '=' . ( $state eq 'on' ? '1' : '0' ), 1 );
+
+            ## trans("Plugin [_1] is enabled by [_2]")
+            ## trans("Plugin [_1] is disabled by [_2]")
+            my $message
+                = "Plugin [_1] is "
+                . ( $state eq 'on' ? 'enabled' : 'disabled' )
+                . " by [_2]";
+            my $user = $app->user->name;
+            require MT::Log;
+            $app->log(
+                {   message =>
+                        $app->translate( $message, $plugin_sig, $user ),
+                    class    => 'system',
+                    category => 'plugin',
+                    level    => MT::Log::INFO()
+                }
+            );
         }
     }
     $cfg->save_config;
