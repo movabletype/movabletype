@@ -131,6 +131,23 @@ sub plugin_control {
     my $cfg = $app->config;
     if ( $plugin_sig eq '*' ) {
         $cfg->UsePlugins( $state eq 'on' ? 1 : 0, 1 );
+
+        ## trans("Plugins are enabled by [_1]")
+        ## trans("Plugins are disabled by [_1]")
+        my $message
+            = "Plugins are "
+            . ( $state eq 'on' ? 'enabled' : 'disabled' )
+            . " by [_1]";
+        my $user = $app->user->name;
+        require MT::Log;
+        $app->log(
+            {   message =>
+                    $app->translate( $message, $user ),
+                class    => 'system',
+                category => 'plugin',
+                level    => MT::Log::INFO()
+            }
+        );
     }
     else {
         if ( exists $MT::Plugins{$plugin_sig} ) {
