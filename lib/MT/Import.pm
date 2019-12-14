@@ -251,6 +251,7 @@ sub get_options_html {
         $tmpl->param($param) if $param;
     }
     my $html = $tmpl->output();
+    warn $tmpl->errstr if ( $MT::DebugMode && !$html && $tmpl->errstr );
     $html = '' unless defined $html;
     if ( $html =~ m/<(_|MT)_TRANS /i ) {
         if ( my $c = $importer->{plugin} ) {
