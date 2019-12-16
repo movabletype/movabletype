@@ -395,8 +395,10 @@ sub remove_fileinfo {
         }
     );
 
+    MT::Util::Log::init();
     for my $f (@finfo) {
         $f->remove;
+        MT::Util::Log->info( ' Removed ' . $f->file_path );
     }
     1;
 }
@@ -1324,8 +1326,10 @@ sub rebuild_file {
         else {
 
          # if the shoe don't fit, remove all shoes and create the perfect shoe
+            MT::Util::Log::init();
             foreach (@finfos) {
                 $_->remove();
+                MT::Util::Log->info( ' Removed ' . $_->file_path );
                 if ( MT->config('DeleteFilesAtRebuild') ) {
                     $mt->_delete_archive_file(
                         Blog        => $blog,
@@ -1371,6 +1375,8 @@ sub rebuild_file {
         )
     {
         $finfo->remove();
+        MT::Util::Log::init();
+        MT::Util::Log->info( ' Removed ' . $finfo->file_path );
         if ( MT->config->DeleteFilesAtRebuild ) {
             $mt->_delete_archive_file(
                 Blog        => $blog,
@@ -1741,7 +1747,12 @@ sub rebuild_indexes {
                 $finfo = $finfos[0];
             }
             else {
-                foreach (@finfos) { $_->remove(); }
+
+                MT::Util::Log::init();
+                foreach (@finfos) {
+                    $_->remove();
+                    MT::Util::Log->info( ' Removed ' . $_->file_path );
+                }
                 $finfo = MT::FileInfo->set_info_for_url(
                     $rel_url, $file, 'index',
                     {   Blog     => $tmpl->blog_id,
