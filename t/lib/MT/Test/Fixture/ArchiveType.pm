@@ -128,10 +128,12 @@ our %FixtureSpec = (
             cf_same_catset_fruit => {
                 type         => 'categories',
                 category_set => 'catset_fruit',
+                options      => { multiple => 1 },
             },
             cf_same_catset_other_fruit => {
                 type         => 'categories',
                 category_set => 'catset_fruit',
+                options      => { multiple => 1 },
             },
         ],
         ct_with_other_catset => [
@@ -140,10 +142,12 @@ our %FixtureSpec = (
             cf_other_catset_fruit => {
                 type         => 'categories',
                 category_set => 'catset_fruit',
+                options      => { multiple => 1 },
             },
             cf_other_catset_animal => {
                 type         => 'categories',
                 category_set => 'catset_animal',
+                options      => { multiple => 1 },
             },
         ],
     },
