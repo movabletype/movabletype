@@ -367,12 +367,20 @@
                 });
             }
 
+            function insertContentSecurityPolicy() {
+                var win = ed.getWin();
+                var csp = win.document.createElement('META');
+                csp.setAttribute('http-equiv', 'Content-Security-Policy');
+                csp.setAttribute('content', "script-src 'none'");
+                win.document.head.appendChild(csp);
+            }
 
             ed.onInit.add(function() {
                 $container = $(ed.getContainer());
                 updateButtonVisibility();
                 initSourceButtons();
                 ed.theme.resizeBy(0, 0);
+                insertContentSecurityPolicy();
             });
 
             ed.onPreInit.add(function() {
@@ -435,6 +443,11 @@
                         }
                     }
                 });
+
+                ed.parser.addNodeFilter('link,meta', function(nodes, name) {
+                  node.remove();
+                });
+
             });
 
             if (ed.settings['plugin_mt_tainted_input'] && tinymce.isIE) {
