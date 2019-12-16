@@ -31,6 +31,8 @@ my $admin   = MT::Author->load(1);
 my $ct_id = $objs->{content_type}{ct_with_same_catset}{content_type}->id;
 my $cd_id = $objs->{content_data}{cd_same_apple_orange_peach}->id;
 
+MT->publisher->rebuild( BlogID => $blog_id );
+
 my @files;
 $test_env->ls(
     sub {
