@@ -332,7 +332,7 @@ sub suite {
             method => 'POST',
             setup  => sub {
                 my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_tmpl[1]->id } );
+                    ->load( { template_id => $ct_tmpl[1]->id } ) or return;
 
                 my $file_path = $fi->file_path;
                 $fmgr->delete($file_path);
@@ -342,8 +342,8 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_tmpl[1]->id } );
+                ok my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $ct_tmpl[1]->id } ) or return;
 
                 my $file_path = $fi->file_path;
                 ok( $fmgr->exists($file_path), "'$file_path' exists." );
@@ -356,7 +356,7 @@ sub suite {
             method => 'POST',
             setup  => sub {
                 my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_archive_tmpl[1]->id } );
+                    ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
 
                 my $file_path = $fi->file_path;
                 $fmgr->delete($file_path);
@@ -366,8 +366,8 @@ sub suite {
             },
             complete => sub {
                 my ( $data, $body ) = @_;
-                my $fi = $app->model('fileinfo')
-                    ->load( { template_id => $ct_archive_tmpl[1]->id } );
+                ok my $fi = $app->model('fileinfo')
+                    ->load( { template_id => $ct_archive_tmpl[1]->id } ) or return;
 
                 my $file_path = $fi->file_path;
                 ok( $fmgr->exists($file_path), "'$file_path' exists." );
