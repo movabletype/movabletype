@@ -9,6 +9,7 @@ use HTTP::Response;
 use URI;
 use URI::QueryParam;
 use Test::More;
+use Scalar::Util qw/blessed/;
 
 my %Initialized;
 
@@ -119,14 +120,30 @@ sub request {
     $self->{res} = $res;
 }
 
+sub _convert_params {
+    my $params = shift;
+    if ( blessed $params && $params->isa('HTTP::Request') ) {
+        my $cgi = CGI->new( $params->content );
+        my %hash;
+        for my $name ( $cgi->multi_param ) {
+            my @values = $cgi->multi_param($name);
+            $hash{$name} = @values > 1 ? \@values : $values[0];
+        }
+        return \%hash;
+    }
+    return $params;
+}
+
 sub get {
     my ( $self, $params ) = @_;
+    $params = _convert_params($params);
     $params->{__request_method} = 'GET';
     $self->request($params);
 }
 
 sub post {
     my ( $self, $params ) = @_;
+    $params = _convert_params($params);
     $params->{__request_method} = 'POST';
     $self->request($params);
 }
