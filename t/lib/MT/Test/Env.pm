@@ -2,16 +2,19 @@ package MT::Test::Env;
 
 use strict;
 use warnings;
+use Carp;
 use Test::More;
 use File::Spec;
 use Cwd ();
 use Fcntl qw/:flock/;
+use File::Find ();
 use File::Path 'mkpath';
 use File::Temp 'tempdir';
 use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
+use String::CamelCase 'camelize';
 
 our $MT_HOME;
 
@@ -93,8 +96,12 @@ sub write_config {
         ImageDriver         => $image_driver,
         MTVersion           => MT->version_number,
         MTReleaseNumber     => MT->release_number,
+        LoggerModule        => 'Test',
+        LoggerPath          => 'TEST_ROOT/log',
+        LoggerLevel         => 'DEBUG',
         MailTransfer        => 'debug',
         DBIRaiseError       => 1,
+        ProcessMemoryCommand => 0,    ## disable process check
     );
 
     if ($extra) {
@@ -333,7 +340,12 @@ sub prepare_fixture {
             };
         }
         else {
-            $code = shift;
+            $code = sub {
+                my $fixture_class = 'MT::Test::Fixture::' . camelize($id);
+                eval "require $fixture_class; 1"
+                    or croak "Unknown fixture id: $id";
+                $fixture_class->prepare_fixture;
+            };
         }
     }
 
@@ -663,9 +675,10 @@ sub save_fixture {
     close $fh;
 }
 
-sub _cut_created_on {
+sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
     $schema;
 }
 
@@ -683,7 +696,7 @@ sub test_schema {
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_cut_created_on($generated_schema) eq _cut_created_on($saved_schema) )
+    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
     {
         pass "schema is up-to-date";
     }
@@ -694,6 +707,16 @@ sub test_schema {
                 { STYLE => 'Unified' } );
         }
     }
+}
+
+sub dump_table {
+    my ( $self, $table, $extra, $bind ) = @_;
+    my $dbh = $self->dbh;
+    my $sql = "SELECT * FROM $table";
+    $sql .= " $extra" if $extra;
+    my $rows = $dbh->selectall_arrayref( $sql,
+        { Slice => +{} }, @{ $bind || [] } );
+    note explain($rows);
 }
 
 sub skip_if_addon_exists {
@@ -768,8 +791,64 @@ sub schema_version {
 sub plugin_schema_version {
     my $self = shift;
     return map { $_->id => $_->schema_version }
-        grep { defined $_->schema_version && $_->schema_version ne '' }
+        grep   { defined $_->schema_version && $_->schema_version ne '' }
         @MT::Plugins;
+}
+
+sub utime_r {
+    my ( $self, $root, $utime ) = @_;
+    $utime ||= int( time - 86400 );    # 1 day old
+    File::Find::find(
+        {   wanted => sub {
+                return unless -f $File::Find::name;
+                utime $utime, $utime, $File::Find::name or warn $!;
+            },
+            no_chdir => 1,
+        },
+        $root || $self->root
+    );
+}
+
+sub clear_mt_cache {
+    MT::Request->instance->reset;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+}
+
+sub ls {
+    my ( $self, $root, $callback ) = @_;
+    if ( ref $root eq ref sub {} ) {
+        $callback = $root;
+        $root = undef;
+    }
+    $callback ||= sub {
+        my $file = shift;
+        note $file if -f $file;
+    };
+    File::Find::find(
+        {   wanted => sub {
+                $callback->($File::Find::name);
+            },
+            preprocess => sub { sort @_ },
+            no_chdir   => 1,
+        },
+        $root || $self->root
+    );
+}
+
+sub remove_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    unlink $logfile;
+}
+
+sub slurp_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    open my $fh, '<', $logfile or die $!;
+    local $/;
+    <$fh>;
 }
 
 sub DESTROY {
