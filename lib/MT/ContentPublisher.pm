@@ -598,9 +598,7 @@ sub rebuild_content_data {
 
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
-                    my @cats
-                        = @{ $categories_for_rebuild->{ $map->cat_field_id }
-                            || [] };
+                    my @cats = map { @$_ } values %{ $categories_for_rebuild || {} };
                     for my $cat (@cats) {
                         $mt->_rebuild_content_archive_type(
                             ContentData => $content_data,
