@@ -1463,8 +1463,8 @@ use vars qw( @ISA %Lexicon );
 	'Individual Plugins' => 'プラグイン',
 	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
 	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
-	'Plugin [_1] is enabled by [_2]' => '[_2]がプラグイン[_1]を有効にしました',
-	'Plugin [_1] is disabled by [_2]' => '[_2]がプラグイン[_1]を無効にしました',
+	'Plugin \'[_1]\' is enabled by [_2]' => '[_2]が[_1]プラグインを有効にしました',
+	'Plugin \'[_1]\' is disabled by [_2]' => '[_2]が[_1]プラグインを無効にしました',
 
 ## lib/MT/CMS/Search.pm
 	'No [_1] were found that match the given criteria.' => '該当する[_1]は見つかりませんでした。',
