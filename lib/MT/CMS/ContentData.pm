@@ -599,11 +599,12 @@ sub save {
             }
         );
 
-        my @cats;
-        for my $cat_id ( keys %categories_old ) {
-            my $cat = MT->model('category')->load($cat_id) or next;
-            push @cats, $cat;
-        }
+        my @cat_ids = map {@$_} values %categories_old;
+        my @cats    = MT->model('category')->load(
+            {   id              => \@cat_ids,
+                category_set_id => \'> 0',
+            }
+        );
 
         for my $map (@maps) {
             my $at       = $map->archive_type;
