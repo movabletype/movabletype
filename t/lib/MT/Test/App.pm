@@ -9,6 +9,7 @@ use HTTP::Response;
 use URI;
 use URI::QueryParam;
 use Test::More;
+use HTML::Form;
 use Scalar::Util qw/blessed/;
 
 my %Initialized;
@@ -146,6 +147,15 @@ sub post {
     $params = _convert_params($params);
     $params->{__request_method} = 'POST';
     $self->request($params);
+}
+
+sub forms {
+    my $self = shift;
+    HTML::Form->parse(
+        $self->{content},
+        base   => 'http://localhost',
+        strict => 1,
+    );
 }
 
 my %app_params_mapping = (
