@@ -816,6 +816,10 @@ sub clear_mt_cache {
 
 sub ls {
     my ( $self, $root, $callback ) = @_;
+    if ( ref $root eq ref sub {} ) {
+        $callback = $root;
+        $root = undef;
+    }
     $callback ||= sub {
         my $file = shift;
         note $file if -f $file;
