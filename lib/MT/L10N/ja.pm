@@ -1497,6 +1497,10 @@ use vars qw( @ISA %Lexicon );
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin' => 'プラグイン',
+	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
+	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
+	'Plugin [_1] is enabled by [_2]' => '[_2]がプラグイン[_1]を有効にしました',
+	'Plugin [_1] is disabled by [_2]' => '[_2]がプラグイン[_1]を無効にしました',
 
 ## lib/MT/CMS/RebuildTrigger.pm
 	'Select Site' => 'サイトを選択',
