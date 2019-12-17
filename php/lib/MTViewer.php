@@ -191,7 +191,7 @@ class MTViewer extends SmartyBC {
                     $copy = $matches[0];
                     $replaced = preg_replace($search, $replace, $copy);
                     $replaced = preg_replace_callback(
-                        '/(?<!\\\\)\\\\((([LU])(\\w*)((?<!\\\\)\\\\E)?)|(([lu])(\\w)))/',
+                        '/(?<!\\\\)\\\\((([LU])([^\\\\]*)((?<!\\\\)\\\\E)?)|(([lu])([^\\\\])))/',
                         function($second_matches) {
                             if ($second_matches[3] === 'L') {
                                 return strtolower($second_matches[4]);
