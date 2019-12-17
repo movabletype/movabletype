@@ -445,7 +445,12 @@
                 });
 
                 ed.parser.addNodeFilter('link,meta', function(nodes, name) {
-                  node.remove();
+                    var i, node;
+
+                    for (i = 0; i < nodes.length; i++) {
+                        node = nodes[i];
+                        node.remove();
+                    }
                 });
 
             });
