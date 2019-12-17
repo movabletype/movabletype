@@ -892,5 +892,7 @@
 { "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=/\\L$2\\E>\\U$2\\E</a>\\l$3\">", "e" : "Test <a href=/foo>FOO</a>bar String"}, #876
 { "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=\"/\\L$2\\E\">\\U$2\\E</a>\\l$3\">", "e" : "Test <a href=\"/foo\">FOO</a>bar String"}, #877
 { "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=/\\L$2.php>\\U$2\\E</a>\\l$3\">", "e" : "Test <a href=/foo.php>FOO</a>bar String"}, #878
-{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=\"/\\L$2.php\">\\U$2\\E</a>\\l$3\">", "e" : "Test <a href=\"/foo.php\">FOO</a>bar String"} #879
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=\"/\\L$2.php\">\\U$2\\E</a>\\l$3\">", "e" : "Test <a href=\"/foo.php\">FOO</a>bar String"}, #879
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=/\\L$2/$2.php>\\U$2:$2\\E</a>\\l$3\\u$3\">", "e" : "Test <a href=/foo/foo.php>FOO:FOO</a>bBar String"}, #880
+{ "r" : "1", "t" : "<MTSetVarBlock name=\"foo\">Test FooBar String</MTSetVarBlock><MTGetVar name=\"foo\" regex_replace=\"/(.)(Foo)(.)/g\",\"$1<a href=\"/\\L$2/$2.php\">\\U$2:$2\\E</a>\\l$3\\u$3\">", "e" : "Test <a href=\"/foo/foo.php\">FOO:FOO</a>bBar String"} #881
 ]
