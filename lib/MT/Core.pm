@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1889,7 +1889,7 @@ BEGIN {
             'HTTPNoProxy'            => { default => 'localhost', },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
-            'ImageQualityJpeg'       => { default => 75 },
+            'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
             'AutoChangeImageQuality' => { default => 1 },
             'NetPBMPath'             => undef,
@@ -2719,7 +2719,10 @@ sub load_backup_instructions {
 sub load_core_permissions {
     require MT::ContentType;
     my @content_type_permissions
-        = keys %{ MT->app->model('content_type')->all_permissions };
+        = eval { keys %{ MT->app->model('content_type')->all_permissions } };
+    if ( $@ && $MT::DebugMode ) {
+        warn "An error occurred when loading the content_type class: $@";
+    }
 
     return {
         'blog.administer_site' => {

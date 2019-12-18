@@ -1,6 +1,6 @@
 package MT::Test::DDL;
 
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -171,11 +171,13 @@ sub _01_create_table : Tests(2) {
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
 
-    my $create_sql = $ddl_class->create_table_sql('Ddltest');
-    ok( $create_sql, 'Create Table SQL for Ddltest is available' );
-    my $res = $dbh->do($create_sql);
-    ok( $res, 'Driver could perform Create Table SQL for Ddltest' );
-    note( $dbh->errstr || $DBI::errstr ) if !$res;
+    my @create_sql = $ddl_class->create_table_sql('Ddltest');
+    ok( scalar @create_sql, 'Create Table SQL for Ddltest is available' );
+    for my $create_sql (@create_sql) {
+        my $res = $dbh->do($create_sql);
+        ok( $res, 'Driver could perform Create Table SQL for Ddltest' );
+        note( $dbh->errstr || $DBI::errstr ) if !$res;
+    }
 }
 
 sub _02_create_indexes : Tests(6) {

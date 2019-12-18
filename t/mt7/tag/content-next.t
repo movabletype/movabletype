@@ -159,21 +159,21 @@ my $cd1 = MT::ContentData->load(
     {   blog_id         => $blog_id,
         content_type_id => $ct->id,
         author_id       => 1,
-        authored_on     => '2017-06-01 19:30',
+        authored_on     => '2017-06-01 19:30:00',
     }
 );
 my $cd2 = MT::ContentData->load(
     {   blog_id         => $blog_id,
         content_type_id => $ct->id,
         author_id       => $author2->id,
-        authored_on     => '2017-06-02 19:30',
+        authored_on     => '2017-06-02 19:30:00',
     }
 );
 my $cd3 = MT::ContentData->load(
     {   blog_id         => $blog_id,
         content_type_id => $ct->id,
         author_id       => 1,
-        authored_on     => '2017-06-03 19:30',
+        authored_on     => '2017-06-03 19:30:00',
     }
 );
 

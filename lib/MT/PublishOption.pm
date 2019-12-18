@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -45,17 +45,6 @@ sub archive_build_is_enable {
         }
     );
     $map ? 1 : 0;
-}
-
-# DEPRECATED
-# https://movabletype.atlassian.net/browse/MTC-26180
-sub archive_build_type {
-    my ( $blog_id, $at ) = @_;
-    warn 'MT::PublishOption::archive_build_type has been deprecated.';
-    require MT::TemplateMap;
-    my $map = MT::TemplateMap->load(
-        { blog_id => $blog_id, archive_type => $at } );
-    $map && $map->build_type;
 }
 
 1;

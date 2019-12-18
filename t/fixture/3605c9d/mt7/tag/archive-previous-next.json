@@ -551,17 +551,17 @@
             1,
             null,
             "__NOW__",
-            "0a56a9b28f87cf18f3253035a23ef494ccab2b98",
+            "2e577c32533d540f10f678572a8b27da8d6824a6",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20170308180500",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20170308180500\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             1,
-            "3faea939b64816eb9a0ebc1d32ec37eb5d638f04",
+            "8db6f55d973b86daa023f71168d3a993def394ed",
             null,
             null,
             "__NOW__",
             5,
             2,
-            "3faea939b64816eb9a0ebc1d32ec37eb5d638f04",
+            "8db6f55d973b86daa023f71168d3a993def394ed",
             null,
             201722
          ],
@@ -572,17 +572,17 @@
             1,
             null,
             "__NOW__",
-            "0a56a9b28f87cf18f3253035a23ef494ccab2b98",
+            "2e577c32533d540f10f678572a8b27da8d6824a6",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20180407180500\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012",
             2,
-            "b5deeeefd63a07b4614e32613c74f19c38ad3f88",
+            "0c28b45165e1d2d044d6eaa0f26174be6adfde78",
             null,
             null,
             "__NOW__",
-            3,
+            8,
             2,
-            "b5deeeefd63a07b4614e32613c74f19c38ad3f88",
+            "0c28b45165e1d2d044d6eaa0f26174be6adfde78",
             null,
             201722
          ],
@@ -593,80 +593,80 @@
             1,
             null,
             "__NOW__",
-            "0a56a9b28f87cf18f3253035a23ef494ccab2b98",
+            "2e577c32533d540f10f678572a8b27da8d6824a6",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20190506180500\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00012-\u0000\u0000\u0000\u000e20190506180500",
             3,
-            "29da8db1514cb58947a7c5504f6064344c7105df",
+            "df88171e92069dd0414c2dee044ebe44f5696e77",
+            null,
+            null,
+            "__NOW__",
+            8,
+            2,
+            "df88171e92069dd0414c2dee044ebe44f5696e77",
+            null,
+            201722
+         ],
+         [
+            1,
+            "2017-05-30 16:36:00",
+            2,
+            2,
+            null,
+            "__NOW__",
+            "35652108516478ae8cc5d44a2c5144a2eabed528",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20170308180500\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            4,
+            "c3f75b0786dbc8b687faca7cec6d563363505f4c",
+            null,
+            null,
+            "__NOW__",
+            1,
+            2,
+            "c3f75b0786dbc8b687faca7cec6d563363505f4c",
+            null,
+            201722
+         ],
+         [
+            1,
+            "2017-05-30 16:36:00",
+            2,
+            2,
+            null,
+            "__NOW__",
+            "35652108516478ae8cc5d44a2c5144a2eabed528",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20180407180500",
+            5,
+            "b0e4d9730545a4ab387e77b421d8676144c30fb9",
+            null,
+            null,
+            "__NOW__",
+            8,
+            2,
+            "b0e4d9730545a4ab387e77b421d8676144c30fb9",
+            null,
+            201722
+         ],
+         [
+            2,
+            "2017-05-30 16:36:00",
+            2,
+            2,
+            null,
+            "__NOW__",
+            "35652108516478ae8cc5d44a2c5144a2eabed528",
+            0,
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20190506180500",
+            6,
+            "f71c9daf6e156282a130b333a1c7290c841bf9f3",
             null,
             null,
             "__NOW__",
             9,
             2,
-            "29da8db1514cb58947a7c5504f6064344c7105df",
-            null,
-            201722
-         ],
-         [
-            1,
-            "2017-05-30 16:36:00",
-            2,
-            2,
-            null,
-            "__NOW__",
-            "a580dcdddbb655fbf650f67a253f5246d7ee210d",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20170308180500",
-            4,
-            "956ce47761f3748ceb12912b3a558e77d17ec8f6",
-            null,
-            null,
-            "__NOW__",
-            1,
-            2,
-            "956ce47761f3748ceb12912b3a558e77d17ec8f6",
-            null,
-            201722
-         ],
-         [
-            1,
-            "2017-05-30 16:36:00",
-            2,
-            2,
-            null,
-            "__NOW__",
-            "a580dcdddbb655fbf650f67a253f5246d7ee210d",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20180407180500",
-            5,
-            "b96e6fc13645f25d724f4b90565a7051c73426dc",
-            null,
-            null,
-            "__NOW__",
-            3,
-            2,
-            "b96e6fc13645f25d724f4b90565a7051c73426dc",
-            null,
-            201722
-         ],
-         [
-            2,
-            "2017-05-30 16:36:00",
-            2,
-            2,
-            null,
-            "__NOW__",
-            "a580dcdddbb655fbf650f67a253f5246d7ee210d",
-            0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00013A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u00014-\u0000\u0000\u0000\u000e20190506180500",
-            6,
-            "a5ca7c0dbc03787b8cfaa1affe3b6303f30a64ea",
-            null,
-            null,
-            "__NOW__",
-            2,
-            2,
-            "a5ca7c0dbc03787b8cfaa1affe3b6303f30a64ea",
+            "f71c9daf6e156282a130b333a1c7290c841bf9f3",
             null,
             201722
          ]
@@ -706,7 +706,7 @@
             null,
             null,
             "categories",
-            "ac35b6acc978c534bb62a7d4aae240fd9f0c04a6"
+            "98a29c6a8dbf0ba9457745805414ca9a788b2bcf"
          ],
          [
             2,
@@ -723,7 +723,7 @@
             null,
             null,
             "date_and_time",
-            "307be2131e7882f20f057662e80bd4a0f347b575"
+            "7397edf5cdd583fea6fc4447608ae88f2a4f1255"
          ],
          [
             2,
@@ -740,7 +740,7 @@
             null,
             null,
             "categories",
-            "24709faa5c3f56d4d48ce2152cb44c27248a264a"
+            "98bfb3f994ed8ba7cac4d56c0feb19ee0df9a405"
          ],
          [
             2,
@@ -757,7 +757,7 @@
             null,
             null,
             "date_and_time",
-            "6e238adb1b6ff8edffdee7297632d5ee1b1272b2"
+            "ecefeae804dbb67d50f35bdee40031b0210d23bf"
          ]
       ]
    },
@@ -1021,12 +1021,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ac35b6acc978c534bb62a7d4aae240fd9f0c04a6H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(307be2131e7882f20f057662e80bd4a0f347b575",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(98a29c6a8dbf0ba9457745805414ca9a788b2bcf\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(7397edf5cdd583fea6fc4447608ae88f2a4f1255\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time",
             1,
             null,
             "__NOW__",
             "test content type",
-            "0a56a9b28f87cf18f3253035a23ef494ccab2b98",
+            "2e577c32533d540f10f678572a8b27da8d6824a6",
             null,
             null
          ],
@@ -1036,12 +1036,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(24709faa5c3f56d4d48ce2152cb44c27248a264a\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6e238adb1b6ff8edffdee7297632d5ee1b1272b2\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(98bfb3f994ed8ba7cac4d56c0feb19ee0df9a405\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00014\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(ecefeae804dbb67d50f35bdee40031b0210d23bf",
             2,
             null,
             "__NOW__",
             "test content type 2",
-            "a580dcdddbb655fbf650f67a253f5246d7ee210d",
+            "35652108516478ae8cc5d44a2c5144a2eabed528",
             null,
             null
          ]
@@ -1497,7 +1497,7 @@
             "Archive Index",
             "archives.html",
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Archives</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-index <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n                            <h1 id=\"page-title\" class=\"archive-title\">Archives</h1>\n\n<mt:Ignore>\n    <!-- List of monthly archives, if monthly archives are enabled -->\n</mt:Ignore>\n<mt:IfArchiveTypeEnabled archive_type=\"Monthly\">\n                            <div class=\"archive-monthly archive-date-based archive\">\n    <mt:ArchiveList archive_type=\"Monthly\">\n        <mt:ArchiveListHeader>\n                                <h2 class=\"archive-header\">Monthly Archives</h2>\n                                <div class=\"archive-content\">\n                                    <ul>\n        </mt:ArchiveListHeader>\n                                        <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n        <mt:ArchiveListFooter>\n                                    </ul>\n                                </div>\n        </mt:ArchiveListFooter>\n    </mt:ArchiveList>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n\n\n<mt:Ignore>\n    <!-- List of category archives, if category archives are enabled -->\n</mt:Ignore>\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n                            <div class=\"archive-category archive\">\n                                <h2 class=\"archive-header\">Categories</h2>\n                                <div class=\"archive-content\">\n    <mt:TopLevelCategories>\n        <mt:SubCatIsFirst>\n                                    <ul>\n        </mt:SubCatIsFirst>\n        <mt:If tag=\"CategoryCount\">\n                                        <li><a href=\"<$mt:CategoryArchiveLink$>\" title=\"<$mt:CategoryDescription$>\"><$mt:CategoryLabel$></a>\n        <mt:Else>\n                                        <li><$mt:CategoryLabel$>\n        </mt:If>\n        <$mt:SubCatsRecurse$>\n                                        </li>\n        <mt:SubCatIsLast>\n                                    </ul>\n        </mt:SubCatIsLast>\n    </mt:TopLevelCategories>\n                                </div>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n\n\n<mt:Ignore>\n    <!-- List of author archives, if category author are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Author\">\n                                <div class=\"archive-author archive\">\n        <mt:ArchiveList archive_type=\"Author\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Author Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of category archives by month, if category archives are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Category-Monthly\">\n                                <div class=\"archive-category-monthly archive\">\n        <mt:ArchiveList archive_type=\"Category-Monthly\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Category Monthly Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of author archives, if category archives are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Author-Monthly\">\n                                <div class=\"archive-author-monthly archive\">\n        <mt:ArchiveList archive_type=\"Author-Monthly\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Author Monthly Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of entry archives, if entry archives are enabled -->\n<mt:IfArchiveTypeEnabled archive_type=\"Individual\">\n                            <div class=\"archive-individual archive-date-based archive\">\n    <mt:ArchiveList archive_type=\"Individual\">\n        <mt:ArchiveListHeader>\n                                <div class=\"archive-content\">\n                                    <ul>\n        </mt:ArchiveListHeader>\n                                        <li><$mt:ArchiveDate format=\"%Y.%m.%d\"$>: <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n        <mt:ArchiveListFooter>\n                                    </ul>\n                                </div>\n        </mt:ArchiveListFooter>\n    </mt:ArchiveList>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Archives</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-index <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n                            <h1 id=\"page-title\" class=\"archive-title\">Archives</h1>\n\n<mt:Ignore>\n    <!-- List of monthly archives, if monthly archives are enabled -->\n</mt:Ignore>\n<mt:IfArchiveTypeEnabled archive_type=\"Monthly\">\n                            <div class=\"archive-monthly archive-date-based archive\">\n    <mt:ArchiveList archive_type=\"Monthly\">\n        <mt:ArchiveListHeader>\n                                <h2 class=\"archive-header\">Monthly Archives</h2>\n                                <div class=\"archive-content\">\n                                    <ul>\n        </mt:ArchiveListHeader>\n                                        <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n        <mt:ArchiveListFooter>\n                                    </ul>\n                                </div>\n        </mt:ArchiveListFooter>\n    </mt:ArchiveList>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n\n\n<mt:Ignore>\n    <!-- List of category archives, if category archives are enabled -->\n</mt:Ignore>\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n                            <div class=\"archive-category archive\">\n                                <h2 class=\"archive-header\">Categories</h2>\n                                <div class=\"archive-content\">\n    <mt:TopLevelCategories>\n        <mt:SubCatIsFirst>\n                                    <ul>\n        </mt:SubCatIsFirst>\n        <mt:If tag=\"CategoryCount\">\n                                        <li><a href=\"<$mt:CategoryArchiveLink$>\" title=\"<$mt:CategoryDescription$>\"><$mt:CategoryLabel$></a>\n        <mt:Else>\n                                        <li><$mt:CategoryLabel$>\n        </mt:If>\n        <$mt:SubCatsRecurse$>\n                                        </li>\n        <mt:SubCatIsLast>\n                                    </ul>\n        </mt:SubCatIsLast>\n    </mt:TopLevelCategories>\n                                </div>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n\n\n<mt:Ignore>\n    <!-- List of author archives, if category author are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Author\">\n                                <div class=\"archive-author archive\">\n        <mt:ArchiveList archive_type=\"Author\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Author Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of category archives by month, if category archives are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Category-Monthly\">\n                                <div class=\"archive-category-monthly archive\">\n        <mt:ArchiveList archive_type=\"Category-Monthly\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Category Monthly Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of author archives, if category archives are enabled -->\n    <mt:IfArchiveTypeEnabled archive_type=\"Author-Monthly\">\n                                <div class=\"archive-author-monthly archive\">\n        <mt:ArchiveList archive_type=\"Author-Monthly\">\n            <mt:ArchiveListHeader>\n                                    <h2 class=\"archive-header\">Author Monthly Archives</h2>\n                                    <div class=\"archive-content\">\n                                        <ul>\n            </mt:ArchiveListHeader>\n                                            <li><a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n            <mt:ArchiveListFooter>\n                                        </ul>\n                                    </div>\n            </mt:ArchiveListFooter>\n        </mt:ArchiveList>\n                                </div>\n    </mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n<mt:Ignore>\n    <!-- List of entry archives, if entry archives are enabled -->\n<mt:IfArchiveTypeEnabled archive_type=\"Individual\">\n                            <div class=\"archive-individual archive-date-based archive\">\n    <mt:ArchiveList archive_type=\"Individual\">\n        <mt:ArchiveListHeader>\n                                <div class=\"archive-content\">\n                                    <ul>\n        </mt:ArchiveListHeader>\n                                        <li><$mt:ArchiveDate format=\"%Y.%m.%d\"$>: <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$></a></li>\n        <mt:ArchiveListFooter>\n                                    </ul>\n                                </div>\n        </mt:ArchiveListFooter>\n    </mt:ArchiveList>\n                            </div>\n</mt:IfArchiveTypeEnabled>\n</mt:Ignore>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "index"
          ],
          [
@@ -1651,7 +1651,7 @@
             "Category Entry Listing",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:ArchiveTitle$> Archives</title>\n<mt:Ignore>\n    <!-- Include Next and Previous links if publishing a date-based archive -->\n</mt:Ignore>\n<mt:If name=\"datebased_archive\">\n    <mt:ArchivePrevious><link rel=\"prev\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchivePrevious>\n    <mt:ArchiveNext><link rel=\"next\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchiveNext>\n</mt:If>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-listing mt-<$mt:Var name=\"archive_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n<mt:If name=\"datebased_archive\">\n                            <mt:Ignore><!-- Title for category-monthly entry listings --></mt:Ignore>\n                            <h1 id=\"page-title\" class=\"archive-title\"><$mt:ArchiveTitle$> Archives</h1>\n<mt:Else>\n                            <mt:Ignore><!-- Title for category entry listings --></mt:Ignore>\n                            <h1 id=\"page-title\" class=\"archive-title\">Recently in <em><$mt:ArchiveTitle$></em> Category</h1>\n</mt:If>\n\n\n<mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>\n<mt:Unless name=\"datebased_archive\"><$mt:Var name=\"limit\" value=\"auto\"$></mt:Unless>\n<mt:Entries limit=\"$limit\">\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <mt:ArchivePrevious><a href=\"<$mt:ArchiveLink$>\">&laquo; <$mt:ArchiveTitle$></a> |</mt:ArchivePrevious>\n                                <a href=\"<$mt:Link template=\"main_index\"$>\">Main Index</a> |\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                                <mt:ArchiveNext>| <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$> &raquo;</a></mt:ArchiveNext>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:ArchiveTitle$> Archives</title>\n<mt:Ignore>\n    <!-- Include Next and Previous links if publishing a date-based archive -->\n</mt:Ignore>\n<mt:If name=\"datebased_archive\">\n    <mt:ArchivePrevious><link rel=\"prev\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchivePrevious>\n    <mt:ArchiveNext><link rel=\"next\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchiveNext>\n</mt:If>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-listing mt-<$mt:Var name=\"archive_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n<mt:If name=\"datebased_archive\">\n                            <mt:Ignore><!-- Title for category-monthly entry listings --></mt:Ignore>\n                            <h1 id=\"page-title\" class=\"archive-title\"><$mt:ArchiveTitle$> Archives</h1>\n<mt:Else>\n                            <mt:Ignore><!-- Title for category entry listings --></mt:Ignore>\n                            <h1 id=\"page-title\" class=\"archive-title\">Recently in <em><$mt:ArchiveTitle$></em> Category</h1>\n</mt:If>\n\n\n<mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>\n<mt:Unless name=\"datebased_archive\"><$mt:Var name=\"limit\" value=\"auto\"$></mt:Unless>\n<mt:Entries limit=\"$limit\">\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <mt:ArchivePrevious><a href=\"<$mt:ArchiveLink$>\">&laquo; <$mt:ArchiveTitle$></a> |</mt:ArchivePrevious>\n                                <a href=\"<$mt:Link template=\"main_index\"$>\">Main Index</a> |\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                                <mt:ArchiveNext>| <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$> &raquo;</a></mt:ArchiveNext>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "archive"
          ],
          [
@@ -1739,7 +1739,7 @@
             "Comment Preview",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    var user = <$mt:UserSessionState$>;\n    var is_preview = true;\n    /* ]]> */\n    </script>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Previewing your Comment</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-comment-preview <$mt:Var name=\"page_layout\"$>\" onload=\"mtEntryOnLoad()\" onunload=\"mtEntryOnUnload()\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <h1 id=\"page-title\"><$mt:Var name=\"page_title\"$></h1>\n\n\n<mt:Ignore><!-- Comment Preview --></mt:Ignore>\n                            <div class=\"comment\" id=\"comment-<$mt:CommentID$>\">\n                                <div class=\"inner\">\n                                    <div class=\"comment-header\">\n                                        <div class=\"asset-meta\">\n                                            <span class=\"byline\">\n                                                <$mt:CommentAuthorIdentity$>\n    <mt:IfCommentParent>\n                                                <span class=\"vcard author\"><$mt:CommentAuthorLink$></span> replied to <a href=\"<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>\">comment from <mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent></a>\n    <mt:Else>\n                                                <span class=\"vcard author\"><$mt:CommentAuthorLink$></span>\n    </mt:IfCommentParent>\n                                                | <a href=\"<$mt:CommentLink$>\"><abbr class=\"published\" title=\"<$mt:CommentDate format_name=\"iso8601\"$>\"><$mt:CommentDate$></abbr></a>\n                                            </span>\n                                        </div>\n                                    </div>\n                                    <div class=\"comment-content\">\n                                        <$mt:CommentBody$>\n                                    </div>\n                                </div>\n                            </div>\n\n\n<mt:Ignore><!-- Comment Form --></mt:Ignore>\n                            <div class=\"comments-open\" id=\"comments-open\">\n                                <h2 class=\"comments-open-header\">Leave a comment</h2>\n                                <div class=\"comments-open-content\">\n                                    <div id=\"comment-greeting\"></div>\n                                    <form method=\"post\" action=\"<$mt:CGIPath$><$mt:CommentScript$>\" name=\"comments_form\" id=\"comments-form\" onsubmit=\"return mtCommentOnSubmit(this)\">\n                                        <input type=\"hidden\" name=\"static\" value=\"1\" />\n                                        <input type=\"hidden\" name=\"armor\" value=\"1\" />\n                                        <input type=\"hidden\" name=\"preview\" value=\"\" />\n                                        <input type=\"hidden\" name=\"entry_id\" value=\"<$mt:EntryID$>\" />\n                                        <input type=\"hidden\" name=\"__lang\" value=\"<$mt:BlogLanguage$>\" />\n                                        <input type=\"hidden\" name=\"sid\" value=\"\" />\n<mt:IfCommentParent>\n                                            <input type=\"hidden\" name=\"parent_id\" value=\"<$mt:CommentParentID escape=\"html\"$>\" id=\"comment-parent-id\">\n</mt:IfCommentParent>\n                                        <div id=\"comments-open-data\">\n                                            <div id=\"comment-form-name\">\n                                                <label for=\"comment-author\">Name</label>\n                                                <input id=\"comment-author\" name=\"author\" size=\"30\" value=\"<$mt:CommentAuthor encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                            <div id=\"comment-form-email\">\n                                                <label for=\"comment-email\">Email Address</label>\n                                                <input id=\"comment-email\" name=\"email\" size=\"30\" value=\"<$mt:CommentEmail encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                            <div id=\"comment-form-url\">\n                                                <label for=\"comment-url\">URL</label>\n                                                <input id=\"comment-url\" name=\"url\" size=\"30\" value=\"<$mt:CommentURL encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                        </div>\n<mt:IfCommentParent>\n                                        <div id=\"comment-form-reply\">\n                                            <input type=\"checkbox\" id=\"comment-reply\" name=\"comment_reply\" value=\"<$mt:CommentParentID escape=\"html\"$>\" checked=\"checked\" onclick=\"mtSetCommentParentID()\" />\n                                            <label for=\"comment-reply\" id=\"comment-reply-label\">Replying to comment from <mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent></label>\n                                        </div>\n</mt:IfCommentParent>\n                                        <div id=\"comments-open-text\">\n                                            <label for=\"comment-text\">Comments <mt:IfAllowCommentHTML>(You may use HTML tags for style)</mt:IfAllowCommentHTML></label>\n                                            <textarea id=\"comment-text\" name=\"text\" rows=\"15\" cols=\"50\" onfocus=\"mtShowCaptcha()\"><$mt:CommentBody autolink=\"0\" sanitize=\"0\" convert_breaks=\"0\" encode_html=\"1\"$></textarea>\n                                        </div>\n                                        <div id=\"comments-open-captcha\"></div>\n                                        <div id=\"comments-open-footer\">\n                                            <input type=\"submit\" accesskey=\"v\" name=\"preview_button\" id=\"comment-preview\" value=\"Preview\" onclick=\"this.form.preview.value='1';\" />\n                                            <input type=\"submit\" accesskey=\"s\" name=\"post\" id=\"comment-submit\" value=\"Submit\" />\n                                            <input type=\"button\" name=\"cancel\" id=\"comment-cancel\" value=\"Cancel\" onclick=\"window.location='<$mt:EntryPermalink$>'\" />\n                                        </div>\n                                    </form>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    var user = <$mt:UserSessionState$>;\n    var is_preview = true;\n    /* ]]> */\n    </script>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Previewing your Comment</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-comment-preview <$mt:Var name=\"page_layout\"$>\" onload=\"mtEntryOnLoad()\" onunload=\"mtEntryOnUnload()\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <h1 id=\"page-title\"><$mt:Var name=\"page_title\"$></h1>\n\n\n<mt:Ignore><!-- Comment Preview --></mt:Ignore>\n                            <div class=\"comment\" id=\"comment-<$mt:CommentID$>\">\n                                <div class=\"inner\">\n                                    <div class=\"comment-header\">\n                                        <div class=\"asset-meta\">\n                                            <span class=\"byline\">\n                                                <$mt:CommentAuthorIdentity$>\n    <mt:IfCommentParent>\n                                                <span class=\"vcard author\"><$mt:CommentAuthorLink$></span> replied to <a href=\"<mt:CommentParent><$mt:CommentLink$></mt:CommentParent>\">comment from <mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent></a>\n    <mt:Else>\n                                                <span class=\"vcard author\"><$mt:CommentAuthorLink$></span>\n    </mt:IfCommentParent>\n                                                | <a href=\"<$mt:CommentLink$>\"><abbr class=\"published\" title=\"<$mt:CommentDate format_name=\"iso8601\"$>\"><$mt:CommentDate$></abbr></a>\n                                            </span>\n                                        </div>\n                                    </div>\n                                    <div class=\"comment-content\">\n                                        <$mt:CommentBody$>\n                                    </div>\n                                </div>\n                            </div>\n\n\n<mt:Ignore><!-- Comment Form --></mt:Ignore>\n                            <div class=\"comments-open\" id=\"comments-open\">\n                                <h2 class=\"comments-open-header\">Leave a comment</h2>\n                                <div class=\"comments-open-content\">\n                                    <div id=\"comment-greeting\"></div>\n                                    <form method=\"post\" action=\"<$mt:CGIPath$><$mt:CommentScript$>\" name=\"comments_form\" id=\"comments-form\" onsubmit=\"return mtCommentOnSubmit(this)\">\n                                        <input type=\"hidden\" name=\"static\" value=\"1\" />\n                                        <input type=\"hidden\" name=\"armor\" value=\"1\" />\n                                        <input type=\"hidden\" name=\"preview\" value=\"\" />\n                                        <input type=\"hidden\" name=\"entry_id\" value=\"<$mt:EntryID$>\" />\n                                        <input type=\"hidden\" name=\"__lang\" value=\"<$mt:BlogLanguage$>\" />\n                                        <input type=\"hidden\" name=\"sid\" value=\"\" />\n<mt:IfCommentParent>\n                                            <input type=\"hidden\" name=\"parent_id\" value=\"<$mt:CommentParentID escape=\"html\"$>\" id=\"comment-parent-id\">\n</mt:IfCommentParent>\n                                        <div id=\"comments-open-data\">\n                                            <div id=\"comment-form-name\">\n                                                <label for=\"comment-author\">Name</label>\n                                                <input id=\"comment-author\" name=\"author\" size=\"30\" value=\"<$mt:CommentAuthor encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                            <div id=\"comment-form-email\">\n                                                <label for=\"comment-email\">Email Address</label>\n                                                <input id=\"comment-email\" name=\"email\" size=\"30\" value=\"<$mt:CommentEmail encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                            <div id=\"comment-form-url\">\n                                                <label for=\"comment-url\">URL</label>\n                                                <input id=\"comment-url\" name=\"url\" size=\"30\" value=\"<$mt:CommentURL encode_html=\"1\"$>\" onfocus=\"mtShowCaptcha()\" />\n                                            </div>\n                                        </div>\n<mt:IfCommentParent>\n                                        <div id=\"comment-form-reply\">\n                                            <input type=\"checkbox\" id=\"comment-reply\" name=\"comment_reply\" value=\"<$mt:CommentParentID escape=\"html\"$>\" checked=\"checked\" onclick=\"mtSetCommentParentID()\" />\n                                            <label for=\"comment-reply\" id=\"comment-reply-label\">Replying to comment from <mt:CommentParent><$mt:CommentAuthor$></mt:CommentParent></label>\n                                        </div>\n</mt:IfCommentParent>\n                                        <div id=\"comments-open-text\">\n                                            <label for=\"comment-text\">Comments <mt:IfAllowCommentHTML>(You may use HTML tags for style)</mt:IfAllowCommentHTML></label>\n                                            <textarea id=\"comment-text\" name=\"text\" rows=\"15\" cols=\"50\" onfocus=\"mtShowCaptcha()\"><$mt:CommentBody autolink=\"0\" sanitize=\"0\" convert_breaks=\"0\" encode_html=\"1\"$></textarea>\n                                        </div>\n                                        <div id=\"comments-open-captcha\"></div>\n                                        <div id=\"comments-open-footer\">\n                                            <input type=\"submit\" accesskey=\"v\" name=\"preview_button\" id=\"comment-preview\" value=\"Preview\" onclick=\"this.form.preview.value='1';\" />\n                                            <input type=\"submit\" accesskey=\"s\" name=\"post\" id=\"comment-submit\" value=\"Submit\" />\n                                            <input type=\"button\" name=\"cancel\" id=\"comment-cancel\" value=\"Cancel\" onclick=\"window.location='<$mt:EntryPermalink$>'\" />\n                                        </div>\n                                    </form>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "comment_preview"
          ],
          [
@@ -1761,7 +1761,7 @@
             "Comment Response",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n\n\n<mt:If name=\"comment_confirmation\">\n    <mt:Ignore><!-- Success message when comment has been submitted --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Confirmation...\"$>\n    <$mt:Var name=\"message\" value=\"<p>Your comment has been submitted!</p>\"$>\n<mt:Else name=\"comment_pending\">\n    <mt:Ignore><!-- Pending message when comment is being held for review --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Thank you for commenting.\"$>\n    <$mt:Var name=\"message\" value=\"<p>Your comment has been received and held for review by a blog administrator.</p>\"$>\n<mt:Else name=\"comment_error\">\n    <mt:Ignore><!-- Error message when comment submission fails --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Comment Submission Error\"$>\n    <mt:SetVarBlock name=\"message\"><p>Your comment submission failed for the following reasons: <$mt:ErrorMessage encode_html=\"1\"$></p></mt:SetVarBlock>\n</mt:If>\n\n\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:Var name=\"page_title\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"<$mt:Var name=\"body_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n                            <h1 id=\"page-title\"><$mt:Var name=\"page_title\"$></h1>\n                            <$mt:Var name=\"message\"$>\n                            <p>\n                            <mt:If name=\"comment_error\">\n                                <a href=\"javascript:history.back()\">Back</a>\n                            <mt:Else>\n                                Return to the <a href=\"<$mt:EntryLink$>\">original entry</a>.\n                            </mt:If>\n                            </p>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n\n\n<mt:If name=\"comment_confirmation\">\n    <mt:Ignore><!-- Success message when comment has been submitted --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Confirmation...\"$>\n    <$mt:Var name=\"message\" value=\"<p>Your comment has been submitted!</p>\"$>\n<mt:Else name=\"comment_pending\">\n    <mt:Ignore><!-- Pending message when comment is being held for review --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Thank you for commenting.\"$>\n    <$mt:Var name=\"message\" value=\"<p>Your comment has been received and held for review by a blog administrator.</p>\"$>\n<mt:Else name=\"comment_error\">\n    <mt:Ignore><!-- Error message when comment submission fails --></mt:Ignore>\n    <$mt:Var name=\"page_title\" value=\"Comment Submission Error\"$>\n    <mt:SetVarBlock name=\"message\"><p>Your comment submission failed for the following reasons: <$mt:ErrorMessage encode_html=\"1\"$></p></mt:SetVarBlock>\n</mt:If>\n\n\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:Var name=\"page_title\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"<$mt:Var name=\"body_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n                            <h1 id=\"page-title\"><$mt:Var name=\"page_title\"$></h1>\n                            <$mt:Var name=\"message\"$>\n                            <p>\n                            <mt:If name=\"comment_error\">\n                                <a href=\"javascript:history.back()\">Back</a>\n                            <mt:Else>\n                                Return to the <a href=\"<$mt:EntryLink$>\">original entry</a>.\n                            </mt:If>\n                            </p>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "comment_response"
          ],
          [
@@ -1915,7 +1915,7 @@
             "Dynamic Error",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Page Not Found</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-dynamic-error <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n                            <h1 id=\"page-title\">Page Not Found</h1>\n                            <blockquote>\n                                <strong><$mt:ErrorMessage$></strong>\n                            </blockquote>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Page Not Found</title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-dynamic-error <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n                            <h1 id=\"page-title\">Page Not Found</h1>\n                            <blockquote>\n                                <strong><$mt:ErrorMessage$></strong>\n                            </blockquote>\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "dynamic_error"
          ],
          [
@@ -1937,7 +1937,7 @@
             "Entry",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <$mt:Var name=\"comments_per_page\" value=\"50\"$>\n    <mt:EntryPrevious><link rel=\"prev bookmark\" href=\"<$mt:EntryPermalink$>\" title=\"<$mt:EntryTitle encode_html=\"1\"$>\" /></mt:EntryPrevious>\n    <mt:EntryNext><link rel=\"next bookmark\" href=\"<$mt:EntryPermalink$>\" title=\"<$mt:EntryTitle encode_html=\"1\"$>\" /></mt:EntryNext>\n    <$mt:EntryTrackbackData$>\n    <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n    <script type=\"text/javascript\">\n        MT.entryID = <$mt:EntryID$>;\n        MT.commentsPerPage = <$mt:Var name=\"comments_per_page\"$>;\n        MT.entryCommentCount = <$mt:EntryCommentCount$>;\n        MT.commentIds = [<mt:Comments sort_order=\"ascend\" glue=\",\"><mt:CommentID></mt:Comments>];\n    </script>\n    </mt:If>\n    <title><$mt:EntryTitle encode_html=\"1\"$> - <$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-entry-archive <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <div id=\"entry-<$mt:EntryID$>\" class=\"entry-asset asset hentry\">\n                                <div class=\"asset-header\">\n                                    <h1 id=\"page-title\" class=\"asset-name entry-title\"><$mt:EntryTitle$></h1>\n                                    <div class=\"asset-meta\">\n                                        <span class=\"byline\">\n<mt:If tag=\"EntryAuthorDisplayName\">\n                                            By <span class=\"vcard author\"><$mt:EntryAuthorLink show_hcard=\"1\"$></span> on <abbr class=\"published\" title=\"<$mt:EntryDate format_name=\"iso8601\"$>\"><$mt:EntryDate format=\"%x %X\"$></abbr>\n<mt:Else>\n                                            <abbr class=\"published\" title=\"<$mt:EntryDate format_name=\"iso8601\"$>\"><$mt:EntryDate format=\"%x %X\"$></abbr>\n</mt:If>\n                                        </span>\n<mt:IfCommentsActive>\n                                        <span class=\"separator\">|</span> <a href=\"<$mt:EntryPermalink$>#comments\"><$mt:EntryCommentCount singular=\"1 Comment\" plural=\"# Comments\" none=\"No Comments\"$></a>\n</mt:IfCommentsActive>\n<mt:IfPingsActive>\n                                        <span class=\"separator\">|</span> <a href=\"<$mt:EntryPermalink$>#trackbacks\"><$mt:EntryTrackbackCount singular=\"1 TrackBack\" plural=\"# TrackBacks\" none=\"No TrackBacks\"$></a>\n</mt:IfPingsActive>\n                                    </div>\n                                </div>\n                                <div class=\"asset-content entry-content\">\n<mt:If tag=\"EntryBody\">\n                                    <div class=\"asset-body\">\n                                        <$mt:EntryBody$>\n                                    </div>\n</mt:If>\n<mt:If tag=\"EntryMore\" convert_breaks=\"0\">\n                                    <div id=\"more\" class=\"asset-more\">\n                                        <$mt:EntryMore$>\n                                    </div>\n</mt:If>\n                                </div>\n                                <div class=\"asset-footer\">\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n    <mt:If tag=\"EntryCategories\">\n                                    <div class=\"entry-categories\">\n                                        <h4>Categories<span class=\"delimiter\">:</span></h4>\n                                        <ul>\n                                            <li class=\"entry-category\"><mt:EntryCategories glue='<span class=\"delimiter\">,</span></li> <li class=\"entry-category\">'><a href=\"<$mt:CategoryArchiveLink$>\" rel=\"tag\"><$mt:CategoryLabel$></a></mt:EntryCategories></li>\n                                        </ul>\n                                    </div>\n    </mt:If>\n</mt:IfArchiveTypeEnabled>\n<mt:EntryIfTagged>\n                                    <div class=\"entry-tags\">\n                                        <h4>Tags<span class=\"delimiter\">:</span></h4>\n                                        <ul>\n                                            <li><mt:EntryTags glue='<span class=\"delimiter\">,</span></li> <li>'><a href=\"javascript:void(0)\" onclick=\"location.href='<$mt:TagSearchLink encode_js=\"1\"$>';return false;\" rel=\"tag\"><$mt:TagName$></a></mt:EntryTags></li>\n                                        </ul>\n                                    </div>\n</mt:EntryIfTagged>\n                                </div>\n                            </div>\n\n\n                    <$mt:Include module=\"Trackbacks\"$>\n                    <$mt:Include module=\"Comments\"$>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <$mt:Var name=\"comments_per_page\" value=\"50\"$>\n    <mt:EntryPrevious><link rel=\"prev bookmark\" href=\"<$mt:EntryPermalink$>\" title=\"<$mt:EntryTitle encode_html=\"1\"$>\" /></mt:EntryPrevious>\n    <mt:EntryNext><link rel=\"next bookmark\" href=\"<$mt:EntryPermalink$>\" title=\"<$mt:EntryTitle encode_html=\"1\"$>\" /></mt:EntryNext>\n    <$mt:EntryTrackbackData$>\n    <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n    <script type=\"text/javascript\">\n        MT.entryID = <$mt:EntryID$>;\n        MT.commentsPerPage = <$mt:Var name=\"comments_per_page\"$>;\n        MT.entryCommentCount = <$mt:EntryCommentCount$>;\n        MT.commentIds = [<mt:Comments sort_order=\"ascend\" glue=\",\"><mt:CommentID></mt:Comments>];\n    </script>\n    </mt:If>\n    <title><$mt:EntryTitle encode_html=\"1\"$> - <$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-entry-archive <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <div id=\"entry-<$mt:EntryID$>\" class=\"entry-asset asset hentry\">\n                                <div class=\"asset-header\">\n                                    <h1 id=\"page-title\" class=\"asset-name entry-title\"><$mt:EntryTitle$></h1>\n                                    <div class=\"asset-meta\">\n                                        <span class=\"byline\">\n<mt:If tag=\"EntryAuthorDisplayName\">\n                                            By <span class=\"vcard author\"><$mt:EntryAuthorLink show_hcard=\"1\"$></span> on <abbr class=\"published\" title=\"<$mt:EntryDate format_name=\"iso8601\"$>\"><$mt:EntryDate format=\"%x %X\"$></abbr>\n<mt:Else>\n                                            <abbr class=\"published\" title=\"<$mt:EntryDate format_name=\"iso8601\"$>\"><$mt:EntryDate format=\"%x %X\"$></abbr>\n</mt:If>\n                                        </span>\n<mt:IfCommentsActive>\n                                        <span class=\"separator\">|</span> <a href=\"<$mt:EntryPermalink$>#comments\"><$mt:EntryCommentCount singular=\"1 Comment\" plural=\"# Comments\" none=\"No Comments\"$></a>\n</mt:IfCommentsActive>\n<mt:IfPingsActive>\n                                        <span class=\"separator\">|</span> <a href=\"<$mt:EntryPermalink$>#trackbacks\"><$mt:EntryTrackbackCount singular=\"1 TrackBack\" plural=\"# TrackBacks\" none=\"No TrackBacks\"$></a>\n</mt:IfPingsActive>\n                                    </div>\n                                </div>\n                                <div class=\"asset-content entry-content\">\n<mt:If tag=\"EntryBody\">\n                                    <div class=\"asset-body\">\n                                        <$mt:EntryBody$>\n                                    </div>\n</mt:If>\n<mt:If tag=\"EntryMore\" convert_breaks=\"0\">\n                                    <div id=\"more\" class=\"asset-more\">\n                                        <$mt:EntryMore$>\n                                    </div>\n</mt:If>\n                                </div>\n                                <div class=\"asset-footer\">\n<mt:IfArchiveTypeEnabled archive_type=\"Category\">\n    <mt:If tag=\"EntryCategories\">\n                                    <div class=\"entry-categories\">\n                                        <h4>Categories<span class=\"delimiter\">:</span></h4>\n                                        <ul>\n                                            <li class=\"entry-category\"><mt:EntryCategories glue='<span class=\"delimiter\">,</span></li> <li class=\"entry-category\">'><a href=\"<$mt:CategoryArchiveLink$>\" rel=\"tag\"><$mt:CategoryLabel$></a></mt:EntryCategories></li>\n                                        </ul>\n                                    </div>\n    </mt:If>\n</mt:IfArchiveTypeEnabled>\n<mt:EntryIfTagged>\n                                    <div class=\"entry-tags\">\n                                        <h4>Tags<span class=\"delimiter\">:</span></h4>\n                                        <ul>\n                                            <li><mt:EntryTags glue='<span class=\"delimiter\">,</span></li> <li>'><a href=\"javascript:void(0)\" onclick=\"location.href='<$mt:TagSearchLink encode_js=\"1\"$>';return false;\" rel=\"tag\"><$mt:TagName$></a></mt:EntryTags></li>\n                                        </ul>\n                                    </div>\n</mt:EntryIfTagged>\n                                </div>\n                            </div>\n\n\n                    <$mt:Include module=\"Trackbacks\"$>\n                    <$mt:Include module=\"Comments\"$>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "individual"
          ],
          [
@@ -2047,7 +2047,7 @@
             "Main Index",
             "index.html",
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <link rel=\"EditURI\" type=\"application/rsd+xml\" title=\"RSD\" href=\"<$mt:Link template=\"rsd\"$>\" />\n    <title><$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-main-index <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n<mt:Entries>\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <link rel=\"EditURI\" type=\"application/rsd+xml\" title=\"RSD\" href=\"<$mt:Link template=\"rsd\"$>\" />\n    <title><$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-main-index <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n<mt:Entries>\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "index"
          ],
          [
@@ -2135,7 +2135,7 @@
             "Monthly Entry Listing",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:ArchiveTitle$> Archives</title>\n<mt:Ignore>\n    <!-- Include Next and Previous links if publishing a date-based archive -->\n</mt:Ignore>\n<mt:If name=\"datebased_archive\">\n    <mt:ArchivePrevious><link rel=\"prev\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchivePrevious>\n    <mt:ArchiveNext><link rel=\"next\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchiveNext>\n</mt:If>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-listing mt-<$mt:Var name=\"archive_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <h1 id=\"page-title\" class=\"archive-title\"><$mt:ArchiveTitle$> Archives</h1>\n\n\n<mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>\n<mt:Unless name=\"datebased_archive\"><$mt:Var name=\"limit\" value=\"auto\"$></mt:Unless>\n<mt:Entries limit=\"$limit\">\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <mt:ArchivePrevious><a href=\"<$mt:ArchiveLink$>\">&laquo; <$mt:ArchiveTitle$></a> |</mt:ArchivePrevious>\n                                <a href=\"<$mt:Link template=\"main_index\"$>\">Main Index</a> |\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                                <mt:ArchiveNext>| <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$> &raquo;</a></mt:ArchiveNext>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: <$mt:ArchiveTitle$> Archives</title>\n<mt:Ignore>\n    <!-- Include Next and Previous links if publishing a date-based archive -->\n</mt:Ignore>\n<mt:If name=\"datebased_archive\">\n    <mt:ArchivePrevious><link rel=\"prev\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchivePrevious>\n    <mt:ArchiveNext><link rel=\"next\" href=\"<$mt:ArchiveLink$>\" title=\"<$mt:ArchiveTitle encode_html=\"1\"$>\" /></mt:ArchiveNext>\n</mt:If>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-archive-listing mt-<$mt:Var name=\"archive_class\"$> <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <h1 id=\"page-title\" class=\"archive-title\"><$mt:ArchiveTitle$> Archives</h1>\n\n\n<mt:Ignore><!-- Limit number of entries to the number set in Blog Entry Settings --></mt:Ignore>\n<mt:Unless name=\"datebased_archive\"><$mt:Var name=\"limit\" value=\"auto\"$></mt:Unless>\n<mt:Entries limit=\"$limit\">\n                            <mt:Ignore><!-- Use the Entry Summary module for each entry published on this page --></mt:Ignore>\n                            <$mt:Include module=\"Entry Summary\"$>\n</mt:Entries>\n\n\n                            <div class=\"content-nav\">\n                                <mt:ArchivePrevious><a href=\"<$mt:ArchiveLink$>\">&laquo; <$mt:ArchiveTitle$></a> |</mt:ArchivePrevious>\n                                <a href=\"<$mt:Link template=\"main_index\"$>\">Main Index</a> |\n                                <a href=\"<$mt:Link template=\"archive_index\"$>\">Archives</a>\n                                <mt:ArchiveNext>| <a href=\"<$mt:ArchiveLink$>\"><$mt:ArchiveTitle$> &raquo;</a></mt:ArchiveNext>\n                            </div>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "archive"
          ],
          [
@@ -2179,7 +2179,7 @@
             "Page",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <$mt:EntryTrackbackData$>\n    <$mt:Var name=\"comments_per_page\" value=\"50\"$>\n    <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n\t    <script type=\"text/javascript\">\n         MT.entryID = <$mt:PageID$>;\n         MT.commentsPerPage = <$mt:Var name=\"comments_per_page\"$>;\n         MT.entryCommentCount = <$mt:EntryCommentCount$>;\n         MT.commentIds = [<mt:Comments sort_order=\"ascend\" glue=\",\"><mt:CommentID></mt:Comments>];\n\t    </script>\n    </mt:If>\n    <title><$mt:PageTitle encode_html=\"1\"$> - <$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-page-archive <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <div id=\"page-<$mt:PageID$>\" class=\"page-asset asset\">\n                                <div class=\"asset-header\">\n                                    <h1 id=\"page-title\" class=\"asset-name\"><$mt:PageTitle$></h1>\n                                </div>\n                                <div class=\"asset-content\">\n<mt:If tag=\"PageBody\">\n                                    <div class=\"asset-body\">\n                                        <$mt:PageBody$>\n                                    </div>\n</mt:If>\n<mt:If tag=\"PageMore\">\n                                    <div id=\"more\" class=\"asset-more\">\n                                        <$mt:PageMore$>\n                                    </div>\n</mt:If>\n                                </div>\n                                <div class=\"asset-footer\"></div>\n                            </div>\n\n\n                    <$mt:Include module=\"Trackbacks\"$>\n                    <$mt:Include module=\"Comments\"$>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <$mt:Include module=\"HTML Head\"$>\n    <$mt:EntryTrackbackData$>\n    <$mt:Var name=\"comments_per_page\" value=\"50\"$>\n    <mt:If tag=\"EntryCommentCount\" gt=\"$comments_per_page\">\n\t    <script type=\"text/javascript\">\n         MT.entryID = <$mt:PageID$>;\n         MT.commentsPerPage = <$mt:Var name=\"comments_per_page\"$>;\n         MT.entryCommentCount = <$mt:EntryCommentCount$>;\n         MT.commentIds = [<mt:Comments sort_order=\"ascend\" glue=\",\"><mt:CommentID></mt:Comments>];\n\t    </script>\n    </mt:If>\n    <title><$mt:PageTitle encode_html=\"1\"$> - <$mt:BlogName encode_html=\"1\"$></title>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-page-archive <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n\n                            <div id=\"page-<$mt:PageID$>\" class=\"page-asset asset\">\n                                <div class=\"asset-header\">\n                                    <h1 id=\"page-title\" class=\"asset-name\"><$mt:PageTitle$></h1>\n                                </div>\n                                <div class=\"asset-content\">\n<mt:If tag=\"PageBody\">\n                                    <div class=\"asset-body\">\n                                        <$mt:PageBody$>\n                                    </div>\n</mt:If>\n<mt:If tag=\"PageMore\">\n                                    <div id=\"more\" class=\"asset-more\">\n                                        <$mt:PageMore$>\n                                    </div>\n</mt:If>\n                                </div>\n                                <div class=\"asset-footer\"></div>\n                            </div>\n\n\n                    <$mt:Include module=\"Trackbacks\"$>\n                    <$mt:Include module=\"Comments\"$>\n\n\n                        </div>\n                    </div>\n\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "page"
          ],
          [
@@ -2223,7 +2223,7 @@
             "Popup Image",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head><title><$mt:ImageURL$></title></head>\n<body id=\"uploaded-image-popup\" class=\"popup\" style=\"margin: 0;padding: 0;\">\n    <img src=\"<$mt:ImageURL$>\" width=\"<$mt:ImageWidth$>\" height=\"<$mt:ImageHeight$>\" alt=\"<$mt:ImageURL$>\" style=\"margin: 0;padding: 0;border: 0;\" />\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head><title><$mt:ImageURL$></title></head>\n<body id=\"uploaded-image-popup\" class=\"popup\" style=\"margin: 0;padding: 0;\">\n    <img src=\"<$mt:ImageURL$>\" width=\"<$mt:ImageWidth$>\" height=\"<$mt:ImageHeight$>\" alt=\"<$mt:ImageURL$>\" style=\"margin: 0;padding: 0;border: 0;\" />\n</body>\n</html>\n",
             "popup_image"
          ],
          [
@@ -2377,7 +2377,7 @@
             "Search Results",
             null,
             1,
-            "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"\n    \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" id=\"sixapart-standard\">\n<head>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    var user = <$mt:UserSessionState$>;\n    /* ]]> */\n    </script>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Search Results</title>\n    <mt:Ignore>Below Javascript adds ajax search capability</mt:Ignore>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    <mt:IfMoreResults>\n    function getResults(page) {\n        page = parseInt(page);\n        if (timer) window.clearTimeout(timer);\n        var xh = mtGetXmlHttp();\n        if (!xh) return false;\n        var res = results[page];\n        if (!res) return;\n        var url = res['next_url'];\n        if (!url) return;\n\n        xh.open('GET', url + '&format=js', true);\n        xh.onreadystatechange = function() {\n            if ( xh.readyState == 4 ) {\n                if ( xh.status && ( xh.status != 200 ) ) {\n                    // error - ignore\n                } else {\n                    try {\n                        var page_results = eval(\"(\" + xh.responseText + \")\");\n                        if ( page_results['error'] == null )\n                            results[page + 1] = page_results['result'];\n                    } catch (e) {\n                    }\n                }\n            }\n        };\n        xh.send(null);\n    }\n\n    function swapContent(direction) {\n        if ( direction == undefined ) direction = 1;\n        var page_span = document.getElementById('current-page');\n        if (!page_span) return true;\n        var next_page = direction + parseInt(page_span.innerHTML);\n        var res = results[next_page];\n        if (!res) return true;\n        var content = res['content'];\n        if (!content) return true;\n        var div = document.getElementById('search-results');\n        if (!div) return true;\n        div.innerHTML = content;\n        timer = window.setTimeout(\"getResults(\" + next_page + \")\", 1*1000);\n        window.scroll(0, 0);\n        return false;\n    }\n    <mt:Else><mt:IfPreviousResults>\n    function swapContent(direction) {\n        return true;\n    }</mt:IfPreviousResults>\n    </mt:IfMoreResults>\n    /* ]]> */\n    </script>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-search-results <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n<mt:Ignore><!--\n    Below is the block to show search results.\n    This makes an independent block to support\n    Ajax-based background retrieval of the next search results.\n--></mt:Ignore>\n<mt:SetVarTemplate id=\"search_results\" name=\"search_results\">  \n<mt:SearchResults>\n    <mt:SearchResultsHeader>\n                            <div id=\"search-results\">\n                                <span id=\"current-page\" class=\"hidden\"><$mt:CurrentPage$></span>\n                                <h1 id=\"page-title\" class=\"search-results-header\">\n        <MTIfStatic><mt:IfStraightSearch>\n                                    Results matching &ldquo;<$mt:SearchString$>&rdquo;\n        </mt:IfStraightSearch></MTIfStatic>\n        <mt:IfTagSearch>\n                                    Results tagged &ldquo;<$mt:SearchString$>&rdquo;\n        </mt:IfTagSearch>\n                                </h1>\n                                <div class=\"search-results-container autopagerize_page_element\">\n    </mt:SearchResultsHeader>\n                                    <$mt:Include module=\"Entry Summary\" hide_counts=\"1\"$>\n    <mt:SearchResultsFooter>\n                                </div><div class=\"autopagerize_insert_before\"></div>\n\n    <mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>\n                                <div class=\"content-nav\">\n                                    <mt:IfPreviousResults><a href=\"<$mt:PreviousLink$>\" rel=\"prev\" onclick=\"return swapContent(-1);\">&lt; Previous</a>&nbsp;&nbsp;</mt:IfPreviousResults><mt:PagerBlock><mt:IfCurrentPage><$mt:Var name=\"__value__\"$><mt:Else><a href=\"<$mt:PagerLink$>\"><$mt:Var name=\"__value__\"$></a></mt:IfCurrentPage><mt:Unless name=\"__last__\">&nbsp;</mt:Unless></mt:PagerBlock><mt:IfMoreResults>&nbsp;&nbsp;<a href=\"<$mt:NextLink$>\" rel=\"next\" onclick=\"return swapContent();\">Next &gt;</a></mt:IfMoreResults>\n                                </div>\n                            </div>\n    </mt:SearchResultsFooter>\n</mt:SearchResults>\n</mt:SetVarTemplate>\n<mt:Ignore><!-- Display search results constructed in the block above --></mt:Ignore>\n<$mt:Var name=\"search_results\"$>\n\n\n<mt:Ignore><!-- Display no results message --></mt:Ignore>\n<mt:NoSearchResults>\n                            <h1 id=\"page-title\" class=\"search-results-header\">\n    <MTIfStatic><mt:IfStraightSearch>\n                                Results matching &ldquo;<$mt:SearchString$>&rdquo;\n    </mt:IfStraightSearch></MTIfStatic>\n    <mt:IfTagSearch>\n                                Results tagged &ldquo;<$mt:SearchString$>&rdquo;\n    </mt:IfTagSearch>\n                            </h1>\n                            <p>No results found for &ldquo;<$mt:SearchString$>&rdquo;.</p>\n</mt:NoSearchResults>\n\n\n<mt:Ignore><!-- Display instructions for searching if search script was accessed without a query --></mt:Ignore>\n<mt:NoSearch>\n                            <h1 id=\"page-title\" class=\"search-results-header\">Instructions</h1>\n                            <p>By default, this search engine looks for all of the specified words in any order. To search for an exact phrase, enclose the phrase in quotes:</p>\n                            <blockquote>\n                                <p><code>\"movable type\"</code></p>\n                            </blockquote>\n                            <p>The search engine also supports the AND, OR, and NOT boolean operators:</p>\n                            <blockquote>\n                                <p><code>personal OR publishing</code></p>\n                                <p><code>publishing NOT personal</code></p>\n                            </blockquote>\n</mt:NoSearch>\n\n<mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>\n<mt:IfMoreResults>\n<script type=\"text/javascript\">\n<!--\nvar div = document.getElementById('search-results');\nvar results = {\n    '<$mt:CurrentPage$>': {\n        'content': div.innerHTML,\n        'next_url': '<$mt:NextLink$>'\n    }\n};\nvar timer = window.setTimeout(\"getResults(\" + <$mt:CurrentPage$> + \")\", 1*1000);\n//-->\n</script>\n</mt:IfMoreResults>\n\n\n                        </div>\n                    </div>\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
+            "<!DOCTYPE html>\n<html>\n<head>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    var user = <$mt:UserSessionState$>;\n    /* ]]> */\n    </script>\n    <$mt:Include module=\"HTML Head\"$>\n    <title><$mt:BlogName encode_html=\"1\"$>: Search Results</title>\n    <mt:Ignore>Below Javascript adds ajax search capability</mt:Ignore>\n    <script type=\"text/javascript\">\n    /* <![CDATA[ */\n    <mt:IfMoreResults>\n    function getResults(page) {\n        page = parseInt(page);\n        if (timer) window.clearTimeout(timer);\n        var xh = mtGetXmlHttp();\n        if (!xh) return false;\n        var res = results[page];\n        if (!res) return;\n        var url = res['next_url'];\n        if (!url) return;\n\n        xh.open('GET', url + '&format=js', true);\n        xh.onreadystatechange = function() {\n            if ( xh.readyState == 4 ) {\n                if ( xh.status && ( xh.status != 200 ) ) {\n                    // error - ignore\n                } else {\n                    try {\n                        var page_results = eval(\"(\" + xh.responseText + \")\");\n                        if ( page_results['error'] == null )\n                            results[page + 1] = page_results['result'];\n                    } catch (e) {\n                    }\n                }\n            }\n        };\n        xh.send(null);\n    }\n\n    function swapContent(direction) {\n        if ( direction == undefined ) direction = 1;\n        var page_span = document.getElementById('current-page');\n        if (!page_span) return true;\n        var next_page = direction + parseInt(page_span.innerHTML);\n        var res = results[next_page];\n        if (!res) return true;\n        var content = res['content'];\n        if (!content) return true;\n        var div = document.getElementById('search-results');\n        if (!div) return true;\n        div.innerHTML = content;\n        timer = window.setTimeout(\"getResults(\" + next_page + \")\", 1*1000);\n        window.scroll(0, 0);\n        return false;\n    }\n    <mt:Else><mt:IfPreviousResults>\n    function swapContent(direction) {\n        return true;\n    }</mt:IfPreviousResults>\n    </mt:IfMoreResults>\n    /* ]]> */\n    </script>\n</head>\n<body id=\"<$mt:BlogThemeID$>\" class=\"mt-search-results <$mt:Var name=\"page_layout\"$>\">\n    <div id=\"container\">\n        <div id=\"container-inner\">\n\n\n            <$mt:Include module=\"Banner Header\"$>\n\n\n            <div id=\"content\">\n                <div id=\"content-inner\">\n\n\n                    <div id=\"alpha\">\n                        <div id=\"alpha-inner\">\n\n<mt:Ignore><!--\n    Below is the block to show search results.\n    This makes an independent block to support\n    Ajax-based background retrieval of the next search results.\n--></mt:Ignore>\n<mt:SetVarTemplate id=\"search_results\" name=\"search_results\">  \n<mt:SearchResults>\n    <mt:SearchResultsHeader>\n                            <div id=\"search-results\">\n                                <span id=\"current-page\" class=\"hidden\"><$mt:CurrentPage$></span>\n                                <h1 id=\"page-title\" class=\"search-results-header\">\n        <MTIfStatic><mt:IfStraightSearch>\n                                    Results matching &ldquo;<$mt:SearchString$>&rdquo;\n        </mt:IfStraightSearch></MTIfStatic>\n        <mt:IfTagSearch>\n                                    Results tagged &ldquo;<$mt:SearchString$>&rdquo;\n        </mt:IfTagSearch>\n                                </h1>\n                                <div class=\"search-results-container autopagerize_page_element\">\n    </mt:SearchResultsHeader>\n                                    <$mt:Include module=\"Entry Summary\" hide_counts=\"1\"$>\n    <mt:SearchResultsFooter>\n                                </div><div class=\"autopagerize_insert_before\"></div>\n\n    <mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>\n                                <div class=\"content-nav\">\n                                    <mt:IfPreviousResults><a href=\"<$mt:PreviousLink$>\" rel=\"prev\" onclick=\"return swapContent(-1);\">&lt; Previous</a>&nbsp;&nbsp;</mt:IfPreviousResults><mt:PagerBlock><mt:IfCurrentPage><$mt:Var name=\"__value__\"$><mt:Else><a href=\"<$mt:PagerLink$>\"><$mt:Var name=\"__value__\"$></a></mt:IfCurrentPage><mt:Unless name=\"__last__\">&nbsp;</mt:Unless></mt:PagerBlock><mt:IfMoreResults>&nbsp;&nbsp;<a href=\"<$mt:NextLink$>\" rel=\"next\" onclick=\"return swapContent();\">Next &gt;</a></mt:IfMoreResults>\n                                </div>\n                            </div>\n    </mt:SearchResultsFooter>\n</mt:SearchResults>\n</mt:SetVarTemplate>\n<mt:Ignore><!-- Display search results constructed in the block above --></mt:Ignore>\n<$mt:Var name=\"search_results\"$>\n\n\n<mt:Ignore><!-- Display no results message --></mt:Ignore>\n<mt:NoSearchResults>\n                            <h1 id=\"page-title\" class=\"search-results-header\">\n    <MTIfStatic><mt:IfStraightSearch>\n                                Results matching &ldquo;<$mt:SearchString$>&rdquo;\n    </mt:IfStraightSearch></MTIfStatic>\n    <mt:IfTagSearch>\n                                Results tagged &ldquo;<$mt:SearchString$>&rdquo;\n    </mt:IfTagSearch>\n                            </h1>\n                            <p>No results found for &ldquo;<$mt:SearchString$>&rdquo;.</p>\n</mt:NoSearchResults>\n\n\n<mt:Ignore><!-- Display instructions for searching if search script was accessed without a query --></mt:Ignore>\n<mt:NoSearch>\n                            <h1 id=\"page-title\" class=\"search-results-header\">Instructions</h1>\n                            <p>By default, this search engine looks for all of the specified words in any order. To search for an exact phrase, enclose the phrase in quotes:</p>\n                            <blockquote>\n                                <p><code>\"movable type\"</code></p>\n                            </blockquote>\n                            <p>The search engine also supports the AND, OR, and NOT boolean operators:</p>\n                            <blockquote>\n                                <p><code>personal OR publishing</code></p>\n                                <p><code>publishing NOT personal</code></p>\n                            </blockquote>\n</mt:NoSearch>\n\n<mt:Ignore><!-- Used with the ajax search capability of the new search class --></mt:Ignore>\n<mt:IfMoreResults>\n<script type=\"text/javascript\">\n<!--\nvar div = document.getElementById('search-results');\nvar results = {\n    '<$mt:CurrentPage$>': {\n        'content': div.innerHTML,\n        'next_url': '<$mt:NextLink$>'\n    }\n};\nvar timer = window.setTimeout(\"getResults(\" + <$mt:CurrentPage$> + \")\", 1*1000);\n//-->\n</script>\n</mt:IfMoreResults>\n\n\n                        </div>\n                    </div>\n\n                    <$mt:Include module=\"Sidebar\"$>\n\n\n                </div>\n            </div>\n\n\n            <$mt:Include module=\"Banner Footer\"$>\n\n\n        </div>\n    </div>\n</body>\n</html>\n",
             "search_results"
          ],
          [
@@ -2500,28 +2500,6 @@
             "__NOW__",
             0,
             53,
-            "technorati_search",
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "Technorati Search",
-            null,
-            1,
-            "<div class=\"widget-technorati widget\">\n    <h3 class=\"widget-header\">Technorati</h3>\n    <div class=\"widget-content\">\n        <div id=\"technorati\">\n            <form id=\"ts_s\" method=\"post\" action=\"http://technorati.com/search.php\">\n                <fieldset>\n                    <legend><a href='http://www.technorati.com/'>Technorati</a> search</legend>\n                    <input type=\"hidden\" name=\"sub\" value=\"searchlet\" />\n                    <input type=\"text\" id=\"ts_search\" name=\"s\" size=\"12\" maxlength=\"255\" value=\"\" /><br />\n                    <input type=\"radio\" checked=\"checked\" name=\"from\" id=\"ts_yb\" value=\"<$mt:BlogURL$>\" />\n                    <label for=\"ts_yb\" title=\"<$mt:BlogName$>\">this blog</label>\n                    <input type=\"radio\" name=\"from\" id=\"ts_www\" value=\"\" /> <label for=\"ts_www\">all blogs</label>\n                    <input type=\"submit\" class=\"btn\" value=\"Search\" />\n                </fieldset>\n            </form>\n            <p id=\"ts_l\" class=\"ts_l\"><a href=\"http://technorati.com/search/<$mt:BlogURL$>\" id=\"ts_lh\">&#187; Blogs that link here</a></p>\n        </div>\n    </div>\n</div>\n",
-            "widget"
-         ],
-         [
-            2,
-            0,
-            0,
-            1,
-            null,
-            null,
-            "__NOW__",
-            0,
-            54,
             "trackbacks",
             null,
             null,
@@ -2543,7 +2521,7 @@
             null,
             "__NOW__",
             0,
-            55,
+            54,
             "2column_layout_sidebar",
             null,
             null,
@@ -2565,7 +2543,7 @@
             null,
             "__NOW__",
             0,
-            56,
+            55,
             "3column_layout_primary_sidebar",
             null,
             null,
@@ -2587,7 +2565,7 @@
             null,
             "__NOW__",
             0,
-            57,
+            56,
             "3column_layout_secondary_sidebar",
             null,
             null,
@@ -2609,7 +2587,7 @@
             null,
             "__NOW__",
             0,
-            58,
+            57,
             null,
             null,
             null,
@@ -2631,7 +2609,7 @@
             null,
             "__NOW__",
             0,
-            59,
+            58,
             null,
             null,
             null,
@@ -2663,7 +2641,7 @@
       ],
       "rows" : [
          [
-            55,
+            54,
             "modulesets",
             null,
             "46,6,33,8,39,51,37,41",
@@ -2677,7 +2655,7 @@
             null
          ],
          [
-            56,
+            55,
             "modulesets",
             null,
             "8,39,51,37,41",
@@ -2691,7 +2669,7 @@
             null
          ],
          [
-            57,
+            56,
             "modulesets",
             null,
             "46,33,6",
@@ -2778,7 +2756,7 @@
             "%-c/%i",
             5,
             1,
-            58
+            57
          ],
          [
             "ContentType-Author",
@@ -2790,7 +2768,7 @@
             "author/%-a/%f",
             6,
             1,
-            58
+            57
          ],
          [
             "ContentType-Daily",
@@ -2802,7 +2780,7 @@
             "%y/%m/%d/%f",
             7,
             1,
-            58
+            57
          ],
          [
             "ContentType-Weekly",
@@ -2814,7 +2792,7 @@
             "%y/%m/%d-week/%i",
             8,
             1,
-            58
+            57
          ],
          [
             "ContentType-Monthly",
@@ -2826,7 +2804,7 @@
             "%y/%m/%i",
             9,
             1,
-            58
+            57
          ],
          [
             "ContentType-Yearly",
@@ -2838,7 +2816,7 @@
             "%y/%i",
             10,
             1,
-            58
+            57
          ],
          [
             "ContentType-Category",
@@ -2850,7 +2828,7 @@
             "%-c/%i",
             11,
             1,
-            59
+            58
          ],
          [
             "ContentType-Author",
@@ -2862,7 +2840,7 @@
             "author/%-a/%f",
             12,
             1,
-            59
+            58
          ],
          [
             "ContentType-Daily",
@@ -2874,7 +2852,7 @@
             "%y/%m/%d/%f",
             13,
             1,
-            59
+            58
          ],
          [
             "ContentType-Weekly",
@@ -2886,7 +2864,7 @@
             "%y/%m/%d-week/%i",
             14,
             1,
-            59
+            58
          ],
          [
             "ContentType-Monthly",
@@ -2898,7 +2876,7 @@
             "%y/%m/%i",
             15,
             1,
-            59
+            58
          ],
          [
             "ContentType-Yearly",
@@ -2910,7 +2888,7 @@
             "%y/%i",
             16,
             1,
-            59
+            58
          ]
       ]
    },

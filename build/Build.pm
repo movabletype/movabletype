@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -43,6 +43,7 @@ use File::Spec;
 use Getopt::Long;
 use IO::File;
 use Sys::Hostname;
+use Config;
 
 sub new {
     my $class = shift;
@@ -300,7 +301,7 @@ sub make {
         );
     }
     else {
-        $self->verbose_command('make');
+        $self->verbose_command($Config{make});
     }
 
     if ( !$self->{'debug'} && $self->{'workspace!'} ) {

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1497,6 +1497,10 @@ use vars qw( @ISA %Lexicon );
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin' => 'プラグイン',
+	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
+	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
+	'Plugin \'[_1]\' is enabled by [_2]' => '[_2]が[_1]プラグインを有効にしました',
+	'Plugin \'[_1]\' is disabled by [_2]' => '[_2]が[_1]プラグインを無効にしました',
 
 ## lib/MT/CMS/RebuildTrigger.pm
 	'Select Site' => 'サイトを選択',
@@ -4237,7 +4241,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/multi_line_text.tmpl
 	'Input format' => '入力フォーマット',
-	'Use all rich text decoration buttons' => 'リッチテキストの装飾ボタンをすべて利用する',
+	'Use all rich text decoration buttons' => 'リッチテキストの入力支援ボタンをすべて利用する',
 	
 
 ## tmpl/cms/content_field_type_options/number.tmpl

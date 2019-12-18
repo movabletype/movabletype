@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1957,6 +1957,26 @@ sub core_endpoints {
             default_params => { save_revision => 1, },
             error_codes =>
                 { 403 => 'Do not have permission to update an entry.', },
+        },
+        {   id        => 'create_page',
+            route     => '/sites/:site_id/pages',
+            resources => ['page'],
+            verb      => 'POST',
+            version   => 3,
+            handler   => "${pkg}v3::Page::create",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to create a page.', },
+        },
+        {   id        => 'update_page',
+            route     => '/sites/:site_id/pages/:page_id',
+            resources => ['page'],
+            verb      => 'PUT',
+            version   => 3,
+            handler   => "${pkg}v3::Page::update",
+            default_params => { save_revision => 1, },
+            error_codes =>
+                { 403 => 'Do not have permission to update a page.', },
         },
 
         # version 4

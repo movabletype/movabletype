@@ -1,6 +1,6 @@
 <mt:app:ContentFieldOptionGroup
    type="multi_line_text">
-  
+
   <mtapp:ContentFieldOption
      id="multi_line_text-initial_value"
      label="<__trans phrase="Initial Value">">
@@ -17,15 +17,6 @@
     </select>
   </mtapp:ContentFieldOption>
 
-  <mtapp:ContentFieldOptionScript>
-    this.options.input_formats = {}
-    <mt:loop name="text_filters">
-    this.options.input_formats['<mt:var name="filter_key" escape="js">'] = ''
-    </mt:loop>
-    if ( this.options.input_format )
-      this.options.input_formats[this.options.input_format] = "selected"
-  </mtapp:ContentFieldOptionScript>
-
   <mtapp:ContentFieldOption
     id="multi_line_text-full_rich_text"
     label="<__trans phrase="Use all rich text decoration buttons">">
@@ -33,14 +24,23 @@
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOptionScript>
-  if ( this.isNew )
-    this.options.full_rich_text = 1
+    this.options.input_formats = {}
+    <mt:loop name="text_filters">
+    this.options.input_formats['<mt:var name="filter_key" escape="js">'] = ''
+    </mt:loop>
+    if ( this.options.input_format )
+      this.options.input_formats[this.options.input_format] = "selected"
 
-  if ( this.options.full_rich_text === "0" )
-    this.options.full_rich_text = 0
+    if ( this.isNew )
+      this.options.full_rich_text = 1
 
-  changeStateFullRichText(e) {
-    this.options.full_rich_text = e.target.checked
-  }
+    if ( this.options.full_rich_text === "0" )
+      this.options.full_rich_text = 0
+
+    changeStateFullRichText(e) {
+      this.options.full_rich_text = e.target.checked
+    }
+
   </mtapp:ContentFieldOptionScript>
+
 </mt:app:ContentFieldOptionGroup>

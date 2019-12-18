@@ -370,6 +370,7 @@ sub prepare_content_type {
                         %options = (
                             label        => $cf_name,
                             category_set => $set->id,
+                            %{delete $item->{options} || {}},
                         );
                     }
                     my $cf = MT::Test::Permission->make_content_field(

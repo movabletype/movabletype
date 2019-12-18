@@ -2,7 +2,7 @@
 Template - Copyright 2005 Six Apart
 $Id: Template.js 204 2007-05-30 19:50:59Z ddavis $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

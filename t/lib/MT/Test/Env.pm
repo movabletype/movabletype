@@ -100,6 +100,7 @@ sub write_config {
         LoggerPath          => 'TEST_ROOT/log',
         LoggerLevel         => 'DEBUG',
         MailTransfer        => 'debug',
+        DBIRaiseError       => 1,
         ProcessMemoryCommand => 0,    ## disable process check
     );
 
@@ -138,6 +139,18 @@ sub write_config {
         }
     }
     close $fh;
+}
+
+sub save_file {
+    my ( $self, $path, $body ) = @_;
+
+    my $file = $self->path($path);
+    my $dir  = dirname($file);
+    mkpath $dir unless -d $dir;
+
+    open my $fh, '>', $file or die $!;
+    binmode $fh;
+    print $fh $body;
 }
 
 sub connect_info {
@@ -803,6 +816,10 @@ sub clear_mt_cache {
 
 sub ls {
     my ( $self, $root, $callback ) = @_;
+    if ( ref $root eq ref sub {} ) {
+        $callback = $root;
+        $root = undef;
+    }
     $callback ||= sub {
         my $file = shift;
         note $file if -f $file;

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -3438,7 +3438,7 @@ sub handlers_for_mode {
             my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
-                    if $hdlr->{code} =~ m/^\$?(\w+)::/;
+                    if $handler =~ m/^\$?(\w+)::/;
             }
         }
         else {
@@ -4276,6 +4276,7 @@ sub is_valid_redirect_target {
             map { scalar $app->param($_) } qw/static return_url return_to/;
         push @targets, '' unless @targets;
         for my $target (@targets) {
+            next if $target eq '0';
             if ( ( $target eq '' ) || ( $target eq '1' ) ) {
                 require MT::Entry;
                 my $entry_id = $app->param('entry_id') || 0;

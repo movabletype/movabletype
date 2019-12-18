@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -301,7 +301,7 @@ sub save_config {
     my $config;
     eval { $config = $cfg_class->load(); };
     if ($@) {
-        warn 'An error occurred when loading the config class: ' . $@;
+        warn "An error occurred when loading the config class: $@" if $MT::DebugMode;
         return;
     }
     unless ($config) {

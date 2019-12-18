@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2007-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2007-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -599,11 +599,12 @@ sub save {
             }
         );
 
-        my @cats;
-        for my $cat_id ( keys %categories_old ) {
-            my $cat = MT->model('category')->load($cat_id) or next;
-            push @cats, $cat;
-        }
+        my @cat_ids = map {@$_} values %categories_old;
+        my @cats    = MT->model('category')->load(
+            {   id              => \@cat_ids,
+                category_set_id => \'> 0',
+            }
+        );
 
         for my $map (@maps) {
             my $at       = $map->archive_type;
@@ -1951,7 +1952,7 @@ sub _update_content_data_status {
         MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_entry_status.');
+    MT::Util::Log->info('--- End   update_content_data_status.');
 
     $tmpl;
 }

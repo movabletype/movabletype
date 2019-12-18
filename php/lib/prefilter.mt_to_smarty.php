@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -337,6 +337,11 @@ function _parse_modifier($str) {
                     } else {
                         $val = '$vars.' . $second_matches[2];
                     }
+                }
+                elseif (preg_match('/^([\'"])(.*(?<!\\\\)\1.*)\1$/', $val, $second_matches)) {
+                    $quote = $second_matches[1];
+                    $val = preg_replace("/(?<!\\\\)$quote/", "\\$quote", $second_matches[2]);
+                    $val = $quote . $val . $quote;
                 }
                 $result .= ':' . $val;
             }

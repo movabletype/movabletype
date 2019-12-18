@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2005-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2005-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -26,7 +26,7 @@ my $plugin = MT::Plugin::WidgetManager->new(
             q(<MT_TRANS phrase="Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.">),
         version        => $VERSION,
         schema_version => $VERSION,
-        author_name    => 'Six Apart, Ltd.',
+        author_name    => 'Six Apart Ltd.',
         author_link    => 'http://www.movabletype.org/',
         key            => 'widget-manager',
         l10n_class     => 'WidgetManager::L10N',

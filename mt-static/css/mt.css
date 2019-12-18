@@ -11653,6 +11653,18 @@ fieldset.form-group {
   padding: 2px 4px;
 }
 
+.text.low {
+  min-height: 5em;
+}
+
+.text.high {
+  min-height: 15em;
+}
+
+.text.highest {
+  min-height: 35em;
+}
+
 .custom-control .custom-control-label::before {
   border: 1px solid #A5A5A5;
 }

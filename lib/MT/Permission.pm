@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -119,8 +119,13 @@ sub global_perms {
         my $regs = MT::Component->registry('permissions');
         my %keys = map { $_ => 1 } map { keys %$_ } @$regs;
         %perms = map { $_ => MT->registry( 'permissions' => $_ ) } keys %keys;
-        %perms = +( %perms,
-            %{ MT->app->model('content_type')->all_permissions } );
+
+        my $ct_permissions = eval { MT->app->model('content_type')->all_permissions };
+        if ( $@ && $MT::DebugMode ) {
+            warn "An error occurred when loading the config class: $@";
+        }
+
+        %perms = +( %perms, %$ct_permissions ) if $ct_permissions;
 
         \%perms;
     }
@@ -1003,7 +1008,7 @@ Both of these methods can be used to register a new permission with
 Movable Type.
 
 Note: It is not advisable to call these method to register custom permissions
-without having preregistered for one from Six Apart, Ltd. This will
+without having preregistered for one from Six Apart Ltd. This will
 reserve your permission and allow it to coexist with other plugins and
 future permissions defined by Movable Type itself.
 
