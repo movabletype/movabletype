@@ -317,7 +317,7 @@ sub init_core_registry {
             },
             'XML::Parser' => {
                 link  => 'https://metacpan.org/pod/XML::Parser',
-                label => 'This module required for action streams.',
+                label => 'This module required for XML-RPC API.',
             },
             'XML::SAX::ExpatXS' => {
                 link => 'https://metacpan.org/pod/XML::SAX::ExpatXS',
