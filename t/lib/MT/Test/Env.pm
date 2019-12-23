@@ -686,7 +686,7 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
-    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema;
 }
 
@@ -704,8 +704,7 @@ sub test_schema {
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
-    {
+    if ( _tweak_schema($generated_schema) eq _tweak_schema($saved_schema) ) {
         pass "schema is up-to-date";
     }
     else {
@@ -824,9 +823,9 @@ sub clear_mt_cache {
 
 sub ls {
     my ( $self, $root, $callback ) = @_;
-    if ( ref $root eq ref sub {} ) {
+    if ( ref $root eq ref sub { } ) {
         $callback = $root;
-        $root = undef;
+        $root     = undef;
     }
     $callback ||= sub {
         my $file = shift;
