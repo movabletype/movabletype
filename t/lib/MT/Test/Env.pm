@@ -250,6 +250,14 @@ sub prepare {
     $class->_prepare_mysql_database($dbh);
 }
 
+sub my_cnf {
+    my $class = shift;
+    return +{
+        default_authentication_plugin => 'mysql_native_password',
+        'skip-networking'             => '',
+    };
+}
+
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
