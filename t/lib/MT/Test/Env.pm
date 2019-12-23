@@ -250,6 +250,24 @@ sub prepare {
     $class->_prepare_mysql_database($dbh);
 }
 
+sub my_cnf {
+    my $class = shift;
+
+    my %cnf = ( 'skip-networking' => '' );
+
+    my $verbose_help = `mysqld --verbose --help 2>/dev/null`;
+
+    my ($version) = $verbose_help =~ /\A.*Ver ([0-9]+\.[0-9]+\.[0-9]+)/;
+    my $major_version = ( split /\./, $version )[0];
+
+    my $is_maria = $verbose_help =~ /\A.*MariaDB/;
+
+    if ( !$is_maria && $major_version >= 8 ) {
+        $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+    \%cnf;
+}
+
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
@@ -678,7 +696,7 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
-    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema;
 }
 
@@ -696,8 +714,7 @@ sub test_schema {
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
-    {
+    if ( _tweak_schema($generated_schema) eq _tweak_schema($saved_schema) ) {
         pass "schema is up-to-date";
     }
     else {
@@ -816,9 +833,9 @@ sub clear_mt_cache {
 
 sub ls {
     my ( $self, $root, $callback ) = @_;
-    if ( ref $root eq ref sub {} ) {
+    if ( ref $root eq ref sub { } ) {
         $callback = $root;
-        $root = undef;
+        $root     = undef;
     }
     $callback ||= sub {
         my $file = shift;
