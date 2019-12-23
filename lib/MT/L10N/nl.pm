@@ -680,7 +680,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] must be an integer and between [_2] and [_3].' => '[_1] moet een integer zijn tussen [_2] en [_3].',
 
 ## lib/MT/App.pm
-	'Problem with this request: corrupt character data for character set [_1]' => 'ï¾ƒã�¤ï½¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
+	'Problem with this request: corrupt character data for character set [_1]' => 'Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Cannot load blog #[_1]' => 'Kan blog niet laden #[_1]',
 	'Internal Error: Login user is not initialized.' => 'Interne fout: login gebruiker is niet geïnitialiseerd.',
 	'The login could not be confirmed because of a database error ([_1])' => 'Aanmelding kon niet worden bevestigd wegens een databasefout ([_1])',
@@ -3191,27 +3191,8 @@ use vars qw( @ISA %Lexicon );
 	'(None)' => '(Geen)',
 
 ## mt-static/js/image_editor/fabric.js
-	' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ' => ' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ',
-	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ',
-	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ',
-	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ',
-	',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ' => ',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ',
 
 ## mt-static/js/image_editor/fabric.min.js
-	'+e(n.x,r)++e(n.y,r)+' => '+e(n.x,r)++e(n.y,r)+',
-	',i(r.textLeft,2)," ",i(r.textTop,2),' => ',i(r.textLeft,2)," ",i(r.textTop,2),',
 
 ## mt-static/js/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - Filter [_2]',
@@ -4192,7 +4173,7 @@ use vars qw( @ISA %Lexicon );
 	'UTC+3 (Baghdad Time/Moscow Time)' => 'UTC+3 (Tijd in Bagdad/Moskau)',
 	'UTC+2 (Eastern Europe Time)' => 'UTC+2 (Oost-Europese tijd)',
 	'UTC+1 (Central European Time)' => 'UTC+1 (Centraal-Europese tijd)',
-	'UTC+0 (Universal Time Coordinated)' => 'UTC+0 (Universeel Gecoï¾ƒÎ´ï½¶rdineerde Tijd)',
+	'UTC+0 (Universal Time Coordinated)' => 'UTC+0 (Universeel Gecoördineerde Tijd)',
 	'UTC-1 (West Africa Time)' => 'UTC-1 (West-Afrika-tijd)',
 	'UTC-2 (Azores Time)' => 'UTC-2 (Azorentijd)',
 	'UTC-3 (Atlantic Time)' => 'UTC-3 (Atlantische tijd)',
@@ -4203,7 +4184,7 @@ use vars qw( @ISA %Lexicon );
 	'UTC-7 (Mountain Time)' => 'UTC-7 (Mountain tijd)',
 	'UTC-8 (Pacific Time)' => 'UTC-8 (Westkust tijd)',
 	'UTC-9 (Alaskan Time)' => 'UTC-9 (Alaska tijd)',
-	'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (Aleutianen-Hawaõ‚‡©anse tijd)',
+	'UTC-10 (Aleutians-Hawaii Time)' => 'UTC-10 (Aleutianen-Hawaïaanse tijd)',
 	'UTC-11 (Nome Time)' => 'UTC-11 (Nome tijd)',
 	'Language' => 'Taal',
 	'If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.' => 'Als u een andere taal kiest dan de standaard taal die op systeemniveau staat ingesteld, dan moet u mogelijk de namen van bepaalde modules aanpassen in bepaalde sjablonen om andere globale modules te kunnen includeren.',
@@ -6752,7 +6733,7 @@ use vars qw( @ISA %Lexicon );
 ## addons/Enterprise.pack/config.yaml
 	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype',
 	'Advanced Pack' => 'Advanced pack',
-	'Oracle Database (Recommended)' => 'Oracle database (aangeradenÃ ',
+	'Oracle Database (Recommended)' => 'Oracle database (aangeraden)',
 	'Microsoft SQL Server Database' => 'Microsoft SQL Server database',
 	'Microsoft SQL Server Database UTF-8 support (Recommended)' => 'Microsoft SQL Server Database met UTF-8 ondersteuning (aangeraden)',
 	'Publish Charset' => 'Karakterset voor publicatie',
@@ -6790,7 +6771,7 @@ use vars qw( @ISA %Lexicon );
 	'(none)' => '(Geen)',
 	'The following groups were deleted:' => 'Volgende groepen werden verwijderd:',
 	'Failed to create a new group: [_1]' => 'Nieuwe groep aanmaken mislukt: [_1]',
-	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Advanced.' => 'Â´[_1] directief moet ingesteld zijn om leden van een LDAP groep te synchroniseren naar Movable Type Advanced',
+	'[_1] directive must be set to synchronize members of LDAP groups to Movable Type Advanced.' => '´[_1] directief moet ingesteld zijn om leden van een LDAP groep te synchroniseren naar Movable Type Advanced',
 	'Cannot get group \'[_1]\' (#[_2]) entry and its all member attributes from external directory.' => 'Kan geen informatie over groep \'[_1]\' (#[_2]) en bijhorende attributen ophalen uit externe directory.',
 	'Cannot get member entries of group \'[_1]\' (#[_2]) from external directory.' => 'Kan geen informatie over leden van greop \'[_1]\' (#[_2]) ophalen uit externe directory.',
 	'Members removed: ' => 'Leden verwijderd:',
@@ -6850,7 +6831,7 @@ use vars qw( @ISA %Lexicon );
 	'Entry not found in LDAP: [_1]' => 'Item niet gevonden in LDAP: [_1]',
 	'Binding to LDAP server failed: [_1]' => 'Binden aan LDAP server mislukt: [_1]',
 	'User not found in LDAP: [_1]' => 'Gebruiker niet gevonden in LDAP: [_1]',
-	'More than one user with the same name found in LDAP: [_1]' => 'Meer dan Ã©Ã©n gebruiker met dezelfde naam gevonden in LDAP: [_1]',
+	'More than one user with the same name found in LDAP: [_1]' => 'Meer dan één gebruiker met dezelfde naam gevonden in LDAP: [_1]',
 
 ## addons/Enterprise.pack/lib/MT/ObjectDriver/Driver/DBD/MSSQLServer.pm
 	'PublishCharset [_1] is not supported in this version of the MS SQL Server Driver.' => 'PublishCharset [_1] wordt niet ondersteund in deze versie van de MS SQL Server Driver',
@@ -7026,7 +7007,7 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that failed to sync with an external server.' => 'Deze mail is om u te melden dat synchronisatie met een externe server mislukt is.',
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => '[_1] gekopiÃ«erd',
+	'Copied [_1]' => '[_1] gekopiëerd',
 	'Create Sync Setting' => 'Sync instelling aanmaken',
 	'The sync setting with the same name already exists.' => 'Een synchronisatie instelling met dezelfde naam bestaat al.',
 	'Reached the upper limit of the parallel execution.' => 'Maximumlimiet voor uitvoering in paralel bereikt.',
@@ -7047,10 +7028,10 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/tmpl/cfg_contents_sync.tmpl
 	'Contents Sync Settings' => 'Instellingen synchronisatie inhoud',
 	'Contents sync settings has been saved.' => 'De instellingen voor synchronisatie van inhoud zijn opgeslagen.',
-	'The sync settings has been copied but not saved yet.' => 'De synchronisatie instellingen zijn gekopiÃ«erd maar nog niet opgeslagen.',
-	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'EÃ©n of meer sjablonen staan ingesteld om dynamisch gepubliceerd te worden. Dynamisch publiceren werkt mogelijk niet op de bestemmings-server.',
+	'The sync settings has been copied but not saved yet.' => 'De synchronisatie instellingen zijn gekopiëerd maar nog niet opgeslagen.',
+	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Eén of meer sjablonen staan ingesteld om dynamisch gepubliceerd te worden. Dynamisch publiceren werkt mogelijk niet op de bestemmings-server.',
 	'Run synchronization now' => 'Nu synchroniseren',
-	'Copy this sync setting' => 'Deze synchronisatie instelling kopiÃ«ren',
+	'Copy this sync setting' => 'Deze synchronisatie instelling kopiëren',
 	'Sync Date' => 'Synchronisatiedatum',
 	'Recipient for Notification' => 'Ontvanger van berichten',
 	'Receive only error notification' => 'Enkel foutmeldingen ontvangen',
@@ -7076,7 +7057,7 @@ use vars qw( @ISA %Lexicon );
 	'Sync name should be shorter than [_1] characters.' => 'Synchronisatienaam moet korter dan [_1] karakters zijn.',
 	'The sync date must be in the future.' => 'De synchronisatiedatum moet in de toekomst liggen.',
 	'Invalid time.' => 'Ongeldig tijdstip;',
-	'You must make one or more destination settings.' => 'U moet Ã©Ã©n of meer bestemmingen instellen.',
+	'You must make one or more destination settings.' => 'U moet één of meer bestemmingen instellen.',
 	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?',
 	'View sync log' => 'Sync log bekijken',
 	'Clear the previous synchronization file list' => 'Vorige lijst synchronisatiebestanden leegaken',
@@ -7755,7 +7736,7 @@ richt \'[_4]\'',
 	'Failed.' => 'Mislukt.',
 
 ## plugins/WXRImporter/config.yaml
-	'Import WordPress exported RSS into MT.' => 'Importeer RSS geÃ«xporteerd uit WordPress in MT.',
+	'Import WordPress exported RSS into MT.' => 'Importeer RSS geëxporteerd uit WordPress in MT.',
 	'"WordPress eXtended RSS (WXR)"' => '"WordPress eXtended RSS (WXR)"',
 	'"Download WP attachments via HTTP."' => '"WP attachments downloaden via HTTP."',
 

@@ -3190,27 +3190,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'(None)' => '(Aucun)',
 
 ## mt-static/js/image_editor/fabric.js
-	' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ' => ' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ',
-	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ',
-	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ',
-	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ',
-	',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ' => ',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ',
 
 ## mt-static/js/image_editor/fabric.min.js
-	'+e(n.x,r)++e(n.y,r)+' => '+e(n.x,r)++e(n.y,r)+',
-	',i(r.textLeft,2)," ",i(r.textTop,2),' => ',i(r.textLeft,2)," ",i(r.textTop,2),',
 
 ## mt-static/js/listing/list_data.js
 	'[_1] - Filter [_2]' => '[_1] - Filtre [_2]',
@@ -4494,7 +4475,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Entrez un nouveau chemin où votre fichier d'index sera localisé. Ne pas commencer par '/' ou '\'.  Exemple : /home/mt/public_html/blog ou C:\www\public_html\blog},
 	q{Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Entrez un nouveau chemin où votre fichier d'index sera localisé. Un chemin absolu (commençant par '/' pour Linux ou 'C:\' pour Windows) is conseillé.  Ne pas terminer par '/' ou '\'. Exemple : /home/mt/public_html ou C:\www\public_html},
 	'Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/' => 'Entrez la nouvelle URL des archives de votre site enfant. Exemple : http://www.example.com/blog/archives/',
-	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Entrer le nouveau chemin où vos fichiers d'index de la section des archives seront publiés. Ne pas terminer par '/' ou '\'. Exemple : /home/mt/public_html/blog ou C:\www\public_html\blog},
+	q{Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Entrer le nouveau chemin où vos fichiers d'index de la section des archives seront publiés. Ne pas terminer par '/' ou '\'.  Exemple : /home/mt/public_html/blog ou C:\www\public_html\blog},
 	q{Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Entrer le nouveau chemin où vos fichiers d'index de la section des archives seront publiés. Un chemin absolu (commençant par '/' pour Linux ou 'C:\' pour Windows) is conseillé.  Ne pas terminer par '/' ou '\'. Exemple : /home/mt/public_html ou C:\www\public_html},
 	'Continue (s)' => 'Continuer (s)',
 	'Back (b)' => 'Retour (b)',
@@ -4602,7 +4583,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Undo' => 'Annuler',
 	'Redo' => 'Refaire',
 	'Save (s)' => 'Enregistrer (s)',
-	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Les modifications apportées à cette image seront perdues. Voulez-vous vraiment fermer cette fenêtre ?',
+	'You have unsaved changes to this image that will be lost. Are you sure you want to close this dialog?' => 'Les modifications apportées à cette image seront perdues. Voulez-vous vraiment fermer cette fenêtre?',
 
 ## tmpl/cms/dialog/entry_notify.tmpl
 	'Send a Notification' => 'Envoyer une notification',
@@ -5119,7 +5100,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Statically (default)' => 'Statique (défaut)',
 	q{Via Publish Queue} => q{Via une publication en mode file d'attente},
 	'On a schedule' => 'Planifié',
-	': every ' => ' : chaque ',
+	': every ' => ': chaque ',
 	'minutes' => 'minutes',
 	'hours' => 'heures',
 	'Dynamically' => 'Dynamique',
@@ -7101,7 +7082,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Are you sure you want to remove this settings?' => 'Voulez-vous vraiment supprimer ces paramètres ?',
 	'View sync log' => 'Voir le log de synchronisation',
 	'Clear the previous synchronization file list' => 'Vider la précédente liste des fichiers à synchroniser',
-	'Sync all files' => 'synchroniser tous les fichiers',
 	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Après qu\'une synchronisation a été effectuée, un e-mail de notification sera envoyé à l\'utilisateur qui l\'a déclenchée, et à l\'administrateur système (par défaut) ou le destinataire spécifié ci-dessus.',
 	'Are you sure you want to clear the previous synchronization file list?' => 'Vouslez-vous vraiment supprimer la précédente liste des fichiers à synchroniser ?',
 	'Destination name should be shorter than [_1] characters.' => 'Le nom de destination devrait faire moins de [_1] caractères.',
