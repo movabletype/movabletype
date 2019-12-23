@@ -291,7 +291,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'La etiqueta condicional MTIf utiliza este módulo en un atributo de comprobación.',
 	'This module is used by the Markdown text filter.' => 'El filtro de textos Markdown utiliza este módulo.',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'mt-search.cgi necesita este módulo si está usando Movable Type con una versión de Perl anterior a Perl 5.8.',
-	'This module required for XML-RPC API.' => 'Este módulo es necesario para XML-RPC API.',
+	'This module is required for XML-RPC API.' => 'Este módulo es necesario para XML-RPC API.',
 	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1] es opcional; Este es uno de los módulos necesarios para restaurar una copia de seguridad.',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'Este módulo es necesario para las estadísticas de Google Analytics y para la verificación de certificados SSL.',
 	'This module is required for executing run-periodic-tasks.' => 'Este módulo es necesario para la ejecución de run-periodic-tasks (tareas programadas).',
