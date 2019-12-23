@@ -735,6 +735,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Le profil du commentateur a été modifié avec succès.',
 	'Commenter profile could not be updated: [_1]' => 'Le profil du commentateur n\'a pu être modifié : [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] doit être un nombre.',
+	'[_1] must be an integer and between [_2] and [_3].' => '_1] doit être un entier entre [_2] et [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Requête erronée : jeu de caractères corrompu [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Erreur lors du chargement du site web #[_1] pour la création de l\'utilisateur. Vérifiez vos paramètres NewUserefaultWebsiteId.',
@@ -6842,6 +6846,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error switching directory.' => 'Erreur au changement de répertoire.',
 	'Synchronization with an external server has been successfully finished.' => 'La synchronisation avec un serveur distant a réussi.',
 	'Failed to sync with an external server.' => 'La synchronisation avec un serveur distant a échoué.',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Impossible de synchroniser ([_1]) avec un serveur externe ([_2]).',
+	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'La synchronisation ([_1]) avec un serveur externe ([_2]) s\'est terminée avec succès.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Le répertoire Temp [_1] n\'est pas ouvert en écriture.',
@@ -6871,6 +6877,8 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Une erreur est survenue lors de la connexion avec le serveur FTP \'[_1]\' : [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération du répertoire courant depuis \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération de la liste des répertoires depuis \'[_1]\'',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Paramètre de synchronisation \'[_1]\' (ID : [_2]) supprimé par [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Paramètre de synchronisation \'[_1]\' (ID : [_2]) édité par [_3].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...',

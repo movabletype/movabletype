@@ -734,6 +734,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Se actualizó con éxito el perfil del comentarista.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] debe ser un número.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] debe ser un entero entre [_2] y [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Error cargando el sitio web #[_1] para la provisión de usuarios. Compruebe la directiva NewUserefaultWebsiteId.',
@@ -6823,6 +6827,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error switching directory.' => 'Error cambiando de directorio.',
 	'Synchronization with an external server has been successfully finished.' => 'Finalizó con éxito la sincronización con el servidor externo.',
 	'Failed to sync with an external server.' => 'Falló la sincronización con un servidor externo.',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Falló la sincronización ([_1]) con un servidor externo ([_2]).',
+	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Ha finalizado con éxito la sincronización ([_1]) con un servidor externo ([_2]).',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'No se puede escribir en el directorio temporal [_1].',
@@ -6852,6 +6858,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Ocurrió un error al intentar conectar con el servidor FTP \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Ocurrió un error al intentar copiar el directorio actual desde \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Ocurrió un error al intentar copiar la lista de directorios de \'[_1]\'',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Configuración de sincrinización \'[_1]\' (ID: [_2]) borrada por [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Configuración de sincronización \'[_1]\' (ID: [_2]) editada por [_3].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Eliminando todas las tareas de sincronización de contenidos...',

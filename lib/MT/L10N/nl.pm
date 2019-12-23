@@ -735,6 +735,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] moet een getal zijn.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] moet een integer zijn tussen [_2] en [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fout bij het laden van website #[_1]',
@@ -6814,6 +6818,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error switching directory.' => 'Fout bij wisselen van map.',
 	'Synchronization with an external server has been successfully finished.' => 'Synchronisatie naar externe server met succes afgerond.',
 	'Failed to sync with an external server.' => 'Synchronisatie naar externe server mislukt.',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisatie ([_1]) met een externe server ([_2]) is niet gelukt.',
+	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Synchronisatie ([_1]) met een externe server ([_2]) werd met succes afgerond.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
@@ -6843,6 +6849,8 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het verbinden met de FTP server \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de huidige map van \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de lijst van mappen van \'[_1]\'',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Sync instelling \'[_1]\' (ID: [_2]) verwijderd door [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Sync instelling \'[_1]\' (ID: [_2]) bewerkt door [_3].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...',
