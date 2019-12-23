@@ -196,7 +196,7 @@ use vars qw( @ISA %Lexicon );
 	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 y sus dependencias son necesarias para que los comentaristas se autentifiquen mediante proveedores OpenID, incluyendo LiveJournal.',
 	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP es necesario para enviar correos vía servidores SMTP.',
 	'This module and its dependencies are required in order to support CRAM-MD5, DIGEST-MD5 or LOGIN SASL mechanisms.' => 'Este módulo y sus dependencias son necesarios para dar soporte a los mecanismos CRAM-MD5, DIGEST-MD5 o LOGIN SASL.',
-	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL es necesario para todas las conexiones SSL/TLS, como las estadísticas de Google Analytics o la autentificación SMTP mediante SSL/TLS.', # Translate - New
+	'IO::Socket::SSL is required in all of the SSL/TLS connection, such as Google Analytics site statistics or SMTP Auth over SSL/TLS.' => 'IO::Socket::SSL es necesario para todas las conexiones SSL/TLS, como las estadísticas de Google Analytics o la autentificación SMTP mediante SSL/TLS.',
 	'Net::SSLeay is required to use SMTP Auth over an SSL connection, or to use it with a STARTTLS command.' => 'Net::SSLeay es necesario para usar autentificación SMTP con una conexión SSL o con el comando STARTTLS.',
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'La etiqueta condicional MTIf utiliza este módulo en un atributo de comprobación.',
 	'This module is used by the Markdown text filter.' => 'El filtro de textos Markdown utiliza este módulo.',
@@ -258,7 +258,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] ([_2])' => '[_1] ([_2])',
 
 ## default_templates/banner_footer.mtml
-	'_POWERED_BY' => 'Motor <a href="http://www.movabletype.org/"><$MTProductName$></a>',
+	'_POWERED_BY' => 'Motor <a href="https://www.movabletype.org/"><$MTProductName$></a>',
 	'This blog is licensed under a <a href="[_1]">Creative Commons License</a>.' => 'Este blog tiene una <a href="[_1]">Licencia Creative Commons</a>.',
 
 ## default_templates/calendar.mtml
@@ -373,6 +373,10 @@ use vars qw( @ISA %Lexicon );
 	'No TrackBacks' => 'Sin trackbacks',
 	'Tags' => 'Etiquetas',
 	'Trackbacks' => 'Trackbacks',
+	'# Comments' => '# comentarios',
+	'1 Comment' => '1 comentario',
+	'Comments' => 'Comentarios',
+	'No Comments' => 'Sin comentarios',
 
 ## default_templates/entry_summary.mtml
 	'Continue reading <a href="[_1]" rel="bookmark">[_2]</a>.' => 'Continúe leyendo <a href="[_1]" rel="bookmark">[_2]</a>.',
@@ -399,11 +403,14 @@ use vars qw( @ISA %Lexicon );
 	'This email is to notify you that an IP address has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una dirección IP.',
 	'IP Address: [_1]' => 'Dirección IP: [_1]',
 	'Recovery: [_1]' => 'Recuperación: [_1]',
+	'Mail Footer' => 'Pie del correo',
 
 ## default_templates/lockout-user.mtml
 	'This email is to notify you that a Movable Type user account has been locked out.' => 'Este correo es para notificarle que se ha bloqueado una cuenta de usuario de Movable Type.',
 	'Display Name: [_1]' => 'Nombre: [_1]',
 	'If you want to permit this user to participate again, click the link below.' => 'Si desea permitir que este usuario participe de nuevo, haga clic en el enlace de abajo.',
+	'Email: [_1]' => 'Correo Electrónico: [_1]',
+	'Username: [_1]' => 'Nombre de usuario: [_1]',
 
 ## default_templates/main_index.mtml
 
@@ -472,7 +479,7 @@ use vars qw( @ISA %Lexicon );
 	'Pages' => 'Páginas',
 
 ## default_templates/powered_by.mtml
-	'_MTCOM_URL' => 'http://www.movabletype.com/',
+	'_MTCOM_URL' => 'https://www.movabletype.com/',
 
 ## default_templates/recent_assets.mtml
 
@@ -501,6 +508,8 @@ use vars qw( @ISA %Lexicon );
 	'The search engine also supports the AND, OR, and NOT boolean operators:' => 'El motor de búsqueda también tiene soporte para los operadores lógicos AND, OR y NOT:',
 	'personal OR publishing' => 'personal OR publicación',
 	'publishing NOT personal' => 'publicación NOT personal',
+	'Next' => 'Siguiente',
+	'Previous' => 'Anterior',
 
 ## default_templates/sidebar.mtml
 	'2-column layout - Sidebar' => 'Distribución de 2 columnas - Barra lateral',
@@ -670,11 +679,14 @@ use vars qw( @ISA %Lexicon );
 	'Export Theme' => 'Exportar tema',
 	'Backup' => 'Copia de seguridad',
 	'Restore' => 'Restaurar',
-	'Address Book' => 'Agenda',
+	'Address Book' => 'Contactos',
 	'Activity Log' => 'Actividad',
 	'Asset' => 'Multimedia',
 	'Website' => 'Website',
 	'Profile' => 'Perfil',
+	'Back' => 'Volver',
+	'Blog' => 'Blog',
+	'Cannot load blog (ID:[_1])' => 'No se pudo cargar el blog (ID:[_1])',
 
 ## lib/MT/App/Comments.pm
 	'Error assigning commenting rights to user \'[_1] (ID: [_2])\' for weblog \'[_3] (ID: [_4])\'. No suitable commenting role was found.' => 'Error asignando permisos para comentar al usuario \'[_1] (ID: [_2])\' para el weblog \'[_3] (ID: [_4])\'. No se encontró un rol adecuado.',
@@ -735,6 +747,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Se actualizó con éxito el perfil del comentarista.',
 	'Commenter profile could not be updated: [_1]' => 'No se pudo actualizar el perfil del comentarista: [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] debe ser un número.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] debe ser un entero entre [_2] y [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Problema con esta petición: dato corrupto de carácter para el conjunto de caracteres [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Error cargando el sitio web #[_1] para la provisión de usuarios. Compruebe la directiva NewUserefaultWebsiteId.',
@@ -772,6 +788,19 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Mensajes de alerta y registro',
 	'Removed [_1].' => 'Se eliminó [_1].',
 	'You did not have permission for this action.' => 'No tenía permisos para realizar esta acción.',
+	'Cannot load blog #[_1].' => 'No se pudo cargar el blog #[_1].',
+	'Cannot load entry #[_1].' => 'No se pudo cargar la entrada #[_1].',
+	'Display Name' => 'Nombre',
+	'Email Address' => 'Dirección de correo electrónico',
+	'Email Address is invalid.' => 'La dirección de correo no es válida.',
+	'Failed login attempt by disabled user \'[_1]\'' => 'Inicio de sesión fallido por usuario deshabilitado \'[_1]\'',
+	'Failed login attempt by unknown user \'[_1]\'' => 'Inicio de sesión fallido por usuario desconocido \'[_1]\'',
+	'Passwords do not match.' => 'Las contraseñas no coinciden.',
+	'System Email Address is not configured.' => 'La dirección de correo del sistema no está configurada.',
+	'Text entered was wrong.  Try again.' => 'El texto que se ha introducido es incorrecto. Inténtelo de nuevo.',
+	'The login could not be confirmed because of a database error ([_1])' => 'No se pudo confirmar el inicio de sesión por un error en la base de datos ([_1])',
+	'URL is invalid.' => 'La URL no es válida.',
+	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]',
 
 ## lib/MT/App/Search/Legacy.pm
 	'A search is in progress. Please wait until it is completed and try again.' => 'Hay una búsqueda en ejecución. Por favor, espere hasta que haya finalizado e inténtelo de nuevo.',
@@ -801,6 +830,9 @@ use vars qw( @ISA %Lexicon );
 	'Filename extension cannot be asp or php for these archives' => 'La extensión del fichero no puede ser asp o php para estos archivos',
 	'Template must be a main_index for Index archive type' => 'La plantilla debe ser main_index para el tipo de archivo Índice',
 	'The search you conducted has timed out.  Please simplify your query and try again.' => 'La búsqueda que realizaba sobrepasó el tiempo. Por favor, simplifique la consulta e inténtelo de nuevo.',
+	'No alternate template is specified for template \'[_1]\'' => 'No se especificó una plantilla alternativa para la plantilla',
+	'Opening local file \'[_1]\' failed: [_2]' => 'Fallo abriendo el fichero local \'[_1]\': [_2]',
+	'Search: query for \'[_1]\'' => 'Búsqueda: encontrar \'[_1]\'',
 
 ## lib/MT/App/Search/TagSearch.pm
 	'TagSearch works with MT::App::Search.' => 'TagSearch funciona con MT::App::Search.',
@@ -832,6 +864,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid parameter.' => 'Parámetro no válido.',
 	'No permissions. Please contact your Movable Type administrator for assistance with upgrading Movable Type.' => 'Sin permisos. Por favor, contacte con el administrador de Movable Type para obtener asistencia sobre la actualización.',
 	'Movable Type has been upgraded to version [_1].' => 'Movable Type ha sido actualizado a la versión [_1].',
+	'Invalid email address \'[_1]\'' => 'Dirección de correo no válida \'[_1]\'',
 
 ## lib/MT/App/Wizard.pm
 	'The [_1] driver is required to use [_2].' => 'Es necesario el controlador [_1] para usar [_2].',
@@ -912,7 +945,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/ArchiveType/Individual.pm
 	'yyyy/mm/entry-basename.html' => 'aaaa/mm/título-entrada.html',
 	'yyyy/mm/entry_basename.html' => 'aaaa/mm/título_entrada.html',
-	'yyyy/mm/entry-basename/index.html' => 'aaaa/mm/titutlo-entrada/index.html',
+	'yyyy/mm/entry-basename/index.html' => 'aaaa/mm/título-entrada/index.html',
 	'yyyy/mm/entry_basename/index.html' => 'aaaa/mm/título_entrada/index.html',
 	'yyyy/mm/dd/entry-basename.html' => 'aaaa/mm/dd/título-entrada.html',
 	'yyyy/mm/dd/entry_basename.html' => 'aaaa/mm/dd/título_entrada.html',
@@ -988,6 +1021,8 @@ use vars qw( @ISA %Lexicon );
 	'Author Status' => 'Estado autor',
 	'Missing File' => 'Fichero perdido',
 	'Assets of this website' => 'Multimedia de este sitio',
+	'Name' => 'Nombre',
+	'URL' => 'URL',
 
 ## lib/MT/Asset/Video.pm
 	'Videos' => 'Vídeos',
@@ -1005,6 +1040,7 @@ use vars qw( @ISA %Lexicon );
 	'Role Detail' => 'Detalles del rol',
 	'Website/Blog Name' => 'Website/Blog Name',
 	'__WEBSITE_BLOG_NAME' => 'Nombre del sitio/blog',
+	'User is [_1]' => 'El usuario es [_1]',
 
 ## lib/MT/AtomServer.pm
 	'[_1]: Entries' => '[_1]: Entradas',
@@ -1021,6 +1057,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Auth/MT.pm
 	'Missing required module' => 'Módulo obligatorio no instalado',
+	'Failed to verify the current password.' => 'Falló la verificación de la contraseña actual.',
+	'Password contains invalid character.' => 'La contraseña contiene un carácter no válido.',
 
 ## lib/MT/Auth/OpenID.pm
 	'Could not save the session' => 'No se pudo guardar la sesión',
@@ -1058,6 +1096,8 @@ use vars qw( @ISA %Lexicon );
 	'Pending Commenters' => 'Comentaristas pendientes',
 	'MT Native Users' => 'Usuarios nativos de MT',
 	'Externally Authenticated Commenters' => 'Comentaristas autentificados externamente',
+	'Commenters' => 'Comentaristas',
+	'Registered User' => 'Usuario registrado',
 
 ## lib/MT/Auth.pm
 	'Bad AuthenticationModule config \'[_1]\': [_2]' => 'Configuración incorrecta de AuthenticationModule \'[_1]\': [_2]',
@@ -1231,6 +1271,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot load asset #[_1]' => 'No se pudo cargar el fichero multimedia #[_1]',
 	'<' => '<',
 	'/' => '/',
+	'Permission denied.' => 'Permiso denegado.',
 
 ## lib/MT/CMS/BanList.pm
 	'You did not enter an IP address to ban.' => 'No tecleó una dirección IP para bloquear.',
@@ -1277,13 +1318,13 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Entries must be cloned if comments and trackbacks are cloned' => 'Las entradas tienen que clonarse su se clonan los comentarios y trackbacks',
 	'Entries must be cloned if comments are cloned' => 'Las entradas deben clonarse si se clonan los comentarios',
 	'Entries must be cloned if trackbacks are cloned' => 'Las entradas deben clonarse si se clonan los trackbacks',
-	'\'[_1]\' (ID:[_2]) has been copied as \'[_3]\' (ID:[_4]) by \'[_5]\' (ID:[_6]).' => '\'[_1]\' (ID:[_2]) se ha copiado como \'[_3]\' (ID:[_4]) por \'[_5]\' (ID:[_6]).', # Translate - New
+	'\'[_1]\' (ID:[_2]) has been copied as \'[_3]\' (ID:[_4]) by \'[_5]\' (ID:[_6]).' => '\'[_1]\' (ID:[_2]) se ha copiado como \'[_3]\' (ID:[_4]) por \'[_5]\' (ID:[_6]).',
 
 ## lib/MT/CMS/Category.pm
 	'The [_1] must be given a name!' => '¡Debe dar un nombre a [_1]!',
 	'Failed to update [_1]: Some of [_2] were changed after you opened this page.' => 'Falló la actualización de [_1]: Se modificaron algunos [_2] después de que abriera la página.',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Se intentó actualizar [_1]([_2]), pero el objeto no se encontró.',
-	'[_1] order has been edited by \'[_2]\'.' => 'El orden de [_1] fue editado por \'[_2]\'.', # Translate - New
+	'[_1] order has been edited by \'[_2]\'.' => 'El orden de [_1] fue editado por \'[_2]\'.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Se han realizado los cambios ([_1] añadido, [_2] editado y [_3] borrado). <a href="#" onclick="[_4]" class="mt-rebuild">Publique el sitio</a> para que los cambios tomen efecto.',
 	'Add a [_1]' => 'Añador un [_1]',
 	'No label' => 'Sin título',
@@ -1292,8 +1333,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'The category name \'[_1]\' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'Hay un conflicto entre el nombre de la categoría \'[_1]\' y otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.',
 	'The category basename \'[_1]\' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.' => 'Hay un conflicto entre el nombre base de la categoría \'[_1]\' y el de otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.',
 	'The name \'[_1]\' is too long!' => 'El nombre \'[_1]\' es demasiado largo.',
-	'Category \'[_1]\' created by \'[_2]\'.' => 'La categoría \'[_1]\' fue creada por \'[_2]\'.', # Translate - New
-	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'La categoría \'[_1]\' (ID:[_2]) fue editada por \'[_3]\'', # Translate - New
+	'Category \'[_1]\' created by \'[_2]\'.' => 'La categoría \'[_1]\' fue creada por \'[_2]\'.',
+	'Category \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'La categoría \'[_1]\' (ID:[_2]) fue editada por \'[_3]\'',
 	'Category \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'La categoría \'[_1]\' (ID:[_2]) fue borrada por \'[_3]\'',
 	'The category name \'[_1]\' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.' => 'El nombre de la categría \'[_1]\' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.',
 
@@ -1341,6 +1382,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'System templates cannot be deleted.' => 'No se pueden eliminar las plantillas del sistema.',
 	'The selected [_1] has been deleted from the database.' => 'El [_1] seleccionado fue borrado de la base de datos.',
 	'Saving snapshot failed: [_1]' => 'Fallo al guardar instantánea: [_1]',
+	'Permission denied: [_1]' => 'Permiso denegado: [_1]',
 
 ## lib/MT/CMS/Dashboard.pm
 	'Error: This blog does not have a parent website.' => 'Error: Este blog no tiene un sitio web padre.',
@@ -1385,6 +1427,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Need entries to update status' => 'Necesita entradas para actualizar su estado',
 	'One of the entries ([_1]) did not exist' => 'Una de las entradas ([_1]) no existe.',
 	'[_1] \'[_2]\' (ID:[_3]) status changed from [_4] to [_5]' => '[_1] \'[_2]\' (ID:[_3]) cambió de estado de [_4] a [_5]',
+	'/' => '/',
 
 ## lib/MT/CMS/Export.pm
 	'Loading blog \'[_1]\' failed: [_2]' => 'Falló al cargar el blog \'[_1]\': [_2]',
@@ -1404,7 +1447,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## lib/MT/CMS/Folder.pm
 	'The folder \'[_1]\' conflicts with another folder. Folders with the same parent must have unique basenames.' => 'La carpeta \'[_1]\' tiene conflicto con otra carpeta. Las carpetas con el mismo padre deben tener nombre base únicos.',
 	'Folder \'[_1]\' created by \'[_2]\'' => 'La carpeta \'[_1]\' fue creada por \'[_2]\'',
-	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'La carpeta \'[_1]\' (ID:[_2]) fue editada por \'[_3]\'', # Translate - New
+	'Folder \'[_1]\' (ID:[_2]) edited by \'[_3]\'' => 'La carpeta \'[_1]\' (ID:[_2]) fue editada por \'[_3]\'',
 	'Folder \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'La carpeta \'[_1]\' (ID:[_2]) fue borrada por \'[_3]\'',
 
 ## lib/MT/CMS/Import.pm
@@ -1447,6 +1490,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error in search expression: [_1]' => 'Error en la expresión de búsqueda: [_1]',
 	'Searched for: \'[_1]\' Replaced with: \'[_2]\'' => 'Se buscó: \'[_1]\' Se reemplazó con: \'[_2]\'',
 	'[_1] \'[_2]\' (ID:[_3]) updated by user \'[_4]\' using Search & Replace.' => '[_1] \'[_2]\' (Id:[_3]) actualizado por el usuario \'[_4]\' mediante Buscar y reemplazar.',
+	'Excerpt' => 'Resumen',
+	'Site Root' => 'Raíz del sitio',
+	'Templates' => 'Plantillas',
+	'Title' => 'Título',
 
 ## lib/MT/CMS/Tag.pm
 	'A new name for the tag must be specified.' => 'Debe especificar un nombre nuevo para la etiqueta.',
@@ -1509,6 +1556,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Widget Template' => 'Plantilla de widget',
 	'Widget Templates' => 'Plantillas de widget',
 	'template' => 'plantilla',
+	'Preview' => 'Vista previa',
 
 ## lib/MT/CMS/Theme.pm
 	'Theme not found' => 'Tema no encontrado',
@@ -1564,7 +1612,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Only to blogs within this system' => 'Solo a los blogs en este sistema',
 	'[_1] is [_2]' => '[_1] es [_2]',
 	'none' => 'ninguno',
-	'Changing image quality is [_1]' => 'Cambiando la calidad de imagen es [_1]', # Translate - New
+	'Changing image quality is [_1]' => 'Cambiando la calidad de imagen es [_1]',
 	'Image quality(JPEG) is [_1]' => 'La calidad de la imagen (JPEG) es [_1]',
 	'Image quality(PNG) is [_1]' => 'La calidad de la imagen (PNG) es [_1]',
 	'System Settings Changes Took Place' => 'Se realizaron los cambios en la configuración del sistema',
@@ -1672,6 +1720,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'User \'[_1]\' (ID:[_2]) created by \'[_3]\'' => 'Usuario \'[_1]\' (ID:[_2]) creado por \'[_3]\'',
 	'User \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Usuario \'[_1]\' (ID:[_2]) borrado por \'[_3]\'',
 	'represents a user who will be created afterwards' => 'representa un usuario que se creará después',
+	'For improved security, please change your password' => 'Para mayor seguridad, por favor, cambie la contraseña',
 
 ## lib/MT/CMS/Website.pm
 	'New Website' => 'Nuevo sitio web',
@@ -1707,6 +1756,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Comments on my entries/pages' => 'Comentarios en mis entradas/páginas',
 	'Comments in the last 7 days' => 'Comentarios en los últimos 7 días',
 	'Spam comments' => 'Comentarios spam',
+	'Loading blog \'[_1]\' failed: [_2]' => 'Falló al cargar el blog \'[_1]\': [_2]',
 
 ## lib/MT/Compat/v3.pm
 	'uses: [_1], should use: [_2]' => 'usa: [_1], debería usar: [_2]',
@@ -1814,7 +1864,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Purge Stale DataAPI Session Records' => 'Eliminar registros de sesión DataAPI caducados',
 	'Remove expired lockout data' => 'Eliminar datos cacudados de bloqueos',
 	'Purge Unused FileInfo Records' => 'Purgar registros FileInfo no utilizados',
-	'Remove Compiled Template Files' => 'Borrar ficheros de plantillas compiladas', # Translate - New
+	'Remove Compiled Template Files' => 'Borrar ficheros de plantillas compiladas',
 	'Manage Website' => 'Administrar sitio web',
 	'Manage Blog' => 'Administrar blog',
 	'Manage Website with Blogs' => 'Administrar sitio web con blogs',
@@ -1839,6 +1889,14 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Create Websites' => 'Crear sitios web',
 	'Manage Plugins' => 'Administrar extensiones',
 	'View System Activity Log' => 'Ver registro de actividad del sistema',
+	'*Website/Blog deleted*' => '*Sitio/blog borrado*',
+	'Blog Name' => 'Nombre del blog',
+	'IP address' => 'Dirección IP',
+	'Members' => 'Miembros',
+	'No Title' => 'Sin título',
+	'No label' => 'Sin título',
+	'Tag' => 'Etiqueta',
+	'Upload File' => 'Transferir fichero',
 
 ## lib/MT/DataAPI/Callback/Blog.pm
 	'A parameter "[_1]" is required.' => 'Se requiere un parámetro "[_1]".',
@@ -1899,6 +1957,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid limit_size: [_1]' => 'limit_size no válido: [_1]',
 	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Ocurrió un error durante el proceso de restauración: [_1] Por favor, compruebe el registro de actividad para más detalles.',
 	'Make sure that you remove the files that you restored from the \'import\' folder, so that if/when you run the restore process again, those files will not be re-restored.' => 'Asegúrese de que elimina los ficheros que ha restaurado de la carpeta \'importar\', por si ejecuta el proceso en otra ocasión que éstos no vuelvan a restaurar.',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Debe poderse escribir en el directorio temporal para que las copias de seguridad funcionen correctamente. Por favor, compruebe la opción de configuración TempDir.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Blog.pm
 	'Cannot create a blog under blog (ID:[_1]).' => 'No se pudo crear un blog bajo el blog (Id:[_1]).',
@@ -2213,6 +2272,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Metadata' => 'Metadatos',
 	'Logs on This Website' => 'Históricos de este sitio',
 	'Show only errors' => 'Mostrar solo los errores',
+	'TrackBacks' => 'TrackBacks',
 
 ## lib/MT/Mail.pm
 	'Unknown MailTransfer method \'[_1]\'' => 'MailTransfer método desconocido \'[_1]\'',
@@ -2228,6 +2288,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Click to edit contact' => 'Clic para editar el contacto',
 	'Save Changes' => 'Guardar cambios',
 	'Save' => 'Guardar',
+	'Cancel' => 'Cancelar',
 
 ## lib/MT/ObjectAsset.pm
 	'Asset Placement' => 'Posición del elemento multimedia',
@@ -2306,6 +2367,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'livedoor' => 'livedoor',
 	'Hatena' => 'Hatena',
 	'Movable Type default' => 'Predefinido de Movable Type',
+	'An error occurred: [_1]' => 'Ocurrió un error: [_1]',
 
 ## lib/MT/Revisable/Local.pm
 
@@ -2408,6 +2470,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot find entry \'[_1]\'' => 'No se encontró la entrada \'[_1]\'',
 	'Unspecified archive template' => 'Archivo de plantilla no especificado',
 	'Error in file template: [_1]' => 'Error en fichero de plantilla: [_1]',
+	'Cannot load template' => 'No se pudo cargar la plantilla',
 
 ## lib/MT/Template/Context.pm
 	'The attribute exclude_blogs cannot take \'[_1]\' for a value.' => 'El atributo exclude_blogs no puede tener el valor \'[_1]\'.',
@@ -2450,6 +2513,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Dynamicity' => 'Dinamicidad',
 	'Build Type' => 'Tipo de reconstrucción',
 	'Interval' => 'Intervalo',
+	'Comment Listing' => 'Lista de comentarios',
+	'Comment Preview' => 'Vista previa de comentario',
 
 ## lib/MT/Template/Tags/Archive.pm
 	'Group iterator failed.' => 'Fallo en iterador de grupo.',
@@ -2662,6 +2727,13 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Assigning embedded flag to asset placements...' => 'Asignando marca a los elementos empotrados...',
 	'Updating template build types...' => 'Actualizando los tipos de publicación de las plantillas...',
 	'Replacing file formats to use CategoryLabel tag...' => 'Reemplazando los formatos de fichero para usar la etiqueta CategoryLabel...',
+	'Assigning entry comment and TrackBack counts...' => 'Asignando totales de comentarios y trackbacks de las entradas...',
+	'Comment Response' => 'Comentar respuesta',
+	'Comment Submission Error' => 'Error en el envío de comentarios',
+	'Confirmation...' => 'Confirmación...',
+	'Return to the <a href="[_1]">original entry</a>.' => 'Volver a la <a href="[_1]">entrada original</a>.',
+	'Thank you for commenting.' => 'Gracias por comentar.',
+	'Your comment has been received and held for review by a blog administrator.' => 'Se ha recibido el comentario y está pendiente de aprobación por parte del administrador del blog.',
 
 ## lib/MT/Upgrade/v5.pm
 	'Populating generic website for current blogs...' => 'Poblando el sitio web genérico con los blogs actuales...',
@@ -2700,6 +2772,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Setting the \'created by\' ID for any user for whom this field is not defined...' => 'Indicando el identificador \'created_by\' para los usuarios que no tienen el campo definido...',
 	'Assigning a language to each blog to help choose appropriate display format for dates...' => 'Asignando un idioma a cada blog para ayudarlos a mostrar las fechas en un formato correcto...',
 	'Adding notification dashboard widget...' => 'Añadiendo el widget para el centro de notificaciones...',
+	'Can administer the website.' => 'Puede administrar el sitio web',
+	'Website Administrator' => 'Administrador del sitio web',
 
 ## lib/MT/Upgrade/v6.pm
 	'Fixing TheSchwartz::Error table...' => 'Corrigiendo la tabla TheSchwartz:Error...',
@@ -2709,6 +2783,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Migrating "This is you" dashboard widget...' => 'Migrando el widget para el panel "Este es usted"...',
 	'Adding "Site stats" dashboard widget...' => 'Añadiendo el widget para el panel "Estadísticas del sitio"...',
 	'Reordering dashboard widgets...' => 'Reordenando los widgets de paneles...',
+	'Rebuilding permission records...' => 'Reconstruyendo los registros de permisos...',
 
 ## lib/MT/Util/Archive.pm
 	'Type must be specified' => 'Debe especificar el tipo',
@@ -2722,6 +2797,9 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot extract from the object' => 'No se pudo extraer usando el objeto',
 	'Cannot write to the object' => 'No se pudo escribir en el objeto',
 	'Both data and file name must be specified.' => 'Se deben especificar tanto los datos como el nombre del fichero.',
+	'[_1] in the archive contains ..' => '[_1] en el archivo contiene...',
+	'[_1] in the archive is an absolute path' => '[_1] en el archivo es una ruta absoluta',
+	'[_1] in the archive is not a regular file' => '[_1] en el archivo no es un fichero normal',
 
 ## lib/MT/Util/Archive/Zip.pm
 	'Type must be zip' => 'El tipo debe ser zip',
@@ -2733,6 +2811,15 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Type the characters you see in the picture above.' => 'Introduzca los caracteres que ve en la imagen de arriba.',
 	'Image creation failed.' => 'Falló la creación de la imagen.',
 	'Image error: [_1]' => 'Error de imagen: [_1]',
+
+## lib/MT/Util/Log.pm
+	'Cannot load Log module: [_1]' => 'No se pudo cargar el módulo de registros: [_1]',
+	'Invalid Log module' => 'Módulo de registros no válido',
+	'Unknown Logger Level: [_1]' => 'Nivel de registros desconocido: [_1]',
+
+## lib/MT/Util/YAML.pm
+	'Cannot load YAML module: [_1]' => 'No se pudo cargar el módulo YAML: [_1]',
+	'Invalid YAML module' => 'Módulo YAML no válido',
 
 ## lib/MT/Util.pm
 	'moments from now' => 'dentro de unos momentos',
@@ -2776,6 +2863,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'Blogs',
+	'First Website' => 'Primer sitio web',
 
 ## lib/MT/Worker/Publish.pm
 	'Background Publishing Done' => 'Publicación en segundo plano realizada',
@@ -2811,6 +2899,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error writing uploaded file: [_1]' => 'Error escribiendo el fichero transferido: [_1]',
 	'Perl module Image::Size is required to determine width and height of uploaded images.' => 'El módulo de Perl Image::Size es necesario para obtener las dimensiones de las imágenes transferidas.',
 	'Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.' => 'Los métodos de las plantillas no están implementados, debido a las diferencias entre Blogger API y Movable Type API.',
+	'Invalid entry ID \'[_1]\'' => 'ID de entrada \'[_1]\' no válido',
+	'Invalid login' => 'Incio de sesión no válido',
+	'No entry_id' => 'Sin entry_id',
+	'Publishing failed: [_1]' => 'Falló la publicación: [_1]',
 
 ## mt-static/addons/Sync.pack/js/cms.js
 	'Continue' => 'Continuar',
@@ -2843,27 +2935,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'(None)' => '(Ninguno)',
 
 ## mt-static/js/image_editor/fabric.js
-	' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ' => ' +
-                          toFixed(center.x, NUM_FRACTION_DIGITS) +
-                           +
-                          toFixed(center.y, NUM_FRACTION_DIGITS) +
-                        ',
-	', (-this.width / 2), , (-this.height/2), ' => ', (-this.width / 2), , (-this.height/2), ',
-	' + (-this.width/2) +  + (-this.height/2) + ' => ' + (-this.width/2) +  + (-this.height/2) + ',
-	', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ' => ', toFixed(offsets.textLeft, 2), , toFixed(offsets.textTop, 2), ',
-	',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ' => ',
-        -this.width / 2, ,
-        -this.height + heightOfLine, ',
 
 ## mt-static/js/image_editor/fabric.min.js
-	'+e(n.x,r)++e(n.y,r)+' => '+e(n.x,r)++e(n.y,r)+', # Translate - New
-	',i(r.textLeft,2)," ",i(r.textTop,2),' => ',i(r.textLeft,2)," ",i(r.textTop,2),', # Translate - New
 
 ## mt-static/js/tc/mixer/display.js
 	'Title:' => 'Título:',
@@ -2874,7 +2947,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## mt-static/js/upload_settings.js
 	'You must set a valid path.' => 'Debe indicar una ruta válida.',
-	'You must set a path begining with %s or %a.' => 'Debe indicar una ruta que comience con %s o %a.', # Translate - New
+	'You must set a path begining with %s or %a.' => 'Debe indicar una ruta que comience con %s o %a.',
 
 ## mt-static/mt.js
 	'delete' => 'borrar',
@@ -2955,6 +3028,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Strong Emphasis' => 'Énfasis negrita',
 	'Emphasis' => 'Énfasis',
 	'List Item' => 'Elemento lista',
+	'Block Quotation' => 'Cita',
+	'Insert HTML' => 'Insertar HTML',
+	'Ordered List' => 'Lista ordenada',
+	'Unordered List' => 'Lista no ordenada',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/paste/editor_plugin.js
 	'paste.plaintext_mode_sticky' => 'paste.plaintext_mode_sticky',
@@ -2990,14 +3067,25 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/classic_blog/templates/category_entry_listing.mtml
 
 ## themes/classic_blog/templates/comment_detail.mtml
+	'[_1] replied to <a href="[_2]">comment from [_3]</a>' => '[_1] respondió al <a href="[_2]">comentario de [_3]</a>',
 
 ## themes/classic_blog/templates/comment_listing.mtml
+	'Comment Detail' => 'Detalle del comentario',
 
 ## themes/classic_blog/templates/comment_preview.mtml
+	'(You may use HTML tags for style)' => '(Puede usar etiquetas HTML para el estilo)',
+	'Leave a comment' => 'Escribir un comentario',
+	'Previewing your Comment' => 'Vista previa del comentario',
+	'Replying to comment from [_1]' => 'Respondiendo al comentario de [_1]',
+	'Submit' => 'Enviar',
 
 ## themes/classic_blog/templates/comment_response.mtml
+	'Your comment has been submitted!' => '¡El comentario se ha recibido!',
+	'Your comment submission failed for the following reasons: [_1]' => 'El envío del comentario falló por alguna de las siguientes razones: [_1]',
 
 ## themes/classic_blog/templates/comments.mtml
+	'Remember personal info?' => '¿Recordar datos personales?',
+	'The data is modified by the paginate script' => 'Los datos son modificados por el script de paginación',
 
 ## themes/classic_blog/templates/creative_commons.mtml
 
@@ -3038,6 +3126,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/classic_blog/templates/recent_assets.mtml
 
 ## themes/classic_blog/templates/recent_comments.mtml
+	'<strong>[_1]:</strong> [_2] <a href="[_3]" title="full comment on: [_4]">read more</a>' => '<strong>[_1]:</strong> [_2] <a href="[_3]" title="comentario completo en: [_4]">más</a>',
 
 ## themes/classic_blog/templates/recent_entries.mtml
 
@@ -3056,9 +3145,13 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/classic_blog/templates/technorati_search.mtml
 
 ## themes/classic_blog/templates/trackbacks.mtml
+	'<a href="[_1]">[_2]</a> from [_3] on <a href="[_4]">[_5]</a>' => '<a href="[_1]">[_2]</a> desde [_3] en <a href="[_4]">[_5]</a>',
+	'TrackBack URL: [_1]' => 'URL de TrackBack: [_1]',
+	'[_1] <a href="[_2]">Read More</a>' => '[_1] <a href="[_2]">Leer más</a>',
 
 ## themes/classic_blog/theme.yaml
 	'A traditional blogging design that comes with plenty of styles and a selection of 2 column / 3 column layouts. Best for use in standard blog publishing applications.' => 'Un diseño de blogs tradicional con múltiples estilos y posibilidad de seleccionar una disposición a 2 o 3 columnas. Recomendado para instalaciones de blogs estándares.',
+	'Displays error, pending or confirmation message for comments.' => 'Muestra mensajes de error o mensajes de pendiente y confirmación en los comentarios.',
 
 ## themes/classic_website/templates/about_this_page.mtml
 	'<a href="[_1]">[_2]</a> was the previous entry in this website.' => '<a href="[_1]">[_2]</a> fue la entrada anterior en este sitio.',
@@ -3073,6 +3166,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/classic_website/templates/banner_footer.mtml
 
 ## themes/classic_website/templates/blogs.mtml
+	'Blogs' => 'Blogs',
 
 ## themes/classic_website/templates/calendar.mtml
 
@@ -3497,6 +3591,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Other Tags' => 'Otras etiquetas',
 	'END OF PAGE BODY' => 'FIN DEL CUERPO DE LA PÁGINA',
 	'END OF CONTAINER' => 'FIN DEL CONTENEDOR',
+	'Regex search' => 'Expresión regular',
 
 ## search_templates/results_feed_rss2.tmpl
 	'Search Results for [_1]' => 'Resultados de la búsqueda sobre [_1]',
@@ -3679,7 +3774,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Disable Plugins' => 'Desactivar extensiones',
 	'Enable plugin functionality' => 'Activar las funciones de las extensiones',
 	'Enable Plugins' => 'Activar extensiones',
-	'_PLUGIN_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_PLUGIN_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Plugins' => 'Buscar extensiones',
 	'Your plugin settings have been saved.' => 'Se guardó la configuración de la extensión.',
 	'Your plugin settings have been reset.' => 'Se reinició la configuración de la extensión.',
@@ -3829,6 +3924,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'You must set a valid Archive URL.' => 'Debe indicar una URL de archivos válida.',
 	'You must set your Local Archive Path.' => 'Debe introducir la Ruta Local de Archivos.',
 	'You must set a valid Local Archive Path.' => 'Debe indicar una ruta local de archivos válida.',
+	'Archive Root' => 'Raíz de archivos',
 
 ## tmpl/cms/cfg_registration.tmpl
 	'Registration Settings' => 'Configuración de registro',
@@ -3846,6 +3942,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Authentication Methods' => 'Métodos de autentificación',
 	'Please select authentication methods to accept comments.' => 'Por favor, seleccione los métodos de autentificación para aceptar comentarios.',
 	'One or more Perl modules may be missing to use this authentication method.' => 'Uno o más módulos de Perl podrían no estar instalados y ser necesarios para usar este método de autentificación.',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'El módulo de Perl necesario para la autentificación de comentaristas mendiante OpenID (Digest::SHA1) no está instalado.',
 
 ## tmpl/cms/cfg_system_general.tmpl
 	'Your settings have been saved.' => 'Configuración guardada.',
@@ -3895,8 +3992,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	q{However, the following IP addresses are 'whitelisted' and will never be locked out:} => q{Sin embargo, las siguientes direcciones IP están en una 'lista blanca' y nunca serán bloqueadas:},
 	'The list of IP addresses. If a remote IP address is included in this list, the failed login will not recorded. You can specify multiple IP addresses separated by commas or line breaks.' => 'La lista de direcciones IP. El inicio de sesión no será registrado si la dirección IP remota está incluída en esta lista. Puede especificar múltiples direcciones IP separadas por comas o saltos de línea.',
 	'Image Quality Settings' => 'Configuración de la calidad de las imágenes',
-	'Changing image quality' => 'Cambiando la calidad de la imagen', # Translate - New
-	'Enable image quality changing.' => 'Activar cambio de calidad de imágenes.', # Translate - New
+	'Changing image quality' => 'Cambiando la calidad de la imagen',
+	'Enable image quality changing.' => 'Activar cambio de calidad de imágenes.',
 	'Image quality(JPEG)' => 'Calidad de imagen (JPEG)',
 	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'La calidad de las imágenes JPEG y sus miniaturas. Este valor puede ser un entero entre 0 y 100. El valor por defecto es 75.',
 	'Image quality(PNG)' => 'Calidad de imagen (PNG)',
@@ -4012,6 +4109,10 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/dialog/asset_modal.tmpl
 	'Library' => 'Biblioteca',
+	'Cancel (x)' => 'Cancelar (x)',
+	'Insert' => 'Insertar',
+	'Insert (s)' => 'Insertar (s)',
+	'Next (s)' => 'Siguiente (s)',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => 'Mostrar una imagen en la entrada/página',
@@ -4192,6 +4293,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Embed Asset' => 'Embeber fichero multimedia',
 	'You must specify a name for the asset.' => 'Debe especificar un nombre para el fichero multimedia.',
 	'You have unsaved changes to this asset that will be lost.' => 'Los cambios no guardados a este fichero multimedia se perderán.',
+	'Prev' => 'Anterior',
+	'You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?' => 'Los cambios no guardados a este fichero multimedia se perderán. ¿Está seguro de que desea editar la imagen?',
 
 ## tmpl/cms/edit_author.tmpl
 	'Edit Profile' => 'Editar Perfil',
@@ -4247,6 +4350,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Save changes to this author (s)' => 'Guardar cambios de este autor (s)',
 	'_USAGE_PASSWORD_RESET' => 'Puede iniciar la recuperación de la contraseña en nombre de este usuario. Si lo hace, se enviará un correo a <strong>[_1]</strong> con una nueva contraseña aleatoria.',
 	'Initiate Password Recovery' => 'Iniciar recuperación de contraseña',
+	'You must use half-width character for password.' => 'Debe usar caracteres de media-anchura para la contraseña.',
 
 ## tmpl/cms/edit_blog.tmpl
 	'Create Blog' => 'Crear blog',
@@ -4310,6 +4414,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'The trusted status of the commenter' => 'El estado de la confianza en el comentarista',
 	'Trusted' => 'De confianza',
 	'Authenticated' => 'Autentificado',
+	'Banned' => 'Bloqueado',
 
 ## tmpl/cms/edit_comment.tmpl
 	'The comment has been approved.' => 'Se ha aprobado el comentario.',
@@ -4355,6 +4460,12 @@ No se pudo escribir el fichero. Disco lleno.",
 	'View all comments from this IP Address' => 'Ver todos los comentarios procedentes de esta dirección IP',
 	'Fulltext of the comment entry' => 'Texto completo de la entrada del comentario',
 	'Responses to this comment' => 'Respuestas al comentario',
+	'Approved' => 'Autorizado',
+	'Comment Text' => 'Comentario',
+	'Commenter' => 'Comentarista',
+	'Commenter Status' => 'Estado comentarista',
+	'Edit Comment' => 'Editar comentario',
+	'Unapproved' => 'No aprobado',
 
 ## tmpl/cms/edit_entry_batch.tmpl
 	'Save these [_1] (s)' => 'Guardar este [_1] (s)',
@@ -4480,6 +4591,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'View all TrackBacks from this IP address' => 'Mostrar todos los TrackBacks enviados desde esta dirección IP',
 	'TrackBack Text' => 'Texto del TrackBack',
 	'Excerpt of the TrackBack entry' => 'Resumen de la entrada del TrackBack',
+	'Source Site' => 'Sitio de origen',
+	'Source Title' => 'Título de origen',
 
 ## tmpl/cms/edit_role.tmpl
 	'Edit Role' => 'Editar rol',
@@ -4556,6 +4669,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'No caching' => 'Sin caché',
 	'Expire after' => 'Caduca tras',
 	'Expire upon creation or modification of:' => 'Caduca tras la creación o modificación de:',
+	'New Template' => 'Nueva plantilla',
 
 ## tmpl/cms/edit_website.tmpl
 	'Create Website' => 'Crear un sitio web',
@@ -4643,6 +4757,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'You can specify a default category for imported entries which have none assigned.' => 'Puede especificar una categoría predefinida para las entradas importadas que no tengan ninguna asignada.',
 	'Select a category' => 'Seleccione una categoría',
 	'Import Entries (s)' => 'Importar entradas (s)',
+	'Import Entries' => 'Importar entradas',
 
 ## tmpl/cms/include/anonymous_comment.tmpl
 	'Allow comments from anonymous or unauthenticated users.' => 'Permitir comentarios de usuarios anónimos o no autentificados.',
@@ -4687,6 +4802,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Created On' => 'Creado en',
 	'Asset Missing' => 'Fichero multimedia no existe',
 	'No thumbnail image' => 'Sin miniatura',
+	'Size' => 'Tamaño',
 
 ## tmpl/cms/include/asset_upload.tmpl
 	q{Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1].} => q{Antes de subir un fichero, debe publicar su [_1]. [_2]Configure las rutas de publicación[_3] de su [_1] y republique el [_1].},
@@ -4706,13 +4822,13 @@ No se pudo escribir el fichero. Disco lleno.",
 	'[_1] - [_2] of [_3]' => '[_1] - [_2] de [_3]',
 
 ## tmpl/cms/include/async_asset_upload.tmpl
-	'Upload new image' => 'Subir nueva imagen', # Translate - Case
-	'Upload new asset' => 'Transferir nuevo fichero multimedia', # Translate - Case
-	'Choose files to upload or drag files.' => 'Seleccione los ficheros para subir o arrástrelos.', # Translate - New
-	'Choose file to upload or drag file.' => 'Seleccione los ficheros a subir o arrástrelos.', # Translate - New
+	'Upload new image' => 'Subir nueva imagen',
+	'Upload new asset' => 'Transferir nuevo fichero multimedia',
+	'Choose files to upload or drag files.' => 'Seleccione los ficheros para subir o arrástrelos.',
+	'Choose file to upload or drag file.' => 'Seleccione los ficheros a subir o arrástrelos.',
 	'Upload Options' => 'Configuración transferencias',
 	'Operation for a file exists' => 'Acción para ficheros existentes',
-	'Drag and drop here' => 'Arrastrar y solar aquí', # Translate - New
+	'Drag and drop here' => 'Arrastrar y solar aquí',
 	'Cancelled: [_1]' => 'Cancelado: [_1]',
 	'The file you tried to upload is too large: [_1]' => 'El fichero que intentó transferir es muy grande: [_1]',
 	'[_1] is not a valid [_2] file.' => '[_1] no es un fichero [_2] válido.',
@@ -4788,6 +4904,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'View this page' => 'Ver esta página',
 	'Search for all comments from this IP address' => 'Buscar todos los comentarios enviados desde esta dirección IP',
 	'to republish' => 'para reconstruir',
+	'Anonymous' => 'Anónimo',
+	'Reply' => 'Responder',
 
 ## tmpl/cms/include/copyright.tmpl
 	'Copyright &copy; 2001 Six Apart. All Rights Reserved.' => 'Copyright &copy; 2001 Six Apart. All Rights Reserved.',
@@ -4910,12 +5028,16 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Save changes' => 'Guardar cambios',
 
 ## tmpl/cms/include/pagination.tmpl
+	'First' => 'Primero',
+	'Last' => 'Último',
 
 ## tmpl/cms/include/ping_table.tmpl
 	'Publish selected [_1] (p)' => 'Publicar [_1] seleccionados (p)',
 	'Edit this TrackBack' => 'Editar este TrackBack',
 	'Go to the source entry of this TrackBack' => 'Ir a la entrada de origen de este TrackBack',
 	'View the [_1] for this TrackBack' => 'Mostrar [_1] de este TrackBack',
+	'From' => 'Origen',
+	'Target' => 'Destino',
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => 'No se encontraron revisiones.',
@@ -4932,6 +5054,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'(on [_1])' => '(en [_1])',
 	'Select another blog...' => 'Seleccionar otro blog...',
 	'Create Blog (on [_1])' => 'Crear un blog (en [_1])',
+	'Create Website' => 'Crear un sitio web',
+	'Websites' => 'Sitios web',
 
 ## tmpl/cms/include/template_table.tmpl
 	'Create Archive Template:' => 'Crear plantilla de archivos',
@@ -5149,7 +5273,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## tmpl/cms/list_theme.tmpl
 	'[_1] Themes' => 'Temas de [_1]',
 	'All Themes' => 'Todos los temas',
-	'_THEME_DIRECTORY_URL' => 'http://plugins.movabletype.org/',
+	'_THEME_DIRECTORY_URL' => 'https://plugins.movabletype.org/',
 	'Find Themes' => 'Buscar temas',
 	'Theme [_1] has been uninstalled.' => 'El tema [_1] se ha desinstalado.',
 	'Theme [_1] has been applied (<a href="[_2]">[quant,_3,warning,warnings]</a>).' => 'Se ha aplicado el tema [_1] (<a href="[_2]">[quant,_3,aviso, avisos]</a>).',
@@ -5309,6 +5433,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Showing first [_1] results.' => 'Primeros [_1] resultados.',
 	'Show all matches' => 'Mostrar todos los resultados',
 	'[quant,_1,result,results] found' => '[quant,_1,resultado]',
+	'Search &amp; Replace' => 'Buscar &amp; Reemplazar',
 
 ## tmpl/cms/setup_initial_website.tmpl
 	'Create Your First Website' => 'Cree su primer sitio web',
@@ -5543,6 +5668,8 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/comment/signup.tmpl
 	'Password Confirm' => 'Confirmar contraseña',
+	'Create an account' => 'Crear una cuenta',
+	'Register' => 'Registrarse',
 
 ## tmpl/data_api/include/login_mt.tmpl
 
@@ -5807,7 +5934,8 @@ No se pudo escribir el fichero. Disco lleno.",
 	'The systemObject "[_1]" is invalid.' => 'El systemObject "[_1]" no es válido.',
 
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Callback.pm
-	'Please enter valid option for the [_1] field: [_2]' => 'Por favor, introduzca una opción válida para el campo [_1]: [_2]', # Translate - New
+	'Please enter valid option for the [_1] field: [_2]' => 'Por favor, introduzca una opción válida para el campo [_1]: [_2]',
+	'Invalid date \'[_1]\'; dates should be real dates.' => 'Fecha no válida \'[_1]\'; debe ser una fecha real.',
 
 ## addons/Commercial.pack/lib/CustomFields/DataAPI/Endpoint/v2/Field.pm
 	'Invalid includeShared parameter provided: [_1]' => 'Parámetro de includeShare no válido: [_1]',
@@ -5995,6 +6123,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'By [_1] | Comments ([_2])' => 'Por [_1] | Comentarios ([_2]) ',
 
 ## addons/Commercial.pack/templates/professional/website/search.mtml
+	'Case sensitive' => 'Distinguir mayúsculas y minúsculas',
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
 
@@ -6781,7 +6910,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Sync Settings' => 'Configuración de la sincronización',
 	'Create new sync setting' => 'Crear nueva configuración de sincronización',
 	'Contents Sync' => 'Sincronización de contenidos',
-	'Remove sync PID files' => 'Borrar los ficheros de sincronización PID', # Translate - New
+	'Remove sync PID files' => 'Borrar los ficheros de sincronización PID',
 	'Updating MT::SyncSetting table...' => 'Actualizando la tabla MT::SyncSetting...',
 	'Migrating settings of contents sync on website...' => 'Migrando la configuración de la sincronización de contenidos en el sitio web...',
 	'Migrating settings of contents sync on blog...' => 'Migrando la configuración de la sincronización de contenidos en el blog...',
@@ -6791,12 +6920,12 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot access to remote directory \'[_1]\'' => 'No se pudo acceder al directorio remoto \'[_1]\'',
 	'Deleting file \'[_1]\' failed.' => 'Fallo al borrar el fichero \'[_1]\'.',
 	'Deleting path \'[_1]\' failed.' => 'Fallo al borrar la ruta \'[_1]\'.',
-	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => 'Exste un directorio o fichero cuyo nombre termina con un punto (.) o un espacio. No se pueden sincronizar estos ficheros: "[_1]"', # Translate - New
+	'Directory or file by which end of name is dot(.) or blank exists. Cannot synchronize these files.: "[_1]"' => 'Exste un directorio o fichero cuyo nombre termina con un punto (.) o un espacio. No se pueden sincronizar estos ficheros: "[_1]"',
 	'Unable to write temporary file ([_1]): [_2]' => 'No se pudo escribir un fichero temporal ([_1]): [_2]',
-	'Unable to get size of temporary file ([_1]): [_2]' => 'No se pudo obtener el tamaño del fichero temporal ([_1]): [_2]', # Translate - New
-	'FTP reconnection was failed. ([_1])' => 'La reconexión al FTP falló. ([_1])', # Translate - New
-	'FTP connection lost.' => 'Se perdió la conexión FTP.', # Translate - New
-	'FTP connection timeout.' => 'Caducó la conexión FTP.', # Translate - New
+	'Unable to get size of temporary file ([_1]): [_2]' => 'No se pudo obtener el tamaño del fichero temporal ([_1]): [_2]',
+	'FTP reconnection was failed. ([_1])' => 'La reconexión al FTP falló. ([_1])',
+	'FTP connection lost.' => 'Se perdió la conexión FTP.',
+	'FTP connection timeout.' => 'Caducó la conexión FTP.',
 	'Unable to write remote files. Please check activity log for more details.: [_1]' => 'No se pudieron escribir ficheros remotos. Compruebe el histórico de actividad para más detalles: [_1]',
 	'Unable to write remote files ([_1]): [_2]' => 'No se pudieron escribir ficheros remotos ([_1]): [_2]',
 
@@ -6808,13 +6937,42 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error switching directory.' => 'Error cambiando de directorio.',
 	'Synchronization with an external server has been successfully finished.' => 'Finalizó con éxito la sincronización con el servidor externo.',
 	'Failed to sync with an external server.' => 'Falló la sincronización con un servidor externo.',
+	'FTP Server' => 'Servidor FTP',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Falló la sincronización ([_1]) con un servidor externo ([_2]).',
+	'Port' => 'Puerto',
+	'Rsync Additional Options' => 'Opciones adicionales de Rsync',
+	'Rsync Destination' => 'Destino de Rsync',
+	'Start Directory' => 'Directorio de inicio',
+	'Synchronization has successfully finished.' => 'La sincronización finalizó correctamente.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'No se puede escribir en el directorio temporal [_1].',
 	'Error during rsync: Command (exit code [_1]): [_2]' => 'Error durante rsync: Comando (código de salida [_1]): [_2]',
+	'Failed to remove "[_1]": [_2]' => 'Fallo al borrar "[_1]": [_2]',
+	'Incomplete file copy to Temp Directory.' => 'Copia de fichero incompleta en el directorio temporal.',
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Lista de ficheros para sincronizar',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'*Sync setting deleted*' => '*Opción de sincronización borrada*',
+	'Are you sure you want to reset the sync log?' => '¿Está seguro de que desea reiniciar el registro de sincronización?',
+	'Clear Sync Log' => 'Borrar registro de sincronización',
+	'Destination Name' => 'Nombre del destino',
+	'Download Sync Log (CSV)' => 'Descargar registro de sincronización (CSV)',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error al enviar el correol ([_1]); ¿Intente otra configuración de MailTransfer?',
+	'FTP' => 'FTP',
+	'Finish Date' => 'Fecha final',
+	'Finish Time' => 'Hora final',
+	'Invalid email address: [_1]' => 'Dirección de correo no válida: [_1]',
+	'Parallel' => 'Paralelo',
+	'Rsync' => 'Rsync',
+	'Start Date' => 'Fecha inicial',
+	'Start Time' => 'Hora inicial',
+	'Sync Logs' => 'Sincronizar registros',
+	'Sync Result' => 'Resultado de sincronización',
+	'Sync Type' => 'Tipo de sincronización',
+	'Sync setting is not specified.' => 'No se ha especificado la opción de sincronización.',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Configuración de la sincronización',
@@ -6832,11 +6990,16 @@ No se pudo escribir el fichero. Disco lleno.",
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => 'Copiado [_1]',
 	'The sync setting with the same name already exists.' => 'Ya existe una configuración de sincronización con el mismo nombre.',
-	'Reached the upper limit of the parallel execution.' => 'Llegó al límite máximo de la ejecución en paralelo.', # Translate - New
-	'Process ID can\'t be acquired.' => 'No se puede adquirir el ID del proceso.', # Translate - New
+	'Reached the upper limit of the parallel execution.' => 'Llegó al límite máximo de la ejecución en paralelo.',
+	'Process ID can\'t be acquired.' => 'No se puede adquirir el ID del proceso.',
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Ocurrió un error al intentar conectar con el servidor FTP \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Ocurrió un error al intentar copiar el directorio actual desde \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Ocurrió un error al intentar copiar la lista de directorios de \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Falló el borrado de la lista de archivos de sincronización "[_1]": [_2]',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Configuración de sincrinización \'[_1]\' (ID: [_2]) borrada por [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Configuración de sincronización \'[_1]\' (ID: [_2]) editada por [_3].',
+	'Synchronization log reset by \'[_1]\'' => 'Registro de sincronización reiniciado por \'[_1]\'',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Se eliminó la lista de archivos de sincronizaciones previas. [_1] por [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Eliminando todas las tareas de sincronización de contenidos...',
@@ -6874,6 +7037,16 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid time.' => 'Fecha no válida.',
 	'You must make one or more destination settings.' => 'Debe indicar una o más opciones de destino.',
 	'Are you sure you want to remove this settings?' => '¿Está seguro de que desea eliminar estas opciones?',
+	'A duplicate destination name exists.' => 'Existe un nombre de destino duplicado.',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Después de ejecutar un trabajo de sincronización, se enviará una notificación por correo electrónico al usuario que registró el trabajo y al administrador del sistema (por defecto) o al destinatario especificado arriba.',
+	'Are you sure you want to clear the previous synchronization file list?' => '¿Está seguro de que desea borrar la lista de archivos de sincronizaciones previas?',
+	'Clear the previous synchronization file list' => 'Borrr la lista de archivos de sincronizaciones previas',
+	'Deleting...' => 'Borrando...',
+	'Destination name should be shorter than [_1] characters.' => 'El nombre del destino debe tener menos de [_1] caracteres.',
+	'Do not send .htaccess and .htpasswd file' => 'No enviar ficheros .htaccess y .htpasswd',
+	'The previous synchronization file list has been cleared.' => 'La lista de ficheros de sincronizaciones previas ha sido borrada.',
+	'View sync log' => 'Ver registro de sincronización',
+	'htaccess' => 'htaccess',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => '¡Sincronizar ahora!',
@@ -6881,6 +7054,11 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Synchronizing...' => 'Sincronizando...',
 	'Finish!' => '¡Finalizó!',
 	'The synchronization was interrupted. Unable to resume.' => 'Se interrumpió la sincronización. No es posible continuar.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Executer' => 'Ejecutor',
+	'Synchronization error notification' => 'Notificación de error de sincronización',
+	'Synchronization success notification' => 'Notificación de sincronización exitosa',
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Provee registro de comentaristas a través de Facebook Connect.',
@@ -6956,10 +7134,12 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
 	'Select a Boilerplate' => 'Seleccionar un text con formato',
+	'Boilerplate' => 'Texto con formato',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Are you sure you want to delete the selected boilerplates?' => '¿Está seguro que desea borrar los textos con formato seleccionados?',
 	'My Boilerplate' => 'Mis textos con formato',
+	'Boilerplate' => 'Texto con formato',
 
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Callback/FormattedText.pm
 	'The boilerplate \'[_1]\' is already in use in this site.' => 'Este sitio ya usa el texto con formato \'[_1]\'.',
@@ -7010,7 +7190,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'OAuth2 settings' => 'Configuración OAuth2',
 	'This [_2] is using the settings of [_1].' => 'Este [_2] está usando la configuración de [_1].',
 	'Other Google account' => 'Otra cuenta de Google',
-	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{Antes de seleccionar el perfil, cree un ID de cliente para la autentificación OAuth2 de aplicaciones web, usando esta URI de redirección vía <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>.}, # Translate - New
+	q{Create an OAuth2 application's Client ID for web applications with this redirect URI via <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a> before selecting profile.} => q{Antes de seleccionar el perfil, cree un ID de cliente para la autentificación OAuth2 de aplicaciones web, usando esta URI de redirección vía <a href="https://cloud.google.com/console" target="_blank">Google Cloud Platform</a>.},
 	'Redirect URI of the OAuth2 application' => 'URI de redirección de la aplicación OAuth2',
 	'Client ID of the OAuth2 application' => 'ID de cliente de la aplicación OAuth2',
 	'Client secret of the OAuth2 application' => 'Secreto de cliente de la aplicación OAuth2',
@@ -7312,6 +7492,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/Textile/textile2.pl
 	'A humane web text generator.' => 'Un generador de texto web humano',
 	'Textile 2' => 'Textile 2',
+	'http://www.movabletype.org/documentation/appendices/tags/%t.html' => 'http://www.movabletype.org/documentation/appendices/tags/%t.html',
 
 ## plugins/TinyMCE/config.yaml
 	'Default WYSIWYG editor.' => 'Editor con formato predefinido',
@@ -7341,6 +7522,10 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Entry has no MT::Trackback object!' => '¡La entrada no tiene objeto MT::Trackback!',
 	'Assigning permissions for new user...' => 'Asignar permisos al nuevo usuario...',
 	'Saving permission failed: [_1]' => 'Fallo guardando permisos: [_1]',
+	'Creating new comment (from \'[_1]\')...' => 'Creando nuevo comentario (de \'[_1]\')...',
+	'Creating new ping (\'[_1]\')...' => 'Creando nuevo ping (\'[_1]\')...',
+	'Saving comment failed: [_1]' => 'Fallo guardando comentario: [_1]',
+	'Saving ping failed: [_1]' => 'Fallo guardando ping: [_1]',
 
 ## plugins/WXRImporter/tmpl/options.tmpl
 	q{Before you import WordPress posts to Movable Type, we recommend that you <a href='[_1]'>configure your blog's publishing paths</a> first.} => q{Antes de importar las entradas de WordPress a Movable Type, le recomendamos que primero <a href='[_1]'>configure las rutas de publicación del blog</a>.},
@@ -7351,7 +7536,5 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Download attachments (images and files) from the imported WordPress powered blog.' => 'Descargar adjuntos (imágenes y ficheros) de un blog importado de WordPress.',
 
 );
-
-## New words: 194
 
 1;
