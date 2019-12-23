@@ -736,6 +736,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Le profil du commentateur a été modifié avec succès.',
 	'Commenter profile could not be updated: [_1]' => 'Le profil du commentateur n\'a pu être modifié : [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] doit être un nombre.',
+	'[_1] must be an integer and between [_2] and [_3].' => '_1] doit être un entier entre [_2] et [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Requête erronée : jeu de caractères corrompu [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Erreur lors du chargement du site web #[_1] pour la création de l\'utilisateur. Vérifiez vos paramètres NewUserefaultWebsiteId.',
@@ -6827,6 +6831,13 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error switching directory.' => 'Erreur au changement de répertoire.',
 	'Synchronization with an external server has been successfully finished.' => 'La synchronisation avec un serveur distant a réussi.',
 	'Failed to sync with an external server.' => 'La synchronisation avec un serveur distant a échoué.',
+	'FTP Server' => 'Serveur FTP',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Impossible de synchroniser ([_1]) avec un serveur externe ([_2]).',
+	'Port' => 'Port',
+	'Rsync Additional Options' => 'Options rsync aditionnelles',
+	'Rsync Destination' => 'Destination rsync',
+	'Start Directory' => 'Répertoire de départ',
+	'Synchronization has successfully finished.' => 'La synchronisation s\'est correctement terminée.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Le répertoire Temp [_1] n\'est pas ouvert en écriture.',
@@ -6834,6 +6845,26 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Liste des fichiers à synchroniser',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'*Sync setting deleted*' => '*Paramètre de synchronisation supprimé*',
+	'Are you sure you want to reset the sync log?' => 'Voulez-vous vraiment réinitialiser le log de synchronisation ?',
+	'Clear Sync Log' => 'Vider le log de synchronisation',
+	'Destination Name' => 'Nom de destination',
+	'Download Sync Log (CSV)' => 'Télécharger le log de synchronisation (CSV)',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Erreur d\'envoi d\'e-mail ([_1]). Tentez avec un autre paramètre MailTransfer.',
+	'FTP' => 'FTP',
+	'Finish Date' => 'Date de fin',
+	'Finish Time' => 'Horaire de fin',
+	'Invalid email address: [_1]' => 'Adresse e-mail invalide : [_1]',
+	'Parallel' => 'Parallèle',
+	'Rsync' => 'Rsync',
+	'Start Date' => 'Date de démarrage',
+	'Start Time' => 'Horaire de démarrage',
+	'Sync Logs' => 'Logs de synchronisation',
+	'Sync Result' => 'Résultat de synchronisation',
+	'Sync Type' => 'Type de synchronisation',
+	'Sync setting is not specified.' => 'Réglage de synchronisation manquant.',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Paramètres de synchronisation',
@@ -6856,6 +6887,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Une erreur est survenue lors de la connexion avec le serveur FTP \'[_1]\' : [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération du répertoire courant depuis \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Une erreur est survenue lors de la tentative de récupération de la liste des répertoires depuis \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'La suppression de la liste des fichiers à synchroniser a échoué "[_1]" : [_2]',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Paramètre de synchronisation \'[_1]\' (ID : [_2]) supprimé par [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Paramètre de synchronisation \'[_1]\' (ID : [_2]) édité par [_3].',
+	'Synchronization log reset by \'[_1]\'' => 'Log de synchronisation réinitialisé par \'[_1]\'',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'La précédente liste des fichiers à synchroniser a été supprimée. [_1] par [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...',
@@ -6893,6 +6929,16 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid time.' => 'Temps invalide.',
 	'You must make one or more destination settings.' => 'Vous devez créer au moins une destination.',
 	'Are you sure you want to remove this settings?' => 'Voulez-vous vraiment supprimer ces paramètres ?',
+	'A duplicate destination name exists.' => 'Le nom de destination existe déjà.',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Après qu\'une synchronisation a été effectuée, un e-mail de notification sera envoyé à l\'utilisateur qui l\'a déclenchée, et à l\'administrateur système (par défaut) ou le destinataire spécifié ci-dessus.',
+	'Are you sure you want to clear the previous synchronization file list?' => 'Vouslez-vous vraiment supprimer la précédente liste des fichiers à synchroniser ?',
+	'Clear the previous synchronization file list' => 'Vider la précédente liste des fichiers à synchroniser',
+	'Deleting...' => 'Suppression…',
+	'Destination name should be shorter than [_1] characters.' => 'Le nom de destination devrait faire moins de [_1] caractères.',
+	'Do not send .htaccess and .htpasswd file' => 'Ne pas envoyer les fichiers .htaccess et .htpasswd',
+	'The previous synchronization file list has been cleared.' => 'La précédente liste des fichiers à synchroniser a été vidée.',
+	'View sync log' => 'Voir le log de synchronisation',
+	'htaccess' => 'htaccess',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => 'Synchroniser maintenant !',
@@ -6900,6 +6946,11 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Synchronizing...' => 'Synchronisation...',
 	'Finish!' => 'Terminé !',
 	'The synchronization was interrupted. Unable to resume.' => 'La synchronisation a été interrompue. Impossible de reprendre.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Executer' => 'Éxecuter',
+	'Synchronization error notification' => 'Notification d\'échec de la synchronisation',
+	'Synchronization success notification' => 'Notification de succès de la synchronisation',
 
 ## plugins/FacebookCommenters/config.yaml
 	q{Provides commenter registration through Facebook Connect.} => q{Permet l'enregistrement des auteurs de commentaires via Facebook Connect},

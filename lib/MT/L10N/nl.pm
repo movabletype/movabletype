@@ -736,6 +736,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Reageerdersprofiel is met succes bijgewerkt.',
 	'Commenter profile could not be updated: [_1]' => 'Reageerdersprofiel kon niet worden bijgewerkt: [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] moet een getal zijn.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] moet een integer zijn tussen [_2] en [_3].',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => '¨Probleem met dit verzoek: corrupte karakterdata voor karakterset [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fout bij het laden van website #[_1]',
@@ -6799,6 +6803,13 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Error switching directory.' => 'Fout bij wisselen van map.',
 	'Synchronization with an external server has been successfully finished.' => 'Synchronisatie naar externe server met succes afgerond.',
 	'Failed to sync with an external server.' => 'Synchronisatie naar externe server mislukt.',
+	'FTP Server' => 'FTP Server',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisatie ([_1]) met een externe server ([_2]) is niet gelukt.',
+	'Port' => 'Poort',
+	'Rsync Additional Options' => 'Rrsync bijkomende opties',
+	'Rsync Destination' => 'Rsync bestemming',
+	'Start Directory' => 'Beginmap',
+	'Synchronization has successfully finished.' => 'Synchronisatie met succes afgerond.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Tijdelijke map [_1] niet beschrijfbaar.',
@@ -6806,6 +6817,26 @@ Kan bestand niet schrijven.  Schijf vol.",
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Bestandslijst synchronisatie',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'*Sync setting deleted*' => 'Sync instelling verwijderd',
+	'Are you sure you want to reset the sync log?' => 'Zeker dat u het sync log wil leegmaken?',
+	'Clear Sync Log' => 'Sync log leegmaken',
+	'Destination Name' => 'Naam bestemming',
+	'Download Sync Log (CSV)' => 'Sync log downloaden (CSV)',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); probeer een andere MailTransfer instelling?',
+	'FTP' => 'FTP',
+	'Finish Date' => 'Einddatum',
+	'Finish Time' => 'Eindtijd',
+	'Invalid email address: [_1]' => 'Ongeldig email adres: [_1]',
+	'Parallel' => 'Paralel',
+	'Rsync' => 'Rsync',
+	'Start Date' => 'Begindatum',
+	'Start Time' => 'Starttijd',
+	'Sync Logs' => 'Sync logs',
+	'Sync Result' => 'Sync resulaat',
+	'Sync Type' => 'Sync type',
+	'Sync setting is not specified.' => 'Sync instelling niet opgegeven.',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Instellingen synchronisatie',
@@ -6828,6 +6859,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Er deed zich een fout voor bij het verbinden met de FTP server \'[_1]\': [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de huidige map van \'[_1]\'',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Er deed zich een fout voor bij het ophalen van de lijst van mappen van \'[_1]\'',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Verwijderen sync bestandenlijst mislukt "[_1]": [_2]',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Sync instelling \'[_1]\' (ID: [_2]) verwijderd door [_3].',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Sync instelling \'[_1]\' (ID: [_2]) bewerkt door [_3].',
+	'Synchronization log reset by \'[_1]\'' => 'Synchronisatielog leeggemaakt door \'[_1]\'',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'De vorige lijst met synchronisatiebestanden werd leeggemaakt. [_1] door [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...',
@@ -6865,6 +6901,16 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Invalid time.' => 'Ongeldig tijdstip;',
 	'You must make one or more destination settings.' => 'U moet één of meer bestemmingen instellen.',
 	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?',
+	'A duplicate destination name exists.' => 'Er bestaat reeds een identieke bestemmingsnaam.',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Nadat een sync job afgerond is zal een email notificatie worden verstuurd naar de gebruiker die deze job registreerde en naar de systeembeheerder (standaard) of de ontvanger die hierboven werd opgegeven.',
+	'Are you sure you want to clear the previous synchronization file list?' => 'Bent u zeker dat u de lijst met de vorige synchronisatiebestanden wenst te verwijderen?',
+	'Clear the previous synchronization file list' => 'Vorige lijst synchronisatiebestanden leegaken',
+	'Deleting...' => 'Verwijderen...',
+	'Destination name should be shorter than [_1] characters.' => 'Naam bestemming moet minder dan [_1] karakters lang zijn.',
+	'Do not send .htaccess and .htpasswd file' => 'Stuur geen .htaccess en .htpasswd bestand',
+	'The previous synchronization file list has been cleared.' => 'De lijst met vorige synchronisatiebestanden is leeggemaakt.',
+	'View sync log' => 'Sync log bekijken',
+	'htaccess' => 'htaccess',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => 'Nu synchroniseren!',
@@ -6872,6 +6918,11 @@ Kan bestand niet schrijven.  Schijf vol.",
 	'Synchronizing...' => 'Synchroniseren...',
 	'Finish!' => 'Klaar!',
 	'The synchronization was interrupted. Unable to resume.' => 'De synchronisatie werd onderbroken.  Hervatten niet mogelijk.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Executer' => 'Uitvoerder',
+	'Synchronization error notification' => 'Foutbericht synchronisatie',
+	'Synchronization success notification' => 'Succesbericht synchronisatie',
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Voegt registratie van reageerders toe via Facebook Connect.',

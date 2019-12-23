@@ -735,6 +735,10 @@ use vars qw( @ISA %Lexicon );
 	'Commenter profile has successfully been updated.' => 'Das Profil des Kommentarautoren wurde erfolgreich aktualisiert.',
 	'Commenter profile could not be updated: [_1]' => 'Das Profil des Kommentarautoren konnte nicht aktualisiert werden: [_1]',
 
+## lib/MT/App/DataAPI.pm
+	'[_1] must be a number.' => '[_1] muss eine Zahl sein.',
+	'[_1] must be an integer and between [_2] and [_3].' => '[_1] muss eine ganze Zahl zwischen [_2] und [_3] sein.',
+
 ## lib/MT/App.pm
 	'Problem with this request: corrupt character data for character set [_1]' => 'Es ist ein Fehler aufgetreten: ungültige Zeichen für Zeichensatz [_1]',
 	'Error loading website #[_1] for user provisioning. Check your NewUserefaultWebsiteId setting.' => 'Fehler beim Laden der Website #[_1] zur Bereitstellung an Benutzer. Bitte überprüfen Sie Ihre NewUserDefaultWebsiteId-Einstellugen.',
@@ -6807,6 +6811,13 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Error switching directory.' => 'Fehler beim Verzeichniswechsel.',
 	'Synchronization with an external server has been successfully finished.' => 'Synchronisation mit externem Server erfolgreich abgeschlossen.',
 	'Failed to sync with an external server.' => 'Synchronisation mit externem Server fehlgeschlagen.',
+	'FTP Server' => 'FTP-Server',
+	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisation([_1]) mit externem Server([_2]) fehlgeschlagen.',
+	'Port' => 'Port',
+	'Rsync Additional Options' => 'Rsync-Optionen',
+	'Rsync Destination' => 'Rsync-Ziel',
+	'Start Directory' => 'Ausgangsverzeichnis',
+	'Synchronization has successfully finished.' => 'Synchronisation erfolgreich abgeschlossen.',
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 	'Temp Directory [_1] is not writable.' => 'Das temporäre Verzeichnis [_1] kann nicht beschrieben werden.',
@@ -6814,6 +6825,26 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## addons/Sync.pack/lib/MT/SyncFileList.pm
 	'Sync file list' => 'Synchronisations-Dateiliste',
+
+## addons/Sync.pack/lib/MT/SyncLog.pm
+	'*Sync setting deleted*' => '*Synchronisation-Einstellung gelöscht*',
+	'Are you sure you want to reset the sync log?' => 'Synchronisation-Protokoll wirklich zurücksetzen?',
+	'Clear Sync Log' => 'Synchronisation-Protokoll leeren',
+	'Destination Name' => 'Zielname',
+	'Download Sync Log (CSV)' => 'Synchronisation-Protokoll herunterladen (CSV)',
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Mailversand fehlgeschlagen ([_1]). Sind die MailTransfer-Einstellungen richtig?',
+	'FTP' => 'FTP',
+	'Finish Date' => 'End-Datum',
+	'Finish Time' => 'End-Zeitpunkt',
+	'Invalid email address: [_1]' => 'Ungültige E-Mail-Adresse: [_1]',
+	'Parallel' => 'Parallel',
+	'Rsync' => 'Rsync',
+	'Start Date' => 'Start-Datum',
+	'Start Time' => 'Start-Zeitpunkt',
+	'Sync Logs' => 'Synchronisation-Protokolle',
+	'Sync Result' => 'Synchronisation-Ergebnis',
+	'Sync Type' => 'Art der Synchronisation',
+	'Sync setting is not specified.' => 'Keine Synchronisation-Einstellung angegeben',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'Synchronisations-Einstellungen',
@@ -6836,6 +6867,11 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'An error occurred while attempting to connect to the FTP server \'[_1]\': [_2]' => 'Bei der Verbindung mit dem FTP-Server \'[_1]\' ist ein Fehler aufgetreten: [_2]',
 	'An error occurred while attempting to retrieve the current directory from \'[_1]\'' => 'Beim Einlesen des aktuellen Verzeichnisses von \'[_1]\' ist ein Fehler aufgetreten.',
 	'An error occurred while attempting to retrieve the list of directories from \'[_1]\'' => 'Beim Einlesen der Verzeichnisliste von \'[_1]\' ist ein Fehler aufgetreten.',
+	'Deleting sync file list failed "[_1]": [_2]' => 'Löschen der Synchronisations-Dateiliste mit \'[_1]\' fehlgeschlagen: [_2]',
+	'Sync setting \'[_1]\' (ID: [_2]) deleted by [_3].' => 'Synchronisations-Einstellung \'[_1]\' (ID: [_2]) von [_3] gelöscht.',
+	'Sync setting \'[_1]\' (ID: [_2]) edited by [_3].' => 'Synchronisations-Einstellung \'[_1]\' (ID: [_2]) von [_3] bearbeitet.',
+	'Synchronization log reset by \'[_1]\'' => 'Synchronisations-Protokoll von \'[_1]\' zurückgesetzt',
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Vorherige Synchronisations-Dateiliste geleert. [_1] von [_2].',
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Entferne alle Synchronisations-Jobs...',
@@ -6873,6 +6909,16 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Invalid time.' => 'Zeitangabe ungültig.',
 	'You must make one or more destination settings.' => 'Bitte geben Sie mindestens ein Ziel an.',
 	'Are you sure you want to remove this settings?' => 'Diese Einstellung wirklich entfernen?',
+	'A duplicate destination name exists.' => 'Zielname bereits vorhanden.',
+	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Nach erfolgter Synchronisation wird eine E-Mail-Benachrichtigung an den Benutzer, der die Synchronisation angelegt hat, verschickt. Außerdem erhält als Standard der Administrator oder der oben angegebene Empfänger die Benachrichtigung.',
+	'Are you sure you want to clear the previous synchronization file list?' => 'Vorherige Synchronisations-Dateiliste wirklich leeren?',
+	'Clear the previous synchronization file list' => 'Vorherige Synchronisations-Dateiliste leeren',
+	'Deleting...' => 'Lösche...',
+	'Destination name should be shorter than [_1] characters.' => 'Zielnamen dürfen höchstens [_1] Zeichen lang sein.',
+	'Do not send .htaccess and .htpasswd file' => '.htaccess- und .htpasswd-Dateien nicht senden',
+	'The previous synchronization file list has been cleared.' => 'Vorherige Synchronisations-Dateiliste geleert.',
+	'View sync log' => 'Synchronisations-Protokoll anzeigen',
+	'htaccess' => 'htaccess',
 
 ## addons/Sync.pack/tmpl/dialog/contents_sync_now.tmpl
 	'Sync Now!' => 'Jetzt synchronisieren',
@@ -6880,6 +6926,11 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Synchronizing...' => 'Synchronisiere...',
 	'Finish!' => 'Fertig!',
 	'The synchronization was interrupted. Unable to resume.' => 'Die Synchronisation wurde unterbrochen. Der Vorgang kann nicht fortgesetzt werden.',
+
+## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
+	'Executer' => 'Ausführender',
+	'Synchronization error notification' => 'Benachrichtigung bei fehlgeschlagener Synchronisation',
+	'Synchronization success notification' => 'Benachrichtigung bei erfolgreicher Synchronisation',
 
 ## plugins/FacebookCommenters/config.yaml
 	'Provides commenter registration through Facebook Connect.' => 'Ermöglicht es Kommentarautoren, sich über Facebook Connect zu registrieren',
