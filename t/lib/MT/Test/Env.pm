@@ -250,6 +250,24 @@ sub prepare {
     $class->_prepare_mysql_database($dbh);
 }
 
+sub my_cnf {
+    my $class = shift;
+
+    my %cnf = ( 'skip-networking' => '' );
+
+    my $verbose_help = `mysqld --verbose --help 2>/dev/null`;
+
+    my ($version) = $verbose_help =~ /\A.*Ver ([0-9]+\.[0-9]+\.[0-9]+)/;
+    my $major_version = ( split /\./, $version )[0];
+
+    my $is_maria = $verbose_help =~ /\A.*MariaDB/;
+
+    if ( !$is_maria && $major_version >= 8 ) {
+        $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+    \%cnf;
+}
+
 sub dbh {
     my $self = shift;
     $self->connect_info unless $self->{dsn};
