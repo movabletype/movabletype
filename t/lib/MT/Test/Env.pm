@@ -252,10 +252,20 @@ sub prepare {
 
 sub my_cnf {
     my $class = shift;
-    return +{
-        default_authentication_plugin => 'mysql_native_password',
-        'skip-networking'             => '',
-    };
+
+    my %cnf = ( 'skip-networking' => '' );
+
+    my $verbose_help = `mysqld --verbose --help 2>/dev/null`;
+
+    my ($version) = $verbose_help =~ /\A.*Ver ([0-9]+\.[0-9]+\.[0-9]+)/;
+    my $major_version = ( split /\./, $version )[0];
+
+    my $is_maria = $verbose_help =~ /\A.*MariaDB/;
+
+    if ( !$is_maria && $major_version >= 8 ) {
+        $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+    \%cnf;
 }
 
 sub dbh {
