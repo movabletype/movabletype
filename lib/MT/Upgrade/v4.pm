@@ -866,8 +866,8 @@ sub core_populate_author_auth_type {
         # for legacy OpenID plugin commenters
         if ( $u->name =~ m(^openid\n(.*)$) ) {
             my $url = $1;
-            if ( eval { require Digest::MD5; 1; } ) {
-                $url = Digest::MD5::md5_hex( Encode::encode_utf8($url) );
+            if ( eval { require MT::Util::Digest::MD5; 1; } ) {
+                $url = MT::Util::Digest::MD5::md5_hex( Encode::encode_utf8($url) );
             }
             else {
                 $url = substr $url, 0, 255;
