@@ -1956,12 +1956,12 @@ sub start_background_task {
 }
 
 {
+    sub perl_sha1_digest_hex {
+        require MT::Util::Digest::SHA1;
+        MT::Util::Digest::SHA1::sha1_hex(@_);
     }
 }
 
-sub perl_sha1_digest_hex {
-    sprintf( "%.8x" x 5, unpack( 'N*', &MT::Util::Deprecated::perl_sha1_digest(@_) ) );
-}
 
 # TBD: fill in the contracts of these.
 sub sanitize_input {

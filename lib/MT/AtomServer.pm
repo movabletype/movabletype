@@ -12,7 +12,7 @@ use XML::Atom;
 use XML::Atom::Util qw( first textValue );
 use base qw( MT::App );
 use MIME::Base64 ();
-use Digest::SHA1 ();
+use MT::Util::Digest::SHA1 ();
 use MT::Atom;
 use MT::Util qw( encode_xml );
 use MT::Author;
@@ -200,7 +200,7 @@ sub authenticate {
         return $app->auth_failure( 403, 'X-WSSE UsernameToken timed out' );
     }
     $auth->{Nonce} = MIME::Base64::decode_base64( $auth->{Nonce} );
-    my $expected = Digest::SHA1::sha1_base64(
+    my $expected = MT::Util::Digest::SHA1::sha1_base64(
         $auth->{Nonce} . $auth->{Created} . $user->api_password );
 
     # Some base64 implementors do it wrong and don't put the =
