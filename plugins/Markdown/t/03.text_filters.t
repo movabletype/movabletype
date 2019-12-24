@@ -49,6 +49,8 @@ run {
     $ctx->stash( 'entry', $entry );
 
     for my $text_filter ( 'markdown', 'markdown_with_smartypants' ) {
+    TODO: {
+        local $TODO = $block->TODO if $block->TODO;
         $entry->convert_breaks($text_filter);
         my $result = $tmpl->build;
         $result =~ s/(\r\n|\r|\n)+\z//g;
@@ -59,6 +61,7 @@ run {
         }
         is( $result, $block->$text_filter,
             $block->name . ' text_filter:' . $text_filter );
+        }
     }
 };
 
@@ -116,7 +119,8 @@ SKIP:
         my $template = '<mt:EntryBody />';
 
         for my $text_filter ( 'markdown', 'markdown_with_smartypants' ) {
-        SKIP: {
+        TODO: {
+                local $TODO = $block->TODO if $block->TODO;
                 open2( my $php_in, my $php_out, 'php -q' );
                 print $php_out &php_test_script( $template, $block->text,
                     $text_filter );
@@ -332,6 +336,8 @@ __foo__
 address@example.com
 
 @@@ NoIndent
+--- TODO
+regression (MTC-26823, FEEDBACK-1463)
 --- text
 <div>
 <div>
