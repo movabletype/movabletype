@@ -9,8 +9,8 @@ use strict;
 use warnings;
 use Locale::Maketext;
 
-@MT::L10N::ISA = qw( Locale::Maketext );
-@MT::L10N::Lexicon = ( _AUTO => 1, );
+our @ISA = qw( Locale::Maketext );
+our @Lexicon = ( _AUTO => 1, );
 
 our $PERMITTED_METHODS_REGEX = qr/^(?:lc|uc|quant|numerate|numf|sprintf)$/;
 
