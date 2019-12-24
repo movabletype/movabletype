@@ -2123,7 +2123,7 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
+                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
