@@ -255,10 +255,12 @@ sub my_cnf {
 
     my %cnf = ( 'skip-networking' => '' );
 
-    my $verbose_help = `mysqld --verbose --help 2>/dev/null`;
+    my $mysqld = _mysqld() or return \%cnf;
 
-    my ($version) = $verbose_help =~ /\A.*Ver ([0-9]+\.[0-9]+\.[0-9]+)/;
-    my $major_version = ( split /\./, $version )[0];
+    my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
+
+    my ( $version, $major_version )
+        = $verbose_help =~ /\A.*Ver (([0-9]+)\.[0-9]+\.[0-9]+)/;
 
     my $is_maria = $verbose_help =~ /\A.*MariaDB/;
 
@@ -266,6 +268,26 @@ sub my_cnf {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
     }
     \%cnf;
+}
+
+sub _which {
+    my $exec = shift;
+    my $path = `which $exec 2>/dev/null` or return;
+    chomp $path;
+    $path;
+}
+
+sub _mysqld {
+    my $mysqld = _which('mysqld');
+    return $mysqld if $mysqld;
+
+    my $mysql = _which('mysql') or return;
+
+    for my $dir (qw/ bin libexec sbin /) {
+        ( $mysqld = $mysql ) =~ s!/[^/]+/mysql$!/$dir/mysqld! or next;
+        return $mysqld if -f $mysqld && -x _;
+    }
+    return;
 }
 
 sub dbh {
