@@ -578,7 +578,7 @@ sub _create_asset {
     my $w         = delete $asset_values->{'image_width'};
     my $h         = delete $asset_values->{'image_height'};
     $asset->set_values($asset_values);
-    if ( $h && $w ) {
+    if ( $h && $w && $asset->can('image_width') ) {
         $asset->image_width($w);
         $asset->image_height($h);
     }
