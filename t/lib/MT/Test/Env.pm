@@ -234,9 +234,11 @@ sub _connect_info_sqlite {
 sub _prepare_mysql_database {
     my ( $self, $dbh ) = @_;
     local $dbh->{RaiseError} = 1;
-    my $sql = <<"END_OF_SQL";
+    my $character_set = $ENV{MT_TEST_MYSQL_CHARSET}   || 'utf8';
+    my $collation     = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
-CREATE DATABASE mt_test;
+CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
     for my $statement ( split ";\n", $sql ) {
         $dbh->do($statement);
