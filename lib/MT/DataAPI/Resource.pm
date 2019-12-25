@@ -260,15 +260,10 @@ sub resource {
 
         # Get the resource registries of the version below api version,
         # and sort these in ascending order of version.
-        @regs = do {
-            my @tmp_regs;
-            for my $ver ( 1 .. $api_version ) {
-                my @ver_regs
-                    = grep { ( $_->{reg}{version} || 1 ) == $ver } @regs;
-                push @tmp_regs, @ver_regs;
-            }
-            @tmp_regs;
-        };
+        @regs = map { $_->[1] }
+            sort { $a->[0] <=> $b->[0] }
+            grep { $_->[0] <= $api_version }
+            map { [$_->{reg}{version} || 1, $_] } @regs;
 
         my %tmp_res = ();
         for (@regs) {
