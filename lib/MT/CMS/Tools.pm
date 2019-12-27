@@ -195,7 +195,7 @@ sub recover_password {
             my %head = (
                 id      => 'recover_password',
                 To      => $email,
-                From    => $app->config('EmailAddressMain') || $email,
+                From    => $app->config('EmailAddressMain') || '',
                 Subject => $app->translate("Password Recovery")
             );
             my $charset = $app->charset;
