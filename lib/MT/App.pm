@@ -2658,8 +2658,20 @@ sub _send_comment_notification {
             ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body )
-            or return $app->error( MT::Mail->errstr() );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+
+            return $app->error( MT::Mail->errstr() );
+        };
     }
 }
 
@@ -2719,7 +2731,17 @@ sub _send_sysadmins_email {
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body );
+        MT::Mail->send( \%head, $body )
+            or $app->log(
+            {   message => $app->translate(
+                    'Error sending mail: [_1]',
+                    MT::Mail->errstr
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
+            );
     }
 }
 
