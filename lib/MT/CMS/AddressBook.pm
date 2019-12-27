@@ -151,7 +151,7 @@ sub send_notify {
                 "Error sending mail ([_1]): Try another MailTransfer setting?",
                 MT::Mail->errstr
             );
-        }
+        };
     }
     delete $head{To};
 
