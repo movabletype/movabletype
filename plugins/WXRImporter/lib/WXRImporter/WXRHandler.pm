@@ -29,6 +29,7 @@ sub start_document {
 
     $self->{start}          = 1;
     $self->{basename_limit} = 255;    # max length of the column
+    no warnings 'redefine';
     *_decoder = sub { $_[0]; }
         unless $self->{is_pp};
 
