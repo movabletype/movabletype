@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2123,7 +2123,7 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
+                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },

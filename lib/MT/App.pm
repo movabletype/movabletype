@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2658,8 +2658,20 @@ sub _send_comment_notification {
             ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body )
-            or return $app->error( MT::Mail->errstr() );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+
+            return $app->error( MT::Mail->errstr() );
+        };
     }
 }
 
@@ -2719,7 +2731,19 @@ sub _send_sysadmins_email {
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+            last;
+        };
     }
 }
 

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -313,7 +313,7 @@ sub init_core_registry {
             },
             'XML::Parser' => {
                 link  => 'https://metacpan.org/pod/XML::Parser',
-                label => 'This module required for action streams.',
+                label => 'This module is required for XML-RPC API.',
             },
             'XML::SAX::ExpatXS' => {
                 link => 'https://metacpan.org/pod/XML::SAX::ExpatXS',
