@@ -258,6 +258,106 @@ subtest 'invalid signup (post)' => sub {
     $app->content_doesnt_expose($BAD_URL);
 };
 
+subtest 'valid signout (get, static = 0)' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    my $guard = _login_as_commenter( $app, $melody );
+
+    my $res = $app->get(
+        {   __mode     => 'handle_sign_in',
+            blog_id    => 1,
+            return_url => $GOOD_URL,
+            logout     => 1,
+            static     => 0,
+        }
+    );
+    $app->status_is(200);
+    $app->content_like('<meta http-equiv="refresh"');
+    $app->content_like($GOOD_URL);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+};
+
+subtest 'invalid signout (get, static = 0)' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    my $guard = _login_as_commenter( $app, $melody );
+
+    my $res = $app->get(
+        {   __mode     => 'handle_sign_in',
+            blog_id    => 1,
+            return_url => $BAD_URL,
+            logout     => 1,
+            static     => 0,
+        }
+    );
+    $app->status_is(200);
+    $app->content_like('An error occurred');
+    $app->content_like('You are trying to redirect to external resources');
+    $app->content_doesnt_expose($BAD_URL);
+};
+
+subtest 'valid signout (get, static = 1)' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    my $guard = _login_as_commenter( $app, $melody );
+
+    my $entry     = MT::Entry->load(1);
+    my $entry_url = $entry->archive_url;
+
+    my $res = $app->get(
+        {   __mode     => 'handle_sign_in',
+            blog_id    => 1,
+            return_url => $GOOD_URL,
+            logout     => 1,
+            static     => 1,
+            entry_id   => 1,
+        }
+    );
+    $app->status_is(200);
+    $app->content_like('<meta http-equiv="refresh"');
+    $app->content_like($entry_url);
+    $app->content_unlike($GOOD_URL);
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+};
+
+subtest 'invalid signout (get, static = 1)' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    my $guard = _login_as_commenter( $app, $melody );
+
+    my $entry     = MT::Entry->load(1);
+    my $entry_url = $entry->archive_url;
+
+    my $res = $app->get(
+        {   __mode     => 'handle_sign_in',
+            blog_id    => 1,
+            return_url => $BAD_URL,
+            logout     => 1,
+            static     => 1,
+            entry_id   => 1,
+        }
+    );
+    $app->status_is(200);
+    $app->content_like('<meta http-equiv="refresh"');
+    $app->content_like($entry_url);
+    $app->content_unlike('An error occurred');
+    $app->content_doesnt_expose($BAD_URL);
+};
+
 subtest 'valid start_recover (get)' => sub {
     my $app = MT::Test::App->new('MT::App::Comments');
     my $res = $app->get(
