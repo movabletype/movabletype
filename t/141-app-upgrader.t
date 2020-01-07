@@ -111,7 +111,10 @@ subtest 'Upgrade from MT4 to MT6' => sub {
         require JSON;
         $json_steps = JSON::from_json($out);
 
-        ok( !$json_steps->{error}, 'Request has no error.' );
+        ok( !$json_steps->{error}, 'Request has no error.' ) or do {
+            note "ERROR: " . $json_steps->{error};
+            last;
+        };
 
     }
 

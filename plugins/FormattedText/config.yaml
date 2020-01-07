@@ -2,7 +2,7 @@ id: FormattedText
 name: FormattedText
 version: 1.23
 author_link: http://www.movabletype.org/
-author_name: Six Apart, Ltd.
+author_name: Six Apart Ltd.
 description: <MT_TRANS phrase="Manage boilerplate.">
 l10n_class: FormattedText::L10N
 
@@ -12,6 +12,7 @@ object_types:
 
 applications:
     cms:
+        disable_object_methods: '$FormattedText::FormattedText::App::disable_object_methods'
         menus:
             entry:manage_formatted_text:
                 label: Boilerplate

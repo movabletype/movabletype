@@ -29,6 +29,7 @@ sub start_document {
 
     $self->{start}          = 1;
     $self->{basename_limit} = 255;    # max length of the column
+    no warnings 'redefine';
     *_decoder = sub { $_[0]; }
         unless $self->{is_pp};
 
@@ -578,7 +579,7 @@ sub _create_asset {
     my $w         = delete $asset_values->{'image_width'};
     my $h         = delete $asset_values->{'image_height'};
     $asset->set_values($asset_values);
-    if ( $h && $w ) {
+    if ( $h && $w && $asset->can('image_width') ) {
         $asset->image_width($w);
         $asset->image_height($h);
     }

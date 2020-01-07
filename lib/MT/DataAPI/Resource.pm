@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -260,15 +260,10 @@ sub resource {
 
         # Get the resource registries of the version below api version,
         # and sort these in ascending order of version.
-        @regs = do {
-            my @tmp_regs;
-            for my $ver ( 1 .. $api_version ) {
-                my @ver_regs
-                    = grep { ( $_->{reg}{version} || 1 ) == $ver } @regs;
-                push @tmp_regs, @ver_regs;
-            }
-            @tmp_regs;
-        };
+        @regs = map { $_->[1] }
+            sort { $a->[0] <=> $b->[0] }
+            grep { $_->[0] <= $api_version }
+            map { [$_->{reg}{version} || 1, $_] } @regs;
 
         my %tmp_res = ();
         for (@regs) {

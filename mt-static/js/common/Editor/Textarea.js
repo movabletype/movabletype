@@ -1,7 +1,7 @@
 /* 
 $Id: Textarea.js 272 2010-10-04 04:19:00Z tamano $
 
-Copyright Six Apart, Ltd. All rights reserved.
+Copyright Six Apart Ltd. All rights reserved.
 Redistribution and use in source and binary forms is
 subject to the Six Apart JavaScript license:
 

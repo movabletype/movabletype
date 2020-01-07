@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -549,8 +549,19 @@ sub _send_signup_confirmation {
     $sess->set( blog_id => $blog_id );
     $sess->save;
 
-    MT::Mail->send( \%head, $body )
-        or die MT::Mail->errstr();
+    MT::Mail->send( \%head, $body ) or do {
+        $app->log(
+            {   message => $app->translate(
+                    'Error sending mail: [_1]',
+                    MT::Mail->errstr
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
+        );
+        die MT::Mail->errstr();
+    };
 }
 
 sub do_register {
@@ -867,7 +878,17 @@ sub _builtin_throttle {
                 }
             );
             $body = wrap_text( $body, 72 );
-            MT::Mail->send( \%head, $body );
+            MT::Mail->send( \%head, $body )
+                or $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+                );
         }
         return 0;
     }

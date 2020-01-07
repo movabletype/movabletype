@@ -1,6 +1,6 @@
 package MT::Test::Driver;
 
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -164,7 +164,7 @@ sub count_group_by : Tests(34) {
     ok( ( $count, $bfid ) = $cgb_iter5->(), 'set' );
     is( $bfid,  2, 'id-8' );
     is( $count, 2, 'count-8' );
-    ok( !$cgb_iter2->(), 'no $iter' );
+    ok( !$cgb_iter5->(), 'no $iter' );
 }
 
 sub sum_group_by : Tests(7) {

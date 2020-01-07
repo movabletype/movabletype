@@ -1,6 +1,6 @@
 #!/usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -889,7 +889,7 @@ if ($mt) {
     foreach my $key ( keys %$drivers ) {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
-        my $link   = 'http://search.cpan.org/dist/' . $driver->{dbd_package};
+        my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
         $link =~ s/::/-/g;
         push @DATA,
             [

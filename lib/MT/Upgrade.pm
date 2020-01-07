@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -971,12 +971,16 @@ sub core_finish {
     }
 
     my $cur_version = MT->version_number;
+    my $cur_rel     = MT->release_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
+        $cfg->MTReleaseNumber( $cur_rel, 1 );
     }
-    my $cur_rel = MT->release_number;
-    if ( !defined( $cfg->MTReleaseNumber )
-        || ( $cur_rel > $cfg->MTReleaseNumber ) )
+    elsif (
+        !defined( $cfg->MTReleaseNumber )
+        || (   $cur_version == $cfg->MTVersion
+            && $cur_rel > $cfg->MTReleaseNumber )
+        )
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
     }

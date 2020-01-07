@@ -12,7 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 69;
+plan tests => 68;
 
 use MT;
 use MT::Blog;

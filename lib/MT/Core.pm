@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1828,7 +1828,7 @@ BEGIN {
             'HTTPNoProxy'            => { default => 'localhost', },
             'HeaderCacheControl'     => undef,
             'ImageDriver'            => { default => 'ImageMagick', },
-            'ImageQualityJpeg'       => { default => 75 },
+            'ImageQualityJpeg'       => { default => 85 },
             'ImageQualityPng'        => { default => 7 },
             'AutoChangeImageQuality' => { default => 1 },
             'NetPBMPath'             => undef,
@@ -2047,7 +2047,7 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'rainier' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf'
+                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },

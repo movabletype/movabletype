@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -131,11 +131,45 @@ sub plugin_control {
     my $cfg = $app->config;
     if ( $plugin_sig eq '*' ) {
         $cfg->UsePlugins( $state eq 'on' ? 1 : 0, 1 );
+
+        ## trans("Plugins are enabled by [_1]")
+        ## trans("Plugins are disabled by [_1]")
+        my $message
+            = "Plugins are "
+            . ( $state eq 'on' ? 'enabled' : 'disabled' )
+            . " by [_1]";
+        my $user = $app->user->name;
+        require MT::Log;
+        $app->log(
+            {   message =>
+                    $app->translate( $message, $user ),
+                class    => 'system',
+                category => 'plugin',
+                level    => MT::Log::INFO()
+            }
+        );
     }
     else {
         if ( exists $MT::Plugins{$plugin_sig} ) {
             $cfg->PluginSwitch(
                 $plugin_sig . '=' . ( $state eq 'on' ? '1' : '0' ), 1 );
+
+            ## trans("Plugin '[_1]' is enabled by [_2]")
+            ## trans("Plugin '[_1]' is disabled by [_2]")
+            my $message
+                = "Plugin '[_1]' is "
+                . ( $state eq 'on' ? 'enabled' : 'disabled' )
+                . " by [_2]";
+            my $user = $app->user->name;
+            require MT::Log;
+            $app->log(
+                {   message =>
+                        $app->translate( $message, $plugin_sig, $user ),
+                    class    => 'system',
+                    category => 'plugin',
+                    level    => MT::Log::INFO()
+                }
+            );
         }
     }
     $cfg->save_config;

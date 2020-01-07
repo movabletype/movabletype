@@ -2,16 +2,19 @@ package MT::Test::Env;
 
 use strict;
 use warnings;
+use Carp;
 use Test::More;
 use File::Spec;
 use Cwd ();
 use Fcntl qw/:flock/;
+use File::Find ();
 use File::Path 'mkpath';
 use File::Temp 'tempdir';
 use File::Basename 'dirname';
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
+use String::CamelCase 'camelize';
 
 our $MT_HOME;
 
@@ -93,7 +96,12 @@ sub write_config {
         ImageDriver         => $image_driver,
         MTVersion           => MT->version_number,
         MTReleaseNumber     => MT->release_number,
+        LoggerModule        => 'Test',
+        LoggerPath          => 'TEST_ROOT/log',
+        LoggerLevel         => 'DEBUG',
         MailTransfer        => 'debug',
+        DBIRaiseError       => 1,
+        ProcessMemoryCommand => 0,    ## disable process check
     );
 
     if ($extra) {
@@ -131,6 +139,18 @@ sub write_config {
         }
     }
     close $fh;
+}
+
+sub save_file {
+    my ( $self, $path, $body ) = @_;
+
+    my $file = $self->path($path);
+    my $dir  = dirname($file);
+    mkpath $dir unless -d $dir;
+
+    open my $fh, '>', $file or die $!;
+    binmode $fh;
+    print $fh $body;
 }
 
 sub connect_info {
@@ -214,9 +234,11 @@ sub _connect_info_sqlite {
 sub _prepare_mysql_database {
     my ( $self, $dbh ) = @_;
     local $dbh->{RaiseError} = 1;
-    my $sql = <<"END_OF_SQL";
+    my $character_set = $ENV{MT_TEST_MYSQL_CHARSET}   || 'utf8';
+    my $collation     = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
-CREATE DATABASE mt_test;
+CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
 END_OF_SQL
     for my $statement ( split ";\n", $sql ) {
         $dbh->do($statement);
@@ -228,6 +250,46 @@ sub prepare {
     my ( $class, $mysqld ) = @_;
     my $dbh = DBI->connect( $mysqld->dsn );
     $class->_prepare_mysql_database($dbh);
+}
+
+sub my_cnf {
+    my $class = shift;
+
+    my %cnf = ( 'skip-networking' => '' );
+
+    my $mysqld = _mysqld() or return \%cnf;
+
+    my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
+
+    my ( $version, $major_version )
+        = $verbose_help =~ /\A.*Ver (([0-9]+)\.[0-9]+\.[0-9]+)/;
+
+    my $is_maria = $verbose_help =~ /\A.*MariaDB/;
+
+    if ( !$is_maria && $major_version >= 8 ) {
+        $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+    \%cnf;
+}
+
+sub _which {
+    my $exec = shift;
+    my $path = `which $exec 2>/dev/null` or return;
+    chomp $path;
+    $path;
+}
+
+sub _mysqld {
+    my $mysqld = _which('mysqld');
+    return $mysqld if $mysqld;
+
+    my $mysql = _which('mysql') or return;
+
+    for my $dir (qw/ bin libexec sbin /) {
+        ( $mysqld = $mysql ) =~ s!/[^/]+/mysql$!/$dir/mysqld! or next;
+        return $mysqld if -f $mysqld && -x _;
+    }
+    return;
 }
 
 sub dbh {
@@ -320,7 +382,12 @@ sub prepare_fixture {
             };
         }
         else {
-            $code = shift;
+            $code = sub {
+                my $fixture_class = 'MT::Test::Fixture::' . camelize($id);
+                eval "require $fixture_class; 1"
+                    or croak "Unknown fixture id: $id";
+                $fixture_class->prepare_fixture;
+            };
         }
     }
 
@@ -650,9 +717,10 @@ sub save_fixture {
     close $fh;
 }
 
-sub _cut_created_on {
+sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
     $schema;
 }
 
@@ -670,7 +738,7 @@ sub test_schema {
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_cut_created_on($generated_schema) eq _cut_created_on($saved_schema) )
+    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
     {
         pass "schema is up-to-date";
     }
@@ -681,6 +749,16 @@ sub test_schema {
                 { STYLE => 'Unified' } );
         }
     }
+}
+
+sub dump_table {
+    my ( $self, $table, $extra, $bind ) = @_;
+    my $dbh = $self->dbh;
+    my $sql = "SELECT * FROM $table";
+    $sql .= " $extra" if $extra;
+    my $rows = $dbh->selectall_arrayref( $sql,
+        { Slice => +{} }, @{ $bind || [] } );
+    note explain($rows);
 }
 
 sub skip_if_addon_exists {
@@ -755,8 +833,64 @@ sub schema_version {
 sub plugin_schema_version {
     my $self = shift;
     return map { $_->id => $_->schema_version }
-        grep { defined $_->schema_version && $_->schema_version ne '' }
+        grep   { defined $_->schema_version && $_->schema_version ne '' }
         @MT::Plugins;
+}
+
+sub utime_r {
+    my ( $self, $root, $utime ) = @_;
+    $utime ||= int( time - 86400 );    # 1 day old
+    File::Find::find(
+        {   wanted => sub {
+                return unless -f $File::Find::name;
+                utime $utime, $utime, $File::Find::name or warn $!;
+            },
+            no_chdir => 1,
+        },
+        $root || $self->root
+    );
+}
+
+sub clear_mt_cache {
+    MT::Request->instance->reset;
+    MT::ObjectDriver::Driver::Cache::RAM->clear_cache;
+}
+
+sub ls {
+    my ( $self, $root, $callback ) = @_;
+    if ( ref $root eq ref sub {} ) {
+        $callback = $root;
+        $root = undef;
+    }
+    $callback ||= sub {
+        my $file = shift;
+        note $file if -f $file;
+    };
+    File::Find::find(
+        {   wanted => sub {
+                $callback->($File::Find::name);
+            },
+            preprocess => sub { sort @_ },
+            no_chdir   => 1,
+        },
+        $root || $self->root
+    );
+}
+
+sub remove_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    unlink $logfile;
+}
+
+sub slurp_logfile {
+    my $self    = shift;
+    my $logfile = MT::Util::Log->_get_logfile_path;
+    return unless -f $logfile;
+    open my $fh, '<', $logfile or die $!;
+    local $/;
+    <$fh>;
 }
 
 sub DESTROY {

@@ -2,7 +2,7 @@
 List Controller Component
 $Id: List.js 209 2007-06-01 19:21:10Z ddavis $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

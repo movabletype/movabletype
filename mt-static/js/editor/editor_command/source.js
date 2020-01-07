@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+ * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -75,6 +75,10 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         }
     },
 
+    tweakForBlockTag: function(text) {
+        return text.replace(/^\n*/, '\n\n').replace(/\n*$/, '\n\n');
+    },
+
     execLinkCommand: function(command, open, close, text) {
         var selection;
 
@@ -146,35 +150,35 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
     'createLink-target': true,
 
     indent: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', this.tweakForBlockTag(text));
     },
 
     blockquote: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', this.tweakForBlockTag(text));
     },
 
     insertUnorderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ul>', '</ul>', text);
+        this.execEnclosingCommand(command, '<ul>', '</ul>', this.tweakForBlockTag(text));
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ol>', '</ol>', text);
+        this.execEnclosingCommand(command, '<ol>', '</ol>', this.tweakForBlockTag(text));
     },
 
     insertListItem: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<li>', '</li>', text);
+        this.execEnclosingCommand(command, '<li>', '</li>', this.tweakForBlockTag(text));
     },
 
     justifyLeft: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: left;">', '</div>', text);
+        this.execEnclosingCommand(command, '<div style="text-align: left;">', '</div>', this.tweakForBlocKTag(text));
     },
 
     justifyCenter: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: center;">', '</div>', text);
+        this.execEnclosingCommand(command, '<div style="text-align: center;">', '</div>', this.tweakForBlockTag(text));
     },
 
     justifyRight: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: right;">', '</div>', text);
+        this.execEnclosingCommand(command, '<div style="text-align: right;">', '</div>', this.tweakForBlocKTag(text));
     }
 };
 

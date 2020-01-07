@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -538,7 +538,17 @@ sub _send_ping_notification {
         my $charset = $app->config('MailEncoding') || $app->charset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
         my $body = MT->build_email( 'new-ping.tmpl', \%param );
-        MT::Mail->send( \%head, $body );
+        MT::Mail->send( \%head, $body )
+            or $app->log(
+            {   message => $app->translate(
+                    'Error sending mail: [_1]',
+                    MT::Mail->errstr
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
+            );
     }
 }
 

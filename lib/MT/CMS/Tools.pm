@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -192,7 +192,7 @@ sub recover_password {
             my %head = (
                 id      => 'recover_password',
                 To      => $email,
-                From    => $app->config('EmailAddressMain') || $email,
+                From    => $app->config('EmailAddressMain') || '',
                 Subject => $app->translate("Password Recovery")
             );
             my $charset = $app->charset;
@@ -211,12 +211,24 @@ sub recover_password {
             );
 
             require MT::Mail;
-            MT::Mail->send( \%head, $body )
-                or die $app->translate(
-                "Error sending e-mail ([_1]); Please fix the problem, then "
-                    . "try again to recover your password.",
-                MT::Mail->errstr
+            MT::Mail->send( \%head, $body ) or do {
+                $app->log(
+                    {   message => $app->translate(
+                            'Error sending mail: [_1]',
+                            MT::Mail->errstr
+                        ),
+                        level    => MT::Log::ERROR(),
+                        class    => 'system',
+                        category => 'email'
+                    }
                 );
+
+                die $app->translate(
+                    "Error sending e-mail ([_1]); Please fix the problem, then "
+                        . "try again to recover your password.",
+                    MT::Mail->errstr
+                );
+            };
         }
     );
 
@@ -2792,14 +2804,26 @@ sub reset_password {
     );
 
     require MT::Mail;
-    MT::Mail->send( \%head, $body )
-        or return $app->error(
-        $app->translate(
-            "Error sending e-mail ([_1]); Please fix the problem, then "
-                . "try again to recover your password.",
-            MT::Mail->errstr
-        )
+    MT::Mail->send( \%head, $body ) or do {
+        $app->log(
+            {   message => $app->translate(
+                    'Error sending mail: [_1]',
+                    MT::Mail->errstr
+                ),
+                level    => MT::Log::ERROR(),
+                class    => 'system',
+                category => 'email'
+            }
         );
+
+        return $app->error(
+            $app->translate(
+                "Error sending e-mail ([_1]); Please fix the problem, then "
+                    . "try again to recover your password.",
+                MT::Mail->errstr
+            )
+        );
+    };
 
     ( 1, $message );
 }

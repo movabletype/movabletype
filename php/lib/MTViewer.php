@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -800,8 +800,11 @@ EOT;
 
     function load_modifier($name) {
         $params = array('plugins' => array(array('modifier', $name, null, null, false)));
-        require_once 'modifier.'.$name.'.php';
-        return true;
+        include_once('modifier.'.$name.'.php');
+        if ( function_exists('smarty_modifier_' . $name) )
+            return true;
+        else
+            return false;
     }
 
     function register_tag_handler($tag, $fn, $type) {

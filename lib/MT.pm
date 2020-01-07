@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -33,7 +33,7 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.5', '6.0021' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.5', '6.0022' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
@@ -2703,17 +2703,20 @@ sub new_ua {
         );
     }
 
-    my $ua = $lwp_class->new;
-    if ( MT->config->SSLVerifyNone || !( eval { require Mozilla::CA; 1 } ) ) {
-        $ua->ssl_opts( verify_hostname => 0 );
+    my %ssl_opts = (
+        verify_hostname => MT->config->SSLVerifyNone ? 0 : 1,
+        SSL_version     => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+    );
+
+    if ( eval { require Mozilla::CA; 1 } ) {
+        $ssl_opts{SSL_ca_file} = Mozilla::CA::SSL_ca_file();
     }
     else {
-        $ua->ssl_opts(
-            verify_hostname => 1,
-            SSL_version => MT->config->SSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-            SSL_ca_file => Mozilla::CA::SSL_ca_file(),
-        );
+        $ssl_opts{verify_hostname} = 0;
     }
+
+    my $ua = $lwp_class->new;
+    $ua->ssl_opts(%ssl_opts);
     $ua->max_size($max_size) if $ua->can('max_size');
     $ua->agent($agent);
     $ua->timeout($timeout) if defined $timeout;
@@ -4380,7 +4383,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2019 Six Apart.
+Except where otherwise noted, MT is Copyright 2001-2020 Six Apart.
 All rights reserved.
 
 =cut

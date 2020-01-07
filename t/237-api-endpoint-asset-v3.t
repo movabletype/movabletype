@@ -1166,7 +1166,24 @@ sub suite {
         {    # Blog.
             path      => '/v3/sites/1/assets/1',
             method    => 'DELETE',
-            setup     => sub { die if !$app->model('asset')->load(1) },
+            setup     => sub {
+                die if !$app->model('asset')->load(1);
+
+                # add grandchilden
+                my $asset = $app->model('asset')->load(100) or die $!;
+                $asset->set_values(
+                    {   id     => 1000,
+                        parent => 100,
+                    }
+                );
+                $asset->save or die $asset->errstr;
+                $asset->set_values(
+                    {   id     => 10000,
+                        parent => 1000,
+                    }
+                );
+                $asset->save or die $asset->errstr;
+            },
             callbacks => [
                 {   name =>
                         'MT::App::DataAPI::data_api_delete_permission_filter.asset',
@@ -1179,6 +1196,11 @@ sub suite {
             complete => sub {
                 my $deleted = MT->model('asset')->load(1);
                 is( $deleted, undef, 'deleted' );
+
+                # grandchilden should be removed as well
+                my @grandchilden = MT->model('asset')
+                    ->load( { class => '*', parent => [ 100, 1000 ] } );
+                ok !@grandchilden, "no grandchildren";
             },
         },
         {    # System.

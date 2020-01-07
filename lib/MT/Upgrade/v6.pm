@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -19,13 +19,13 @@ sub upgrade_functions {
                     my $blog = $_[0];
                     $blog->class eq 'blog' && !$blog->parent_id;
                 },
-                code  => sub { $_[0]->class('website') },
+                code => sub { $_[0]->class('website') },
                 label => "Migrating current blog to a website...",
                 sql   => <<__SQL__,
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
-    AND ( blog_parent_id is null OR blog_parent_id = '' OR blog_parent_id = 0 );
+    AND ( blog_parent_id is null OR blog_parent_id = 0 );
 __SQL__
             },
         },
@@ -122,6 +122,11 @@ __SQL__
             version_limit => '6.0021',
             priority      => 3.1,
             code          => \&_v6_remove_sql_set_names,
+        },
+        'v6_update_release_number' => {
+            version_limit => '6.0022',
+            priority      => 3.1,
+            code          => \&_v6_update_release_number,
         },
     };
 }
@@ -245,7 +250,11 @@ SQL
 
         $driver->sql( [ "alter table mt_ts_error drop constraint $pkey", ] );
     }
-    elsif ( $driver->dbd =~ m/::mysql$|::Oracle$/ ) {
+    elsif ( $driver->dbd =~ m/::mysql$/ ) {
+        return unless $dbh->selectrow_arrayref("show index in mt_ts_error where Key_name = ?", undef, 'PRIMARY');
+        $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
+    }
+    elsif ( $driver->dbd =~ m/::Oracle$/ ) {
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {
@@ -283,6 +292,16 @@ sub _v6_remove_sql_set_names {
 
     my $cfg = MT->config;
     $cfg->SQLSetNames( undef, 1 );
+    $cfg->save_config;
+}
+
+sub _v6_update_release_number {
+    my $self = shift;
+
+    $self->progress( $self->translate_escape('Fixing MTReleaseNumber...') );
+
+    my $cfg = MT->config;
+    $cfg->MTReleaseNumber( MT->release_number, 1 );
     $cfg->save_config;
 }
 

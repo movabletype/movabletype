@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2006-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2006-2019 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -22,7 +22,7 @@ $plugin = MT::Plugin::MultiBlog->new(
             '<MT_TRANS phrase="MultiBlog allows you to publish content from other blogs and define publishing rules and access controls between them.">',
         version                => $VERSION,
         schema_version         => $VERSION,
-        author_name            => 'Six Apart, Ltd.',
+        author_name            => 'Six Apart Ltd.',
         author_link            => 'http://www.movabletype.org/',
         system_config_template => 'system_config.tmpl',
         doc_link =>

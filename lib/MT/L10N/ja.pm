@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2018 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -201,7 +201,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
 	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'This module required for action streams.' => 'アクションストリームを利用するために必要です。',
+	'This module is required for XML-RPC API.' => 'XML-RPC APIを利用するために必要です。',
 	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
@@ -1461,6 +1461,10 @@ use vars qw( @ISA %Lexicon );
 	'Error saving plugin settings: [_1]' => 'プラグインの設定を保存できません: [_1]',
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
+	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
+	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
+	'Plugin \'[_1]\' is enabled by [_2]' => '[_2]が[_1]プラグインを有効にしました',
+	'Plugin \'[_1]\' is disabled by [_2]' => '[_2]が[_1]プラグインを無効にしました',
 
 ## lib/MT/CMS/Search.pm
 	'No [_1] were found that match the given criteria.' => '該当する[_1]は見つかりませんでした。',
@@ -2718,6 +2722,7 @@ _4]\'から削除しました。',
 	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
 	'Reordering dashboard widgets...' => 'ダッシュボードウィジェットの並び順を設定しています...',
 	'Rebuilding permission records...' => '権限を再構築しています...',
+        'Fixing MTReleaseNumber...' => 'MTReleaseNumber を更新しています...',
 
 ## lib/MT/Util.pm
 	'moments from now' => '今から',

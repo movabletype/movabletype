@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -8,8 +8,8 @@ package MT::L10N;
 use strict;
 use Locale::Maketext;
 
-@MT::L10N::ISA = qw( Locale::Maketext );
-@MT::L10N::Lexicon = ( _AUTO => 1, );
+our @ISA = qw( Locale::Maketext );
+our @Lexicon = ( _AUTO => 1, );
 
 our $PERMITTED_METHODS_REGEX = qr/^(?:lc|uc|quant|numerate|numf|sprintf)$/;
 
