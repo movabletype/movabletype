@@ -63,7 +63,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                 if ($month - 1 == 0) {
                     $prefix = ($year - 1) . "12";
                 } else {
-                    $prefix = $year . ($month - 1);
+                    $prefix = ($year . $month) - 1;
                 }
             } elseif ($prefix == 'next') {
                 $year  = substr($today, 0, 4);
@@ -72,7 +72,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                     $prefix = ($year + 1) . "01";
                 }
                 else {
-                    $prefix = $year . ($month + 1);
+                    $prefix = ($year . $month) + 1;
                 }
             } else {
                 // error: Invalid month format: must be YYYYMM
