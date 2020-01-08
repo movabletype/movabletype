@@ -208,9 +208,10 @@ class MT {
             $ctx->add_plugin_dir($plugin_dir);
 
         # Load any php directories found during the 'init_addons' loop
-        foreach ($ctx->plugins_dir as $plugin_dir)
+        foreach ($ctx->plugins_dir as $plugin_dir) {
             if (is_dir($plugin_dir))
                 $this->load_plugin($plugin_dir);
+        }
     }
 
     function load_plugin($plugin_dir) {
