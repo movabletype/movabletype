@@ -397,6 +397,12 @@ sub prepare_fixture {
     else {
         $code->();
     }
+
+    unless (exists $self->{config}{DataAPIDisableSite}) {
+        MT->config->set(DataAPIDisableSite => '', 1);
+        MT->config->save_config;
+    }
+
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
         $self->save_schema;
         $self->save_fixture($id);
