@@ -63,7 +63,7 @@ class MTCache_memcached extends MTCacheBase {
 
     # param: $server = hostname:portno
     function _connect($server) {
-        list ($host, $port) = split(":", $server);
+        list ($host, $port) = explode(":", $server);
         if ($host == '')
             die("Cannot connect to memcached server.");
         if ($port == '')
