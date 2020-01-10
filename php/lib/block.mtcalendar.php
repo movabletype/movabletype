@@ -58,7 +58,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
                 if ($month - 1 == 0) {
                     $prefix = ($year - 1) . "12";
                 } else {
-                    $prefix = $year . ($month - 1);
+                    $prefix = ($year . $month) - 1;
                 }
             } else {
                 // error: Invalid month format: must be YYYYMM
