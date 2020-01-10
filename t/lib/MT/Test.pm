@@ -406,6 +406,8 @@ sub init_db {
     $pkg->init_newdb(@_) && $pkg->init_upgrade(@_);
 }
 
+sub config { MT->config }
+
 sub progress { }
 
 sub error {
