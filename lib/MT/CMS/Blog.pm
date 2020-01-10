@@ -1897,7 +1897,9 @@ sub _post_save_cfg_screens {
         }
     }
     if ( $screen eq 'cfg_web_services' ) {
-        save_data_api_settings($app);
+        my $blog_id         = $app->param('id');
+        my $enable_data_api = $app->param('enable_data_api');
+        save_data_api_settings( $app, $blog_id, $enable_data_api );
     }
 
     return 1;
@@ -1985,6 +1987,9 @@ sub post_save {
         # Add this blog to the user's "favorite blogs", pushing any 10th
         # blog off the list
         my $auth = $app->user;
+
+        # disable data api by default
+        save_data_api_settings( $app, $obj->id, 0 );
 
         # Grant permission
         my $assoc_class = $app->model('association');
@@ -3614,16 +3619,18 @@ sub data_api_is_enabled {
 }
 
 sub save_data_api_settings {
-    my ($app) = @_;
+    my ( $app, $blog_id, $new_value ) = @_;
 
-    my $blog_id = $app->param('id') || 0;
-    my $cfg     = $app->config;
+    $blog_id   = $app->param('id') || 0         unless defined $blog_id;
+    $new_value = $app->param('enable_data_api') unless defined $new_value;
+
+    my $cfg = $app->config;
 
     my $data_api_disable_site
         = defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
     my %data_api_disable_site
         = map { $_ => 1 } ( split ',', $data_api_disable_site );
-    if ( $app->param('enable_data_api') ) {
+    if ($new_value) {
         delete $data_api_disable_site{$blog_id};
     }
     else {
