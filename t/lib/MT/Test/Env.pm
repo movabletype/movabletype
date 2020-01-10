@@ -397,6 +397,7 @@ sub prepare_fixture {
     else {
         $code->();
     }
+
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
         $self->save_schema;
         $self->save_fixture($id);
