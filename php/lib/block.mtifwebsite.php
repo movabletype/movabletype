@@ -8,11 +8,7 @@
 function smarty_block_mtifwebsite($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog = $ctx->stash('blog');
-        $ok = empty($blog)
-            ? 0
-            : $blog->class == 'website'
-                ? 1
-                : 0;
+        $ok = (!empty($blog) && $blog->class == 'website') ? 1 : 0;
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat, $ok);
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);

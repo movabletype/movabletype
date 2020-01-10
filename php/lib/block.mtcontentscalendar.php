@@ -61,18 +61,18 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
                 $year = substr($today, 0, 4);
                 $month = substr($today, 4, 2);
                 if ($month - 1 == 0) {
-                    $prefix = $year - 1 . "12";
+                    $prefix = ($year - 1) . "12";
                 } else {
-                    $prefix = $year . $month - 1;
+                    $prefix = ($year . $month) - 1;
                 }
             } elseif ($prefix == 'next') {
                 $year  = substr($today, 0, 4);
                 $month = substr($today, 4, 2);
                 if ( $month + 1 == 13 ) {
-                    $prefix = $year + 1 . "01";
+                    $prefix = ($year + 1) . "01";
                 }
                 else {
-                    $prefix = $year . $month + 1;
+                    $prefix = ($year . $month) + 1;
                 }
             } else {
                 // error: Invalid month format: must be YYYYMM
