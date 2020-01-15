@@ -11,14 +11,17 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.25';
+$VERSION = '1.29';
 
 sub ProcessOcad($$$);
 sub ProcessJPEG_HDR($$$);
 
 # (this main JPEG table is for documentation purposes only)
 %Image::ExifTool::JPEG::Main = (
-    NOTES => 'This table lists information extracted by ExifTool from JPEG images.',
+    NOTES => q{
+        This table lists information extracted by ExifTool from JPEG images. See
+        L<https://www.w3.org/Graphics/JPEG/jfif3.pdf> for the JPEG specification.
+    },
     APP0 => [{
         Name => 'JFIF',
         Condition => '$$valPt =~ /^JFIF\0/',
@@ -60,6 +63,13 @@ sub ProcessJPEG_HDR($$$);
         Name => 'FLIR',
         Condition => '$$valPt =~ /^FLIR\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::FLIR::FFF' },
+      }, {
+        Name => 'RawThermalImage', # (from Parrot Bebop-Pro Thermal drone)
+        Condition => '$$valPt =~ /^PARROT\0(II\x2a\0|MM\0\x2a)/',
+        Groups => { 0 => 'APP1', 1 => 'Parrot', 2 => 'Preview' },
+        Notes => 'thermal image from Parrot Bebop-Pro Thermal drone',
+        RawConv => 'substr($val, 7)',
+        Binary => 1,
     }],
     APP2 => [{
         Name => 'ICC_Profile',
@@ -108,6 +118,10 @@ sub ProcessJPEG_HDR($$$);
         Condition => '$$valPt =~ /^RMETA\0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Ricoh::RMETA' },
       }, {
+        Name => 'SamsungUniqueID',
+        Condition => '$$valPt =~ /ssuniqueid\0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Samsung::APP5' },
+      }, {
         Name => 'PreviewImage', # (eg. BenQ DC E1050)
         Notes => 'continued from APP4',
     }],
@@ -132,6 +146,10 @@ sub ProcessJPEG_HDR($$$);
         Name => 'Pentax',
         Condition => '$$valPt =~ /^PENTAX \0/',
         SubDirectory => { TagTable => 'Image::ExifTool::Pentax::Main' },
+      }, {
+        Name => 'Huawei',
+        Condition => '$$valPt =~ /^HUAWEI\0\0/',
+        SubDirectory => { TagTable => 'Image::ExifTool::Unknown::Main' },
       }, {
         Name => 'Qualcomm',
         Condition => '$$valPt =~ /^\x1aQualcomm Camera Attributes/',
@@ -232,6 +250,10 @@ sub ProcessJPEG_HDR($$$);
         Name => 'PreviewImage',
         Condition => '$$valPt =~ /^\xff\xd8\xff/',
         Writable => 1,  # (for docs only)
+      }, {
+        Name => 'EmbeddedVideo',
+        Notes => 'extracted only when ExtractEmbedded option is used',
+        Condition => '$$valPt =~ /^.{4}ftyp/s',
     }],
 );
 
@@ -595,7 +617,7 @@ segments are included in the Image::ExifTool module itself.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

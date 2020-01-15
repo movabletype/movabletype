@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.20';
+$VERSION = '3.29';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -146,7 +146,7 @@ sub DecodeAFPoints($$$$;$);
     '3 44.3' => 'Sigma 17-70mm F2.8-4.5 DC Macro', #(Bart Hickman)
     '3 44.4' => 'Sigma 18-50mm F3.5-5.6 DC', #4
     '3 44.5' => 'Sigma 17-35mm F2.8-4 EX DG', #29
-    '3 44.6' => 'Tamron 35-90mm F4 AF', #12
+    '3 44.6' => 'Tamron 35-90mm F4-5.6 AF', #12 (added "-5.6", ref IB)
     '3 44.7' => 'Sigma AF 18-35mm F3.5-4.5 Aspherical', #29
     '3 46' => 'Sigma or Samsung Lens (3 46)',
     '3 46.1' => 'Sigma APO 70-200mm F2.8 EX',
@@ -304,8 +304,9 @@ sub DecodeAFPoints($$$$;$);
     '7 243' => 'smc PENTAX-DA 70mm F2.4 Limited', #PH
     '7 244' => 'smc PENTAX-DA 21mm F3.2 AL Limited', #16
     '8 0' => 'Sigma 50-150mm F2.8 II APO EX DC HSM', #forum2997
-    '8 3' => 'Sigma AF 18-125mm F3.5-5.6 DC', #29
+    '8 3' => 'Sigma 18-125mm F3.8-5.6 DC HSM', #forum10167
     '8 4' => 'Sigma 50mm F1.4 EX DG HSM', #Artur private communication
+    '8 6' => 'Sigma 4.5mm F2.8 EX DC Fisheye', #IB
     '8 7' => 'Sigma 24-70mm F2.8 IF EX DG HSM', #Exiv2
     '8 8' => 'Sigma 18-250mm F3.5-6.3 DC OS HSM', #27
     '8 11' => 'Sigma 10-20mm F3.5 EX DC HSM', #27
@@ -316,6 +317,7 @@ sub DecodeAFPoints($$$$;$);
     '8 16' => 'Sigma 70-200mm F2.8 EX DG Macro HSM II', #26
     '8 17' => 'Sigma 50-500mm F4.5-6.3 DG OS HSM', #(Heike Herrmann) (also APO, ref 26)
     '8 18' => 'Sigma 8-16mm F4.5-5.6 DC HSM', #forum2998
+    '8 20' => 'Sigma 18-50mm F2.8-4.5 DC HSM', #IB
     '8 21' => 'Sigma 17-50mm F2.8 EX DC OS HSM', #26
     '8 22' => 'Sigma 85mm F1.4 EX DG HSM', #26
     '8 23' => 'Sigma 70-200mm F2.8 APO EX DG OS HSM', #27
@@ -333,6 +335,8 @@ sub DecodeAFPoints($$$$;$);
     '8 61' => 'HD PENTAX-D FA 28-105mm F3.5-5.6 ED DC WR', #PH
     '8 62' => 'HD PENTAX-D FA 24-70mm F2.8 ED SDM WR', #PH
     '8 63' => 'HD PENTAX-D FA 15-30mm F2.8 ED SDM WR', #PH
+    '8 64' => 'HD PENTAX-D FA* 50mm F1.4 SDM AW', #27
+    '8 196' => 'HD PENTAX-DA* 11-18mm F2.8 ED DC AW', #29
     '8 197' => 'HD PENTAX-DA 55-300mm F4.5-6.3 ED PLM WR RE', #29
     '8 198' => 'smc PENTAX-DA L 18-50mm F4-5.6 DC WR RE', #29
     '8 199' => 'HD PENTAX-DA 18-50mm F4-5.6 DC WR RE', #29
@@ -393,6 +397,10 @@ sub DecodeAFPoints($$$$;$);
     '21 7' => '07 Mount Shield 11.5mm F9', #PH (NC)
     '21 8' => '08 Wide Zoom 3.8-5.9mm F3.7-4', #PH (NC)
     '21 233' => 'Adapter Q for K-mount Lens', #29
+#
+# Ricoh lenses
+#
+    '31 1' => 'GR Lens', #PH (GR III 28mm F2.8)
 );
 
 # Pentax model ID codes - PH
@@ -532,8 +540,10 @@ my %pentaxModelID = (
     0x13092 => 'K-1', #IB (Ricoh)
     0x1309c => 'K-3 II', #29 (Ricoh)
     0x131f0 => 'WG-M2', # (Ricoh)
+    0x1320e => 'GR III', # (Ricoh)
     0x13222 => 'K-70', #29 (Ricoh)
     0x1322c => 'KP', #29 (Ricoh)
+    0x13240 => 'K-1 Mark II', # (Ricoh)
 );
 
 # Pentax city codes - (PH, Optio WP)
@@ -792,6 +802,8 @@ my %kelvinWB = (
     },
 );
 
+my %noYes = ( 0 => 'No', 1 => 'Yes' );
+
 # common attributes for writable BinaryData directories
 my %binaryDataAttrs = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
@@ -946,6 +958,7 @@ my %binaryDataAttrs = (
             4 => 'RAW', #5
             5 => 'Premium', #PH (K20D)
             7 => 'RAW (pixel shift enabled)', #forum6536 (K-3 II)
+            8 => 'Dynamic Pixel Shift', #IB
             65535 => 'n/a', #PH (Q MOV video)
         },
     },
@@ -1113,6 +1126,8 @@ my %binaryDataAttrs = (
                 3 => 'Manual',
                 4 => 'Super Macro', #JD
                 5 => 'Pan Focus',
+                # 8 - seen for Ricoh GR III
+                # 9 - seen for Ricoh GR III
                 16 => 'AF-S (Focus-priority)', #17
                 17 => 'AF-C (Focus-priority)', #17
                 18 => 'AF-A (Focus-priority)', #PH (educated guess)
@@ -1123,6 +1138,8 @@ my %binaryDataAttrs = (
                 273 => 'AF-C (Release-priority)', #PH (K-5,K-3)
                 274 => 'AF-A (Release-priority)', #PH (K-3)
                 288 => 'Contrast-detect (Release-priority)', #PH (K-01)
+                # 32777 (0x8009) - seen for Ricoh GR III
+                # 32779 (0x800b) - seen for Ricoh GR III
             },
         },{
             Name => 'FocusMode',
@@ -1547,12 +1564,27 @@ my %binaryDataAttrs = (
             'Saturation', 'Sharpness', 'Contrast', 'Hue' or 'HighLowKey' followed by
             '+1', '+2' or '+3' for step size
         },
-        # 1=.3ev, 2=.7, 3=1.0, ... 10=.5ev, 11=1.5, ...
-        ValueConv => [ '$val<10 ? $val/3 : $val-9.5' ],
-        ValueConvInv => [ 'abs($val-int($val)-.5)>0.05 ? int($val*3+0.5) : int($val+10)' ],
+        # 1=.3ev, 2=.7, 3=1.0 ... 10=.5, 11=1.5, ... 4096=0, 4097=0.5 ... 8192=0, 8193=0.3
+        # (models like K-1 and K-5 use 0x1000 and 0x2000 to indicate 1/2 and 1/3 EV step
+        # size -- convert this as a fraction so we can recognize this format when writing)
+        ValueConv => [ q{
+            return $val / 3 if $val < 10;
+            return $val - 9.5 if $val < 20;
+            return ($val - 0x1000) . '/2' if $val & 0x1000;
+            return ($val - 0x2000) . '/3' if $val & 0x2000;
+            return $val; # (shouldn't happen)
+        }],
+        ValueConvInv => [ q{
+            if ($val =~ s{/(\d+)$}{}) {
+                return $val + 0x1000 if $1 == 2;
+                return $val + 0x2000 if $1 == 3;
+                return undef;
+            }
+            return abs($val-int($val)-.5)>0.05 ? int($val*3+0.5) : int($val+10);
+        }],
         PrintConv => sub {
             my @v = split(' ', shift);
-            $v[0] = sprintf('%.1f', $v[0]) if $v[0];
+            $v[0] = sprintf('%.1f', $v[0]) if $v[0] and $v[0]!~m{/};
             if ($v[1]) {
                 my %s = (1=>'WB-BA',2=>'WB-GM',3=>'Saturation',4=>'Sharpness',
                          5=>'Contrast',6=>'Hue',7=>'HighLowKey');
@@ -2098,6 +2130,8 @@ my %binaryDataAttrs = (
             9 => 'Radiant', # (Q)
             10 => 'Cross Processing', #31 (K-70)
             11 => 'Flat', #31 (K-70)
+            # 256 - seen for GR III
+            # 262 - seen for GR III
         },
     },
     0x0050 => { #PH
@@ -2182,6 +2216,7 @@ my %binaryDataAttrs = (
             16 => '16 (K-1)', #PH
             17 => '17 (K-70)', #29
             18 => '18 (KP)', #PH
+            19 => '19 (GR III)', #PH
         },
     },
     0x0067 => { #PH (K-5)
@@ -2413,6 +2448,7 @@ my %binaryDataAttrs = (
             '1 0' => 'Slow',
             '2 0' => 'Standard',
             '3 0' => 'Fast',
+            # '1 108' - seen for GR III
         },
     },
     0x007b => { #PH (K-5)
@@ -2517,7 +2553,13 @@ my %binaryDataAttrs = (
     0x0088 => { #PH
         Name => 'NeutralDensityFilter',
         Writable => 'int8u',
-        PrintConv => { 0 => 'Off', 1 => 'On' },
+        Count => -1,
+        PrintConv => {
+            0 => 'Off',
+            1 => 'On',
+            '0 2' => 'Off (0 2)', #PH (NC, GR III)
+            '1 2' => 'On (1 2)', #PH (NC, GR III)
+        },
     },
     0x008b => { #PH (LS465)
         Name => 'ISO',
@@ -2587,7 +2629,7 @@ my %binaryDataAttrs = (
     },
     # 0x0202: int16u[4]: all 0's in all my samples
     0x0203 => { #JD (not really sure what these mean)
-        Name => 'ColorMatrixA',
+        Name => 'ColorMatrixA', # (camera RGB to sRGB matrix, *ist D, ref IB)
         Writable => 'int16s',
         Count => 9,
         ValueConv => 'join(" ",map({ $_/8192 } split(" ",$val)))',
@@ -2596,7 +2638,7 @@ my %binaryDataAttrs = (
         PrintConvInv => '"$val"',
     },
     0x0204 => { #JD
-        Name => 'ColorMatrixB',
+        Name => 'ColorMatrixB', # (camera RGB to Adobe RGB matrix, *ist D, ref IB)
         Writable => 'int16s',
         Count => 9,
         ValueConv => 'join(" ",map({ $_/8192 } split(" ",$val)))',
@@ -2655,7 +2697,7 @@ my %binaryDataAttrs = (
             SubDirectory => { TagTable => 'Image::ExifTool::Pentax::LensInfo' },
         },{
             Name => 'LensInfo',
-            Condition => '$count != 90 and $count != 91 and $count != 80 and $count != 128',
+            Condition => '$count != 90 and $count != 91 and $count != 80 and $count != 128 and $count != 168',
             SubDirectory => { TagTable => 'Image::ExifTool::Pentax::LensInfo2' },
         },{
             Name => 'LensInfo', # 645D
@@ -2670,6 +2712,7 @@ my %binaryDataAttrs = (
             Condition => '$count == 80 or $count == 128',
             SubDirectory => { TagTable => 'Image::ExifTool::Pentax::LensInfo5' },
         }
+        # ($count == 168 - Ricoh GR III)
     ],
     0x0208 => [ #PH
         {
@@ -2804,7 +2847,7 @@ my %binaryDataAttrs = (
         Name => 'HuffmanTable',
         Flags => [ 'Unknown', 'Binary' ],
         Writable => 0,
-        Notes => 'found in K10D, K20D and K2000D PEF images',
+        Notes => 'found in K10D, K20D and K2000 PEF images',
     },
     0x0221 => { #28
         Name => 'KelvinWB',
@@ -3099,25 +3142,19 @@ my %binaryDataAttrs = (
         Name => 'WorldTimeLocation',
         Mask => 0x01,
         PrintConv => {
-            0x00 => 'Hometown',
-            0x01 => 'Destination',
+            0 => 'Hometown',
+            1 => 'Destination',
         },
     },
     0.2 => {
         Name => 'HometownDST',
         Mask => 0x02,
-        PrintConv => {
-            0x00 => 'No',
-            0x02 => 'Yes',
-        },
+        PrintConv => \%noYes,
     },
     0.3 => {
         Name => 'DestinationDST',
         Mask => 0x04,
-        PrintConv => {
-            0x00 => 'No',
-            0x04 => 'Yes',
-        },
+        PrintConv => \%noYes,
     },
     2 => {
         Name => 'HometownCity',
@@ -3195,8 +3232,8 @@ my %binaryDataAttrs = (
         Name => 'EVSteps',
         Mask => 0x20,
         PrintConv => {
-            0x00 => '1/2 EV Steps',
-            0x20 => '1/3 EV Steps',
+            0 => '1/2 EV Steps',
+            1 => '1/3 EV Steps',
         },
     },
     1.3 => { # (this bit is set for movies with the K-5 - PH)
@@ -3204,8 +3241,8 @@ my %binaryDataAttrs = (
         # always set even when not in Program AE mode
         Mask => 0x40,
         PrintConv => {
-            0x00 => 'Tv or Av',
-            0x40 => 'P Shift',
+            0 => 'Tv or Av',
+            1 => 'P Shift',
         },
     },
     1.4 => { # (K10D, K-5)
@@ -3213,16 +3250,14 @@ my %binaryDataAttrs = (
         # always set even Aperture Ring is in A mode
         Mask => 0x80,
         PrintConv => {
-            0x00 => 'Prohibited',
-            0x80 => 'Permitted',
+            0 => 'Prohibited',
+            1 => 'Permitted',
         },
     },
     2 => {
         Name => 'FlashOptions',
         Notes => 'the camera flash options settings, set even if the flash is off',
         Mask => 0xf0,
-        ValueConv => '$val>>4',
-        ValueConvInv => '$val<<4',
         # Note: These tags correlate with the FlashMode and InternalFlashMode values,
         # and match what is displayed by the Pentax software
         PrintConv => {
@@ -3253,11 +3288,11 @@ my %binaryDataAttrs = (
         Name => 'AFPointMode',
         Mask => 0xf0,
         PrintConv => {
-            0x00 => 'Auto',
+            0 => 'Auto',
             BITMASK => {
-                4 => 'Select',
-                5 => 'Fixed Center',
-                # have seen bit 6 set in pre-production images (firmware 0.20) - PH
+                0 => 'Select',
+                1 => 'Fixed Center',
+                # have seen bit 2 set in pre-production images (firmware 0.20) - PH
             },
         },
     },
@@ -3316,7 +3351,7 @@ my %binaryDataAttrs = (
     8 => {
         Name => 'ExposureBracketStepSize',
         # This is set even when Exposure Bracket is Off (and the K10D
-        # displays Ò---Ó as the step size when you press the EB button) - DaveN
+        # displays "---" as the step size when you press the EB button) - DaveN
         # because the last value is remembered and if you turn Exposure Bracket
         # on the step size goes back to what it was before.
         PrintConv => {
@@ -3355,20 +3390,20 @@ my %binaryDataAttrs = (
         # tag 0x0019 reports Flash if the Flash was used.
         PrintConv => {
             0 => 'Auto',
-            16 => 'Daylight',
-            32 => 'Shade',
-            48 => 'Cloudy',
-            64 => 'Daylight Fluorescent',
-            80 => 'Day White Fluorescent',
-            96 => 'White Fluorescent',
-            112 => 'Tungsten',
-            128 => 'Flash',
-            144 => 'Manual',
+            1 => 'Daylight',
+            2 => 'Shade',
+            3 => 'Cloudy',
+            4 => 'Daylight Fluorescent',
+            5 => 'Day White Fluorescent',
+            6 => 'White Fluorescent',
+            7 => 'Tungsten',
+            8 => 'Flash',
+            9 => 'Manual',
             # The three Set Color Temperature settings refer to the 3 preset settings which
             # can be saved in the menu (see page 123 of the K10D manual)
-            192 => 'Set Color Temperature 1',
-            208 => 'Set Color Temperature 2',
-            224 => 'Set Color Temperature 3',
+            12 => 'Set Color Temperature 1',
+            13 => 'Set Color Temperature 2',
+            14 => 'Set Color Temperature 3',
         },
     },
     10.1 => {
@@ -3421,10 +3456,7 @@ my %binaryDataAttrs = (
         Condition => '$$self{Model} =~ /K-5\b/',
         Notes => 'K-5 only',
         Mask => 0x01,
-        PrintConv => {
-            0x00 => 'Off',
-            0x01 => 'On',
-        },
+        PrintConv => { 0 => 'Off', 1 => 'On' },
     },
     14.3 => { #PH (K-5)
         Name => 'SensitivitySteps',
@@ -3432,8 +3464,8 @@ my %binaryDataAttrs = (
         Notes => 'K-5 only',
         Mask => 0x02,
         PrintConv => {
-            0x00 => '1 EV Steps',
-            0x02 => 'As EV Steps',
+            0 => '1 EV Steps',
+            1 => 'As EV Steps',
         },
     },
     14.4 => { #PH (K-5)
@@ -3441,10 +3473,7 @@ my %binaryDataAttrs = (
         Condition => '$$self{Model} =~ /K-5\b/',
         Notes => 'K-5 only',
         Mask => 0x04,
-        PrintConv => {
-            0x00 => 'Off',
-            0x04 => 'On',
-        },
+        PrintConv => { 0 => 'Off', 1 => 'On' },
     },
     # 14.5 Mask 0x80 - changes for K-5
     16 => {
@@ -3459,15 +3488,15 @@ my %binaryDataAttrs = (
         # isn't selected) - ref 19
         # (these tags relate closely to InternalFlashMode values - PH)
         PrintConv => {
-            0x00 => 'Normal', # (this value never occurs in Green Mode) - ref 19
-            0x10 => 'Red-eye reduction', # (this value never occurs in Green Mode) - ref 19
-            0x20 => 'Auto',  # (this value only occurs in Green Mode) - ref 19
-            0x30 => 'Auto, Red-eye reduction', # (this value only occurs in Green Mode) - ref 19
-            0x50 => 'Wireless (Master)',
-            0x60 => 'Wireless (Control)',
-            0x80 => 'Slow-sync',
-            0x90 => 'Slow-sync, Red-eye reduction',
-            0xa0 => 'Trailing-curtain Sync'
+            0 => 'Normal', # (this value never occurs in Green Mode) - ref 19
+            1 => 'Red-eye reduction', # (this value never occurs in Green Mode) - ref 19
+            2 => 'Auto',  # (this value only occurs in Green Mode) - ref 19
+            3 => 'Auto, Red-eye reduction', # (this value only occurs in Green Mode) - ref 19
+            5 => 'Wireless (Master)',
+            6 => 'Wireless (Control)',
+            8 => 'Slow-sync',
+            9 => 'Slow-sync, Red-eye reduction',
+            10 => 'Trailing-curtain Sync'
         },
     },
     16.1 => {
@@ -3492,10 +3521,7 @@ my %binaryDataAttrs = (
             Remote or Self-timer, and Internal/ExternalFlashMode is not "On, Wireless"
         },
         Mask => 0x80,
-        PrintConv => {
-            0x00 => 'No',
-            0x80 => 'Yes',
-        },
+        PrintConv => \%noYes,
     },
     17.2 => {
         Name => 'Rotation',
@@ -3503,10 +3529,10 @@ my %binaryDataAttrs = (
         Notes => 'K10D only',
         Mask => 0x60,
         PrintConv => {
-            0x00 => 'Horizontal (normal)',
-            0x20 => 'Rotate 180',
-            0x40 => 'Rotate 90 CW',
-            0x60 => 'Rotate 270 CW',
+            0 => 'Horizontal (normal)',
+            1 => 'Rotate 180',
+            2 => 'Rotate 90 CW',
+            3 => 'Rotate 270 CW',
         },
     },
     # Bit 0x08 is set on 3 of my 3000 shots to (All 3 were Shutter Priority
@@ -3517,8 +3543,8 @@ my %binaryDataAttrs = (
         Notes => 'K10D only',
         Mask => 0x04,
         PrintConv => {
-            0x00 => 'Manual',
-            0x04 => 'Auto',
+            0 => 'Manual',
+            1 => 'Auto',
         },
     },
     17.4 => {
@@ -3527,8 +3553,8 @@ my %binaryDataAttrs = (
         Notes => 'K10D only',
         Mask => 0x02,
         PrintConv => {
-            0x00 => '1 EV Steps',
-            0x02 => 'As EV Steps',
+            0 => '1 EV Steps',
+            1 => 'As EV Steps',
         },
     },
     # 17 Mask 0x08 - changed when changing Auto ISO range (K-5)
@@ -3750,15 +3776,15 @@ my %binaryDataAttrs = (
         Notes => 'K7 and Kx',
         Mask => 0xf0,
         PrintConv => {
-            0x00 => 'Standard',
-            0x10 => 'Daylight',
-            0x20 => 'Shade',
-            0x30 => 'Cloudy',
-            0x40 => 'Daylight Fluorescent',
-            0x50 => 'Day White Fluorescent',
-            0x60 => 'White Fluorescent',
-            0x70 => 'Tungsten',
-            0x80 => 'Unknown', #31 (or not set due to inadequate lighting)
+            0 => 'Standard',
+            1 => 'Daylight',
+            2 => 'Shade',
+            3 => 'Cloudy',
+            4 => 'Daylight Fluorescent',
+            5 => 'Day White Fluorescent',
+            6 => 'White Fluorescent',
+            7 => 'Tungsten',
+            8 => 'Unknown', #31 (or not set due to inadequate lighting)
         },
     },
     13.1 => { #30
@@ -4194,10 +4220,7 @@ my %binaryDataAttrs = (
         Condition => 'not $$self{NewLensData}',
         Notes => 'not valid for the K-r, K-5 or K-5II', #29
         Mask => 0x01,
-        PrintConv => {
-            0 => 'On',
-            1 => 'Off',
-        },
+        PrintConv => { 0 => 'On', 1 => 'Off' },
     },
     0.2 => { #JD
         Name => 'MinAperture',
@@ -4205,10 +4228,10 @@ my %binaryDataAttrs = (
         Notes => 'not valid for the K-r, K-5 or K-5II', #29
         Mask => 0x06,
         PrintConv => {
-            0x00 => 22,
-            0x02 => 32,
-            0x04 => 45,
-            0x06 => 16,
+            0 => 22,
+            1 => 32,
+            2 => 45,
+            3 => 16,
         },
     },
     0.3 => { #JD
@@ -4216,8 +4239,8 @@ my %binaryDataAttrs = (
         Condition => 'not $$self{NewLensData}',
         Notes => 'not valid for the K-r, K-5 or K-5II', #29
         Mask => 0x70,
-        ValueConv => '5 + (($val >> 4) ^ 0x07) / 2',
-        ValueConvInv => '((($val - 5) * 2) ^ 0x07) << 4',
+        ValueConv => '5 + ($val ^ 0x07) / 2',
+        ValueConvInv => '(($val - 5) * 2) ^ 0x07',
     },
     # 1-16 look like Lens Codes LC0-LC15, ref patent 5617173 and 5999753 [+notes by PH]
     1 => { # LC0 = lens kind + version data
@@ -4234,32 +4257,32 @@ my %binaryDataAttrs = (
         Notes => 'minimum focus distance for the lens',
         Mask => 0xf8,
         PrintConv => {
-            0x00 => '0.13-0.19 m',  # (plus K or M lenses)
-            0x08 => '0.20-0.24 m',
-            0x10 => '0.25-0.28 m',
-            0x18 => '0.28-0.30 m',
-            0x20 => '0.35-0.38 m',
-            0x28 => '0.40-0.45 m',
-            0x30 => '0.49-0.50 m',  # (plus many Sigma lenses)
-            0x38 => '0.6 m',        #PH (NC)
-            0x40 => '0.7 m',        # (plus Sigma 55-200)
-            0x48 => '0.8-0.9 m',    #PH (NC) Tokina 28-70/2.6-2.8
-            0x50 => '1.0 m',        # (plus Sigma 70 macro)
-            0x58 => '1.1-1.2 m',
-            0x60 => '1.4-1.5 m',
-            0x68 => '1.5 m',        # Sigma 70-300/4-5.6 macro
-            0x70 => '2.0 m',
-            0x78 => '2.0-2.1 m',    #PH (NC)
-            0x80 => '2.1 m',        # Sigma 135-400 APO & DG: 2.0-2.2m
-            0x88 => '2.2-2.9 m',    #PH (NC)
-            0x90 => '3.0 m',        # Sigma 50-500 : 1.0-3.0m depending on the focal length
-                                   ## 50mm, 100mm => 1.0m
-                                   ## 200mm       => 1.1m
-                                   ## 300mm       => 1.5m
-                                   ## 400mm       => 2.2m
-                                   ## 500mm       => 3.0m
-            0x98 => '4-5 m',        #PH (NC)
-            0xa0 => '5.6 m',        # Pentax DA 560
+            0 => '0.13-0.19 m', # (plus K or M lenses)
+            1 => '0.20-0.24 m',
+            2 => '0.25-0.28 m',
+            3 => '0.28-0.30 m',
+            4 => '0.35-0.38 m',
+            5 => '0.40-0.45 m',
+            6 => '0.49-0.50 m', # (plus many Sigma lenses)
+            7 => '0.6 m',       #PH (NC)
+            8 => '0.7 m',       # (plus Sigma 55-200)
+            9 => '0.8-0.9 m',   #PH (NC) Tokina 28-70/2.6-2.8
+            10 => '1.0 m',      # (plus Sigma 70 macro)
+            11 => '1.1-1.2 m',
+            12 => '1.4-1.5 m',
+            13 => '1.5 m',      # Sigma 70-300/4-5.6 macro
+            14 => '2.0 m',
+            15 => '2.0-2.1 m',  #PH (NC)
+            16 => '2.1 m',      # Sigma 135-400 APO & DG: 2.0-2.2m
+            17 => '2.2-2.9 m',  #PH (NC)
+            18 => '3.0 m',      # Sigma 50-500 : 1.0-3.0m depending on the focal length
+                                 ## 50mm, 100mm => 1.0m
+                                 ## 200mm       => 1.1m
+                                 ## 300mm       => 1.5m
+                                 ## 400mm       => 2.2m
+                                 ## 500mm       => 3.0m
+            19 => '4-5 m',      #PH (NC)
+            20 => '5.6 m',      # Pentax DA 560
             # To check: Sigma 120-400 OS: MFD 1.5m
             # To check: Sigma 150-500 OS: MFD 2.2m
             # To check: Sigma 50-500 has MFD 50-180cm
@@ -4321,8 +4344,8 @@ my %binaryDataAttrs = (
     10 => { # LC9 = nominal AVmin/AVmax data (open/closed aperture values)
         Name => 'NominalMaxAperture',
         Mask => 0xf0,
-        ValueConv => '2**(($val>>4)/4)', #JD
-        ValueConvInv => '4*log($val)/log(2) << 4',
+        ValueConv => '2**($val/4)', #JD
+        ValueConvInv => '4*log($val)/log(2)',
         PrintConv => 'sprintf("%.1f", $val)',
         PrintConvInv => '$val',
     },
@@ -4571,6 +4594,7 @@ my %binaryDataAttrs = (
         # *istDS and K100D, but I'm not sure what this means - PH
         # I've also seen: 0x42 (K2000), 0xf2 (K-7,K-r,K-5), 0x12,0x22 (K-x) - PH
         PrintConv => {
+            1 => 'Camera Battery', #PH (NC, GR III)
             2 => 'Body Battery',
             3 => 'Grip Battery',
             4 => 'External Power Supply', #PH
@@ -4583,10 +4607,10 @@ my %binaryDataAttrs = (
             Notes => '*istD, K100D, K200D, K10D and K20D',
             Mask => 0xf0,
             PrintConv => { #19
-                 0x10 => 'Empty or Missing',
-                 0x20 => 'Almost Empty',
-                 0x30 => 'Running Low',
-                 0x40 => 'Full',
+                 1 => 'Empty or Missing',
+                 2 => 'Almost Empty',
+                 3 => 'Running Low',
+                 4 => 'Full',
             },
         },{
             Name => 'BodyBatteryState',
@@ -4594,18 +4618,16 @@ my %binaryDataAttrs = (
             Notes => 'other models except the K110D, K2000 and K-m',
             Mask => 0xf0,
             PrintConv => {
-                 0x10 => 'Empty or Missing',
-                 0x20 => 'Almost Empty',
-                 0x30 => 'Running Low',
-                 0x40 => 'Close to Full',
-                 0x50 => 'Full',
+                 1 => 'Empty or Missing',
+                 2 => 'Almost Empty',
+                 3 => 'Running Low',
+                 4 => 'Close to Full',
+                 5 => 'Full',
             },
         },{
             Name => 'BodyBatteryState',
             Notes => 'decoding unknown for other models',
             Mask => 0xf0,
-            ValueConv => '$val >> 4',
-            ValueConvInv => '$val << 4',
         },
     ],
     1.2 => [
@@ -4615,10 +4637,10 @@ my %binaryDataAttrs = (
             Notes => 'K10D and K20D',
             Mask => 0x0f,
             PrintConv => { #19
-                 0x01 => 'Empty or Missing',
-                 0x02 => 'Almost Empty',
-                 0x03 => 'Running Low',
-                 0x04 => 'Full',
+                 1 => 'Empty or Missing',
+                 2 => 'Almost Empty',
+                 3 => 'Running Low',
+                 4 => 'Full',
             },
         },{
             Name => 'GripBatteryState',
@@ -5268,7 +5290,7 @@ my %binaryDataAttrs = (
     NOTES => q{
         The parameters associated with each type of digital filter are unique, and
         these settings are also extracted with the DigitalFilter tag.  Information
-        is not extracted for filters that are "Off" unless the Unknown option is
+        is not extracted for filters that are "Off" unless the L<Unknown|../ExifTool.html#Unknown> option is
         used.
     },
     0 => {
@@ -5315,6 +5337,7 @@ my %binaryDataAttrs = (
         Mask => 0x0f,
         PrintHex => 0,
         PrintConv => {
+            0 => 'n/a', #PH (NC, GR III)
             1 => 'Horizontal (normal)',
             2 => 'Rotate 180',
             3 => 'Rotate 90 CW',
@@ -5331,10 +5354,10 @@ my %binaryDataAttrs = (
         Name => 'CompositionAdjust',
         Mask => 0xf0,
         PrintConv => {
-            0x00 => 'Off',
-            0x20 => 'Composition Adjust',
-            0xa0 => 'Composition Adjust + Horizon Correction',
-            0xc0 => 'Horizon Correction',
+            0 => 'Off',
+            2 => 'Composition Adjust',
+            10 => 'Composition Adjust + Horizon Correction',
+            12 => 'Horizon Correction',
         },
     },
     1 => {
@@ -6248,7 +6271,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -19,7 +19,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.32';
+$VERSION = '1.34';
 
 sub ProcessRicohText($$$);
 sub ProcessRicohRMETA($$$);
@@ -330,9 +330,13 @@ my %ricohLensIDs = (
         },
     },
     0x1018 => { #3
-        Name => 'CropMode35mm',
+        Name => 'CropMode',
         Writable => 'int16u',
-        PrintConv => { 0 => 'Off', 1 => 'On' },
+        PrintConv => {
+            0 => 'Off',
+            1 => 'On (35mm)',
+            2 => 'On (47mm)', #IB
+        },
     },
     0x1019 => { #3
         Name => 'NDFilter',
@@ -1033,11 +1037,7 @@ sub ProcessRicohRMETA($$$)
         my $dat = substr($$dataPt, $pos, $size);
         if ($verbose) {
             $et->VPrint(2, "$$et{INDENT}RMETA section type=$type size=$size\n");
-            if ($verbose > 2) {
-                my %dumpParms = ( Addr => $$dirInfo{DataPos} + $pos, Prefix => $$et{INDENT} );
-                $dumpParms{MaxLen} = 96 if $verbose == 3;
-                Image::ExifTool::HexDump(\$dat, undef, %dumpParms);
-            }
+            $et->VerboseDump(\$dat, Addr => $$dirInfo{DataPos} + $pos);
         }
         if ($type == 1) {                       # section 1: tag names
             # save the tag names
@@ -1125,7 +1125,7 @@ interpret Ricoh maker notes EXIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

@@ -23,6 +23,8 @@ use strict;
 use Image::ExifTool qw(:Utils);
 use Image::ExifTool::XMP;
 
+sub Init_crd($);
+
 #------------------------------------------------------------------------------
 
 # xmpDM structure definitions
@@ -73,6 +75,18 @@ my %sTimecode = (
     },
     timeValue   => { },
     value       => { Writable => 'integer', Notes => 'only in XMP 2008 spec; an error?' },
+);
+
+# camera-raw defaults
+%Image::ExifTool::XMP::crd = (
+    %xmpTableDefaults,
+    INIT_TABLE => \&Init_crd,
+    GROUPS => { 1 => 'XMP-crd', 2 => 'Image' },
+    NAMESPACE   => 'crd',
+    AVOID => 1,
+    TABLE_DESC => 'Photoshop Camera Defaults namespace',
+    NOTES => 'Adobe Camera Raw Defaults tags.',
+    # (tags added dynamically when WRITE_PROC is called)
 );
 
 # XMP Dynamic Media namespace properties (xmpDM)
@@ -359,12 +373,13 @@ my %sEntityWithRole = (
     Name        => { Writable => 'lang-alt' },
     Role        => { List => 'Bag' },
 );
-my %sFrameSize = (
-    STRUCT_NAME => 'FrameSize',
-    NAMESPACE   => 'Iptc4xmpExt',
-    WidthPixels  => { Writable => 'integer' },
-    HeightPixels => { Writable => 'integer' },
-);
+# (no longer used)
+#my %sFrameSize = (
+#    STRUCT_NAME => 'FrameSize',
+#    NAMESPACE   => 'Iptc4xmpExt',
+#    WidthPixels  => { Writable => 'integer' },
+#    HeightPixels => { Writable => 'integer' },
+#);
 my %sRating = (
     STRUCT_NAME => 'Rating',
     NAMESPACE   => 'Iptc4xmpExt',
@@ -669,6 +684,21 @@ my %sLinkedImage = (
     # new IPTC video metadata 1.1 properties
     # (ref https://www.iptc.org/std/videometadatahub/recommendation/IPTC-VideoMetadataHub-props-Rec_1.1.html)
     SnapshotLink => { Groups => { 2 => 'Image' }, List => 'Bag', Struct => \%sLinkedImage, Name => 'Snapshot' },
+    # new IPTC video metadata 1.2 properties
+    # (ref http://www.iptc.org/std/videometadatahub/recommendation/IPTC-VideoMetadataHub-props-Rec_1.2.html)
+    RecDevice => {
+        Struct => {
+            STRUCT_NAME => 'Device',
+            NAMESPACE   => 'Iptc4xmpExt',
+            Manufacturer        => { },
+            ModelName           => { },
+            SerialNumber        => { },
+            AttLensDescription  => { },
+            OwnersDeviceId      => { },
+        },
+    },
+    PlanningRef         => { List => 'Bag', Struct => \%sEntityWithRole },
+    audioBitsPerSample  => { Writable => 'integer' },
 );
 
 #------------------------------------------------------------------------------
@@ -706,7 +736,7 @@ my %prismPublicationDate = (
         Publishing Requirements for Industry Standard Metadata 3.0 namespace
         tags.  (see L<http://www.prismstandard.org/>)
     },
-    acedemicField   => { }, # (3.0)
+    academicField   => { }, # (3.0)
     aggregateIssueNumber => { Writable => 'integer' }, # (3.0)
     aggregationType => { List => 'Bag' },
     alternateTitle  => {
@@ -1592,11 +1622,13 @@ my %sSubVersion = (
 %Image::ExifTool::XMP::GSpherical = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-GSpherical', 2 => 'Image' },
+    WRITE_GROUP => 'GSpherical', # write in special location for video files
     NAMESPACE => 'GSpherical',
     AVOID => 1,
     NOTES => q{
         Not actually XMP.  These RDF/XML tags are used in Google spherical MP4
-        videos.  See
+        videos.  These tags are written into the video track of MOV/MP4 files, and
+        not at the top level like other XMP tags.  See
         L<https://github.com/google/spatial-media/blob/master/docs/spherical-video-rfc.md>
         for the specification.
     },
@@ -1631,8 +1663,8 @@ my %sSubVersion = (
 # Google depthmap information (ref https://developers.google.com/depthmap-metadata/reference)
 %Image::ExifTool::XMP::GDepth = (
     GROUPS      => { 0 => 'XMP', 1 => 'XMP-GDepth', 2 => 'Image' },
-    NAMESPACE   => { 'GDepth' => 'http://ns.google.com/photos/1.0/depthmap/' },
-    AVOID       => 1, # (too potential tag name conflicts)
+    NAMESPACE   => 'GDepth',
+    AVOID       => 1, # (too many potential tag name conflicts)
     NOTES       => q{
         Google depthmap information. See
         L<https://developers.google.com/depthmap-metadata/> for the specification.
@@ -1649,6 +1681,7 @@ my %sSubVersion = (
     Far         => { Writable => 'real' },
     Mime        => { },
     Data => {
+        Name => 'DepthImage',
         ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
         ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
     },
@@ -1683,6 +1716,34 @@ my %sSubVersion = (
     FocalPointY     => { Writable => 'real' },
 );
 
+# Google camera namespace (ref PH)
+%Image::ExifTool::XMP::GCamera = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-GCamera', 2 => 'Camera' },
+    NAMESPACE => 'GCamera',
+    NOTES => 'Camera information found in Google panorama images.',
+    BurstID         => { },
+    BurstPrimary    => { },
+    PortraitNote    => { },
+    PortraitRequest => {
+        Notes => 'High Definition Render Pipeline (HDRP) data', #PH (guess)
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
+    PortraitVersion => { },
+    SpecialTypeID   => { List => 'Bag' },
+    PortraitNote    => { },
+);
+
+# Google creations namespace (ref PH)
+%Image::ExifTool::XMP::GCreations = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-GCreations', 2 => 'Camera' },
+    NAMESPACE => 'GCreations',
+    NOTES => 'Google creations tags.',
+    CameraBurstID  => { },
+);
+
 # Getty Images namespace (ref PH)
 %Image::ExifTool::XMP::GettyImages = (
     %xmpTableDefaults,
@@ -1693,7 +1754,7 @@ my %sSubVersion = (
         prefix recorded in the file, but ExifTool shortens this for the family 1
         group name.
     },
-    Personality         => { },
+    Personality         => { List => 'Bag' },
     OriginalFilename    => { Name => 'OriginalFileName' },
     ParentMEID          => { },
     # the following from StarGeek
@@ -1714,6 +1775,22 @@ my %sSubVersion = (
     RoutingExclusions   => { List => 'Bag' },
     SecondaryFTP        => { List => 'Bag' },
     TimeShot            => { },
+);
+
+# RED smartphone images (ref PH)
+%Image::ExifTool::XMP::LImage = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-LImage', 2 => 'Image' },
+    NAMESPACE => 'LImage',
+    NOTES => 'Tags written by RED smartphones.',
+    MajorVersion => { },
+    MinorVersion => { },
+    RightAlbedo => {
+        Notes => 'Right stereoscopic image',
+        Groups => { 2 => 'Preview' },
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
 );
 
 # SVG namespace properties (ref 9)
@@ -1748,6 +1825,23 @@ my %sSubVersion = (
     NAMESPACE => undef, # variable namespace
 );
 
+#------------------------------------------------------------------------------
+# Generate crd tags
+# Inputs: 0) tag table ref
+sub Init_crd($)
+{
+    my $tagTablePtr = shift;
+    # import tags from CRS namespace
+    my $crsTable = GetTagTable('Image::ExifTool::XMP::crs');
+    my $tag;
+    foreach $tag (Image::ExifTool::TagTableKeys($crsTable)) {
+        my $crsInfo = $$crsTable{$tag};
+        my $tagInfo = $$tagTablePtr{$tag} = { %$crsInfo };
+        $$tagInfo{Groups} = { 0 => 'XMP', 1 => 'XMP-crd' , 2 => $$crsInfo{Groups}{2} } if $$crsInfo{Groups};
+    }
+}
+
+
 1;  #end
 
 __END__
@@ -1766,7 +1860,7 @@ This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

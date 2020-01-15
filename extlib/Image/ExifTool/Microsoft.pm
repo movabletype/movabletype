@@ -192,7 +192,8 @@ my %sRegions = (
 
 # Xtra tags written in MP4 files written by Microsoft Windows Media Player
 # (ref http://msdn.microsoft.com/en-us/library/windows/desktop/dd562330(v=VS.85).aspx)
-# Note: These tags are closely related to Image::ExifTool::ASF::ExtendedDescr
+# Note: These tags are closely related to tags in Image::ExifTool::ASF::ExtendedDescr
+#       and Image::ExifTool::WTV::Metadata
 %Image::ExifTool::Microsoft::Xtra = (
     PROCESS_PROC => \&ProcessXtra,
     GROUPS => { 0 => 'QuickTime', 2 => 'Video' },
@@ -883,7 +884,7 @@ Microsoft-specific EXIF and XMP tags.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
