@@ -14,12 +14,12 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Import;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 sub ProcessTag($$$$%);
 
 %Image::ExifTool::JSON::Main = (
-    GROUPS => { 0 => 'File', 1 => 'File', 2 => 'Other' },
+    GROUPS => { 0 => 'JSON', 1 => 'JSON', 2 => 'Other' },
     NOTES => q{
         No JSON tags have been pre-defined, but ExifTool will read any existing
         tags from basic JSON-formatted files.
@@ -128,7 +128,7 @@ information from JSON files.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

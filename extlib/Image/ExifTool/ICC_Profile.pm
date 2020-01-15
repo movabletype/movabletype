@@ -24,7 +24,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.34';
+$VERSION = '1.35';
 
 sub ProcessICC($$);
 sub ProcessICC_Profile($$$);
@@ -198,6 +198,7 @@ my %manuSig = ( #6
     'KYOC' => 'Kyocera',
     'LCAG' => 'Leica Camera AG',
     'LCCD' => 'Leeds Colour',
+    'lcms' => 'Little CMS', #NealKrawetz
     'LDAK' => 'Left Dakota',
     'LEAD' => 'Leading Technology, Inc.',
     'Leaf' => 'Leaf', #PH
@@ -327,7 +328,7 @@ my %manuSig = ( #6
     'Z123' => "Lavanya's test Company",
     'Zebr' => 'Zebra Technologies Inc',
     'ZRAN' => 'Zoran Corporation',
-    # also seen: "    ",ACMS,KCMS,UCCM,etc2,lcms,SCTX
+    # also seen: "    ",ACMS,KCMS,UCCM,etc2,SCTX
 );
 
 # ICC_Profile tag table
@@ -1263,7 +1264,7 @@ data created on one device into another device's native color space.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

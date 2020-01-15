@@ -107,7 +107,8 @@ sub InflateStruct($;$)
         $val = '';
         $delim = $delim ? "\\$delim|,|\\||\$" : ',|\\||$';
         for (;;) {
-            $$obj =~ s/^(.*?)($delim)//s and $val .= $1;
+            $$obj =~ s/^(.*?)($delim)//s or last;
+            $val .= $1;
             last unless $2;
             $2 eq '|' or $$obj = $2 . $$obj, last;
             $$obj =~ s/^(.)//s and $val .= $1;  # add escaped character
@@ -621,6 +622,7 @@ sub RestoreStruct($;$)
     my ($key, %structs, %var, %lists, $si, %listKeys, @siList);
     my $ex = $$et{TAG_EXTRA};
     my $valueHash = $$et{VALUE};
+    my $fileOrder = $$et{FILE_ORDER};
     my $tagExtra = $$et{TAG_EXTRA};
     foreach $key (keys %{$$et{TAG_INFO}}) {
         $$ex{$key} or next;
@@ -764,7 +766,13 @@ sub RestoreStruct($;$)
                 # everything else, and this is really what we care about)
                 my $k = $listKeys{$oldStruct};
                 if ($k) {   # ($k will be undef for an empty structure)
-                    $k lt $key and $et->DeleteTag($key), next;
+                    if ($k lt $key) {
+                        # keep lowest file order
+                        $$fileOrder{$k} = $$fileOrder{$key} if $$fileOrder{$k} > $$fileOrder{$key};
+                        $et->DeleteTag($key);
+                        next;
+                    }
+                    $$fileOrder{$key} = $$fileOrder{$k} if $$fileOrder{$key} > $$fileOrder{$k};
                     $et->DeleteTag($k);   # remove tag with greater copy number
                 }
             }
@@ -775,11 +783,11 @@ sub RestoreStruct($;$)
             # save strInfo ref and file order
             if ($var{$strInfo}) {
                 # set file order to just before the first associated flattened tag
-                if ($var{$strInfo}[1] > $$et{FILE_ORDER}{$key}) {
-                    $var{$strInfo}[1] = $$et{FILE_ORDER}{$key} - 0.5;
+                if ($var{$strInfo}[1] > $$fileOrder{$key}) {
+                    $var{$strInfo}[1] = $$fileOrder{$key} - 0.5;
                 }
             } else {
-                $var{$strInfo} = [ $strInfo, $$et{FILE_ORDER}{$key} - 0.5 ];
+                $var{$strInfo} = [ $strInfo, $$fileOrder{$key} - 0.5 ];
             }
             # preserve original flattened tags if requested
             if ($keepFlat) {
@@ -809,7 +817,7 @@ sub RestoreStruct($;$)
     foreach $si (sort { $var{$a}[1] <=> $var{$b}[1] } @siList) {
         $key = $et->FoundTag($var{$si}[0], '');
         $$valueHash{$key} = $structs{$si};
-        $$et{FILE_ORDER}{$key} = $var{$si}[1];
+        $$fileOrder{$key} = $var{$si}[1];
     }
 }
 
@@ -833,7 +841,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

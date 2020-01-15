@@ -20,7 +20,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.14';
+$VERSION = '1.16';
 
 # road map of directory locations in GIF images
 my %gifMap = (
@@ -102,12 +102,12 @@ my %gifMap = (
     4.1 => {
         Name => 'HasColorMap',
         Mask => 0x80,
-        PrintConv => { 0x00 => 'No', 0x80 => 'Yes' },
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
     },
     4.2 => {
         Name => 'ColorResolutionDepth',
         Mask => 0x70,
-        ValueConv => '($val >> 4) + 1',
+        ValueConv => '$val + 1',
     },
     4.3 => {
         Name => 'BitsPerPixel',
@@ -321,9 +321,7 @@ Block:
             my $comment = '';
             while ($length) {
                 last unless $raf->Read($buff, $length) == $length;
-                if ($verbose > 2 and not $outfile) {
-                    HexDump(\$buff, undef, Out => $out);
-                }
+                $et->VerboseDump(\$buff) unless $outfile;
                 # add buffer to comment string
                 $comment .= $buff;
                 last unless $raf->Read($ch, 1);  # read next block header
@@ -534,7 +532,7 @@ write GIF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

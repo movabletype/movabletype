@@ -15,7 +15,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.13';
+$VERSION = '1.14';
 
 sub ProcessMPImageList($$$);
 
@@ -97,7 +97,7 @@ sub ProcessMPImageList($$$);
     NOTES => q{
         The first MPF "Large Thumbnail" image is extracted as PreviewImage, and the
         rest of the embedded MPF images are extracted as MPImage#.  The
-        ExtractEmbedded (-ee) option may be used to extract information from these
+        L<ExtractEmbedded|../ExifTool.html#ExtractEmbedded> (-ee) option may be used to extract information from these
         embedded images.
     },
     0.1 => {
@@ -105,9 +105,9 @@ sub ProcessMPImageList($$$);
         Format => 'int32u',
         Mask => 0xf8000000,
         PrintConv => { BITMASK => {
-            29 => 'Representative image',
-            30 => 'Dependent child image',
-            31 => 'Dependent parent image',
+            2 => 'Representative image',
+            3 => 'Dependent child image',
+            4 => 'Dependent parent image',
         }},
     },
     0.2 => {
@@ -163,7 +163,7 @@ sub ProcessMPImageList($$$);
         },
         Notes => q{
             the first MPF "Large Thumbnail" is extracted as PreviewImage, and the rest
-            of the embedded MPF images are extracted as MPImage#.  The ExtractEmbedded
+            of the embedded MPF images are extracted as MPImage#.  The L<ExtractEmbedded|../ExifTool.html#ExtractEmbedded>
             option may be used to extract information from these embedded images.
         },
         # extract all MPF images (not just one)
@@ -266,7 +266,7 @@ Format (MPF) information from JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
