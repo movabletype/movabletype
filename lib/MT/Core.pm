@@ -2169,7 +2169,7 @@ BEGIN {
                 type    => 'HASH',
                 default => {}
             },
-            'DataAPIDisableSite'   => { default => '0' },
+            'DataAPIDisableSite'   => undef,
             'RebuildOffsetSeconds' => { default => 20 },
 
             # Enterprise.pack
