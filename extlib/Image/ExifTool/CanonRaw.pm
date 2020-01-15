@@ -21,7 +21,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::Canon;
 
-$VERSION = '1.57';
+$VERSION = '1.58';
 
 sub WriteCRW($$);
 sub ProcessCanonRaw($$$);
@@ -346,12 +346,14 @@ sub BuildMakerNotes($$$$$$);
     },
     0x2007 => {
         Name => 'JpgFromRaw',
+        Groups => { 2 => 'Preview' },
         Writable => 'resize',  # 'resize' allows this value to change size
         Permanent => 0,
         RawConv => '$self->ValidateImage(\$val,$tag)',
     },
     0x2008 => {
         Name => 'ThumbnailImage',
+        Groups => { 2 => 'Preview' },
         Writable => 'resize',  # 'resize' allows this value to change size
         WriteCheck => '$self->CheckImage(\$val)',
         Permanent => 0,
@@ -681,7 +683,7 @@ sub ProcessCanonRaw($$$)
         my ($value, $delRawConv);
         if ($valueInDir) {  # is the value data in the directory?
             # this type of tag stores the value in the 'size' and 'ptr' fields
-            $valueDataPos = $dirOffset + $pt + 4;
+            $valueDataPos = $dirOffset + $pt + 4; # (remember, +2 for the entry count)
             $size = 8;
             $value = substr($buff, $pt+2, $size);
             # set count to 1 by default for normal values in directory
@@ -875,7 +877,7 @@ tags.)
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

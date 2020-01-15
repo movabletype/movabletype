@@ -19,7 +19,7 @@ use strict;
 use vars qw($VERSION %ttLang);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.07';
+$VERSION = '1.09';
 
 sub ProcessOTF($$);
 
@@ -88,20 +88,20 @@ my %ttCharset = (
     1 => 'fr',     25 => 'pl',    49 => 'az',    73 => 'kn',    130 => 'ca',
     2 => 'de',     26 => 'hu',    50 => 'az',    74 => 'ta',    131 => 'la',
     3 => 'it',     27 => 'et',    51 => 'hy',    75 => 'te',    132 => 'qu',
-    4 => 'nl',     28 => 'lv',    52 => 'ka',    76 => 'si',    133 => 'gn',
+    4 => 'nl-NL',  28 => 'lv',    52 => 'ka',    76 => 'si',    133 => 'gn',
     5 => 'sv',     29 => 'smi',   53 => 'ro',    77 => 'my',    134 => 'ay',
     6 => 'es',     30 => 'fo',    54 => 'ky',    78 => 'km',    135 => 'tt',
     7 => 'da',     31 => 'fa',    55 => 'tg',    79 => 'lo',    136 => 'ug',
     8 => 'pt',     32 => 'ru',    56 => 'tk',    80 => 'vi',    137 => 'dz',
     9 => 'no',     33 => 'zh-CN', 57 => 'mn-MN', 81 => 'id',    138 => 'jv',
-    10 => 'he',    34 => 'nl',    58 => 'mn-CN', 82 => 'tl',    139 => 'su',
+    10 => 'he',    34 => 'nl-BE', 58 => 'mn-CN', 82 => 'tl',    139 => 'su',
     11 => 'ja',    35 => 'ga',    59 => 'ps',    83 => 'ms-MY', 140 => 'gl',
     12 => 'ar',    36 => 'sq',    60 => 'ku',    84 => 'ms-BN', 141 => 'af',
     13 => 'fi',    37 => 'ro',    61 => 'ks',    85 => 'am',    142 => 'br',
-    14 => 'iu',    38 => 'cs',    62 => 'sd',    86 => 'ti',    144 => 'gd',
-    15 => 'is',    39 => 'sk',    63 => 'bo',    87 => 'om',    145 => 'vg',
+    14 => 'el',    38 => 'cs',    62 => 'sd',    86 => 'ti',    144 => 'gd',
+    15 => 'is',    39 => 'sk',    63 => 'bo',    87 => 'om',    145 => 'gv',
     16 => 'mt',    40 => 'sl',    64 => 'ne',    88 => 'so',    146 => 'ga',
-    17 => 'tr',    41 => 'yi',    65 => 'sa',    89 => 'sw',    147 => 'rar',
+    17 => 'tr',    41 => 'yi',    65 => 'sa',    89 => 'sw',    147 => 'to',
     18 => 'hr',    42 => 'sr',    66 => 'mr',    90 => 'rw',    148 => 'el',
     19 => 'zh-TW', 43 => 'mk',    67 => 'bn',    91 => 'rn',    149 => 'kl',
     20 => 'ur',    44 => 'bg',    68 => 'as',    92 => 'ny',    150 => 'az',
@@ -346,6 +346,7 @@ sub ProcessTTC($$)
     # might as well put a limit on the number of fonts we will parse (< 256)
     return 0 unless $num < 0x100 and $raf->Read($buff, $num * 4) == $num * 4;
     $et->SetFileType('TTC');
+    return 1 if $$et{OPTIONS}{FastScan} and $$et{OPTIONS}{FastScan} == 3;
     my $tagTablePtr = GetTagTable('Image::ExifTool::Font::Main');
     $et->HandleTag($tagTablePtr, 'numfonts', $num);
     # loop through all fonts in the collection
@@ -376,6 +377,7 @@ sub ProcessOTF($$)
     return 0 unless $buff =~ /^(\0\x01\0\0|OTTO|true|typ1|\xa5(kbd|lst))[\0\x01]/;
 
     $et->SetFileType($1 eq 'OTTO' ? 'OTF' : 'TTF');
+    return 1 if $$et{OPTIONS}{FastScan} and $$et{OPTIONS}{FastScan} == 3;
     SetByteOrder('MM');
     my $numTables = Get16u(\$buff, 4);
     return 0 unless $numTables > 0 and $numTables < 0x200;
@@ -394,7 +396,7 @@ sub ProcessOTF($$)
         my $offset = Get32u(\$tbl, $pos + 8);
         my $size   = Get32u(\$tbl, $pos + 12);
         unless ($raf->Seek($offset+$base, 0) and $raf->Read($buff, $size) == $size) {
-            $et->Warn("Error reading '$tag' data");
+            $et->Warn("Error reading '${tag}' data");
             next;
         }
         if ($verbose) {
@@ -513,6 +515,7 @@ sub ProcessAFM($$)
     return 0 unless $buff =~ /^Start(Comp|Master)?FontMetrics\s+\d+/;
     my $ftyp = $1 ? ($1 eq 'Comp' ? 'ACFM' : 'AMFM') : 'AFM';
     $et->SetFileType($ftyp, 'application/x-font-afm');
+    return 1 if $$et{OPTIONS}{FastScan} and $$et{OPTIONS}{FastScan} == 3;
     my $tagTablePtr = GetTagTable('Image::ExifTool::Font::AFM');
 
     for (;;) {
@@ -572,6 +575,7 @@ sub ProcessFont($$)
              $raf->Read($buf2, 11) == 11 and lc($buf2) eq "postscript\0")
     {
         $et->SetFileType('PFM');
+        return 1 if $$et{OPTIONS}{FastScan} and $$et{OPTIONS}{FastScan} == 3;
         SetByteOrder('II');
         my $tagTablePtr = GetTagTable('Image::ExifTool::Font::Main');
         # process the PFM header
@@ -611,7 +615,7 @@ types are OTF, TTF, TTC, DFONT, PFA, PFB, PFM, AFM, ACFM and AMFM.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
