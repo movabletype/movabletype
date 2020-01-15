@@ -259,11 +259,6 @@ sub edit {
 
             $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
 
-            # data api is disabled system-wide
-            if ( $blog_id and !defined $param->{enable_data_api} ) {
-                $param->{data_api_disable_site_readonly} = 1;
-            }
-
             if ( $cfg->is_readonly('DataAPIDisableSite') ) {
                 $param->{'data_api_disable_site_readonly'} = 1;
                 $param->{config_warning}                   = $app->translate(
@@ -356,12 +351,6 @@ sub edit {
     {
         # System level web services settings.
         $param->{enable_data_api} = data_api_is_enabled( $app, $blog_id );
-
-        # data api is disabled system-wide
-        if ( $blog_id and !defined $param->{enable_data_api} ) {
-            $param->{'data_api_disable_site_readonly'} = 1;
-        }
-
         if ( $app->config->is_readonly('DataAPIDisableSite') ) {
             $param->{'data_api_disable_site_readonly'} = 1;
             $param->{config_warning}                   = $app->translate(
@@ -3626,12 +3615,7 @@ sub data_api_is_enabled {
 
     my @disable_site = split ',',
         defined $cfg->DataAPIDisableSite ? $cfg->DataAPIDisableSite : '';
-
-    for my $id (@disable_site) {
-        return unless $id;  ## disabled system-wide
-        return 0 if $blog_id == $id;
-    }
-    return 1;
+    return ( grep { $blog_id == $_ } @disable_site ) ? 0 : 1;
 }
 
 sub save_data_api_settings {
