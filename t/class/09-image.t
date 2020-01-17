@@ -19,6 +19,7 @@ use File::Spec;
 use MT::Image;
 use MT::ConfigMgr;
 use MT;
+use MT::Test::Image;
 
 our( @Img, @drivers, $TESTS_FOR_EACH );
 
@@ -48,8 +49,13 @@ my $cfg    = MT::ConfigMgr->instance;
 my $tested = 0;
 for my $rec (@Img) {
     my ( $img_filename, $img_width, $img_height ) = @$rec;
-    my $img_file
-        = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', $img_filename );
+    my ($ext) = $img_filename =~ /\.(gif|jpg|png)$/;
+    my ( $guard, $img_file ) = MT::Test::Image->tempfile(
+        DIR    => $test_env->root,
+        SUFFIX => ".$ext",
+    );
+    close $guard;
+
     ok( -B $img_file, "$img_file looks like a binary file" );
 
     for my $driver (@drivers) {

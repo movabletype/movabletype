@@ -17,14 +17,12 @@ BEGIN {
 }
 
 use File::Basename;
-use File::Copy;
-use File::Spec;
-use File::Temp qw( tempfile );
 
 use MT::Test;
 use MT::Test::Permission;
 use MT;
 use MT::Image;
+use MT::Test::Image;
 
 if ( !MT::Image->new ) {
     plan skip_all => 'ImageDriver may be invalid.';
@@ -41,13 +39,12 @@ $fmgr_mock->mock( 'put_data', sub {1} );
 my $image_mock = Test::MockModule->new( ref MT::Image->new );
 
 # Generate temporary JPEG file.
-my $jpg_file
-    = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
-my ( $fh, $tempfile )
-    = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg', );
+my ( $fh, $tempfile ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => '.jpg',
+);
 close $fh;
-copy( $jpg_file, $tempfile );
-ok( -s $tempfile, 'Copy JPEG file.' );
+ok( -s $tempfile, 'JPEG file exists.' );
 
 # Generate temporary asset record.
 my $asset = MT::Test::Permission->make_asset(

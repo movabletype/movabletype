@@ -21,14 +21,9 @@ use MT::Test;
 use MT::Test::Permission;
 use MT;
 use MT::Image;
+use MT::Test::Image;
 
 use Image::ExifTool;
-
-my $jpg_file
-    = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
-
-# test may fail on Travis CI when test.jpg is changed by other test
-`git checkout $jpg_file`;
 
 $test_env->prepare_fixture('db');
 
@@ -39,10 +34,12 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
-        my ( $fh, $tempfile )
-            = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg' );
-        close $fh;
-        copy( $jpg_file, $tempfile );
+        my ( $fh, $tempfile ) = tempfile(
+            DIR    => $test_env->root,
+            SUFFIX => '.jpg',
+            UNLINK => 1,
+        );
+        MT::Test::Image->write( fh => $fh, type => 'jpeg' );
         ok( -s $tempfile, 'Copy JPEG file.' );
 
         my $image = MT::Test::Permission->make_asset(

@@ -24,11 +24,11 @@ binmode $builder->output,         ':encoding(utf8)';
 binmode $builder->failure_output, ':encoding(utf8)';
 binmode $builder->todo_output,    ':encoding(utf8)';
 
-use File::Spec;
 use JSON;
 
 use MT::Test;
 use MT;
+use MT::Test::Image;
 
 MT::Test->init_app;
 
@@ -133,6 +133,9 @@ sub upload_asset {
         $file = Encode::encode(cp932 => $file);
     }
 
+    my $test_image = $test_env->path($file);
+    MT::Test::Image->write( file => $test_image );
+
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
     my $app = _run_app(
         'MT::App::CMS',
@@ -143,7 +146,7 @@ sub upload_asset {
             destination      => '%s',
             __test_upload    => [
                 'file',
-                File::Spec->catfile( $ENV{MT_HOME}, qw/ t images /, $file ),
+                $test_image,
             ],
             auto_rename_non_ascii =>
                 1,    # Rename non-ascii filename automatically
