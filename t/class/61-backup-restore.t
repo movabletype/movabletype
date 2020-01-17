@@ -30,6 +30,8 @@ use Data::Dumper;
 
 $test_env->prepare_fixture('db_data');
 
+STDOUT->binmode(':encoding(utf8)');
+
 # MTC-26702
 my $group = MT::Test::Permission->make_group;
 my $site  = MT::Blog->load( 1 ) or die; 
