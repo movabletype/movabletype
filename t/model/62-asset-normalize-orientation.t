@@ -19,7 +19,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app );
+use MT::Test;
 use MT::Image;
 use MT::Test::Image;
 use File::Temp;

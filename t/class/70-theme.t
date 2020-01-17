@@ -18,8 +18,6 @@ use File::Spec;
 use FindBin qw( $Bin );
 use MT;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 my $mt = MT->instance;

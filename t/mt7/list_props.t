@@ -18,8 +18,6 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 
-MT::Test->init_app;
-
 use MT::ContentData;
 use MT::ListProperty;
 

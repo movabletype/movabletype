@@ -25,8 +25,6 @@ use MT::Association;
 use MT::Test;
 use MT::Test::Permission;
 
-BEGIN { MT::Test->init_app; }
-
 use MT::BackupRestore;
 use Data::Dumper;
 
