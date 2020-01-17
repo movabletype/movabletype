@@ -19,26 +19,16 @@ use File::Spec;
 use MT::Image;
 use MT::ConfigMgr;
 use MT;
+use MT::Test::Image;
 
-our( @Img, @drivers, $TESTS_FOR_EACH );
+my $TESTS_FOR_EACH = 29;
 
-BEGIN {
-    $TESTS_FOR_EACH = 29;
-
-    @Img = (
-        [ 'test.gif', 400, 300 ],
-        [ 'test.jpg', 640, 480 ],
-        [ 'test.png', 150, 150 ],
-    );
-    @drivers = qw( ImageMagick NetPBM GD Imager );
-    plan tests => scalar @Img    # file exists
-        + (
-              scalar @Img
-            * scalar @drivers
-            * $TESTS_FOR_EACH )    # each image by each driver
-        + 1                        # no driver test
-        ;
-}
+my @Img = (
+    [ 'test.gif', 400, 300 ],
+    [ 'test.jpg', 640, 480 ],
+    [ 'test.png', 150, 150 ],
+);
+my @drivers = qw( ImageMagick NetPBM GD Imager );
 
 MT->set_language('en-us');
 
@@ -48,8 +38,13 @@ my $cfg    = MT::ConfigMgr->instance;
 my $tested = 0;
 for my $rec (@Img) {
     my ( $img_filename, $img_width, $img_height ) = @$rec;
-    my $img_file
-        = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', $img_filename );
+    my ($ext) = $img_filename =~ /\.(gif|jpg|png)$/;
+    my ( $guard, $img_file ) = MT::Test::Image->tempfile(
+        DIR    => $test_env->root,
+        SUFFIX => ".$ext",
+    );
+    close $guard;
+
     ok( -B $img_file, "$img_file looks like a binary file" );
 
     for my $driver (@drivers) {
@@ -155,10 +150,10 @@ for my $rec (@Img) {
                 ok( $blob, "convert $img_filename to $to with $driver" );
             }
 
-            open FH, $img_file or die $!;
-            binmode FH;
-            my $data = do { local $/; <FH> };
-            close FH;
+            open my $fh, '<', $img_file or die $!;
+            binmode $fh;
+            my $data = do { local $/; <$fh> };
+            close $fh;
             $img = MT::Image->new( Data => $data, Type => $type );
 
             isa_ok( $img, 'MT::Image::' . $driver );
@@ -181,3 +176,5 @@ for my $rec (@Img) {
 }
 
 ok( $tested > 0, 'At least one of image drivers should be tested' );
+
+done_testing;

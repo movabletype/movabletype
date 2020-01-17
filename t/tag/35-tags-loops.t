@@ -46,7 +46,7 @@ $test_env->prepare_fixture(sub {
     });
     $obj->save or die $obj->errstr;
 
-    my ($author_role) = $mt->model('role')->load({ name => 'Author' });
+    my ($author_role) = $mt->model('role')->load({ name => MT->translate('Author') });
 
     my $author = $mt->model('author')->new;
     $author->set_values({

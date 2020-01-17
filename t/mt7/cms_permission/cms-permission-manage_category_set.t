@@ -65,7 +65,7 @@ my $user = MT::Author->load( { name => 'aikawa' } );
 
 require MT::Role;
 my $manage_category_set_role
-    = MT::Role->load( { name => 'Manage Category Set' } );
+    = MT::Role->load( { name => MT->translate('Manage Category Set') } );
 
 require MT::CategorySet;
 my $category_set  = MT::CategorySet->load( { name => 'test category set' } );

@@ -6,15 +6,12 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
-BEGIN {
-    eval qq{ use IPC::Run3; 1 }
-        or plan skip_all => 'IPC::Run3 is not installed';
-}
 
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         ThemesDirectory => 'TEST_ROOT/themes/',
+        DefaultLanguage => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -27,6 +24,7 @@ use IO::String;
 $| = 1;
 
 use MT::Test;
+use MT::Test::PHP;
 use JSON -support_by_pp;
 use MT;
 use MT::Util qw(ts2epoch epoch2ts);
@@ -305,9 +303,7 @@ PHP
             }
         }
     };
-    run3 ['php', '-q'],
-        \$test_script, \my $php_result, undef
-        or die $?;
+    my $php_result = MT::Test::PHP->run($test_script);
 
     my $RESULT = IO::String->new($php_result);
 
