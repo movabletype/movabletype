@@ -23,6 +23,8 @@ use MT::Template::Context;
 
 use MT::Test;
 
+MT::Test->init_app;
+
 # setup
 my %callbacks;
 my $mock_mt = Test::MockModule->new('MT');
