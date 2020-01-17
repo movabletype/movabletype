@@ -78,6 +78,8 @@ sub write_config {
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
         || ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
+    my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
+
     require MT;
 
     # common directives
@@ -97,7 +99,7 @@ sub write_config {
                 MT_HOME/themes/
                 )
         ],
-        DefaultLanguage     => 'en_US',
+        DefaultLanguage     => $default_language,
         StaticWebPath       => '/mt-static/',
         StaticFilePath      => 'TEST_ROOT/mt-static',
         EmailAddressMain    => 'mt@localhost.localdomain',
