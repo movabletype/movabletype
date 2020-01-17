@@ -32,7 +32,7 @@ sub write {
     my $data = $class->_image_data_for(\%args);
 
     my $fh = $args{fh} || IO::File->new( $args{file}, "w" );
-    $fh->binmode;
+    binmode $fh;
     $fh->autoflush(1);
     print $fh $data;
 }
