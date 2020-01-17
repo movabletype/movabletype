@@ -27,7 +27,7 @@ use File::Copy;
 use Image::ExifTool;
 
 my ( $guard, $src_file ) = MT::Test::Image->tempfile(
-    DIR => $test_env->root,
+    DIR    => $test_env->root,
     SUFFIX => '.jpg',
 );
 close $guard;
@@ -43,7 +43,7 @@ sub _create_image_with_orientation {
     );
     my ( $fh, $file ) = File::Temp::tempfile(
         SUFFIX => '.jpg',
-        DIR    => MT->config->TempDir
+        DIR    => $test_env->root,
     );
     close($fh);
     copy( $src_file, $file );
