@@ -21,25 +21,14 @@ use MT::ConfigMgr;
 use MT;
 use MT::Test::Image;
 
-our( @Img, @drivers, $TESTS_FOR_EACH );
+my $TESTS_FOR_EACH = 29;
 
-BEGIN {
-    $TESTS_FOR_EACH = 29;
-
-    @Img = (
-        [ 'test.gif', 400, 300 ],
-        [ 'test.jpg', 640, 480 ],
-        [ 'test.png', 150, 150 ],
-    );
-    @drivers = qw( ImageMagick NetPBM GD Imager );
-    plan tests => scalar @Img    # file exists
-        + (
-              scalar @Img
-            * scalar @drivers
-            * $TESTS_FOR_EACH )    # each image by each driver
-        + 1                        # no driver test
-        ;
-}
+my @Img = (
+    [ 'test.gif', 400, 300 ],
+    [ 'test.jpg', 640, 480 ],
+    [ 'test.png', 150, 150 ],
+);
+my @drivers = qw( ImageMagick NetPBM GD Imager );
 
 MT->set_language('en-us');
 
@@ -187,3 +176,5 @@ for my $rec (@Img) {
 }
 
 ok( $tested > 0, 'At least one of image drivers should be tested' );
+
+done_testing;
