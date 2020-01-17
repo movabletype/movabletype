@@ -13,9 +13,7 @@ BEGIN {
 }
 
 use File::Basename qw( basename );
-use File::Copy;
 use File::Spec;
-use File::Temp qw( tempfile );
 
 use MT::Test;
 use MT::Test::Permission;
@@ -34,13 +32,13 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
-        my ( $fh, $tempfile ) = tempfile(
+        my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
             DIR    => $test_env->root,
             SUFFIX => '.jpg',
-            UNLINK => 1,
         );
-        MT::Test::Image->write( fh => $fh, type => 'jpeg' );
-        ok( -s $tempfile, 'Copy JPEG file.' );
+        close $guard;
+
+        ok( -s $tempfile, 'JPEG file exists.' );
 
         my $image = MT::Test::Permission->make_asset(
             blog_id   => 1,
