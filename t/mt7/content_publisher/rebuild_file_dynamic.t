@@ -20,8 +20,7 @@ BEGIN {
 use MT::Test 'has_php';
 BEGIN { plan skip_all => "Can't find executable file: php" unless has_php(); }
 
-use IPC::Run3 'run3';
-
+use MT::Test::PHP;
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
 
@@ -89,10 +88,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 }
 PHP
 
-    run3 [ 'php', '-q' ], \$test_script, \my $result, undef,
-        { binmode_stdin => 1 }
-        or die $?;
-    $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+    my $result = MT::Test::PHP->run($test_script);
 
     my $test_name;
     if ( $tmpl->content_type_id ) {
