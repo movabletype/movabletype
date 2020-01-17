@@ -251,7 +251,7 @@ sub make_asset {
     require File::Basename;
     my ( $name, $dirs, $ext ) = File::Basename::fileparse( $values->{file_path} );
     $values->{file_name} = "$name$ext";
-    $ext =~ s/$\.// if $ext;
+    $ext =~ s/^\.// if $ext;
     $values->{file_ext} = $ext;
 
     require MT::Asset;
