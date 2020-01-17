@@ -171,7 +171,7 @@ sub make_role {
     require MT::Role;
     my $role = MT::Role->new();
     $role->set_values(
-        {   name        => $params{name},
+        {   name        => MT->translate( $params{name} ),
             permissions => $params{permissions},
         }
     );

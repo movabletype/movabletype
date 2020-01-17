@@ -588,7 +588,7 @@ sub init_data {
 
     require MT::Role;
     my ( $admin_role, $author_role )
-        = map { MT::Role->load( { name => $_ } ) }
+        = map { MT::Role->load( { name => MT->translate($_) } ) }
         ( 'Site Administrator', 'Author' );
 
     unless ( $admin_role && $author_role ) {
@@ -624,7 +624,7 @@ sub init_data {
         require MT::Object;
         MT::Object->driver->clear_cache;
         ( $admin_role, $author_role )
-            = map { MT::Role->load( { name => $_ } ) }
+            = map { MT::Role->load( { name => MT->translate($_) } ) }
             ( 'Site Administrator', 'Author' );
     }
 

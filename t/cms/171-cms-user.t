@@ -282,7 +282,7 @@ subtest 'Manage Users screen' => sub {
 subtest 'Batch Edit Entries screen' => sub {
     my $website = MT->model('website')->load;
     MT::Test::Permission->make_entry( blog_id => $website->id );
-    my $role = MT::Role->load( { name => 'Site Administrator' } );
+    my $role = MT::Role->load( { name => MT->translate('Site Administrator') } );
     MT::Association->link( $admin, $role, $website );
 
     foreach my $blog_type (qw( blog website )) {
