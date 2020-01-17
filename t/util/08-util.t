@@ -48,10 +48,6 @@ MT->set_instance($mt);
 
 $mt->config( 'NoHTMLEntities', 1 );
 
-if ( $^O eq 'MSWin32' ) {
-    $mt->config( 'TempDir', File::Spec->tmpdir );
-}
-
 ## Use done_testing()
 ## BEGIN { plan tests => 221 };
 

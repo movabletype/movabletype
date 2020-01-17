@@ -24,10 +24,6 @@ $test_env->prepare_fixture('db_data');
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
-if ( $^O eq 'MSWin32' ) {
-    $app->config->TempDir( File::Spec->tmpdir );
-}
-
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent = 0;
 

@@ -138,10 +138,6 @@ subtest 'mode = apply_theme' => sub {
 };
 
 subtest 'mode = do_export_theme' => sub {
-    if ( $^O eq 'MSWin32' ) {
-        $app->config->TempDir( File::Spec->tmpdir );
-    }
-
     $app = _run_app(
         'MT::App::CMS',
         {   __test_user      => $admin,
