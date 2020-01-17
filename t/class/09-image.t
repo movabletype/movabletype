@@ -150,10 +150,10 @@ for my $rec (@Img) {
                 ok( $blob, "convert $img_filename to $to with $driver" );
             }
 
-            open FH, $img_file or die $!;
-            binmode FH;
-            my $data = do { local $/; <FH> };
-            close FH;
+            open my $fh, '<', $img_file or die $!;
+            binmode $fh;
+            my $data = do { local $/; <$fh> };
+            close $fh;
             $img = MT::Image->new( Data => $data, Type => $type );
 
             isa_ok( $img, 'MT::Image::' . $driver );
