@@ -54,7 +54,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      */
     public function populate(Smarty_Template_Cached $cached, Smarty_Internal_Template $_template)
     {
-        $cached->filepath = sha1($_template->source->uid) . '#' . $this->sanitize($cached->source->resource) . '#' .
+        $cached->filepath = $_template->source->uid . '#' . $this->sanitize($cached->source->resource) . '#' .
                             $this->sanitize($cached->cache_id) . '#' . $this->sanitize($cached->compile_id);
 
         $this->populateTimestamp($cached);
@@ -76,37 +76,34 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
         }
         $cached->content = $content;
         $cached->timestamp = (int) $timestamp;
-        $cached->exists = $cached->timestamp;
+        $cached->exists = !!$cached->timestamp;
     }
 
     /**
      * Read the cached template and process the header
      *
-     * @param  Smarty_Internal_Template $_template template object
-     * @param  Smarty_Template_Cached   $cached    cached object
-     * @param bool                      $update    flag if called because cache update
+     * @param \Smarty_Internal_Template $_smarty_tpl do not change variable name, is used by compiled template
+     * @param  Smarty_Template_Cached   $cached      cached object
+     * @param boolean                   $update      flag if called because cache update
      *
      * @return boolean                 true or false if the cached content does not exist
      */
-    public function process(Smarty_Internal_Template $_template, Smarty_Template_Cached $cached = null, $update = false)
+    public function process(Smarty_Internal_Template $_smarty_tpl, Smarty_Template_Cached $cached = null,
+                            $update = false)
     {
         if (!$cached) {
-            $cached = $_template->cached;
+            $cached = $_smarty_tpl->cached;
         }
         $content = $cached->content ? $cached->content : null;
         $timestamp = $cached->timestamp ? $cached->timestamp : null;
         if ($content === null || !$timestamp) {
-            if (!$this->fetch($_template->cached->filepath, $_template->source->name, $_template->cache_id,
-                              $_template->compile_id, $content, $timestamp, $_template->source->uid)
+            if (!$this->fetch($_smarty_tpl->cached->filepath, $_smarty_tpl->source->name, $_smarty_tpl->cache_id,
+                              $_smarty_tpl->compile_id, $content, $timestamp, $_smarty_tpl->source->uid)
             ) {
                 return false;
             }
         }
         if (isset($content)) {
-            /** @var Smarty_Internal_Template $_smarty_tpl
-             * used in evaluated code
-             */
-            $_smarty_tpl = $_template;
             eval("?>" . $content);
 
             return true;
@@ -135,7 +132,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
      *
      * @param  Smarty_Internal_Template $_template template object
      *
-     * @return string  content
+     * @return string|false  content
      */
     public function readCachedContent(Smarty_Internal_Template $_template)
     {
@@ -230,7 +227,7 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     {
         $string = trim($string, '|');
         if (!$string) {
-            return null;
+            return '';
         }
         return preg_replace('#[^\w\|]+#S', '_', $string);
     }
@@ -290,6 +287,10 @@ abstract class Smarty_CacheResource_KeyValueStore extends Smarty_CacheResource
     protected function getMetaTimestamp(&$content)
     {
         extract(unpack('N1s/N1m/a*content', $content));
+        /**
+         * @var  int $s
+         * @var  int $m
+         */
         return $s + ($m / 100000000);
     }
 
