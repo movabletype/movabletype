@@ -172,6 +172,7 @@ SKIP: {
                     "expected_todo",
                     "expected_php_error",
                     "expected_error",
+                    "expected_php",
                 );
                 my $expected_method = "expected";
                 for my $method (@extra_methods) {
@@ -214,6 +215,7 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
+    $template =~ s/\$/\\\$/g;
 
     my $test_script = <<PHP;
 <?php
