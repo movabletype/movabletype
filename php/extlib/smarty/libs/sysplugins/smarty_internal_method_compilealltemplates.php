@@ -23,7 +23,7 @@ class Smarty_Internal_Method_CompileAllTemplates
      *
      * @api  Smarty::compileAllTemplates()
      *
-     * @param \Smarty $smarty
+     * @param \Smarty $smarty        passed smarty object
      * @param  string $extension     file extension
      * @param  bool   $force_compile force all to recompile
      * @param  int    $time_limit
@@ -61,7 +61,8 @@ class Smarty_Internal_Method_CompileAllTemplates
         $sourceDir = $isConfig ? $smarty->getConfigDir() : $smarty->getTemplateDir();
         // loop over array of source directories
         foreach ($sourceDir as $_dir) {
-            $_dir_1 = new RecursiveDirectoryIterator($_dir);
+            $_dir_1 = new RecursiveDirectoryIterator($_dir, defined('FilesystemIterator::FOLLOW_SYMLINKS') ?
+                FilesystemIterator::FOLLOW_SYMLINKS : 0);
             $_dir_2 = new RecursiveIteratorIterator($_dir_1);
             foreach ($_dir_2 as $_fileinfo) {
                 $_file = $_fileinfo->getFilename();
@@ -72,12 +73,16 @@ class Smarty_Internal_Method_CompileAllTemplates
                     continue;
                 }
                 if ($_fileinfo->getPath() !== substr($_dir, 0, - 1)) {
-                    $_file = substr($_fileinfo->getPath(), strlen($_dir)) . DS . $_file;
+                    $_file = substr($_fileinfo->getPath(), strlen($_dir)) . $smarty->ds . $_file;
                 }
                 echo "\n<br>", $_dir, '---', $_file;
                 flush();
                 $_start_time = microtime(true);
                 $_smarty = clone $smarty;
+                // 
+                $_smarty->_cache = array();
+                $_smarty->ext = new Smarty_Internal_Extension_Handler();
+                $_smarty->ext->objType = $_smarty->_objType;
                 $_smarty->force_compile = $force_compile;
                 try {
                     /* @var Smarty_Internal_Template $_tpl */
