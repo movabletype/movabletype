@@ -172,6 +172,7 @@ SKIP: {
                     "expected_todo",
                     "expected_php_error",
                     "expected_error",
+                    "expected_php",
                 );
                 my $expected_method = "expected";
                 for my $method (@extra_methods) {
