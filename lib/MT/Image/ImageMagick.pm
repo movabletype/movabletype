@@ -92,10 +92,25 @@ sub png_quality {
     $image->SUPER::png_quality(@_) * 10;
 }
 
+my $HasRefType;
+sub _get_first_image {
+    my $magick = shift;
+    if ( !defined $HasRefType ) {
+        $HasRefType = eval { require Scalar::Util; 1 } ? 1 : 0;
+    }
+
+    # It may cost too much to manipulate large animated GIF image
+    # that contains many images inside.
+    if ( $HasRefType and Scalar::Util::reftype($magick) eq 'ARRAY' ) {
+        return $magick->[0];
+    }
+    return $magick;
+}
+
 sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
     eval {
         my ( $orig_x, $orig_y ) = $magick->Get( 'width', 'height' );
@@ -138,7 +153,7 @@ sub crop_rectangle {
     my $image = shift;
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
 
     eval {
@@ -174,7 +189,7 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image  = shift;
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
 
     eval {
@@ -189,7 +204,7 @@ sub flipHorizontal {
 
 sub flipVertical {
     my $image  = shift;
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
 
     eval {
@@ -204,7 +219,7 @@ sub flipVertical {
 sub rotate {
     my $image = shift;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
 
     eval {
@@ -221,7 +236,7 @@ sub convert {
     my $image  = shift;
     my %param  = @_;
     my $type   = $image->{type} = $param{Type};
-    my $magick = $image->{magick};
+    my $magick = _get_first_image( $image->{magick} );
     my $blob;
 
     eval {
