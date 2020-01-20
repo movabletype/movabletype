@@ -13,6 +13,10 @@
  *
  * @package    Smarty
  * @subpackage TemplateResources
+ *
+ * @method renderUncompiled(Smarty_Template_Source $source, Smarty_Internal_Template $_template)
+ * @method populateCompiledFilepath(Smarty_Template_Compiled $compiled, Smarty_Internal_Template $_template)
+ * @method process(Smarty_Internal_Template $_smarty_tpl)
  */
 abstract class Smarty_Resource
 {
@@ -48,27 +52,6 @@ abstract class Smarty_Resource
      * @var bool
      */
     public $hasCompiledHandler = false;
-
-    /**
-     * Name of the Class to compile this resource's contents with
-     *
-     * @var string
-     */
-    public $compiler_class = 'Smarty_Internal_SmartyTemplateCompiler';
-
-    /**
-     * Name of the Class to tokenize this resource's contents with
-     *
-     * @var string
-     */
-    public $template_lexer_class = 'Smarty_Internal_Templatelexer';
-
-    /**
-     * Name of the Class to parse this resource's contents with
-     *
-     * @var string
-     */
-    public $template_parser_class = 'Smarty_Internal_Templateparser';
 
     /**
      * Load template's source into current template object
@@ -131,7 +114,7 @@ abstract class Smarty_Resource
      */
     public function getBasename(Smarty_Template_Source $source)
     {
-        return null;
+        return basename(preg_replace('![^\w]+!', '_', $source->name));
     }
 
     /**
@@ -226,16 +209,16 @@ abstract class Smarty_Resource
      */
     public static function getUniqueTemplateName($obj, $template_resource)
     {
-        $smarty = $obj->_objType == 2 ? $obj->smarty : $obj;
+        $smarty = $obj->_getSmartyObj();
         list($name, $type) = self::parseResourceName($template_resource, $smarty->default_resource_type);
         // TODO: optimize for Smarty's internal resource types
         $resource = Smarty_Resource::load($smarty, $type);
         // go relative to a given template?
         $_file_is_dotted = $name[ 0 ] == '.' && ($name[ 1 ] == '.' || $name[ 1 ] == '/');
-        if ($obj->_objType == 2 && $_file_is_dotted &&
+        if ($obj->_isTplObj() && $_file_is_dotted &&
             ($obj->source->type == 'file' || $obj->parent->source->type == 'extends')
         ) {
-            $name = dirname($obj->source->filepath) . DS . $name;
+             $name = $smarty->_realpath(dirname($obj->parent->source->filepath) . $smarty->ds . $name);
         }
         return $resource->buildUniqueResourceName($smarty, $name);
     }
