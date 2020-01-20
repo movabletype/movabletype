@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.14  06-Jan-2019
+@version   v5.20.16  12-Jan-2020
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -128,7 +128,6 @@ class ADODB_mssqlnative extends ADOConnection {
 	var $cachedSchemaFlush = false;
 	var $sequences = false;
 	var $mssql_version = '';
-    var $is_utf = false;
 
 	function __construct()
 	{
@@ -478,9 +477,7 @@ class ADODB_mssqlnative extends ADOConnection {
 		$connectionInfo["Database"]=$argDatabasename;
 		$connectionInfo["UID"]=$argUsername;
 		$connectionInfo["PWD"]=$argPassword;
-        if ( $this->is_utf )
-            $connectionInfo['CharacterSet'] = 'UTF-8';
-
+		
 		foreach ($this->connectionParameters as $parameter=>$value)
 		    $connectionInfo[$parameter] = $value;
 		
@@ -834,12 +831,6 @@ class ADODB_mssqlnative extends ADOConnection {
 		return $retarr;
 	}
 
-    function Execute($sql,$inputarr=false) {
-        if ( $this->is_utf )
-            $sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
-        return parent::Execute( $sql, $inputarr );
-    }
-
 }
 
 /*--------------------------------------------------------------------------------------
@@ -1083,7 +1074,7 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 		is running. All associated result memory for the specified result identifier will automatically be freed.	*/
 	function _close()
 	{
-		if(is_object($this->_queryID)) {
+		if(is_resource($this->_queryID)) {
 			$rez = sqlsrv_free_stmt($this->_queryID);
 			$this->_queryID = false;
 			return $rez;

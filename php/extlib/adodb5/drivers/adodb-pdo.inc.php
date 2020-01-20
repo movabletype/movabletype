@@ -1,6 +1,6 @@
 <?php
 /**
-	@version   v5.20.14  06-Jan-2019
+	@version   v5.20.16  12-Jan-2020
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -147,9 +147,6 @@ class ADODB_pdo extends ADOConnection {
 				default:
 					$argDSN .= ';dbname='.$argDatabasename;
 			}
-		}
-		if ( $this->port ) {
-			$argDSN .= ';port=' . $this->port;
 		}
 		try {
 			$this->_connectionID = new PDO($argDSN, $argUsername, $argPassword);
@@ -484,8 +481,6 @@ class ADODB_pdo extends ADOConnection {
 		#adodb_backtrace();
 		#var_dump($this->_bindInputArray);
 		if ($stmt) {
-			if (empty($this->_driver))
-				$this->_driver = new stdClass;
 			$this->_driver->debug = $this->debug;
 			if ($inputarr) {
 				$ok = $stmt->execute($inputarr);
