@@ -2716,8 +2716,8 @@ sub asset_from_url {
     unless ( $fmgr->exists($local_path) ) {
         $fmgr->mkpath($local_path);
     }
-    require MT::Util::Digest::SHA1;
-    my $filename = MT::Util::Digest::SHA1::sha1_hex($image_url);
+    require MT::Util::Digest::SHA;
+    my $filename = MT::Util::Digest::SHA::sha1_hex($image_url);
     unless ($ext) {    # trust content type higher than url extension
         ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
     }
