@@ -474,12 +474,12 @@ function open_dialog(href, opts) {
         $('body').addClass('has-dialog');
     }
     $('.mt-dialog').show();
-    $('.mt-dialog').bind('close', function(event, fn) {
+    $('.mt-dialog').on('close', function(event, fn) {
         fn(event);
     });
     $('.mt-dialog-overlay').show();
     if (opts.esckeyclose) {
-        $(document).bind('keyup.mt-dialog', function(event){
+        $(document).on('keyup.mt-dialog', function(event){
             if (event.keyCode == 27) {
                 close_dialog();
             }
@@ -498,8 +498,8 @@ function close_dialog(url, fn) {
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
     }
-    $(document).unbind('keyup.mt-dialog');
-    $('.mt-dialog').unbind('close');
+    $(document).off('keyup.mt-dialog');
+    $('.mt-dialog').off('close');
     $('.mt-dialog').hide();
 
     // Removing "iframe" in delay.
@@ -1151,8 +1151,8 @@ $.mtValidator('default', {
         jQuery.data( $target.get(0), 'validate_focus', focus );
         jQuery.data( $target.get(0), 'validate_blur',  blur );
         $target
-            .bind('focus', focus)
-            .bind('blur', blur);
+            .on('focus', focus)
+            .on('blur', blur);
         if ( $target.get(0) === document.activeElement )
             $error_block.show();
         else
@@ -1178,8 +1178,8 @@ $.mtValidator('default', {
         var focus = jQuery.data( $target.get(0), 'validate_focus'),
             blur  = jQuery.data( $target.get(0), 'validate_blur');
         $target
-            .unbind('focus', focus)
-            .unbind('blur', blur);
+            .off('focus', focus)
+            .off('blur', blur);
     },
     doFocus: false
 });

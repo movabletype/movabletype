@@ -11,7 +11,7 @@ window.setDirty = function(dirty) {
   }
 }
 
-$(window).bind('beforeunload', function() {
+$(window).on('beforeunload', function() {
   if (isdirty) {
     return trans('You have unsaved changes to this page that will be lost.');
   }

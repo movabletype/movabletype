@@ -281,7 +281,7 @@ $.fn.numeric.blur = function()
 
 $.fn.removeNumeric = function()
 {
-	return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).data("numeric.decimalPlaces", null).unbind("keypress", $.fn.numeric.keypress).unbind("keyup", $.fn.numeric.keyup).unbind("blur", $.fn.numeric.blur);
+	return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).data("numeric.decimalPlaces", null).off("keypress", $.fn.numeric.keypress).off("keyup", $.fn.numeric.keyup).off("blur", $.fn.numeric.blur);
 };
 
 // Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)

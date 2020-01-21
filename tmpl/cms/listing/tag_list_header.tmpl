@@ -169,7 +169,7 @@ function editTagName(anchor) {
   return false;
 }
 
-jQuery(window).bind('listReady', function() {
+jQuery(window).on('listReady', function() {
   tag_names = {};
   jQuery('.edit-tag').each(function(){
     tag_names[ jQuery(this).text() ] = 1;

@@ -1131,7 +1131,7 @@ function saveTemplatePrefs( sync ) {
 <mt:else>
     setSyntaxHighlight('off');
 </mt:if>
-    jQuery(window).bind('pre_autosave', function(){
+    jQuery(window).on('pre_autosave', function(){
         syncEditor();
     });
     function saveArchiveMapChange(param) {

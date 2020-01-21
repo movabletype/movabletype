@@ -116,7 +116,7 @@
 
                     enabled = false;
                     fitToWindow = function(){};
-                    $window.unbind('resize.mt_fullscreen');
+                    $window.off('resize.mt_fullscreen');
                 }
                 ed.fire('mtFullscreenStateChanged', {state: enabled});
 
