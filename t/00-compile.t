@@ -198,6 +198,9 @@ use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::ContentType');
+use_ok('MT::Util::Deprecated');
+use_ok('MT::Util::Digest::MD5');
+use_ok('MT::Util::Digest::SHA');
 use_ok('MT::Template::Tags::Common');
 use_ok('MT::version');
 
