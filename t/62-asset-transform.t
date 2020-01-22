@@ -19,7 +19,7 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use MT::Test qw( :app :db );
+use MT::Test qw(:db);
 use MT::Test::Permission;
 use MT;
 use MT::Image;

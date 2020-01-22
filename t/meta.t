@@ -15,7 +15,7 @@ BEGIN {
 plan tests => 6;
 use Data::Dumper;
 
-use MT::Test qw( :db :app :data );
+use MT::Test qw( :db :data );
 
 use MT::Blog;
 
