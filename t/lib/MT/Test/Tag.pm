@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2017 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2017 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -11,12 +11,11 @@ use Encode;
 use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
+use MT::Test::PHP;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
-    eval qq{ use IPC::Run3 'run3'; 1 }
-        or plan skip_all => 'IPC::Run3 is not installed';
 }
 
 my $vars = {};
@@ -153,11 +152,7 @@ SKIP: {
                 my $php_script = php_test_script( $block->blog_id || $blog_id,
                     $template, $text, $extra );
 
-                run3 [ 'php', '-q' ], \$php_script, \my $php_result, undef,
-                    { binmode_stdin => 1 }
-                    or die $?;
-                $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-                $php_result = Encode::decode_utf8($php_result);
+                my $php_result = MT::Test::PHP->run($php_script);
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 

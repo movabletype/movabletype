@@ -13,15 +13,14 @@ BEGIN {
 }
 
 use File::Basename qw( basename );
-use File::Copy;
 use File::Spec;
-use File::Temp qw( tempfile );
 use Test::More;
 
 use MT::Test qw(:db);
 use MT::Test::Permission;
 use MT;
 use MT::Image;
+use MT::Test::Image;
 
 use Image::ExifTool;
 
@@ -32,13 +31,13 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
 
-        my $jpg_file
-            = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
-        my ( $fh, $tempfile )
-            = tempfile( DIR => MT->config->TempDir, SUFFIX => '.jpg' );
-        close $fh;
-        copy( $jpg_file, $tempfile );
-        ok( -s $tempfile, 'Copy JPEG file.' );
+        my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+            DIR    => $test_env->root,
+            SUFFIX => '.jpg',
+        );
+        close $guard;
+
+        ok( -s $tempfile, 'JPEG file exists.' );
 
         my $image = MT::Test::Permission->make_asset(
             blog_id   => 1,
