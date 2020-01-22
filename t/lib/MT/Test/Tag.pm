@@ -219,6 +219,7 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
+    $template =~ s/\$/\\\$/g;
 
     my $test_script = <<PHP;
 <?php
