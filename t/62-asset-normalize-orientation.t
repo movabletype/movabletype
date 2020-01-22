@@ -43,9 +43,8 @@ sub _create_image_with_orientation {
         Type        => 'ValueConv'
     );
     my ( $fh, $file ) = File::Temp::tempfile(
-        undef,
         SUFFIX => '.jpg',
-        DIR    => MT->config->TempDir
+        DIR    => $test_env->root,
     );
     close($fh);
     copy( $src_file, $file );
