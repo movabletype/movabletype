@@ -17,10 +17,10 @@ BEGIN {
         or plan skip_all => 'Test::MockModule is not installed';
 }
 
-use IPC::Open2;
 use URI;
 
 use MT::Test qw(:db :data);
+use MT::Test::PHP;
 use MT::WeblogPublisher;
 my $app       = MT->instance;
 my $publisher = MT::WeblogPublisher->new;
@@ -159,10 +159,7 @@ print($ctx->stash('current_mapping_url') . "\n");
 print($ctx->stash('preferred_mapping_url') . "\n");
 PHP
 
-    open2( my $php_in, my $php_out, 'php -q' );
-    print {$php_out} $test_script;
-    close $php_out;
-    my $php_result = do { local $/; <$php_in> };
+    my $php_result = MT::Test::PHP->run($test_script);
 
     my $result = {};
     @$result{qw(current_mapping_url preferred_mapping_url)} = split /\n/,
