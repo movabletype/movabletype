@@ -628,7 +628,6 @@ sub start {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
         my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
         push @DATA,
             [
             $driver->{dbd_package},
@@ -720,7 +719,6 @@ sub configure {
             push @ids, "'" . $id . "'";
         }
         my $link = 'https://metacpan.org/pod/' . $driver->{dbd_package};
-        $link =~ s/::/-/g;
         push @DATA,
             [
             $driver->{dbd_package},
