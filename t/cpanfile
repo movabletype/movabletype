@@ -102,6 +102,7 @@ on 'test' => sub {
     requires 'SQL::Maker';
     requires 'SQL::Translator';
     requires 'String::CamelCase';
+    requires 'Term::Encoding';
     requires 'Test::Base';
     requires 'Test::Class';
     requires 'Test::Data';
