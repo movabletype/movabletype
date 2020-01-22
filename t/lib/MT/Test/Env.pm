@@ -927,31 +927,6 @@ sub DESTROY {
             $self->enable_plugin($name);
         }
     }
-
-    my @bad_files = qw(
-        t/atom.xml
-        t/2018
-        t/2017
-        t/1978
-        t/archives.html
-        t/index.html
-        t/mt.js
-        t/rsd.xml
-        t/styles.css
-    );
-    my $found;
-    for my $file (@bad_files) {
-        if (-e $file) {
-            my ($pkg, $file, $line) = caller;
-            open my $log, '>>', 'error.log';
-            print $log "BOOO: $file spits bad files\n";
-            $found = 1;
-            last;
-        }
-    }
-    if ($found) {
-        system("rm -rf t/mt-preview-* t/atom.xml t/2018 t/2017 t/1978 t/archives.html t/index.html t/mt.js t/rsd.xml t/styles.css t/bar t/foo");
-    }
 }
 
 1;
