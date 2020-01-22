@@ -373,6 +373,11 @@ sub _fixture_file {
 sub prepare_fixture {
     my $self = shift;
 
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG MYSQL_CHARSET MYSQL_COLLATION / ) {
+        $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+        note "Fixture is ignored because of an environmental variable";
+    }
+
     require MT::Test;
     my $app = $ENV{MT_APP} || 'MT::App';
     eval "require $app; 1" or die $@;
