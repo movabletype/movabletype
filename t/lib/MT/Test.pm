@@ -326,21 +326,27 @@ sub _load_classes {
     my $mt = MT->instance( $cfg ? ( Config => $cfg ) : () )
         or die "No MT object " . MT->errstr;
 
+    my @classes;
     my $types = MT->registry('object_types');
-    $types->{$_} = MT->model($_)
-        for grep { MT->model($_) }
-        map      { $_ . ':meta' }
-        grep     { MT->model($_)->meta_pkg }
-        sort keys %$types;
-    foreach my $key (qw( entry user )) {
-        $types->{ $key . ':summary' } = $types->{$key} . '::Summary';
-    }
-    my @classes = map { $types->{$_} } grep { $_ !~ /\./ } sort keys %$types;
-    foreach my $class (@classes) {
-        if ( ref($class) eq 'ARRAY' ) {
-            next;    #TODO for now - it won't hurt when we do driver-tests.
+    for my $key ( keys %$types ) {
+        next if $key =~ /\./;
+        my $class = $types->{$key};
+        $class = $class->[0] if ref $class eq 'ARRAY';
+        push @classes, $class;
+
+        if ( $key eq 'entry' or $key eq 'user' ) {
+            push @classes, "$class\::Summary";
         }
-        elsif ( !defined *{ $class . '::__properties' } ) {
+
+        if ( my $model = MT->model($key) ) {
+            if ( $model->meta_pkg ) {
+                my $meta_class = MT->model("$key:meta");
+                push @classes, $meta_class if $meta_class;
+            }
+        }
+    }
+    foreach my $class (@classes) {
+        if ( !defined *{ $class . '::__properties' } ) {
             eval '# line '
                 . __LINE__ . ' '
                 . __FILE__ . "\n"
@@ -360,16 +366,9 @@ sub init_newdb {
     # Clear existing database tables
     my $driver = MT::Object->driver();
     foreach my $class (@classes) {
-        if ( ref($class) eq 'ARRAY' ) {
-            next;    #TODO for now - it won't hurt when we do driver-tests.
-        }
-        else {
-
-            if ( $driver->dbd->ddl_class->table_exists($class) ) {
-                $driver->sql( $driver->dbd->ddl_class->drop_table_sql($class),
-                );
-                $driver->dbd->ddl_class->drop_sequence($class),;
-            }
+        if ( $driver->dbd->ddl_class->table_exists($class) ) {
+            $driver->sql( $driver->dbd->ddl_class->drop_table_sql($class) );
+            $driver->dbd->ddl_class->drop_sequence($class),;
         }
     }
 
