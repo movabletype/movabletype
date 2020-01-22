@@ -27,6 +27,15 @@ use lib "$MT_HOME/lib", "$MT_HOME/extlib";
 use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
+use Term::Encoding qw(term_encoding);
+
+my $enc = term_encoding() || 'utf8';
+
+my $builder = Test::More->builder;
+binmode $builder->output,         ":encoding($enc)";
+binmode $builder->failure_output, ":encoding($enc)";
+binmode $builder->todo_output,    ":encoding($enc)";
+
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
