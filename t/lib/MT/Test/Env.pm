@@ -39,7 +39,7 @@ binmode $builder->todo_output,    ":encoding($enc)";
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
-    my $root = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
+    my $root     = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
     $ENV{MT_TEST_ROOT} = $root;
     $ENV{PERL_JSON_BACKEND} ||= 'JSON::PP';
@@ -484,7 +484,7 @@ sub _find_file {
 
 sub load_schema_and_fixture {
     my ( $self, $fixture_id ) = @_;
-    my $schema_file = $self->_find_file( $self->_schema_file ) or return;
+    my $schema_file  = $self->_find_file( $self->_schema_file ) or return;
     my $fixture_file = $self->_find_file( $self->_fixture_file($fixture_id) )
         or return;
     return
@@ -494,7 +494,7 @@ sub load_schema_and_fixture {
     my ( $s, $m, $h, $d, $mo, $y ) = gmtime;
     my $now = sprintf( "%04d%02d%02d%02d%02d%02d",
         $y + 1900, $mo + 1, $d, $h, $m, $s );
-    my @pool = ( 'a' .. 'z', 0 .. 9 );
+    my @pool     = ( 'a' .. 'z', 0 .. 9 );
     my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
     my $salt     = join '', map { $pool[ rand @pool ] } 1 .. 16;
 
@@ -539,7 +539,7 @@ sub load_schema_and_fixture {
             my ( $sql, @bind )
                 = $sql_maker->insert_multi( $table, @$data{qw/cols rows/} );
             for my $bind_value (@bind) {
-                if ($bind_value && $bind_value =~ /^BIN:SERG/) {
+                if ( $bind_value && $bind_value =~ /^BIN:SERG/ ) {
                     $bind_value =~ s/(.)/sprintf('0x%02x', ord($1))/ge;
                 }
             }
@@ -742,7 +742,7 @@ sub save_fixture {
 sub _tweak_schema {
     my $schema = shift;
     $schema =~ s/^\-\- Created on .+$//m;
-    $schema =~ s/NULL DEFAULT NULL/NULL/g;  ## mariadb 10.2.1+
+    $schema =~ s/NULL DEFAULT NULL/NULL/g;    ## mariadb 10.2.1+
     $schema;
 }
 
@@ -752,16 +752,15 @@ sub test_schema {
     $self->_get_id_from_caller;
     $self->_set_fixture_dirs;
 
-    my $driver       = lc $self->{driver};
-    my $schema_file  = "$self->{fixture_dirs}[0]/schema.$driver.sql";
+    my $driver      = lc $self->{driver};
+    my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
     my $saved_schema = _slurp($schema_file);
 
     my $generated_schema = $self->_generate_schema;
 
-    if (_tweak_schema($generated_schema) eq _tweak_schema($saved_schema) )
-    {
+    if ( _tweak_schema($generated_schema) eq _tweak_schema($saved_schema) ) {
         pass "schema is up-to-date";
     }
     else {
@@ -880,9 +879,9 @@ sub clear_mt_cache {
 
 sub ls {
     my ( $self, $root, $callback ) = @_;
-    if ( ref $root eq ref sub {} ) {
+    if ( ref $root eq ref sub { } ) {
         $callback = $root;
-        $root = undef;
+        $root     = undef;
     }
     $callback ||= sub {
         my $file = shift;
