@@ -58,6 +58,9 @@ __END__
 <MTArchiveList archive_type='Category-Yearly'><MTArchiveTitle>: <MTArchiveCount>
 </MTArchiveList>
 </MTCategories>
---- expected
+--- expected_todo
 2015: 1
 2013: 1
+--- expected_php
+foo: 2015: 1
+foo: 2013: 1
