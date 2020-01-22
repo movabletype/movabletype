@@ -225,7 +225,12 @@ sub _connect_info_mysql {
     else {
         $self->{dsn}
             = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect( $self->{dsn} ) or die $DBI::errstr;
+        my $dbh = DBI->connect( $self->{dsn} );
+        if ( !$dbh ) {
+            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
+            ( my $dsn = $self->{dsn} ) =~ s/dbname=$info{Database};//;
+            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        }
         $self->_prepare_mysql_database($dbh);
     }
     return %info;
