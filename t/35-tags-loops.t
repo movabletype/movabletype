@@ -12,9 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Open2;
-
-use Test::Base;
+use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
@@ -305,108 +303,18 @@ for my $ix (1..2) {
     $obj->save or die $obj->errstr;
 }
 
+sub _set_handler_perl {
+    my ($ctx, $block) = @_;
+    return unless $block->name eq 'mt:SearchResults';
 
-run {
-    my $block = shift;
+    require MT::Template::Context::Search;
+    my $mt = MT->instance;
+    $mt->{__tag_handlers}->{'searchresults'}->[0] =
+        \&MT::Template::Context::Search::_hdlr_results;
 
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
-
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( $block->template );
-        my $ctx = $tmpl->context;
-
-        if ($block->name eq 'mt:SearchResults') {
-            require MT::Template::Context::Search;
-            $mt->{__tag_handlers}->{'searchresults'}->[0] = 
-                \&MT::Template::Context::Search::_hdlr_results;
-
-            my @elist = $mt->model('entry')->load({ blog_id => $blog_id });
-            $ctx->stash('results', sub { return shift @elist });
-            $ctx->stash('count', 2);
-        }
-
-        my $blog = MT::Blog->load($blog_id);
-        $ctx->stash( 'blog',          $blog );
-        $ctx->stash( 'blog_id',       $blog->id );
-        $ctx->stash( 'local_blog_id', $blog->id );
-        $ctx->stash( 'builder',       MT::Builder->new );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $text ) = @_;
-    $text ||= '';
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$blog_id   = '$blog_id';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->init_plugins();
-
-$db = $mt->db();
-$ctx =& $mt->context();
-
-$ctx->stash('blog_id', $blog_id);
-$ctx->stash('local_blog_id', $blog_id);
-$blog = $db->fetch_blog($blog_id);
-$ctx->stash('blog', $blog);
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template, $block->text );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
+    my @elist = $mt->model('entry')->load({ blog_id => $blog_id });
+    $ctx->stash('results', sub { return shift @elist });
+    $ctx->stash('count', 2);
 }
 
 sub count2expect {
@@ -432,6 +340,9 @@ sub count2expect {
 sub inflate_tmpl {
     s/____/|X<mt:var name="__first__">X<mt:var name="__last__">X<mt:var name="__counter__">X<mt:var name="__odd__">X<mt:var name="__even__">X|/;
 }
+
+MT::Test::Tag->run_perl_tests($blog_id, \&_set_handler_perl);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 

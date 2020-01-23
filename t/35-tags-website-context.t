@@ -12,9 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Open2;
-
-use Test::Base;
+use MT::Test::Tag;
 plan tests => 2 * blocks;
 
 use MT;
@@ -1192,98 +1190,8 @@ $guest->save or die $guest->errstr;
 
 MT->request->reset;
 
-run {
-    my $block = shift;
-
-SKIP:
-    {
-        skip $block->skip, 1 if $block->skip;
-
-        my $tmpl = $app->model('template')->new;
-        $tmpl->text( '<mt:Websites site_ids="'
-                . $blog_id . '">'
-                . $block->template
-                . '</mt:Websites>' );
-        my $ctx = $tmpl->context;
-
-        $ctx->stash( 'builder', MT::Builder->new );
-        $ctx->stash( 'user',    $admin );
-
-        my $result = $tmpl->build;
-        $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-        is( $result, $block->expected, $block->name );
-    }
-};
-
-sub php_test_script {
-    my ( $template, $text ) = @_;
-    $text ||= '';
-
-    my $test_script = <<PHP;
-<?php
-\$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
-\$MT_CONFIG = '@{[ $app->find_config ]}';
-\$tmpl = <<<__TMPL__
-$template
-__TMPL__
-;
-\$text = <<<__TMPL__
-$text
-__TMPL__
-;
-PHP
-    $test_script .= <<'PHP';
-include_once($MT_HOME . '/php/mt.php');
-include_once($MT_HOME . '/php/lib/MTUtil.php');
-
-$mt = MT::get_instance(1, $MT_CONFIG);
-$mt->config('SupportDirectoryPath', './mt-static');
-$mt->init_plugins();
-
-$ctx =& $mt->context();
-
-if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
-    $ctx->_eval('?>' . $_var_compiled);
-} else {
-    print('Error compiling template module.');
-}
-
-?>
-PHP
-}
-
-SKIP:
-{
-    unless ( join( '', `php --version 2>&1` ) =~ m/^php/i ) {
-        skip "Can't find executable file: php",
-            1 * blocks('expected_dynamic');
-    }
-
-    run {
-        my $block = shift;
-
-    SKIP:
-        {
-            skip $block->skip, 1 if $block->skip;
-
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script(
-                '<mt:Websites site_ids="'
-                    . $blog_id . '">'
-                    . $block->template
-                    . '</mt:Websites>',
-                $block->text
-            );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-
-            my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
-        }
-    };
-}
+MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_php_tests($blog_id);
 
 __END__
 

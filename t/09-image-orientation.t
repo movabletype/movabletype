@@ -20,16 +20,22 @@ BEGIN {
 use MT;
 use MT::Test;
 use MT::Image;
+use MT::Test::Image;
 
 MT->instance;
 
 my @drivers = qw( ImageMagick NetPBM GD Imager );
 
+my ( $guard, $file ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => '.png',
+);
+close $guard;
+
 my $original_width  = 3;
 my $original_height = 2;
 my $original_image  = Image::Magick->new;
-$original_image->Read(
-    File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.png' ) );
+$original_image->Read($file);
 $original_image->Resize(
     width  => $original_width,
     height => $original_height
@@ -61,11 +67,8 @@ for my $driver (@drivers) {
         my $cfg = MT::ConfigMgr->instance;
         $cfg->ImageDriver($driver);
         MT::Image->error('');
-        MT::Image->new(
-            Filename => File::Spec->catfile(
-                $ENV{MT_HOME}, 't', 'images', 'test.png'
-            )
-        ) or plan skip_all => "Cannot load MT::Image::$driver";
+        MT::Image->new( Filename => $file )
+            or plan skip_all => "Cannot load MT::Image::$driver";
 
         _run_for_each_method();
 

@@ -27,8 +27,6 @@ BEGIN {
     use MT::Test;
 }
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 use MT::Lockout;

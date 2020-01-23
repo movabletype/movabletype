@@ -27,7 +27,7 @@ use MT::Test;
 
 my $mt = MT->new;
 use MT::Util::Archive;
-my $tmp = ( $^O eq 'MSWin32' ) ? File::Spec->tmpdir : MT->config->TempDir;
+my $tmp = $test_env->root;
 my %files = (
     'zip' => File::Spec->catfile( $tmp, 'test1.zip' ),
     'tgz' => File::Spec->catfile( $tmp, 'test1.tar.gz' ),

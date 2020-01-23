@@ -771,6 +771,15 @@ sub sorting : Tests(6) {
     is_object( $tmp, $foo[0], 'Newest status=2 Foo is Foo #1' );
 }
 
+sub _fix_created_on {
+    my ( $created_on, $diff ) = @_;
+
+    require Time::Piece;
+    # force to parse as GMT
+    my $epoch = Time::Piece->strptime( $created_on, '%Y%m%d%H%M%S%Z');
+    Time::Piece->new( $epoch + $diff )->strftime('%Y%m%d%H%M%S');
+}
+
 sub ranges : Tests(9) {
     my $self = shift;
     $self->make_basic_data();
@@ -778,8 +787,12 @@ sub ranges : Tests(9) {
     my $tmp;
     my @foo = map { Foo->load($_) } ( 1 .. 2 );
 
+    my $created_on     = $foo[1]->column('created_on');
+    my $one_sec_before = _fix_created_on($created_on, -1);
+    my $one_sec_after  = _fix_created_on($created_on, +1);
+
     ## Load using range search, one less than foo[1]->created_on and newer
-    $tmp = Foo->load( { created_on => [ $foo[1]->column('created_on') - 1 ] },
+    $tmp = Foo->load( { created_on => [ $one_sec_before ] },
         { range => { created_on => 1 } } );
     is_object( $tmp, $foo[1],
         'Foo from open-ended date range before Foo #2 is Foo #2' );
@@ -787,8 +800,8 @@ sub ranges : Tests(9) {
     ## Load using EXCLUSIVE range search, up through the momment $foo[1] created
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on') - 1,
-                $foo[1]->column('created_on')
+                $one_sec_before,
+                $created_on,
             ]
         },
         { range => { created_on => 1 } }
@@ -798,8 +811,8 @@ sub ranges : Tests(9) {
 
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on'),
-                $foo[1]->column('created_on') + 1
+                $created_on,
+                $one_sec_after,
             ]
         },
         { range => { created_on => 1 } }
@@ -811,8 +824,8 @@ sub ranges : Tests(9) {
     ## Load using INCLUSIVE range search, up through the momment $foo[1] created
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on') - 1,
-                $foo[1]->column('created_on')
+                $one_sec_before,
+                $created_on,
             ]
         },
         { range_incl => { created_on => 1 } }
@@ -824,8 +837,8 @@ sub ranges : Tests(9) {
 
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on'),
-                $foo[1]->column('created_on') + 1
+                $created_on,
+                $one_sec_after,
             ]
         },
         { range_incl => { created_on => 1 } }
@@ -843,7 +856,7 @@ sub ranges : Tests(9) {
     ## Range search, all items with created_on less than foo[1]->created_on
     $tmp
         = Foo->load(
-        { created_on => [ undef, $foo[1]->column('created_on') - 1 ] },
+        { created_on => [ undef, $one_sec_before ] },
         { range => { created_on => 1 } } );
     is_object( $tmp, $foo[0],
         "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1"

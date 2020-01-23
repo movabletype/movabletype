@@ -24,8 +24,6 @@ use MT::Test;
 use MT::App::DataAPI;
 use MT::DataAPI::Endpoint::Stats;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 my $app  = MT::App::DataAPI->new;
