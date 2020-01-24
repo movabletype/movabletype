@@ -813,8 +813,7 @@ sub configure {
             $cfg->DBPort( $param{dbport} )         if $param{dbport};
             $cfg->DBSocket( $param{dbsocket} )     if $param{dbsocket};
             $cfg->ODBCDriver( $param{odbcdriver} ) if $param{odbcdriver};
-            $cfg->DBHost( $param{dbserver} )
-                if $param{dbserver} && ( $param{dbtype} ne 'oracle' );
+            $cfg->DBHost( $param{dbserver} )       if $param{dbserver};
             my $current_charset = $cfg->PublishCharset;
             $cfg->PublishCharset( $param{publish_charset} )
                 if $param{publish_charset};
