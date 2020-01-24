@@ -2312,7 +2312,7 @@ sub sanitize_embed {
         || MT->config('GlobalSanitizeSpec');
 
     my $spec = $gspec
-        . ',embed * !style,object id classid width height,param/ name value,script src type,div';
+        . ',embed * !style,object id classid width height,param/ name value,script src type,div,iframe *';
     my $sanitized = MT::Sanitize->sanitize( $str, $spec );
 
     # Don't permit any actual script inside a script tag (external
