@@ -54,8 +54,8 @@ sub is_valid_password {
 
     if ( $real_pass =~ m/^\$6\$(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
-        if ( eval { require Digest::SHA } ) {
-            return $value eq Digest::SHA::sha512_base64(
+        if ( eval { require MT::Util::Digest::SHA } ) {
+            return $value eq MT::Util::Digest::SHA::sha512_base64(
                 $salt . Encode::encode_utf8($pass) );
         }
         else {

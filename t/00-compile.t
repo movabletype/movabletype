@@ -196,6 +196,9 @@ SKIP: {
     }
 }
 use_ok('MT::Util::Captcha');
+use_ok('MT::Util::Deprecated');
+use_ok('MT::Util::Digest::MD5');
+use_ok('MT::Util::Digest::SHA');
 SKIP: {
     my @modules = qw( Compress::Zlib Path::Class DateTime );
     my $eval_string = join( ';', map {"require $_"} @modules );

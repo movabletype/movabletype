@@ -22,7 +22,7 @@ sub start_document {
     my $self = shift;
     my $data = shift;
 
-    eval { require Digest::SHA };
+    eval { require MT::Util::Digest::SHA };
     if ($@) {
         $self->{digest_sha_not_found} = 1;
     }
