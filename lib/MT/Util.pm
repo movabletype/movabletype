@@ -1235,10 +1235,10 @@ sub make_unique_author_basename {
             $name = "author" . $author->id;
         }
         else {
-            require Digest::MD5;
+            require MT::Util::Digest::MD5;
             $name = "author"
                 . substr(
-                Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
+                MT::Util::Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
                 0, 5
                 );
         }
