@@ -10,6 +10,7 @@ use MT;
 use base qw( MT::ErrorHandler );
 
 our %LoggerLevels;
+
 BEGIN {
     %LoggerLevels = (
         DEBUG => 0,
@@ -21,13 +22,35 @@ BEGIN {
 }
 use constant \%LoggerLevels;
 
-our ( $Logger, $LoggerLevel );
+our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 
 sub init {
-    return if _find_module();
+    if ($Initialized) {
+        return unless $Logger && $LoggerPathDate;
+        return if _check_logger_path();
+    }
+    else {
+        return if _find_module();
+    }
 
     require MT::Util::Log::Stderr;
     $Logger = MT::Util::Log::Stderr->new;
+    $LoggerLevelStr ||= 'INFO';
+    $LoggerLevel    = $LoggerLevels{$LoggerLevelStr};
+    $LoggerPathDate = undef;
+}
+
+sub _check_logger_path {
+    my $day = ( localtime() )[3];
+    return 1 if $LoggerPathDate == $day;
+
+    my $logfile_path = _get_logfile_path() or return;
+
+    my $logger_module = ref $Logger;
+
+    $Logger = eval { $logger_module->new( $LoggerLevelStr, $logfile_path ) };
+    return unless $@;
+    return 1;
 }
 
 sub _find_module {
@@ -35,6 +58,10 @@ sub _find_module {
 
     ## If MT is not ready, just return and use Stderr
     return if $@;
+
+    # No need to reinitialize otherwise; keep using Stderr
+    # if something turns out to be wrong
+    $Initialized = 1;
 
     $logger_level = uc( $logger_level || 'INFO' );
 
@@ -51,7 +78,8 @@ sub _find_module {
         );
         return;
     }
-    $LoggerLevel = $LoggerLevels{$logger_level};
+    $LoggerLevelStr = $logger_level;
+    $LoggerLevel    = $LoggerLevels{$logger_level};
 
     my $logger_module = MT->config->LoggerModule or return;
 
@@ -173,6 +201,7 @@ sub _get_logfile_path {
         $time[4] + 1,
         $time[3]
     );
+    $LoggerPathDate = $time[3];
 
     require File::Spec;
     return File::Spec->catfile( $dir, $file );
