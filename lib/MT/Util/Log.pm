@@ -48,50 +48,22 @@ sub _find_module {
     }
 
     my $logger_module = MT->config->LoggerModule or return;
-    if ($logger_module) {
-        $logger_module =~ s/^Log:://;
-        die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
-        if ( $logger_module !~ /::/ ) {
-            $logger_module = 'MT::Util::Log::' . $logger_module;
-        }
-        eval "require $logger_module";
-        if ($@) {
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Cannot load Log module: [_1]',
-                        MT->config->LoggerModule
-                    ),
-                }
-            );
-            return;
-        }
-        $Module = $logger_module;
-    }
-    else {
-        foreach my $module (qw( Log4perl Minimal )) {
-            my $m = 'MT::Util::Log::' . $module;
-            eval "require $m";
-            unless ($@) {
-                $Module = $m;
-                last;
+
+    $logger_module =~ s/^Log:://;
+    $logger_module = 'MT::Util::Log::' . $logger_module;
+    if ( !eval "require $logger_module; 1"; ) {
+        warn $@;
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message  => MT->translate(
+                    'Cannot load Log module: [_1]',
+                    MT->config->LoggerModule
+                ),
             }
-        }
-        unless ($Module) {
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Cannot load Log module: [_1]',
-                        'Log4perl or Minimal'
-                    ),
-                }
-            );
-            return;
-        }
+        );
+        return;
     }
 
     my $logger_path = MT->config->LoggerPath or return;
