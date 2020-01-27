@@ -8,7 +8,6 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Logger );
 
 our %LoggerLevels;
 BEGIN {
@@ -22,7 +21,7 @@ BEGIN {
 }
 use constant \%LoggerLevels;
 
-our $LoggerLevel;
+our ( $Logger, $LoggerLevel );
 
 sub init {
     return if _find_module();
