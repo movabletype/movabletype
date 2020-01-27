@@ -8,115 +8,105 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Cannot_use $Logger );
 
-sub init { _find_module() }
+our %LoggerLevels;
 
-sub _find_module {
+BEGIN {
+    %LoggerLevels = (
+        DEBUG => 0,
+        INFO  => 1,
+        WARN  => 2,
+        ERROR => 3,
+        NONE  => 99,
+    );
+}
+use constant \%LoggerLevels;
 
-    return if $Cannot_use;
+our ( $Initialized, $Logger, $LoggerLevel, $LoggerLevelStr, $LoggerPathDate );
 
-    # lookup argument for unit test.
-    my ( $logger_level, $logger_path, $logger_module ) = @_;
-
-    if ( !$logger_level ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_level = MT->config->LoggerLevel || '' };
-        if (   !$logger_level
-            || uc $logger_level eq 'NONE'
-            || (   uc $logger_level ne 'NONE'
-                && uc $logger_level ne 'DEBUG'
-                && uc $logger_level ne 'INFO'
-                && uc $logger_level ne 'WARN'
-                && uc $logger_level ne 'ERROR' )
-            )
-        {
-            $Cannot_use = 1;
-            return if uc $logger_level eq 'NONE';
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Unknown Logger Level: [_1]',
-                        $logger_level
-                    ),
-                }
-            );
-            return;
-        }
-    }
-
-    if ( !$logger_path ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_path = MT->config->LoggerPath || '' };
-        unless ($logger_path) {
-            $Cannot_use = 1;
-            return;
-        }
-    }
-
-    if ( !$logger_module ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_module = MT->config->LoggerModule || '' };
-    }
-    if ($logger_module) {
-        $logger_module =~ s/^Log:://;
-        die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
-        if ( $logger_module !~ /::/ ) {
-            $logger_module = 'MT::Util::Log::' . $logger_module;
-        }
-        eval "require $logger_module";
-        if ($@) {
-            $Cannot_use = 1;
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Cannot load Log module: [_1]',
-                        MT->config->LoggerModule
-                    ),
-                }
-            );
-            return;
-        }
-        $Module = $logger_module;
+sub init {
+    if ($Initialized) {
+        return unless $Logger && $LoggerPathDate;
+        return if _check_logger_path();
     }
     else {
-        foreach my $module (qw( Log4perl Minimal )) {
-            my $m = 'MT::Util::Log::' . $module;
-            eval "require $m";
-            unless ($@) {
-                $Module = $m;
-                last;
-            }
-        }
-        unless ($Module) {
-            $Cannot_use = 1;
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Cannot load Log module: [_1]',
-                        'Log4perl or Minimal'
-                    ),
-                }
-            );
-            return;
-        }
+        return if _find_module();
     }
 
-    my $fmgr         = MT::FileMgr->new('Local');
-    my $logfile_path = _get_logfile_path();
-    if (   !$fmgr->exists($logger_path)
-        || !$fmgr->can_write($logger_path)
-        || ( $fmgr->exists($logfile_path)
-            && !$fmgr->can_write($logfile_path) )
-        )
-    {
-        $Cannot_use = 1;
+    require MT::Util::Log::Stderr;
+    $Logger = MT::Util::Log::Stderr->new;
+    $LoggerLevelStr ||= 'INFO';
+    $LoggerLevel    = $LoggerLevels{$LoggerLevelStr};
+    $LoggerPathDate = undef;
+}
+
+sub _check_logger_path {
+    my $day = ( localtime() )[3];
+    return 1 if $LoggerPathDate == $day;
+
+    my $logfile_path = _get_logfile_path() or return;
+
+    my $logger_module = ref $Logger;
+
+    $Logger = eval { $logger_module->new( $LoggerLevelStr, $logfile_path ) };
+    return unless $@;
+    return 1;
+}
+
+sub _find_module {
+    my $logger_level = eval { MT->config->LoggerLevel };
+
+    ## If MT is not ready, just return and use Stderr
+    return if $@;
+
+    # No need to reinitialize otherwise; keep using Stderr
+    # if something turns out to be wrong
+    $Initialized = 1;
+
+    $logger_level = uc( $logger_level || 'INFO' );
+
+    if ( !defined $LoggerLevels{$logger_level} ) {
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message  => MT->translate(
+                    'Unknown Logger Level: [_1]',
+                    $logger_level
+                ),
+            }
+        );
+        return;
+    }
+    $LoggerLevelStr = $logger_level;
+    $LoggerLevel    = $LoggerLevels{$logger_level};
+
+    my $logger_module = MT->config->LoggerModule or return;
+
+    $logger_module =~ s/^Log:://;
+    $logger_module = 'MT::Util::Log::' . $logger_module;
+    if ( !eval "require $logger_module; 1" ) {
+        warn $@ if $@ !~ /Can't locate/;;
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message  => MT->translate(
+                    'Cannot load Log module: [_1]',
+                    MT->config->LoggerModule
+                ),
+            }
+        );
+        return;
+    }
+
+    return if $logger_module eq 'MT::Util::Log::Stderr';
+
+    my $logfile_path = _get_logfile_path() or return;
+
+    $Logger = eval { $logger_module->new( $logger_level, $logfile_path ) };
+    if ($@) {
+        warn $@;
         MT->log(
             {   class    => 'system',
                 category => 'logs',
@@ -128,65 +118,45 @@ sub _find_module {
         return;
     }
 
-    $Logger = $Module->new( $logger_level, _get_logfile_path() );
-
-    $Cannot_use = 0;
-
     1;
 }
 
 sub debug {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
+    return if $LoggerLevel > DEBUG;
     _write_log( 'debug', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
+    return if $LoggerLevel > INFO;
     _write_log( 'info', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
+    return if $LoggerLevel > WARN;
     _write_log( 'warn', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
+    return if $LoggerLevel > ERROR;
     _write_log( 'error', $msg );
 }
 
 sub _write_log {
     my ( $level, $msg ) = @_;
-    return if $Cannot_use;
+    return unless $Logger;
     $Logger->$level( _get_message( uc($level), $msg ) );
 }
 
 sub _get_message {
     my ( $level, $message ) = @_;
 
-    my $memory;
-    my $cmd = MT->config->ProcessMemoryCommand;
-    if ($cmd) {
-        my $re;
-        if ( ref($cmd) eq 'HASH' ) {
-            $re  = $cmd->{regex};
-            $cmd = $cmd->{command};
-        }
-        $cmd =~ s/\$\$/$$/g;
-        $memory = `$cmd`;
-        if ($re) {
-            if ( $memory =~ m/$re/ ) {
-                $memory = $1;
-                $memory =~ s/\D//g;
-            }
-        }
-        else {
-            $memory =~ s/\s+//gs;
-        }
+    my $memory = '';
+    if ( MT->config->PerformanceLogging ) {
+        $memory = _get_memory();
     }
 
     my ( $pkg, $filename, $line ) = caller(3);
@@ -201,31 +171,41 @@ sub _get_message {
         $level, $memory, $message, $filename, $line;
 }
 
-sub _get_logfile_path {
-    my @time = localtime(time);
+sub _get_memory {
+    my $cmd = MT->config->ProcessMemoryCommand or return '';
+    my $re;
+    if ( ref($cmd) eq 'HASH' ) {
+        $re  = $cmd->{regex};
+        $cmd = $cmd->{command};
+    }
+    $cmd =~ s/\$\$/$$/g;
+    my $memory = `$cmd` or return '';
+    if ($re) {
+        if ( $memory =~ m/$re/ ) {
+            $memory = $1;
+            $memory =~ s/\D//g;
+        }
+    }
+    else {
+        $memory =~ s/\s+//gs;
+    }
+    return $memory;
+}
 
-    require File::Spec;
+sub _get_logfile_path {
     my $dir = MT->config('LoggerPath') or return;
 
+    my @time = localtime(time);
     my $file = sprintf(
         "al-%04d%02d%02d.log",
         $time[5] + 1900,
         $time[4] + 1,
         $time[3]
     );
+    $LoggerPathDate = $time[3];
 
+    require File::Spec;
     return File::Spec->catfile( $dir, $file );
-}
-
-sub _write_mt_log {
-    my $msg = shift;
-    MT->log(
-        {   class    => 'system',
-            category => 'logs',
-            level    => MT::Log::WARN(),
-            message  => $msg,
-        }
-    );
 }
 
 1;
