@@ -47,7 +47,7 @@ sub _find_module {
         return;
     }
 
-    my $logger_module = MT->config->LoggerModule;
+    my $logger_module = MT->config->LoggerModule or return;
     if ($logger_module) {
         $logger_module =~ s/^Log:://;
         die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
@@ -94,10 +94,7 @@ sub _find_module {
         }
     }
 
-    my $logger_path = MT->config->LoggerPath;
-    unless ($logger_path) {
-        return;
-    }
+    my $logger_path = MT->config->LoggerPath or return;
 
     my $fmgr         = MT::FileMgr->new('Local');
     my $logfile_path = _get_logfile_path();
