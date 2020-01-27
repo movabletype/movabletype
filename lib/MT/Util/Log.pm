@@ -70,7 +70,19 @@ sub _find_module {
 
     my $logfile_path = _get_logfile_path() or return;
 
-    $Logger = $Module->new( $logger_level, $logfile_path );
+    $Logger = eval { $logger_module->new( $logger_level, $logfile_path ) };
+    if ($@) {
+        warn $@;
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message =>
+                    MT->translate( '[_1] is not writable.', $logfile_path ),
+            }
+        );
+        return;
+    }
 
     1;
 }
