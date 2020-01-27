@@ -68,9 +68,9 @@ sub _find_module {
 
     return if $logger_module eq 'MT::Util::Log::Stderr';
 
-    my $logger_path = MT->config->LoggerPath or return;
+    my $logfile_path = _get_logfile_path() or return;
 
-    $Logger = $Module->new( $logger_level, _get_logfile_path() );
+    $Logger = $Module->new( $logger_level, $logfile_path );
 
     1;
 }
