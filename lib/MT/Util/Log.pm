@@ -16,50 +16,41 @@ sub _find_module {
 
     return if $Cannot_use;
 
-    # lookup argument for unit test.
-    my ( $logger_level, $logger_path, $logger_module ) = @_;
-
-    if ( !$logger_level ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_level = MT->config->LoggerLevel || '' };
-        if (   !$logger_level
-            || uc $logger_level eq 'NONE'
-            || (   uc $logger_level ne 'NONE'
-                && uc $logger_level ne 'DEBUG'
-                && uc $logger_level ne 'INFO'
-                && uc $logger_level ne 'WARN'
-                && uc $logger_level ne 'ERROR' )
-            )
-        {
-            $Cannot_use = 1;
-            return if uc $logger_level eq 'NONE';
-            MT->log(
-                {   class    => 'system',
-                    category => 'logs',
-                    level    => MT::Log::WARNING(),
-                    message  => MT->translate(
-                        'Unknown Logger Level: [_1]',
-                        $logger_level
-                    ),
-                }
-            );
-            return;
-        }
+    ## if MT was not yet instantiated, ignore the config directive.
+    my $logger_level = eval { MT->config->LoggerLevel || '' };
+    if (   !$logger_level
+        || uc $logger_level eq 'NONE'
+        || (   uc $logger_level ne 'NONE'
+            && uc $logger_level ne 'DEBUG'
+            && uc $logger_level ne 'INFO'
+            && uc $logger_level ne 'WARN'
+            && uc $logger_level ne 'ERROR' )
+        )
+    {
+        $Cannot_use = 1;
+        return if uc $logger_level eq 'NONE';
+        MT->log(
+            {   class    => 'system',
+                category => 'logs',
+                level    => MT::Log::WARNING(),
+                message  => MT->translate(
+                    'Unknown Logger Level: [_1]',
+                    $logger_level
+                ),
+            }
+        );
+        return;
     }
 
-    if ( !$logger_path ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_path = MT->config->LoggerPath || '' };
-        unless ($logger_path) {
-            $Cannot_use = 1;
-            return;
-        }
+    ## if MT was not yet instantiated, ignore the config directive.
+    my $logger_path = eval {  MT->config->LoggerPath || '' };
+    unless ($logger_path) {
+        $Cannot_use = 1;
+        return;
     }
 
-    if ( !$logger_module ) {
-        ## if MT was not yet instantiated, ignore the config directive.
-        eval { $logger_module = MT->config->LoggerModule || '' };
-    }
+    ## if MT was not yet instantiated, ignore the config directive.
+    my $logger_module = eval { MT->config->LoggerModule || '' };
     if ($logger_module) {
         $logger_module =~ s/^Log:://;
         die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
