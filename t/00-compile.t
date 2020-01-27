@@ -294,6 +294,7 @@ SKIP: {
 }
 use_ok('MT::Util::YAML::Tiny');
 use_ok('MT::Util::Log');
+use_ok('MT::Util::Log::Stderr');
 SKIP: {
     if ( eval { require Log::Log4perl } ) {
         use_ok('MT::Util::Log::Log4perl');
