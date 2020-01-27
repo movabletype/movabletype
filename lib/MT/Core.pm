@@ -2194,7 +2194,7 @@ BEGIN {
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
-            'LoggerLevel'  => { default => 'none' },
+            'LoggerLevel'  => { default => 'info' },
             'LoggerPath'   => undef,
             'LoggerModule' => undef,
 
