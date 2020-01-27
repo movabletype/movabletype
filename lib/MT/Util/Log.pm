@@ -10,6 +10,14 @@ use MT;
 use base qw( MT::ErrorHandler );
 use vars qw( $Module $Logger );
 
+our %LoggerLevels = (
+    DEBUG => 0,
+    INFO  => 1,
+    WARN  => 2,
+    ERROR => 3,
+    NONE  => 99,
+);
+
 sub init {
     return if _find_module();
 
@@ -18,21 +26,14 @@ sub init {
 }
 
 sub _find_module {
-    my $logger_level = eval { MT->config->LoggerLevel || '' };
+    my $logger_level = eval { MT->config->LoggerLevel };
 
     ## If MT is not ready, just return and use Stderr
     return if $@;
 
-    if (   !$logger_level
-        || uc $logger_level eq 'NONE'
-        || (   uc $logger_level ne 'NONE'
-            && uc $logger_level ne 'DEBUG'
-            && uc $logger_level ne 'INFO'
-            && uc $logger_level ne 'WARN'
-            && uc $logger_level ne 'ERROR' )
-        )
-    {
-        return if uc $logger_level eq 'NONE';
+    $logger_level = uc( $logger_level || 'INFO' );
+
+    if ( !defined $LoggerLevels{$logger_level} ) {
         MT->log(
             {   class    => 'system',
                 category => 'logs',
