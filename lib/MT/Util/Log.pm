@@ -66,6 +66,8 @@ sub _find_module {
         return;
     }
 
+    return if $logger_module eq 'MT::Util::Log::Stderr';
+
     my $logger_path = MT->config->LoggerPath or return;
 
     my $fmgr         = MT::FileMgr->new('Local');
