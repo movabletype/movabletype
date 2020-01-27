@@ -10,7 +10,12 @@ use MT;
 use base qw( MT::ErrorHandler );
 use vars qw( $Module $Cannot_use $Logger );
 
-sub init { _find_module() }
+sub init {
+    return if _find_module();
+
+    require MT::Util::Log::Stderr;
+    $Logger = MT::Util::Log::Stderr->new;
+}
 
 sub _find_module {
 
