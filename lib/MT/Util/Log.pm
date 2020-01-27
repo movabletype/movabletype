@@ -48,12 +48,6 @@ sub _find_module {
     }
 
     ## if MT was not yet instantiated, ignore the config directive.
-    my $logger_path = eval {  MT->config->LoggerPath || '' };
-    unless ($logger_path) {
-        return;
-    }
-
-    ## if MT was not yet instantiated, ignore the config directive.
     my $logger_module = eval { MT->config->LoggerModule || '' };
     if ($logger_module) {
         $logger_module =~ s/^Log:://;
@@ -99,6 +93,12 @@ sub _find_module {
             );
             return;
         }
+    }
+
+    ## if MT was not yet instantiated, ignore the config directive.
+    my $logger_path = eval {  MT->config->LoggerPath || '' };
+    unless ($logger_path) {
+        return;
     }
 
     my $fmgr         = MT::FileMgr->new('Local');
