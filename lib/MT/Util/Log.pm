@@ -147,6 +147,7 @@ sub error {
 
 sub _write_log {
     my ( $level, $msg ) = @_;
+    return unless $Logger;
     $Logger->$level( _get_message( uc($level), $msg ) );
 }
 
