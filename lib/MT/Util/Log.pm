@@ -8,7 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
-use vars qw( $Module $Cannot_use $Logger );
+use vars qw( $Module $Logger );
 
 sub init {
     return if _find_module();
@@ -18,9 +18,6 @@ sub init {
 }
 
 sub _find_module {
-
-    return if $Cannot_use;
-
     ## if MT was not yet instantiated, ignore the config directive.
     my $logger_level = eval { MT->config->LoggerLevel || '' };
     if (   !$logger_level
@@ -32,7 +29,6 @@ sub _find_module {
             && uc $logger_level ne 'ERROR' )
         )
     {
-        $Cannot_use = 1;
         return if uc $logger_level eq 'NONE';
         MT->log(
             {   class    => 'system',
@@ -50,7 +46,6 @@ sub _find_module {
     ## if MT was not yet instantiated, ignore the config directive.
     my $logger_path = eval {  MT->config->LoggerPath || '' };
     unless ($logger_path) {
-        $Cannot_use = 1;
         return;
     }
 
@@ -64,7 +59,6 @@ sub _find_module {
         }
         eval "require $logger_module";
         if ($@) {
-            $Cannot_use = 1;
             MT->log(
                 {   class    => 'system',
                     category => 'logs',
@@ -89,7 +83,6 @@ sub _find_module {
             }
         }
         unless ($Module) {
-            $Cannot_use = 1;
             MT->log(
                 {   class    => 'system',
                     category => 'logs',
@@ -112,7 +105,6 @@ sub _find_module {
             && !$fmgr->can_write($logfile_path) )
         )
     {
-        $Cannot_use = 1;
         MT->log(
             {   class    => 'system',
                 category => 'logs',
@@ -126,38 +118,31 @@ sub _find_module {
 
     $Logger = $Module->new( $logger_level, _get_logfile_path() );
 
-    $Cannot_use = 0;
-
     1;
 }
 
 sub debug {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
     _write_log( 'debug', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
     _write_log( 'info', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
     _write_log( 'warn', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
-    return if $Cannot_use;
     _write_log( 'error', $msg );
 }
 
 sub _write_log {
     my ( $level, $msg ) = @_;
-    return if $Cannot_use;
     $Logger->$level( _get_message( uc($level), $msg ) );
 }
 
