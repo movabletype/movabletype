@@ -222,15 +222,4 @@ sub _get_logfile_path {
     return File::Spec->catfile( $dir, $file );
 }
 
-sub _write_mt_log {
-    my $msg = shift;
-    MT->log(
-        {   class    => 'system',
-            category => 'logs',
-            level    => MT::Log::WARN(),
-            message  => $msg,
-        }
-    );
-}
-
 1;
