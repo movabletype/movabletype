@@ -70,25 +70,6 @@ sub _find_module {
 
     my $logger_path = MT->config->LoggerPath or return;
 
-    my $fmgr         = MT::FileMgr->new('Local');
-    my $logfile_path = _get_logfile_path();
-    if (   !$fmgr->exists($logger_path)
-        || !$fmgr->can_write($logger_path)
-        || ( $fmgr->exists($logfile_path)
-            && !$fmgr->can_write($logfile_path) )
-        )
-    {
-        MT->log(
-            {   class    => 'system',
-                category => 'logs',
-                level    => MT::Log::WARNING(),
-                message =>
-                    MT->translate( '[_1] is not writable.', $logfile_path ),
-            }
-        );
-        return;
-    }
-
     $Logger = $Module->new( $logger_level, _get_logfile_path() );
 
     1;
