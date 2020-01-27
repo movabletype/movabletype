@@ -47,8 +47,7 @@ sub _find_module {
         return;
     }
 
-    ## if MT was not yet instantiated, ignore the config directive.
-    my $logger_module = eval { MT->config->LoggerModule || '' };
+    my $logger_module = MT->config->LoggerModule;
     if ($logger_module) {
         $logger_module =~ s/^Log:://;
         die MT->translate('Invalid Log module') if $logger_module =~ /[^\w:]/;
@@ -95,8 +94,7 @@ sub _find_module {
         }
     }
 
-    ## if MT was not yet instantiated, ignore the config directive.
-    my $logger_path = eval {  MT->config->LoggerPath || '' };
+    my $logger_path = MT->config->LoggerPath;
     unless ($logger_path) {
         return;
     }
