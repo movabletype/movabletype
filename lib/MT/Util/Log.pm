@@ -169,24 +169,8 @@ sub _get_message {
     my ( $level, $message ) = @_;
 
     my $memory = '';
-    my $cmd = MT->config->ProcessMemoryCommand;
-    if ($cmd) {
-        my $re;
-        if ( ref($cmd) eq 'HASH' ) {
-            $re  = $cmd->{regex};
-            $cmd = $cmd->{command};
-        }
-        $cmd =~ s/\$\$/$$/g;
-        $memory = `$cmd`;
-        if ($re) {
-            if ( $memory =~ m/$re/ ) {
-                $memory = $1;
-                $memory =~ s/\D//g;
-            }
-        }
-        else {
-            $memory =~ s/\s+//gs;
-        }
+    if ( MT->config->PerformanceLogging ) {
+        $memory = _get_memory();
     }
 
     my ( $pkg, $filename, $line ) = caller(3);
@@ -199,6 +183,27 @@ sub _get_message {
         sprintf "%04d-%02d-%02dT%02d:%02d:%02d [%s] %s %s at %s line %d.",
         $time[5] + 1900, $time[4] + 1, @time[ 3, 2, 1, 0 ],
         $level, $memory, $message, $filename, $line;
+}
+
+sub _get_memory {
+    my $cmd = MT->config->ProcessMemoryCommand or return '';
+    my $re;
+    if ( ref($cmd) eq 'HASH' ) {
+        $re  = $cmd->{regex};
+        $cmd = $cmd->{command};
+    }
+    $cmd =~ s/\$\$/$$/g;
+    my $memory = `$cmd` or return '';
+    if ($re) {
+        if ( $memory =~ m/$re/ ) {
+            $memory = $1;
+            $memory =~ s/\D//g;
+        }
+    }
+    else {
+        $memory =~ s/\s+//gs;
+    }
+    return $memory;
 }
 
 sub _get_logfile_path {
