@@ -18,8 +18,11 @@ sub init {
 }
 
 sub _find_module {
-    ## if MT was not yet instantiated, ignore the config directive.
     my $logger_level = eval { MT->config->LoggerLevel || '' };
+
+    ## If MT is not ready, just return and use Stderr
+    return if $@;
+
     if (   !$logger_level
         || uc $logger_level eq 'NONE'
         || (   uc $logger_level ne 'NONE'
