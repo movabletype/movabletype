@@ -822,9 +822,13 @@ sub save {
                 ArchiveType => $archive_type,
             );
         }
+        MT::Util::Log::init();
         for my $param (@old_archive_params) {
             $app->publisher->_delete_archive_file(%$param);
-            $param->{FileInfo}->remove if $param->{FileInfo};
+            if ( my $fi = $param->{FileInfo} ) {
+                $fi->remove;
+                MT::Util::Log->info( ' Removed ' . $fi->file_path );
+            }
         }
     }
 
