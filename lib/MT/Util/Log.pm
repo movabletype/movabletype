@@ -10,13 +10,19 @@ use MT;
 use base qw( MT::ErrorHandler );
 use vars qw( $Module $Logger );
 
-our %LoggerLevels = (
-    DEBUG => 0,
-    INFO  => 1,
-    WARN  => 2,
-    ERROR => 3,
-    NONE  => 99,
-);
+our %LoggerLevels;
+BEGIN {
+    %LoggerLevels = (
+        DEBUG => 0,
+        INFO  => 1,
+        WARN  => 2,
+        ERROR => 3,
+        NONE  => 99,
+    );
+}
+use constant \%LoggerLevels;
+
+our $LoggerLevel;
 
 sub init {
     return if _find_module();
@@ -46,12 +52,13 @@ sub _find_module {
         );
         return;
     }
+    $LoggerLevel = $LoggerLevels{$logger_level};
 
     my $logger_module = MT->config->LoggerModule or return;
 
     $logger_module =~ s/^Log:://;
     $logger_module = 'MT::Util::Log::' . $logger_module;
-    if ( !eval "require $logger_module; 1"; ) {
+    if ( !eval "require $logger_module; 1" ) {
         warn $@;
         MT->log(
             {   class    => 'system',
@@ -89,21 +96,25 @@ sub _find_module {
 
 sub debug {
     my ( $class, $msg ) = @_;
+    return if $LoggerLevel > DEBUG;
     _write_log( 'debug', $msg );
 }
 
 sub info {
     my ( $class, $msg ) = @_;
+    return if $LoggerLevel > INFO;
     _write_log( 'info', $msg );
 }
 
 sub warn {
     my ( $class, $msg ) = @_;
+    return if $LoggerLevel > WARN;
     _write_log( 'warn', $msg );
 }
 
 sub error {
     my ( $class, $msg ) = @_;
+    return if $LoggerLevel > ERROR;
     _write_log( 'error', $msg );
 }
 
