@@ -8,10 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw(MT::Util::Log);
-
-BEGIN {
-    use Log::Minimal;
-}
+use Log::Minimal;
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
