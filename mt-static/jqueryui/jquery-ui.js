@@ -119,7 +119,7 @@ function visible( element ) {
 		}).length;
 }
 
-$.extend( $.expr[ ":" ], {
+$.extend( $.expr.pseudos, {
 	data: $.expr.createPseudo ?
 		$.expr.createPseudo(function( dataName ) {
 			return function( elem ) {
@@ -358,7 +358,7 @@ $.widget = function( name, base, prototype ) {
 	}
 
 	// create selector for plugin
-	$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
+	$.expr.pseudos[ fullName.toLowerCase() ] = function( elem ) {
 		return !!$.data( elem, fullName );
 	};
 
