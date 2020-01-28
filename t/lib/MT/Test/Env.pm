@@ -272,7 +272,10 @@ sub prepare {
 sub my_cnf {
     my $class = shift;
 
-    my %cnf = ( 'skip-networking' => '' );
+    my %cnf = (
+        'skip-networking' => '',
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
+    );
 
     my $mysqld = _mysqld() or return \%cnf;
 
