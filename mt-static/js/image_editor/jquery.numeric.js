@@ -50,7 +50,7 @@ $.fn.numeric = function(config, callback)
 	// callback function
 	callback = (typeof(callback) == "function" ? callback : function() {});
 	// set data and methods
-	return this.data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).data("numeric.decimalPlaces", decimalPlaces).keypress($.fn.numeric.keypress).keyup($.fn.numeric.keyup).blur($.fn.numeric.blur);
+	return this.data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).data("numeric.decimalPlaces", decimalPlaces).on('keypress',$.fn.numeric.keypress).on('keyup',$.fn.numeric.keyup).on('blur',$.fn.numeric.blur);
 };
 
 $.fn.numeric.keypress = function(e)

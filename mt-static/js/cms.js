@@ -4,7 +4,7 @@ var isdirty = false;
 window.setDirty = function(dirty) {
   isdirty = dirty;
   if (isdirty) {
-    $('button.save').removeAttr('disabled').removeClass('disabled');
+    $('button.save').prop('disabled', false).removeClass('disabled');
   }
   else {
     $('button.save').attr('disabled', 'disabled').addClass('disabled');

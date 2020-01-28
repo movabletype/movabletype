@@ -102,7 +102,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery('div.toggle-selector').click(function() {
+  jQuery('div.toggle-selector').on('click', function() {
     var $parent = jQuery(this).parent('.asset-detail-panel');
     if ($parent.hasClass('excepr')) {
       jQuery(this).removeClass('except');
@@ -112,7 +112,7 @@
     }
   });
 
-  jQuery('button.primary').click(function(){
+  jQuery('button.primary').on('click', function(){
     var options = [];
     var errors = 0;
     jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
@@ -149,7 +149,7 @@
     return false;
   });
 
-  jQuery('input[name="thumb_width"]').keypress(function(event){
+  jQuery('input[name="thumb_width"]').on('keypress', function(event){
     var key = event.charCode || event.keyCode;
     if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
         ( key == 9 ) || ( key == 13 ) || ( key == 27 ))

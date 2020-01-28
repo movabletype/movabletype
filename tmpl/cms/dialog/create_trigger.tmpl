@@ -126,7 +126,7 @@ function init() {
             else {
                 <mt:unless name="missing_content_type">
                 jQuery('#object_content').show();
-                jQuery('#content_type-panel').find('.search-submit').click();
+                jQuery('#content_type-panel').find('.search-submit').trigger('click');
                 jQuery('#content_type-panel').find('.search-reset').hide();
                 </mt:unless>
                 var site_has_content_type = {
@@ -277,7 +277,7 @@ function init() {
             if (datasource.searchtype) {
                 args += '&search_type=' + datasource.searchtype;
             }
-    
+
             datasource.searching = true;
             if (datasource.pager)
                 datasource.pager.render();
@@ -396,9 +396,9 @@ TC.attachLoadEvent( init );
           <thead>
             <tr>
               <th class="head cb mt-table__control">
-            
+
                 &nbsp;
-            
+
               </th>
               <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Object Name"></span></th>
             </tr>
@@ -471,9 +471,9 @@ TC.attachLoadEvent( init );
           <thead>
             <tr>
               <th class="head cb mt-table__control">
-            
+
                 &nbsp;
-            
+
               </th>
               <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Event"></span></th>
             </tr>
@@ -566,9 +566,9 @@ TC.attachLoadEvent( init );
           <thead>
             <tr>
               <th class="head cb mt-table__control">
-            
+
                 &nbsp;
-            
+
               </th>
               <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
             </tr>

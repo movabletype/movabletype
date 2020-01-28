@@ -18,18 +18,18 @@ MT.Editor.Source = function(id) {
 
     var focused = false;
     this.$textarea
-        .keydown(function() {
+        .on('keydown', function() {
             // Save the position of cursor for the insertion of asset. (IE)
             editor.saveSelection();
             editor.setDirty();
         })
-        .keyup(function() {
+        .on('keyup', function() {
             editor.saveSelection();
         })
-        .focus(function() {
+        .on('focus', function() {
             focused = true;
         })
-        .blur(function() {
+        .on('blur', function() {
             focused = false;
         });
 

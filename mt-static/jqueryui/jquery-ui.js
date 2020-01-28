@@ -221,7 +221,7 @@ $.fn.extend({
 				this.each(function() {
 					var elem = this;
 					setTimeout(function() {
-						$( elem ).focus();
+						$( elem ).trigger('focus');
 						if ( fn ) {
 							fn.call( elem );
 						}
@@ -869,7 +869,7 @@ var widget = $.widget;
 
 
 var mouseHandled = false;
-$( document ).mouseup( function() {
+$( document ).on('mouseup', function() {
 	mouseHandled = false;
 });
 
@@ -1759,7 +1759,7 @@ var accordion = $.widget( "ui.accordion", {
 
 	_panelKeyDown: function( event ) {
 		if ( event.keyCode === $.ui.keyCode.UP && event.ctrlKey ) {
-			$( event.currentTarget ).prev().focus();
+			$( event.currentTarget ).prev().trigger('focus');
 		}
 	},
 
@@ -3541,10 +3541,10 @@ $.widget( "ui.button", {
 				});
 
 			if ( this.buttonElement.is("a") ) {
-				this.buttonElement.keyup(function(event) {
+				this.buttonElement.on('keyup', function(event) {
 					if ( event.keyCode === $.ui.keyCode.SPACE ) {
 						// TODO pass through original event correctly (just as 2nd argument doesn't work)
-						$( this ).click();
+						$( this ).trigger('click');
 					}
 				});
 			}
@@ -3960,8 +3960,8 @@ $.extend(Datepicker.prototype, {
 			return;
 		}
 		this._attachments(input, inst);
-		input.addClass(this.markerClassName).keydown(this._doKeyDown).
-			keypress(this._doKeyPress).keyup(this._doKeyUp);
+		input.addClass(this.markerClassName).on('keydown', this._doKeyDown).
+			on('keypress', this._doKeyPress).on('keyup', this._doKeyUp);
 		this._autoSize(inst);
 		$.data(target, "datepicker", inst);
 		//If disabled option is true, disable the datepicker once it has been attached to the input (see ticket #5665)
@@ -3992,7 +3992,7 @@ $.extend(Datepicker.prototype, {
 
 		showOn = this._get(inst, "showOn");
 		if (showOn === "focus" || showOn === "both") { // pop-up date picker when in the marked field
-			input.focus(this._showDatepicker);
+			input.on('focus', this._showDatepicker);
 		}
 		if (showOn === "button" || showOn === "both") { // pop-up date picker when button clicked
 			buttonText = this._get(inst, "buttonText");
@@ -4004,7 +4004,7 @@ $.extend(Datepicker.prototype, {
 					html(!buttonImage ? buttonText : $("<img/>").attr(
 					{ src:buttonImage, alt:buttonText, title:buttonText })));
 			input[isRTL ? "before" : "after"](inst.trigger);
-			inst.trigger.click(function() {
+			inst.trigger.on('click', function() {
 				if ($.datepicker._datepickerShowing && $.datepicker._lastInput === input[0]) {
 					$.datepicker._hideDatepicker();
 				} else if ($.datepicker._datepickerShowing && $.datepicker._lastInput !== input[0]) {
@@ -4085,7 +4085,7 @@ $.extend(Datepicker.prototype, {
 			id = "dp" + this.uuid;
 			this._dialogInput = $("<input type='text' id='" + id +
 				"' style='position: absolute; top: -100px; width: 0px;'/>");
-			this._dialogInput.keydown(this._doKeyDown);
+			this._dialogInput.on('keydown', this._doKeyDown);
 			$("body").append(this._dialogInput);
 			inst = this._dialogInst = this._newInst(this._dialogInput, false);
 			inst.settings = {};
@@ -5802,7 +5802,7 @@ $.fn.datepicker = function(options){
 
 	/* Initialise the date picker. */
 	if (!$.datepicker.initialized) {
-		$(document).mousedown($.datepicker._checkExternalClick);
+		$(document).on('mousedown', $.datepicker._checkExternalClick);
 		$.datepicker.initialized = true;
 	}
 
@@ -8268,7 +8268,7 @@ var dialog = $.widget( "ui.dialog", {
 		this._destroyOverlay();
 		this._untrackInstance();
 
-		if ( !this.opener.filter( ":focusable" ).focus().length ) {
+		if ( !this.opener.filter( ":focusable" ).trigger('focus').length ) {
 
 			// support: IE9
 			// IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
@@ -8379,7 +8379,7 @@ var dialog = $.widget( "ui.dialog", {
 		if ( !hasFocus.length ) {
 			hasFocus = this.uiDialog;
 		}
-		hasFocus.eq( 0 ).focus();
+		hasFocus.eq( 0 ).trigger('focus');
 	},
 
 	_keepFocus: function( event ) {
@@ -8430,12 +8430,12 @@ var dialog = $.widget( "ui.dialog", {
 
 				if ( ( event.target === last[0] || event.target === this.uiDialog[0] ) && !event.shiftKey ) {
 					this._delay(function() {
-						first.focus();
+						first.trigger('focus');
 					});
 					event.preventDefault();
 				} else if ( ( event.target === first[0] || event.target === this.uiDialog[0] ) && event.shiftKey ) {
 					this._delay(function() {
-						last.focus();
+						last.trigger('focus');
 					});
 					event.preventDefault();
 				}
@@ -10342,7 +10342,7 @@ $.extend( $.effects, {
 
 		// Fixes #7595 - Elements lose focus when wrapped.
 		if ( element[ 0 ] === active || $.contains( element[ 0 ], active ) ) {
-			$( active ).focus();
+			$( active ).trigger('focus');
 		}
 
 		wrapper = element.parent(); //Hotfix for jQuery 1.4 since some change in wrap() seems to actually lose the reference to the wrapped element
@@ -10383,7 +10383,7 @@ $.extend( $.effects, {
 
 			// Fixes #7595 - Elements lose focus when wrapped.
 			if ( element[ 0 ] === active || $.contains( element[ 0 ], active ) ) {
-				$( active ).focus();
+				$( active ).trigger('focus');
 			}
 		}
 
@@ -12981,7 +12981,7 @@ var slider = $.widget( "ui.slider", $.ui.mouse, {
 
 		closestHandle
 			.addClass( "ui-state-active" )
-			.focus();
+			.trigger('focus');
 
 		offset = closestHandle.offset();
 		mouseOverHandle = !$( event.target ).parents().addBack().is( ".ui-slider-handle" );
@@ -15371,7 +15371,7 @@ var tabs = $.widget( "ui.tabs", {
 		this._refresh();
 
 		if ( this.active.length ) {
-			this.load( options.active );
+			this.on('load', options.active );
 		}
 	},
 
@@ -15533,7 +15533,7 @@ var tabs = $.widget( "ui.tabs", {
 
 	_focusNextTab: function( index, goingForward ) {
 		index = this._findNextTab( index, goingForward );
-		this.tabs.eq( index ).focus();
+		this.tabs.eq( index ).trigger('focus');
 		return index;
 	},
 
@@ -15877,7 +15877,7 @@ var tabs = $.widget( "ui.tabs", {
 		}
 
 		if ( toShow.length ) {
-			this.load( this.tabs.index( tab ), event );
+			this.on('load', this.tabs.index( tab ), event );
 		}
 		this._toggle( event, eventData );
 	},

@@ -139,7 +139,7 @@ function editTagName(anchor) {
         jQuery('<input>')
           .val(name)
           .attr('class','form-control text short newname')
-          .click(function (e) {
+          .on('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             return false;
@@ -150,7 +150,7 @@ function editTagName(anchor) {
           .attr('class', 'button btn btn-default')
           .text('<__trans phrase="Rename">')
           .button()
-          .click( function(e) {
+          .on('click',  function(e) {
             var newname = jQuery('input.newname').val();
             submitEdit( id, newname, name );
             e.preventDefault();
@@ -163,7 +163,7 @@ function editTagName(anchor) {
           .attr('class', 'button btn btn-default')
           .text('<__trans phrase="Cancel">')
           .button()
-          .click( function (e) { closeTagEditor(e) } )
+          .on('click', function (e) { closeTagEditor(e) } )
       )
     )
   return false;

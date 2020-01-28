@@ -75,7 +75,7 @@ jQuery(function() {
     jQuery('.msg, .display-options').mtToggleField();
     jQuery('.fav-actions-nav').mtToggleField({hide_clicked: true});
     jQuery('#cms-search').mtToggleField({hide_clicked: true}, function(){
-        jQuery('#quick-search').focus();
+        jQuery('#quick-search').trigger('focus');
     });
     jQuery('input.text-date').datepicker({
         dateFormat: 'yy-mm-dd',
@@ -98,21 +98,21 @@ jQuery(function() {
         }
     });
     jQuery('.button.toolbar').button();
-    jQuery('#brand > a').hover(
-        function() {
+    jQuery('#brand > a').on({
+        'mouseenter': function() {
             jQuery(this).after('<span class="tips"><__trans phrase="Your Dashboard"></span>');
         },
-        function(){
+        'mouseleave': function(){
             jQuery('#brand span.tips').remove();
         }
-    );
+    });
     jQuery('input').each(function() {
         jQuery(this).addClass(jQuery(this).attr('type'));
     });
     jQuery('#quick-search').mtPlaceholder();
 
     jQuery("#notification_dashboard li span.detail").css("display","none");
-    jQuery('#notification_dashboard li').click(function() {
+    jQuery('#notification_dashboard li').on('click', function() {
         jQuery(this).find("span.detail").toggle("fast");
     });
 });
@@ -123,4 +123,3 @@ jQuery(function() {
 
 </body>
 </html>
-

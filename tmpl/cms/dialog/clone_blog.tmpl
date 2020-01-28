@@ -863,11 +863,11 @@
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery.mtUseSubdomain();
 jQuery.mtUseAbsolute();
-jQuery('button.goback').click(function() {
+jQuery('button.goback').on('click', function() {
   jQuery('form#clone-verification-form > input[name=clone]').val(0);
 });
 
-jQuery('input#enable_archive_paths').click(function() {
+jQuery('input#enable_archive_paths').on('click', function() {
   jQuery('div#enable_archive_paths_prefs').toggle();
 });
 </mt:setvarblock>

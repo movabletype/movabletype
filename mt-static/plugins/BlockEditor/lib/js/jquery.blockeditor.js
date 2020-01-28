@@ -19,7 +19,7 @@
       (app.getIndirectMethod('setDirty'))();
     }
     $('.modal-blockeditor').modal('hide');
-    $('#blockeidor_menus-' + field_id + ' .nav-link[href=#prev]').click();
+    $('#blockeidor_menus-' + field_id + ' .nav-link[href=#prev]').trigger('click');
   };
   var _init = function(data) {
     return this.each(function() {

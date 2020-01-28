@@ -157,7 +157,7 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
-    jQuery('#name').focus();
+    jQuery('#name').trigger('focus');
 
     <mt:if name="sitepath_limited">
     function is_path_limit_clear( path_ ) {
@@ -201,7 +201,7 @@ jQuery(function() {
         '#server_offset': '<__trans phrase="You did not select a timezone." escape="singlequotes">'
     });
 
-    jQuery('form#new_website_form').submit( function () {
+    jQuery('form#new_website_form').on('submit', function () {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });

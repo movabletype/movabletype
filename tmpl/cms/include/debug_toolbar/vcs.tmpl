@@ -34,7 +34,7 @@ function loadVcsRevision() {
   var errorProcess = function () {
     jQuery('#mt-vcs-branch-value').text('(not loaded)');
     jQuery('#mt-vcs-revision-value').text('(not loaded)');
-    jQuery('#mt-vcs-reload-button').removeAttr('disabled')
+    jQuery('#mt-vcs-reload-button').prop('disabled', false)
                                    .show();
   };
 
@@ -75,4 +75,3 @@ function reloadVcsRevision() {
   loadVcsRevision();
 }
 </script>
-

@@ -146,7 +146,7 @@ var categorySetId = <mt:if name="id"><mt:var name="id" escape="js"><mt:else>0</m
 function setDirty( dirty ) {
     isdirty = dirty;
     if ( isdirty ) {
-        jQuery('button.save').removeAttr('disabled').removeClass('disabled');
+        jQuery('button.save').prop('disabled', false).removeClass('disabled');
     }
     else {
         jQuery('button.save').attr('disabled', 'disabled').addClass('disabled');
@@ -162,7 +162,7 @@ function loginAgain(fn) {
         .find('#sign-in-button')
           .text('<__trans phrase="Continue" escape="js">')
           .off()
-          .click(function(){
+          .on('click', function(){
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',
@@ -249,8 +249,8 @@ function fixInteractions( options ) {
   };
   var opts = jQuery.extend(defaults, options);
   if ( opts.closeInlineForms ) {
-    jQuery('div.edit-form button.cancel').click();
-    jQuery('div.add-form button.cancel').click();
+    jQuery('div.edit-form button.cancel').trigger('click');
+    jQuery('div.add-form button.cancel').trigger('click');
   }
 
   if ( opts.sortable ) {
@@ -267,7 +267,7 @@ function fixInteractions( options ) {
   }
 }
 
-jQuery('div#area-action input[name=category_label]').focus( function() {
+jQuery('div#area-action input[name=category_label]').on('focus', function() {
   fixInteractions();
 });
 
@@ -369,11 +369,11 @@ function initItem($item) {
       $form.appendTo($element);
       $form.find('.cat-label, .basename').on('keypress', function (e) {
         if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-          $form.find('button.rename').click();
+          $form.find('button.rename').trigger('click');
           return false;
         }
       });
-      $form.find('.cat-label').focus();
+      $form.find('.cat-label').trigger('focus');
       return false;
     });
 
@@ -503,7 +503,7 @@ function addItem(parent, label) {
 
 jQuery('#area-action input').on('keypress',function(e){
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-        jQuery(this).siblings('button.add').click();
+        jQuery(this).siblings('button.add').trigger('click');
         return false;
     }
 });
@@ -769,12 +769,15 @@ function initMoving() {
 }
 
 function setHoverAction($elements) {
-  $elements.hover(function() {
-    var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
-    jQuery('.pcat-'+parent).addClass('highlight');
-  }, function() {
-    var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
-    jQuery('.pcat-'+parent).removeClass('highlight');
+  $elements.on({
+    'mouseenter': function() {
+      var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).addClass('highlight');
+    },
+    'mouseleave': function() {
+      var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).removeClass('highlight');
+    }
   });
 }
 
@@ -801,7 +804,7 @@ function renderItems(data) {
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
 
-  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
 }
 
 function fixZeroStateMessage () {
@@ -860,7 +863,7 @@ function renderNestedList() {
   });
 }
 
-jQuery('.add').click(function() {
+jQuery('.add').on('click', function() {
   var $focusParent = jQuery(':focus').parent('div');
   var parent = '';
   var label = '';
@@ -887,7 +890,7 @@ jQuery('.add').click(function() {
   return false;
 });
 
-jQuery('.save').click( bulkUpdateCategories );
+jQuery('.save').on('click', bulkUpdateCategories );
 
 function bulkUpdateCategories() {
   if ( !jQuery('#set_name').mtValidate('simple') ) {
@@ -978,7 +981,7 @@ jQuery(window).on('resize', function () {
 });
 
   <mt:if name="is_category_set">
-jQuery('#set_name').keyup(function() {
+jQuery('#set_name').on('keyup', function() {
   setDirty(true);
 });
   </mt:if>
@@ -990,7 +993,7 @@ jQuery(window).on('beforeunload', function() {
 });
 
 jQuery(window).on('listReady', function() {
-  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
 });
 renderNestedList();
 </mt:setvarblock>

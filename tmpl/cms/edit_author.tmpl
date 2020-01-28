@@ -203,7 +203,7 @@ function isContainsMultiByte ( val ) {
 }
 
 function showPasswordField() {
-    jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().focus();
+    jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().trigger('focus');
     jQuery('#change-password-link').parents('#show_password-field').hide();
     event.preventDefault();
 }
@@ -569,7 +569,7 @@ jQuery.mtValidateAddMessages({
     "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
 });
 
-jQuery('#profile').submit(function(eventObject) {
+jQuery('#profile').on('submit', function(eventObject) {
     if ( !jQuery("#pass").mtValidate('simple') ) return false;
     if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
     jQuery("input:checked").each(function(){

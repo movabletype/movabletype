@@ -6483,7 +6483,7 @@ JSCRIPT
 
     $vs .= << "JSCRIPT";
         jQuery(document).ready(function() {
-            jQuery("form#$form_id").submit(function(e){
+            jQuery("form#$form_id").on('submit', function(e){
                 var form = jQuery(this);
                 var passwd_input = form.find("input[name=$pass_field]");
                 if ( !passwd_input.is(":visible") ) {

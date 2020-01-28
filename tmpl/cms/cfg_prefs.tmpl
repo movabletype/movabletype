@@ -704,7 +704,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="form-group col"> 
+        <div class="form-group col">
           <div class="custom-control custom-checkbox">
             <input type="checkbox" name="allow_to_change_at_upload" id="allow_to_change_at_upload" value="1"<mt:if name="allow_to_change_at_upload"> checked="checked"</mt:if> class="custom-control-input cb" />
             <label class="custom-control-label" for="allow_to_change_at_upload"><__trans phrase="Allow to change at upload"></label>
@@ -790,7 +790,7 @@ function setLicense() {
     }
     </mt:if>
 
-jQuery(window).load(function () {
+jQuery(window).on('load', function () {
     var e = MT.Util.getByID(<mt:if name="cc_license">'has-license'<mt:else>'no-license'</mt:if>);
     if (e) e.style.display = 'block';
 
@@ -892,7 +892,7 @@ jQuery(window).load(function () {
         "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">'
     });
 
-    jQuery('#cfg_form').submit( function () {
+    jQuery('#cfg_form').on('submit', function () {
         var $form = jQuery(this),
             $url = $form.find('#site_url_path, #site_url_subdomain, #archive_url_path, #archive_url_subdomain'),
             $simple = $form.find('input:visible, select:visible').filter(function() {

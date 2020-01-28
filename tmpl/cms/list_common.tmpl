@@ -380,7 +380,7 @@ function loginAgain(fn) {
         .find('#sign-in-button')
           .text('<__trans phrase="Continue" escape="js">')
           .off()
-          .click(function(){
+          .on('click', function(){
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',

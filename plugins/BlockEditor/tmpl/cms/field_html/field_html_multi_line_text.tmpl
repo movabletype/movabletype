@@ -395,14 +395,14 @@ jQuery(window).on('load change_to_mobile_view change_to_pc_view', function () {
     var selectedFormat = $formats.find('option:selected').val();
     if (isMobileView) {
       $formats.find('option[value=richtext]').attr('disabled', 'disabled');
-      $formats.find('option[value=_richtext]').removeAttr('disabled');
+      $formats.find('option[value=_richtext]').prop('disabled', false);
       if (selectedFormat != 'richtext') {
         return;
       }
       $formats.val('_richtext')
               .trigger('change', true);
     } else {
-      $formats.find('option[value=richtext]').removeAttr('disabled');
+      $formats.find('option[value=richtext]').prop('disabled', false);
       $formats.find('option[value=_richtext]').attr('disabled', 'disabled');
       if (selectedFormat != '_richtext') {
         return;

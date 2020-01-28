@@ -58,7 +58,7 @@
       "#event": '<__trans phrase="You must select Event.">'
     });
 
-    jQuery('#object_type').change(function() {
+    jQuery('#object_type').on('change', function() {
       var value = jQuery('#object_type').val();
       if( value === '2' ) {
         jQuery('#content_type-field').removeClass('invisible');
@@ -69,7 +69,7 @@
       setEvent();
     });
 
-    jQuery('#next_button').click(function(){
+    jQuery('#next_button').on('click', function(){
       if ( !jQuery('#object_type').mtValidate('simple') ) return false;
       if ( !jQuery('#content_type').hasClass('invisible') ) {
         if ( !jQuery('#content_type').mtValidate('simple') ) return false;
@@ -77,10 +77,10 @@
       if ( !jQuery('#event').hasClass('invisible') ) {
         if ( !jQuery('#event').mtValidate('simple') ) return false;
       }
-     jQuery('#start-create-trigger').submit();
+     jQuery('#start-create-trigger').trigger('submit');
     });
-    
-    jQuery('#cancel_button').click(function(){
+
+    jQuery('#cancel_button').on('click', function(){
       return jQuery.fn.mtModal.close();
     });
 
