@@ -55,6 +55,7 @@ for my $d ( glob( File::Spec->catfile( $spec_dir, '*' ) ) ) {
         for my $k (qw(from_object to_object)) {
             my $yaml = File::Spec->catfile( $d, $k . '.yaml' );
             if ( -e $yaml ) {
+                local $YAML::Syck::LoadBlessed = 1;
                 my $suite = YAML::Syck::LoadFile($yaml);
                 subtest $k => sub {
                     no strict 'refs';
