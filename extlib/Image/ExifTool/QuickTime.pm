@@ -34,6 +34,7 @@
 #   22) https://developer.apple.com/library/mac/documentation/QuickTime/QTFF/Metadata/Metadata.html
 #   23) http://atomicparsley.sourceforge.net/mpeg-4files.html
 #   24) https://github.com/sergiomb2/libmp4v2/wiki/iTunesMetadata
+#   25) https://cconcolato.github.io/mp4ra/atoms.html
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::QuickTime;
@@ -44,7 +45,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '2.37';
+$VERSION = '2.41';
 
 sub ProcessMOV($$;$);
 sub ProcessKeys($$$);
@@ -59,6 +60,7 @@ sub Process_mebx($$$);
 sub Process_3gf($$$);
 sub Process_gps0($$$);
 sub Process_gsen($$$);
+sub ProcessRIFFTrailer($$$);
 sub ProcessTTAD($$$);
 sub ProcessNMEA($$$);
 sub SaveMetaKeys($$$);
@@ -103,6 +105,7 @@ my %mimeLookup = (
     HEIC => 'image/heic',
     HEVC => 'image/heic-sequence',
     HEIF => 'image/heif',
+    AVIF => 'image/avif', #PH (NC)
     CRX  => 'video/x-canon-crx',    # (will get overridden)
 );
 
@@ -202,6 +205,7 @@ my %ftypLookup = (
     'hevc' => 'High Efficiency Image Format HEVC sequence (.HEICS)', # image/heic-sequence
     'mif1' => 'High Efficiency Image Format still image (.HEIF)', # image/heif
     'msf1' => 'High Efficiency Image Format sequence (.HEIFS)', # image/heif-sequence
+    'avif' => 'AV1 Image File Format (.AVIF)', # image/avif
     'crx ' => 'Canon Raw (.CRX)', #PH (CR3 or CRM; use Canon CompressorVersion to decide)
 );
 
@@ -502,15 +506,15 @@ my %eeBox = (
     },
     # mfra - movie fragment random access: contains tfra (track fragment random access), and
     #           mfro (movie fragment random access offset) (ref 5)
-    mdat => { Name => 'MovieData', Unknown => 1, Binary => 1 },
+    mdat => { Name => 'MediaData', Unknown => 1, Binary => 1 },
     'mdat-size' => {
-        Name => 'MovieDataSize',
+        Name => 'MediaDataSize',
         Notes => q{
             not a real tag ID, this tag represents the size of the 'mdat' data in bytes
             and is used in the AvgBitrate calculation
         },
     },
-    'mdat-offset' => 'MovieDataOffset',
+    'mdat-offset' => 'MediaDataOffset',
     junk => { Unknown => 1, Binary => 1 }, #8
     uuid => [
         { #9 (MP4 files)
@@ -1600,7 +1604,7 @@ my %eeBox = (
         },
     },
     # tsel - TrackSelection (ref 17)
-    # Apple tags (ref 16)
+    # Apple tags (ref 16[dead] -- see ref 25 instead)
     angl => { Name => 'CameraAngle',  Format => 'string' }, # (NC)
     clfn => { Name => 'ClipFileName', Format => 'string' }, # (NC)
     clid => { Name => 'ClipID',       Format => 'string' }, # (NC)
@@ -2184,7 +2188,7 @@ my %eeBox = (
     PROCESS_PROC => \&ProcessMOV,
     GROUPS => { 2 => 'Video' },
     dcom => 'Compression',
-    # cmvd - compressed movie data
+    # cmvd - compressed moov atom data
 );
 
 # Profile atoms (ref 11)
@@ -2475,8 +2479,8 @@ my %eeBox = (
             Start => 4,
         },
     },{
-        Name => 'Unknown_colr',
-        Flags => ['Binary','Unknown','Hidden'],
+        Name => 'ColorRepresentation',
+        ValueConv => 'join(" ", substr($val,0,4), unpack("x4n*",$val))',
     }],
     irot => {
         Name => 'Rotation',
@@ -2528,6 +2532,10 @@ my %eeBox = (
         Name => 'HEVCConfiguration',
         SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::HEVCConfig' },
     },
+    av1C => {
+        Name => 'AV1Configuration',
+        SubDirectory => { TagTable => 'Image::ExifTool::QuickTime::AV1Config' },
+    },
 );
 
 # HEVC configuration (ref https://github.com/MPEGGroup/isobmff/blob/master/IsoLib/libisomediafile/src/HEVCConfigAtom.c)
@@ -2539,13 +2547,11 @@ my %eeBox = (
     1 => {
         Name => 'GeneralProfileSpace',
         Mask => 0xc0,
-        BitShift => 6,
         PrintConv => { 0 => 'Conforming' },
     },
     1.1 => {
         Name => 'GeneralTierFlag',
         Mask => 0x20,
-        BitShift => 5,
         PrintConv => {
             0 => 'Main Tier',
             1 => 'High Tier',
@@ -2616,7 +2622,6 @@ my %eeBox = (
     21 => {
         Name => 'ConstantFrameRate',
         Mask => 0xc0,
-        BitShift => 6,
         PrintConv => {
             0 => 'Unknown',
             1 => 'Constant Frame Rate',
@@ -2626,12 +2631,10 @@ my %eeBox = (
     21.1 => {
         Name => 'NumTemporalLayers',
         Mask => 0x38,
-        BitShift => 3,
     },
     21.2 => {
         Name => 'TemporalIDNested',
         Mask => 0x04,
-        BitShift => 2,
         PrintConv => { 0 => 'No', 1 => 'Yes' },
     },
     #21.3 => {
@@ -2642,6 +2645,68 @@ my %eeBox = (
     #},
     #22 => 'NumberOfNALUnitArrays',
     # (don't decode the NAL unit arrays)
+);
+
+# HEVC configuration (ref https://aomediacodec.github.io/av1-isobmff/#av1codecconfigurationbox)
+%Image::ExifTool::QuickTime::AV1Config = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 2 => 'Video' },
+    FIRST_ENTRY => 0,
+    0 => {
+        Name => 'AV1ConfigurationVersion',
+        Mask => 0x7f,
+    },
+    1.0 => {
+        Name => 'SeqProfile',
+        Mask => 0xe0,
+        Unknown => 1,
+    },
+    1.1 => {
+        Name => 'SeqLevelIdx0',
+        Mask => 0x1f,
+        Unknown => 1,
+    },
+    2.0 => {
+        Name => 'SeqTier0',
+        Mask => 0x80,
+        Unknown => 1,
+    },
+    2.1 => {
+        Name => 'HighBitDepth',
+        Mask => 0x40,
+        Unknown => 1,
+    },
+    2.2 => {
+        Name => 'TwelveBit',
+        Mask => 0x20,
+        Unknown => 1,
+    },
+    2.3 => {
+        Name => 'ChromaFormat', # (Monochrome+SubSamplingX+SubSamplingY)
+        Notes => 'bits: 0x04 = Monochrome, 0x02 = SubSamplingX, 0x01 = SubSamplingY',
+        Mask => 0x1c,
+        PrintConv => {
+            0x00 => 'YUV 4:4:4',
+            0x02 => 'YUV 4:2:2',
+            0x03 => 'YUV 4:2:0',
+            0x07 => 'Monochrome 4:0:0',
+        },
+    },
+    2.4 => {
+        Name => 'ChromaSamplePosition',
+        Mask => 0x03,
+        PrintConv => {
+            0 => 'Unknown',
+            1 => 'Vertical',
+            2 => 'Colocated',
+            3 => '(reserved)',
+        },
+    },
+    3 => {
+        Name => 'InitialDelaySamples',
+        RawConv => '$val & 0x10 ? undef : ($val & 0x0f) + 1',
+        Unknown => 1,
+    },
 );
 
 %Image::ExifTool::QuickTime::ItemRef = (
@@ -7088,13 +7153,13 @@ my %eeBox = (
     AvgBitrate => {
         Priority => 0,  # let QuickTime::AvgBitrate take priority
         Require => {
-            0 => 'QuickTime::MovieDataSize',
+            0 => 'QuickTime::MediaDataSize',
             1 => 'QuickTime::Duration',
         },
         RawConv => q{
             return undef unless $val[1];
             $val[1] /= $$self{TimeScale} if $$self{TimeScale};
-            my $key = 'MovieDataSize';
+            my $key = 'MediaDataSize';
             my $size = $val[0];
             for (;;) {
                 $key = $self->NextTagKey($key) or last;
@@ -7835,8 +7900,8 @@ sub HandleItemInfo($)
             $buff = $val . $buff if length $val;
             next unless length $buff;   # ignore empty directories
             my ($start, $subTable, $proc);
-            if ($name eq 'EXIF') {
-                $start = 10;
+            if ($name eq 'EXIF' and length $buff >= 4) {
+                $start = 4 + unpack('N', $buff); # skip "Exif\0\0" header if it exists
                 $subTable = GetTagTable('Image::ExifTool::Exif::Main');
                 $proc = \&Image::ExifTool::ProcessTIFF;
             } else {
@@ -7884,7 +7949,7 @@ sub HandleItemInfo($)
 sub EEWarn($)
 {
     my $et = shift;
-    $et->WarnOnce('The ExtractEmbedded option may find more tags in the movie data',3);
+    $et->WarnOnce('The ExtractEmbedded option may find more tags in the media data',3);
 }
 
 #------------------------------------------------------------------------------
@@ -8134,6 +8199,7 @@ sub ProcessKeys($$$)
         }
         my ($newInfo, $msg);
         if ($tagInfo) {
+            # copy tag information into new Keys tag
             $newInfo = {
                 Name      => $$tagInfo{Name},
                 Format    => $$tagInfo{Format},
@@ -8142,7 +8208,7 @@ sub ProcessKeys($$$)
                 PrintConv => $$tagInfo{PrintConv},
                 PrintConvInv => $$tagInfo{PrintConvInv},
                 Writable  => defined $$tagInfo{Writable} ? $$tagInfo{Writable} : 1,
-                KeysInfo  => $tagInfo,
+                SubDirectory => $$tagInfo{SubDirectory},
             };
             my $groups = $$tagInfo{Groups};
             $$newInfo{Groups} = $groups ? { %$groups } : { };
@@ -8293,7 +8359,7 @@ sub ProcessMOV($$;$)
                     my $str = $$dirInfo{DirName} . ' with ' . ($raf->Tell() - $pos) . ' bytes';
                     $et->VPrint(0,"$$et{INDENT}\[Terminator found in $str remaining]");
                 } else {
-                    my $t = PrintableTagID($tag);
+                    my $t = PrintableTagID($tag,2);
                     $et->VPrint(0,"$$et{INDENT}Tag '${t}' extends to end of file");
                 }
                 last;
@@ -8394,9 +8460,21 @@ sub ProcessMOV($$;$)
         }
         # load values only if associated with a tag (or verbose) and not too big
         if ($size > 0x2000000) {    # start to get worried above 32 MB
+            # check for RIFF trailer (written by Auto-Vox dashcam)
+            if ($buff =~ /^(gpsa|gps0|gsen|gsea)...\0/s) { # (yet seen only gpsa as first record)
+                $et->VPrint(0, "Found RIFF trailer");
+                if ($et->Options('ExtractEmbedded')) {
+                    $raf->Seek(-8, 1) or last;  # seek back to start of trailer
+                    my $tbl = GetTagTable('Image::ExifTool::QuickTime::Stream');
+                    ProcessRIFFTrailer($et, { RAF => $raf }, $tbl);
+                } else {
+                    EEWarn($et);
+                }
+                last;
+            }
             $ignore = 1;
             if ($tagInfo and not $$tagInfo{Unknown} and not $eeTag) {
-                my $t = PrintableTagID($tag);
+                my $t = PrintableTagID($tag,2);
                 if ($size > 0x8000000) {
                     $et->Warn("Skipping '${t}' atom > 128 MB", 1);
                 } else {
@@ -8444,7 +8522,7 @@ ItemID:         foreach $id (keys %$items) {
             my $val;
             my $missing = $size - $raf->Read($val, $size);
             if ($missing) {
-                my $t = PrintableTagID($tag);
+                my $t = PrintableTagID($tag,2);
                 $et->Warn("Truncated '${t}' data (missing $missing bytes)");
                 last;
             }
@@ -8721,7 +8799,7 @@ ItemID:         foreach $id (keys %$items) {
                 Extra => sprintf(' at offset 0x%.4x', $raf->Tell()),
             ) if $verbose;
             if ($size and (not $raf->Seek($size-1, 1) or $raf->Read($buff, 1) != 1)) {
-                my $t = PrintableTagID($tag);
+                my $t = PrintableTagID($tag,2);
                 $et->Warn("Truncated '${t}' data");
                 last;
             }
@@ -8754,7 +8832,7 @@ QTLang: foreach $tag (@{$$et{QTLang}}) {
     # process item information now that we are done processing its 'meta' container
     HandleItemInfo($et) if $topLevel or $dirID eq 'meta';
 
-    ScanMovieData($et) if $ee and $topLevel;  # brute force scan for metadata embedded in movie data
+    ScanMediaData($et) if $ee and $topLevel;  # brute force scan for metadata embedded in media data
 
     # restore any changed options
     $et->Options($_ => $saveOptions{$_}) foreach keys %saveOptions;
@@ -8791,7 +8869,7 @@ information from QuickTime and MP4 video, M4A audio, and HEIC image files.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

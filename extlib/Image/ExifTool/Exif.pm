@@ -56,7 +56,7 @@ use vars qw($VERSION $AUTOLOAD @formatSize @formatName %formatNumber %intFormat
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::MakerNotes;
 
-$VERSION = '4.24';
+$VERSION = '4.27';
 
 sub ProcessExif($$$);
 sub WriteExif($$$);
@@ -68,6 +68,7 @@ sub ValidateImageData($$$;$);
 sub ProcessTiffIFD($$$);
 sub PrintParameter($$$);
 sub GetOffList($$$$$);
+sub PrintOpcode($$$);
 sub PrintLensInfo($);
 sub ConvertLensInfo($);
 
@@ -335,6 +336,33 @@ my %sampleFormat = (
     0x102 => 1, # BitsPerSample
     0x103 => 1, # Compression
     0x115 => 1, # SamplesPerPixel
+);
+
+# conversions for DNG OpcodeList tags
+my %opcodeInfo = (
+    Writable => 'undef',
+    WriteGroup => 'SubIFD',
+    Protected => 1,
+    Binary => 1,
+    ConvertBinary => 1, # needed because the ValueConv value is binary
+    PrintConvColumns => 2,
+    PrintConv => {
+        OTHER => \&PrintOpcode,
+        1 => 'WarpRectilinear',
+        2 => 'WarpFisheye',
+        3 => 'FixVignetteRadial',
+        4 => 'FixBadPixelsConstant',
+        5 => 'FixBadPixelsList',
+        6 => 'TrimBounds',
+        7 => 'MapTable',
+        8 => 'MapPolynomial',
+        9 => 'GainMap',
+        10 => 'DeltaPerRow',
+        11 => 'DeltaPerColumn',
+        12 => 'ScalePerRow',
+        13 => 'ScalePerColumn',
+    },
+    PrintConvInv => undef,  # (so the inverse conversion is not performed)
 );
 
 # main EXIF tag table
@@ -3700,41 +3728,9 @@ my %sampleFormat = (
         Protected => 1,
         Binary => 1,
     },
-    0xc740 => { # DNG 1.3
-        Name => 'OpcodeList1',
-        Writable => 'undef',
-        WriteGroup => 'SubIFD',
-        Protected => 1,
-        Binary => 1,
-        # opcodes:
-        # 1 => 'WarpRectilinear',
-        # 2 => 'WarpFisheye',
-        # 3 => 'FixVignetteRadial',
-        # 4 => 'FixBadPixelsConstant',
-        # 5 => 'FixBadPixelsList',
-        # 6 => 'TrimBounds',
-        # 7 => 'MapTable',
-        # 8 => 'MapPolynomial',
-        # 9 => 'GainMap',
-        # 10 => 'DeltaPerRow',
-        # 11 => 'DeltaPerColumn',
-        # 12 => 'ScalePerRow',
-        # 13 => 'ScalePerColumn',
-    },
-    0xc741 => { # DNG 1.3
-        Name => 'OpcodeList2',
-        Writable => 'undef',
-        WriteGroup => 'SubIFD',
-        Protected => 1,
-        Binary => 1,
-    },
-    0xc74e => { # DNG 1.3
-        Name => 'OpcodeList3',
-        Writable => 'undef',
-        WriteGroup => 'SubIFD',
-        Protected => 1,
-        Binary => 1,
-    },
+    0xc740 => { Name => 'OpcodeList1', %opcodeInfo }, # DNG 1.3
+    0xc741 => { Name => 'OpcodeList2', %opcodeInfo }, # DNG 1.3
+    0xc74e => { Name => 'OpcodeList3', %opcodeInfo }, # DNG 1.3
     0xc761 => { # DNG 1.3
         Name => 'NoiseProfile',
         Writable => 'double',
@@ -4157,8 +4153,8 @@ my %subSecConv = (
         my $v;
         if (defined $val[1] and $val[1]=~/^(\d+)/) {
             my $subSec = $1;
-            # be careful here just in case the time already contains a timezone (contrary to spec)
-            undef $v unless ($v = $val[0]) =~ s/( \d{2}:\d{2}:\d{2})/$1\.$subSec/;
+            # be careful here just in case the time already contains sub-seconds or a timezone (contrary to spec)
+            undef $v unless ($v = $val[0]) =~ s/( \d{2}:\d{2}:\d{2})(?!\.\d+)/$1\.$subSec/;
         }
         if (defined $val[2] and $val[0]!~/[-+]/ and $val[2]=~/^([-+])(\d{1,2}):(\d{2})/) {
             $v = ($v || $val[0]) . sprintf('%s%.2d:%.2d', $1, $2, $3);
@@ -5098,6 +5094,27 @@ sub PrintCFAPattern($)
         $rtnVal .= '][';
     }
     return $rtnVal . ']';
+}
+
+#------------------------------------------------------------------------------
+# Print Opcode List
+# Inputs: 0) value, 1) flag for inverse conversion, 2) conversion hash reference
+# Returns: converted value
+sub PrintOpcode($$$)
+{
+    my ($val, $inv, $conv) = @_;
+    return undef if $inv;   # (can't do inverse conversion)
+    return '' unless length $$val > 4;
+    my $num = unpack('N', $$val);
+    my $pos = 4;
+    my ($i, @ops);
+    for ($i=0; $i<$num; ++$i) {
+        $pos + 16 <= length $$val or push(@ops, '<err>'), last;
+        my ($op, $ver, $flags, $len) = unpack("x${pos}N4", $$val);
+        push @ops, $$conv{$op} || "[opcode $op]";
+        $pos += 16 + $len;
+    }
+    return join ', ', @ops;
 }
 
 #------------------------------------------------------------------------------
@@ -6488,7 +6505,7 @@ EXIF and TIFF meta information.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

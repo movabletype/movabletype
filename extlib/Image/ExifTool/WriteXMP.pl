@@ -90,11 +90,11 @@ sub ValidateXMP($;$)
 
 #------------------------------------------------------------------------------
 # Validate XMP property
-# Inputs: 0) ExifTool ref, 1) validate hash ref
+# Inputs: 0) ExifTool ref, 1) validate hash ref, 2) attribute hash ref
 # - issues warnings if problems detected
-sub ValidateProperty($$)
+sub ValidateProperty($$;$)
 {
-    my ($et, $propList) = @_;
+    my ($et, $propList, $attr) = @_;
 
     if ($$et{XmpValidate} and @$propList > 2) {
         if ($$propList[0] =~ /^x:x[ma]pmeta$/ and
@@ -105,10 +105,23 @@ sub ValidateProperty($$)
                 if ($$propList[-1] =~ /^rdf:(Bag|Seq|Alt)$/) {
                     $et->Warn("Ignored empty $$propList[-1] list for $$propList[-2]", 1);
                 } else {
+                    if ($$propList[-2] eq 'rdf:Alt' and $attr) {
+                        my $lang = $$attr{'xml:lang'};
+                        if ($lang and @$propList >= 5) {
+                            my $langPath = join('/', @$propList[3..($#$propList-2)]);
+                            my $valLang = $$et{XmpValidateLangAlt} || ($$et{XmpValidateLangAlt} = { });
+                            $$valLang{$langPath} or $$valLang{$langPath} = { };
+                            if ($$valLang{$langPath}{$lang}) {
+                                $et->WarnOnce("Duplicate language ($lang) in lang-alt list: $langPath");
+                            } else {
+                                $$valLang{$langPath}{$lang} = 1;
+                            }
+                        }
+                    }
                     my $xmpValidate = $$et{XmpValidate};
                     my $path = join('/', @$propList[3..$#$propList]);
                     if (defined $$xmpValidate{$path}) {
-                        $et->Warn("Duplicate XMP property: $path") if defined $$xmpValidate{$path};
+                        $et->Warn("Duplicate XMP property: $path");
                     } else {
                         $$xmpValidate{$path} = 1;
                     }
@@ -324,9 +337,8 @@ sub SetPropertyPath($$;$$$$)
     # add required properties if this is a list
     push @propList, "rdf:$listType", 'rdf:li 10' if $listType and $listType ne '1';
     # set PropertyPath for all flattened tags of this structure if necessary
-    # (note: don't do this for variable-namespace structures (undef NAMESPACE))
     my $strTable = $$tagInfo{Struct};
-    if ($strTable and $$strTable{NAMESPACE} and not ($parentID and
+    if ($strTable and not ($parentID and
         # must test NoSubStruct flag to avoid infinite recursion
         (($$tagTablePtr{$parentID} and $$tagTablePtr{$parentID}{NoSubStruct}) or
         length $parentID > 500))) # avoid deep recursion
@@ -847,7 +859,7 @@ sub WriteXMP($$;$)
 #
     if (%{$$et{DEL_GROUP}} and (grep /^XMP-.+$/, keys %{$$et{DEL_GROUP}} or
         # (logic is a bit more complex for group names in exiftool XML files)
-        grep m{^http://ns.exiftool.ca/}, values %nsUsed))
+        grep m{^http://ns.exiftool.(?:ca|org)/}, values %nsUsed))
     {
         my $del = $$et{DEL_GROUP};
         my $path;
@@ -858,7 +870,7 @@ sub WriteXMP($$;$)
             $ns = $stdXlatNS{$ns} if $stdXlatNS{$ns};
             my ($grp, @g);
             # no "XMP-" added to most groups in exiftool RDF/XML output file
-            if ($nsUsed{$ns} and (@g = ($nsUsed{$ns} =~ m{^http://ns.exiftool.ca/(.*?)/(.*?)/}))) {
+            if ($nsUsed{$ns} and (@g = ($nsUsed{$ns} =~ m{^http://ns.exiftool.(?:ca|org)/(.*?)/(.*?)/}))) {
                 if ($g[1] =~ /^\d/) {
                     $grp = "XML-$g[0]";
                     #(all XML-* groups stored as uppercase DEL_GROUP key)
@@ -1449,7 +1461,7 @@ sub WriteXMP($$;$)
             my @ns = sort keys %nsCur;
             $long[-2] .= "$nl$sp<$prop rdf:about='${about}'";
             # generate et:toolkit attribute if this is an exiftool RDF/XML output file
-            if (@ns and $nsCur{$ns[0]} =~ m{^http://ns.exiftool.ca/}) {
+            if (@ns and $nsCur{$ns[0]} =~ m{^http://ns.exiftool.(?:ca|org)/}) {
                 $long[-2] .= "\n$sp${sp}xmlns:et='http://ns.exiftool.ca/1.0/'" .
                             " et:toolkit='Image::ExifTool $Image::ExifTool::VERSION'";
             }
@@ -1601,7 +1613,7 @@ This file contains routines to write XMP metadata.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
