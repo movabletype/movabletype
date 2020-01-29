@@ -13,12 +13,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use Data::Dumper;
-
+use utf8;
 use MT::Test;
-
-plan tests => 142;
-
 use MT;
 
 my $mt = MT->new;
@@ -357,6 +353,15 @@ ok( ref( $tokens->[0][1] ) eq 'HASH',
 is( scalar keys %{ $tokens->[0][1] }, 0, "Has no attributes" );
 is( $builder->build( $ctx, $tokens ),
     'foo', "Building produces expected result" );
+
+$mt->set_language('ja_JP');
+
+note("Unknown localized tag");
+$tokens = $builder->compile( $ctx, '<mt:vあr>' );
+like $builder->errstr => qr/\Q<mt:vあr>は存在しません(1行目)\E/,
+    "correct error" or note "Error: " . $builder->errstr;
+
+done_testing;
 
 package My::Context;
 
