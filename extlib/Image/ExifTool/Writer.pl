@@ -5,7 +5,7 @@
 #
 # Notes:        Also contains some less used ExifTool functions
 #
-# URL:          http://owl.phy.queensu.ca/~phil/exiftool/
+# URL:          https://exiftool.org/
 #
 # Revisions:    12/16/2004 - P. Harvey Created
 #------------------------------------------------------------------------------
@@ -135,8 +135,8 @@ my %rawType = (
 my @delGroups = qw(
     Adobe AFCP APP0 APP1 APP2 APP3 APP4 APP5 APP6 APP7 APP8 APP9 APP10 APP11
     APP12 APP13 APP14 APP15 CanonVRD CIFF Ducky EXIF ExifIFD File FlashPix
-    FotoStation GlobParamIFD GPS ICC_Profile IFD0 IFD1 InteropIFD IPTC ItemList
-    JFIF Jpeg2000 Keys MakerNotes Meta MetaIFD MIE MPF NikonCapture PDF
+    FotoStation GlobParamIFD GPS ICC_Profile IFD0 IFD1 Insta360 InteropIFD IPTC
+    ItemList JFIF Jpeg2000 Keys MakerNotes Meta MetaIFD MIE MPF NikonCapture PDF
     PDF-update PhotoMechanic Photoshop PNG PNG-pHYs PrintIM QuickTime RMETA RSRC
     SubIFD Trailer UserData XML XML-* XMP XMP-*
 );
@@ -280,8 +280,8 @@ my %ignorePrintConv = map { $_ => 1 } qw(OTHER BITMASK Notes);
 #        each value in the list.  Internally, the new information is stored in
 #        the following members of the $$self{NEW_VALUE}{$tagInfo} hash:
 #           TagInfo - tag info ref
-#           DelValue - list ref for values to delete
-#           Value - list ref for values to add (not defined if deleting the tag)
+#           DelValue - list ref for raw values to delete
+#           Value - list ref for raw values to add (not defined if deleting the tag)
 #           IsCreating - must be set for the tag to be added for the standard file types,
 #                        otherwise just changed if it already exists.  This may be
 #                        overridden for file types with a PREFERRED metadata type.
@@ -2752,8 +2752,8 @@ Conv: for (;;) {
                     ($wantGroup or not defined $wantGroup))
                 {
                     $listSplit = ',?\s+' if $listSplit eq '1' and $$tagInfo{AutoSplit};
-                    my @splitVal = split /$listSplit/, $val;
-                    $val = \@splitVal if @splitVal > 1;
+                    my @splitVal = split /$listSplit/, $val, -1;
+                    $val = @splitVal > 1 ? \@splitVal : @splitVal ? $splitVal[0] : '';
                 }
             }
             $type = $convType || $$self{ConvType} || 'PrintConv';
@@ -2850,7 +2850,7 @@ Conv: for (;;) {
                     last Conv;
                 }
             } elsif ($conv) {
-                if (ref $conv eq 'HASH') {
+                if (ref $conv eq 'HASH' and (not exists $$tagInfo{"${type}Inv"} or $convInvList)) {
                     my ($multi, $lc);
                     # insert alternate language print conversions if required
                     if ($$self{CUR_LANG} and $type eq 'PrintConv' and
@@ -2927,14 +2927,16 @@ Conv: for (;;) {
 }
 
 #------------------------------------------------------------------------------
-# convert tag names to values in a string (eg. '${EXIF:ISO}x $$' --> '100x $')
+# Convert tag names to values or variables in a string
+# (eg. '${EXIF:ISO}x $$' --> '100x $' without hash ref, or "$info{'EXIF:ISO'}x $" with)
 # Inputs: 0) ExifTool object ref, 1) reference to list of found tags
 #         2) string with embedded tag names, 3) Options:
 #               undef    - set missing tags to ''
 #              'Error'   - issue minor error on missing tag (and return undef)
 #              'Warn'    - issue minor warning on missing tag (and return undef)
 #              'Silent'  - just return undef on missing tag (no errors/warnings)
-#               Hash ref - hash for return of tag/value pairs
+#               Hash ref - defined to interpolate as variables in string instead of values
+#                          --> receives tag/value pairs for interpolation of the variables
 #         4) document group name if extracting from a specific document
 #         5) hash ref to cache tag keys for subsequent calls in document loop
 # Returns: string with embedded tag values (or '$info{TAGNAME}' entries with Hash ref option)
@@ -4713,6 +4715,11 @@ TryLib: for ($lib=$strptimeLib; ; $lib='') {
             } elsif ($lib eq 'POSIX::strptime') {
                 @a = eval { POSIX::strptime($val, $fmt) };
             } else {
+                # protect against a negative epoch time, it can cause a hard crash in Windows
+                if ($^O eq 'MSWin32' and $fmt =~ /%s/ and $val =~ /-\d/) {
+                    warn "Can't convert negative epoch time\n";
+                    return undef;
+                }
                 @a = eval {
                     my $t = Time::Piece->strptime($val, $fmt);
                     return ($t->sec, $t->min, $t->hour, $t->mday, $t->_mon, $t->_year);
@@ -4756,7 +4763,7 @@ TryLib: for ($lib=$strptimeLib; ; $lib='') {
                 if (not $tz) {
                     if (eval { require Time::Local }) {
                         # determine timezone offset for this time
-                        my @args = ($a[4],$a[3],$a[2],$a[1],$a[0]-1,$yr-1900);
+                        my @args = ($a[4],$a[3],$a[2],$a[1],$a[0]-1,$yr);
                         my $diff = Time::Local::timegm(@args) - TimeLocal(@args);
                         $tz = TimeZoneString($diff / 60);
                     } else {
@@ -6857,6 +6864,7 @@ sub WriteBinaryData($$$)
 sub WriteTIFF($$$)
 {
     my ($self, $dirInfo, $tagTablePtr) = @_;
+    $self or return 1;    # allow dummy access
     my $buff = '';
     $$dirInfo{OutFile} = \$buff;
     return $buff if $self->ProcessTIFF($dirInfo, $tagTablePtr) > 0;
@@ -6882,7 +6890,7 @@ used routines.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

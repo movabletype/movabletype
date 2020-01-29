@@ -14,12 +14,12 @@
 #               6) http://forums.dpreview.com/forums/readflat.asp?forum=1012&thread=31350384
 #                  and http://forum.photome.de/viewtopic.php?f=2&t=353&p=742#p740
 #               7) Kai Lappalainen private communication
-#               8) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5223.0.html
+#               8) https://exiftool.org/forum/index.php/topic,5223.0.html
 #               9) Zilvinas Brobliauskas private communication
 #               10) Albert Shan private communication
-#               11) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,8377.0.html
-#               12) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,9607.0.html
-#               13) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic=10481.0.html
+#               11) https://exiftool.org/forum/index.php/topic,8377.0.html
+#               12) https://exiftool.org/forum/index.php/topic,9607.0.html
+#               13) https://exiftool.org/forum/index.php/topic=10481.0.html
 #               IB) Iliah Borg private communication (LibRaw)
 #               JD) Jens Duttke private communication
 #------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.75';
+$VERSION = '1.76';
 
 sub ProcessFujiDir($$$);
 sub ProcessFaceRec($$$);
@@ -302,6 +302,7 @@ my %faceCategories = (
         PrintConv => {
             0 => 'Auto',
             1 => 'Manual',
+            65535 => 'Movie', #forum10766
         },
     },
     0x1022 => { #8/forum6579
@@ -616,6 +617,7 @@ my %faceCategories = (
             0x501 => 'Pro Neg. Hi', #PH (X-Pro1)
             0x600 => 'Classic Chrome', #forum6109
             0x700 => 'Eterna', #12
+            0x800 => 'Classic Negative', #forum10536
         },
     },
     0x1402 => { #2
@@ -683,6 +685,8 @@ my %faceCategories = (
         PrintConv => {
             0 => 'Unrecognized',
             0x100 => 'Portrait Image',
+            0x103 => 'Night Portrait', #forum10651
+            0x105 => 'Backlit Portrait', #forum10651
             0x200 => 'Landscape Image',
             0x300 => 'Night Scene',
             0x400 => 'Macro',
@@ -1635,7 +1639,7 @@ FujiFilm maker notes in EXIF information, and to read/write FujiFilm RAW
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

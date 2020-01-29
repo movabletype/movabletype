@@ -63,8 +63,8 @@
 #              47) http://www.exiv2.org/
 #              48) Tomasz A. Kawecki private communication (550D, firmware 1.0.6, 1.0.8)
 #              49) http://www.listware.net/201101/digikam-users/49795-digikam-users-re-lens-recognition.html
-#              50) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,3833.0.html
-#              51) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4110.0.html
+#              50) https://exiftool.org/forum/index.php/topic,3833.0.html
+#              51) https://exiftool.org/forum/index.php/topic,4110.0.html
 #              52) Kai Harrekilde-Petersen private communication
 #              53) Anton Reiser private communication
 #              54) https://github.com/lclevy/canon_cr3
@@ -88,7 +88,7 @@ sub ProcessCTMD($$$);
 sub ProcessExifInfo($$$);
 sub SwapWords($);
 
-$VERSION = '4.26';
+$VERSION = '4.33';
 
 # Note: Removed 'USM' from 'L' lenses since it is redundant - PH
 # (or is it?  Ref 32 shows 5 non-USM L-type lenses)
@@ -184,7 +184,7 @@ $VERSION = '4.26';
     36 => 'Canon EF 38-76mm f/4.5-5.6', #32
     37 => 'Canon EF 35-80mm f/4-5.6 or Tamron Lens', #32
     37.1 => 'Tamron 70-200mm f/2.8 Di LD IF Macro', #PH
-    37.2 => 'Tamron AF 28-300mm f/3.5-6.3 XR Di VC LD Aspherical [IF] Macro Model A20', #38
+    37.2 => 'Tamron AF 28-300mm f/3.5-6.3 XR Di VC LD Aspherical [IF] Macro (A20)', #38
     37.3 => 'Tamron SP AF 17-50mm f/2.8 XR Di II VC LD Aspherical [IF]', #34
     37.4 => 'Tamron AF 18-270mm f/3.5-6.3 Di II VC LD Aspherical [IF] Macro', #forum2937
     38 => 'Canon EF 80-200mm f/4.5-5.6', #32
@@ -192,7 +192,7 @@ $VERSION = '4.26';
     40 => 'Canon EF 28-80mm f/3.5-5.6',
     41 => 'Canon EF 28-90mm f/4-5.6', #32
     42 => 'Canon EF 28-200mm f/3.5-5.6 or Tamron Lens', #32
-    42.1 => 'Tamron AF 28-300mm f/3.5-6.3 XR Di VC LD Aspherical [IF] Macro Model A20', #15
+    42.1 => 'Tamron AF 28-300mm f/3.5-6.3 XR Di VC LD Aspherical [IF] Macro (A20)', #15
     43 => 'Canon EF 28-105mm f/4-5.6', #10
     44 => 'Canon EF 90-300mm f/4.5-5.6', #32
     45 => 'Canon EF-S 18-55mm f/3.5-5.6 [II]', #PH (same ID for version II, ref 20)
@@ -220,12 +220,13 @@ $VERSION = '4.26';
     112 => 'Sigma 28mm f/1.5 FF High-speed Prime or other Sigma Lens', #IB
     112.1 => 'Sigma 40mm f/1.5 FF High-speed Prime', #IB
     112.2 => 'Sigma 105mm f/1.5 FF High-speed Prime', #IB
-    117 => 'Tamron 35-150mm f/2.8-4.0 Di VC OSD', #IB (A043)
+    117 => 'Tamron 35-150mm f/2.8-4.0 Di VC OSD (A043) or other Tamron Lens', #IB
+    117.1 => 'Tamron SP 35mm f/1.4 Di USD (F045)', #Exiv2#1064
     124 => 'Canon MP-E 65mm f/2.8 1-5x Macro Photo', #9
     125 => 'Canon TS-E 24mm f/3.5L',
     126 => 'Canon TS-E 45mm f/2.8', #15
     127 => 'Canon TS-E 90mm f/2.8 or Tamron Lens', #15
-    127.1 => 'Tamron 18-200mm f/3.5-6.3 Di II VC', #TomLachecki (model B018)
+    127.1 => 'Tamron 18-200mm f/3.5-6.3 Di II VC (B018)', #TomLachecki
     129 => 'Canon EF 300mm f/2.8L USM', #32
     130 => 'Canon EF 50mm f/1.0L USM', #10/15
     131 => 'Canon EF 28-80mm f/2.8-4L USM or Sigma Lens', #32
@@ -243,7 +244,7 @@ $VERSION = '4.26';
     134 => 'Canon EF 600mm f/4L IS USM', #15
     135 => 'Canon EF 200mm f/1.8L USM',
     136 => 'Canon EF 300mm f/2.8L USM',
-    136.1 => 'Tamron SP 15-30mm f/2.8 Di VC USD', #TomLachecki (model A012)
+    136.1 => 'Tamron SP 15-30mm f/2.8 Di VC USD (A012)', #TomLachecki
     137 => 'Canon EF 85mm f/1.2L USM or Sigma or Tamron Lens', #10
     137.1 => 'Sigma 18-50mm f/2.8-4.5 DC OS HSM', #PH
     137.2 => 'Sigma 50-200mm f/4-5.6 DC OS HSM', #PH
@@ -253,10 +254,10 @@ $VERSION = '4.26';
     137.6 => 'Sigma 17-70mm f/2.8-4 DC Macro OS HSM | C', #forum2819 (Contemporary version has this ID - PH)
     137.7 => 'Sigma 17-50mm f/2.8 OS HSM', #47
     137.8 => 'Sigma 18-200mm f/3.5-6.3 DC OS HSM [II]', #PH
-    137.9 => 'Tamron AF 18-270mm f/3.5-6.3 Di II VC PZD', #(model B008)forum3090
+    137.9 => 'Tamron AF 18-270mm f/3.5-6.3 Di II VC PZD (B008)', #forum3090
    '137.10' => 'Sigma 8-16mm f/4.5-5.6 DC HSM', #50-Zwielicht
-   '137.11' => 'Tamron SP 17-50mm f/2.8 XR Di II VC', #50 (model B005)
-   '137.12' => 'Tamron SP 60mm f/2 Macro Di II', #50 (model G005)
+   '137.11' => 'Tamron SP 17-50mm f/2.8 XR Di II VC (B005)', #50
+   '137.12' => 'Tamron SP 60mm f/2 Macro Di II (G005)', #50
    '137.13' => 'Sigma 10-20mm f/3.5 EX DC HSM', #Gerald Erdmann
    '137.14' => 'Tamron SP 24-70mm f/2.8 Di VC USD', #PH
    '137.15' => 'Sigma 18-35mm f/1.8 DC HSM', #David Monro
@@ -291,7 +292,7 @@ $VERSION = '4.26';
     153 => 'Canon EF 35-350mm f/3.5-5.6L USM or Sigma or Tamron Lens', #PH
     153.1 => 'Sigma 50-500mm f/4-6.3 APO HSM EX', #15
     153.2 => 'Tamron AF 28-300mm f/3.5-6.3 XR LD Aspherical [IF] Macro',
-    153.3 => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical [IF] Macro Model A14', #15
+    153.3 => 'Tamron AF 18-200mm f/3.5-6.3 XR Di II LD Aspherical [IF] Macro (A14)', #15
     153.4 => 'Tamron 18-250mm f/3.5-6.3 Di II LD Aspherical [IF] Macro', #PH
     154 => 'Canon EF 20mm f/2.8 USM or Zeiss Lens', #15
     154.1 => 'Zeiss Milvus 21mm f/2.8', #IB
@@ -300,8 +301,8 @@ $VERSION = '4.26';
     155 => 'Canon EF 85mm f/1.8 USM or Sigma Lens',
     155.1 => 'Sigma 14mm f/1.8 DG HSM | A', #IB (A017)
     156 => 'Canon EF 28-105mm f/3.5-4.5 USM or Tamron Lens',
-    156.1 => 'Tamron SP 70-300mm f/4-5.6 Di VC USD', #PH (model A005)
-    156.2 => 'Tamron SP AF 28-105mm f/2.8 LD Aspherical IF', #JR (Model 176D)
+    156.1 => 'Tamron SP 70-300mm f/4-5.6 Di VC USD (A005)', #PH
+    156.2 => 'Tamron SP AF 28-105mm f/2.8 LD Aspherical IF (176D)', #JR
     160 => 'Canon EF 20-35mm f/3.5-4.5 USM or Tamron or Tokina Lens',
     160.1 => 'Tamron AF 19-35mm f/3.5-4.5', #44
     160.2 => 'Tokina AT-X 124 AF Pro DX 12-24mm f/4', #49
@@ -314,7 +315,7 @@ $VERSION = '4.26';
     161.3 => 'Sigma 24-60mm f/2.8 EX DG', #PH (http://www.lensrentals.com/blog/2012/08/canon-illumination-correction-and-third-party-lenses)
     161.4 => 'Tamron AF 17-50mm f/2.8 Di-II LD Aspherical', #40
     161.5 => 'Tamron 90mm f/2.8',
-    161.6 => 'Tamron SP AF 17-35mm f/2.8-4 Di LD Aspherical IF', #IB (A05)
+    161.6 => 'Tamron SP AF 17-35mm f/2.8-4 Di LD Aspherical IF (A05)', #IB
     161.7 => 'Tamron SP AF 28-75mm f/2.8 XR Di LD Aspherical [IF] Macro', #IB/NJ
     161.8 => 'Tokina AT-X 24-70mm f/2.8 PRO FX (IF)', #IB
     162 => 'Canon EF 200mm f/2.8L USM', #32
@@ -418,10 +419,10 @@ $VERSION = '4.26';
     211 => 'Canon EF 28-200mm f/3.5-5.6 USM', #15
     212 => 'Canon EF 28-105mm f/4-5.6 USM', #15
     213 => 'Canon EF 90-300mm f/4.5-5.6 USM or Tamron Lens',
-    213.1 => 'Tamron SP 150-600mm f/5-6.3 Di VC USD', #topic5565 (model A011)
-    213.2 => 'Tamron 16-300mm f/3.5-6.3 Di II VC PZD Macro', #PH (model B016)
-    213.3 => 'Tamron SP 35mm f/1.8 Di VC USD', #PH (model F012)
-    213.4 => 'Tamron SP 45mm f/1.8 Di VC USD', #PH (model F013)
+    213.1 => 'Tamron SP 150-600mm f/5-6.3 Di VC USD (A011)', #forum5565
+    213.2 => 'Tamron 16-300mm f/3.5-6.3 Di II VC PZD Macro (B016)', #PH
+    213.3 => 'Tamron SP 35mm f/1.8 Di VC USD (F012)', #PH
+    213.4 => 'Tamron SP 45mm f/1.8 Di VC USD (F013)', #PH
     214 => 'Canon EF-S 18-55mm f/3.5-5.6 USM', #PH/34
     215 => 'Canon EF 55-200mm f/4.5-5.6 II USM',
     217 => 'Tamron AF 18-270mm f/3.5-6.3 Di II VC PZD', #47
@@ -502,7 +503,7 @@ $VERSION = '4.26';
     493.1 => 'Canon EF 24-105mm f/4L IS USM', #PH (should recheck this)
     494 => 'Canon EF 600mm f/4L IS II USM', #PH
     495 => 'Canon EF 24-70mm f/2.8L II USM or Sigma Lens', #PH
-    495.1 => 'Sigma 24-70mm F2.8 DG OS HSM | A', #IB (017)
+    495.1 => 'Sigma 24-70mm f/2.8 DG OS HSM | A', #IB (017)
     496 => 'Canon EF 200-400mm f/4L IS USM', #PH
     499 => 'Canon EF 200-400mm f/4L IS USM + 1.4x', #50
     502 => 'Canon EF 28mm f/2.8 IS USM or Tamron Lens', #PH
@@ -513,15 +514,16 @@ $VERSION = '4.26';
     506 => 'Canon EF 400mm f/4 DO IS II USM', #42
     507 => 'Canon EF 16-35mm f/4L IS USM', #42
     508 => 'Canon EF 11-24mm f/4L USM or Tamron Lens', #PH
-    508.1 => 'Tamron 10-24mm f/3.5-4.5 Di II VC HLD', #PH (B023)
-    624 => 'Sigma 70-200mm F2.8 DG OS HSM | S', #IB (018)
+    508.1 => 'Tamron 10-24mm f/3.5-4.5 Di II VC HLD (B023)', #PH
+    624 => 'Sigma 70-200mm f/2.8 DG OS HSM | S', #IB (018)
     747 => 'Canon EF 100-400mm f/4.5-5.6L IS II USM or Tamron Lens', #JR
     747.1 => 'Tamron SP 150-600mm f/5-6.3 Di VC USD G2', #50
     748 => 'Canon EF 100-400mm f/4.5-5.6L IS II USM + 1.4x or Tamron Lens', #JR (1.4x Mk III)
     748.1 => 'Tamron 100-400mm f/4.5-6.3 Di VC USD A035E + 1.4x', #IB
     748.2 => 'Tamron 70-210mm f/4 Di VC USD (A034) + 2x', #IB
     749 => 'Tamron 100-400mm f/4.5-6.3 Di VC USD A035E + 2x', #IB
-    750 => 'Canon EF 35mm f/1.4L II USM', #42
+    750 => 'Canon EF 35mm f/1.4L II USM or Tamron Lens', #42
+    750.1 => 'Tamron SP 85mm f/1.8 Di VC USD (F016)', #Exiv2#1072
     751 => 'Canon EF 16-35mm f/2.8L III USM', #42
     752 => 'Canon EF 24-105mm f/4L IS II USM', #42
     753 => 'Canon EF 85mm f/1.4L IS USM', #42
@@ -550,6 +552,7 @@ $VERSION = '4.26';
     4158 => 'Canon EF-S 18-55mm f/4-5.6 IS STM', #PH
     4159 => 'Canon EF-M 32mm f/1.4 STM', #42
     4160 => 'Canon EF-S 35mm f/2.8 Macro IS STM', #42
+    4208 => 'Sigma 56mm f/1.4 DC DN | C', #forum10603
     # (Nano USM lenses - 0x90xx)
     36910 => 'Canon EF 70-300mm f/4-5.6 IS II USM', #42
     36912 => 'Canon EF-S 18-135mm f/3.5-5.6 IS USM', #42
@@ -566,6 +569,8 @@ $VERSION = '4.26';
     61182.3 => 'Canon RF 28-70mm F2 L USM', #IB
     61182.4 => 'Canon RF 85mm F1.2L USM', #IB
     61182.5 => 'Canon RF 24-240mm F4-6.3 IS USM', #IB
+    61182.6 => 'Canon RF 24-70mm F2.8 L IS USM', #PH
+    61182.7 => 'Canon RF 15-35mm F2.8 L IS USM', #PH
     65535 => 'n/a',
 );
 
@@ -896,7 +901,7 @@ $VERSION = '4.26';
     0x80000325 => 'EOS 70D',
     0x80000326 => 'EOS Rebel T5i / 700D / Kiss X7i',
     0x80000327 => 'EOS Rebel T5 / 1200D / Kiss X70 / Hi',
-    0x80000328 => 'EOS-1D X MARK II', #42
+    0x80000328 => 'EOS-1D X Mark II', #42
     0x80000331 => 'EOS M',
     0x80000350 => 'EOS 80D', #42
     0x80000355 => 'EOS M2',
@@ -913,10 +918,13 @@ $VERSION = '4.26';
     0x80000417 => 'EOS Rebel SL2 / 200D / Kiss X9', #IB/42
     0x80000422 => 'EOS Rebel T100 / 4000D / 3000D', #IB (3000D in China; Kiss? - PH)
     0x80000424 => 'EOS R', #IB
+    0x80000428 => 'EOS-1D X Mark III', #IB
     0x80000432 => 'EOS Rebel T7 / 2000D / 1500D / Kiss X90', #IB
     0x80000433 => 'EOS RP',
     0x80000436 => 'EOS SL3 / 250D / Kiss X10', #25
     0x80000437 => 'EOS 90D', #IB
+    0x80000520 => 'EOS D2000C', #IB
+    0x80000560 => 'EOS D6000C', #PH (guess)
 );
 
 my %canonQuality = (
@@ -1584,7 +1592,10 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         ValueConv => 'unpack("H*", $val)',
         ValueConvInv => 'pack("H*", $val)',
     },
-    # 0x29 - WBInfo (ref IB, offset 0x6 is int32u[4] WB_GRBGLevels as shot for PowerShot G9)
+    0x29 => { #IB (G9)
+        Name => 'WBInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::Canon::WBInfo' },
+    },
     # 0x2d - changes with categories (ref 31)
     0x2f => { #PH (G12)
         Name => 'FaceDetect3',
@@ -1593,6 +1604,8 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             TagTable => 'Image::ExifTool::Canon::FaceDetect3',
         },
     },
+    # 0x32 - if length is 768, starting at offset 4 there are 6 RGGB 1/val int16 records:
+    #        daylight,cloudy,tungsten,fluorescent,flash,kelvin (D30 2001, ref IB)
     0x35 => { #PH
         Name => 'TimeInfo',
         SubDirectory => {
@@ -2067,7 +2080,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
             4 => 'Continuous, Low', #PH
             5 => 'Continuous, High', #PH
             6 => 'Silent Single', #PH
-            # ref A: http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5701.msg27843.html#msg27843
+            # ref A: https://exiftool.org/forum/index.php/topic,5701.msg27843.html#msg27843
             9 => 'Single, Silent', #A
             10 => 'Continuous, Silent', #A
             # 11 - seen for SX260
@@ -6423,6 +6436,25 @@ my %ciMaxFocal = (
     0x02 => 'FacesDetected',
 );
 
+# G9 white balance information (MakerNotes tag 0x29) (ref IB)
+%Image::ExifTool::Canon::WBInfo = (
+    %binaryDataAttrs,
+    NOTES => 'WB tags for the Canon G9.',
+    FORMAT => 'int32u',
+    FIRST_ENTRY => 1,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    0x02 => { Name => 'WB_GRGBLevelsAuto',        Format => 'int32s[4]' },
+    0x0a => { Name => 'WB_GRGBLevelsDaylight',    Format => 'int32s[4]' },
+    0x12 => { Name => 'WB_GRGBLevelsCloudy',      Format => 'int32s[4]' },
+    0x1a => { Name => 'WB_GRGBLevelsTungsten',    Format => 'int32s[4]' },
+    0x22 => { Name => 'WB_GRGBLevelsFluorescent', Format => 'int32s[4]' },
+    0x2a => { Name => 'WB_GRGBLevelsFluorHigh',   Format => 'int32s[4]' },
+    0x32 => { Name => 'WB_GRGBLevelsFlash',       Format => 'int32s[4]' },
+    0x3a => { Name => 'WB_GRGBLevelsUnderwater',  Format => 'int32s[4]' },
+    0x42 => { Name => 'WB_GRGBLevelsCustom1',     Format => 'int32s[4]' },
+    0x4a => { Name => 'WB_GRGBLevelsCustom2',     Format => 'int32s[4]' },
+);
+
 # yet more face detect information (MakerNotes tag 0x2f) - PH (G12)
 %Image::ExifTool::Canon::FaceDetect3 = (
     %binaryDataAttrs,
@@ -9628,7 +9660,7 @@ Canon maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

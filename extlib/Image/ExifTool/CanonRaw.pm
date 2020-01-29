@@ -877,7 +877,7 @@ tags.)
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -892,7 +892,7 @@ under the same terms as Perl itself.
 
 =item L<http://xyrion.org/ciff/>
 
-=item L<http://owl.phy.queensu.ca/~phil/exiftool/canon_raw.html>
+=item L<https://exiftool.org/canon_raw.html>
 
 =back
 
