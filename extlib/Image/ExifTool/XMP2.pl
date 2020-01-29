@@ -389,7 +389,7 @@ my %sRating = (
     RatingScaleMaxValue => { FlatName => 'ScaleMaxValue' },
     RatingValueLogoLink => { FlatName => 'ValueLogoLink' },
     RatingRegion => {
-        FlatName => 'RatingRegion',
+        FlatName => 'Region',
         Struct => \%sLocationDetails,
         List => 'Bag',
     },
@@ -436,6 +436,39 @@ my %sLinkedImage = (
     HeightPixels=> { Writable => 'integer' },
     UsedVideoFrame => { Struct => \%sTimecode },
 );
+my %sBoundaryPoint = ( # new in 1.5
+    STRUCT_NAME => 'BoundaryPoint',
+    NAMESPACE   => 'Iptc4xmpExt',
+    rbX => { FlatName => 'X', Writable => 'real' },
+    rbY => { FlatName => 'Y', Writable => 'real' },
+);
+my %sRegionBoundary = ( # new in 1.5
+    STRUCT_NAME => 'RegionBoundary',
+    NAMESPACE   => 'Iptc4xmpExt',
+    rbShape => { FlatName => 'Shape', PrintConv => { rectangle => 'Rectangle', circle => 'Circle', polygon => 'Polygon' } },
+    rbUnit  => { FlatName => 'Unit',  PrintConv => { pixel => 'Pixel', relative => 'Relative' } },
+    rbX => { FlatName => 'X', Writable => 'real' },
+    rbY => { FlatName => 'Y', Writable => 'real' },
+    rbW => { FlatName => 'W', Writable => 'real' },
+    rbH => { FlatName => 'H', Writable => 'real' },
+    rbRx => { FlatName => 'Rx', Writable => 'real' },
+    rbVertices => { FlatName => 'Vertices', List => 'Seq', Struct => \%sBoundaryPoint },
+);
+my %sImageRegion = ( # new in 1.5
+    STRUCT_NAME => 'ImageRegion',
+    NAMESPACE   => undef,   # undefined to allow variable-namespace extensions
+    NOTES => q{
+        This structure is new in the IPTC Extension version 1.5 specification.  As
+        well as the fields defined below, this structure may contain any top-level
+        XMP tags, but since they aren't pre-defined the only way to add these tags
+        is to write ImageRegion as a structure with these tags as new fields.
+    },
+    RegionBoundary => { Namespace => 'Iptc4xmpExt', FlatName => 'Boundary', Struct => \%sRegionBoundary },
+    rId    => { Namespace => 'Iptc4xmpExt', FlatName => 'ID' },
+    Name   => { Namespace => 'Iptc4xmpExt', Writable => 'lang-alt' },
+    rCtype => { Namespace => 'Iptc4xmpExt', FlatName => 'Ctype', List => 'Bag', Struct => \%sEntity },
+    rRole  => { Namespace => 'Iptc4xmpExt', FlatName => 'Role',  List => 'Bag', Struct => \%sEntity },
+);
 
 # IPTC Extension namespace properties (Iptc4xmpExt) (ref 4)
 %Image::ExifTool::XMP::iptcExt = (
@@ -444,9 +477,9 @@ my %sLinkedImage = (
     NAMESPACE   => 'Iptc4xmpExt',
     TABLE_DESC => 'XMP IPTC Extension',
     NOTES => q{
-        IPTC Extension namespace tags.  The actual namespace prefix is
-        "Iptc4xmpExt", but ExifTool shortens this for the family 1 group name. (see
-        L<http://www.iptc.org/IPTC4XMP/>)
+        This table contains tags defined by the IPTC Extension schema version 1.5. 
+        The actual namespace prefix is "Iptc4xmpExt", but ExifTool shortens this for
+        the family 1 group name. (see L<http://www.iptc.org/IPTC4XMP/>)
     },
     AboutCvTerm => {
         Struct => \%sCVTermDetails,
@@ -503,12 +536,13 @@ my %sLinkedImage = (
         List => 'Bag',
         Notes => 'deprecated by version 1.2',
     },
-    DigImageGUID            => { Name => 'DigitalImageGUID' },
+    DigImageGUID            => { Groups => { 2 => 'Image' }, Name => 'DigitalImageGUID' },
     DigitalSourcefileType   => {
         Name => 'DigitalSourceFileType',
         Notes => 'now deprecated -- replaced by DigitalSourceType',
+        Groups => { 2 => 'Image' },
     },
-    DigitalSourceType       => { Name => 'DigitalSourceType' },
+    DigitalSourceType       => { Name => 'DigitalSourceType', Groups => { 2 => 'Image' } },
     EmbdEncRightsExpr => {
         Struct => {
             STRUCT_NAME => 'EEREDetails',
@@ -551,8 +585,8 @@ my %sLinkedImage = (
         Groups => { 2 => 'Location' },
         List => 'Bag',
     },
-    MaxAvailHeight          => { Writable => 'integer' },
-    MaxAvailWidth           => { Writable => 'integer' },
+    MaxAvailHeight          => { Groups => { 2 => 'Image' }, Writable => 'integer' },
+    MaxAvailWidth           => { Groups => { 2 => 'Image' }, Writable => 'integer' },
     ModelAge                => { List => 'Bag', Writable => 'integer' },
     OrganisationInImageCode => { List => 'Bag' },
     OrganisationInImageName => { List => 'Bag' },
@@ -687,6 +721,7 @@ my %sLinkedImage = (
     # new IPTC video metadata 1.2 properties
     # (ref http://www.iptc.org/std/videometadatahub/recommendation/IPTC-VideoMetadataHub-props-Rec_1.2.html)
     RecDevice => {
+        Groups => { 2 => 'Device' },
         Struct => {
             STRUCT_NAME => 'Device',
             NAMESPACE   => 'Iptc4xmpExt',
@@ -698,7 +733,9 @@ my %sLinkedImage = (
         },
     },
     PlanningRef         => { List => 'Bag', Struct => \%sEntityWithRole },
-    audioBitsPerSample  => { Writable => 'integer' },
+    audioBitsPerSample  => { Groups => { 2 => 'Audio' }, Writable => 'integer' },
+    # new IPTC Extension schema 1.5 property
+    ImageRegion => { Groups => { 2 => 'Image' }, List => 'Bag', Struct => \%sImageRegion },
 );
 
 #------------------------------------------------------------------------------
@@ -1188,15 +1225,15 @@ my %sSubVersion = (
     TagStructure => { Struct => \%sTagStruct, List => 'Bag' },
     TagStructureLabelName => { Name => 'LabelName1', Flat => 1 },
     TagStructureReference => { Name => 'Reference1', Flat => 1 },
-    TagStructureSubLabels => { Name => 'SubLables1', Flat => 1 },
+    TagStructureSubLabels => { Name => 'SubLabels1', Flat => 1 },
     TagStructureParentReference => { Name => 'ParentReference1', Flat => 1 },
     TagStructureSubLabelsLabelName => { Name => 'LabelName2', Flat => 1 },
     TagStructureSubLabelsReference => { Name => 'Reference2', Flat => 1 },
-    TagStructureSubLabelsSubLabels => { Name => 'SubLables2', Flat => 1 },
+    TagStructureSubLabelsSubLabels => { Name => 'SubLabels2', Flat => 1 },
     TagStructureSubLabelsParentReference => { Name => 'ParentReference2', Flat => 1 },
     TagStructureSubLabelsSubLabelsLabelName => { Name => 'LabelName3', Flat => 1 },
     TagStructureSubLabelsSubLabelsReference => { Name => 'Reference3', Flat => 1 },
-    TagStructureSubLabelsSubLabelsSubLabels => { Name => 'SubLables3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabels => { Name => 'SubLabels3', Flat => 1 },
     TagStructureSubLabelsSubLabelsParentReference => { Name => 'ParentReference3', Flat => 1 },
     TagStructureSubLabelsSubLabelsSubLabelsLabelName => { Name => 'LabelName4', Flat => 1 },
     TagStructureSubLabelsSubLabelsSubLabelsReference => { Name => 'Reference4', Flat => 1 },
@@ -1387,7 +1424,7 @@ my %sSubVersion = (
 );
 
 # Microsoft ExpressionMedia namespace properties (expressionmedia)
-# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4235.0.html)
+# (ref https://exiftool.org/forum/index.php/topic,4235.0.html)
 %Image::ExifTool::XMP::ExpressionMedia = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-expressionmedia', 2 => 'Image' },
@@ -1580,7 +1617,7 @@ my %sSubVersion = (
 );
 
 # Google panorama namespace properties
-# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4569.0.html)
+# (ref https://exiftool.org/forum/index.php/topic,4569.0.html)
 %Image::ExifTool::XMP::GPano = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-GPano', 2 => 'Image' },
@@ -1733,6 +1770,14 @@ my %sSubVersion = (
     PortraitVersion => { },
     SpecialTypeID   => { List => 'Bag' },
     PortraitNote    => { },
+    DisableAutoCreation => { List => 'Bag' },
+    hdrp_makernote => {
+        Name => 'HDRPMakerNote',
+        # decoded data starts with the following bytes, but nothing yet is known about its contents:
+        # 48 44 52 50 02 ef 64 35 6d 5e 70 1e 2c ea e3 4c [HDRP..d5m^p.,..L]
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
 );
 
 # Google creations namespace (ref PH)
@@ -1860,7 +1905,7 @@ This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2019, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
