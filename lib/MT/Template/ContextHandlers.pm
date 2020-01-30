@@ -3340,7 +3340,7 @@ sub _hdlr_app_statusmsg {
     $id    = defined $id    ? qq{ id="$id"}      : "";
     $class = defined $class ? qq{msg msg-$class} : "msg";
     return $ctx->build(<<"EOT");
-    <div$id class="$class"><p class="msg-text">$msg $rebuild</p>$close</div>
+    <div$id class="$class"><div class="msg-text">$msg $rebuild</div>$close</div>
 EOT
 }
 
