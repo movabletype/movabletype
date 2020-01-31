@@ -2879,8 +2879,8 @@ sub build_page {
         = exists $param->{build_menus} ? $param->{build_menus} : 1;
     if ($build_menus) {
         $app->build_menus($param);
-        $app->build_menu_actions($param);
-        $app->build_user_actions($param);
+        $app->build_actions( 'menu_actions', $param );
+        $app->build_actions( 'user_actions', $param );
     }
     if ( !ref($page)
         || ( $page->isa('MT::Template') && !$page->param('page_actions') ) )
@@ -3574,17 +3574,16 @@ sub build_user_menus {
     $param->{user_menus} = \@menus;
 }
 
-sub build_menu_actions {
+sub build_actions {
     my $app = shift;
-    my ($param) = @_;
+    my ( $registry_key, $param ) = @_;
 
-    my @sorted_actions
-        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
-        values %{ $app->registry('menu_actions') || {} };
+    my $actions = $app->registry($registry_key) || {};
 
     my @valid_actions;
-    for my $action (@sorted_actions) {
-        my $cond = $action->{condition};
+    for my $id ( keys %$actions ) {
+        my $action = $actions->{$id};
+        my $cond   = $action->{condition};
         if ( defined $cond ) {
             next unless $cond;
             next if ref $cond eq 'CODE' && !$cond->( $app, $param );
@@ -3594,38 +3593,17 @@ sub build_menu_actions {
         if ( $href && ref $href eq 'CODE' ) {
             $href = $href->( $app, $param );
         }
+        $action->{id} = $id;
+        $action->{order} ||= 0;
 
         push @valid_actions, $action;
     }
 
-    $param->{menu_actions} = \@valid_actions;
-}
+    @valid_actions
+        = sort { $a->{order} <=> $b->{order} or $a->{id} cmp $b->{id} }
+        @valid_actions;
 
-sub build_user_actions {
-    my $app = shift;
-    my ($param) = @_;
-
-    my @sorted_actions
-        = sort { ( $a->{order} || 0 ) <=> ( $b->{order} || 0 ) }
-        values %{ $app->registry('user_actions') || {} };
-
-    my @valid_actions;
-    for my $action (@sorted_actions) {
-        my $cond = $action->{condition};
-        if ( defined $cond ) {
-            next unless $cond;
-            next if ref $cond eq 'CODE' && !$cond->( $app, $param );
-        }
-
-        my $href = $action->{href};
-        if ( $href && ref $href eq 'CODE' ) {
-            $href = $href->( $app, $param );
-        }
-
-        push @valid_actions, $action;
-    }
-
-    $param->{user_actions} = \@valid_actions;
+    $param->{$registry_key} = \@valid_actions;
 }
 
 sub return_to_dashboard {
