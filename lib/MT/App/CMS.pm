@@ -3566,8 +3566,9 @@ sub build_user_menus {
         else {
             $menu_item{label} = $item->{label};
         }
-        $menu_item{order} = $item->{order};
+        $menu_item{order}     = $item->{order};
         $menu_item{is_active} = $active eq $key ? 1 : 0;
+        $menu_item{id}        = $key;
         push @menus, \%menu_item;
     }
     @menus = sort { $a->{order} <=> $b->{order} } @menus;
