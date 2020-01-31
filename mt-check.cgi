@@ -82,7 +82,7 @@ my $script_name = basename($0);
 my $unsafe = ( $script_name =~ /^mt-check-unsafe.*$/ ) ? 1 : 0;
 if ($unsafe) {
     my @stats = stat($0);
-    $unsafe = 0 if 60 * 10 < time() - $stats[9];    # mtime
+    $unsafe = 0 if 60 * 10 < time() - $stats[10];    # ctime
 }
 
 local $| = 1;
