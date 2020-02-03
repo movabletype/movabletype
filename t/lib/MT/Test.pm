@@ -7,8 +7,10 @@ package MT::Test;
 use base qw( Exporter );
 
 our $VERSION = 0.9;
-our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks location_param_contains query_param_contains has_php );
+our @EXPORT  = qw(
+    _run_app _run_rpt _run_tasks
+    location_param_contains query_param_contains has_php
+);
 
 use strict;
 use warnings;
@@ -48,7 +50,6 @@ sub add_plugin_test_libs {
 }
 
 use Test::More;
-use Test::Deep qw( eq_deeply );
 
 BEGIN {
 
@@ -1606,10 +1607,6 @@ It\'s a hard rain\'s a-gonna fall',
     1;
 }
 
-
-my $out;
-sub get_last_output { return "$out"; }
-
 sub _run_app {
     my ( $class, $params, $level ) = @_;
     $level ||= 0;
@@ -1729,98 +1726,6 @@ sub _parse_query {
         = map { my ( $k, $v ) = split( /=/, $_, 2 ); $k => uri_unescape($v) }
         @params;
     return %params;
-}
-
-sub out_like {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app = _run_app( $class, $params );
-    $out = delete $app->{__test_output};
-    return like( $out, $r, $name );
-}
-
-sub out_unlike {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app = _run_app( $class, $params );
-    $out = delete $app->{__test_output};
-    return unlike( $out, $r, $name );
-}
-
-sub grab_stderr {
-    my ($code) = @_;
-    my $out;
-    local *SAVEERR;
-    open SAVEERR, ">&STDERR";
-    close STDERR;
-    open STDERR, ">", \$out;
-
-    $code->();
-
-    close STDERR;
-    open STDERR, ">&SAVEERR";
-
-    return $out;
-}
-
-sub err_like {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app;
-    my $err = grab_stderr( sub { $app = _run_app( $class, $params ) } );
-    print "OUTPUT = " . $app->{__test_output} . "\n" if ( !$err );
-    return like( $err, $r, $name );
-}
-
-sub get_current_session {
-    require MT::Session;
-    my $sess = MT::Session::get_unexpired_value(
-        MT->config->UserSessionTimeout,
-        {   id   => $session_id,
-            kind => 'US'
-        }
-    );
-    return $sess;
-}
-
-my $tmpl_out;
-my $tmpl_err;
-sub get_tmpl_out   { return "$tmpl_out" }
-sub get_tmpl_error { return "$tmpl_err" }
-
-sub _tmpl_out {
-    require MT::Object;
-    MT::Object->driver->clear_cache;
-
-    require MT::Request;
-    MT::Request->instance->reset;
-
-    my ( $text, $param, $ctx_h ) = @_;
-    require MT::Template;
-    my $tmpl = MT::Template->new;
-    $tmpl->blog_id( $ctx_h->{blog_id} ) if ( $ctx_h->{blog_id} );
-    $tmpl->text($text);
-
-    require MT::Template::Context;
-    my $ctx = MT::Template::Context->new;
-    while ( my ( $k, $v ) = each %$ctx_h ) {
-        $ctx->stash( $k, $v );
-    }
-
-    $tmpl->context($ctx);
-    $tmpl->param($param);
-    $tmpl_out = $tmpl->output;
-    $tmpl_err = $tmpl->errstr;
-    return $tmpl_out;
-}
-
-sub tmpl_out_like {
-    my ( $text, $param, $ctx_h, $re, $name ) = @_;
-
-    return like( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
-}
-
-sub tmpl_out_unlike {
-    my ( $text, $param, $ctx_h, $re, $name ) = @_;
-
-    return unlike( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
 }
 
 sub _run_rpt {
