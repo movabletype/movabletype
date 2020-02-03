@@ -771,15 +771,6 @@ sub sorting : Tests(6) {
     is_object( $tmp, $foo[0], 'Newest status=2 Foo is Foo #1' );
 }
 
-sub _fix_created_on {
-    my ( $created_on, $diff ) = @_;
-
-    require Time::Piece;
-    # force to parse as GMT
-    my $epoch = Time::Piece->strptime( $created_on, '%Y%m%d%H%M%S%Z');
-    Time::Piece->new( $epoch + $diff )->strftime('%Y%m%d%H%M%S');
-}
-
 sub ranges : Tests(9) {
     my $self = shift;
     $self->make_basic_data();
