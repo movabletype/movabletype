@@ -86,20 +86,11 @@ sub __massage_page_action {
                 }
             }
         }
-        if ( $action->{mode} || $action->{dialog} ) {
-            $action->{link} = $app->uri(
-                mode =>
-                    ( $action->{mode} ? $action->{mode} : $action->{dialog} ),
-                args => $action->{args}
-            );
-        }
-        elsif ( $action->{dialog} ) {
-            if ( $action->{args} ) {
-                my @args = map { $_ . '=' . $action->{args}->{$_} }
-                    keys %{ $action->{args} };
-                $action->{dialog_args} .= join '&', @args;
-            }
-        }
+        $action->{link} = $app->uri(
+            mode =>
+                ( $action->{mode} ? $action->{mode} : $action->{dialog} ),
+            args => $action->{args}
+        );
     }
     else {
         $action->{page} = $app->uri(
@@ -113,12 +104,7 @@ sub __massage_page_action {
     $action->{label} = $action->{link_text} if exists $action->{link_text};
     if ( $plugin && !ref( $action->{label} ) ) {
         my $label = $action->{label};
-        if ($plugin) {
-            $action->{label} = sub { $plugin->translate($label) };
-        }
-        else {
-            $action->{label} = sub { $app->translate($label) };
-        }
+        $action->{label} = sub { $plugin->translate($label) };
     }
 
     $action->{__massaged} = 1;
