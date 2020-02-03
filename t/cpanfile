@@ -119,4 +119,5 @@ on 'test' => sub {
     requires 'Text::Diff';
     requires 'Time::Piece';
     requires 'URI::Escape';
+    requires 'Web::Query';
 };
