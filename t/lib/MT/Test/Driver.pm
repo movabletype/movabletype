@@ -31,6 +31,7 @@ __PACKAGE__->install_properties(
 package Test::GroupBy;
 use base qw( Test::Class MT::Test );
 use Test::More;
+use MT::Test::DriverUtil;
 use POSIX qw(strftime);
 
 sub reset_db : Test(setup) {
@@ -286,21 +287,22 @@ sub max_group_by : Tests(7) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 package Test::Joins;
 use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'MacBook',
@@ -467,7 +469,7 @@ sub count_with_joins : Tests(2) {
 
 sub count_group_by_with_joins : Tests(3) {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'Snow Leopard',
@@ -598,21 +600,22 @@ sub only_join : Tests(1) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 package Test::Search;
 use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 sub make_basic_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             __wait  => 1,
             name    => 'foo',
@@ -632,7 +635,7 @@ sub make_basic_data {
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'MacBook',
@@ -779,8 +782,8 @@ sub ranges : Tests(9) {
     my @foo = map { Foo->load($_) } ( 1 .. 2 );
 
     my $created_on     = $foo[1]->column('created_on');
-    my $one_sec_before = _fix_created_on($created_on, -1);
-    my $one_sec_after  = _fix_created_on($created_on, +1);
+    my $one_sec_before = fix_ts($created_on, -1);
+    my $one_sec_after  = fix_ts($created_on, +1);
 
     ## Load using range search, one less than foo[1]->created_on and newer
     $tmp = Foo->load( { created_on => [ $one_sec_before ] },
@@ -1019,7 +1022,7 @@ SKIP: {
 
 sub null_column_join : Tests(2) {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'tetsuya',
             text    => 'Tetsuya Masuda',
@@ -1102,18 +1105,19 @@ sub null_column_join : Tests(2) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 package Test::Classy;
 use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
 
 use Sock;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Sock ));
+    reset_table_for(qw( Sock ));
 }
 
 sub a_plain_old_sock : Tests(3) {
@@ -1441,21 +1445,22 @@ sub sock_array_class_terms : Tests(12) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Sock ));
+    reset_table_for(qw( Sock ));
 }
 
 package Test::TypedJoin;
 use Test::More;
 use MT::Test;
 use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'OSX',
@@ -1731,20 +1736,21 @@ sub left_join_inner_join : Tests(1) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 package Test::DriverBasic;
 use base qw( Test::Class MT::Test );
 use MT::Test;
+use MT::Test::DriverUtil;
 use Test::More;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub basic : Test(137) {
