@@ -11,6 +11,7 @@ use URI::QueryParam;
 use Test::More;
 use HTML::Form;
 use Scalar::Util qw/blessed/;
+use Web::Query;
 
 my %Initialized;
 
@@ -142,11 +143,23 @@ sub get {
     $self->request($params);
 }
 
+sub get_ok {
+    my ( $self, $params ) = @_;
+    my $res = $self->get($params);
+    ok $res->is_success, "get succeeded";
+}
+
 sub post {
     my ( $self, $params ) = @_;
     $params = _convert_params($params);
     $params->{__request_method} = 'POST';
     $self->request($params);
+}
+
+sub post_ok {
+    my ( $self, $params ) = @_;
+    my $res = $self->post($params);
+    ok $res->is_success, "post succeeded";
 }
 
 sub forms {
@@ -211,6 +224,11 @@ sub _clear_cache {
     MT->instance->request->reset;
 }
 
+sub trans {
+    my ( $self, $message ) = @_;
+    MT->translate($message);
+}
+
 sub status_is {
     my ( $self, $code ) = @_;
     is $self->{res}->code, $code, "status is $code";
@@ -239,6 +257,27 @@ sub content_doesnt_expose {
     my ( $self, $url ) = @_;
     ok $self->content !~ /(<(a|form|meta|link|img|script)\s[^>]+\Q$url\E[^>]+>)/s
         or note "$url is exposed as $1";
+}
+
+sub find {
+    my ( $self, $selector ) = @_;
+    my $wq = Web::Query->new( $self->content );
+    $wq->find($selector);
+}
+
+sub page_title {
+    my $self = shift;
+    $self->find("#page-title")->text;
+}
+
+sub alert_text {
+    my $self = shift;
+    $self->find(".alert")->text;
+}
+
+sub generic_error {
+    my $self = shift;
+    $self->find("#generic-error")->text;
 }
 
 1;
