@@ -1,7 +1,7 @@
 package File::Listing;
 
 sub Version { $VERSION; }
-$VERSION = "5.814";
+$VERSION = "6.04";
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -35,30 +35,47 @@ sub init { } # Dummy sub
 
 sub file_mode ($)
 {
+    Carp::croak("Input to file_mode() must be a 10 character string.")
+        unless length($_[0]) == 10;
+
     # This routine was originally borrowed from Graham Barr's
     # Net::FTP package.
 
     local $_ = shift;
     my $mode = 0;
-    my($type,$ch);
+    my($type);
 
     s/^(.)// and $type = $1;
+
+    # When the set-group-ID bit (file mode bit 02000) is set, and the group
+    # execution bit (file mode bit 00020) is unset, and it is a regular file,
+    # some implementations of `ls' use the letter `S', others use `l' or `L'.
+    # Convert this `S'.
+
+    s/[Ll](...)$/S$1/;
 
     while (/(.)/g) {
 	$mode <<= 1;
 	$mode |= 1 if $1 ne "-" &&
 		      $1 ne 'S' &&
-		      $1 ne 't' &&
 		      $1 ne 'T';
     }
 
-    $type eq "d" and $mode |= 0040000 or	# Directory
-      $type eq "l" and $mode |= 0120000 or	# Symbolic Link
-	$mode |= 0100000;			# Regular File
+    $mode |= 0004000 if /^..s....../i;
+    $mode |= 0002000 if /^.....s.../i;
+    $mode |= 0001000 if /^........t/i;
 
-    $mode |= 0004000 if /^...s....../i;
-    $mode |= 0002000 if /^......s.../i;
-    $mode |= 0001000 if /^.........t/i;
+    # De facto standard definitions. From 'stat.h' on Solaris 9.
+
+    $type eq "p" and $mode |= 0010000 or        # fifo
+    $type eq "c" and $mode |= 0020000 or        # character special
+    $type eq "d" and $mode |= 0040000 or        # directory
+    $type eq "b" and $mode |= 0060000 or        # block special
+    $type eq "-" and $mode |= 0100000 or        # regular
+    $type eq "l" and $mode |= 0120000 or        # symbolic link
+    $type eq "s" and $mode |= 0140000 or        # socket
+    $type eq "D" and $mode |= 0150000 or        # door
+      Carp::croak("Unknown file type: $type");
 
     $mode;
 }
@@ -288,9 +305,16 @@ sub line {
     local($_) = shift;
     my($tz, $error) = @_; # ignored for now...
 
-    if (m!<A\s+HREF=\"([^\"]+)\">.*</A>.*?(\d+)-([a-zA-Z]+)-(\d+)\s+(\d+):(\d+)\s+(?:([\d\.]+[kM]?|-))!i) {
+    s!</?t[rd][^>]*>! !g;  # clean away various table stuff
+    if (m!<A\s+HREF=\"([^\"]+)\">.*</A>.*?(\d+)-([a-zA-Z]+|\d+)-(\d+)\s+(\d+):(\d+)\s+(?:([\d\.]+[kMG]?|-))!i) {
 	my($filename, $filesize) = ($1, $7);
 	my($d,$m,$y, $H,$M) = ($2,$3,$4,$5,$6);
+	if ($m =~ /^\d+$/) {
+	    ($d,$y) = ($y,$d) # iso date
+	}
+	else {
+	    $m = _monthabbrev_number($m);
+	}
 
 	$filesize = 0 if $filesize eq '-';
 	if ($filesize =~ s/k$//i) {
@@ -305,7 +329,7 @@ sub line {
 	$filesize = int $filesize;
 
 	require Time::Local;
-	my $filetime = Time::Local::timelocal(0,$M,$H,$d,_monthabbrev_number($m)-1,_guess_year($y)-1900);
+	my $filetime = Time::Local::timelocal(0,$M,$H,$d,$m-1,_guess_year($y)-1900);
 	my $filetype = ($filename =~ s|/$|| ? "d" : "f");
 	return [$filename, $filetype, $filesize, $filetime, undef];
     }
@@ -381,7 +405,7 @@ assumed.
 
 The third parameter is the type of listing to assume.  Currently
 supported formats are 'unix', 'apache' and 'dosftp'.  The default
-value 'unix'.  Ideally, the listing type should be determined
+value is 'unix'.  Ideally, the listing type should be determined
 automatically.
 
 The fourth parameter specifies how unparseable lines should be treated.
@@ -400,7 +424,12 @@ $filetype value is one of the letters 'f', 'd', 'l' or '?'.  The
 $filetime value is the seconds since Jan 1, 1970.  The
 $filemode is a bitmask like the mode returned by stat().
 
-=head1 CREDITS
+=head1 COPYRIGHT
+
+Copyright 1996-2010, Gisle Aas
 
 Based on lsparse.pl (from Lee McLoughlin's ftp mirror package) and
 Net::FTP's parse_dir (Graham Barr).
+
+This library is free software; you can redistribute it and/or
+modify it under the same terms as Perl itself.

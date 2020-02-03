@@ -3,7 +3,22 @@ package LWP::Authen::Digest;
 use strict;
 use base 'LWP::Authen::Basic';
 
+our $VERSION = '6.43';
+
 require Digest::MD5;
+
+sub _reauth_requested {
+    my ($class, $auth_param, $ua, $request, $auth_header) = @_;
+    my $ret = defined($$auth_param{stale}) && lc($$auth_param{stale}) eq 'true';
+    if ($ret) {
+        my $hdr = $request->header($auth_header);
+        $hdr =~ tr/,/;/;    # "," is used to separate auth-params!!
+        ($hdr) = HTTP::Headers::Util::split_header_words($hdr);
+        my $nonce = {@$hdr}->{nonce};
+        delete $$ua{authen_md5_nonce_count}{$nonce};
+    }
+    return $ret;
+}
 
 sub auth_header {
     my($class, $user, $pass, $request, $ua, $h) = @_;
@@ -58,7 +73,14 @@ sub auth_header {
     my @pairs;
     for (@order) {
 	next unless defined $resp{$_};
-	push(@pairs, "$_=" . qq("$resp{$_}"));
+
+	# RFC2617 says that qop-value and nc-value should be unquoted.
+	if ( $_ eq 'qop' || $_ eq 'nc' ) {
+		push(@pairs, "$_=" . $resp{$_});
+	}
+	else {
+		push(@pairs, "$_=" . qq("$resp{$_}"));
+	}
     }
 
     my $auth_value  = "Digest " . join(", ", @pairs);
