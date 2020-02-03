@@ -124,7 +124,7 @@ __PACKAGE__->install_properties(
 );
 
 package Test::DDL;
-use base qw( Test::Class MT::Test );
+use base qw( Test::Class );
 use Test::More;
 use MT::Test::DriverUtil;
 

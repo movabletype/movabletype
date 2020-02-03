@@ -29,7 +29,7 @@ __PACKAGE__->install_properties(
 );
 
 package Test::GroupBy;
-use base qw( Test::Class MT::Test );
+use base qw( Test::Class );
 use Test::More;
 use MT::Test::DriverUtil;
 use POSIX qw(strftime);
@@ -292,9 +292,8 @@ sub clean_db : Test(teardown) {
 
 package Test::Joins;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
 use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
     reset_table_for(qw( Foo Bar Baz ));
@@ -605,9 +604,8 @@ sub clean_db : Test(teardown) {
 
 package Test::Search;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
 use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
     reset_table_for(qw( Foo Bar ));
@@ -1110,9 +1108,8 @@ sub clean_db : Test(teardown) {
 
 package Test::Classy;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
 use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 use Sock;
 
@@ -1450,9 +1447,8 @@ sub clean_db : Test(teardown) {
 
 package Test::TypedJoin;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
 use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
     reset_table_for(qw( Foo Bar Baz ));
@@ -1740,8 +1736,7 @@ sub clean_db : Test(teardown) {
 }
 
 package Test::DriverBasic;
-use base qw( Test::Class MT::Test );
-use MT::Test;
+use base qw( Test::Class );
 use MT::Test::DriverUtil;
 use Test::More;
 
