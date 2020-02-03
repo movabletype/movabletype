@@ -19,8 +19,7 @@ use MT::Test;
 use MT::FileMgr;
 use MT::Image;
 
-my $file   = File::Spec->rel2abs(__FILE__);
-my $png    = File::Spec->catfile( $ENV{MT_HOME}, 'mt-static', 'images', 'logo',
+my $png = File::Spec->catfile( $ENV{MT_HOME}, 'mt-static', 'images', 'logo',
     'movable-type-logo.png' );
 
 my $cfg = MT->config;
