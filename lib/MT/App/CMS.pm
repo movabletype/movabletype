@@ -385,8 +385,6 @@ sub core_methods {
 
         ## Groups
         'delete_group'             => "${pkg}Group::delete_group",
-        'edit_group_members'       => "${pkg}Group::edit_group_members",
-        'add_group_members'        => "${pkg}Group::add_group_members",
         'remove_member'            => "${pkg}Group::remove_member",
         'remove_group'             => "${pkg}Group::remove_group",
         'add_member'               => "${pkg}Group::add_member",
