@@ -97,6 +97,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Minimal';
     requires 'Net::SFTP';
+    requires 'Path::Tiny';
     requires 'PHP::Serialization';
     requires 'pQuery';
     requires 'SQL::Maker';
@@ -118,4 +119,5 @@ on 'test' => sub {
     requires 'Text::Diff';
     requires 'Time::Piece';
     requires 'URI::Escape';
+    requires 'Web::Query';
 };
