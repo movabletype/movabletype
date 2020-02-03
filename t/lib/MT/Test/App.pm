@@ -125,10 +125,11 @@ sub request {
 sub _convert_params {
     my $params = shift;
     if ( blessed $params && $params->isa('HTTP::Request') ) {
+        my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
         my $cgi = CGI->new( $params->content );
         my %hash;
-        for my $name ( $cgi->multi_param ) {
-            my @values = $cgi->multi_param($name);
+        for my $name ( $cgi->$param_method ) {
+            my @values = $cgi->$param_method($name);
             $hash{$name} = @values > 1 ? \@values : $values[0];
         }
         return \%hash;
@@ -169,6 +170,13 @@ sub forms {
         base   => 'http://localhost',
         strict => 1,
     );
+}
+
+sub form {
+    my ( $self, $id ) = @_;
+    my @forms = $self->forms;
+    my ($form) = grep { ( $_->attr('id') // '' ) eq $id } @forms;
+    $form;
 }
 
 my %app_params_mapping = (
@@ -265,19 +273,27 @@ sub find {
     $wq->find($selector);
 }
 
+sub _trim {
+    my $str = shift;
+    $str =~ s/\A\s+//s;
+    $str =~ s/\s+\z//s;
+    $str;
+}
+
 sub page_title {
     my $self = shift;
-    $self->find("#page-title")->text;
+    _trim( $self->find("#page-title")->text );
 }
 
 sub alert_text {
     my $self = shift;
-    $self->find(".alert")->text;
+    my $alert_class = MT->version_number >= 7 ? '.alert' : '.msg';
+    _trim( $self->find($alert_class)->text );
 }
 
 sub generic_error {
     my $self = shift;
-    $self->find("#generic-error")->text;
+    _trim( $self->find("#generic-error")->text );
 }
 
 1;
