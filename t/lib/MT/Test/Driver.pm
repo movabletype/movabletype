@@ -1837,7 +1837,7 @@ sub basic : Test(137) {
     is( Foo->count( { status => 0 } ),
         1, 'Count of all status=0 Foos finds all one' );
     my $ranged_count
-        = Foo->count( { created_on => [ $foo[1]->column('created_on') - 1 ] },
+        = Foo->count( { created_on => [ fix_ts( $foo[1]->created_on, -1 ) ] },
         { range => { created_on => 1 } } );
     is( $ranged_count, 1,
         'Count of all Foos in open-ended date range starting before Foo #1 finds all one'
@@ -1903,7 +1903,7 @@ sub basic : Test(137) {
         {   limit     => 1,
             sort      => 'created_on',
             direction => 'descend',
-            start_val => $foo[1]->created_on - 1
+            start_val => fix_ts( $foo[1]->created_on, -1 ),
         }
     );
     is_object( $tmp, $foo[0],
@@ -1916,7 +1916,7 @@ sub basic : Test(137) {
         {   limit     => 1,
             sort      => 'created_on',
             direction => 'ascend',
-            start_val => $foo[1]->created_on - 1
+            start_val => fix_ts( $foo[1]->created_on, -1 ),
         }
     );
     is_object( $tmp, $foo[1],
