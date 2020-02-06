@@ -66,7 +66,7 @@ sub WritePhotoshop($$$)
 # rewrite existing tags in the old directory, deleting ones as necessary
 # (the Photoshop directory entries aren't in any particular order)
 #
-    # Format: 0) Type, 4 bytes - '8BIM' (or the rare 'PHUT', 'DCSR' or 'AgHg')
+    # Format: 0) Type, 4 bytes - '8BIM' (or the rare 'PHUT', 'DCSR', 'AgHg' or 'MeSa')
     #         1) TagID,2 bytes
     #         2) Name, pascal string padded to even no. bytes
     #         3) Size, 4 bytes - N
@@ -76,7 +76,7 @@ sub WritePhotoshop($$$)
         # each entry must be on same even byte boundary as directory start
         ++$pos if ($pos ^ $start) & 0x01;
         my $type = substr($$dataPt, $pos, 4);
-        if ($type !~ /^(8BIM|PHUT|DCSR|AgHg)$/) {
+        if ($type !~ /^(8BIM|PHUT|DCSR|AgHg|MeSa)$/) {
             $et->Error("Bad Photoshop IRB resource");
             undef $newData;
             last;
@@ -124,7 +124,7 @@ sub WritePhotoshop($$$)
                     $$newTags{$tagID} = $tagInfo;   # add later
                     $value = undef;
                 } else {
-                    $value = $et->GetNewValues($nvHash);
+                    $value = $et->GetNewValue($nvHash);
                 }
                 ++$$et{CHANGED};
                 next unless defined $value;     # next if tag is being deleted
@@ -138,6 +138,10 @@ sub WritePhotoshop($$$)
                 unless ($tagInfo) {
                     # process subdirectory anyway if writable (except EXIF to avoid recursion)
                     # --> this allows IPTC to be processed if found here in TIFF images
+                    # (note that I have seen a case of XMP in PSD-EXIFInfo-IFD0, and the EXIF
+                    #  exclusion means that this won't be written unless an EXIF tag is
+                    #  specifically edited, see forum10768 -- maybe this should be changed
+                    #  if it happens again)
                     my $tmpInfo = $et->GetTagInfo($tagTablePtr, $tagID);
                     if ($tmpInfo and $$tmpInfo{SubDirectory} and
                         $tmpInfo->{SubDirectory}->{TagTable} ne 'Image::ExifTool::Exif::Main')
@@ -185,7 +189,7 @@ sub WritePhotoshop($$$)
         if ($$newTags{$tagID}) {
             $tagInfo = $$newTags{$tagID};
             my $nvHash = $et->GetNewValueHash($tagInfo);
-            $value = $et->GetNewValues($nvHash);
+            $value = $et->GetNewValue($nvHash);
             # handle new IPTCDigest value specially
             if ($tagInfo eq $iptcDigestInfo and defined $value) {
                 if ($value eq 'new') {
@@ -253,7 +257,7 @@ default resource name, and applied if no appended name is provided.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

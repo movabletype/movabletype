@@ -13,6 +13,11 @@ use MT::I18N qw( const );
 use Time::Local qw( timegm );
 use List::Util qw( sum );
 
+use MT::Util::Deprecated qw(
+    bin2dec dec2bin dsa_verify
+    perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
+);
+
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
@@ -22,8 +27,7 @@ our @EXPORT_OK
     days_in wday_from_ts encode_js decode_js get_entry spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
     decode_xml is_valid_url is_url discover_tb convert_high_ascii
-    mark_odd_rows dsa_verify perl_sha1_digest relative_date
-    perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
+    mark_odd_rows relative_date xliterate_utf8
     start_background_task launch_background_tasks substr_wref
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
@@ -32,6 +36,8 @@ our @EXPORT_OK
     extract_url_path break_up_text dir_separator deep_do deep_copy
     realpath canonicalize_path clear_site_stats_widget_cache check_fast_cgi is_valid_ip
     encode_json build_upload_destination );
+
+push @EXPORT_OK, @MT::Util::Deprecated::EXPORT_OK;
 
 {
     my $Has_Weaken;
@@ -1235,10 +1241,10 @@ sub make_unique_author_basename {
             $name = "author" . $author->id;
         }
         else {
-            require Digest::MD5;
+            require MT::Util::Digest::MD5;
             $name = "author"
                 . substr(
-                Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
+                MT::Util::Digest::MD5::md5_hex( Encode::encode_utf8( $author->name ) ),
                 0, 5
                 );
         }
@@ -1961,233 +1967,6 @@ sub start_background_task {
     }
 }
 
-{
-    eval { require bytes; 1; };
-
-    sub addbin {
-        my ( $a, $b ) = @_;
-        my $length = ( length $a > length $b ? length $a : length $b );
-
-        $a = "\0" x ( $length - ( length $a ) ) . $a;
-        $b = "\0" x ( $length - ( length $b ) ) . $b;
-        my $carry  = 0;
-        my $result = '';
-        for ( my $i = 1; $i <= $length; $i++ ) {
-            my $adigit = ord( substr( $a, -$i, 1 ) );
-            my $bdigit = ord( substr( $b, -$i, 1 ) );
-            my $rdigit = $adigit + $bdigit + $carry;
-            $carry  = $rdigit / 256;
-            $result = chr( $rdigit % 256 ) . $result;
-        }
-        if ($carry) {
-            return $result = chr($carry) . $result;
-        }
-        else {
-            return $result;
-        }
-    }
-
-    sub multbindec {
-        my ( $a, $b ) = @_;
-
-        # $b is decimal-ascii, $b < 256
-        my @result;
-        $result[ ( length $a ) ] = 0;
-        for ( my $i = 1; $i <= length $a; $i++ ) {
-            my $adigit = substr( $a, -$i, 1 );
-            $result[ -$i ] = ord($adigit) * $b;
-        }
-
-        for ( my $i = 2; $i <= scalar @result; $i++ ) {
-            $result[ -$i ] += int( $result[ -$i + 1 ] / 256 );
-            $result[ -$i + 1 ] = $result[ -$i + 1 ] % 256;
-        }
-
-        shift @result while ( @result && ( $result[0] == 0 ) );
-
-        pack( 'C*', @result );
-    }
-
-    sub divbindec {
-        my ( $a, $b ) = @_;
-
-        # $b is decimal-ascii, $b < 256
-
-        my $acc = ord( substr( $a, 0, 1 ) );
-        my $quot;
-        while ( length $a ) {
-            $a = substr( $a, 1 );
-            $quot .= chr( $acc / $b );
-            $acc = $acc % $b;
-            if ( length $a ) {
-                $acc = $acc * 256 + ord( substr( $a, 0, 1 ) );
-            }
-        }
-        return ( $quot, $acc );
-    }
-
-    sub dec2bin {
-        my ($decimal) = @_;
-        my @digits = split //, $decimal;
-        my $result = "";
-        foreach my $d (@digits) {
-            $result = multbindec( $result, 10 );
-            $result = addbin( pack( 'c', $d ), $result );
-        }
-        while ( substr( $result, 0, 1 ) eq "\0" ) {
-            $result = substr( $result, 1 );
-        }
-        $result;
-    }
-
-    sub bin2dec {
-        my $bin    = $_[0];
-        my $result = '';
-        my $rem    = 0;
-        while ( ( length $bin ) && ( $bin ne "\0" ) ) {
-            ( $bin, $rem ) = divbindec( $bin, 10 );
-            $result = $rem . $result;
-            $bin = substr( $bin, 1 ) if ( substr( $bin, 0, 1 ) eq "\0" );
-        }
-        $result;
-    }
-
-    sub perl_sha1_digest
-    {    # thanks to Adam Back for the starting point of this
-        my ($message) = @_;
-        my $init_string
-            = 'D9T4C`>_-JXF8NMS^$#)4=L/2X?!:@GF9;MGKH8\;O-S*8L\'6';
-
-        # 67452301 efcdab89 98badcfe 10325476 c3d2e1f0
-        my @A = unpack "N*", unpack 'u', $init_string;
-        my @K = splice @A, 5, 4;
-        sub M { my ( $x, $m ); ( $x = pop ) - ( $m = 1 + ~0 ) * int $x / $m }; # modulo 0x100000000
-
-        sub L {
-            my ( $n, $x );
-            $n = pop;
-            ( ( $x = pop ) << $n | 2**$n - 1 & $x >> 32 - $n ) & (0xffffffff);
-        }    # left-rotate bit vector
-             # magic SHA1 functions
-        my @F = (
-            sub { my ( $a, $b, $c, $d ) = @_; $b & ( $c ^ $d ) ^ $d },
-            sub { my ( $a, $b, $c, $d ) = @_; $b ^ $c ^ $d },
-            sub { my ( $a, $b, $c, $d ) = @_; ( $b | $c ) & $d | $b & $c },
-            sub { my ( $a, $b, $c, $d ) = @_; $b ^ $c ^ $d }
-        );
-        my $F = sub {
-            my $which = shift;
-            my ( $a, $b, $c, $d ) = @_;
-            if ( $which == 0 ) { $b & ( $c ^ $d ) ^ $d }
-            elsif ( $which == 1 ) { $b ^ $c ^ $d }
-            elsif ( $which == 2 ) { ( $b | $c ) & $d | $b & $c }
-            elsif ( $which == 3 ) { $b ^ $c ^ $d }
-        };
-
-        my ( $l, $r, $p, $t, $S, @W, $P );
-        do {
-            $P = substr( $message, 0, 64 );
-            $message = length $message >= 64 ? substr( $message, 64 ) : "";
-            $l += $r = length $P;
-            $r++, $P .= "\x80" if $r < 64 && !$p++;
-            @W = unpack 'N16', $P . "\0" x ( 64 - length($P) );
-            $W[15] = $l * 8 if $r < 57;
-            for ( 16 .. 79 ) {
-                push @W,
-                    L(
-                    $W[ $_ - 3 ] ^ $W[ $_ - 8 ] ^ $W[ $_ - 14 ]
-                        ^ $W[ $_ - 16 ],
-                    1
-                    );
-            }
-            my ( $a, $b, $c, $d, $e ) = @A;
-            for ( 0 .. 79 ) {
-                $t = M(
-                      ( $F->( int( $_ / 20 ), $a, $b, $c, $d ) )
-                    + $e + $W[$_]
-                        + $K[ $_ / 20 ]
-                        + L $a,
-                    5
-                );
-                $e = $d;
-                $d = $c;
-                $c = L( $b, 30 );
-                $b = $a;
-                $a = $t;
-            }
-            $A[0] = M( $A[0] + $a );
-            $A[1] = M( $A[1] + $b );
-            $A[2] = M( $A[2] + $c );
-            $A[3] = M( $A[3] + $d );
-            $A[4] = M( $A[4] + $e );
-        } while $r > 56;
-
-        pack( 'N*', @A[ 0 .. 4 ] );
-    }
-}
-
-sub perl_sha1_digest_hex {
-    sprintf( "%.8x" x 5, unpack( 'N*', &perl_sha1_digest(@_) ) );
-}
-
-sub perl_sha1_digest_base64 {
-    require MIME::Base64;
-    MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
-}
-
-{
-    my $has_crypt_dsa;
-
-    sub dsa_verify {
-        my %param = @_;
-
-        unless ( defined $has_crypt_dsa ) {
-            eval { require Crypt::DSA; };
-            $has_crypt_dsa = $@ ? 0 : 1;
-        }
-        if ( $has_crypt_dsa && !$param{ForcePerl} ) {
-            $param{Key} = bless $param{Key}, 'Crypt::DSA::Key';
-            $param{Signature} = bless $param{Signature},
-                'Crypt::DSA::Signature';
-            return Crypt::DSA->new->verify(%param);
-        }
-        else {
-            require Math::BigInt;
-
-            my ( $key, $dgst, $sig );
-
-            Carp::croak __PACKAGE__ . "dsa_verify: Need a Key"
-                unless $key = $param{Key};
-
-            unless ( $dgst = $param{Digest} ) {
-                Carp::croak "dsa_verify: Need either Message or Digest"
-                    unless $param{Message};
-                $dgst = perl_sha1_digest( $param{Message} );
-            }
-            Carp::croak "dsa_verify: Need a Signature"
-                unless $sig = $param{Signature};
-            my $r       = new Math::BigInt( $sig->{r} );
-            my $s       = new Math::BigInt( $sig->{'s'} );
-            my $p       = new Math::BigInt( $key->{p} );
-            my $q       = new Math::BigInt( $key->{'q'} );
-            my $g       = new Math::BigInt( $key->{g} );
-            my $pub_key = new Math::BigInt( $key->{pub_key} );
-            my $u2      = $s->bmodinv($q);
-
-            my $u1 = new Math::BigInt( "0x" . unpack( "H*", $dgst ) );
-
-            $u1 = $u1->bmul($u2)->bmod($q);
-            $u2 = $r->bmul($u2)->bmod($q);
-            my $t1 = $g->bmodpow( $u1, $p );
-            my $t2 = $pub_key->bmodpow( $u2, $p );
-            $u1 = $t1->bmul($t2)->bmod( $key->{p} );
-            $u1 = $u1->bmod( $key->{'q'} );
-            my $result = $u1->bcmp( $sig->{r} );
-            return defined($result) ? $result == 0 : 0;
-        }
-    }
-}
-
 # TBD: fill in the contracts of these.
 sub sanitize_input {
     use bytes;
@@ -2533,7 +2312,7 @@ sub sanitize_embed {
         || MT->config('GlobalSanitizeSpec');
 
     my $spec = $gspec
-        . ',embed * !style,object id classid width height,param/ name value,script src type,div';
+        . ',embed * !style,object id classid width height,param/ name value,script src type,div,iframe *';
     my $sanitized = MT::Sanitize->sanitize( $str, $spec );
 
     # Don't permit any actual script inside a script tag (external
@@ -3083,23 +2862,6 @@ the transformed address.
 Checks the email address I<$email_address> for syntax validity; if the
 address--or part of it--is valid, I<is_valid_email> returns the valid (part
 of) the email address. Otherwise, it returns C<0>.
-
-=head2 perl_sha1_digest($msg)
-
-Returns a SHA1 digest of $msg. The result is the usual packed binary
-representation. Use perl_sha1_digest_hex to get a printable string.
-
-=head2 perl_sha1_digest_hex($msg)
-
-Returns a SHA1 digest of $msg. The result is an ASCII string of hex
-digits. Use perl_sha1_digest to get a binary representation.
-
-=head2 dsa_verify(Key => $key, Signature => $sig,
-    [ Message => $msg | $Digest => $dgst ])
-
-Verifies that sig is a DSA signature of $msg (or $dgst) produced using
-the private half of the public key given in $key. Requires
-Math::BigInt but doesn't call for any non-perl libraries.
 
 =head2 get_newsbox_html($newsbox_url, $kind)
 

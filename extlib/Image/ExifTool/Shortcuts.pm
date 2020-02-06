@@ -19,7 +19,7 @@ package Image::ExifTool::Shortcuts;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '1.53';
+$VERSION = '1.65';
 
 # this is a special table used to define command-line shortcuts
 # (documentation Notes may be added for these via %shortcutNotes in BuildTagLookup.pm)
@@ -117,6 +117,7 @@ $VERSION = '1.53';
         'MakerNoteCanon',
         'MakerNoteCasio',
         'MakerNoteCasio2',
+        'MakerNoteDJI',
         'MakerNoteFLIR',
         'MakerNoteFujiFilm',
         'MakerNoteGE',
@@ -144,11 +145,13 @@ $VERSION = '1.53';
         'MakerNoteKodak9',
         'MakerNoteKodak10',
         'MakerNoteKodak11',
+        'MakerNoteKodak12',
         'MakerNoteKodakUnknown',
         'MakerNoteKyocera',
         'MakerNoteMinolta',
         'MakerNoteMinolta2',
         'MakerNoteMinolta3',
+        'MakerNoteMotorola',
         'MakerNoteNikon',
         'MakerNoteNikon2',
         'MakerNoteNikon3',
@@ -161,8 +164,13 @@ $VERSION = '1.53';
         'MakerNoteLeica4',
         'MakerNoteLeica5',
         'MakerNoteLeica6',
+        'MakerNoteLeica7',
+        'MakerNoteLeica8',
+        'MakerNoteLeica9',
+        'MakerNoteLeica10',
         'MakerNotePanasonic',
         'MakerNotePanasonic2',
+        'MakerNotePanasonic3',
         'MakerNotePentax',
         'MakerNotePentax2',
         'MakerNotePentax3',
@@ -171,8 +179,11 @@ $VERSION = '1.53';
         'MakerNotePentax6',
         'MakerNotePhaseOne',
         'MakerNoteReconyx',
+        'MakerNoteReconyx2',
+        'MakerNoteReconyx3',
         'MakerNoteRicoh',
         'MakerNoteRicoh2',
+        'MakerNoteRicohPentax',
         'MakerNoteRicohText',
         'MakerNoteSamsung1a',
         'MakerNoteSamsung1b',
@@ -224,7 +235,7 @@ $VERSION = '1.53';
         'IFD0:Artist',
         'IFD0:Copyright',
         # other TIFF tags
-        'IFD0:Rating', 
+        'IFD0:Rating',
         'IFD0:RatingPercent',
         'IFD0:DNGLensInfo',
         'IFD0:PanasonicTitle',
@@ -321,7 +332,7 @@ name prefix.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

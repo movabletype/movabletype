@@ -14,7 +14,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.42';
+$VERSION = '1.48';
 
 sub ProcessMIE($$);
 sub ProcessMIEGroup($$$);
@@ -152,8 +152,11 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
         (eg. C<55(mi/h)>).  If no units are specified, the default units are
         written.
 
-        See L<http://owl.phy.queensu.ca/~phil/exiftool/MIE1.1-20070121.pdf> for the
-        official MIE specification.
+        4) ExifTool writes compressed metadata to MIE files if the L<Compress|../ExifTool.html#Compress> (-z)
+        option is used and Compress::Zlib is available.
+
+        See L<https://exiftool.org/MIE1.1-20070121.pdf> for the official MIE
+        specification.
     },
    '0Type' => {
         Name => 'SubfileType',
@@ -298,7 +301,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     Contributors=> { Groups => { 2 => 'Author' }, List => 1 },
     Copyright   => { Groups => { 2 => 'Author' } },
     CreateDate  => { Groups => { 2 => 'Time' }, %dateInfo },
-    EMail       => { Groups => { 2 => 'Author' } },
+    EMail       => { Name => 'Email', Groups => { 2 => 'Author' } },
     Keywords    => { List => 1 },
     ModifyDate  => { Groups => { 2 => 'Time' }, %dateInfo },
     OriginalDate=> {
@@ -466,6 +469,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     },
     data => {
         Name => 'FullSizeImage',
+        Groups => { 2 => 'Preview' },
         %binaryConv,
         RawConv => '$self->ValidateImage(\$val,$tag)',
     },
@@ -488,6 +492,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     },
     data => {
         Name => 'PreviewImage',
+        Groups => { 2 => 'Preview' },
         %binaryConv,
         RawConv => '$self->ValidateImage(\$val,$tag)',
     },
@@ -510,6 +515,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     },
     data => {
         Name => 'ThumbnailImage',
+        Groups => { 2 => 'Preview' },
         %binaryConv,
         RawConv => '$self->ValidateImage(\$val,$tag)',
     },
@@ -567,7 +573,7 @@ my %offOn = ( 0 => 'Off', 1 => 'On' );
     ExposureTime    => {
         Writable => 'rational64u',
         PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
-        PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
+        PrintConvInv => '$val',
     },
     Flash => {
         SubDirectory => {
@@ -974,7 +980,7 @@ sub WriteMIEGroup($$$)
             if ($tagLen) {
                 $raf->Read($tag, $tagLen) == $tagLen or last;
                 $oldHdr .= $tag;    # add tag to element header
-                $et->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
+                $et->Warn("MIE tag '${tag}' out of sequence") if $tag lt $lastTag;
                 # separate units from tag name if they exist
                 $units = $1 if $tag =~ s/\((.*)\)$//;
             } else {
@@ -995,10 +1001,10 @@ sub WriteMIEGroup($$$)
                 }
             }
             # don't rewrite free bytes or information in deleted groups
-            if ($format eq 0x80 or ($delGroup and $tagLen and ($format & 0xf0) != 0x10)) {
+            if ($format == 0x80 or ($delGroup and $tagLen and ($format & 0xf0) != 0x10)) {
                 $raf->Seek($valLen, 1) or $msg = 'Seek error', last;
                 if ($verbose > 1) {
-                    my $free = ($format eq 0x80) ? ' free' : '';
+                    my $free = ($format == 0x80) ? ' free' : '';
                     print $out "    - $grp1:$tag ($valLen$free bytes)\n";
                 }
                 ++$$et{CHANGED} if $delGroup;
@@ -1032,7 +1038,7 @@ sub WriteMIEGroup($$$)
                 if ($newTag eq $tag) {
                     # make sure that either both or neither old and new tags are MIE groups
                     if ($isMieGroup xor ($format & 0xf3) == 0x10) {
-                        $et->Warn("Tag '$tag' not expected type");
+                        $et->Warn("Tag '${tag}' not expected type");
                         next;   # don't write our new tag
                     }
                     # uncompress existing directory into $oldVal since we are editing it
@@ -1119,6 +1125,7 @@ sub WriteMIEGroup($$$)
                             eval { require Compress::Zlib })
                         {
                             $subdirInfo{Compact} = 1;
+                            $subdirInfo{ReadOnly} = 1;  # because XMP is not writable in place
                         }
                     }
                     $subdirInfo{Parent} = $dirName;
@@ -1235,11 +1242,10 @@ sub WriteMIEGroup($$$)
                     # write new value if creating, or if List and list existed, or
                     # if tag was previously deleted
                     next unless $$nvHash{IsCreating} or
-                        (($newTag eq $lastTag and ($$newInfo{List} or $deletedTag eq $lastTag)
-                        and not $$nvHash{EditOnly}));
+                        ($newTag eq $lastTag and ($$newInfo{List} or $deletedTag eq $lastTag));
                 }
                 # get the new value to write (undef to delete)
-                push @newVals, $et->GetNewValues($nvHash);
+                push @newVals, $et->GetNewValue($nvHash);
                 next unless @newVals;
                 $writable = $$newInfo{Writable} || $$tagTablePtr{WRITABLE};
                 if ($writable eq 'string') {
@@ -1266,7 +1272,7 @@ sub WriteMIEGroup($$$)
                 }
                 $newFormat = $mieCode{$writable};
                 unless (defined $newFormat) {
-                    $msg = "Bad format '$writable' for $$newInfo{Name}";
+                    $msg = "Bad format '${writable}' for $$newInfo{Name}";
                     next MieElement;
                 }
             }
@@ -1475,7 +1481,7 @@ sub ProcessMIEGroup($$$)
         my ($tag, $units);
         if ($tagLen) {
             $raf->Read($tag, $tagLen) == $tagLen or last;
-            $et->Warn("MIE tag '$tag' out of sequence") if $tag lt $lastTag;
+            $et->Warn("MIE tag '${tag}' out of sequence") if $tag lt $lastTag;
             $lastTag = $tag;
             # separate units from tag name if they exist
             $units = $1 if $tag =~ s/\((.*)\)$//;
@@ -1535,7 +1541,7 @@ sub ProcessMIEGroup($$$)
             $raf->Read($value, $valLen) == $valLen or last;
             if ($format & 0x04) {
                 if ($verbose) {
-                    print $out "$$et{INDENT}\[Tag '$tag' $valLen bytes compressed]\n";
+                    print $out "$$et{INDENT}\[Tag '${tag}' $valLen bytes compressed]\n";
                 }
                 next unless HasZlib($et, 'decode');
                 my $stat;
@@ -1600,7 +1606,7 @@ sub ProcessMIEGroup($$$)
                     }
                     $et->VerboseInfo($lastTag, $tagInfo,
                         DataPt  => \$value,
-                        DataPos => $raf->Tell() - $valLen,
+                        DataPos => $wasCompressed ? undef : $raf->Tell() - $valLen,
                         Size    => $valLen,
                         Format  => $formatStr,
                         Value   => $val,
@@ -2538,7 +2544,7 @@ tag name.  For example:
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.  The MIE format itself is also
@@ -2548,7 +2554,7 @@ copyright Phil Harvey, and is covered by the same free-use license.
 
 =over 4
 
-=item L<http://owl.phy.queensu.ca/~phil/exiftool/MIE1.1-20070121.pdf>
+=item L<https://exiftool.org/MIE1.1-20070121.pdf>
 
 =back
 

@@ -15,7 +15,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::IPTC;
 use Image::ExifTool::XMP;
 
-$VERSION = '1.04';
+$VERSION = '1.06';
 
 sub ProcessPhotoMechanic($$);
 
@@ -108,7 +108,7 @@ my %rawCropConv = (
     NOTES => q{
         Below is a list of the observed PhotoMechanic XMP tags.  The actual
         namespace prefix is "photomechanic" but ExifTool shortens this in
-        the "XMP-photomech" family 1 group name.
+        the family 1 group name.
     },
     ColorClass  => {
         Writable => 'integer',
@@ -191,7 +191,7 @@ sub ProcessPhotoMechanic($$)
             $et->ProcessDirectory(\%dirInfo, $tagTablePtr);
         } elsif ($$et{DEL_GROUP}{PhotoMechanic}) {
             # delete the trailer
-            $verbose and printf $out "  Deleting PhotoMechanic trailer\n";
+            $verbose and print $out "  Deleting PhotoMechanic trailer\n";
             ++$$et{CHANGED};
         } else {
             # rewrite the trailer
@@ -200,7 +200,7 @@ sub ProcessPhotoMechanic($$)
             if (defined $newBuff) {
                 $newPt = \$newBuff; # write out the modified trailer
                 my $pad = 0x800 - length($newBuff);
-                if ($pad > 0 and not $et->Options('Compact')) {
+                if ($pad > 0 and not $$et{OPTIONS}{Compact}{NoPadding}) {
                     # pad out to 2kB like PhotoMechanic does
                     $newBuff .= "\0" x $pad;
                 }
@@ -236,7 +236,7 @@ write information written by the Camera Bits Photo Mechanic software.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

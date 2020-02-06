@@ -18,8 +18,6 @@ BEGIN {
 use MT::Test;
 use MT::BackupRestore;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 note 'System, all';

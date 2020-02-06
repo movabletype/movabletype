@@ -8,7 +8,7 @@
  */
 
 /**
- * Smarty Connfig Resource Data Object
+ * Smarty Config Resource Data Object
  * Meta Data Container for Template Files
  *
  * @package    Smarty
@@ -40,26 +40,25 @@ class Smarty_Template_Config extends Smarty_Template_Source
     public $isConfig = true;
 
     /**
-     * create Source Object container
+     * Name of the Class to compile this resource's contents with
      *
-     * @param Smarty_Resource $handler  Resource Handler this source object communicates with
-     * @param Smarty          $smarty   Smarty instance this source object belongs to
-     * @param string          $resource full template_resource
-     * @param string          $type     type of resource
-     * @param string          $name     resource name
+     * @var string
      */
-    public function __construct(Smarty_Resource $handler, Smarty $smarty, $resource, $type, $name)
-    {
-        // must clone handler as we change class names
-        $this->handler = clone $handler; // Note: prone to circular references
-        $this->handler->compiler_class = 'Smarty_Internal_Config_File_Compiler';
-        $this->handler->template_lexer_class = 'Smarty_Internal_Configfilelexer';
-        $this->handler->template_parser_class = 'Smarty_Internal_Configfileparser';
-        $this->resource = $resource;
-        $this->type = $type;
-        $this->name = $name;
-        $this->smarty = $smarty;
-    }
+    public $compiler_class = 'Smarty_Internal_Config_File_Compiler';
+
+    /**
+     * Name of the Class to tokenize this resource's contents with
+     *
+     * @var string
+     */
+    public $template_lexer_class = 'Smarty_Internal_Configfilelexer';
+
+    /**
+     * Name of the Class to parse this resource's contents with
+     *
+     * @var string
+     */
+    public $template_parser_class = 'Smarty_Internal_Configfileparser';
 
     /**
      * initialize Source Object for given resource
@@ -76,22 +75,24 @@ class Smarty_Template_Config extends Smarty_Template_Source
                                 $template_resource = null)
     {
         static $_incompatible_resources = array('extends' => true, 'php' => true);
-        $template_resource = $_template->template_resource;
-        if (empty($template_resource)) {
-            throw new SmartyException('Missing config name');
+        if ($_template) {
+            $smarty = $_template->smarty;
+            $template_resource = $_template->template_resource;
         }
-        // parse resource_name, load resource handler
-        list($name, $type) =
-            Smarty_Resource::parseResourceName($template_resource, $_template->smarty->default_config_type);
+        if (empty($template_resource)) {
+            throw new SmartyException('Source: Missing  name');
+        }
+         // parse resource_name, load resource handler
+        list($name, $type) = Smarty_Resource::parseResourceName($template_resource, $smarty->default_config_type);
         // make sure configs are not loaded via anything smarty can't handle
         if (isset($_incompatible_resources[ $type ])) {
             throw new SmartyException ("Unable to use resource '{$type}' for config");
         }
-        $resource = Smarty_Resource::load($_template->smarty, $type);
-        $source = new Smarty_Template_Config($resource, $_template->smarty, $template_resource, $type, $name);
-        $resource->populate($source, $_template);
-        if (!$source->exists && isset($_template->smarty->default_config_handler_func)) {
+        $source = new Smarty_Template_Config($smarty, $template_resource, $type, $name);
+        $source->handler->populate($source, $_template);
+        if (!$source->exists && isset($smarty->default_config_handler_func)) {
             Smarty_Internal_Method_RegisterDefaultTemplateHandler::_getDefaultTemplate($source);
+            $source->handler->populate($source, $_template);
         }
         return $source;
     }

@@ -783,7 +783,7 @@ $_encode_xml_Map = array('&' => '&amp;', '"' => '&quot;',
                          '<' => '&lt;', '>' => '&gt;',
                          '\'' => '&apos;');
 
-function __check_xml_char($matches) {
+function _check_xml_char($matches) {
     $val = $matches[2];
     $is_hex = $matches[1];
     if ($is_hex)
@@ -819,7 +819,7 @@ function encode_xml($str, $nocdata = 0) {
         $str = '<![CDATA[' . $str . ']]>';
     } else {
         $str = strtr($str, $_encode_xml_Map);
-        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', '__check_xml_char', $str);
+        $str = preg_replace_callback('/&amp;#(x?)((?:[0-9]+|[0-9a-fA-F]+).*?);/', '_check_xml_char', $str);
     }
     return $str;
 }

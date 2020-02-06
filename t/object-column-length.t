@@ -16,7 +16,7 @@ BEGIN {
 
 use MT;
 MT->instance;
-use MT::Test qw( :app :db );
+use MT::Test qw(:db);
 
 my $registry = MT->registry('object_types');
 

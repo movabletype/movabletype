@@ -13,8 +13,9 @@ package Image::ExifTool::OpenEXR;
 use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
+use Image::ExifTool::GPS;
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 # supported EXR value format types (other types are extracted as undef binary data)
 my %formatType = (
@@ -61,7 +62,7 @@ my %formatType = (
         Groups => { 2 => 'Location' },
         PrintConv => q{
             $val = int($val * 10) / 10;
-            return ($val =~ s/^-// ? "$val m Below" : "$val m Above") . " Sea Level";
+            return(($val =~ s/^-// ? "$val m Below" : "$val m Above") . " Sea Level");
         },
     },
     aperture            => { PrintConv => 'sprintf("%.1f",$val)' },
@@ -69,6 +70,7 @@ my %formatType = (
     chromaticities      => { },
     capDate => {
         Name => 'DateTimeOriginal',
+        Description => 'Date/Time Original',
         Groups => { 2 => 'Time' },
         PrintConv => '$self->ConvertDateTime($val)',
     },
@@ -109,7 +111,6 @@ my %formatType = (
     latitude => {
         Name => 'GPSLatitude',
         Groups => { 2 => 'Location' },
-        RawConv => 'require Image::ExifTool::GPS; $val', # to load Composite tags and routines
         PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
     },
     lineOrder => {
@@ -122,7 +123,6 @@ my %formatType = (
     longitude => {
         Name => 'GPSLongitude',
         Groups => { 2 => 'Location' },
-        RawConv => 'require Image::ExifTool::GPS; $val', # to load Composite tags and routines
         PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
     },
     lookModTransform    => { },
@@ -159,7 +159,7 @@ sub ProcessEXR($$)
     my $raf = $$dirInfo{RAF};
     my $verbose = $et->Options('Verbose');
     my $binary = $et->Options('Binary') || $verbose;
-    my ($buff, $buf2, $dim);
+    my ($buff, $dim);
 
     # verify this is a valid RIFF file
     return 0 unless $raf->Read($buff, 8) == 8;
@@ -197,7 +197,7 @@ sub ProcessEXR($$)
                     $name = 'Invalid';
                 }
             }
-            $tagInfo = { Name => $name, WasAdded => 1 };
+            $tagInfo = { Name => $name };
             AddTagToTable($tagTablePtr, $tag, $tagInfo);
             $et->VPrint(0, $$et{INDENT}, "[adding $tag]\n");
         }
@@ -302,7 +302,7 @@ information from OpenEXR images.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

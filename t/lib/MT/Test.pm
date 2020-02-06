@@ -7,8 +7,10 @@ package MT::Test;
 use base qw( Exporter );
 
 our $VERSION = 0.9;
-our @EXPORT
-    = qw( is_object are_objects _run_app out_like out_unlike err_like grab_stderr get_current_session _tmpl_out tmpl_out_like tmpl_out_unlike get_last_output get_tmpl_error get_tmpl_out _run_rpt _run_tasks has_php );
+our @EXPORT  = qw(
+    _run_app _run_rpt _run_tasks
+    location_param_contains query_param_contains has_php
+);
 
 use strict;
 use warnings;
@@ -48,7 +50,6 @@ sub add_plugin_test_libs {
 }
 
 use Test::More;
-use Test::Deep qw( eq_deeply );
 
 BEGIN {
 
@@ -115,8 +116,6 @@ sub import {
         }
     }
 
-    # We need *some* instance created up front, to initialize the database
-    # factory etc properly, so do so now.
     MT->instance unless $ENV{MT_TEST_ROOT};
 
     # Export requested or all exportable functions.
@@ -211,114 +210,6 @@ sub init_testdb {
     $pkg->init_newdb;
 }
 
-our $MEMCACHED_SEARCHED;
-our $MEMCACHED_FAKE;
-if ( $ENV{PREFILLED_CACHE} ) {
-    $MEMCACHED_FAKE = $ENV{PREFILLED_CACHE};
-}
-
-sub init_memcached {
-    my $pkg = shift;
-    eval { require MT::Memcached; };
-    if ($@) {
-        die "Cannot fake MT::Memcached, as it's not available";
-    }
-    local $SIG{__WARN__} = sub { };
-    my $orig_new = \&MT::Memcached::new;
-    *MT::Memcached::new = sub {
-        my $class = shift;
-        my %param;
-        my $self = bless \%param, 'MT::Memcached';
-        return $self;
-    };
-    *MT::Memcached::instance = sub {
-        my $class = shift;
-        my $self  = MT::Memcached->new();
-        return $self;
-    };
-    *MT::Memcached::is_available = sub {1};
-    *MT::Memcached::get = sub {
-        my $self = shift;
-        my ($key) = @_;
-        $MEMCACHED_SEARCHED->{$key} = 1;
-        return $MEMCACHED_FAKE->{$key};
-    };
-    *MT::Memcached::get_multi = sub {
-        my $self = shift;
-        my @keys = @_;
-        my %vals = ();
-        foreach my $k (@keys) {
-            $vals{$k} = $MEMCACHED_FAKE->{$k}
-                if exists( $MEMCACHED_FAKE->{$k} );
-        }
-        return \%vals;
-    };
-    *MT::Memcached::add = sub {
-        my $self = shift;
-        my ( $key, $val, $ttl ) = @_;
-        unless ( exists $MEMCACHED_FAKE->{$key} ) {
-            $MEMCACHED_FAKE->{$key} = $val;
-        }
-    };
-    *MT::Memcached::replace = sub {
-        my $self = shift;
-        my ( $key, $val, $ttl ) = @_;
-        if ( exists $MEMCACHED_FAKE->{$key} ) {
-            $MEMCACHED_FAKE->{$key} = $val;
-        }
-    };
-    *MT::Memcached::set = sub {
-        my $self = shift;
-        my ( $key, $val, $ttl ) = @_;
-        $MEMCACHED_FAKE->{$key} = $val;
-    };
-    *MT::Memcached::delete = sub {
-        my $self = shift;
-        my ($key) = @_;
-        $MEMCACHED_FAKE->{"old$key"} = delete $MEMCACHED_FAKE->{$key};
-    };
-    *MT::Memcached::remove = sub {
-        my $self = shift;
-        my ($key) = @_;
-        $MEMCACHED_FAKE->{"old$key"} = delete $MEMCACHED_FAKE->{$key};
-    };
-    *MT::Memcached::incr = sub {
-        my $self = shift;
-        my ( $key, $incr ) = @_;
-        my $val = $MEMCACHED_FAKE->{$key};
-        $val  ||= 0;
-        $incr ||= 1;
-        $MEMCACHED_FAKE->{$key} = $val + $incr;
-    };
-    *MT::Memcached::decr = sub {
-        my $self = shift;
-        my ( $key, $incr ) = @_;
-        my $val = $MEMCACHED_FAKE->{$key};
-        $val  ||= 0;
-        $incr ||= 1;
-        $MEMCACHED_FAKE->{$key} = $val - $incr;
-        if ( $MEMCACHED_FAKE->{$key} < 0 ) {
-            $MEMCACHED_FAKE->{$key} = 0;
-        }
-    };
-    *MT::Memcached::inflate = sub {
-        my $driver = shift;
-        my ( $class, $data ) = @_;
-        $class->inflate($data);
-    };
-    *MT::Memcached::deflate = sub {
-        my $driver = shift;
-        my ($obj) = @_;
-        $obj->deflate;
-    };
-
-    # make sure things will pull from Memcached instead of RAM
-    eval {
-        require MT::ObjectDriver::Driver::Cache::RAM;
-        MT::ObjectDriver::Driver::Cache::RAM->Disabled(1);
-    };
-}
-
 sub _load_classes {
     my $pkg = shift;
     my ($cfg) = @_;
@@ -326,21 +217,27 @@ sub _load_classes {
     my $mt = MT->instance( $cfg ? ( Config => $cfg ) : () )
         or die "No MT object " . MT->errstr;
 
+    my @classes;
     my $types = MT->registry('object_types');
-    $types->{$_} = MT->model($_)
-        for grep { MT->model($_) }
-        map      { $_ . ':meta' }
-        grep     { MT->model($_)->meta_pkg }
-        sort keys %$types;
-    foreach my $key (qw( entry user )) {
-        $types->{ $key . ':summary' } = $types->{$key} . '::Summary';
-    }
-    my @classes = map { $types->{$_} } grep { $_ !~ /\./ } sort keys %$types;
-    foreach my $class (@classes) {
-        if ( ref($class) eq 'ARRAY' ) {
-            next;    #TODO for now - it won't hurt when we do driver-tests.
+    for my $key ( keys %$types ) {
+        next if $key =~ /\./;
+        my $class = $types->{$key};
+        $class = $class->[0] if ref $class eq 'ARRAY';
+        push @classes, $class;
+
+        if ( $key eq 'entry' or $key eq 'user' ) {
+            push @classes, "$class\::Summary";
         }
-        elsif ( !defined *{ $class . '::__properties' } ) {
+
+        if ( my $model = MT->model($key) ) {
+            if ( $model->meta_pkg ) {
+                my $meta_class = MT->model("$key:meta");
+                push @classes, $meta_class if $meta_class;
+            }
+        }
+    }
+    foreach my $class (@classes) {
+        if ( !defined *{ $class . '::__properties' } ) {
             eval '# line '
                 . __LINE__ . ' '
                 . __FILE__ . "\n"
@@ -360,17 +257,9 @@ sub init_newdb {
     # Clear existing database tables
     my $driver = MT::Object->driver();
     foreach my $class (@classes) {
-        if ( ref($class) eq 'ARRAY' ) {
-            next;    #TODO for now - it won't hurt when we do driver-tests.
-        }
-        else {
-
-            if ( $driver->dbd->ddl_class->table_exists($class) ) {
-                $driver->sql( $driver->dbd->ddl_class->drop_table_sql($class),
-                );
-                $driver->dbd->ddl_class->drop_sequence($class),;
-            }
-        }
+        next unless $driver->dbd->ddl_class->table_exists($class);
+        $driver->sql( $driver->dbd->ddl_class->drop_table_sql($class) );
+        $driver->dbd->ddl_class->drop_sequence($class);
     }
 
     1;
@@ -395,6 +284,8 @@ sub init_upgrade {
         MT::Page->remove;
         MT::Comment->remove;
     };
+    warn $@ if $@;
+
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
@@ -405,6 +296,8 @@ sub init_db {
     my $pkg = shift;
     $pkg->init_newdb(@_) && $pkg->init_upgrade(@_);
 }
+
+sub config { MT->config }
 
 sub progress { }
 
@@ -1590,109 +1483,6 @@ It\'s a hard rain\'s a-gonna fall',
     1;
 }
 
-sub _is_object {
-    my ( $got, $expected, $name ) = @_;
-
-    if ( !defined $got ) {
-        fail($name);
-        diag('    got undef, not an object');
-        return;
-    }
-
-    if ( !$got->isa( ref $expected ) ) {
-        fail($name);
-        diag( '    got a ', ref($got), ' but expected a ', ref $expected );
-        return;
-    }
-
-    if ( $got == $expected ) {
-        fail($name);
-        diag(
-            '    got the exact same instance as expected, when really expected a different but equivalent object'
-        );
-        return;
-    }
-
-    # Ignore object columns that have undefined values.
-    my ( %got_values, %expected_values );
-    while ( my ( $field, $value ) = each %{ $got->{column_values} } ) {
-        $got_values{$field} = $value if defined $value;
-    }
-    while ( my ( $field, $value ) = each %{ $expected->{column_values} } ) {
-        $expected_values{$field} = $value if defined $value;
-    }
-
-    if ( !eq_deeply( \%got_values, \%expected_values ) ) {
-
-        # 'Test' again so the helpful failure diagnostics are output.
-        is_deeply( \%got_values, \%expected_values, $name );
-        return;
-    }
-
-    return 1;
-}
-
-sub is_object {
-    my ( $got, $expected, $name ) = @_;
-    pass($name) if _is_object(@_);
-}
-
-sub are_objects {
-    my ( $got, $expected, $name ) = @_;
-
-    my $count = scalar @$expected;
-    if ( $count != scalar @$got ) {
-        fail($name);
-        diag( '    got ', scalar(@$got), ' objects but expected ', $count );
-        return;
-    }
-
-    for my $i ( 0 .. $count - 1 ) {
-        return if !_is_object( $$got[$i], $$expected[$i], "$name (#$i)" );
-    }
-    pass($name);
-}
-
-sub reset_table_for {
-    my $self = shift;
-    for my $class (@_) {
-        my $driver    = $class->dbi_driver;
-        my $dbh       = $driver->rw_handle;
-        my $ddl_class = $driver->dbd->ddl_class;
-
-        $dbh->{pg_server_prepare} = 0
-            if $ddl_class =~ m/Pg/;
-
-        $dbh->do( $ddl_class->drop_table_sql($class) )
-            or die $dbh->errstr
-            if $driver->table_exists($class);
-        $dbh->do( $ddl_class->create_table_sql($class) ) or die $dbh->errstr;
-        $dbh->do($_)
-            or die $dbh->errstr
-            for $ddl_class->index_table_sql($class);
-        $ddl_class->drop_sequence($class),
-            $ddl_class->create_sequence($class);    # may do nothing
-    }
-}
-
-sub make_objects {
-    my $self     = shift;
-    my @obj_data = @_;
-
-    for my $data (@obj_data) {
-        if ( my $wait = delete $data->{__wait} ) {
-            sleep($wait);
-        }
-        my $class = delete $data->{__class};
-        my $obj   = $class->new;
-        $obj->set_values($data);
-        $obj->save() or die "Could not save test Foo: ", $obj->errstr, "\n";
-    }
-}
-
-my $out;
-sub get_last_output { return "$out"; }
-
 sub _run_app {
     my ( $class, $params, $level ) = @_;
     $level ||= 0;
@@ -1809,98 +1599,6 @@ sub _parse_query {
     return %params;
 }
 
-sub out_like {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app = _run_app( $class, $params );
-    $out = delete $app->{__test_output};
-    return like( $out, $r, $name );
-}
-
-sub out_unlike {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app = _run_app( $class, $params );
-    $out = delete $app->{__test_output};
-    return unlike( $out, $r, $name );
-}
-
-sub grab_stderr {
-    my ($code) = @_;
-    my $out;
-    local *SAVEERR;
-    open SAVEERR, ">&STDERR";
-    close STDERR;
-    open STDERR, ">", \$out;
-
-    $code->();
-
-    close STDERR;
-    open STDERR, ">&SAVEERR";
-
-    return $out;
-}
-
-sub err_like {
-    my ( $class, $params, $r, $name ) = @_;
-    my $app;
-    my $err = grab_stderr( sub { $app = _run_app( $class, $params ) } );
-    print "OUTPUT = " . $app->{__test_output} . "\n" if ( !$err );
-    return like( $err, $r, $name );
-}
-
-sub get_current_session {
-    require MT::Session;
-    my $sess = MT::Session::get_unexpired_value(
-        MT->config->UserSessionTimeout,
-        {   id   => $session_id,
-            kind => 'US'
-        }
-    );
-    return $sess;
-}
-
-my $tmpl_out;
-my $tmpl_err;
-sub get_tmpl_out   { return "$tmpl_out" }
-sub get_tmpl_error { return "$tmpl_err" }
-
-sub _tmpl_out {
-    require MT::Object;
-    MT::Object->driver->clear_cache;
-
-    require MT::Request;
-    MT::Request->instance->reset;
-
-    my ( $text, $param, $ctx_h ) = @_;
-    require MT::Template;
-    my $tmpl = MT::Template->new;
-    $tmpl->blog_id( $ctx_h->{blog_id} ) if ( $ctx_h->{blog_id} );
-    $tmpl->text($text);
-
-    require MT::Template::Context;
-    my $ctx = MT::Template::Context->new;
-    while ( my ( $k, $v ) = each %$ctx_h ) {
-        $ctx->stash( $k, $v );
-    }
-
-    $tmpl->context($ctx);
-    $tmpl->param($param);
-    $tmpl_out = $tmpl->output;
-    $tmpl_err = $tmpl->errstr;
-    return $tmpl_out;
-}
-
-sub tmpl_out_like {
-    my ( $text, $param, $ctx_h, $re, $name ) = @_;
-
-    return like( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
-}
-
-sub tmpl_out_unlike {
-    my ( $text, $param, $ctx_h, $re, $name ) = @_;
-
-    return unlike( _tmpl_out( $text, $param, $ctx_h ), $re, $name );
-}
-
 sub _run_rpt {
     `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
 }
@@ -1926,6 +1624,11 @@ sub has_php {
     my $php_version_string = `php --version 2>&1` or return $HasPHP = 0;
     my ($php_version) = $php_version_string =~ /^PHP (\d+\.\d+)/i;
     $HasPHP = ( $php_version and $php_version >= 5 ) ? 1 : 0;
+    if (MT->config->ObjectDriver =~ /u?mssqlserver/i) {
+        my $phpinfo = `php -i 2>&1` or return $HasPHP = 0;
+        $HasPHP = 0 if $phpinfo =~ /\-\-without\-(?:pdo\-)?mssql/;
+    }
+    $HasPHP;
 }
 
 1;

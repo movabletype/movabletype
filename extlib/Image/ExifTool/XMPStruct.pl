@@ -9,7 +9,7 @@
 package Image::ExifTool::XMP;
 
 use strict;
-use vars qw(%specialStruct $xlatNamespace);
+use vars qw(%specialStruct %stdXlatNS);
 
 use Image::ExifTool qw(:Utils);
 use Image::ExifTool::XMP;
@@ -83,7 +83,7 @@ sub InflateStruct($;$)
                 ($part = $$obj) =~ s/^\s*//s;
                 $part =~ s/[\x0d\x0a].*//s;
                 $part = substr($part,0,27) . '...' if length($part) > 30;
-                $warn = "Invalid structure field at '$part'";
+                $warn = "Invalid structure field at '${part}'";
             } else {
                 $warn = 'Missing closing brace for structure';
             }
@@ -107,7 +107,8 @@ sub InflateStruct($;$)
         $val = '';
         $delim = $delim ? "\\$delim|,|\\||\$" : ',|\\||$';
         for (;;) {
-            $$obj =~ s/^(.*?)($delim)//s and $val .= $1;
+            $$obj =~ s/^(.*?)($delim)//s or last;
+            $val .= $1;
             last unless $2;
             $2 eq '|' or $$obj = $2 . $$obj, last;
             $$obj =~ s/^(.)//s and $val .= $1;  # add escaped character
@@ -223,7 +224,7 @@ Key:
                     $tagInfo = $ti;
                     $g1 = $grps[1];
                 }
-                $tagInfo or $warn =  "'$tag' is not a writable XMP tag", next Key;
+                $tagInfo or $warn =  "'${tag}' is not a writable XMP tag", next Key;
                 GetPropertyPath($tagInfo);  # make sure property path is generated for this tag
                 $tag = $$tagInfo{Name};
                 $tag = "$g1:$tag" if $grp;
@@ -232,7 +233,7 @@ Key:
                 # create new structure field if necessary
                 $fieldInfo or $fieldInfo = $$strTable{$tag} = {
                     %$tagInfo, # (also copies the necessary TagID and PropertyPath)
-                    Namespace => $$tagInfo{Table}{NAMESPACE},
+                    Namespace => $$tagInfo{Namespace} || $$tagInfo{Table}{NAMESPACE},
                     LangCode  => $langCode,
                 };
                 # delete stuff we don't need (shouldn't cause harm, but better safe than sorry)
@@ -264,7 +265,7 @@ Key:
                     last; # write this lang-alt field
                 }
             }
-            $warn = "'$tag' is not a field of $strName";
+            $warn = "'${tag}' is not a field of $strName";
             next Key;
         }
         if (ref $$struct{$key} eq 'HASH') {
@@ -281,12 +282,18 @@ Key:
             foreach $item (@{$$struct{$key}}) {
                 if (not ref $item) {
                     $item = '' unless defined $item; # use empty string for missing items
-                    $$fieldInfo{Struct} and $warn = "$tag items are not valid structures", next Key;
-                    $et->Sanitize(\$item);
-                    ($copy[$i],$err) = $et->ConvInv($item,$fieldInfo,$tag,$strName,$type,'');
-                    $err and $warn = $err, next Key;
-                    $err = CheckXMP($et, $fieldInfo, \$copy[$i]);
-                    $err and $warn = "$err in $strName $tag", next Key;
+                    if ($$fieldInfo{Struct}) {
+                        # (allow empty structures)
+                        $item =~ /^\s*$/ or $warn = "$tag items are not valid structures", next Key;
+                        $copy[$i] = { }; # create hash for empty structure
+                    } else {
+                        $et->Sanitize(\$item);
+                        ($copy[$i],$err) = $et->ConvInv($item,$fieldInfo,$tag,$strName,$type,'');
+                        $copy[$i] = '' unless defined $copy[$i];    # avoid undefined item
+                        $err and $warn = $err, next Key;
+                        $err = CheckXMP($et, $fieldInfo, \$copy[$i]);
+                        $err and $warn = "$err in $strName $tag", next Key;
+                    }
                 } elsif (ref $item eq 'HASH') {
                     $$fieldInfo{Struct} or $warn = "$tag is not a structure in $strName", next Key;
                     ($copy[$i], $err) = CheckStruct($et, $item, $$fieldInfo{Struct});
@@ -304,18 +311,19 @@ Key:
             $et->Sanitize(\$$struct{$key});
             ($val,$err) = $et->ConvInv($$struct{$key},$fieldInfo,$tag,$strName,$type,'');
             $err and $warn = $err, next Key;
+            next Key unless defined $val;   # check for undefined
             $err = CheckXMP($et, $fieldInfo, \$val);
             $err and $warn = "$err in $strName $tag", next Key;
             # turn this into a list if necessary
             $copy{$tag} = $$fieldInfo{List} ? [ $val ] : $val;
         }
     }
-    if (%copy) {
+    if (%copy or not $warn) {
         $rtnVal = \%copy;
         undef $err;
         $$et{CHECK_WARN} = $warn if $warn;
     } else {
-        $err = $warn || 'Structure has no fields';
+        $err = $warn;
     }
     return wantarray ? ($rtnVal, $err) : $rtnVal;
 }
@@ -390,7 +398,11 @@ sub DeleteStruct($$$$$)
         my $verbose = $et->Options('Verbose');
         @delPaths = sort @delPaths if $verbose > 1;
         foreach $p (@delPaths) {
-            $et->VerboseValue("- XMP-$p", $$capture{$p}[0]) if $verbose > 1;
+            if ($verbose > 1) {
+                my $p2 = $p;
+                $p2 =~ s/^(\w+)/$stdXlatNS{$1} || $1/e;
+                $et->VerboseValue("- XMP-$p2", $$capture{$p}[0]);
+            }
             delete $$capture{$p};
             $deleted = 1;
             ++$$changed;
@@ -454,7 +466,9 @@ sub AddNewTag($$$$$$)
     $$capture{$path} = [ $val, \%attrs ];
     # print verbose message
     if ($et and $et->Options('Verbose') > 1) {
-        $et->VerboseValue("+ XMP-$path", $val);
+        my $p = $path;
+        $p =~ s/^(\w+)/$stdXlatNS{$1} || $1/e;
+        $et->VerboseValue("+ XMP-$p", $val);
     }
 }
 
@@ -474,8 +488,16 @@ sub AddNewStruct($$$$$$)
     my $ns = $$strTable{NAMESPACE} || '';
     my $changed = 0;
 
+    # add dummy field to allow empty structures (name starts with '~' so it will come
+    # after all valid structure fields, which is necessary when serializing the XMP later)
+    %$struct or $$struct{'~dummy~'} = '';
+
     foreach $tag (sort keys %$struct) {
-        my $fieldInfo = $$strTable{$tag} or next;
+        my $fieldInfo = $$strTable{$tag};
+        unless ($fieldInfo) {
+            next unless $tag eq '~dummy~'; # check for dummy field
+            $fieldInfo = { }; # create dummy field info for dummy structure
+        }
         my $val = $$struct{$tag};
         my $propPath = $$fieldInfo{PropertyPath};
         unless ($propPath) {
@@ -535,7 +557,11 @@ sub AddNewStruct($$$$$$)
         my $path = $basePath . '/' . ConformPathToNamespace($et, "rdf:type");
         unless ($$capture{$path}) {
             $$capture{$path} = [ '', { 'rdf:resource' => $$strTable{TYPE} } ];
-            $et->VerboseValue("+ XMP-$path", $$strTable{TYPE}) if $verbose > 1;
+            if ($verbose > 1) {
+                my $p = $path;
+                $p =~ s/^(\w+)/$stdXlatNS{$1} || $1/e;
+                $et->VerboseValue("+ XMP-$p", $$strTable{TYPE});
+            }
         }
     }
     return $changed;
@@ -584,7 +610,7 @@ sub ConvertStruct($$$$;$)
             return $val;
         } else {
             my (@list, $val);
-            foreach $val (@$value) {    
+            foreach $val (@$value) {
                 my $v = ConvertStruct($et, $tagInfo, $val, $type, $parentID);
                 push @list, $v if defined $v;
             }
@@ -603,9 +629,10 @@ sub RestoreStruct($;$)
 {
     local $_;
     my ($et, $keepFlat) = @_;
-    my ($key, %structs, %var, %lists, $si, %listKeys);
+    my ($key, %structs, %var, %lists, $si, %listKeys, @siList);
     my $ex = $$et{TAG_EXTRA};
     my $valueHash = $$et{VALUE};
+    my $fileOrder = $$et{FILE_ORDER};
     my $tagExtra = $$et{TAG_EXTRA};
     foreach $key (keys %{$$et{TAG_INFO}}) {
         $$ex{$key} or next;
@@ -630,10 +657,12 @@ sub RestoreStruct($;$)
             # create new entry in tag table for this structure
             my $g1 = $$table{GROUPS}{0} || 'XMP';
             my $name = $tag;
+            # tag keys will have a group 1 prefix when coming from import of XML from -X option
             if ($tag =~ /(.+):(.+)/) {
                 my $ns;
                 ($ns, $name) = ($1, $2);
-                $ns = $$xlatNamespace{$ns} if $$xlatNamespace{$ns};
+                $ns =~ s/^XMP-//; # remove leading "XMP-" if it exists because we add it later
+                $ns = $stdXlatNS{$ns} if $stdXlatNS{$ns};
                 $g1 .= "-$ns";
             }
             $strInfo = {
@@ -725,7 +754,7 @@ sub RestoreStruct($;$)
                 # XMP namespace on the tag name.  In this case, add
                 # the corresponding group1 name to the tag ID.
                 my ($ns, $name) = ($1, $2);
-                $ns = $$xlatNamespace{$ns} if $$xlatNamespace{$ns};
+                $ns = $stdXlatNS{$ns} if $stdXlatNS{$ns};
                 $tag = "XMP-$ns:" . ucfirst $name;
             } else {
                 $tag = ucfirst $tag;
@@ -740,14 +769,22 @@ sub RestoreStruct($;$)
             }
             delete $structs{$strInfo} unless $oldStruct;
         } elsif ($tagInfo eq $strInfo) {
-            # just a regular list tag
+            # just a regular list tag (or an empty structure)
             if ($oldStruct) {
                 # keep tag with lowest numbered key (well, not exactly, since
                 # "Tag (10)" is lt "Tag (2)", but at least "Tag" is lt
                 # everything else, and this is really what we care about)
                 my $k = $listKeys{$oldStruct};
-                $k lt $key and $et->DeleteTag($key), next;
-                $et->DeleteTag($k);   # remove tag with greater copy number
+                if ($k) {   # ($k will be undef for an empty structure)
+                    if ($k lt $key) {
+                        # keep lowest file order
+                        $$fileOrder{$k} = $$fileOrder{$key} if $$fileOrder{$k} > $$fileOrder{$key};
+                        $et->DeleteTag($key);
+                        next;
+                    }
+                    $$fileOrder{$key} = $$fileOrder{$k} if $$fileOrder{$key} > $$fileOrder{$k};
+                    $et->DeleteTag($k);   # remove tag with greater copy number
+                }
             }
             # replace existing value with new list
             $$valueHash{$key} = $structs{$strInfo};
@@ -756,11 +793,11 @@ sub RestoreStruct($;$)
             # save strInfo ref and file order
             if ($var{$strInfo}) {
                 # set file order to just before the first associated flattened tag
-                if ($var{$strInfo}[1] > $$et{FILE_ORDER}{$key}) {
-                    $var{$strInfo}[1] = $$et{FILE_ORDER}{$key} - 0.5;
+                if ($var{$strInfo}[1] > $$fileOrder{$key}) {
+                    $var{$strInfo}[1] = $$fileOrder{$key} - 0.5;
                 }
             } else {
-                $var{$strInfo} = [ $strInfo, $$et{FILE_ORDER}{$key} - 0.5 ];
+                $var{$strInfo} = [ $strInfo, $$fileOrder{$key} - 0.5 ];
             }
             # preserve original flattened tags if requested
             if ($keepFlat) {
@@ -784,12 +821,13 @@ sub RestoreStruct($;$)
     foreach $si (keys %lists) {
         defined $_ or $_ = '' foreach @{$lists{$si}};
     }
-    # save new structure tags
-    foreach $si (keys %structs) {
-        next unless $var{$si};  # already handled regular lists
+    # make a list of all new structures we generated
+    $var{$_} and push @siList, $_ foreach keys %structs;
+    # save new structures in the same order they were read from file
+    foreach $si (sort { $var{$a}[1] <=> $var{$b}[1] } @siList) {
         $key = $et->FoundTag($var{$si}[0], '');
         $$valueHash{$key} = $structs{$si};
-        $$et{FILE_ORDER}{$key} = $var{$si}[1];
+        $$fileOrder{$key} = $var{$si}[1];
     }
 }
 
@@ -813,7 +851,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

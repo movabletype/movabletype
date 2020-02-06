@@ -1470,7 +1470,8 @@ sub handle_sign_in {
         $result = 1;
     }
     else {
-        my $authenticator = MT->commenter_authenticator( $q->param('key') );
+        my $key           = $q->param('key');
+        my $authenticator = MT->commenter_authenticator($key);
         my $auth_class    = $authenticator->{class};
         eval "require $auth_class;";
         if ( my $e = $@ ) {
@@ -1478,7 +1479,7 @@ sub handle_sign_in {
         }
         my $cmtr_auth;
         ( $cmtr_auth, $sess )
-            = $auth_class->handle_sign_in( $app, $q->param('key') );
+            = $auth_class->handle_sign_in( $app, $key );
         if ($cmtr_auth) {
             $result = $cmtr_auth;
             unless ($sess) {

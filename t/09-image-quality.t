@@ -12,15 +12,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use File::Basename;
-use File::Spec;
-
 use MT::Test;
 use MT::ConfigMgr;
 use MT::Image;
-
-my $file   = File::Spec->rel2abs(__FILE__);
-my $mt_dir = dirname( dirname($file) );
+use MT::Test::Image;
 
 my $cfg = MT::ConfigMgr->instance;
 
@@ -35,8 +30,12 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
                     'Imager cannot change the quality of PNG image.';
             }
 
-            my $png_file
-                = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.png' );
+            my ( $guard, $png_file ) = MT::Test::Image->tempfile(
+                DIR    => $test_env->root,
+                SUFFIX => '.png',
+            );
+            close $guard;
+
             my @blob_size;
             for my $q ( 0 .. 9 ) {
                 $cfg->ImageQualityPng($q);
@@ -66,8 +65,12 @@ for my $d (qw/ ImageMagick GD Imager NetPBM /) {
 
         # JPEG
         subtest 'JPEG' => sub {
-            my $jpg_file
-                = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
+            my ( $guard, $jpg_file ) = MT::Test::Image->tempfile(
+                DIR    => $test_env->root,
+                SUFFIX => '.jpg',
+            );
+            close $guard;
+
             my @blob_size;
             for my $q ( reverse 0 .. 100 ) {
                 $cfg->ImageQualityJpeg($q);

@@ -392,8 +392,8 @@ sub _asset_from_url {
     unless ( $fmgr->exists($local_path) ) {
         $fmgr->mkpath($local_path);
     }
-    require Digest::SHA1;
-    my $filename = Digest::SHA1::sha1_hex($image_url);
+    require MT::Util::Digest::SHA;
+    my $filename = MT::Util::Digest::SHA::sha1_hex($image_url);
     unless ($ext) {    # trust content type higher than url extension
         ($ext) = $image_url =~ m!(\.[^\.\\\/])$!;
     }
@@ -480,8 +480,8 @@ sub _asset_from_url {
 sub _url_hash {
     my ($url) = @_;
 
-    if ( eval { require Digest::MD5; 1; } ) {
-        return Digest::MD5::md5_hex($url);
+    if ( eval { require MT::Util::Digest::MD5; 1; } ) {
+        return MT::Util::Digest::MD5::md5_hex($url);
     }
     return substr $url, 0, 255;
 }

@@ -12,8 +12,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app );
+use MT::Test;
 use MT::Image;
+use MT::Test::Image;
 use Test::More;
 use File::Temp;
 use File::Copy;
@@ -26,8 +27,12 @@ BEGIN {
         or plan skip_all => 'Test::MockObject is not installed';
 }
 
-my $src_file
-    = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
+my ( $guard, $src_file ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => '.jpg',
+);
+close $guard;
+
 my $src_image = MT::Image->new( Filename => $src_file );
 
 sub _create_image_with_orientation {
@@ -38,9 +43,8 @@ sub _create_image_with_orientation {
         Type        => 'ValueConv'
     );
     my ( $fh, $file ) = File::Temp::tempfile(
-        undef,
         SUFFIX => '.jpg',
-        DIR    => MT->config->TempDir
+        DIR    => $test_env->root,
     );
     close($fh);
     copy( $src_file, $file );
@@ -200,14 +204,17 @@ sub _run {
 my @drivers = qw( ImageMagick NetPBM GD Imager );
 for my $driver (@drivers) {
     subtest $driver => sub {
+        my ( $guard, $file ) = MT::Test::Image->tempfile(
+            DIR    => $test_env->root,
+            SUFFIX => '.png',
+        );
+        close $guard;
+
         my $cfg = MT::ConfigMgr->instance;
         $cfg->ImageDriver($driver);
         MT::Image->error('');
-        MT::Image->new(
-            Filename => File::Spec->catfile(
-                $ENV{MT_HOME}, 't', 'images', 'test.png'
-            )
-        ) or plan skip_all => "Cannot load MT::Image::$driver";
+        MT::Image->new( Filename => $file )
+            or plan skip_all => "Cannot load MT::Image::$driver";
 
         _run();
 

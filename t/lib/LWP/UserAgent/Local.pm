@@ -2,7 +2,8 @@ package LWP::UserAgent::Local;
 
 use LWP::UserAgent;
 use base 'LWP::UserAgent';
-use IPC::Open2 'open2';
+use IPC::Run3 'run3';
+use IO::String;
 
 =pod
 
@@ -81,25 +82,22 @@ sub simple_request {
         . $ENV{PATH_INFO} . "\n"
         if $options->{verbose};
 
-    if ( $request->content() ) {
+    my $content = $request->content();
+    if ($content) {
         $ENV{CONTENT_LENGTH} = length $request->content();
-        my $pid
-            = open2( \*RESPONSE, \*REQUEST,
-            "/usr/bin/env perl ./$script_name" )
-            or die "Couldn't spawn ./$script_name";
-        print REQUEST $request->content();
-        close REQUEST;
     }
-    else {
-        open RESPONSE, "/usr/bin/env perl ./$script_name|"
-            or die "Couldn't spawn $script_name";
-        print STDERR "$script_name exit status: $?\n" if $?;
-    }
+    run3 [$^X, "./$script_name"],
+        \$content, \my $output, undef,
+        { binmode_stdin => 1 }
+        or die "Couldn't spawn ./$script_name";
+    print STDERR "$script_name exit status: $?\n" if $?;
+
+    my $RESPONSE = IO::String->new($output);
 
     my $response = new HTTP::Response();
     $response->request($request);
-    my $status_line;
-    while ( ( $line = <RESPONSE> ) !~ /^\s*$/ ) {
+    my $status_line = '';
+    while ( ( $line = <$RESPONSE> ) !~ /^\s*$/ ) {
         if ( $line =~ /^Status:/i ) {
             $status_line = $line;
         }
@@ -119,10 +117,10 @@ sub simple_request {
     $response->message($response_desc);
 
     local $/ = undef;
-    $body = <RESPONSE>;
+    $body = <$RESPONSE>;
     $response->content($body);
 
-    close RESPONSE;
+    close $RESPONSE;
     $response;
 }
 

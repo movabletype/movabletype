@@ -196,6 +196,9 @@ SKIP: {
     }
 }
 use_ok('MT::Util::Captcha');
+use_ok('MT::Util::Deprecated');
+use_ok('MT::Util::Digest::MD5');
+use_ok('MT::Util::Digest::SHA');
 SKIP: {
     my @modules = qw( Compress::Zlib Path::Class DateTime );
     my $eval_string = join( ';', map {"require $_"} @modules );
@@ -221,6 +224,7 @@ SKIP: {
 }
 use_ok('MT::Util::YAML::Tiny');
 use_ok('MT::Util::Log');
+use_ok('MT::Util::Log::Stderr');
 SKIP: {
     if ( eval { require Log::Log4perl } ) {
         use_ok('MT::Util::Log::Log4perl');

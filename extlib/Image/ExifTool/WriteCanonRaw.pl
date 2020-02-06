@@ -174,7 +174,7 @@ sub CheckCanonRaw($$$)
     my $tagName = $$tagInfo{Name};
     if ($tagName eq 'JpgFromRaw' or $tagName eq 'ThumbnailImage') {
         unless ($$valPtr =~ /^\xff\xd8/ or $et->Options('IgnoreMinorErrors')) {
-            return '[minor] Not a valid image';
+            return '[Minor] Not a valid image';
         }
     } else {
         my $format = $$tagInfo{Format};
@@ -307,7 +307,7 @@ sub WriteCanonRaw($$$)
         if (@addTags and (not defined($tag) or $tag >= $addTags[0])) {
             my $addTag = shift @addTags;
             $tagInfo = $$newTags{$addTag};
-            my $newVal = $et->GetNewValues($tagInfo);
+            my $newVal = $et->GetNewValue($tagInfo);
             if (defined $newVal) {
                 # pad value to an even length (Canon ImageBrowser and ZoomBrowser
                 # version 6.1.1 have problems with odd-sized embedded JPEG images
@@ -432,7 +432,7 @@ sub WriteCanonRaw($$$)
                 }
                 my $nvHash = $et->GetNewValueHash($tagInfo);
                 if ($et->IsOverwriting($nvHash, $oldVal)) {
-                    my $newVal = $et->GetNewValues($nvHash);
+                    my $newVal = $et->GetNewValue($nvHash);
                     my $verboseVal;
                     $verboseVal = $newVal if $verbose > 1;
                     # convert to specified format if necessary
@@ -521,7 +521,7 @@ sub WriteCRW($$)
 
     if ($$et{DEL_GROUP}{MakerNotes}) {
         if ($type eq 'CCDR') {
-            $et->Error("Can't delete MakerNotes group in CRW file");
+            $et->Error("Can't delete MakerNotes from CRW");
             return 0;
         } else {
             ++$$et{CHANGED};
@@ -617,13 +617,13 @@ files and metadata.
 =head1 NOTES
 
 The CRW format is a pleasure to work with.  All pointer offsets are relative
-to the start of the data for each directory.  If TIFF/EXIF had implemented
-pointers in this way, it would be MUCH easier to read and write TIFF/JPEG
-files, and would lead to far fewer problems with corrupted metadata.
+to the start of the data for each directory.  If EXIF/TIFF had implemented
+pointers in this way, it would be MUCH easier to read and write TIFF and
+JPEG files, and would lead to far fewer problems with corrupted metadata.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -632,6 +632,6 @@ under the same terms as Perl itself.
 
 L<Image::ExifTool::CanonRaw(3pm)|Image::ExifTool::CanonRaw>,
 L<Image::ExifTool(3pm)|Image::ExifTool>,
-L<http://owl.phy.queensu.ca/~phil/exiftool/canon_raw.html>
+L<https://exiftool.org/canon_raw.html>
 
 =cut

@@ -9,8 +9,10 @@
 #               2) http://www.cybercom.net/~dcoffin/dcraw/
 #               3) Pascal de Bruijn private communication (NX100)
 #               4) Jaroslav Stepanek via rt.cpan.org
-#               5) Niels Kristian Bech Jensen private communication
-#               6) Nick Livchits private communication
+#               5) Nick Livchits private communication
+#               6) Sreerag Raghavan private communication (SM-C200)
+#               IB) Iliah Borg private communcation (LibRaw)
+#               NJ) Niels Kristian Bech Jensen private communication
 #------------------------------------------------------------------------------
 
 package Image::ExifTool::Samsung;
@@ -20,10 +22,11 @@ use vars qw($VERSION %samsungLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.29';
+$VERSION = '1.48';
 
 sub WriteSTMN($$$);
 sub ProcessINFO($$$);
+sub ProcessSamsungMeta($$$);
 sub ProcessSamsungIFD($$$);
 
 # Samsung LensType lookup
@@ -44,10 +47,11 @@ sub ProcessSamsungIFD($$$);
     10 => 'Samsung NX 45mm F1.8', #3
     11 => 'Samsung NX 45mm F1.8 2D/3D', #3
     12 => 'Samsung NX 12-24mm F4-5.6 ED', #4
-    13 => 'Saumsun NX 16-50mm F2-2.8 S ED OIS', #forum3833
-    14 => 'Samsung NX 10mm F3.5 Fisheye', #5
-    15 => 'Samsung NX 16-50mm F3.5-5.6 Power Zoom ED OIS', #6
+    13 => 'Samsung NX 16-50mm F2-2.8 S ED OIS', #forum3833
+    14 => 'Samsung NX 10mm F3.5 Fisheye', #NJ
+    15 => 'Samsung NX 16-50mm F3.5-5.6 Power Zoom ED OIS', #5
     20 => 'Samsung NX 50-150mm F2.8 S ED OIS', #PH
+    21 => 'Samsung NX 300mm F2.8 ED OIS', #IB
 );
 
 # range of values for Formats used in encrypted information
@@ -83,12 +87,14 @@ my %formatMinMax = (
         DataTag => 'PreviewImage',
         IsOffset => 3,
         Protected => 2,
+        WriteGroup => 'MakerNotes',
     },
     3 => {
         Name => 'PreviewImageLength',
         OffsetPair => 2,   # point to associated offset
         DataTag => 'PreviewImage',
         Protected => 2,
+        WriteGroup => 'MakerNotes',
     },
     11 => {
         Name => 'SamsungIFD',
@@ -106,7 +112,7 @@ my %formatMinMax = (
         This is a standard-format IFD found in the maker notes of some Samsung
         models, except that the entry count is a 4-byte integer and the offsets are
         relative to the end of the IFD.  Currently, no tags in this IFD are known,
-        so the Unknown (-u) or Verbose (-v) option must be used to see this
+        so the L<Unknown|../ExifTool.html#Unknown> (-u) or L<Verbose|../ExifTool.html#Verbose> (-v) option must be used to see this
         information.
     },
     GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
@@ -131,6 +137,7 @@ my %formatMinMax = (
     },
     0x0002 => {
         Name => 'DeviceType',
+        Groups => { 2 => 'Camera' },
         Writable => 'int32u',
         PrintHex => 1,
         PrintConv => {
@@ -143,6 +150,7 @@ my %formatMinMax = (
     },
     0x0003 => {
         Name => 'SamsungModelID',
+        Groups => { 2 => 'Camera' },
         Writable => 'int32u',
         PrintHex => 1,
         PrintConv => {
@@ -154,11 +162,14 @@ my %formatMinMax = (
             0x1001234 => 'HMX-H304',
             0x100130c => 'NX100',
             0x1001327 => 'NX11',
+            0x170104b => 'ES65, ES67 / VLUU ES65, ES67 / SL50',
             0x170104e => 'ES70, ES71 / VLUU ES70, ES71 / SL600',
             0x1701052 => 'ES73 / VLUU ES73 / SL605',
+            0x1701055 => 'ES25, ES27 / VLUU ES25, ES27 / SL45',
             0x1701300 => 'ES28 / VLUU ES28',
             0x1701303 => 'ES74,ES75,ES78 / VLUU ES75,ES78',
             0x2001046 => 'PL150 / VLUU PL150 / TL210 / PL151',
+            0x2001048 => 'PL100 / TL205 / VLUU PL100 / PL101',
             0x2001311 => 'PL120,PL121 / VLUU PL120,PL121',
             0x2001315 => 'PL170,PL171 / VLUUPL170,PL171',
             0x200131e => 'PL210, PL211 / VLUU PL210, PL211',
@@ -168,7 +179,9 @@ my %formatMinMax = (
            #0x3000000 => 'DV150F / DV151F / DV155F',
            #0x3000000 => 'NX mini',
            #0x3000000 => 'NX3000',
+           #0x3000000 => 'NX3300',
            #0x3000000 => 'ST150F / ST151F / ST152F',
+           #0x3000000 => 'WB200F / WB201F / WB202F',
            #0x3000000 => 'WB250F / WB251F / WB252F',
            #0x3000000 => 'WB30F / WB31F / WB32F',
            #0x3000000 => 'WB350F / WB351F / WB352F',
@@ -176,6 +189,7 @@ my %formatMinMax = (
             0x3a00018 => 'Various Models (0x3a00018)',
            #0x3a00018 => 'ES30 / VLUU ES30',
            #0x3a00018 => 'ES80 / ES81',
+           #0x3a00018 => 'ES9 / ES8',
            #0x3a00018 => 'PL200 / VLUU PL200',
            #0x3a00018 => 'PL80 / VLUU PL80 / SL630 / PL81',
            #0x3a00018 => 'PL90 / VLUU PL90',
@@ -214,11 +228,14 @@ my %formatMinMax = (
            #0x5001038 => 'NX2000',
            #0x5001038 => 'NX30',
            #0x5001038 => 'NX300',
+           #0x5001038 => 'NX500',
+           #0x5001038 => 'SM-C200',
            #0x5001038 => 'WB2000',
             0x500103a => 'WB650 / VLUU WB650 / WB660',
             0x500103c => 'WB600 / VLUU WB600 / WB610',
             0x500133e => 'WB150 / WB150F / WB152 / WB152F / WB151',
             0x5a0000f => 'WB5000 / HZ25W',
+            0x5a0001e => 'WB5500 / VLUU WB5500 / HZ50W',
             0x6001036 => 'EX1',
             0x700131c => 'VLUU SH100, SH100',
             0x27127002 => 'SMX-C20N',
@@ -230,19 +247,46 @@ my %formatMinMax = (
     # 0x000c - int32u ? values: 0,1
     # 0x000e - int32u[2] (SoundMultiPicture?)
     # 0x0010 - rational64u ? values: undef,inf
-    # 0x0020 - int16u[2] (ColorInfoDCM?)
+    0x0011 => { #6
+        Name => 'OrientationInfo',
+        SubDirectory => { TagTable => 'Image::ExifTool::Samsung::OrientationInfo' },
+    },
+    0x0020 => [{ #forum7685
+        Name => 'SmartAlbumColor',
+        Condition => '$$valPt =~ /^\0{4}/',
+        Writable => 'int16u',
+        Count => 2,
+        PrintConv => {
+            '0 0' => 'n/a',
+        },
+    },{
+        Name => 'SmartAlbumColor',
+        Writable => 'int16u',
+        Count => 2,
+        PrintConv => [{
+            0 => 'Red',
+            1 => 'Yellow',
+            2 => 'Green',
+            3 => 'Blue',
+            4 => 'Magenta',
+            5 => 'Black',
+            6 => 'White',
+            7 => 'Various',
+        }],
+    }],
     0x0021 => { #1
         Name => 'PictureWizard',
         Writable => 'int16u',
         SubDirectory => { TagTable => 'Image::ExifTool::Samsung::PictureWizard' },
     },
-    # 0x0022 - int32u (CaptureMode?)
+    # 0x0022 - int32u (CaptureMode?) (Gamma? eg. 65538 = 1.2, ref forum7720)
     # 0x0023 - string: "0123456789" (PH) (placeholder for SerialNumber?)
     # 0x0025 - int32u (ImageCount?)
     # 0x002a - undef[4] (SNSDirectShare?)
     # 0x002f - string (GPSInfo01?)
     0x0030 => { #1 (NX100 with GPS)
         Name => 'LocalLocationName',
+        Groups => { 2 => 'Location' },
         Writable => 'string',
         Format => 'undef',
         # this contains 2 place names (in Korean if in Korea), separated by a null+space
@@ -252,14 +296,15 @@ my %formatMinMax = (
     },
     0x0031 => { #1 (NX100 with GPS)
         Name => 'LocationName',
+        Groups => { 2 => 'Location' },
         Writable => 'string',
     },
     # 0x0032 - string (GPSInfo03)
     # 0x0033 - string (GPSInfo04)
     # 0x0034 - string (GPSInfo05)
-    0x0035 => {
+    0x0035 => [{
         Name => 'PreviewIFD',
-        Condition => '$$self{TIFF_TYPE} eq "SRW"', # (not an IFD in JPEG images)
+        Condition => '$$self{TIFF_TYPE} eq "SRW" and $$self{Model} ne "EK-GN120"', # (not an IFD in JPEG images)
         Groups => { 1 => 'PreviewIFD' },
         Flags => 'SubIFD',
         SubDirectory => {
@@ -267,26 +312,58 @@ my %formatMinMax = (
             ByteOrder => 'Unknown',
             Start => '$val',
         },
-    },
+    },{
+        Name => 'PreviewIFD',
+        Condition => '$$self{TIFF_TYPE} eq "SRW"', # (not an IFD in JPEG images)
+        Groups => { 1 => 'PreviewIFD' },
+        Flags => 'SubIFD',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Nikon::PreviewIFD',
+            ByteOrder => 'Unknown',
+            Start => '$val - 36',
+        },
+    }],
     # 0x003a - int16u[2] (SmartLensInfo?)
     # 0x003b - int16u[2] (PhotoStyleSelectInfo?)
     # 0x003c - int16u (SmartRange?)
     # 0x003d - int16u[5] (SmartCropInfo?)
     # 0x003e - int32u (DualCapture?)
     # 0x003f - int16u[2] (SGIFInfo?)
-    # 0x0040 - int32u (FavoriteTagging?) values: 0
+    0x0040 => { #forum7432
+        Name => 'RawDataByteOrder',
+        PrintConv => {
+            0 => 'Little-endian (Intel, II)',
+            1 => 'Big-endian (Motorola, MM)', #(NC)
+        },
+    },
+    0x0041 => { #forum7684
+        Name => 'WhiteBalanceSetup',
+        Writable => 'int32u',
+        PrintConv => {
+            0 => 'Auto',
+            1 => 'Manual',
+        },
+    },
     0x0043 => { #1 (NC)
         Name => 'CameraTemperature',
         Groups => { 2 => 'Camera' },
         Writable => 'rational64s',
         # (DPreview samples all 0.2 C --> pre-production model)
-        PrintConv => '"$val C"',
+        PrintConv => '$val =~ /\d/ ? "$val C" : $val',
         PrintConvInv => '$val=~s/ ?C//; $val',
     },
-    0x0045 => { Name => 'RawCompressionMode', Writable => 'int32u' },
+    # 0x0045 => { Name => 'RawCompressionMode', Writable => 'int32u' }, # (related to ExposureMode, not raw compresison? ref forum7432)
     # 0x004a - int32u[7] (ImageVerification?)
     # 0x004b - int32u[2] (RewindInfo?)
-    # 0x0050 - int32u (ColorSpace? - inconsistent) values: 1
+    # 0x0050 - int32u (ColorSpace? - inconsistent) values: 1 (related to compression mode, ref forum7432)
+    0x0050 => { #forum7432
+        Name => 'RawDataCFAPattern',
+        PrintConv => {
+            0 => 'Unchanged',
+            1 => 'Swap',
+            65535 => 'Roll',
+        },
+    },
     # 0x0054 - int16u[2] (WeatherInfo?)
     # 0x0060 - undef (AEInfo?)
     # 0x0080 - undef (AFInfo?)
@@ -302,14 +379,14 @@ my %formatMinMax = (
     0x0100 => {
         Name => 'FaceDetect',
         Writable => 'int16u',
-        PrintConv => { 0 => 'Off', 1 => 'On' }, # (NC)
+        PrintConv => { 0 => 'Off', 1 => 'On' }, #(NC)
     },
     # 0x0101 - int16u[6] (FaceDetectInfo?)
     # 0x0102 - int16u[x] (FaceDetectInfo?)
     0x0120 => {
         Name => 'FaceRecognition',
         Writable => 'int32u',
-        PrintConv => { 0 => 'Off', 1 => 'On' }, # (NC)
+        PrintConv => { 0 => 'Off', 1 => 'On' }, #(NC)
     },
     0x0123 => { Name => 'FaceName', Writable => 'string' },
     # 0x140 - undef (LensInfo?)
@@ -322,7 +399,12 @@ my %formatMinMax = (
         Groups => { 2 => 'Camera' },
         Writable => 'string',
     },
-    # 0xa002 - string[30]: '0' or 'DY049P000000' (ref PH) (BodySerialNumber?)
+    0xa002 => { #PH/IB
+        Name => 'SerialNumber',
+        Condition => '$$valPt =~ /^\w{5}/', # should be at least 5 characters long
+        Groups => { 2 => 'Camera' },
+        Writable => 'string',
+    },
     0xa003 => { #1 (SRW images only)
         Name => 'LensType',
         Groups => { 2 => 'Camera' },
@@ -337,6 +419,7 @@ my %formatMinMax = (
     },
     0xa005 => {
         Name => 'InternalLensSerialNumber', # Not the printed serial number (ref 1)
+        Groups => { 2 => 'Camera' },
         Writable => 'string',
     },
     0xa010 => { #1
@@ -371,7 +454,7 @@ my %formatMinMax = (
         Name => 'ExposureTime',
         Writable => 'rational64u',
         PrintConv => 'Image::ExifTool::Exif::PrintExposureTime($val)',
-        PrintConvInv => 'Image::ExifTool::Exif::ConvertFraction($val)',
+        PrintConvInv => '$val',
     },
     0xa019 => { #1
         Name => 'FNumber',
@@ -431,13 +514,16 @@ my %formatMinMax = (
         RawConv    => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,-1)',
         RawConvInv => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,1)',
     },
-    #this doesn't seem correct
-    #0xa025 => { #PH/1 (PostAEGain?)
-    #    Name => 'ColorTemperatureAuto',
-    #    Writable => 'int32u',
-    #    RawConv    => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,6)',
-    #    RawConvInv => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,-6)',
-    #},
+    0xa025 => { # (PostAEGain?)
+        Name => 'DigitalGain', #IB
+        Writable => 'int32u',
+        RawConv    => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,6)',
+        RawConvInv => 'Image::ExifTool::Samsung::Crypt($self,$val,$tagInfo,-6)',
+    },
+    0xa025 => { #IB
+        Name => 'HighlightLinearityLimit',
+        Writable => 'int32u',
+    },
     0xa028 => { #2/PH
         Name => 'WB_RGGBLevelsBlack',
         Writable => 'int32s',
@@ -605,6 +691,31 @@ my %formatMinMax = (
     # 0xa061 - int16u (Compression?)
 );
 
+# orientation information (ref 6)
+%Image::ExifTool::Samsung::OrientationInfo = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    WRITE_PROC => \&Image::ExifTool::WriteBinaryData,
+    CHECK_PROC => \&Image::ExifTool::CheckBinaryData,
+    WRITABLE => 1,
+    FORMAT => 'rational64s',
+    FIRST_ENTRY => 0,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    NOTES => 'Camera orientation information written by the Gear 360 (SM-C200).',
+    0 => {
+        Name => 'YawAngle', #(NC)
+        Unknown => 1,
+        Notes => 'always zero',
+    },
+    1 => {
+        Name => 'PitchAngle',
+        Notes => 'upward tilt of rear camera in degrees',
+    },
+    2 => {
+        Name => 'RollAngle',
+        Notes => 'clockwise rotation of rear camera in degrees',
+    },
+);
+
 # Picture Wizard information (ref 1)
 %Image::ExifTool::Samsung::PictureWizard = (
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
@@ -684,7 +795,7 @@ my %formatMinMax = (
         Description => 'Camera Model Name',
         Format => 'string[16]',
     },
-    0x2e => { # (NC)
+    0x2e => { #(NC)
         Name => 'ExposureTime',
         Format => 'int32u',
         ValueConv => '$val ? 10 / $val : 0',
@@ -695,7 +806,7 @@ my %formatMinMax = (
         Format => 'rational64u',
         PrintConv => 'sprintf("%.1f",$val)',
     },
-    0x3a => { # (NC)
+    0x3a => { #(NC)
         Name => 'ExposureCompensation',
         Format => 'rational64s',
         PrintConv => '$val ? sprintf("%+.1f", $val) : 0',
@@ -760,6 +871,7 @@ my %formatMinMax = (
     0x208 => { Name => 'ThumbnailLength', Format => 'int32u' }, # (2 bytes too long in my sample)
     0x20c => {
         Name => 'ThumbnailImage',
+        Groups => { 2 => 'Preview' },
         Format => 'undef[$val{0x208}]',
         Notes => 'the THM image, embedded metadata is extracted as the first sub-document',
         SetBase => 1,
@@ -814,24 +926,144 @@ my %formatMinMax = (
     4 => { Name => 'ThumbnailOffset', IsOffset => 1 },
 );
 
-# information extracted from Samsung trailer (ie. Samsung SM-T805 "Sound & Shot" JPEG)
+# information extracted from "ssuniqueid\0" APP5 (ref PH)
+%Image::ExifTool::Samsung::APP5 = (
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Camera' },
+    ssuniqueid => {
+        Name => 'UniqueID',
+        # 32 bytes - some sort of serial number?
+        ValueConv => 'unpack("H*",$val)',
+    },
+);
+
+# information extracted from Samsung trailer (ie. Samsung SM-T805 "Sound & Shot" JPEG) (ref PH)
 %Image::ExifTool::Samsung::Trailer = (
     GROUPS => { 0 => 'MakerNotes', 2 => 'Other' },
-    VARS => { NO_ID => 1 },
+    VARS => { NO_ID => 1, HEX_ID => 0 },
     NOTES => q{
         Tags extracted from the trailer of JPEG images written when using certain
         features (such as "Sound & Shot" or "Shot & More") from Samsung models such
         as the Galaxy S4 and Tab S.
     },
-    # stuff written with "Shot & More" feature
-    '0x0001' => { Name => 'EmbeddedImage', Binary => 1 },
-    '0x0001-name' => 'EmbeddedImageName',
-    # 0x0830 - unknown (164004 bytes, name like "1165724808.pre")
+    '0x0001-name' => 'EmbeddedImageName', # ("DualShot_1","DualShot_2")
+    '0x0001' => { Name => 'EmbeddedImage', Groups => { 2 => 'Preview' }, Binary => 1 },
+    '0x0100-name' => 'EmbeddedAudioFileName', # ("SoundShot_000")
+    '0x0100' => { Name => 'EmbeddedAudioFile', Groups => { 2 => 'Audio' }, Binary => 1 },
+    '0x0201-name' => 'SurroundShotVideoName', # ("Interactive_Panorama_000")
+    '0x0201' => { Name => 'SurroundShotVideo', Groups => { 2 => 'Video' }, Binary => 1 },
+   # 0x0800-name - seen 'SoundShot_Meta_Info'
+   # 0x0800 - unknown (29 bytes) (contains already-extracted EmbeddedAudioFileName)
+   # 0x0830-name - seen '1165724808.pre'
+   # 0x0830 - unknown (164004 bytes)
+   # 0x08d0-name - seen 'Interactive_Panorama_Info'
+   # 0x08d0 - unknown (7984 bytes)
+   # 0x08e0-name - seen 'Panorama_Shot_Info'
+   # 0x08e0 - string, seen 'PanoramaShot'
+   # 0x08e1-name - seen 'Motion_Panorama_Info'
+   # 0x09e0-name - seen 'Burst_Shot_Info'
+   # 0x09e0 - string, seen '489489125'
+   # 0x0a01-name - seen 'Image_UTC_Data'
+    '0x0a01' => { #forum7161
+        Name => 'TimeStamp',
+        Groups => { 2 => 'Time' },
+        ValueConv => 'ConvertUnixTime($val / 1e3, 1)',
+        PrintConv => '$self->ConvertDateTime($val)',
+    },
+    '0x0a20-name' => 'DualCameraImageName', # ("FlipPhoto_002")
+    '0x0a20' => { Name => 'DualCameraImage', Groups => { 2 => 'Preview' }, Binary => 1 },
+    '0x0a30-name' => 'EmbeddedVideoType', # ("MotionPhoto_Data")
+    '0x0a30' => { Name => 'EmbeddedVideoFile', Groups => { 2 => 'Video' }, Binary => 1 }, #forum7161
+   # 0x0aa1-name - seen 'MCC_Data'
+   # 0x0aa1 - seen '234','222'
+   # 0x0ab0-name - seen 'DualShot_Meta_Info'
+    '0x0ab1-name' => 'DepthMapName', # seen 'DualShot_DepthMap_1' (SM-N950U)
+    '0x0ab1' => { Name => 'DepthMapData', Binary => 1 },
+   # 0x0ab3-name - seen 'DualShot_Extra_Info' (SM-N950U)
+    '0x0ab3' => { # (SM-N950U)
+        Name => 'DualShotExtra',
+        SubDirectory => { TagTable => 'Image::ExifTool::Samsung::DualShotExtra' },
+     },
+   # 0x0ac0-name - seen 'ZoomInOut_Info' (SM-N950U)
+   # 0x0ac0 - 2048 bytes of interesting stuff including firmware version? (SM-N950U)
+    '0x0b40' => { # (SM-N975X front camera)
+        Name => 'SingleShotMeta',
+        SubDirectory => { TagTable => 'Image::ExifTool::Samsung::SingleShotMeta' },
+     },
+   # 0x0b41-name - seen 'SingeShot_DepthMap_1' (Yes, "Singe") (SM-N975X front camera)
+    '0x0b41' => { Name => 'SingleShotDepthMap', Binary => 1 },
+   # 0xa050-name - seen 'Jpeg360_2D_Info' (Samsung Gear 360)
+   # 0xa050 - seen 'Jpeg3602D' (Samsung Gear 360)
+);
 
-    # stuff written with "Sound & Shot" feature
-    '0x0100' => { Name => 'EmbeddedAudioFile', Binary => 1 },
-    '0x0100-name' => 'EmbeddedAudioFileName',
-    # 0x0800 - SoundShot_Meta_Info (contains only already-extracted sound shot name)
+# DualShot Extra Info (ref PH)
+%Image::ExifTool::Samsung::DualShotExtra = (
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    FIRST_ENTRY => 0,
+    FORMAT => 'int32u',
+    # This is a pain, but the DepthMapWidth/Height move around in this record.
+    # In all of my samples so far, the bytes "01 00 ff ff" precede these tags.
+    # I have seen this byte sequence at offsets 32, 60, 64 and 68, so look for
+    # it in bytes 32-95, and use its location to adjust the tag positions
+    8 => {
+        Name => 'DualShotDummy',
+        Format => 'undef[64]',
+        Hidden => 1,
+        Hook => q{
+            if ($size >= 96) {
+                my $tmp = substr($$dataPt, $pos, 64);
+                if ($tmp =~ /\x01\0\xff\xff/g and not pos($tmp) % 4) {
+                    $$self{DepthMapTagPos} = pos($tmp);
+                    $varSize += $$self{DepthMapTagPos} - 32;
+                }
+            }
+        },
+        RawConv => 'undef', # not a real tag
+    },
+    16 => {
+        Name => 'DepthMapWidth',
+        Condition => '$$self{DepthMapTagPos}',
+        Notes => 'index varies depending on model',
+    },
+    17 => {
+        Name => 'DepthMapHeight',
+        Condition => '$$self{DepthMapTagPos}',
+        Notes => 'index varies depending on model',
+    },
+);
+
+# SingleShot Meta Info (ref PH) (SM-N975X front camera)
+%Image::ExifTool::Samsung::SingleShotMeta = (
+    PROCESS_PROC => \&ProcessSamsungMeta,
+    GROUPS => { 0 => 'MakerNotes', 2 => 'Image' },
+    inputWidth          => { },
+    inputHeight         => { },
+    outputWidth         => { },
+    outputHeight        => { },
+    segWidth            => { },
+    segHeight           => { },
+    depthSWWidth        => { },
+    depthSWHeight       => { },
+    depthHWWidth        => { },
+    depthHWHeight       => { },
+    flipStatus          => { },
+    lensFacing          => { },
+    deviceOrientation   => { },
+    objectOrientation   => { },
+    isArtBokeh          => { },
+    beautyRetouchLevel  => { },
+    beautyColorLevel    => { },
+    effectType          => { },
+    effectStrength      => { },
+    blurStrength        => { },
+    spinStrength        => { },
+    zoomStrength        => { },
+    colorpopStrength    => { },
+    monoStrength        => { },
+    sidelightStrength   => { },
+    vintageStrength     => { },
+    bokehShape          => { },
+    perfMode            => { },
 );
 
 # Samsung composite tags
@@ -847,6 +1079,30 @@ my %formatMinMax = (
             my @b = split ' ', $val[1];
             $a[$_] -= $b[$_] foreach 0..$#a;
             return "@a";
+        },
+    },
+    DepthMapTiff => {
+        Require => {
+            0 => 'DepthMapData',
+            1 => 'DepthMapWidth',
+            2 => 'DepthMapHeight',
+        },
+        ValueConv => q{
+            return undef unless length ${$val[0]} == $val[1] * $val[2];
+            my $tiff = MakeTiffHeader($val[1],$val[2],1,8) . ${$val[0]};
+            return \$tiff;
+        },
+    },
+    SingleShotDepthMapTiff => {
+        Require => {
+            0 => 'SingleShotDepthMap',
+            1 => 'SegWidth',
+            2 => 'SegHeight',
+        },
+        ValueConv => q{
+            return undef unless length ${$val[0]} == $val[1] * $val[2];
+            my $tiff = MakeTiffHeader($val[1],$val[2],1,8) . ${$val[0]};
+            return \$tiff;
         },
     },
 );
@@ -913,6 +1169,54 @@ sub ProcessINFO($$$)
         }
         $et->HandleTag($tagTablePtr, $tag, $val);
         $pos += 8;
+    }
+    return 1;
+}
+
+#------------------------------------------------------------------------------
+# Read Samsung Meta Info from trailer
+# Inputs: 0) ExifTool object ref, 1) source dirInfo ref, 2) tag table ref
+# Returns: true on success
+sub ProcessSamsungMeta($$$)
+{
+    my ($et, $dirInfo, $tagTablePtr) = @_;
+    my $dirName = $$dirInfo{DirName};
+    my $dataPt = $$dirInfo{DataPt};
+    my $pos = $$dirInfo{DirStart};
+    my $end = $$dirInfo{DirLen} + $pos;
+    unless ($pos + 8 <= $end and substr($$dataPt, $pos, 4) eq 'DOFS') {
+        $et->Warn("Unrecognized $dirName data");
+        return 0;
+    }
+    my $ver = Get32u($dataPt, $pos + 4);
+    if ($ver == 3) {
+        unless ($pos + 18 <= $end and Get32u($dataPt, $pos + 12) == $$dirInfo{DirLen}) {
+            $et->Warn("Unrecognized $dirName version $ver data");
+            return 0;
+        }
+        my $num = Get16u($dataPt, $pos + 16);
+        $et->VerboseDir("$dirName version $ver", $num);
+        $pos += 18;
+        my ($i, $val);
+        for ($i=0; $i<$num; ++$i) {
+            last if $pos + 2 > $end;
+            my ($x, $n) = unpack("x${pos}CC", $$dataPt);
+            $pos += 2;
+            last if $pos + $n + 2 > $end;
+            my $tag = substr($$dataPt, $pos, $n);
+            my $len = Get16u($dataPt, $pos + $n);
+            $pos += $n + 2;
+            last if $pos + $len > $end;
+            if ($len == 4) {
+                $val = Get32u($dataPt, $pos);
+            } else {
+                my $tmp = substr($$dataPt, $pos, $len);
+                $val = \$pos;
+            }
+            $et->HandleTag($tagTablePtr, $tag, $val);
+            $pos += $len;
+        }
+        $et->Warn("Unexpected end of $dirName version $ver $i $num data") if $i < $num;
     }
     return 1;
 }
@@ -1054,6 +1358,8 @@ SamBlock:
                     Binary      => 1,
                 );
                 AddTagToTable($tagTablePtr, $tag, \%tagInfo);
+            }
+            unless ($$tagTablePtr{"$tag-name"}) {
                 my %tagInfo2 = (
                     Name        => "SamsungTrailer_${tag}Name",
                     Description => "Samsung Trailer $tag Name",
@@ -1139,7 +1445,7 @@ Samsung maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2015, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -1154,8 +1460,9 @@ under the same terms as Perl itself.
 
 =head1 ACKNOWLEDGEMENTS
 
-Thanks to Tae-Sun Park for decoding a number of tags, and Pascal de Bruijn
-for the PictureWizard values.
+Thanks to Tae-Sun Park for decoding a number of tags, Pascal de Bruijn for
+the PictureWizard values, and everyone else who helped by discovering new
+Samsung information.
 
 =head1 SEE ALSO
 

@@ -258,6 +258,8 @@ class Smarty_Security
     public function __construct($smarty)
     {
         $this->smarty = $smarty;
+        $this->smarty->_cache[ 'template_dir_new' ] = true;
+        $this->smarty->_cache[ 'config_dir_new' ] = true;
     }
 
     /**
@@ -470,7 +472,7 @@ class Smarty_Security
             return true;
         }
         if (!empty($this->trusted_constants)) {
-            if (!in_array($const, $this->trusted_constants)) {
+            if (!in_array(strtolower($const), $this->trusted_constants)) {
                 $compiler->trigger_template_error("Security: access to constant '{$const}' not permitted");
                 return false;
             }
@@ -560,7 +562,7 @@ class Smarty_Security
                 unset($this->_resource_dir[ $directory ]);
             }
             foreach ((array) $this->secure_dir as $directory) {
-                $directory = $this->smarty->_realpath($directory . DS, true);
+                $directory = $this->smarty->_realpath($directory . DIRECTORY_SEPARATOR, true);
                 $this->_resource_dir[ $directory ] = true;
             }
             $this->_secure_dir = (array) $this->secure_dir;
@@ -616,7 +618,7 @@ class Smarty_Security
 
             $this->_trusted_dir = $this->trusted_dir;
             foreach ((array) $this->trusted_dir as $directory) {
-                $directory = $this->smarty->_realpath($directory . DS, true);
+                $directory = $this->smarty->_realpath($directory . DIRECTORY_SEPARATOR, true);
                 $this->_php_resource_dir[ $directory ] = true;
             }
         }
@@ -625,33 +627,7 @@ class Smarty_Security
             $this->_checkDir($this->smarty->_realpath($filepath, true), $this->_php_resource_dir);
         return true;
     }
-
-    /**
-     * Start template processing
-     *
-     * @param $template
-     *
-     * @throws SmartyException
-     */
-    public function startTemplate($template)
-    {
-        if ($this->max_template_nesting > 0 && $this->_current_template_nesting ++ >= $this->max_template_nesting) {
-            throw new SmartyException("maximum template nesting level of '{$this->max_template_nesting}' exceeded when calling '{$template->template_resource}'");
-        }
-    }
-
-    /**
-     * Exit template processing
-     *
-     * @internal param $template
-     */
-    public function exitTemplate()
-    {
-        if ($this->max_template_nesting > 0) {
-            $this->_current_template_nesting --;
-        }
-    }
-
+    
     /**
      * Check if file is inside a valid directory
      *
@@ -663,7 +639,7 @@ class Smarty_Security
      */
     private function _checkDir($filepath, $dirs)
     {
-        $directory = dirname($filepath) . DS;
+        $directory = dirname($filepath) . DIRECTORY_SEPARATOR;
         $_directory = array();
         while (true) {
             // remember the directory to add it to _resource_dir in case we're successful
@@ -680,7 +656,7 @@ class Smarty_Security
                 break;
             }
             // bubble up one level
-            $directory = preg_replace('#[\\\/][^\\\/]+[\\\/]$#', DS, $directory);
+            $directory = preg_replace('#[\\\/][^\\\/]+[\\\/]$#', DIRECTORY_SEPARATOR, $directory);
         }
 
         // give up
@@ -715,5 +691,40 @@ class Smarty_Security
             $smarty->security_policy = new $security_class($smarty);
         }
         return;
+    }
+    /**
+     * Start template processing
+     *
+     * @param $template
+     *
+     * @throws SmartyException
+     */
+    public function startTemplate($template)
+    {
+        if ($this->max_template_nesting > 0 && $this->_current_template_nesting ++ >= $this->max_template_nesting) {
+            throw new SmartyException("maximum template nesting level of '{$this->max_template_nesting}' exceeded when calling '{$template->template_resource}'");
+        }
+    }
+
+    /**
+     * Exit template processing
+     *
+     */
+    public function endTemplate()
+    {
+        if ($this->max_template_nesting > 0) {
+            $this->_current_template_nesting --;
+        }
+    }
+
+    /**
+     * Register callback functions call at start/end of template rendering
+     *
+     * @param \Smarty_Internal_Template $template
+     */
+    public function registerCallBacks(Smarty_Internal_Template $template)
+    {
+        $template->startRenderCallbacks[] = array($this, 'startTemplate');
+        $template->endRenderCallbacks[] = array($this, 'endTemplate');
     }
 }

@@ -21,6 +21,7 @@ use File::Spec;
 use File::Path;
 
 use MT::Test;
+use MT::Test::Image;
 
 MT::Test->init_app;
 
@@ -66,6 +67,9 @@ subtest 'Regular JPEG image' => sub {
     my $newest_asset = MT::Asset->load( { class => '*' },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
 
+    my $test_image = $test_env->path('test.jpg');
+    MT::Test::Image->write( file => $test_image );
+
     my ( $app, $put_args ) = _run_app_with_upload_file(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -74,7 +78,7 @@ subtest 'Regular JPEG image' => sub {
             blog_id          => $blog->id,
             file             => 'test.jpg',
         },
-        File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' ),
+        $test_image,
         { 'Content-Type' => 'image/jpeg' }
     );
     my $out = delete $app->{__test_output};
@@ -111,6 +115,9 @@ subtest 'Regular JPEG image with wrong extension' => sub {
     my $newest_asset = MT::Asset->load( { class => '*' },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
 
+    my $test_image = $test_env->path('test.jpg');
+    MT::Test::Image->write( file => $test_image );
+
     my ( $app, $put_args ) = _run_app_with_upload_file(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -119,7 +126,7 @@ subtest 'Regular JPEG image with wrong extension' => sub {
             blog_id          => $blog->id,
             file             => 'wrong-extension-test.gif',
         },
-        File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' ),
+        $test_image,
         { 'Content-Type' => 'image/jpeg' }
     );
     my $out = delete $app->{__test_output};
