@@ -198,6 +198,9 @@ use_ok('MT::EntryStatus');
 use_ok('MT::ObjectCategory');
 use_ok('MT::Template::Tags::ContentType');
 use_ok('MT::Util::ContentType');
+use_ok('MT::Util::Deprecated');
+use_ok('MT::Util::Digest::MD5');
+use_ok('MT::Util::Digest::SHA');
 use_ok('MT::Template::Tags::Common');
 use_ok('MT::version');
 
@@ -291,6 +294,7 @@ SKIP: {
 }
 use_ok('MT::Util::YAML::Tiny');
 use_ok('MT::Util::Log');
+use_ok('MT::Util::Log::Stderr');
 SKIP: {
     if ( eval { require Log::Log4perl } ) {
         use_ok('MT::Util::Log::Log4perl');

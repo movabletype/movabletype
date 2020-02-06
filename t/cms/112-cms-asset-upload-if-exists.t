@@ -23,6 +23,7 @@ use File::Spec;
 use File::Path;
 
 use MT::Test;
+use MT::Test::Image;
 
 MT::Test->init_app;
 
@@ -76,6 +77,9 @@ subtest 'Without "auto_rename_if_exists"' => sub {
     my $newest_asset = MT::Asset->load( { class => '*' },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
 
+    my $test_image = $test_env->path('test.jpg');
+    MT::Test::Image->write( file => $test_image );
+
     my ( $app, $put_args ) = _run_app_with_upload_file(
         'MT::App::CMS',
         {   __test_user      => $admin,
@@ -84,7 +88,7 @@ subtest 'Without "auto_rename_if_exists"' => sub {
             blog_id          => $blog->id,
             file             => 'test.jpg',
         },
-        File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' ),
+        $test_image,
         { 'Content-Type' => 'image/jpeg' }
     );
     my $out = delete $app->{__test_output};
@@ -102,6 +106,9 @@ subtest 'With "auto_rename_if_exists"' => sub {
     my $newest_asset = MT::Asset->load( { class => '*' },
         { sort => [ { column => 'id', desc => 'DESC' } ], } );
 
+    my $test_image = $test_env->path('test.jpg');
+    MT::Test::Image->write( file => $test_image );
+
     my ( $app, $put_args ) = _run_app_with_upload_file(
         'MT::App::CMS',
         {   __test_user           => $admin,
@@ -111,7 +118,7 @@ subtest 'With "auto_rename_if_exists"' => sub {
             file                  => 'test.jpg',
             auto_rename_if_exists => 1,
         },
-        File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' ),
+        $test_image,
         { 'Content-Type' => 'image/jpeg' }
     );
     my $out = delete $app->{__test_output};

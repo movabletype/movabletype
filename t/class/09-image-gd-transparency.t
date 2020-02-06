@@ -16,13 +16,15 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use File::Basename;
-use File::Spec;
-
 use MT::Test;
 use MT::Image;
+use MT::Test::Image;
 
-my $file = File::Spec->catfile( $ENV{MT_HOME}, qw/ t images test.png / );
+my ( $guard, $file ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => ".png",
+);
+close $guard;
 
 my $cfg = MT->config;
 $cfg->ImageDriver('GD');

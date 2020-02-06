@@ -1653,8 +1653,31 @@ class CategoryArchiver implements ArchiveType {
     public function get_title($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        $cat_name = parent::get_category_name();
+        $cat_name = $this->get_category_name();
         return encode_html( strip_tags( $cat_name ) );
+    }
+
+    protected function get_category_name () {
+        $mt = MT::get_instance();
+        $ctx =& $mt->context();
+
+        $curr_at = $ctx->stash('current_archive_type');
+        $archiver = ArchiverFactory::get_archiver($curr_at);
+        $cat = $ctx->stash('category');
+        $cat_name = '';
+
+        if ($ctx->stash('index_archive')
+            || !isset($archiver)
+            || (isset($archiver) && !isset($cat))
+            || !$ctx->stash('inside_archive_list'))
+        {
+            $cat = $ctx->stash('archive_category');
+            $cat or $cat = $ctx->stash('category');
+            if (isset($cat)) {
+                $cat_name = $cat->category_label;
+            }
+        }
+        return $cat_name;
     }
 
     public function get_archive_list($args) {
@@ -3876,10 +3899,32 @@ class ContentTypeCategoryArchiver implements ArchiveType {
     public function get_title($args) {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
-        $cat_name = parent::get_category_name();
+        $cat_name = $this->get_category_name();
         return encode_html( strip_tags( $cat_name ) );
     }
 
+    protected function get_category_name () {
+        $mt = MT::get_instance();
+        $ctx =& $mt->context();
+
+        $curr_at = $ctx->stash('current_archive_type');
+        $archiver = ArchiverFactory::get_archiver($curr_at);
+        $cat = $ctx->stash('category');
+        $cat_name = '';
+
+        if ($ctx->stash('index_archive')
+            || !isset($archiver)
+            || (isset($archiver) && !isset($cat))
+            || !$ctx->stash('inside_archive_list'))
+        {
+            $cat = $ctx->stash('archive_category');
+            $cat or $cat = $ctx->stash('category');
+            if (isset($cat)) {
+                $cat_name = $cat->category_label;
+            }
+        }
+        return $cat_name;
+    }
 
     public function get_archive_list($args) {
         $mt = MT::get_instance();

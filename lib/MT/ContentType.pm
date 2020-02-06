@@ -747,8 +747,11 @@ sub _make_tag_list_prop_count {
                         group     => [ 'tag_id', 'object_id', 'cf_id' ],
                     },
                 );
-                my ($count) = $iter->();
-                $count || 0;
+                my $total = 0;
+                while( my ( $count, @ids ) = $iter->() ) {
+                    $total += $count;
+                }
+                $total;
             },
             html_link => sub {
                 my ( $prop, $obj, $app ) = @_;

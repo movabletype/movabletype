@@ -27,6 +27,15 @@ use lib "$MT_HOME/lib", "$MT_HOME/extlib";
 use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
+use Term::Encoding qw(term_encoding);
+
+my $enc = term_encoding() || 'utf8';
+
+my $builder = Test::More->builder;
+binmode $builder->output,         ":encoding($enc)";
+binmode $builder->failure_output, ":encoding($enc)";
+binmode $builder->todo_output,    ":encoding($enc)";
+
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
@@ -69,6 +78,8 @@ sub write_config {
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
         || ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
 
+    my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
+
     require MT;
 
     # common directives
@@ -88,7 +99,8 @@ sub write_config {
                 MT_HOME/themes/
                 )
         ],
-        DefaultLanguage     => 'en_US',
+        TempDir             => File::Spec->tmpdir,
+        DefaultLanguage     => $default_language,
         StaticWebPath       => '/mt-static/',
         StaticFilePath      => 'TEST_ROOT/mt-static',
         EmailAddressMain    => 'mt@localhost.localdomain',
@@ -213,7 +225,12 @@ sub _connect_info_mysql {
     else {
         $self->{dsn}
             = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect( $self->{dsn} ) or die $DBI::errstr;
+        my $dbh = DBI->connect( $self->{dsn} );
+        if ( !$dbh ) {
+            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
+            ( my $dsn = $self->{dsn} ) =~ s/dbname=$info{Database};//;
+            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        }
         $self->_prepare_mysql_database($dbh);
     }
     return %info;
@@ -255,7 +272,10 @@ sub prepare {
 sub my_cnf {
     my $class = shift;
 
-    my %cnf = ( 'skip-networking' => '' );
+    my %cnf = (
+        'skip-networking' => '',
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
+    );
 
     my $mysqld = _mysqld() or return \%cnf;
 
@@ -355,6 +375,11 @@ sub _fixture_file {
 
 sub prepare_fixture {
     my $self = shift;
+
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG MYSQL_CHARSET MYSQL_COLLATION / ) {
+        $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+        note "Fixture is ignored because of an environmental variable";
+    }
 
     require MT::Test;
     my $app = $ENV{MT_APP} || 'MT::App';

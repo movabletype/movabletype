@@ -384,7 +384,7 @@ sub save_role {
         if $name eq '';
 
     my $role_by_name = MT::Role->load( { name => $name } );
-    if ( $role_by_name && ( ( $id && ( $role->id != $id ) ) || !$id ) ) {
+    if ( $role_by_name && ( !$id || $role_by_name->id != $id ) ) {
         return $app->errtrans("Another role already exists by that name.");
     }
     if ( !@perms ) {

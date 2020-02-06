@@ -9,7 +9,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -136,9 +138,9 @@ my $komiya   = MT::Author->load( { name => 'komiya' } );
 my $admin = MT::Author->load(1);
 
 require MT::Role;
-my $manage_users   = MT::Role->load( { name => 'Manage Users' } );
-my $manage_pages   = MT::Role->load( { name => 'Manage Pages' } );
-my $edit_all_posts = MT::Role->load( { name => 'Edit All Posts' } );
+my $manage_users   = MT::Role->load( { name => MT->translate('Manage Users') } );
+my $manage_pages   = MT::Role->load( { name => MT->translate('Manage Pages') } );
+my $edit_all_posts = MT::Role->load( { name => MT->translate('Edit All Posts') } );
 
 # Run
 my ( $app, $out );

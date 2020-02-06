@@ -10,6 +10,7 @@ BEGIN {
     $test_env = MT::Test::Env->new(
         DeleteFilesAtRebuild => 1,
         RebuildAtDelete      => 1,
+        DefaultLanguage      => 'en_US',  ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }

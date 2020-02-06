@@ -19,10 +19,10 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Run3;
 use URI;
 
 use MT::Test;
+use MT::Test::PHP;
 use MT::WeblogPublisher;
 
 $test_env->prepare_fixture('db_data');
@@ -167,9 +167,7 @@ print($ctx->stash('current_mapping_url') . "\n");
 print($ctx->stash('preferred_mapping_url') . "\n");
 PHP
 
-    run3 ['php', '-q'],
-        \$test_script, \my $php_result, undef
-        or die $?;
+    my $php_result = MT::Test::PHP->run($test_script);
 
     my $result = {};
     @$result{qw(current_mapping_url preferred_mapping_url)} = split /\n/,

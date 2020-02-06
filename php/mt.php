@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.1');
-define('PRODUCT_VERSION', '7.1.5');
+define('VERSION', '7.2');
+define('PRODUCT_VERSION', '7.2');
 define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 5;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -208,9 +208,10 @@ class MT {
             $ctx->add_plugin_dir($plugin_dir);
 
         # Load any php directories found during the 'init_addons' loop
-        foreach ($ctx->plugins_dir as $plugin_dir)
+        foreach ($ctx->plugins_dir as $plugin_dir) {
             if (is_dir($plugin_dir))
                 $this->load_plugin($plugin_dir);
+        }
     }
 
     function load_plugin($plugin_dir) {

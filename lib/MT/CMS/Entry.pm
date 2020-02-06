@@ -484,6 +484,9 @@ sub edit {
         $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
 
         $param->{can_edit_categories} = $perms->can_do('edit_categories');
+        if ( $type eq 'page' ) {
+            $param->{can_edit_categories} ||= $perms->can_do('manage_pages');
+        }
     }
 
     my $data = $app->_build_category_list(

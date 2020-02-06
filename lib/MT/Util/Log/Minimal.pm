@@ -8,10 +8,7 @@ use strict;
 use warnings;
 use MT;
 use base qw(MT::Util::Log);
-
-BEGIN {
-    use Log::Minimal;
-}
+use Log::Minimal;
 
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
@@ -20,9 +17,12 @@ sub new {
 
     my $fh;
     open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
+    $fh->autoflush(1);
+
     local $SIG{HUP} = sub {
         undef $fh;
         open( $fh, '>>', $log_file ) or die "Couldn't open $log_file: $!";
+        $fh->autoflush(1);
     };
 
     $Log::Minimal::PRINT = sub {

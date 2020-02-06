@@ -28,6 +28,7 @@ $VERSION = '1.02';
   # 0x02 => { Name => 'MOIFileSize', Format => 'int32u' },
     0x06 => {
         Name => 'DateTimeOriginal',
+        Description => 'Date/Time Original',
         Format => 'undef[8]',
         Groups => { 2 => 'Time' },
         ValueConv => sub {
@@ -136,7 +137,7 @@ information from MOI files.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

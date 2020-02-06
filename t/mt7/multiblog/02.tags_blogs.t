@@ -19,12 +19,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use IPC::Open2;
+use MT;
+use MT::Test 'has_php';
+use MT::Test::PHP;
 
 plan tests => 2 * blocks;
 
-use MT;
-use MT::Test 'has_php';
 my $app = MT->instance;
 
 $test_env->prepare_fixture('db_data');
@@ -243,13 +243,12 @@ SKIP:
 
             $app->config->save_config;
 
-            open2( my $php_in, my $php_out, 'php -q' );
-            print $php_out &php_test_script( $block->template,
+            my $php_script = php_test_script(
+                $block->template,
                 $block->blog_id || $blog_id,
-                $block->text );
-            close $php_out;
-            my $php_result = do { local $/; <$php_in> };
-            $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+                $block->text,
+            );
+            my $php_result = MT::Test::PHP->run($php_script);
 
             my $name = $block->name . ' - dynamic';
             is( $php_result, $block->expected, $name );

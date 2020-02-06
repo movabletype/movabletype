@@ -5,6 +5,21 @@ Older changelogs:
 [v3.x](changelog_v3.x.md),
 [v2.x](changelog_v2.x.md).
 
+## 5.20.16 - 12-Jan-2020
+
+- mssql: queries are not correctly closed. #590
+
+## 5.20.15 - 24-Nov-2019
+
+- core: remove unnecessary srand() calls. #532
+- core: Fix getMenu with ADODB_FETCH_BOTH. #482
+- core: code cleanup for getMenu and related functions. #563
+- pgsql: stop using obsolete pg_attrdef.adsrc column. #562
+- pdo/mysql: remove extraneous comma in $fmtTimeStamp. #531
+- active record: Use ADODB_ASSOC_CASE constant. #536
+- session: Remove session_module_name('user') calls (PHP 7.2 compatibility). #449
+- PHP 7.4 compatibility: fix deprecated usage of join() #547
+
 ## 5.20.14 - 06-Jan-2019
 
 - security: Denial of service in adodb_date(). #467
@@ -396,7 +411,7 @@ other database types as well; all drivers derived from the above are also impact
 ## 5.06 - 16 Oct 2008
 
 - Added driver adodb-pdo_sqlite.inc.php. Thanks Diogo Toscano (diogo#scriptcase.net) for the code.
-- Added support for [one-to-many relationships](docs-active-record.htm#onetomany) with BelongsTo() and HasMany() in adodb_active_record.
+- Added support for [one-to-many relationships](https://adodb.org/dokuwiki/doku.php?id=v5:userguide:active_record#one_to_many_relations) with BelongsTo() and HasMany() in adodb_active_record.
 - Added BINARY type to mysql.inc.php (also in 4.991).
 - Added support for SelectLimit($sql,-1,100) in oci8. (also in 4.991).
 - New $conn->GetMedian($table, $field, $where='') to get median account no. (also in 4.991)

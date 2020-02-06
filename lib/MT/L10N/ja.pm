@@ -1511,7 +1511,7 @@ use vars qw( @ISA %Lexicon );
 	'(All child sites in this site)' => 'このサイトの全ての子サイト',
 	'Select to apply this trigger to all child sites in this site.' => 'サイト内のすべての子サイトでトリガーを有効にする',
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
-	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトとこサイトでトリガーを有効にする',
+	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'Entry or Page' => '記事/ウェブページ',
 	'Comment' => 'コメント',
 	'Trackback' => 'トラックバック',

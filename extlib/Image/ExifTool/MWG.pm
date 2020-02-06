@@ -16,7 +16,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::XMP;
 
-$VERSION = '1.22';
+$VERSION = '1.23';
 
 sub RecoverTruncatedIPTC($$$);
 sub ListToString($);
@@ -29,6 +29,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
 %Image::ExifTool::MWG::Composite = (
     GROUPS => { 0 => 'Composite', 1 => 'MWG', 2 => 'Image' },
     VARS => { NO_ID => 1 },
+    WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
     NOTES => q{
         The table below lists special Composite tags which are used to access other
         tags based on the MWG 2.0 recommendations.  These tags are only accessible
@@ -59,7 +60,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
         string values be stored as UTF-8.  To honour this, the exiftool application
         sets the default internal EXIF string encoding to "UTF8" when the MWG module
         is loaded, but via the API this must be done manually by setting the
-        CharsetEXIF option.
+        L<CharsetEXIF|../ExifTool.html#CharsetEXIF> option.
 
         A complication of the MWG specification is that although the MWG:Creator
         property may consist of multiple values, the associated EXIF tag
@@ -116,7 +117,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
     DateTimeOriginal => {
         Description => 'Date/Time Original',
         Groups => { 2 => 'Time' },
-        Notes => '"creation date of the intellectual content being shown" - MWG',
+        Notes => '"specifies when a photo was taken" - MWG',
         Writable => 1,
         Shift => 0, # don't shift this tag
         Desire => {
@@ -158,7 +159,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
     },
     CreateDate => {
         Groups => { 2 => 'Time' },
-        Notes => '"creation date of the digital representation" - MWG',
+        Notes => '"specifies when an image was digitized" - MWG',
         Writable => 1,
         Shift => 0, # don't shift this tag
         Desire => {
@@ -196,7 +197,7 @@ my $mwgLoaded;  # flag set if we alreaded Load()ed the MWG tags
     },
     ModifyDate => {
         Groups => { 2 => 'Time' },
-        Notes => '"modification date of the digital image file" - MWG',
+        Notes => '"specifies when a file was modified by the user" - MWG',
         Writable => 1,
         Shift => 0, # don't shift this tag
         Desire => {
@@ -744,7 +745,7 @@ must be loaded explicitly as described above.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
