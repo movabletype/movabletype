@@ -2,7 +2,7 @@
 Development Library - Copyright 2005 Six Apart
 $Id: Devel.js 242 2007-11-02 17:07:29Z ydnar $
 
-Copyright (c) 2007, Six Apart, Ltd.
+Copyright (c) 2007, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -312,7 +312,7 @@ use vars qw( @ISA %Lexicon );
 	'This module is used in a test attribute for the MTIf conditional tag.' => 'MT:Ifタグの機能で使われます。',
 	'This module is used by the Markdown text filter.' => 'Markdown形式を利用するために必要です。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'This module required for action streams.' => 'アクションストリームを利用するために必要です。',
+	'This module is required for XML-RPC API.' => 'XML-RPC APIを利用するために必要です。',
 	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1]のインストールは必須ではありません。バックアップデータの復元に必要となります。',
 	'This module is required for Google Analytics site statistics and for verification of SSL certificates.' => 'このモジュールは、Google Analytics などで SSL 証明書の検証に必要です。',
 	'This module is required for executing run-periodic-tasks.' => 'このモジュールは、run-periodic-tasks を実行するために必要です。',
@@ -608,7 +608,10 @@ use vars qw( @ISA %Lexicon );
 	'Failed login attempt by disabled user \'[_1]\'' => '無効なユーザー [_1] がサインインしようとしました。',
 	'This account has been disabled. Please see your Movable Type system administrator for access.' => 'このアカウントは無効にされています。システム管理者に問い合わせてください。',
 	'Failed login attempt by pending user \'[_1]\'' => '保留中のユーザー「[_1]」がサインインしようとしました。',
+	'Failed login attempt by user \'[_1]\'' => 'ユーザー「[_1]」がサインインに失敗しました。',
+	'Failed login attempt by deleted user \'[_1]\'' => '削除済みのユーザー「[_1]」がサインインしようとしました。',
 	'This account has been deleted. Please see your Movable Type system administrator for access.' => 'このアカウントは削除されました。システム管理者に問い合わせてください。',
+	'Failed login attempt by locked-out user \'[_1]\'' => 'ロックされたユーザー「[_1]」がサインインしようとしました。',
 	'User cannot be created: [_1].' => 'ユーザーを登録できません: [_1]',
 	'User \'[_1]\' has been created.' => 'ユーザー「[_1]」が作成されました。',
 	'Our apologies, but you do not have permission to access any blogs or websites within this installation. If you feel you have reached this message in error, please contact your Movable Type system administrator.' => 'ブログまたはウェブサイトへのアクセスが許されていません。エラーでこのページが表示された場合は、システム管理者に問い合わせてください。',
@@ -1494,6 +1497,10 @@ use vars qw( @ISA %Lexicon );
 	'Plugin Set: [_1]' => 'プラグインのセット: [_1]',
 	'Individual Plugins' => 'プラグイン',
 	'Plugin' => 'プラグイン',
+	'Plugins are enabled by [_1]' => '[_1]がプラグインを有効にしました',
+	'Plugins are disabled by [_1]' => '[_1]がプラグインを無効にしました',
+	'Plugin \'[_1]\' is enabled by [_2]' => '[_2]が[_1]プラグインを有効にしました',
+	'Plugin \'[_1]\' is disabled by [_2]' => '[_2]が[_1]プラグインを無効にしました',
 
 ## lib/MT/CMS/RebuildTrigger.pm
 	'Select Site' => 'サイトを選択',
@@ -4234,7 +4241,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/content_field_type_options/multi_line_text.tmpl
 	'Input format' => '入力フォーマット',
-	'Use all rich text decoration buttons' => 'リッチテキストの装飾ボタンをすべて利用する',
+	'Use all rich text decoration buttons' => 'リッチテキストの入力支援ボタンをすべて利用する',
 	
 
 ## tmpl/cms/content_field_type_options/number.tmpl
@@ -6846,7 +6853,7 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Alt' => '代替テキスト',
-	'Caption' => 'タイトル',
+	'Caption' => 'キャプション',
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'コメント機能を提供します。',

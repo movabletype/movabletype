@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -2159,11 +2159,29 @@ sub login {
     {
 
         # Login invlaid (password error, etc...)
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error( $app->translate('Invalid login.') );
     }
     elsif ( $res == MT::Auth::DELETED() ) {
 
         # Login invalid; auth layer says user record has been removed
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by deleted user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error(
             $app->translate(
                 'This account has been deleted. Please see your Movable Type system administrator for access.'
@@ -2171,6 +2189,15 @@ sub login {
         );
     }
     elsif ( $res == MT::Auth::LOCKED_OUT() ) {
+        $app->log(
+            {   message => $app->translate(
+                    "Failed login attempt by locked-out user '[_1]'", $user
+                ),
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            }
+        );
         return $app->error( $app->translate('Invalid login.') );
     }
     elsif ( $res == MT::Auth::REDIRECT_NEEDED() ) {
@@ -2631,8 +2658,20 @@ sub _send_comment_notification {
             ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body )
-            or return $app->error( MT::Mail->errstr() );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+
+            return $app->error( MT::Mail->errstr() );
+        };
     }
 }
 
@@ -2692,7 +2731,19 @@ sub _send_sysadmins_email {
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+            last;
+        };
     }
 }
 
@@ -3411,7 +3462,7 @@ sub handlers_for_mode {
             my $handler = $hdlr->{code} || $hdlr->{handler};
             if ( $handler && $handler !~ m/->/ ) {
                 $hdlr->{component} = $1
-                    if $hdlr->{code} =~ m/^\$?(\w+)::/;
+                    if $handler =~ m/^\$?(\w+)::/;
             }
         }
         else {
@@ -4249,6 +4300,7 @@ sub is_valid_redirect_target {
             map { scalar $app->param($_) } qw/static return_url return_to/;
         push @targets, '' unless @targets;
         for my $target (@targets) {
+            next if $target eq '0';
             if ( ( $target eq '' ) || ( $target eq '1' ) ) {
                 require MT::Entry;
                 my $entry_id = $app->param('entry_id') || 0;

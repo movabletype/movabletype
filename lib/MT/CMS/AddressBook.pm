@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -135,10 +135,23 @@ sub send_notify {
     my $i = 1;
     require MT::Mail;
     unless ( exists $params{from_address} ) {
-        MT::Mail->send( \%head, $body )
-            or return $app->errtrans(
-            "Error sending mail ([_1]): Try another MailTransfer setting?",
-            MT::Mail->errstr );
+        MT::Mail->send( \%head, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
+            );
+
+            return $app->errtrans(
+                "Error sending mail ([_1]): Try another MailTransfer setting?",
+                MT::Mail->errstr
+            );
+        };
     }
     delete $head{To};
 
@@ -156,13 +169,25 @@ sub send_notify {
         } @addresses_to_send;
     }
     foreach my $info (@email_to_send) {
-        MT::Mail->send( $info, $body )
-            or return $app->error(
-            $app->translate(
-                "Error sending mail ([_1]): Try another MailTransfer setting?",
-                MT::Mail->errstr
-            )
+        MT::Mail->send( $info, $body ) or do {
+            $app->log(
+                {   message => $app->translate(
+                        'Error sending mail: [_1]',
+                        MT::Mail->errstr
+                    ),
+                    level    => MT::Log::ERROR(),
+                    class    => 'system',
+                    category => 'email'
+                }
             );
+
+            return $app->error(
+                $app->translate(
+                    "Error sending mail ([_1]): Try another MailTransfer setting?",
+                    MT::Mail->errstr
+                )
+            );
+        };
     }
     $app->redirect(
         $app->uri(

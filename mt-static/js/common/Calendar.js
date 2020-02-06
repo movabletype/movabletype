@@ -2,7 +2,7 @@
 Calendar Utility
 $Id: Calendar.js 259 2008-02-06 05:04:04Z ddavis $
 
-Copyright (c) 2006, Six Apart, Ltd.
+Copyright (c) 2006, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

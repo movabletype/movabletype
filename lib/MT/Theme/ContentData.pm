@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -48,9 +48,9 @@ sub apply {
         for my $ct_key ( keys %{$content_data} ) {
             my $ct_value = $content_data->{$ct_key};
 
-            my $title
-                = defined( $ct_value->{title} )
-                ? $theme->translate_templatized( $ct_value->{title} )
+            my $label
+                = defined( $ct_value->{label} )
+                ? $theme->translate_templatized( $ct_value->{label} )
                 : '';
             my $identifier
                 = defined $ct_value->{identifier}
@@ -60,7 +60,7 @@ sub apply {
             next
                 if MT::ContentData->exist(
                 {   blog_id => $blog->id,
-                    title   => $title,
+                    label   => $label,
                 }
                 );
             next
@@ -82,8 +82,8 @@ sub apply {
                     convert_breaks  => $ct_value->{convert_breaks},
                     status          => $ct_value->{status}
                         || MT::ContentStatus::RELEASE(),
-                    title => defined( $ct_value->{title} )
-                    ? $theme->translate_templatized( $ct_value->{title} )
+                    label => defined( $ct_value->{label} )
+                    ? $theme->translate_templatized( $ct_value->{label} )
                     : '',
                 }
             );
