@@ -1,6 +1,6 @@
 #! /usr/bin/perl -w
 
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -13,7 +13,7 @@ BEGIN {
     shift @ARGV unless (-e $LANG);
     my $year = (localtime(time))[5] + 1900;
     print <<EOF;
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -57,7 +57,7 @@ while (<>) {
         next if ($_ =~ /^\s*$/);
         print $l;
     }
-    if (/^[#\s]+['|q{](.+)['|}] => ['|q{](.*)['|}],($|\s*\#)/) { # Now also reads empty/to be translated strings
+    if (/^[#\s]+['|q\{](.+)['|}] => ['|q\{](.*)['|}],($|\s*\#)/) { # Now also reads empty/to be translated strings
         my $base = $1; 
         my $trans = $2;
         if ( !exists($conv{$base}) && !exists($pgconv{$base}) ) {

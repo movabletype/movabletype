@@ -347,17 +347,17 @@
             1,
             null,
             "2017-05-30 19:00:00",
-            "50ae2e6d456e2bd01c61f197390f6d38d446ff13",
+            "20afa2cc0732626405514efe22305967f90f94bc",
             0,
             null,
             1,
-            "581d20ac4fd7684f7354601efa7c56b885cbf3db",
+            "df439c80c5380342a2c3cc86b4f02e9124a4ea2d",
             null,
             null,
             "2017-05-30 19:30:00",
+            4,
             2,
-            2,
-            "581d20ac4fd7684f7354601efa7c56b885cbf3db",
+            "df439c80c5380342a2c3cc86b4f02e9124a4ea2d",
             null,
             201722
          ]
@@ -403,7 +403,7 @@
             null,
             "__NOW__",
             "test content data",
-            "50ae2e6d456e2bd01c61f197390f6d38d446ff13",
+            "20afa2cc0732626405514efe22305967f90f94bc",
             null,
             null
          ]

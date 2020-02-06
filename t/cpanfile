@@ -56,7 +56,7 @@ requires 'Cache::Memcached';
 requires 'Archive::Tar';
 requires 'IO::Compress::Gzip';
 requires 'IO::Uncompress::Gunzip';
-requires 'Archive::Zip';
+requires 'Archive::Zip', '!=1.66, !=1.67';
 requires 'XML::SAX';
 requires 'Digest::SHA1';
 requires 'Net::SMTP';
@@ -89,6 +89,7 @@ on 'test' => sub {
     requires 'DateTime::TimeZone';
     requires 'DBD::SQLite';
     requires 'DBI', '1.635';    # For $dbh->selectall_array
+    requires 'HTML::Form';
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
     requires 'IO::String';
@@ -96,6 +97,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Minimal';
     requires 'Net::SFTP';
+    requires 'Path::Tiny';
     requires 'PHP::Serialization';
     requires 'pQuery';
     requires 'SQL::Maker';

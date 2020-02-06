@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -314,7 +314,7 @@ sub search_terms {
     if ( $app->param('archive_type') ) {
         my $at       = $app->param('archive_type');
         my $archiver = MT->publisher->archiver($at);
-        return return $app->errtrans('Invalid archive type')
+        return $app->errtrans('Invalid archive type')
             unless ( $archiver || $at eq 'Index' );
     }
 

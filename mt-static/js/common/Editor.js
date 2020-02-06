@@ -2,7 +2,7 @@
 Editor Library
 $Id: Editor.js 201 2007-05-29 22:51:10Z ddavis $
 
-Copyright (c) 2005, Six Apart, Ltd.
+Copyright (c) 2005, Six Apart Ltd.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

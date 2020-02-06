@@ -2,7 +2,7 @@ id: BlockEditor
 name: BlockEditor
 version: 1.11
 author_link: http://www.movabletype.org/
-author_name: Six Apart, Ltd.
+author_name: Six Apart Ltd.
 description: <MT_TRANS phrase="Block Editor.">
 l10n_class: BlockEditor::L10N
 

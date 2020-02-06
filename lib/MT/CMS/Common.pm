@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -93,7 +93,7 @@ sub save {
     if ( !$author->is_superuser ) {
         if ( ( $type ne 'author' ) && ( $type ne 'template' ) )
         {    # for authors, blog-ctx $perms is not relevant
-            return return $app->permission_denied()
+            return $app->permission_denied()
                 if !$perms && $id;
         }
 

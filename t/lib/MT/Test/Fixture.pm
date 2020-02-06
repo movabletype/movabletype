@@ -198,8 +198,8 @@ sub prepare_entry {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::EntryStatus;
-                    $arg{status} = MT::EntryStatus::status_int($status);
+                    require MT::Entry;
+                    $arg{status} = MT::Entry::status_int($status);
                 }
             }
             else {
@@ -250,8 +250,8 @@ sub prepare_page {
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
-                    require MT::EntryStatus;
-                    $arg{status} = MT::EntryStatus::status_int($status);
+                    require MT::Entry;
+                    $arg{status} = MT::Entry::status_int($status);
                 }
             }
             else {
@@ -370,6 +370,7 @@ sub prepare_content_type {
                         %options = (
                             label        => $cf_name,
                             category_set => $set->id,
+                            %{delete $item->{options} || {}},
                         );
                     }
                     my $cf = MT::Test::Permission->make_content_field(
@@ -436,10 +437,7 @@ sub prepare_content_data {
                         "content_field is required: content_data: $cf_name";
                     my $cf_type = $cf->type;
                     my $cf_arg  = $arg{data}{$cf_name};
-                    if ( $cf_type =~ /date/ ) {
-                        $data{ $cf->id } = $cf_arg;
-                    }
-                    elsif ( $cf_type eq 'categories' ) {
+                    if ( $cf_type eq 'categories' ) {
                         my $set_id = $cf->related_cat_set_id;
                         my @sets   = values %{ $objs->{category_set} };
                         my ($set)
@@ -454,6 +452,9 @@ sub prepare_content_data {
                             push @cat_ids, $cat->id;
                         }
                         $data{ $cf->id } = \@cat_ids;
+                    }
+                    else {
+                        $data{ $cf->id } = $cf_arg;
                     }
                 }
                 $arg{data} = \%data;
@@ -480,9 +481,12 @@ sub prepare_template {
             my %arg
                 = ref $item eq 'HASH' ? %$item : ( archive_type => $item );
             my $archive_type = delete $arg{archive_type};
-            my $archiver     = MT->publisher->archiver($archive_type)
-                or croak "unknown archive_type: $archive_type";
-            $arg{type} = _template_type($archive_type);
+            my $archiver;
+            if ($archive_type) {
+                $archiver = MT->publisher->archiver($archive_type)
+                    or croak "unknown archive_type: $archive_type";
+                $arg{type} = _template_type($archive_type);
+            }
             my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
                 or croak "blog_id is required: template: $arg{type}";
 
@@ -499,6 +503,13 @@ sub prepare_template {
 
             my $mapping = delete $arg{mapping};
 
+            ## Remove (to replace) if a template identifier is specified
+            if ( $arg{identifier} ) {
+                MT::Template->remove(
+                    { blog_id => $blog_id, identifier => $arg{identifier} },
+                    { nofetch => 1 } );
+            }
+
             my $tmpl = MT::Test::Permission->make_template(
                 blog_id => $blog_id,
                 %arg,
@@ -506,7 +517,7 @@ sub prepare_template {
 
             $objs->{template}{ $tmpl->name } = $tmpl;
 
-            next unless $mapping;
+            next unless $archive_type && $mapping;
 
             my $preferred = 1;
             $mapping = [$mapping] if ref $mapping eq 'HASH';

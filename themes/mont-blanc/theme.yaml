@@ -10,10 +10,6 @@ protected: 1
 l10n_lexicon:
   en_us: l10n_en_us.yaml
   ja: l10n_ja.yaml
-  nl: l10n_nl.yaml
-  fr: l10n_fr.yaml
-  de: l10n_de.yaml
-  es: l10n_es.yaml
 thumbnail_file: 'thumb.png'
 thumbnail_file_medium: 'thumb-medium.png'
 thumbnail_file_small: 'thumb-small.png'

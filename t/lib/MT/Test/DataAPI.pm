@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -37,6 +37,9 @@ sub test_data_api {
     my ( $suite, $args ) = @_;
 
     my $app = MT::App::DataAPI->new;
+
+    $app->config->DataAPIDisableSite( '', 1 );
+    $app->config->save_config;
 
     my $is_superuser;
     my $mock_author = Test::MockModule->new('MT::Author');
@@ -219,7 +222,7 @@ sub test_data_api {
                 }
             }
 
-            if ( my $c = $cb->{count} ) {
+            if ( defined( my $c = $cb->{count} ) ) {
                 is( @$params_list, $c,
                     $cb->{name} . ' was called ' . $c . ' time(s)' );
             }

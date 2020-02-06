@@ -10,7 +10,7 @@ jobs:
 
   coveralls:
     docker:
-      - image: movabletype/test:trusty
+      - image: movabletype/test:buster
     steps:
       - checkout
       - run: cpm install -g Devel::Cover::Report::Coveralls

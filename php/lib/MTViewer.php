@@ -1,5 +1,5 @@
 <?php
-# Movable Type (r) (C) 2001-2019 Six Apart, Ltd. All Rights Reserved.
+# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -184,7 +184,39 @@ class MTViewer extends SmartyBC {
             /* remove eval-modifier from $search */
             $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
         }
-        return preg_replace($search, $replace, $string, $global ? -1 : 1);
+        if (preg_match('/\\\\[LUlu]/', $replace) === 1) {
+            return preg_replace_callback(
+                $search,
+                function($matches) use($search, $replace) {
+                    $copy = $matches[0];
+                    $replaced = preg_replace($search, $replace, $copy);
+                    $replaced = preg_replace_callback(
+                        '/(?<!\\\\)\\\\((([LU])([^\\\\]*)((?<!\\\\)\\\\E)?)|(([lu])([^\\\\])))/',
+                        function($second_matches) {
+                            if ($second_matches[3] === 'L') {
+                                return strtolower($second_matches[4]);
+                            }
+                            if ($second_matches[3] === 'U') {
+                                return strtoupper($second_matches[4]);
+                            }
+                            if ($second_matches[7] === 'l') {
+                                return strtolower($second_matches[8]);
+                            }
+                            if ($second_matches[7] === 'u') {
+                                return strtoupper($second_matches[8]);
+                            }
+                            $second_matches[0];
+                        },
+                        $replaced
+                    );
+                    return $replaced;
+                },
+                $string,
+                $global ? -1 : 1
+            );
+        } else {
+            return preg_replace($search, $replace, $string, $global ? -1 : 1);
+        }
     }
 
     function add_token_tag($name) {
