@@ -1237,6 +1237,10 @@ sub _cb_user_provisioning {
         }
     );
 
+    # disable data api by default
+    require MT::CMS::Blog;
+    MT::CMS::Blog::save_data_api_settings( 'MT', $new_blog->id, 0 );
+
     if ($theme_id) {
         require MT::Theme;
         my $theme = MT::Theme->load($theme_id);
