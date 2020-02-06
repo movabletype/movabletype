@@ -37,6 +37,9 @@ sub test_data_api {
 
     my $app = MT::App::DataAPI->new;
 
+    $app->config->set(DataAPIDisableSite => '', 1);
+    $app->config->save_config;
+
     my $is_superuser;
     my $mock_author = Test::MockModule->new('MT::Author');
     $mock_author->mock( 'is_superuser', sub {$is_superuser} );
