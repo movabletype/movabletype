@@ -147,7 +147,8 @@
 
             content_css: '',
             body_class: '',
-            body_id: ''
+            body_id: '',
+            content_security_policy: "script-src 'none';",
         }
     });
 
@@ -204,8 +205,15 @@
                         attrs[attr.nodeName] = attr.nodeValue;
                     });
                     var editorElement = textarea.replaceWith(function(){
-                        return $('<div />', attrs).append(adapter.$editorElement.val());
+                        return $('<div />', attrs);
                     });
+                    var setup = config['setup'];
+                    config['setup'] = function(editor){
+                      if(setup) setup.apply(this, arguments);
+                      editor.on('init', function(){
+                        editor.setContent(adapter.$editorElement.val())
+                      });
+                    };
                     $('#' + adapter.id).css({
                         'height': 'auto',
                         'min-height': '350px',
