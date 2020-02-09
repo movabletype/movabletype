@@ -1431,7 +1431,7 @@ $.fn.extend({
             }
         });
         if ( opts.focus && error_elements.length ) {
-            error_elements[0].focus();
+            error_elements[0].trigger('focus');
         }
         if ( opts.afterTrigger ) {
             this.trigger('after-mt-valid');

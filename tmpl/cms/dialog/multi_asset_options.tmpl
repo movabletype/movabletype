@@ -144,7 +144,7 @@
       var json = JSON.stringify(options);
       var $form = jQuery('#asset-detail-form');
       $form.find('[name="prefs_json"]').val(json);
-      $form.submit();
+      $form.trigger('submit');
     }
     return false;
   });

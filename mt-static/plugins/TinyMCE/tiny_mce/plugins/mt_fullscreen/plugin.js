@@ -95,7 +95,7 @@
                     enabled = true;
                     ed.execCommand('mtFullScreenUpdateFitToWindow');
                     fitToWindow();
-                    $window.bind('resize.mt_fullscreen', fitToWindow);
+                    $window.on('resize.mt_fullscreen', fitToWindow);
                 }
                 else {
                     ed.execCommand('mtRestoreEditorSize', editorSize);

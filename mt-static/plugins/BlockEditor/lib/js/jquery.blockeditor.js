@@ -19,7 +19,7 @@
       (app.getIndirectMethod('setDirty'))();
     }
     $('.modal-blockeditor').modal('hide');
-    $('#blockeidor_menus-' + field_id + ' .nav-link[href=#prev]').trigger('click');
+    $('#blockeidor_menus-' + field_id + ' .nav-link[href="#prev"]').trigger('click');
   };
   var _init = function(data) {
     return this.each(function() {
@@ -28,7 +28,7 @@
       var editor_id = $this.attr('id');
       var block_field = $this;
       var add_field = $('#blockeditor_add-'+field_id);
-      add_field.removeAttr('hidden');
+      add_field.prop('hidden', false);
       var manager = new MT.BlockEditorFieldManager(editor_id);
       managers[editor_id] = manager;
 
@@ -105,7 +105,7 @@
           $('#blockeidor_menus-' + field_id).find('.nav-link').removeClass('active');
           $(this).addClass('active');
           if(mode == 'sort'){
-              jQuery('#editor-input-content-field-' + field_id + '-blockeditor').find('p:last-child').removeAttr('hidden');
+              jQuery('#editor-input-content-field-' + field_id + '-blockeditor').find('p:last-child').prop('hidden', false);
               jQuery('#blockeditor_add-' + field_id).attr('hidden', '');
               jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().attr('hidden', '');
               block_field.sortable({
@@ -146,8 +146,8 @@
               });
           } else {
               jQuery('#editor-input-content-field-' + field_id + '-blockeditor > p').attr('hidden', '');
-              jQuery('#blockeditor_add-' + field_id).removeAttr('hidden');
-              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().removeAttr('hidden');
+              jQuery('#blockeditor_add-' + field_id).prop('hidden', false);
+              jQuery('select[name=content-field-' + field_id + '_convert_breaks]').parent().prop('hidden', false);
           }
       });
 

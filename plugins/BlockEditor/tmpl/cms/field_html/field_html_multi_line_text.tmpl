@@ -165,8 +165,8 @@ div.group-container.multi_line_text-field-container>.form-group {
       jQuery('#' + target_id).parents('.editor-content').hide();
       </mt:unless>
       var field_id = target_id.replace(/editor-input-content-field-/,'');
-      jQuery('#blockeidor_menus-' + field_id + ' .nav-item').removeAttr('hidden');
-      jQuery('#editor-input-content-field-' + field_id + '-blockeditor').removeAttr('hidden');
+      jQuery('#blockeidor_menus-' + field_id + ' .nav-item').prop('hidden', false);
+      jQuery('#editor-input-content-field-' + field_id + '-blockeditor').prop('hidden', false);;
     })
   });
 
@@ -320,8 +320,8 @@ div.group-container.multi_line_text-field-container>.form-group {
           }
       }
       if(option == 'blockeditor'){
-        jQuery('#blockeidor_menus-' + field_id + ' .nav-item').removeAttr('hidden');
-        jQuery('#editor-input-content-field-' + field_id + '-blockeditor').removeAttr('hidden');
+        jQuery('#blockeidor_menus-' + field_id + ' .nav-item').prop('hidden', false);
+        jQuery('#editor-input-content-field-' + field_id + '-blockeditor').prop('hidden', false);
       } else {
         jQuery('#blockeidor_menus-' + field_id + ' .nav-item').attr('hidden','');
         jQuery('#editor-input-content-field-' + field_id + '-blockeditor').attr('hidden', '');

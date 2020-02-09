@@ -113,7 +113,7 @@ function focusable( element, isTabIndexNotNaN ) {
 }
 
 function visible( element ) {
-	return $.expr.filters.visible( element ) &&
+	return $.expr.pseudos.visible( element ) &&
 		!$( element ).parents().addBack().filter(function() {
 			return $.css( this, "visibility" ) === "hidden";
 		}).length;
@@ -4629,7 +4629,7 @@ $.extend(Datepicker.prototype, {
 			inst = this._getInst(obj),
 			isRTL = this._get(inst, "isRTL");
 
-		while (obj && (obj.type === "hidden" || obj.nodeType !== 1 || $.expr.filters.hidden(obj))) {
+		while (obj && (obj.type === "hidden" || obj.nodeType !== 1 || $.expr.pseudos.hidden(obj))) {
 			obj = obj[isRTL ? "previousSibling" : "nextSibling"];
 		}
 
