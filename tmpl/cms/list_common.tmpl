@@ -342,13 +342,13 @@ function showMessage( content, cls ){
 
 function loginAgain(fn) {
   jQuery(window)
-    .unbind('dialogReady.loginAgain')
-    .bind('dialogReady.loginAgain', function(){
+    .off('dialogReady.loginAgain')
+    .on('dialogReady.loginAgain', function(){
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
           .text('<__trans phrase="Continue" escape="js">')
-          .unbind()
+          .off()
           .click(function(){
             dialog.find('#msg-block').empty();
             jQuery.ajax({
@@ -525,7 +525,7 @@ function openFilterRenameField() {
     .val(text)
     .appendTo($label);
   $this.hide().next('.delete-link').hide();
-  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save" escape="js"></a>').bind('click', function() {
+  jQuery('<a href="#'+fid+'" class="tool-link save button"><__trans phrase="Save" escape="js"></a>').on('click', function() {
     var name = jQuery('#filter_'+fid).val();
     if (name == text) {
         // Not modified.
@@ -540,7 +540,7 @@ function openFilterRenameField() {
     return false;
   }).appendTo($handle);
   jQuery('<a href="#'+fid+'" class="tool-link cancel button"><__trans phrase="Cancel" escape="js"></a>')
-    .bind('click', cancelFilterRenameField )
+    .on('click', cancelFilterRenameField )
     .appendTo($handle);
   return false;
 }
@@ -1076,7 +1076,7 @@ function addSelectAll($node) {
   jQuery('<a href="#"></a>')
     .appendTo('.select-all td')
     .text(select_text)
-    .bind('click', function() {
+    .on('click', function() {
       var $input = jQuery('input[name=all_selected]');
       if ($input.val()) {
         $input.val('');
@@ -1196,7 +1196,7 @@ function filterItem(type, datepicker_off) {
     $item
       .find('.filter-date').each(function() {
           dateOption(jQuery(this));
-      }).bind('change', function() {
+      }).on('change', function() {
           dateOption(jQuery(this));
       }).end()
       .find('input.date').datepicker({
@@ -1231,7 +1231,7 @@ jQuery('#item_list').change(function() {
   jQuery('#item_list').attr('selectedIndex', 0);
   jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
     .insertAfter($item)
-    .bind('click', function() {
+    .on('click', function() {
       jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
       updateItemList();
       updateFilterSaveButtons();
@@ -1290,7 +1290,7 @@ jQuery('#apply').click(function() {
   return false;
 });
 
-jQuery('#<mt:var name="object_type">-listing-form').bind('submit.as_apply', function() {
+jQuery('#<mt:var name="object_type">-listing-form').on('submit.as_apply', function() {
   jQuery('#apply').click();
   return false;
 });
@@ -1437,7 +1437,7 @@ function addItems(items, op) {
         .find('.minus').hide().end();
       jQuery('<span class="close-link clickable remove icon-remove icon16 action-icon"><__trans phrase="Remove item" escape="js"></span>')
         .insertAfter($item)
-        .bind('click', function() {
+        .on('click', function() {
           jQuery(this).parent('.filteritem').find('input').mtUnvalidate().end().remove();
           updateItemList();
           updateFilterSaveButtons();
@@ -1632,7 +1632,7 @@ function doForMarked(formid, action, singlar, plural, phrase, xhr) {
   else if ( opt['dialog'] )
     jQuery.fn.mtDialog.open(ScriptURI + '?' + $form.serialize());
   else {
-    $form.unbind('submit.as_apply').submit();
+    $form.off('submit.as_apply').submit();
   }
 }
 
@@ -1678,7 +1678,7 @@ jQuery('#filter-detail').on('click','.filtertype .plus',function(){
 
   $clone.find('.filter-date').each(function() {
       dateOption(jQuery(this));
-  }).bind('change', function() {
+  }).on('change', function() {
       dateOption(jQuery(this));
   }).end()
   .find('input.date').datepicker({
@@ -1692,13 +1692,13 @@ jQuery('#filter-detail').on('click','.filtertype .plus',function(){
   $filteritem.find('.minus').show();
 });
 
-jQuery(window).bind('listReady', function(){
+jQuery(window).on('listReady', function(){
   jQuery('ul#disp_cols .sub:checkbox').each(function () {
     toggleSubField(this);
   });
 });
 
-jQuery(window).bind('listReady', function() {
+jQuery(window).on('listReady', function() {
     jQuery('a.action-link.mt-open-dialog').mtDialog();
 })
 

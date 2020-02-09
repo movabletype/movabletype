@@ -34,7 +34,7 @@ MT.Editor.Source = function(id) {
         });
 
     $.each(['mouseup', 'touchend'], function(index, event) {
-        $(document).bind(event, function() {
+        $(document).on(event, function() {
             if (focused) {
                 editor.saveSelection();
             }

@@ -928,7 +928,7 @@ function saveTemplatePrefs( sync ) {
         return false;
     });
     jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
-    jQuery(window).bind('pre_autosave', function(){
+    jQuery(window).on('pre_autosave', function(){
         syncEditor();
     });
 

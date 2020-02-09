@@ -94,7 +94,7 @@ jQuery(function($j) {
             $j('#djDebugToolbar').hide('fast');
             $j('#djDebugToolbarHandle').show();
             // Unbind keydown
-            $j(document).unbind('keydown.djDebug');
+            $j(document).off('keydown.djDebug');
             if (setCookie) {
                 $j.cookie(COOKIE_NAME, 'hide', {
                     path: '/',
@@ -104,7 +104,7 @@ jQuery(function($j) {
         },
         show_toolbar: function(animate) {
             // Set up keybindings
-            $j(document).bind('keydown.djDebug', function(e) {
+            $j(document).on('keydown.djDebug', function(e) {
                 if (e.keyCode == 27) {
                     $j.djDebug.close();
                 }
@@ -126,7 +126,7 @@ jQuery(function($j) {
             elem.html(elem.html() == uarr ? darr : uarr);
         }
     });
-    $j(document).bind('close.djDebug', function() {
+    $j(document).on('close.djDebug', function() {
         // If a sub-panel is open, close that
         if ($j('#djDebugWindow').is(':visible')) {
             $j('#djDebugWindow').hide();

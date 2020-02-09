@@ -136,11 +136,11 @@
                     });
 
                 function bindMousemoveToIframe() {
-                    $iframeWin.bind('mousemove' + ns, function() {
-                        $iframeWin.unbind('mousemove' + ns);
+                    $iframeWin.on('mousemove' + ns, function() {
+                        $iframeWin.off('mousemove' + ns);
                         $iframe.addClass('state-hover');
-                        $win.bind('mousemove' + ns, function() {
-                            $win.unbind('mousemove' + ns);
+                        $win.on('mousemove' + ns, function() {
+                            $win.off('mousemove' + ns);
                             $iframe.removeClass('state-hover');
                             bindMousemoveToIframe();
                         });
@@ -165,8 +165,8 @@
                     var ns    = '.tinymce_mt_button_activate';
                     var event = 'mouseup' + ns + ' touchend' + ns;
                     $(w)
-                        .unbind(event)
-                        .bind(event, function() {
+                        .off(event)
+                        .on(event, function() {
                             if (win[button]) {
                                 win[button].removeClass('psedo-active');
                                 win[button] = null;
@@ -566,7 +566,7 @@
             });
 
 
-            $(window).bind('dialogDisposed', function() {
+            $(window).on('dialogDisposed', function() {
                 if (savedBookmark) {
                     ed.selection.moveToBookmark(savedBookmark);
                 }
