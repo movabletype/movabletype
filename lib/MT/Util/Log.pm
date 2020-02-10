@@ -86,7 +86,7 @@ sub _find_module {
     $logger_module =~ s/^Log:://;
     $logger_module = 'MT::Util::Log::' . $logger_module;
     if ( !eval "require $logger_module; 1" ) {
-        warn $@ if $@ !~ /Can't locate/;;
+        warn $@ if $@ !~ /Can't locate|Attempt to reload/;;
         MT->log(
             {   class    => 'system',
                 category => 'logs',
