@@ -257,11 +257,33 @@ sub _connect_info_sqlite {
     );
 }
 
+
+sub mysql_charset {
+    my $self = shift;
+    return '' unless $self->driver eq 'mysql';
+    return $ENV{MT_TEST_MYSQL_CHARSET} || 'utf8';
+}
+
+sub mysql_collation {
+    my $self = shift;
+    return '' unless $self->driver eq 'mysql';
+
+    ## -5.7:     utf8mb4_general_ci (sushi-beer)
+    ## 8.0-:     utf8mb4_9000_ai_ci (haha-papa/byoin-biyoin)
+    ## stricter: utf8mb4_9000_as_cs
+    ## stricter: utf8mb4_bin
+    my $collation = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    if ( $self->mysql_charset eq 'utf8mb4' and $collation =~ /^utf8_/ ) {
+        $collation =~ s/^utf8_/utf8mb4_/;
+    }
+    return $collation;
+}
+
 sub _prepare_mysql_database {
     my ( $self, $dbh ) = @_;
     local $dbh->{RaiseError} = 1;
-    my $character_set = $ENV{MT_TEST_MYSQL_CHARSET}   || 'utf8';
-    my $collation     = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    my $character_set = $self->mysql_charset;
+    my $collation     = $self->mysql_collation;
     my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
