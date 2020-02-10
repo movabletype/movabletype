@@ -2458,6 +2458,8 @@ sub set_default_tmpl_params {
         if ( my $author = $mt->user ) {
             $param->{author_id}   = $author->id;
             $param->{author_name} = $author->name;
+
+            delete $param->{mt_debug} unless $author->is_superuser;
         }
         ## We do this in load_tmpl because show_error and login don't call
         ## build_page; so we need to set these variables here.
