@@ -67,6 +67,8 @@ sub driver {
 
 sub _driver { $ENV{MT_TEST_BACKEND} || 'mysql' }
 
+sub mt_home { $MT_HOME }
+
 sub root {
     my $self = shift;
     $self->{root};
