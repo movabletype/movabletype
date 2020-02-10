@@ -230,6 +230,13 @@ sub _connect_info_mysql {
         }
         $self->{dsn}
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
+
+        if ( $ENV{TEST_VERBOSE} ) {
+            for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
+                my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
+                Test::More::note join ': ', @$_ for @$rows;
+            }
+        }
     }
     else {
         $self->{dsn}
