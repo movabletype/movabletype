@@ -460,7 +460,7 @@ sub _create_table_sql_for_old_mysql {
 sub prepare_fixture {
     my $self = shift;
 
-    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG MYSQL_CHARSET MYSQL_COLLATION / ) {
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG / ) {
         $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
         note "Fixture is ignored because of an environmental variable";
     }
