@@ -2444,55 +2444,6 @@ sub set_default_tmpl_params {
     my ($tmpl) = @_;
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
-    if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        $param->{mt_svn_revision} = $mt->_svn_revision();
-        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
-            $param->{mt_headers} = $mt->{apache}->headers_in();
-        }
-        else {
-            $param->{mt_headers} = \%ENV;
-        }
-        unless ( $mt->{cookies} ) {
-            if ( $ENV{MOD_PERL} ) {
-                eval { require Apache::Cookie };
-                $mt->{cookies} = Apache::Cookie->fetch;
-            }
-            else {
-                eval { require CGI::Cookie };
-                $mt->{cookies} = CGI::Cookie->fetch;
-            }
-        }
-        if ( $mt->{cookies} ) {
-            $param->{mt_cookies} = $mt->{cookies};
-        }
-        my %params = $mt->param_hash;
-        $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} & 4 ) {
-            if ( my $profiler = Data::ObjectDriver->profiler ) {
-                my $stats = $profiler->statistics;
-                $param->{mt_sql_profile}{statistics} = $stats;
-                $param->{mt_sql_profile}{total_queries}
-                    = $stats->{'DBI:total_queries'};
-
-                my $freq = $profiler->query_frequency;
-                my @cache_types;
-                foreach ( keys %$freq ) {
-                    my ( $cache_type, $memcache, $method )
-                        = $_ =~ /^(.+)CACHE(D?)_(.+)\s\?/;
-                    next unless $cache_type;
-                    push @cache_types,
-                        $cache_type . ':query_' . lc($method),
-                        delete $freq->{$_};
-                }
-                $param->{mt_sql_profile}{query_frequency} = $freq;
-                $param->{mt_cache_profile} = [];
-                while ( my $k = shift(@cache_types) ) {
-                    push @{ $param->{mt_cache_profile} }, $k,
-                        shift(@cache_types);
-                }
-            }
-        }
-    }
     $param->{mt_beta}         = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
     $param->{static_uri}      = $mt->static_path;
     $param->{mt_version}      = MT->version_number;
