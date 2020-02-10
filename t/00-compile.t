@@ -123,10 +123,6 @@ use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
 
-# Debug
-use_ok('MT::CMS::Debug');
-use_ok('MT::Debug::GitInfo');
-
 # MT7
 use_ok('MT::App::Search::ContentData');
 use_ok('MT::ArchiveType::ContentType');
