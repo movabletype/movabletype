@@ -56,7 +56,7 @@ script:
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ -z $PERL_VERSION ]; then $TEST_COMMAND; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.30" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -t -v $PWD:/mt -w /mt movabletype/test:fedora bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.30" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -e MT_TEST_MYSQL_CHARSET=utf8mb4 -t -v $PWD:/mt -w /mt movabletype/test:fedora bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:
