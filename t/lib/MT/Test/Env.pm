@@ -312,10 +312,27 @@ sub my_cnf {
 
     my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
 
-    my ( $version, $major_version )
-        = $verbose_help =~ /\A.*Ver (([0-9]+)\.[0-9]+\.[0-9]+)/;
+    my ( $version, $major_version, $minor_version )
+        = $verbose_help =~ /\A.*Ver (([0-9]+)\.([0-9]+)\.[0-9]+)/;
 
     my $is_maria = $verbose_help =~ /\A.*MariaDB/;
+
+    # Convert MariaDB version into MySQL version for simplicity
+    # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
+    if ($is_maria) {
+        $major_version = 5;
+        if ( $major_version == 10 ) {
+            if ( $minor_version < 2 ) {
+                $minor_version = 6;
+            } elsif ( $minor_version < 5 ) {
+                $minor_version = 7;
+            }
+        } elsif ( $major_version == 5 ) {  ## just in case
+            if ( $minor_version < 5 ) {
+                $minor_version = 1;
+            }
+        }
+    }
 
     if ( !$is_maria && $major_version >= 8 ) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
