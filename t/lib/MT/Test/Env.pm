@@ -433,6 +433,22 @@ sub _fixture_file {
     return "$id.json";
 }
 
+sub fix_mysql_create_table_sql {
+    my $class = shift;
+    return unless $class->mysql_charset eq 'utf8mb4';
+
+    no warnings 'redefine';
+    *MT::ObjectDriver::DDL::mysql::create_table_sql = \&_create_table_sql_for_old_mysql;
+}
+
+sub _create_table_sql_for_old_mysql {
+    my $sql = MT::ObjectDriver::DDL::create_table_sql(@_);
+    $sql .= " ENGINE=InnoDB";
+    $sql .= " DEFAULT CHARACTER SET=" . ( $ENV{MT_TEST_MYSQL_CHARSET} || 'utf8mb4' );
+    $sql .= " ROW_FORMAT=" . ( $ENV{MT_TEST_MYSQL_ROW_FORMAT} || 'DYNAMIC' );
+    $sql;
+}
+
 sub prepare_fixture {
     my $self = shift;
 
