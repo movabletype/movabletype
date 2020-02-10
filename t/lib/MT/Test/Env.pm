@@ -851,6 +851,10 @@ sub _tweak_schema {
 sub test_schema {
     my $self = shift;
 
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG MYSQL_CHARSET MYSQL_COLLATION / ) {
+        plan skip_all => "Fixture is ignored because of an environmental variable";
+    }
+
     $self->_get_id_from_caller;
     $self->_set_fixture_dirs;
 
