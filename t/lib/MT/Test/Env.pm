@@ -496,6 +496,7 @@ sub prepare_fixture {
         $self->load_schema_and_fixture($id) or $code->();
     }
     else {
+        $self->fix_mysql_create_table_sql;
         $code->();
     }
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
