@@ -47,7 +47,7 @@ sub new {
     my $class = shift;
     my %args  = ( @_ == 1 ) ? ( app_class => shift ) : @_;
 
-    $args{app_class} ||= $ENV{MT_APP} || 'MT::App';
+    $args{app_class} ||= $ENV{MT_APP} || 'MT::App::CMS';
 
     $class->init( $args{app_class} );
 
