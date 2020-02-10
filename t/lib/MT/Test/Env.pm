@@ -288,7 +288,8 @@ sub mysql_collation {
 
 sub _prepare_mysql_database {
     my ( $self, $dbh ) = @_;
-    local $dbh->{RaiseError} = 1;
+    local $dbh->{RaiseError}         = 1;
+    local $dbh->{ShowErrorStatement} = 1;
     my $character_set = $self->mysql_charset;
     my $collation     = $self->mysql_collation;
     my $sql           = <<"END_OF_SQL";
