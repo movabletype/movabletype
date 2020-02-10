@@ -164,6 +164,18 @@ sub post_ok {
     ok $res->is_success, "post succeeded";
 }
 
+sub post_form_ok {
+    my $self = shift;
+    my ( $form_id, $params ) = ref $_[0] ? ( undef, @_ ) : @_;
+    my $form = $self->form($form_id);
+    ok $form, "found form" or return;
+
+    $form->param( $_ => $params->{$_} ) for keys %$params;
+
+    my $res = $self->post( $form->click );
+    ok $res->is_success, "post succeeded";
+}
+
 sub forms {
     my $self = shift;
     HTML::Form->parse(
@@ -176,6 +188,7 @@ sub forms {
 sub form {
     my ( $self, $id ) = @_;
     my @forms = $self->forms;
+    return $forms[0] unless $id;
     my ($form) = grep { ( $_->attr('id') // '' ) eq $id } @forms;
     $form;
 }
