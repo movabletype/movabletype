@@ -46,7 +46,7 @@ sub new {
 
     my $self = bless {
         root   => $root,
-        driver => $ENV{MT_TEST_BACKEND} || 'mysql',
+        driver => _driver(),
         config => \%extra_config,
     }, $class;
 
@@ -59,6 +59,13 @@ sub config_file {
     my $self = shift;
     File::Spec->catfile( $self->{root}, 'mt-config.cgi' );
 }
+
+sub driver {
+    my $self = shift;
+    ref $self ? $self->{driver} : _driver();
+}
+
+sub _driver { $ENV{MT_TEST_BACKEND} || 'mysql' }
 
 sub root {
     my $self = shift;
