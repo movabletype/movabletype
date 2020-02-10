@@ -334,8 +334,20 @@ sub my_cnf {
         }
     }
 
+    # MySQL 8.0+
     if ( !$is_maria && $major_version >= 8 ) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+
+    my $charset = $class->mysql_charset;
+    if ( $charset eq 'utf8mb4' ) {
+        if ( $major_version < 7 and $minor_version < 7 ) {
+            $cnf{innodb_file_format}     = 'Barracuda';
+            $cnf{innodb_file_per_table}  = 1;
+            $cnf{innodb_large_prefix}    = 1;
+        }
+        $cnf{character_set_server} = $charset;
+        $cnf{collation_server}     = $class->mysql_collation;
     }
     \%cnf;
 }
