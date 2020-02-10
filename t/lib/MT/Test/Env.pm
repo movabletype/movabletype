@@ -658,12 +658,21 @@ sub save_schema {
     my $self = shift;
 
     my $force;
+    my $guard;
     if ( !ref $self ) {
         $self = $self->new;
+        require Test::mysqld;
+        my $mysqld = Test::mysqld->new( my_cnf => $self->my_cnf )
+            or die $Test::mysqld::errstr;
+        local $ENV{PERL_TEST_MYSQLPOOL_DSN} = $mysqld->dsn;
+        $self->prepare($mysqld);
         local $ENV{MT_CONFIG} = $self->config_file;
+        $self->write_config;
+        $self->fix_mysql_create_table_sql;
         require MT::Test;
         MT::Test->init_db;
         $force = 1;
+        $guard = $mysqld;
     }
 
     $self->_set_fixture_dirs;
@@ -719,7 +728,9 @@ sub _sql_translator_filter_mysql {
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
             if ( $key eq 'CHARACTER SET' ) {
-                $options->[$i]{$key} = 'utf8';
+                unless ( $options->[$i]{$key} =~ /utf8/ ) {
+                    $options->[$i]{$key} = 'utf8';
+                }
                 $saw_charset = 1;
             }
             if ( $key eq 'ENGINE' ) {
