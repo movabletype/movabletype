@@ -10,6 +10,7 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use HTML::Form;
+use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Web::Query;
 
@@ -177,6 +178,17 @@ sub form {
     my @forms = $self->forms;
     my ($form) = grep { ( $_->attr('id') // '' ) eq $id } @forms;
     $form;
+}
+
+sub links {
+    my $self = shift;
+    my @links;
+    my $p = HTML::LinkExtor->new(sub {
+        my ($tag, %attr) = @_;
+        push @links, $attr{href} if $attr{href};
+    });
+    $p->parse($self->content);
+    @links;
 }
 
 my %app_params_mapping = (
