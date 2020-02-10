@@ -16,6 +16,8 @@ use MT::Test qw( :app :newdb );
 use MT::Test::Permission;
 use MT::Theme;
 
+$test_env->fix_mysql_create_table_sql;
+
 my ( $app, $out );
 
 subtest 'Upgrade from MT4 to MT6' => sub {
