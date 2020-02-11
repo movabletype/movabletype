@@ -58,7 +58,7 @@
 
                 w = tinymce.InlineWindowManager.prototype.open.apply(this, [f, p]);
 
-                $('#' + w.iframeElement.id).load(function() {
+                $('#' + w.iframeElement.id).on('load', function() {
                     if (f.body_id) {
                         $(this).contents().find('body').attr('id', f.body_id);
                     }

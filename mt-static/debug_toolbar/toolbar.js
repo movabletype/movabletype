@@ -7,7 +7,7 @@ jQuery(function($j) {
     $j.extend($j.djDebug, {
         init: function() {
             var current = null;
-            $j('#djDebugPanelList li a').click(function() {
+            $j('#djDebugPanelList li a').on('click', function() {
                 if (!this.className) {
                     return false;
                 }
@@ -25,14 +25,14 @@ jQuery(function($j) {
                 }
                 return false;
             });
-            $j('#djDebug a.close').click(function() {
+            $j('#djDebug a.close').on('click', function() {
                 $j(document).trigger('close.djDebug');
                 $j('#djDebugToolbar li').removeClass('active');
                 return false;
             });
-            $j('#djDebug a.remoteCall').click(function() {
+            $j('#djDebug a.remoteCall').on('click', function() {
                 $j('#djDebugWindow').load(this.href, {}, function() {
-                    $j('#djDebugWindow a.back').click(function() {
+                    $j('#djDebugWindow a.back').on('click', function() {
                         $j(this).parent().parent().hide();
                         return false;
                     });
@@ -40,24 +40,24 @@ jQuery(function($j) {
                 $j('#djDebugWindow').show();
                 return false;
             });
-            $j('#djDebugTemplatePanel a.djTemplateShowContext').click(function() {
+            $j('#djDebugTemplatePanel a.djTemplateShowContext').on('click', function() {
                 $j.djDebug.toggle_arrow($j(this).children('.toggleArrow'))
                 $j.djDebug.toggle_content($j(this).parent().next());
                 return false;
             });
-            $j('#djDebugSQLPanel a.djSQLShowStacktrace').click(function() {
+            $j('#djDebugSQLPanel a.djSQLShowStacktrace').on('click', function() {
                 $j.djDebug.toggle_content($j(this).parent().next());
                 return false;
             });
-            $j('#djDebugCachePanel a.djSQLShowStacktrace').click(function() {
+            $j('#djDebugCachePanel a.djSQLShowStacktrace').on('click', function() {
                 $j.djDebug.toggle_content($j(this).parent().next());
                 return false;
             });
-            $j('#djHideToolBarButton').click(function() {
+            $j('#djHideToolBarButton').on('click', function() {
                 $j.djDebug.hide_toolbar(true);
                 return false;
             });
-            $j('#djShowToolBarButton').click(function() {
+            $j('#djShowToolBarButton').on('click', function() {
                 $j.djDebug.show_toolbar();
                 return false;
             });

@@ -99,15 +99,15 @@ if (window.top && (window.top.location != window.location)) {
   } else {
     window.top.location.href = '<mt:var name="script_url">';
   }
-  jQuery('#sign-in-button').click(function(){
-    jQuery('#username').removeAttr('disabled');
+  jQuery('#sign-in-button').on('click', function(){
+    jQuery('#username').prop('disabled', false);
   });
 }
 
 jQuery(function() {
-    jQuery('#username').focus();
-    if (jQuery('#username').focus().val() != '') {
-        jQuery('#password').focus();
+    jQuery('#username').trigger('focus');
+    if (jQuery('#username').trigger('focus').val() != '') {
+        jQuery('#password').trigger('focus');
     }
 });
 /* ]]> */

@@ -114,7 +114,7 @@ jQuery.mtValidateAddRules({
 
 var editor_manager = new MT.EditorManager('text');
 
-$('#edit_formatted_text').submit(function () {
+$('#edit_formatted_text').on('submit', function () {
     editor_manager.currentEditor.save();
     if ( !$(this).find(':input').mtValidate('simple')) {
         return false;

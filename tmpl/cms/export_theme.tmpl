@@ -168,7 +168,7 @@ jQuery(function() {
         '#theme_name': '<__trans phrase="You must set Theme Name." escape="singlequotes">',
         '#theme_version': '<__trans phrase="Theme version may only contain letters, numbers, and the dash or underscore character." escape="singlequotes">'
     });
-    jQuery('#theme_settings').submit( function() {
+    jQuery('#theme_settings').on('submit', function() {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });

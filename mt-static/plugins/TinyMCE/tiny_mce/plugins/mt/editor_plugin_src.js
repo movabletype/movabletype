@@ -128,10 +128,10 @@
                 var ns          = '.tinymce_mt_iframe_status_' + ed.id;
 
                 $iframeWin
-                    .focus(function() {
+                    .on('focus', function() {
                         $iframe.addClass('state-focus');
                     })
-                    .blur(function() {
+                    .on('blur', function() {
                         $iframe.removeClass('state-focus');
                     });
 
@@ -156,7 +156,7 @@
                 var button   = '$TinyMCEMTButtonActive';
                 var $c       = $(ed.getContainer());
                 var selector = '.mceButton, .mceListBoxEnabled, .mceSplitButtonEnabled a';
-                $c.find(selector).mousedown(function() {
+                $c.find(selector).on('mousedown', function() {
                     win[button] = $(this).addClass('psedo-active');
                 });
 
@@ -273,7 +273,7 @@
             function setPopupWindowLoadedHook(callback) {
                 $.each(ed.windowManager.windows, function(k, w) {
                     var iframe  = w.iframeElement;
-                    $('#' + iframe.id).load(function() {
+                    $('#' + iframe.id).on('load', function() {
                         var win = this.contentWindow;
                         var context = {
                             '$contents': $(this).contents(),
@@ -284,7 +284,7 @@
 
                             //Move focus if webkit so that navigation back will read the item.
                             if (tinymce.isWebKit) {
-                                $('#convert_breaks').focus();
+                                $('#convert_breaks').trigger('focus');
                             }
                             proxies.source.focus();
                         });
@@ -312,7 +312,7 @@
                 c['$contents']
                     .find('form')
                     .attr('onsubmit', '')
-                    .submit(onSubmit);
+                    .on('submit', onSubmit);
 
                 if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
                     c['$contents']
@@ -343,7 +343,7 @@
                     c['$contents']
                         .find('form')
                         .attr('onsubmit', '')
-                        .submit(onSubmit);
+                        .on('submit', onSubmit);
                 }, 0);
             }
 

@@ -130,7 +130,7 @@ jQuery('#tag-table').on('click','a.edit-tag',function(){
           .attr('class', 'button')
           .text('<__trans phrase="Rename">')
           .button()
-          .click( function(){
+          .on('click', function(){
             var newname = jQuery('input.newname').val();
             submitEdit( id, newname, name );
             return false;

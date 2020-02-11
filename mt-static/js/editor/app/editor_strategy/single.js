@@ -33,12 +33,12 @@ $.extend(ES.Single.prototype, ES.prototype, {
             var content = app.editor.getContent();
             target.val(content);
             target.attr('name', strategy.dummy_textarea.attr('name'));
-            strategy.dummy_textarea.removeAttr('name');
+            strategy.dummy_textarea.prop('name', false);
         }
 
         target = $('#' + id);
         this.dummy_textarea.attr('name', target.attr('name'));
-        target.removeAttr('name');
+        target.prop('name', false);
         app.editor.ignoreSetDirty(function() {
             app.editor.setContent(target.val());
             app.editor.clearDirty();

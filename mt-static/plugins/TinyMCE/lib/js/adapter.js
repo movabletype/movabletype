@@ -59,7 +59,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                     $contents.find('a[onmouseover^=showColor]')
                         .each(function() {
                             var callback = this.onmouseover;
-                            $(this).click(function() {
+                            $(this).on('click', function() {
                                 callback();
                                 return false;
                             });

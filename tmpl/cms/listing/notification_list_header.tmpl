@@ -78,7 +78,7 @@
             note_links[i].hide();
             note_fields[i].show();
         }
-        $note_email.focus();
+        $note_email.trigger('focus');
         $note_email.select();
         return false;
     }
@@ -149,7 +149,7 @@
     function setCreateMode () {
         jQuery('#create-inline-notification').show();
         jQuery('#url').val('');
-        jQuery('#email').val('').focus();
+        jQuery('#email').val('').trigger('focus');
         jQuery('#content-actions').hide();
     }
 
@@ -161,7 +161,7 @@
         current_edit = 0;
     }
 
-    jQuery('#submit-new-contact').click(function() {
+    jQuery('#submit-new-contact').on('click', function() {
         if ( !jQuery('#create-inline-notification input').mtValidate('simple') )
             return false;
         renderList({
@@ -176,12 +176,12 @@
         return false;
     });
 
-    jQuery('#create-inline-notification button.mt-cancel-action').click(function() {
+    jQuery('#create-inline-notification button.mt-cancel-action').on('click', function() {
         cancelCreateMode();
         return false;
     });
 
-    jQuery('#action-create-contact').click( function() {
+    jQuery('#action-create-contact').on('click', function() {
         setCreateMode();
         return false;
     });

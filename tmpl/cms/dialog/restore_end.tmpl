@@ -106,10 +106,10 @@ function stopTimer() {
 /* <![CDATA[ */
 App.bootstrapInline( false );
 jQuery(function() {
-    jQuery('button.mt-close-dialog-error').click(function() {
+    jQuery('button.mt-close-dialog-error').on('click', function() {
         parent.jQuery.fn.mtDialog.close('<mt:var name="error_url">');
     });
-    jQuery('button.mt-close-dialog-url').click(function() {
+    jQuery('button.mt-close-dialog-url').on('click', function() {
         parent.jQuery.fn.mtDialog.close('<mt:var name="ok_url">');
     });
 });

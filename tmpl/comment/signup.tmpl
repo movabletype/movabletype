@@ -165,7 +165,7 @@
         "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
     });
 
-    jQuery('#signup_form').submit(function(eventObject) {
+    jQuery('#signup_form').on('submit', function(eventObject) {
         if ( !jQuery("#password").mtValidate('simple') ) return false;
         if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
     });
