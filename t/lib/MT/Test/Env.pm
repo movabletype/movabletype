@@ -785,7 +785,14 @@ sub save_fixture {
     my $root = $self->{root};
     my %data;
     for my $table (@tables) {
-        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table",
+        my $order_by = '';
+        if ( $driver eq 'mysql' ) {
+            my $indices = $dbh->selectall_arrayref( "SHOW INDEX IN $table", { Slice => +{} } );
+            if (@$indices) {
+                $order_by = ' ORDER BY ' . $indices->[0]{Column_name};
+            }
+        }
+        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table$order_by",
             { Slice => +{} } );
         next unless @{ $rows || [] };
         my @keys = sort keys %{ $rows->[0] };
