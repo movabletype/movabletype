@@ -5389,25 +5389,25 @@ Product;Consumer;
 --- template
 <MTPages id="20"><MTPageAssets sort_by="file_name" sort_order="descend" lastn="2"><MTAssetFileName>;</MTPageAssets></MTPages>
 --- expected
-test_3.jpg;test_2.jpg;
+test3.jpg;test2.jpg;
 
 === test 850
 --- template
 <MTPages id="20"><MTPageAssets sort_by="file_name" sort_order="ascend" lastn="2"><MTAssetFileName>;</MTPageAssets></MTPages>
 --- expected
-test_2.jpg;test_3.jpg;
+test2.jpg;test3.jpg;
 
 === test 851
 --- template
 <MTEntries id="1"><MTEntryAssets sort_by="file_name" sort_order="descend" lastn="2"><MTAssetFileName>;</MTEntryAssets></MTEntries>
 --- expected
-test_3.jpg;test_2.jpg;
+test3.jpg;test2.jpg;
 
 === test 852
 --- template
 <MTEntries id="1"><MTEntryAssets sort_by="file_name" sort_order="ascend" lastn="2"><MTAssetFileName>;</MTEntryAssets></MTEntries>
 --- expected
-test_2.jpg;test_3.jpg;
+test2.jpg;test3.jpg;
 
 === test 853
 --- template
