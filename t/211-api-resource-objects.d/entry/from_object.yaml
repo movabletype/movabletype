@@ -379,35 +379,35 @@
         id: 5
         description: This is a test photo.
         label: Image photo
-        filename: test_1.jpg
+        filename: test1.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_1.jpg
+        url: http://narnia.na/nana/images/test1.jpg
       -
         id: 6
         description: This is a test photo.
         label: Image photo
-        filename: test_2.jpg
+        filename: test2.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_2.jpg
+        url: http://narnia.na/nana/images/test2.jpg
       -
         id: 7
         description: This is a test photo.
         label: Image photo
-        filename: test_3.jpg
+        filename: test3.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_3.jpg
+        url: http://narnia.na/nana/images/test3.jpg
     tags:
       - grandpa
       - rain
@@ -453,35 +453,35 @@
         id: 5
         description: This is a test photo.
         label: Image photo
-        filename: test_1.jpg
+        filename: test1.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_1.jpg
+        url: http://narnia.na/nana/images/test1.jpg
       -
         id: 6
         description: This is a test photo.
         label: Image photo
-        filename: test_2.jpg
+        filename: test2.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_2.jpg
+        url: http://narnia.na/nana/images/test2.jpg
       -
         id: 7
         description: This is a test photo.
         label: Image photo
-        filename: test_3.jpg
+        filename: test3.jpg
         mimeType: image/jpeg
         tags:
           - alpha
           - beta
           - gamma
-        url: http://narnia.na/nana/images/test_3.jpg
+        url: http://narnia.na/nana/images/test3.jpg
     tags:
       - grandpa
       - rain
