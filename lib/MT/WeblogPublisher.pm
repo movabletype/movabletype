@@ -404,6 +404,7 @@ sub remove_fileinfo {
         }
     );
 
+    require MT::Util::Log;
     MT::Util::Log::init();
     for my $f (@finfo) {
         $f->remove;
@@ -1299,6 +1300,7 @@ sub rebuild_file {
         else {
 
          # if the shoe don't fit, remove all shoes and create the perfect shoe
+            require MT::Util::Log;
             MT::Util::Log::init();
             foreach (@finfos) {
                 $_->remove();
@@ -1348,6 +1350,7 @@ sub rebuild_file {
         )
     {
         $finfo->remove();
+        require MT::Util::Log;
         MT::Util::Log::init();
         MT::Util::Log->info( ' Removed ' . $finfo->file_path );
         if ( MT->config->DeleteFilesAtRebuild ) {
