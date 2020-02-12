@@ -1153,10 +1153,10 @@ It\'s a hard rain\'s a-gonna fall',
 
     $asset = new $img_pkg;
     $asset->blog_id(1);
-    $asset->url('http://narnia.na/nana/images/test_1.jpg');
+    $asset->url('http://narnia.na/nana/images/test1.jpg');
     $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_1.jpg' ) );
-    $asset->file_name('test_1.jpg');
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test1.jpg' ) );
+    $asset->file_name('test1.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
     $asset->image_height(480);
@@ -1172,10 +1172,10 @@ It\'s a hard rain\'s a-gonna fall',
 
     $asset = new $img_pkg;
     $asset->blog_id(1);
-    $asset->url('http://narnia.na/nana/images/test_2.jpg');
+    $asset->url('http://narnia.na/nana/images/test2.jpg');
     $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_2.jpg' ) );
-    $asset->file_name('test_2.jpg');
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test2.jpg' ) );
+    $asset->file_name('test2.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
     $asset->image_height(480);
@@ -1191,10 +1191,10 @@ It\'s a hard rain\'s a-gonna fall',
 
     $asset = new $img_pkg;
     $asset->blog_id(1);
-    $asset->url('http://narnia.na/nana/images/test_3.jpg');
+    $asset->url('http://narnia.na/nana/images/test3.jpg');
     $asset->file_path(
-        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test_3.jpg' ) );
-    $asset->file_name('test_3.jpg');
+        File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test3.jpg' ) );
+    $asset->file_name('test3.jpg');
     $asset->file_ext('jpg');
     $asset->image_width(640);
     $asset->image_height(480);
