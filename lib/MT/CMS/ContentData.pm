@@ -700,7 +700,7 @@ sub save {
     my ( $previous_old, $next_old );
 
     # TODO: permission check
-    if ($ao_d) {
+    if ( $ao_d || $ao_t ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         my $ts    = MT::Util::valid_date_time2ts($ao);
