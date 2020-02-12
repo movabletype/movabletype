@@ -12,6 +12,7 @@ env:
     - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
     - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
     - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
     - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - PERL_VERSION="5.28" TEST_COMMAND="phpunit && make test-php-lint"
 
@@ -48,6 +49,9 @@ env:
     - PERL_VERSION="5.30" TEST_COMMAND="phpunit && make test-php-lint"
 
 script:
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.28" ] && [ -z $USE_SELENIUM ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.28" ] && [ -n $USE_SELENIUM ]; then TEST_IMAGE=movabletype/test:buster docker-compose -f t/selenium/docker-compose.yml run test ; fi
+
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.28" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "$TEST_COMMAND" ; fi
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.20" ] && ([ $TRAVIS_BRANCH = "master" ] || [ $TRAVIS_BRANCH = "develop" ] || [[ $TRAVIS_BRANCH =~ ^support- ]] || [[ $TRAVIS_BRANCH =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:jessie bash -c "$TEST_COMMAND" ; fi
