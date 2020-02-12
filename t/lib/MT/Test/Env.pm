@@ -816,6 +816,9 @@ sub save_fixture {
                     elsif ( $key eq 'author_password' ) {
                         $value = '__AUTHOR_PASS__';
                     }
+                    elsif ( $key =~ /^(?:role|permission)_permissions$/ ) {
+                        $value = join ',', sort split ',', $value;
+                    }
                     else {
                         $value =~ s/^$root/__TEST_ROOT__/;
                         $value =~ s/^$MT_HOME/__MT_HOME__/;
