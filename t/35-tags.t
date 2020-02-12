@@ -5163,9 +5163,9 @@ entry
 
 === test 829
 --- template
-<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>
+<MTAssets blog_ids='all' sort_by='id'><MTAssetID></MTAssets>
 --- expected
-0011111
+7654321
 
 === test 830
 --- template
