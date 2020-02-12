@@ -12,6 +12,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+$test_env->prepare_fixture('db_data');
+
 use MT::Test::DataAPI;
 
 use MT::App::DataAPI;
