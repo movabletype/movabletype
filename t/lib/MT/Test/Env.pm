@@ -142,24 +142,41 @@ sub write_config {
 
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
-    my $root = $self->{root};
+    $self->{_config} = \%config;
+
+    $self->_write_config;
+}
+
+sub _write_config {
+    my $self = shift;
+
+    my $config = $self->{_config};
+    my $root   = $self->{root};
     open my $fh, '>', $self->config_file or plan skip_all => $!;
-    for my $key ( sort keys %config ) {
-        if ( ref $config{$key} eq 'ARRAY' ) {
-            for my $value ( @{ $config{$key} } ) {
+    for my $key ( sort keys %$config ) {
+        if ( ref $config->{$key} eq 'ARRAY' ) {
+            for my $value ( @{ $config->{$key} } ) {
                 $value =~ s/\bMT_HOME\b/$MT_HOME/;
                 $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
                 print $fh "$key $value\n";
             }
         }
         else {
-            my $value = $config{$key};
+            my $value = $config->{$key};
             $value =~ s/\bMT_HOME\b/$MT_HOME/;
             $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
             print $fh "$key $value\n";
         }
     }
     close $fh;
+}
+
+sub update_config {
+    my ( $self, %extra_config ) = @_;
+    for my $key ( keys %extra_config ) {
+        $self->{_config}{$key} = $extra_config{$key};
+    }
+    $self->_write_config;
 }
 
 sub save_file {
