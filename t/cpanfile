@@ -100,6 +100,7 @@ on 'test' => sub {
     requires 'Path::Tiny';
     requires 'PHP::Serialization';
     requires 'pQuery';
+    requires 'Selenium::Remote::Driver', '!=1.36';
     requires 'SQL::Maker';
     requires 'SQL::Translator';
     requires 'String::CamelCase';
