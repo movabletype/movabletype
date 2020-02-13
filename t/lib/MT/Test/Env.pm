@@ -584,9 +584,10 @@ sub prepare_fixture {
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
 }
 
-sub _slurp {
-    my $file = shift;
+sub slurp {
+    my ( $self, $file, $binmode ) = @_;
     open my $fh, '<', $file or die "$file: $!";
+    binmode $fh, $binmode if $binmode;
     local $/;
     <$fh>;
 }
@@ -643,8 +644,8 @@ sub load_schema_and_fixture {
     # Tentative password; update it later when necessary
     my $author_pass
         = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
-    my $schema  = _slurp($schema_file)  or return;
-    my $fixture = _slurp($fixture_file) or return;
+    my $schema  = $self->slurp($schema_file)  or return;
+    my $fixture = $self->slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
@@ -933,7 +934,7 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = _slurp($schema_file);
+    my $saved_schema = $self->slurp($schema_file);
 
     my $generated_schema = $self->_generate_schema;
 
