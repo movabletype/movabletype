@@ -310,10 +310,10 @@ sub page_title {
     _trim( $self->wq_find("#page-title")->text );
 }
 
-sub alert_text {
+sub message_text {
     my $self = shift;
-    my $alert_class = MT->version_number >= 7 ? '.alert' : '.msg';
-    _trim( $self->wq_find($alert_class)->text );
+    my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
+    _trim( $self->wq_find($message_class)->text );
 }
 
 sub generic_error {
