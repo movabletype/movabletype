@@ -249,10 +249,7 @@ sub _connect_info_mysql {
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
 
         if ( $ENV{TEST_VERBOSE} ) {
-            for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
-                my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
-                Test::More::note join ': ', @$_ for @$rows;
-            }
+            $self->show_mysql_db_variables;
         }
     }
     else {
@@ -281,6 +278,46 @@ sub _connect_info_sqlite {
     );
 }
 
+sub skip_unless_mysql_supports_utf8mb4 {
+    my $self = shift;
+    my $db_charset = $self->mysql_db_charset;
+    if ( $db_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 database: $db_charset";
+    }
+    my $client_charset = $self->mysql_client_charset;
+    if ( $client_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 client: $client_charset";
+    }
+}
+
+sub show_mysql_db_variables {
+    my $self = shift;
+    return unless $self->driver eq 'mysql';
+
+    my $dbh = $self->dbh;
+    for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
+        my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
+        Test::More::note join ': ', @$_ for @$rows;
+    }
+}
+
+sub mysql_session_variable {
+    my ( $self, $name ) = @_;
+    my $dbh = MT::Object->driver->rw_handle;
+    my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
+    my $res = $dbh->selectall_arrayref( $sql, { Slice => +{} } );
+    return $res->[0]{Value} // '';
+}
+
+sub mysql_db_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_database');
+}
+
+sub mysql_client_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_client');
+}
 
 sub mysql_charset {
     my $self = shift;
