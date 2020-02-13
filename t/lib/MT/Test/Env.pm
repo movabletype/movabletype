@@ -636,7 +636,7 @@ sub load_schema_and_fixture {
             chomp $sql;
             next unless $sql;
             if ( $self->mysql_charset eq 'utf8mb4' ) {
-                $sql =~ s/(DEFAULT CHARACTER SET=utf8)/${1}mb4 ROW_FORMAT=DYNAMIC/;
+                $sql =~ s/(DEFAULT CHARACTER SET utf8)/${1}mb4 ROW_FORMAT=DYNAMIC/;
             }
             $dbh->do($sql);
         }
