@@ -630,6 +630,13 @@ sub load_schema_and_fixture {
     }
 
     my $dbh = $self->dbh;
+    if ( $self->mysql_charset eq 'utf8mb4' ) {
+        my $sql = "SHOW VARIABLES LIKE 'innodb_large_prefix'";
+        my $prefix = $dbh->selectrow_hashref($sql);
+        if ( !$prefix or uc $prefix->{Value} ne 'ON' ) {
+            plan skip_all => "Use MySQLPool or set 'innodb_large_prefix'";
+        }
+    }
     $dbh->begin_work;
     eval {
         for my $sql ( split /;\n/s, $schema ) {
