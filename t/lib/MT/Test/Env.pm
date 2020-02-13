@@ -249,10 +249,7 @@ sub _connect_info_mysql {
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
 
         if ( $ENV{TEST_VERBOSE} ) {
-            for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
-                my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
-                Test::More::note join ': ', @$_ for @$rows;
-            }
+            $self->show_mysql_db_variables;
         }
     }
     else {
@@ -281,6 +278,46 @@ sub _connect_info_sqlite {
     );
 }
 
+sub skip_unless_mysql_supports_utf8mb4 {
+    my $self = shift;
+    my $db_charset = $self->mysql_db_charset;
+    if ( $db_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 database: $db_charset";
+    }
+    my $client_charset = $self->mysql_client_charset;
+    if ( $client_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 client: $client_charset";
+    }
+}
+
+sub show_mysql_db_variables {
+    my $self = shift;
+    return unless $self->driver eq 'mysql';
+
+    my $dbh = $self->dbh;
+    for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
+        my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
+        Test::More::note join ': ', @$_ for @$rows;
+    }
+}
+
+sub mysql_session_variable {
+    my ( $self, $name ) = @_;
+    my $dbh = MT::Object->driver->rw_handle;
+    my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
+    my $res = $dbh->selectall_arrayref( $sql, { Slice => +{} } );
+    return $res->[0]{Value} // '';
+}
+
+sub mysql_db_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_database');
+}
+
+sub mysql_client_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_client');
+}
 
 sub mysql_charset {
     my $self = shift;
@@ -547,9 +584,10 @@ sub prepare_fixture {
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
 }
 
-sub _slurp {
-    my $file = shift;
+sub slurp {
+    my ( $self, $file, $binmode ) = @_;
     open my $fh, '<', $file or die "$file: $!";
+    binmode $fh, $binmode if $binmode;
     local $/;
     <$fh>;
 }
@@ -606,8 +644,8 @@ sub load_schema_and_fixture {
     # Tentative password; update it later when necessary
     my $author_pass
         = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
-    my $schema  = _slurp($schema_file)  or return;
-    my $fixture = _slurp($fixture_file) or return;
+    my $schema  = $self->slurp($schema_file)  or return;
+    my $fixture = $self->slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
@@ -630,13 +668,20 @@ sub load_schema_and_fixture {
     }
 
     my $dbh = $self->dbh;
+    if ( $self->mysql_charset eq 'utf8mb4' ) {
+        my $sql = "SHOW VARIABLES LIKE 'innodb_large_prefix'";
+        my $prefix = $dbh->selectrow_hashref($sql);
+        if ( !$prefix or uc $prefix->{Value} ne 'ON' ) {
+            plan skip_all => "Use MySQLPool or set 'innodb_large_prefix'";
+        }
+    }
     $dbh->begin_work;
     eval {
         for my $sql ( split /;\n/s, $schema ) {
             chomp $sql;
             next unless $sql;
             if ( $self->mysql_charset eq 'utf8mb4' ) {
-                $sql =~ s/(DEFAULT CHARACTER SET=utf8)/${1}mb4 ROW_FORMAT=DYNAMIC/;
+                $sql =~ s/(DEFAULT CHARACTER SET utf8)/${1}mb4 ROW_FORMAT=DYNAMIC/;
             }
             $dbh->do($sql);
         }
@@ -889,7 +934,7 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = _slurp($schema_file);
+    my $saved_schema = $self->slurp($schema_file);
 
     my $generated_schema = $self->_generate_schema;
 
