@@ -38,8 +38,8 @@ subtest 'Empty publish date' => sub {
             authored_on_time => '00:00:00',
         }
     );
-    my $alert = $app->alert_text // '';
-    like $alert => qr/Invalid date/, "correct alert";
+    my $message = $app->message_text // '';
+    like $message => qr/Invalid date/, "correct message";
 };
 
 subtest 'Empty publish time' => sub {
@@ -59,8 +59,8 @@ subtest 'Empty publish time' => sub {
             authored_on_time => undef,
         }
     );
-    my $alert = $app->alert_text // '';
-    like $alert => qr/Invalid date/, "correct alert";
+    my $message = $app->message_text // '';
+    like $message => qr/Invalid date/, "correct message";
 };
 
 subtest 'Empty unpublish date' => sub {
@@ -80,8 +80,8 @@ subtest 'Empty unpublish date' => sub {
             unpublished_on_time => '00:00:00',
         }
     );
-    my $alert = $app->alert_text // '';
-    like $alert => qr/Invalid date/, "correct alert";
+    my $message = $app->message_text // '';
+    like $message => qr/Invalid date/, "correct message";
 };
 
 subtest 'Empty unpublish time' => sub {
@@ -101,8 +101,8 @@ subtest 'Empty unpublish time' => sub {
             unpublished_on_time => undef,
         }
     );
-    my $alert = $app->alert_text // '';
-    like $alert => qr/Invalid date/, "correct alert";
+    my $message = $app->message_text // '';
+    like $message => qr/Invalid date/, "correct message";
 };
 
 done_testing();
