@@ -292,7 +292,7 @@ sub content_doesnt_expose {
         or note "$url is exposed as $1";
 }
 
-sub find {
+sub wq_find {
     my ( $self, $selector ) = @_;
     my $wq = Web::Query->new( $self->content );
     $wq->find($selector);
@@ -307,18 +307,18 @@ sub _trim {
 
 sub page_title {
     my $self = shift;
-    _trim( $self->find("#page-title")->text );
+    _trim( $self->wq_find("#page-title")->text );
 }
 
 sub alert_text {
     my $self = shift;
     my $alert_class = MT->version_number >= 7 ? '.alert' : '.msg';
-    _trim( $self->find($alert_class)->text );
+    _trim( $self->wq_find($alert_class)->text );
 }
 
 sub generic_error {
     my $self = shift;
-    _trim( $self->find("#generic-error")->text );
+    _trim( $self->wq_find("#generic-error")->text );
 }
 
 1;
