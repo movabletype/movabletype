@@ -10,6 +10,7 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use HTML::Form;
+use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Web::Query;
 
@@ -47,7 +48,7 @@ sub new {
     my $class = shift;
     my %args  = ( @_ == 1 ) ? ( app_class => shift ) : @_;
 
-    $args{app_class} ||= $ENV{MT_APP} || 'MT::App';
+    $args{app_class} ||= $ENV{MT_APP} || 'MT::App::CMS';
 
     $class->init( $args{app_class} );
 
@@ -163,6 +164,18 @@ sub post_ok {
     ok $res->is_success, "post succeeded";
 }
 
+sub post_form_ok {
+    my $self = shift;
+    my ( $form_id, $params ) = ref $_[0] ? ( undef, @_ ) : @_;
+    my $form = $self->form($form_id);
+    ok $form, "found form" or return;
+
+    $form->param( $_ => $params->{$_} ) for keys %$params;
+
+    my $res = $self->post( $form->click );
+    ok $res->is_success, "post succeeded";
+}
+
 sub forms {
     my $self = shift;
     HTML::Form->parse(
@@ -175,8 +188,20 @@ sub forms {
 sub form {
     my ( $self, $id ) = @_;
     my @forms = $self->forms;
+    return $forms[0] unless $id;
     my ($form) = grep { ( $_->attr('id') // '' ) eq $id } @forms;
     $form;
+}
+
+sub links {
+    my $self = shift;
+    my @links;
+    my $p = HTML::LinkExtor->new(sub {
+        my ($tag, %attr) = @_;
+        push @links, $attr{href} if $attr{href};
+    });
+    $p->parse($self->content);
+    @links;
 }
 
 my %app_params_mapping = (
@@ -267,7 +292,7 @@ sub content_doesnt_expose {
         or note "$url is exposed as $1";
 }
 
-sub find {
+sub wq_find {
     my ( $self, $selector ) = @_;
     my $wq = Web::Query->new( $self->content );
     $wq->find($selector);
@@ -282,18 +307,18 @@ sub _trim {
 
 sub page_title {
     my $self = shift;
-    _trim( $self->find("#page-title")->text );
+    _trim( $self->wq_find("#page-title")->text );
 }
 
-sub alert_text {
+sub message_text {
     my $self = shift;
-    my $alert_class = MT->version_number >= 7 ? '.alert' : '.msg';
-    _trim( $self->find($alert_class)->text );
+    my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
+    _trim( $self->wq_find($message_class)->text );
 }
 
 sub generic_error {
     my $self = shift;
-    _trim( $self->find("#generic-error")->text );
+    _trim( $self->wq_find("#generic-error")->text );
 }
 
 1;

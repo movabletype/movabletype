@@ -1684,7 +1684,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ( $ao_d || $ao_t ) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         unless ( $ao

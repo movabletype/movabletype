@@ -1615,7 +1615,7 @@ A Rainy Day
 --- template
 <MTAssets sort_by='file_name'><$MTAssetFileName$>;</MTAssets>
 --- expected
-test_3.jpg;test_2.jpg;test_1.jpg;test.tmpl;test.jpg;
+test3.jpg;test2.jpg;test1.jpg;test.tmpl;test.jpg;
 
 === test 249
 --- template
@@ -5163,9 +5163,9 @@ entry
 
 === test 829
 --- template
-<MTAssets blog_ids='all'><MTAssetBlogID></MTAssets>
+<MTAssets blog_ids='all' sort_by='id'><MTAssetID></MTAssets>
 --- expected
-0011111
+7654321
 
 === test 830
 --- template
@@ -5285,23 +5285,23 @@ Product;Consumer;
 --- template
 <MTPages id="20"><MTPageAssets sort_by="file_name" sort_order="descend" lastn="2"><MTAssetFileName>;</MTPageAssets></MTPages>
 --- expected
-test_3.jpg;test_2.jpg;
+test3.jpg;test2.jpg;
 
 === test 850
 --- template
 <MTPages id="20"><MTPageAssets sort_by="file_name" sort_order="ascend" lastn="2"><MTAssetFileName>;</MTPageAssets></MTPages>
 --- expected
-test_2.jpg;test_3.jpg;
+test2.jpg;test3.jpg;
 
 === test 851
 --- template
 <MTEntries id="1"><MTEntryAssets sort_by="file_name" sort_order="descend" lastn="2"><MTAssetFileName>;</MTEntryAssets></MTEntries>
 --- expected
-test_3.jpg;test_2.jpg;
+test3.jpg;test2.jpg;
 
 === test 852
 --- template
 <MTEntries id="1"><MTEntryAssets sort_by="file_name" sort_order="ascend" lastn="2"><MTAssetFileName>;</MTEntryAssets></MTEntries>
 --- expected
-test_2.jpg;test_3.jpg;
+test2.jpg;test3.jpg;
 

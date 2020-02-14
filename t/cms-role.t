@@ -44,8 +44,8 @@ subtest 'Role name should not be duplicated' => sub {
 
         if ( !$ct ) {
             is $app->page_title   => "Edit Role", "correct title";
-            like $app->alert_text => qr/Your changes have been saved./,
-                "correct alert";
+            like $app->message_text => qr/Your changes have been saved./,
+                "correct message";
             my $role = MT::Role->load( { name => $role_name } );
             ok $role, "and role does exist";
         }
