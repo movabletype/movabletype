@@ -570,10 +570,12 @@ sub rebuild_content_data {
         $at = 'ContentType';
     }
     if ( $at && $at ne 'None' ) {
+        MT::Util::Log::init();
         my @at = grep { $_ =~ /^ContentType/ } split( ',', $at );
         for my $at (@at) {
             my $archiver = $mt->archiver($at);
             next unless $archiver;    # invalid archive type
+            MT::Util::Log->debug(" Rebuilding $at");
 
             my @maps;
             if ( $param{TemplateMap} ) {
@@ -600,6 +602,8 @@ sub rebuild_content_data {
                 for my $map (@maps) {
                     my @cats = map { @$_ } values %{ $categories_for_rebuild || {} };
                     for my $cat (@cats) {
+                        MT::Util::Log->debug(
+                            " Rebuilding $at (" . $cat->label . ")" );
                         $mt->_rebuild_content_archive_type(
                             ContentData => $content_data,
                             Blog        => $blog,
@@ -913,7 +917,10 @@ sub rebuild_file {
     my $fmgr = $blog->file_mgr;
     if ( UNIVERSAL::isa( MT->instance, 'MT::App' ) ) {
         my $mod_time = $fmgr->file_mod_time($file);
-        return 1 if $mod_time && $mod_time >= $mt->start_time;
+        if ( $mod_time && $mod_time >= $mt->start_time ) {
+            MT::Util::Log->debug( ' Ignored recently rebuilt ' . $file );
+            return 1;
+        }
     }
 
     if ( $archiver->category_based || $archiver->contenttype_category_based )
@@ -1068,8 +1075,10 @@ sub rebuild_file {
         }
         else {
          # if the shoe don't fit, remove all shoes and create the perfect shoe
+            MT::Util::Log::init();
             foreach (@finfos) {
                 $_->remove();
+                MT::Util::Log->info( ' Removed ' . $_->file_path );
                 if ( MT->config('DeleteFilesAtRebuild') ) {
                     $mt->_delete_archive_file(
                         Blog        => $blog,
@@ -1123,6 +1132,7 @@ sub rebuild_file {
         )
     {
         $finfo->remove();
+        MT::Util::Log->info( ' Removed ' . $finfo->file_path );
         if ( MT->config->DeleteFilesAtRebuild ) {
             $mt->_delete_archive_file(
                 Blog        => $blog,
@@ -2054,9 +2064,11 @@ sub remove_fileinfo {
         };
     }
 
+    MT::Util::Log::init();
     my @finfo = MT::FileInfo->load( $terms, $args );
     for my $f (@finfo) {
         $f->remove;
+        MT::Util::Log->info( ' Removed ' . $f->file_path );
     }
     1;
 }

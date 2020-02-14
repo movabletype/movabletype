@@ -8,7 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -33,7 +35,7 @@ my $app = MT::App::DataAPI->new;
     $website_entry->save or die $website_entry->errstr;
 
     my $website = $app->model('website')->load(2) or die;
-    my $role = $app->model('role')->load( { name => 'Site Administrator' } )
+    my $role = $app->model('role')->load( { name => MT->translate('Site Administrator') } )
         or die;
 
     require MT::Association;

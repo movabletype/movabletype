@@ -83,6 +83,7 @@ requires 'Net::CIDR';
 requires 'Net::IP';
 
 on 'test' => sub {
+    requires 'Acme::RandomEmoji';
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Date::Parse';
     requires 'DateTime';
@@ -100,9 +101,11 @@ on 'test' => sub {
     requires 'Path::Tiny';
     requires 'PHP::Serialization';
     requires 'pQuery';
+    requires 'Selenium::Remote::Driver', '!=1.36';
     requires 'SQL::Maker';
     requires 'SQL::Translator';
     requires 'String::CamelCase';
+    requires 'Term::Encoding';
     requires 'Test::Base';
     requires 'Test::Class';
     requires 'Test::Data';
@@ -118,4 +121,5 @@ on 'test' => sub {
     requires 'Text::Diff';
     requires 'Time::Piece';
     requires 'URI::Escape';
+    requires 'Web::Query';
 };

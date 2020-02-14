@@ -27,6 +27,15 @@ use lib "$MT_HOME/lib", "$MT_HOME/extlib";
 use lib glob("$MT_HOME/addons/*/lib"),  glob("$MT_HOME/addons/*/extlib");
 use lib glob("$MT_HOME/plugins/*/lib"), glob("$MT_HOME/plugins/*/extlib");
 
+use Term::Encoding qw(term_encoding);
+
+my $enc = term_encoding() || 'utf8';
+
+my $builder = Test::More->builder;
+binmode $builder->output,         ":encoding($enc)";
+binmode $builder->failure_output, ":encoding($enc)";
+binmode $builder->todo_output,    ":encoding($enc)";
+
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
@@ -37,7 +46,7 @@ sub new {
 
     my $self = bless {
         root   => $root,
-        driver => $ENV{MT_TEST_BACKEND} || 'mysql',
+        driver => _driver(),
         config => \%extra_config,
     }, $class;
 
@@ -50,6 +59,15 @@ sub config_file {
     my $self = shift;
     File::Spec->catfile( $self->{root}, 'mt-config.cgi' );
 }
+
+sub driver {
+    my $self = shift;
+    ref $self ? $self->{driver} : _driver();
+}
+
+sub _driver { $ENV{MT_TEST_BACKEND} || 'mysql' }
+
+sub mt_home { $MT_HOME }
 
 sub root {
     my $self = shift;
@@ -68,6 +86,8 @@ sub write_config {
 
     my $image_driver = $ENV{MT_TEST_IMAGE_DRIVER}
         || ( eval { require Image::Magick } ? 'ImageMagick' : 'Imager' );
+
+    my $default_language = $ENV{MT_TEST_LANG} || 'en_US';
 
     require MT;
 
@@ -88,7 +108,8 @@ sub write_config {
                 MT_HOME/themes/
                 )
         ],
-        DefaultLanguage     => 'en_US',
+        TempDir             => File::Spec->tmpdir,
+        DefaultLanguage     => $default_language,
         StaticWebPath       => '/mt-static/',
         StaticFilePath      => 'TEST_ROOT/mt-static',
         EmailAddressMain    => 'mt@localhost.localdomain',
@@ -121,24 +142,41 @@ sub write_config {
 
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
-    my $root = $self->{root};
+    $self->{_config} = \%config;
+
+    $self->_write_config;
+}
+
+sub _write_config {
+    my $self = shift;
+
+    my $config = $self->{_config};
+    my $root   = $self->{root};
     open my $fh, '>', $self->config_file or plan skip_all => $!;
-    for my $key ( sort keys %config ) {
-        if ( ref $config{$key} eq 'ARRAY' ) {
-            for my $value ( @{ $config{$key} } ) {
+    for my $key ( sort keys %$config ) {
+        if ( ref $config->{$key} eq 'ARRAY' ) {
+            for my $value ( @{ $config->{$key} } ) {
                 $value =~ s/\bMT_HOME\b/$MT_HOME/;
                 $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
                 print $fh "$key $value\n";
             }
         }
         else {
-            my $value = $config{$key};
+            my $value = $config->{$key};
             $value =~ s/\bMT_HOME\b/$MT_HOME/;
             $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
             print $fh "$key $value\n";
         }
     }
     close $fh;
+}
+
+sub update_config {
+    my ( $self, %extra_config ) = @_;
+    for my $key ( keys %extra_config ) {
+        $self->{_config}{$key} = $extra_config{$key};
+    }
+    $self->_write_config;
 }
 
 sub save_file {
@@ -209,11 +247,20 @@ sub _connect_info_mysql {
         }
         $self->{dsn}
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
+
+        if ( $ENV{TEST_VERBOSE} ) {
+            $self->show_mysql_db_variables;
+        }
     }
     else {
         $self->{dsn}
             = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
-        my $dbh = DBI->connect( $self->{dsn} ) or die $DBI::errstr;
+        my $dbh = DBI->connect( $self->{dsn} );
+        if ( !$dbh ) {
+            die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
+            ( my $dsn = $self->{dsn} ) =~ s/dbname=$info{Database};//;
+            $dbh = DBI->connect($dsn) or die $DBI::errstr;
+        }
         $self->_prepare_mysql_database($dbh);
     }
     return %info;
@@ -231,11 +278,74 @@ sub _connect_info_sqlite {
     );
 }
 
+sub skip_unless_mysql_supports_utf8mb4 {
+    my $self = shift;
+    my $db_charset = $self->mysql_db_charset;
+    if ( $db_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 database: $db_charset";
+    }
+    my $client_charset = $self->mysql_client_charset;
+    if ( $client_charset ne 'utf8mb4' ) {
+        plan skip_all => "Requires utf8mb4 client: $client_charset";
+    }
+}
+
+sub show_mysql_db_variables {
+    my $self = shift;
+    return unless $self->driver eq 'mysql';
+
+    my $dbh = $self->dbh;
+    for my $name ( 'character_set%', 'collation%', 'innodb_file_format' ) {
+        my $rows = $dbh->selectall_arrayref("SHOW VARIABLES LIKE '$name'");
+        Test::More::note join ': ', @$_ for @$rows;
+    }
+}
+
+sub mysql_session_variable {
+    my ( $self, $name ) = @_;
+    my $dbh = MT::Object->driver->rw_handle;
+    my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
+    my $res = $dbh->selectall_arrayref( $sql, { Slice => +{} } );
+    return $res->[0]{Value} // '';
+}
+
+sub mysql_db_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_database');
+}
+
+sub mysql_client_charset {
+    my $self = shift;
+    $self->mysql_session_variable('character_set_client');
+}
+
+sub mysql_charset {
+    my $self = shift;
+    return '' unless $self->driver eq 'mysql';
+    return $ENV{MT_TEST_MYSQL_CHARSET} || 'utf8';
+}
+
+sub mysql_collation {
+    my $self = shift;
+    return '' unless $self->driver eq 'mysql';
+
+    ## -5.7:     utf8mb4_general_ci (sushi-beer)
+    ## 8.0-:     utf8mb4_9000_ai_ci (haha-papa/byoin-biyoin)
+    ## stricter: utf8mb4_9000_as_cs
+    ## stricter: utf8mb4_bin
+    my $collation = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    if ( $self->mysql_charset eq 'utf8mb4' and $collation =~ /^utf8_/ ) {
+        $collation =~ s/^utf8_/utf8mb4_/;
+    }
+    return $collation;
+}
+
 sub _prepare_mysql_database {
     my ( $self, $dbh ) = @_;
-    local $dbh->{RaiseError} = 1;
-    my $character_set = $ENV{MT_TEST_MYSQL_CHARSET}   || 'utf8';
-    my $collation     = $ENV{MT_TEST_MYSQL_COLLATION} || 'utf8_general_ci';
+    local $dbh->{RaiseError}         = 1;
+    local $dbh->{ShowErrorStatement} = 1;
+    my $character_set = $self->mysql_charset;
+    my $collation     = $self->mysql_collation;
     my $sql           = <<"END_OF_SQL";
 DROP DATABASE IF EXISTS mt_test;
 CREATE DATABASE mt_test CHARACTER SET $character_set COLLATE $collation;
@@ -255,19 +365,51 @@ sub prepare {
 sub my_cnf {
     my $class = shift;
 
-    my %cnf = ( 'skip-networking' => '' );
+    my %cnf = (
+        'skip-networking' => '',
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
+    );
 
     my $mysqld = _mysqld() or return \%cnf;
 
     my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
 
-    my ( $version, $major_version )
-        = $verbose_help =~ /\A.*Ver (([0-9]+)\.[0-9]+\.[0-9]+)/;
+    my ( $version, $major_version, $minor_version )
+        = $verbose_help =~ /\A.*Ver (([0-9]+)\.([0-9]+)\.[0-9]+)/;
 
     my $is_maria = $verbose_help =~ /\A.*MariaDB/;
 
+    # Convert MariaDB version into MySQL version for simplicity
+    # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
+    if ($is_maria) {
+        $major_version = 5;
+        if ( $major_version == 10 ) {
+            if ( $minor_version < 2 ) {
+                $minor_version = 6;
+            } elsif ( $minor_version < 5 ) {
+                $minor_version = 7;
+            }
+        } elsif ( $major_version == 5 ) {  ## just in case
+            if ( $minor_version < 5 ) {
+                $minor_version = 1;
+            }
+        }
+    }
+
+    # MySQL 8.0+
     if ( !$is_maria && $major_version >= 8 ) {
         $cnf{default_authentication_plugin} = 'mysql_native_password';
+    }
+
+    my $charset = $class->mysql_charset;
+    if ( $charset eq 'utf8mb4' ) {
+        if ( $major_version < 7 and $minor_version < 7 ) {
+            $cnf{innodb_file_format}     = 'Barracuda';
+            $cnf{innodb_file_per_table}  = 1;
+            $cnf{innodb_large_prefix}    = 1;
+        }
+        $cnf{character_set_server} = $charset;
+        $cnf{collation_server}     = $class->mysql_collation;
     }
     \%cnf;
 }
@@ -353,8 +495,29 @@ sub _fixture_file {
     return "$id.json";
 }
 
+sub fix_mysql_create_table_sql {
+    my $class = shift;
+    return unless $class->mysql_charset eq 'utf8mb4';
+
+    no warnings 'redefine';
+    *MT::ObjectDriver::DDL::mysql::create_table_sql = \&_create_table_sql_for_old_mysql;
+}
+
+sub _create_table_sql_for_old_mysql {
+    my $sql = MT::ObjectDriver::DDL::create_table_sql(@_);
+    $sql .= " ENGINE=InnoDB";
+    $sql .= " DEFAULT CHARACTER SET=" . ( $ENV{MT_TEST_MYSQL_CHARSET} || 'utf8mb4' );
+    $sql .= " ROW_FORMAT=" . ( $ENV{MT_TEST_MYSQL_ROW_FORMAT} || 'DYNAMIC' );
+    $sql;
+}
+
 sub prepare_fixture {
     my $self = shift;
+
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG / ) {
+        $ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+        note "Fixture is ignored because of an environmental variable";
+    }
 
     require MT::Test;
     my $app = $ENV{MT_APP} || 'MT::App';
@@ -395,6 +558,7 @@ sub prepare_fixture {
         $self->load_schema_and_fixture($id) or $code->();
     }
     else {
+        $self->fix_mysql_create_table_sql;
         $code->();
     }
     if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
@@ -420,9 +584,10 @@ sub prepare_fixture {
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
 }
 
-sub _slurp {
-    my $file = shift;
+sub slurp {
+    my ( $self, $file, $binmode ) = @_;
     open my $fh, '<', $file or die "$file: $!";
+    binmode $fh, $binmode if $binmode;
     local $/;
     <$fh>;
 }
@@ -479,8 +644,8 @@ sub load_schema_and_fixture {
     # Tentative password; update it later when necessary
     my $author_pass
         = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
-    my $schema  = _slurp($schema_file)  or return;
-    my $fixture = _slurp($fixture_file) or return;
+    my $schema  = $self->slurp($schema_file)  or return;
+    my $fixture = $self->slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
@@ -503,11 +668,21 @@ sub load_schema_and_fixture {
     }
 
     my $dbh = $self->dbh;
+    if ( $self->mysql_charset eq 'utf8mb4' ) {
+        my $sql = "SHOW VARIABLES LIKE 'innodb_large_prefix'";
+        my $prefix = $dbh->selectrow_hashref($sql);
+        if ( !$prefix or uc $prefix->{Value} ne 'ON' ) {
+            plan skip_all => "Use MySQLPool or set 'innodb_large_prefix'";
+        }
+    }
     $dbh->begin_work;
     eval {
         for my $sql ( split /;\n/s, $schema ) {
             chomp $sql;
             next unless $sql;
+            if ( $self->mysql_charset eq 'utf8mb4' ) {
+                $sql =~ s/(DEFAULT CHARACTER SET utf8)/${1}mb4 ROW_FORMAT=DYNAMIC/;
+            }
             $dbh->do($sql);
         }
         my $sql_maker = SQL::Maker->new( driver => $self->{driver} );
@@ -545,12 +720,21 @@ sub save_schema {
     my $self = shift;
 
     my $force;
+    my $guard;
     if ( !ref $self ) {
         $self = $self->new;
+        require Test::mysqld;
+        my $mysqld = Test::mysqld->new( my_cnf => $self->my_cnf )
+            or die $Test::mysqld::errstr;
+        local $ENV{PERL_TEST_MYSQLPOOL_DSN} = $mysqld->dsn;
+        $self->prepare($mysqld);
         local $ENV{MT_CONFIG} = $self->config_file;
+        $self->write_config;
+        $self->fix_mysql_create_table_sql;
         require MT::Test;
         MT::Test->init_db;
         $force = 1;
+        $guard = $mysqld;
     }
 
     $self->_set_fixture_dirs;
@@ -606,7 +790,9 @@ sub _sql_translator_filter_mysql {
         while ( $i < @$options ) {
             my ( $key, $value ) = %{ $options->[$i] };
             if ( $key eq 'CHARACTER SET' ) {
-                $options->[$i]{$key} = 'utf8';
+                unless ( $options->[$i]{$key} =~ /utf8/ ) {
+                    $options->[$i]{$key} = 'utf8';
+                }
                 $saw_charset = 1;
             }
             if ( $key eq 'ENGINE' ) {
@@ -661,7 +847,14 @@ sub save_fixture {
     my $root = $self->{root};
     my %data;
     for my $table (@tables) {
-        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table",
+        my $order_by = '';
+        if ( $driver eq 'mysql' ) {
+            my $indices = $dbh->selectall_arrayref( "SHOW INDEX IN $table", { Slice => +{} } );
+            if (@$indices) {
+                $order_by = ' ORDER BY ' . $indices->[0]{Column_name};
+            }
+        }
+        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table$order_by",
             { Slice => +{} } );
         next unless @{ $rows || [] };
         my @keys = sort keys %{ $rows->[0] };
@@ -684,6 +877,9 @@ sub save_fixture {
                     }
                     elsif ( $key eq 'author_password' ) {
                         $value = '__AUTHOR_PASS__';
+                    }
+                    elsif ( $key =~ /^(?:role|permission)_permissions$/ ) {
+                        $value = join ',', sort split ',', $value;
                     }
                     else {
                         $value =~ s/^$root/__TEST_ROOT__/;
@@ -727,6 +923,10 @@ sub _tweak_schema {
 sub test_schema {
     my $self = shift;
 
+    if ( grep { $ENV{"MT_TEST_$_"} } qw/ LANG MYSQL_CHARSET MYSQL_COLLATION / ) {
+        plan skip_all => "Fixture is ignored because of an environmental variable";
+    }
+
     $self->_get_id_from_caller;
     $self->_set_fixture_dirs;
 
@@ -734,7 +934,7 @@ sub test_schema {
     my $schema_file = "$self->{fixture_dirs}[0]/schema.$driver.sql";
     plan skip_all => 'schema is not found' unless -f $schema_file;
 
-    my $saved_schema = _slurp($schema_file);
+    my $saved_schema = $self->slurp($schema_file);
 
     my $generated_schema = $self->_generate_schema;
 

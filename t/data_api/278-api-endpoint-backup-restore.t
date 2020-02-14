@@ -8,7 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -21,10 +23,6 @@ $test_env->prepare_fixture('db_data');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
-
-if ( $^O eq 'MSWin32' ) {
-    $app->config->TempDir( File::Spec->tmpdir );
-}
 
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent = 0;

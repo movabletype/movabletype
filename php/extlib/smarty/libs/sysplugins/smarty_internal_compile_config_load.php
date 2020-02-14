@@ -46,7 +46,7 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
      * @var array
      * @see Smarty_Internal_CompileBase
      */
-    public $option_flags = array('nocache', 'bubble_up');
+    public $option_flags = array('nocache', 'noscope');
 
     /**
      * Valid scope names
@@ -55,7 +55,7 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
      */
     public $valid_scopes = array('local' => Smarty::SCOPE_LOCAL, 'parent' => Smarty::SCOPE_PARENT,
                                  'root' => Smarty::SCOPE_ROOT, 'tpl_root' => Smarty::SCOPE_TPL_ROOT,
-                                 'smarty' => Smarty::SCOPE_SMARTY);
+                                 'smarty' => Smarty::SCOPE_SMARTY, 'global' => Smarty::SCOPE_SMARTY);
 
     /**
      * Compiles code for the {config_load} tag
@@ -83,7 +83,11 @@ class Smarty_Internal_Compile_Config_Load extends Smarty_Internal_CompileBase
             $section = 'null';
         }
         // scope setup
-        $_scope = $compiler->convertScope($_attr, $this->valid_scopes);
+        if ($_attr[ 'noscope' ]) {
+            $_scope = - 1;
+        } else {
+            $_scope = $compiler->convertScope($_attr, $this->valid_scopes);
+        }
 
         // create config object
         $_output =

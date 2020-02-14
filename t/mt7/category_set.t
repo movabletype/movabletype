@@ -17,8 +17,6 @@ use MT::Test::Permission;
 use MT::Category;
 use MT::CategorySet;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 my $blog_id = 1;

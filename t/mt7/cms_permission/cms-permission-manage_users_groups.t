@@ -71,7 +71,7 @@ $sys_non_manage_user_group_user->can_manage_users_groups(0);
 $sys_manage_user_group_user->save;
 
 require MT::Role;
-my $edit_all_posts = MT::Role->load( { name => 'Edit All Posts' } );
+my $edit_all_posts = MT::Role->load( { name => MT->translate('Edit All Posts') } );
 
 ### Run
 my ( $app, $out );

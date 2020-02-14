@@ -35,14 +35,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.1', '7.0046' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.2', '7.0046' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.1.5',                '__PRODUCT_VERSION_ID__',
+        '7.2',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -60,11 +60,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 5;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4604';
+        $RELEASE_VERSION_ID = 'r.4605';
     }
 
     $DebugMode = 0;
@@ -2074,56 +2074,6 @@ sub set_default_tmpl_params {
     my ($tmpl) = @_;
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
-    if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        require MT::Debug::GitInfo;
-        $param->{mt_vcs_revision} = MT::Debug::GitInfo->is_repository;
-        if ( MT::Util::is_mod_perl1() && exists( $mt->{apache} ) ) {
-            $param->{mt_headers} = $mt->{apache}->headers_in();
-        }
-        else {
-            $param->{mt_headers} = \%ENV;
-        }
-        unless ( $mt->{cookies} ) {
-            if ( MT::Util::is_mod_perl1() ) {
-                eval { require Apache::Cookie };
-                $mt->{cookies} = Apache::Cookie->fetch;
-            }
-            else {
-                eval { require CGI::Cookie };
-                $mt->{cookies} = CGI::Cookie->fetch;
-            }
-        }
-        if ( $mt->{cookies} ) {
-            $param->{mt_cookies} = $mt->{cookies};
-        }
-        my %params = $mt->param_hash;
-        $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} & 4 ) {
-            if ( my $profiler = Data::ObjectDriver->profiler ) {
-                my $stats = $profiler->statistics;
-                $param->{mt_sql_profile}{statistics} = $stats;
-                $param->{mt_sql_profile}{total_queries}
-                    = $stats->{'DBI:total_queries'};
-
-                my $freq = $profiler->query_frequency;
-                my @cache_types;
-                foreach ( keys %$freq ) {
-                    my ( $cache_type, $memcache, $method )
-                        = $_ =~ /^(.+)CACHE(D?)_(.+)\s\?/;
-                    next unless $cache_type;
-                    push @cache_types,
-                        $cache_type . ':query_' . lc($method),
-                        delete $freq->{$_};
-                }
-                $param->{mt_sql_profile}{query_frequency} = $freq;
-                $param->{mt_cache_profile} = [];
-                while ( my $k = shift(@cache_types) ) {
-                    push @{ $param->{mt_cache_profile} }, $k,
-                        shift(@cache_types);
-                }
-            }
-        }
-    }
     $param->{mt_alpha} = 1 if MT->version_id =~ m/^\d+\.\d+a/;
     $param->{mt_beta}  = 1 if MT->version_id =~ m/^\d+\.\d+(?:b|rc)/;
     $param->{mt_alpha_or_beta}      = $param->{mt_alpha} || $param->{mt_beta};
@@ -2142,6 +2092,8 @@ sub set_default_tmpl_params {
             $param->{author_id}   = $author->id;
             $param->{author_name} = $author->name;
             $param->{pc_view}     = $mt->session('pc_view') ? 1 : 0;
+
+            delete $param->{mt_debug} unless $author->is_superuser;
         }
         ## We do this in load_tmpl because show_error and login don't call
         ## build_page; so we need to set these variables here.

@@ -77,7 +77,12 @@
                 if($('#' + this.id + '-text').prop('tagName') == 'TEXTAREA'){
                     this.data.value = $('#' + this.id + '-text').val();
                 } else {
-                    this.data.value = $('#' + this.id + '-text').html();
+                    for (var i = 0; i < this.editors.length; i++) {
+                        if(this.id + '-text' == this.editors[i].id){
+                            this.editors[i].save();
+                            this.data.value = this.editors[i].getContent();
+                        }
+                    }
                 }
             }
         },

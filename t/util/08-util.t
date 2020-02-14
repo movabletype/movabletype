@@ -9,7 +9,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -45,10 +47,6 @@ my $mt = MT->new;
 MT->set_instance($mt);
 
 $mt->config( 'NoHTMLEntities', 1 );
-
-if ( $^O eq 'MSWin32' ) {
-    $mt->config( 'TempDir', File::Spec->tmpdir );
-}
 
 ## Use done_testing()
 ## BEGIN { plan tests => 221 };

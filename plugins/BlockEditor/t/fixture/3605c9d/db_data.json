@@ -93,15 +93,15 @@
             "2000-01-31 07:45:00",
             "This is a test photo.",
             "jpg",
-            "test_1.jpg",
-            "__MT_HOME__/t/images/test_1.jpg",
+            "test1.jpg",
+            "__MT_HOME__/t/images/test1.jpg",
             "5",
             "Image photo",
             "image/jpeg",
             null,
             null,
             null,
-            "http://narnia.na/nana/images/test_1.jpg"
+            "http://narnia.na/nana/images/test1.jpg"
          ],
          [
             "1",
@@ -110,15 +110,15 @@
             "2000-01-31 07:46:00",
             "This is a test photo.",
             "jpg",
-            "test_2.jpg",
-            "__MT_HOME__/t/images/test_2.jpg",
+            "test2.jpg",
+            "__MT_HOME__/t/images/test2.jpg",
             "6",
             "Image photo",
             "image/jpeg",
             null,
             null,
             null,
-            "http://narnia.na/nana/images/test_2.jpg"
+            "http://narnia.na/nana/images/test2.jpg"
          ],
          [
             "1",
@@ -127,15 +127,15 @@
             "2000-01-31 07:47:00",
             "This is a test photo.",
             "jpg",
-            "test_3.jpg",
-            "__MT_HOME__/t/images/test_3.jpg",
+            "test3.jpg",
+            "__MT_HOME__/t/images/test3.jpg",
             "7",
             "Image photo",
             "image/jpeg",
             null,
             null,
             null,
-            "http://narnia.na/nana/images/test_3.jpg"
+            "http://narnia.na/nana/images/test3.jpg"
          ]
       ]
    },

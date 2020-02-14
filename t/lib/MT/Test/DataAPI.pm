@@ -38,6 +38,9 @@ sub test_data_api {
 
     my $app = MT::App::DataAPI->new;
 
+    $app->config->DataAPIDisableSite( '', 1 );
+    $app->config->save_config;
+
     my $is_superuser;
     my $mock_author = Test::MockModule->new('MT::Author');
     $mock_author->mock( 'is_superuser', sub {$is_superuser} );
@@ -67,6 +70,9 @@ sub test_data_api {
     my $format = MT::DataAPI::Format->find_format('json');
 
     $suite = [$suite] unless ref $suite eq 'ARRAY';
+    if ( my @only = grep { $_->{only} } @$suite ) {
+        $suite = \@only;
+    }
     for my $data (@$suite) {
         $mock_app_api->mock( 'authenticate', sub {$author} )
             if !$mock_app_api->is_mocked('authenticate');

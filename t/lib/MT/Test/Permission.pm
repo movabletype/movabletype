@@ -171,7 +171,7 @@ sub make_role {
     require MT::Role;
     my $role = MT::Role->new();
     $role->set_values(
-        {   name        => $params{name},
+        {   name        => MT->translate( $params{name} ),
             permissions => $params{permissions},
         }
     );
@@ -248,7 +248,13 @@ sub make_asset {
         }
     }
 
-    use MT::Asset;
+    require File::Basename;
+    my ( $name, $dirs, $ext ) = File::Basename::fileparse( $values->{file_path}, qr/\.[^.]*/ );
+    $values->{file_name} = "$name$ext";
+    $ext =~ s/^\.// if $ext;
+    $values->{file_ext} = $ext;
+
+    require MT::Asset;
     my $pkg_class = MT::Asset->class_handler($class);
     my $asset     = $pkg_class->new();
 

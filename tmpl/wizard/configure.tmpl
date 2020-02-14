@@ -15,7 +15,7 @@
     <mt:var name="error" escape="html"><mt:if name="error_more"> <a href="#" class="detail-link"><__trans phrase="Details"></a></mt:if>
     <mt:if name="error_more">
       <div class="detail">
-        <p><mt:var name="error_more" escape="html"></p>
+        <mt:var name="error_more" escape="html">
       </div>
     </mt:if>
   </mtapp:statusmsg>
@@ -265,7 +265,7 @@ var database = new Array();
         jQuery(this).remove();
     });
 <mt:if name="connect_error">
-    jQuery('.msg').mtToggleField();
+    jQuery('#connect_error').mtToggleField();
 </mt:if>
 </mt:setvarblock>
 

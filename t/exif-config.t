@@ -24,12 +24,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test;
-
-MT::Test->init_app;
-
-$test_env->prepare_fixture('db');
-
 use Image::ExifTool;
 ok( !MT->can('load_exif_config'), "ExifTool's config file is not loaded." );
 

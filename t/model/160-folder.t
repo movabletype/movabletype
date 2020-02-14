@@ -16,8 +16,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::CMS::Folder;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 my $folder_class = MT->model('folder');

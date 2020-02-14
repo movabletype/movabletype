@@ -484,6 +484,9 @@ sub edit {
         $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
 
         $param->{can_edit_categories} = $perms->can_do('edit_categories');
+        if ( $type eq 'page' ) {
+            $param->{can_edit_categories} ||= $perms->can_do('manage_pages');
+        }
     }
 
     my $data = $app->_build_category_list(
@@ -1411,7 +1414,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ( $ao_d || $ao_t ) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         my $ts    = MT::Util::valid_date_time2ts($ao);

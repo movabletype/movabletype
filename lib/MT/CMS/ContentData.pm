@@ -700,7 +700,7 @@ sub save {
     my ( $previous_old, $next_old );
 
     # TODO: permission check
-    if ($ao_d) {
+    if ( $ao_d || $ao_t ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         my $ts    = MT::Util::valid_date_time2ts($ao);
@@ -822,9 +822,13 @@ sub save {
                 ArchiveType => $archive_type,
             );
         }
+        MT::Util::Log::init();
         for my $param (@old_archive_params) {
             $app->publisher->_delete_archive_file(%$param);
-            $param->{FileInfo}->remove if $param->{FileInfo};
+            if ( my $fi = $param->{FileInfo} ) {
+                $fi->remove;
+                MT::Util::Log->info( ' Removed ' . $fi->file_path );
+            }
         }
     }
 

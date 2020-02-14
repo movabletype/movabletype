@@ -8,7 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -327,14 +329,14 @@ my $admin = MT::Author->load(1);
 require MT::Role;
 my $site_admin      = MT::Role->load( { name => MT->translate('Site Administrator') } );
 my $designer        = MT::Role->load( { name => MT->translate('Designer') } );
-my $create_post     = MT::Role->load( { name => 'Create Post' } );
-my $manage_pages    = MT::Role->load( { name => 'Manage Pages' } );
-my $rebuild         = MT::Role->load( { name => 'Rebuild' } );
-my $edit_config     = MT::Role->load( { name => 'Edit Config' } );
-my $edit_all_posts  = MT::Role->load( { name => 'Edit All Posts' } );
-my $publish_post    = MT::Role->load( { name => 'Publish Post' } );
-my $manage_feedback = MT::Role->load( { name => 'Manage Feedback' } );
-my $edit_templates  = MT::Role->load( { name => 'Edit Templates' } );
+my $create_post     = MT::Role->load( { name => MT->translate('Create Post') } );
+my $manage_pages    = MT::Role->load( { name => MT->translate('Manage Pages') } );
+my $rebuild         = MT::Role->load( { name => MT->translate('Rebuild') } );
+my $edit_config     = MT::Role->load( { name => MT->translate('Edit Config') } );
+my $edit_all_posts  = MT::Role->load( { name => MT->translate('Edit All Posts') } );
+my $publish_post    = MT::Role->load( { name => MT->translate('Publish Post') } );
+my $manage_feedback = MT::Role->load( { name => MT->translate('Manage Feedback') } );
+my $edit_templates  = MT::Role->load( { name => MT->translate('Edit Templates') } );
 
 my $entry = MT::Entry->load( { title => 'my entry' } );
 my $page  = MT::Page->load( { title => 'my page' } );

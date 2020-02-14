@@ -10,7 +10,9 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use HTML::Form;
+use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
+use Web::Query;
 
 my %Initialized;
 
@@ -46,7 +48,7 @@ sub new {
     my $class = shift;
     my %args  = ( @_ == 1 ) ? ( app_class => shift ) : @_;
 
-    $args{app_class} ||= $ENV{MT_APP} || 'MT::App';
+    $args{app_class} ||= $ENV{MT_APP} || 'MT::App::CMS';
 
     $class->init( $args{app_class} );
 
@@ -124,10 +126,11 @@ sub request {
 sub _convert_params {
     my $params = shift;
     if ( blessed $params && $params->isa('HTTP::Request') ) {
+        my $param_method = CGI->VERSION < 4 ? 'param' : 'multi_param';
         my $cgi = CGI->new( $params->content );
         my %hash;
-        for my $name ( $cgi->multi_param ) {
-            my @values = $cgi->multi_param($name);
+        for my $name ( $cgi->$param_method ) {
+            my @values = $cgi->$param_method($name);
             $hash{$name} = @values > 1 ? \@values : $values[0];
         }
         return \%hash;
@@ -142,11 +145,35 @@ sub get {
     $self->request($params);
 }
 
+sub get_ok {
+    my ( $self, $params ) = @_;
+    my $res = $self->get($params);
+    ok $res->is_success, "get succeeded";
+}
+
 sub post {
     my ( $self, $params ) = @_;
     $params = _convert_params($params);
     $params->{__request_method} = 'POST';
     $self->request($params);
+}
+
+sub post_ok {
+    my ( $self, $params ) = @_;
+    my $res = $self->post($params);
+    ok $res->is_success, "post succeeded";
+}
+
+sub post_form_ok {
+    my $self = shift;
+    my ( $form_id, $params ) = ref $_[0] ? ( undef, @_ ) : @_;
+    my $form = $self->form($form_id);
+    ok $form, "found form" or return;
+
+    $form->param( $_ => $params->{$_} ) for keys %$params;
+
+    my $res = $self->post( $form->click );
+    ok $res->is_success, "post succeeded";
 }
 
 sub forms {
@@ -156,6 +183,25 @@ sub forms {
         base   => 'http://localhost',
         strict => 1,
     );
+}
+
+sub form {
+    my ( $self, $id ) = @_;
+    my @forms = $self->forms;
+    return $forms[0] unless $id;
+    my ($form) = grep { ( $_->attr('id') // '' ) eq $id } @forms;
+    $form;
+}
+
+sub links {
+    my $self = shift;
+    my @links;
+    my $p = HTML::LinkExtor->new(sub {
+        my ($tag, %attr) = @_;
+        push @links, $attr{href} if $attr{href};
+    });
+    $p->parse($self->content);
+    @links;
 }
 
 my %app_params_mapping = (
@@ -211,6 +257,11 @@ sub _clear_cache {
     MT->instance->request->reset;
 }
 
+sub trans {
+    my ( $self, $message ) = @_;
+    MT->translate($message);
+}
+
 sub status_is {
     my ( $self, $code ) = @_;
     is $self->{res}->code, $code, "status is $code";
@@ -239,6 +290,35 @@ sub content_doesnt_expose {
     my ( $self, $url ) = @_;
     ok $self->content !~ /(<(a|form|meta|link|img|script)\s[^>]+\Q$url\E[^>]+>)/s
         or note "$url is exposed as $1";
+}
+
+sub wq_find {
+    my ( $self, $selector ) = @_;
+    my $wq = Web::Query->new( $self->content );
+    $wq->find($selector);
+}
+
+sub _trim {
+    my $str = shift;
+    $str =~ s/\A\s+//s;
+    $str =~ s/\s+\z//s;
+    $str;
+}
+
+sub page_title {
+    my $self = shift;
+    _trim( $self->wq_find("#page-title")->text );
+}
+
+sub message_text {
+    my $self = shift;
+    my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
+    _trim( $self->wq_find($message_class)->text );
+}
+
+sub generic_error {
+    my $self = shift;
+    _trim( $self->wq_find("#generic-error")->text );
 }
 
 1;

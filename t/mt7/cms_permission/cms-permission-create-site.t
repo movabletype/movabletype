@@ -50,7 +50,7 @@ my $admin            = MT::Author->load(1);
 my $user             = MT::Author->load( { name => 'aikawa' } );
 
 require MT::Role;
-my $create_site_role = MT::Role->load( { name => 'Create Child Site' } );
+my $create_site_role = MT::Role->load( { name => MT->translate('Create Child Site') } );
 
 # Run
 my ( $app, $out );
