@@ -271,10 +271,11 @@ sub list_props {
                 my @parents
                     = MT->model('website')->load( { id => \@parent_ids } );
                 my %parent_names = map { $_->id => $_->name } @parents;
-                return sort {
+                my @sorted       = sort {
                     $parent_names{ $a->parent_id }
                         cmp $parent_names{ $b->parent_id }
                 } @$objs;
+                return @sorted;
             },
         },
         created_on => {
