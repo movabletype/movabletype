@@ -286,7 +286,7 @@ sub list_props {
                 my %parents = map { $_->parent_id => 1 } @$objs;
                 return @$objs if scalar keys %parents <= 1;
                 my @parents = MT->model('website')
-                    ->load( { id => [ keys %parents ] } );
+                    ->load( { id => [ grep /\A[0-9]+\z/, keys %parents ] } );
                 my %parent_names = map { $_->id => $_->name } @parents;
                 return sort {
                     $parent_names{ $a->parent_id }
