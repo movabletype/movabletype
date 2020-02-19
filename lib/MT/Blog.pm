@@ -283,10 +283,10 @@ sub list_props {
             bulk_sort => sub {
                 my $prop    = shift;
                 my ($objs)  = @_;
-                my %parents = map { $_->parent_id => 1 } @$objs;
-                return @$objs if scalar keys %parents <= 1;
+                my @parent_ids = grep map { $_->parent_id } @$objs;
+                return @$objs if @parent_ids <= 1;
                 my @parents = MT->model('website')
-                    ->load( { id => [ grep /\A[0-9]+\z/, keys %parents ] } );
+                    ->load( { id => \@parent_ids } );
                 my %parent_names = map { $_->id => $_->name } @parents;
                 return sort {
                     $parent_names{ $a->parent_id }
