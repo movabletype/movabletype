@@ -264,17 +264,21 @@ sub list_props {
                     : ( MT->translate('*Website/Blog deleted*') );
             },
             bulk_sort => sub {
-                my $prop    = shift;
-                my ($objs)  = @_;
-                my %parents = map { $_->parent_id => 1 } @$objs;
-                return @$objs if scalar keys %parents <= 1;
-                my @parents = MT->model('website')
-                    ->load( { id => [ keys %parents ] } );
+                my $prop       = shift;
+                my ($objs)     = @_;
+                my @parent_ids = grep $_, map { $_->parent_id } @$objs;
+                return @$objs if @parent_ids <= 1;
+                my @parents
+                    = MT->model('website')->load( { id => \@parent_ids } );
                 my %parent_names = map { $_->id => $_->name } @parents;
-                return sort {
+                for (@parent_ids) {
+                    $parent_names{$_} = '' unless defined $parent_names{$_};
+                }
+                my @sorted = sort {
                     $parent_names{ $a->parent_id }
                         cmp $parent_names{ $b->parent_id }
                 } @$objs;
+                return @sorted;
             },
         },
         created_on => {

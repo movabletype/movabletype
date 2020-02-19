@@ -30,6 +30,9 @@ sub _find_encoding {
     my $enc;
     if ( eval { require Term::Encoding; 1 } ) {
         $enc = Term::Encoding::get_encoding() || 'utf8';
+        if ( $^O eq 'MSWin32' and $enc eq 'cp0' ) {
+            $enc = 'cp932';
+        }
     }
     else {
         $enc = $^O eq 'MSWin32' ? 'cp932' : 'utf8';
