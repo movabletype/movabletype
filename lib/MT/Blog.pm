@@ -266,7 +266,7 @@ sub list_props {
             bulk_sort => sub {
                 my $prop       = shift;
                 my ($objs)     = @_;
-                my @parent_ids = grep map { $_->parent_id } @$objs;
+                my @parent_ids = grep $_, map { $_->parent_id } @$objs;
                 return @$objs if @parent_ids <= 1;
                 my @parents
                     = MT->model('website')->load( { id => \@parent_ids } );
