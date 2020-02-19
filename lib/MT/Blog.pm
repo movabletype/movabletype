@@ -264,8 +264,8 @@ sub list_props {
                     : ( MT->translate('*Website/Blog deleted*') );
             },
             bulk_sort => sub {
-                my $prop    = shift;
-                my ($objs)  = @_;
+                my $prop       = shift;
+                my ($objs)     = @_;
                 my @parent_ids = grep map { $_->parent_id } @$objs;
                 return @$objs if @parent_ids <= 1;
                 my @parents
