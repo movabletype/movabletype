@@ -271,7 +271,7 @@ sub list_props {
                 my @parents
                     = MT->model('website')->load( { id => \@parent_ids } );
                 my %parent_names = map { $_->id => $_->name } @parents;
-                for (@parents_ids) {
+                for (@parent_ids) {
                     $parent_names{$_} = '' unless defined $parent_names{$_};
                 }
                 my @sorted = sort {
