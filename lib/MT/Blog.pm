@@ -281,14 +281,14 @@ sub list_props {
                 }
             },
             bulk_sort => sub {
-                my $prop    = shift;
-                my ($objs)  = @_;
+                my $prop       = shift;
+                my ($objs)     = @_;
                 my @parent_ids = grep map { $_->parent_id } @$objs;
                 return @$objs if @parent_ids <= 1;
-                my @parents = MT->model('website')
-                    ->load( { id => \@parent_ids } );
+                my @parents
+                    = MT->model('website')->load( { id => \@parent_ids } );
                 my %parent_names = map { $_->id => $_->name } @parents;
-                my @sorted = sort {
+                my @sorted       = sort {
                     $parent_names{ $a->parent_id }
                         cmp $parent_names{ $b->parent_id }
                 } @$objs;
