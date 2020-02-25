@@ -1324,11 +1324,11 @@ function saveTemplatePrefs( sync ) {
       setContentFieldInfo();
     });
     jQuery("#copy_ct_unique_id").on('click', function(){
-      jQuery('#ct_unique_id').select();
+      jQuery('#ct_unique_id').trigger('select');
       document.execCommand('copy');
     });
     jQuery("#copy_cf_unique_id").on('click', function(){
-      jQuery('#cf_unique_id').select();
+      jQuery('#cf_unique_id').trigger('select');
       document.execCommand('copy');
     });
 
