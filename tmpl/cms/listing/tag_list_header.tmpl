@@ -141,7 +141,7 @@ jQuery('#tag-table').on('click','a.edit-tag',function(){
           .attr('class', 'button')
           .text('<__trans phrase="Cancel">')
           .button()
-          .click( closeTagEditor )
+          .on('click', closeTagEditor )
       )
     )
   return false;
