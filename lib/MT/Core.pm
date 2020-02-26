@@ -1846,7 +1846,12 @@ BEGIN {
             'SMTPAuthSASLMechanism' => undef,
             'FTPSSSLVerifyNone'     => undef,
             'FTPSSSLVersion'        => undef,
-            'FTPSOptions'           => { type => 'HASH' },
+
+            # MTC-26629
+            'FTPSOptions' => {
+                type    => 'HASH',
+                default => { ReuseSession => 1 }
+            },
             'SSLVerifyNone'         => undef,
             'SSLVersion'            => undef,
             'DebugEmailAddress'     => undef,
