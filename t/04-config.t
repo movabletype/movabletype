@@ -18,7 +18,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-plan tests => 37;
+plan tests => 38;
 
 use MT;
 use MT::ConfigMgr;
@@ -115,5 +115,12 @@ foreach my $key (
     $cfg->set( $key, 'Avocado' );
     is( $cfg->get($key), 'Avocado', "Config $key is set-able" );
 }
+
+## Test FTPSOptions default (MTC-26629)
+is_deeply(
+    $cfg->FTPSOptions,
+    { ReuseSession => 1 },
+    'FTPSOptions ReuseSession=>1'
+);
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";
