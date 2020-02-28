@@ -666,12 +666,10 @@ sub rich_text_transform {
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
+    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)!;
     my @paras = split /\r?\n\r?\n/, $str;
     for my $p (@paras) {
-        if ( $p
-            !~ m@^</?(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)@
-            )
-        {
+        if ( $p !~ m!(?:^</?$tags|</$tags>$)! ) {
             $p =~ s!\r?\n!<br />\n!g;
             $p = "<p>$p</p>";
         }
