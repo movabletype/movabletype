@@ -681,7 +681,7 @@ sub html_text_transform {
     my @paras = split /\r?\n\r?\n/, $str;
     for my $p (@paras) {
         if ( $p
-            !~ m@^</?(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)@
+            !~ m@^</?(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)@
             )
         {
             $p =~ s!\r?\n!<br />\n!g;
