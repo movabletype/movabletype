@@ -76,7 +76,12 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
     },
 
     tweakForBlockTag: function(text) {
-        return text.replace(/^\n*/, '\n\n').replace(/\n*$/, '\n\n');
+        if ( text.match(/\n/) ) {
+            return text.replace(/^\n*/, '\n\n').replace(/\n*$/, '\n\n');
+        }
+        else {
+            return text;
+        }
     },
 
     execLinkCommand: function(command, open, close, text) {
