@@ -1,5 +1,6 @@
 package MT::Test::Selenium;
 
+use Role::Tiny::With;
 use strict;
 use warnings;
 use Test::More;
@@ -13,6 +14,10 @@ use JSON::PP;    # silence redefine warnings
 use MT::PSGI;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
+
+with qw(
+    MT::Test::Role::Wight
+);
 
 our %EXTRA = (
     "Selenium::Chrome" => {
@@ -135,40 +140,5 @@ sub DESTROY {
     $driver->quit;
 }
 
-# The following methods are just to keep compatibility with Test::Wight
-
-sub visit {
-    my ( $self, $path_query ) = @_;
-    my $url = $self->{base_url}->clone;
-    $url->path_query($path_query);
-    $self->driver->get( $url->as_string );
-    $self;
-}
-
-sub find {
-    my ( $self, $selector ) = @_;
-    my $element = eval { $self->driver->find_element($selector); };
-    $self->{_element} = $element;
-    $self;
-}
-
-sub value {
-    my $self = shift;
-    my $element = $self->{_element} or return;
-    $element->get_value;
-}
-
-sub attribute {
-    my ( $self, $attr ) = @_;
-    my $element = $self->{_element} or return;
-    $element->get_attribute($attr);
-}
-
-sub set {
-    my ( $self, $value ) = @_;
-    my $element = $self->{_element} or return;
-    $element->clear;
-    $element->send_keys("$value");
-}
 
 1;
