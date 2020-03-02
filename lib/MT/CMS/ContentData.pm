@@ -304,12 +304,9 @@ sub edit {
             $field->{value} = $data->{ $field->{content_field_id} };
         }
         else {
-            # TODO: fix after updating values option.
-            if ( $field->{type} eq 'select_box' || $field->{type} eq 'checkboxes' ) {
-                my $delimiter = quotemeta( $field->{options_delimiter} || ',' );
-                my @values    = split $delimiter,
-                    ( $field->{options}{initial_value} || '' );
-                $field->{value} = \@values;
+            if ( $field->{type} =~ /^(?:select_box|radio_button|checkboxes)$/ ) {
+                my @checked = map { $_->{value} } grep { $_->{checked} } @{ $field->{options}{values} || [] };
+                $field->{value} = @checked > 1 ? \@checked : $checked[0];
             }
             else {
                 $field->{value} = $field->{options}{initial_value};
