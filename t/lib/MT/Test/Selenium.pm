@@ -27,17 +27,18 @@ our %EXTRA = (
     "Selenium::Chrome" => {
         'goog:chromeOptions' => {
             args => [
-                'headless', ( DEBUG ? 'enable-logging' : () ),
+                'headless', ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox',
             ],
+            perfLoggingPrefs => {},
         },
-        binaries =>
-            [
-                'chromedriver',
-                '/usr/bin/chromedriver',
-                '/usr/lib/chromium-browser/chromedriver',
-                '/usr/lib64/chromium-browser/chromedriver',
-            ],
+        loggingPrefs => { performance => 'ALL' },
+        binaries     => [
+            'chromedriver',
+            '/usr/bin/chromedriver',
+            '/usr/lib/chromium-browser/chromedriver',
+            '/usr/lib64/chromium-browser/chromedriver',
+        ],
     },
     "Selenium::Remote::Driver" => {
         'goog:chromeOptions' => {
@@ -295,6 +296,35 @@ sub request {
     }
     $res ||= HTTP::Response->new(200);
     return $self->{res} = $res;
+}
+
+sub _get_request_logs {
+    my $self = shift;
+    my $logs = $self->driver->get_log('performance');
+    my @requests;
+    for my $log (@$logs) {
+        next unless $log->{message} =~ /Network\.requestWillBeSent/;
+        my $message = decode_json( $log->{message} );
+        my $req     = $message->{message}{params}{request} or next;
+        push @requests, { map { $_ => $req->{$_} } qw/headers method url/ };
+    }
+    return \@requests;
+}
+
+sub _get_response_logs {
+    my $self = shift;
+    my $logs = $self->driver->get_log('performance');
+    my @responses;
+    for my $log (@$logs) {
+        next unless $log->{message} =~ /Network\.responseReceived/;
+        my $message = decode_json( $log->{message} );
+        my $res     = $message->{message}{params}{response} or next;
+        ## Add timing if requested?
+        push @responses,
+            { map { $_ => $res->{$_} }
+                qw/headers status statusText url requestHeaders/ };
+    }
+    return \@responses;
 }
 
 1;
