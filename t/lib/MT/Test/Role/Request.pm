@@ -7,7 +7,7 @@ use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Test::More;
 
-requires qw/ request content base_url /;
+requires qw/ request base_url /;
 
 sub _convert_params {
     my $params = shift;
