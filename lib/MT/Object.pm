@@ -173,6 +173,22 @@ sub install_properties {
             next if ref($prop) ne 'HASH';
             MT::__merge_hash( $cols, $prop, 1 );
         }
+
+        my $aliases = MT->registry( 'object_type_aliases', $type_id );
+        if ($aliases) {
+            my @alias_ids = ref $aliases eq 'ARRAY' ? @$aliases : ($aliases);
+            @alias_ids = @{ $alias_ids[0] } if ref $alias_ids[0] eq 'ARRAY';
+            for my $alias_id (@alias_ids) {
+                my $props_alias = MT->registry( 'object_types', $alias_id );
+                if ( $props_alias && ref $props_alias eq 'ARRAY' ) {
+                    for my $prop (@$props_alias) {
+                        next if ref($prop) ne 'HASH';
+                        MT::__merge_hash( $cols, $prop, 1 );
+                    }
+                }
+            }
+        }
+
         my @classes = grep { !ref($_) } @$more_props;
         foreach my $isa_class (@classes) {
             next if UNIVERSAL::isa( $class, $isa_class );
