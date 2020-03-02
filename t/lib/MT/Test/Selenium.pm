@@ -142,5 +142,9 @@ sub DESTROY {
     $driver->quit;
 }
 
+sub base_url {
+    my $self = shift;
+    $self->{base_url}->clone;
+}
 
 1;

@@ -55,6 +55,8 @@ sub new {
     bless \%args, $class;
 }
 
+sub base_url { 'http://localhost' }
+
 sub login {
     my ( $self, $user ) = @_;
     $self->{user} = $user;
