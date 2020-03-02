@@ -17,6 +17,8 @@ use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
 
 with qw(
     MT::Test::Role::Wight
+    MT::Test::Role::Request
+    MT::Test::Role::WebQuery
 );
 
 our %EXTRA = (
