@@ -158,6 +158,57 @@ sub base_url {
     $self->{base_url}->clone;
 }
 
+sub login {
+    my ( $self, $user ) = @_;
+    my $url = $self->base_url;
+    $url->path('/cgi-bin/mt.cgi');
+    $self->driver->get("$url");
+    $self->{content} = $self->driver->get_page_source;
+    my $form = $self->form;
+    $form->param( username => $user->name );
+    $form->param( password => $user->id == 1 ? 'Nelson' : 'pass' );
+
+    $self->_post_form($form);
+}
+
+sub _post_form {
+    my ( $self, $form ) = @_;
+    my $submit;
+    for my $input ( $form->inputs ) {
+        my $type = $input->type;
+        if ( $type =~ /(?:text|password)/ ) {
+            my $elem = $self->_find_by_input($input);
+            $elem->clear;
+            $elem->send_keys( $input->value );
+        }
+        if ( $type eq 'submit' ) {
+            $submit = $self->_find_by_input($input);
+        }
+    }
+    $submit->click();
+}
+
+sub _find_by_input {
+    my ( $self, $input ) = @_;
+    if ( $input->id ) {
+        return $self->driver->find_element_by_id( $input->id );
+    }
+    elsif ( $input->name ) {
+        my $type = $input->type;
+        if ( $type eq 'select' ) {
+            Carp::croak "not implemented";
+        }
+        elsif ( $type eq 'textarea' ) {
+            Carp::croak "not implemented";
+        }
+        else {
+            return $self->driver->find_element(
+                'input[name=' . $input->name . ']' );
+        }
+    }
+    Carp::croak "Can't find elem from input";
+}
+
 sub mt_url {
     my ( $self, $params ) = @_;
     my $url = $self->base_url;
