@@ -12,6 +12,7 @@ use File::Spec;
 use File::Which qw/which/;
 use URI;
 use JSON::PP;    # silence redefine warnings
+use URI::QueryParam;
 use MT::PSGI;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : 0;
 use constant MY_HOST => $ENV{TRAVIS} ? $ENV{HOSTNAME} : '127.0.0.1';
@@ -155,6 +156,94 @@ sub DESTROY {
 sub base_url {
     my $self = shift;
     $self->{base_url}->clone;
+}
+
+sub mt_url {
+    my ( $self, $params ) = @_;
+    my $url = $self->base_url;
+    $url->path("/cgi-bin/mt.cgi");
+    $url->query_form_hash($params) if $params;
+    $url;
+}
+
+sub request {
+    my ( $self, $params ) = @_;
+    my $method = delete $params->{__request_method};
+    my $request_url;
+    if ( $method eq 'GET' ) {
+        $request_url = $self->mt_url($params);
+        $self->driver->get("$request_url");
+        $self->{content} = $self->driver->get_page_source;
+    }
+    elsif ( $method eq 'POST' ) {
+        $request_url = $self->mt_url;
+        my $submit;
+        for my $key ( keys %$params ) {
+            my $input = eval { $self->driver->find_element_by_name($key) };
+            if ($input) {
+                my $tag = lc $input->get_tag_name;
+                if ( !$input->is_enabled or $input->is_hidden ) {
+                    next;
+                }
+                if ( $tag eq 'input' ) {
+                    my $type = lc $input->get_attribute('type');
+                    if ( $type eq 'submit' ) {
+                        $submit = $input;
+                    }
+                    elsif ( $type eq 'checkbox' ) {
+                    }
+                    elsif ( $type eq 'radio' ) {
+                    }
+                    else {
+                        $input->clear if defined $input->get_value;
+                        $input->send_keys( $params->{$key} );
+                    }
+                }
+                elsif ( $tag eq 'select' ) {
+                    $input->click;
+                    for my $option ( @{ $input->children('option') || [] } ) {
+                        if ( $option->get_value eq $params->{$key} ) {
+                            $option->set_selected;
+                        }
+                        elsif ( $option->is_selected ) {
+                            $option->toggle;
+                        }
+                    }
+                }
+            }
+        }
+        my $source = $self->driver->get_page_source;
+        if ($submit) {
+            $submit->click;
+        }
+        else {
+            $submit = $self->driver->find_element_by_class('btn-primary');
+            $submit->click;
+        }
+    }
+
+    if (DEBUG) {
+        ## Typically warnings from jquery-migrate.js
+        my $console_log = $self->driver->get_log('browser');
+        note explain $console_log if @{ $console_log || [] };
+    }
+
+    my $logs   = $self->_get_response_logs;
+    my @errors = grep { $_->{status} !~ /^[23]/ } @$logs;
+    if (@errors) {
+        note explain \@errors;
+    }
+    my $res;
+    for my $log (@$logs) {
+        next unless $log->{url} eq $request_url;
+
+        # TODO: take care of redirection
+        $res = HTTP::Response->new( $log->{status}, $log->{statusText},
+            [ %{ $log->{headers} || {} } ] );
+        $res->content( $self->{content} );
+    }
+    $res ||= HTTP::Response->new(200);
+    return $self->{res} = $res;
 }
 
 1;
