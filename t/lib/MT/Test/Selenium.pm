@@ -3,6 +3,8 @@ package MT::Test::Selenium;
 use Role::Tiny::With;
 use strict;
 use warnings;
+use JSON::PP ();    # silence redefine warnings
+use JSON;
 use Test::More;
 use Test::TCP;
 use Plack::Runner;
@@ -11,7 +13,6 @@ use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
 use URI;
-use JSON::PP;    # silence redefine warnings
 use URI::QueryParam;
 use MT::PSGI;
 use constant DEBUG => $ENV{MT_TEST_SELENIUM_DEBUG} ? 1 : 0;
