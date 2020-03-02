@@ -24,7 +24,7 @@ with qw(
 
 our %EXTRA = (
     "Selenium::Chrome" => {
-        chromeOptions => {
+        'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
@@ -39,7 +39,7 @@ our %EXTRA = (
             ],
     },
     "Selenium::Remote::Driver" => {
-        chromeOptions => {
+        'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
