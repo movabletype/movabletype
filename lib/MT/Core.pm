@@ -190,6 +190,13 @@ BEGIN {
             # group
             'group' => 'MT::Group',
         },
+        object_type_aliases => {
+            cd        => ['content_data'],
+            cf        => ['content_field'],
+            cf_idx    => ['content_field_index'],
+            ipbanlist => ['banlist'],
+            tbping    => ['ping', 'ping_cat'],
+        },
         list_properties => {
             __virtual => {
                 base => {
