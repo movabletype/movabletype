@@ -7,6 +7,7 @@ use Test::More;
 use Test::TCP;
 use Plack::Runner;
 use Plack::Builder;
+use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
 use URI;
@@ -92,14 +93,23 @@ sub new {
         code => sub {
             my $port = shift;
 
-            my $host = MY_HOST;
+            my $host  = MY_HOST;
             my %extra = ( CGIPath => "http://$host:$port/cgi-bin/" );
             $env->update_config(%extra);
 
-            my $app     = MT::PSGI->new->to_app;
+            my $app        = MT::PSGI->new->to_app;
+            my $static_app = Plack::App::Directory->new(
+                root => "$ENV{MT_HOME}/mt-static" );
+
             my $builder = builder {
-                enable 'AccessLog' if DEBUG;
-                $app;
+                mount "/mt-static" => builder {
+                    enable 'AccessLog' if DEBUG;
+                    $static_app;
+                };
+                mount "/" => builder {
+                    enable 'AccessLog' if DEBUG;
+                    $app;
+                };
             };
             my $runner = Plack::Runner->new( app => $builder );
             $runner->parse_options(
