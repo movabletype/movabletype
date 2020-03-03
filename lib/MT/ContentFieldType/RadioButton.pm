@@ -11,26 +11,26 @@ sub field_html_params {
     my ( $app, $field_data ) = @_;
     my $value = $field_data->{value};
 
+    my %values;
+    if ( defined $value ) {
+        if ( ref $value eq 'ARRAY' ) {
+            %values = map { $_ => 1 } @$value;
+        }
+        else {
+            $values{$value} = 1;
+        }
+    }
+
     my $options_values = $field_data->{options}{values} || [];
 
-    if ( defined $value ) {
-        @$options_values = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                ( $_->{value} eq $value )
-                ? ( checked => 'checked="checked"' )
-                : (),
-            }
-        } @$options_values;
-    }
-    else {
-        @{$options_values} = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
-            }
-        } @{$options_values};
-    }
+    @$options_values = map {
+        {   l => $_->{label},
+            v => $_->{value},
+            $values{ $_->{value} }
+            ? ( checked => 'checked="checked"' )
+            : (),
+        }
+    } @$options_values;
 
     my $required = $field_data->{options}{required} ? 'required' : '';
 

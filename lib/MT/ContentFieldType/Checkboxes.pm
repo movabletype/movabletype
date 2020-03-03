@@ -24,24 +24,14 @@ sub field_html_params {
     my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
 
-    if (%values) {
-        @$options_values = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                $values{ $_->{value} }
-                ? ( checked => 'checked="checked"' )
-                : (),
-            }
-        } @$options_values;
-    }
-    else {
-        @{$options_values} = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                ( $_->{checked} ? ( checked => 'checked="checked"' ) : () ),
-            }
-        } @{$options_values};
-    }
+    @$options_values = map {
+        {   l => $_->{label},
+            v => $_->{value},
+            $values{ $_->{value} }
+            ? ( checked => 'checked="checked"' )
+            : (),
+        }
+    } @$options_values;
 
     my $multiple = '';
     my $max      = $options->{max};
