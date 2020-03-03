@@ -223,6 +223,7 @@
     if (!filter) {
       return;
     }
+    var orgLabel = filter.label;
     filter.label = filterLabel;
 
     var self = this;
@@ -233,6 +234,7 @@
           self.setSaveFilterResult(data.result);
         } else if (data.error) {
           alert(data.error);
+          filter.label = orgLabel;
         }
       },
       always: function () {
