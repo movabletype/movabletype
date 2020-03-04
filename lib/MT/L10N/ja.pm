@@ -3233,7 +3233,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'Show' => '表示項目',
+	'Show' => '表示件数',
 	'25 rows' => '25件',
 	'50 rows' => '50件',
 	'100 rows' => '100件',

@@ -439,13 +439,7 @@ sub run_step {
     my $keys  = $app->config_keys;
     if ($curr_step) {
         foreach ( @{ $keys->{$curr_step} } ) {
-            if ( defined $app->param($_) ) {
-                $param{$_} = $app->param($_);
-            }
-            else {
-                delete $param{$_}
-                    if exists $param{$_};
-            }
+            $param{$_} = $app->param($_);
         }
 
         if ( $app->param('save') ) {
@@ -909,6 +903,12 @@ sub configure {
         $param{connect_error} = 1;
         $param{error}         = $err_msg;
         $param{error_more}    = $err_more;
+    }
+
+    for my $field (@fields) {
+        my $name = $field->{id};
+        next if defined $param{$name};
+        $param{$name} = $field->{default};
     }
 
     $app->build_page( "configure.tmpl", \%param );

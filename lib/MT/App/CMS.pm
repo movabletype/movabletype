@@ -327,13 +327,6 @@ sub core_methods {
         'update_widget_prefs' =>
             sub { return shift->update_widget_prefs(@_) },
 
-        ## Debug
-        'vcs_revision' => {
-            code      => "${pkg}Debug::vcs_revision",
-            app_mode  => 'JSON',
-            condition => sub { my $app = shift; $app->config->DebugMode },
-        },
-
         ## DEPRECATED ##
         'upload_userpic' => "${pkg}User::upload_userpic",
 

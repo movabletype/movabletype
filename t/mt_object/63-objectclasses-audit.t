@@ -34,7 +34,7 @@ $dbh->do("delete from mt_entry_rev");
 sub create_entry {
     my $entry = MT::Entry->new;
     $entry->set_values(
-        {   titme     => 'titme',
+        {   title     => 'title',
             status    => 2,
             author_id => 1,
             blog_id   => $blog->id,

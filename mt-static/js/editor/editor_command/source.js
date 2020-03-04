@@ -75,10 +75,6 @@ $.extend(MT.EditorCommand.Source.prototype, MT.EditorCommand.prototype, {
         }
     },
 
-    tweakForBlockTag: function(text) {
-        return text.replace(/^\n*/, '\n\n').replace(/\n*$/, '\n\n');
-    },
-
     execLinkCommand: function(command, open, close, text) {
         var selection;
 
@@ -150,35 +146,35 @@ MT.EditorCommand.Source.prototype.commands['default'] = {
     'createLink-target': true,
 
     indent: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
     },
 
     blockquote: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<blockquote>', '</blockquote>', text);
     },
 
     insertUnorderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ul>', '</ul>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<ul>', '</ul>', text);
     },
 
     insertOrderedList: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<ol>', '</ol>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<ol>', '</ol>', text);
     },
 
     insertListItem: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<li>', '</li>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<li>', '</li>', text);
     },
 
     justifyLeft: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: left;">', '</div>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<div style="text-align: left;">', '</div>', text);
     },
 
     justifyCenter: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: center;">', '</div>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<div style="text-align: center;">', '</div>', text);
     },
 
     justifyRight: function(command, userInterface, argument, text) {
-        this.execEnclosingCommand(command, '<div style="text-align: right;">', '</div>', this.tweakForBlockTag(text));
+        this.execEnclosingCommand(command, '<div style="text-align: right;">', '</div>', text);
     }
 };
 

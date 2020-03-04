@@ -386,6 +386,12 @@ sub prepare_content_type {
                             source => $source->id,
                         );
                     }
+                    elsif ( $cf_type =~ /\A(?:checkboxes|radio_button|select_box)\z/ ) {
+                        for my $key (qw/min max values required multiple/) {
+                            next unless defined $item->{$key};
+                            $options{$key} = delete $item->{$key};
+                        }
+                    }
                     my $cf = MT::Test::Permission->make_content_field(
                         blog_id         => $blog_id,
                         content_type_id => $ct->id,

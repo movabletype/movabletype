@@ -28,6 +28,7 @@ my @allowed_sub_dirs = qw(
     mt7
     mt_object
     object_driver
+    selenium
     tag
     task
     template

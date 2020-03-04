@@ -46,7 +46,6 @@ $js
     .= `cat plugins/BlockEditor/tmpl/cms/dialog/include/asset_upload_panel.tmpl`;
 $js
     .= `cat plugins/BlockEditor/tmpl/cms/field_html/field_html_multi_line_text.tmpl`;
-$js .= `cat plugins/BlockEditor/tmpl/cms/include/async_asset_list.tmpl`;
 $js .= `cat plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl`;
 $js .= `cat tmpl/cms/edit_commenter.tmpl`;
 $js .= `cat tmpl/cms/edit_content_data.tmpl`;

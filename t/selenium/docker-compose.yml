@@ -1,0 +1,26 @@
+version: "2"
+services:
+  chromedriver:
+    image: movabletype/test:chromedriver
+    expose:
+      - "9515"
+    ports:
+      - "9515:9515"
+    networks:
+      my_net:
+    entrypoint: [chromedriver, --headless, --no-sandbox, --disable-gpu, --url-base=wd/hub, --whitelisted-ips, --verbose]
+  test:
+    image: $TEST_IMAGE
+    volumes:
+      - $PWD:/mt
+    working_dir:
+      /mt
+    depends_on:
+      - chromedriver
+    networks:
+      my_net:
+    command: >-
+      bash -c "TRAVIS=1 MT_TEST_SELENIUM_DEBUG=1 $TEST_COMMAND"
+networks:
+  my_net:
+    driver: bridge
