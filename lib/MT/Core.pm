@@ -1771,7 +1771,7 @@ BEGIN {
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
-            'MailEncoding'          => { default => 'ISO-8859-1', },
+            'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
