@@ -112,10 +112,10 @@ test4</li>
 </ul>
 --- expected
 <ul>
-<li>test
+<li>test<br />
 test2</li>
 
-<li>test3
+<li>test3<br />
 test4</li>
 </ul>
 
@@ -148,14 +148,14 @@ test2-2</p>
 
 test3</li>
 
-<li>test4-1
+<li>test4-1<br />
 test4-2
 
 <p>test5-1<br />
 test5-2<br />
 test5-3</p>
 
-test6-1
+test6-1<br />
 test6-2</li>
 </ul>
 
