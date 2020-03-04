@@ -38,7 +38,6 @@ sub LATEST_VERSION_URL()   {'https://movabletype.jp/latest_version.json'}
 sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {1}
 sub DEFAULT_TIMEZONE()     {9}
-sub MAIL_ENCODING()        {'ISO-2022-JP'}
 sub LOG_EXPORT_ENCODING()  {'Shift_JIS'}
 sub EXPORT_ENCODING()      {'Shift_JIS'}
 sub PUBLISH_CHARSET()      {'UTF-8'}
