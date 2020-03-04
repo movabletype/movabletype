@@ -682,9 +682,9 @@ sub html_text_transform {
     my @paras = split /\r?\n\r?\n/, $str;
     for my $p (@paras) {
         if ( $p !~ m!(?:^</?$tags|</$tags>$)! ) {
-            $p =~ s!\r?\n!<br />\n!g;
             $p = "<p>$p</p>";
         }
+        $p =~ s|(?<!>)\r?\n|<br />\n|g;
     }
     join "\n\n", @paras;
 }
