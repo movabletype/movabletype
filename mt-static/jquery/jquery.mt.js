@@ -1168,10 +1168,6 @@ $.mtValidator('default', {
             // But in that error, $target is already wrapped probably.
         }
         $target.after($error_block);
-        $error_block
-            .css('left', $target.width() )
-            .css('top',   -1 * $target.height() )
-            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
