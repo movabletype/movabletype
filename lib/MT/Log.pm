@@ -110,7 +110,7 @@ sub list_props {
                 return $desc
                     ? qq{
                     <div class="log-message can-select">
-                      <a href="#log-detail-$id" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="log-detail-$id">
+                      <a href="#log-detail-$id" class="toggle-link icon-left icon-spinner detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="log-detail-$id">
                         $msg
                       </a>
                       <div id="log-detail-$id" class="collapse log-metadata detail">
