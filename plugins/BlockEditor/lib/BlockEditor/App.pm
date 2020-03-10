@@ -183,7 +183,7 @@ sub replace_handler {
             = 'editor-input-content-field-'
             . $field_data->{id}
             . '-blockeditor';
-        for my $key ( keys $data->{$editor_key} ) {
+        for my $key ( keys %{ $data->{$editor_key} } ) {
             $replaced += $data->{$editor_key}->{$key}->{value}
                 =~ s!$search_regex!$replace_string!g;
             $replaced += $data->{$editor_key}->{$key}->{html}
