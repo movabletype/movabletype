@@ -1083,7 +1083,6 @@ sub i18n_default_settings {
         'NewsURL'            => 'NEWS_URL',
         'DefaultTimezone'    => 'DEFAULT_TIMEZONE',
         'TimeOffset'         => 'DEFAULT_TIMEZONE',
-        'MailEncoding'       => 'MAIL_ENCODING',
         'ExportEncoding'     => 'EXPORT_ENCODING',
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
