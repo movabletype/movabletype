@@ -175,7 +175,8 @@ sub replace_handler {
         : undef;
     if ( $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
         my $block_editor_data = $content_data->block_editor_data;
-        my $data = eval { MT::Util::from_json( $content_data->block_editor_data ) };
+        my $data
+            = eval { MT::Util::from_json( $content_data->block_editor_data ) };
         return unless $data && ref $data eq 'HASH' && %$data;
 
         my $editor_key
@@ -183,8 +184,10 @@ sub replace_handler {
             . $field_data->{id}
             . '-blockeditor';
         for my $key ( keys $data->{$editor_key} ) {
-            $replaced += $data->{$editor_key}->{$key}->{value} =~ s!$search_regex!$replace_string!g;
-            $replaced += $data->{$editor_key}->{$key}->{html} =~ s!$search_regex!$replace_string!g;
+            $replaced += $data->{$editor_key}->{$key}->{value}
+                =~ s!$search_regex!$replace_string!g;
+            $replaced += $data->{$editor_key}->{$key}->{html}
+                =~ s!$search_regex!$replace_string!g;
         }
         $content_data->block_editor_data( MT::Util::to_json($data) );
     }
