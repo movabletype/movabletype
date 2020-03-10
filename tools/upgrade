@@ -206,6 +206,10 @@ sub trace {
         unless $quiet;
 }
 
+sub config {
+    MT->config;
+}
+
 __PACKAGE__->main() unless caller;
 
 1;
