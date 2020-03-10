@@ -1340,8 +1340,10 @@ sub do_search_replace {
                                 $app->param( 'error', $error );
                             }
                             if ($replace_handler) {
+                                my $text_ref = $text;
+                                $text_ref = \$text unless ref $text_ref;
                                 $replaced = $replace_handler->(
-                                    $re, $replace, $field_data, $text, $obj
+                                    $re, $replace, $field_data, $text_ref, $obj
                                 );
                             }
                         }

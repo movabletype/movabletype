@@ -158,6 +158,39 @@ sub pre_save_content_data {
     1;
 }
 
+sub replace_handler {
+    my ($search_regex, $replace_string, $field_data,
+        $values,       $content_data
+    ) = @_;
+
+    return 0 unless defined $values;
+
+    my $replaced = 0;
+
+    $replaced += $$values =~ s!$search_regex!$replace_string!g;
+
+    my $convert_breaks
+        = $field_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
+    if ( $$convert_breaks->{ $field_data->{id} } eq 'blockeditor' ) {
+        my $block_editor_data = $content_data->block_editor_data;
+        my $data = eval { MT::Util::from_json( $content_data->block_editor_data ) };
+        return unless $data && ref $data eq 'HASH' && %$data;
+
+        my $editor_key
+            = 'editor-input-content-field-'
+            . $field_data->{id}
+            . '-blockeditor';
+        for my $key ( keys $data->{$editor_key} ) {
+            $replaced += $data->{$editor_key}->{$key}->{value} =~ s!$search_regex!$replace_string!g;
+            $replaced += $data->{$editor_key}->{$key}->{html} =~ s!$search_regex!$replace_string!g;
+        }
+        $content_data->block_editor_data( MT::Util::to_json($data) );
+    }
+    $replaced > 0;
+}
+
 =head
 sub dialog_list_asset {
     my $app = shift;
