@@ -836,7 +836,7 @@
 </div>
 
 <mt:if name="enabled_plugins{CommentsTrackback}">
-<div id="feedback-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
+<div id="feedback-field" class="d-none<mt:if name="disp_prefs_show_feedback"> d-md-block</mt:if>">
   <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
@@ -905,7 +905,7 @@
 </mt:if>
 
 <mt:if name="object_type" like="(entry|page)">
-<div id="assets-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
+<div id="assets-field" class="d-none<mt:if name="disp_prefs_show_assets"> d-md-block</mt:if>">
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
   <mtapp:widget
      id="asset_container"
@@ -1237,16 +1237,32 @@ div.mce-notification-error {
               val = customizable_fields[i];
               if ( jQuery.inArray( val, default_fields ) > -1 ) {
                   jQuery('#custom-prefs-'+val).prop('checked', true);
-                  jQuery('div#'+val+'-field').show();
+                  showField(jQuery('div#'+val+'-field'), val);
               } else {
                   jQuery('#custom-prefs-'+val).prop('checked', false);
-                  jQuery('div#'+val+'-field').hide();
+                  hideField(jQuery('div#'+val+'-field'), val);
               }
           };
 
           sendEntryPrefs();
 
           return false;
+      }
+
+      var dContainers = ['assets', 'feedback'];
+      function showField($container, name) {
+          if (dContainers.indexOf(name) >= 0) {
+              $container.addClass('d-md-block');
+          } else {
+              $container.show();
+          }
+      }
+      function hideField($container, name) {
+          if (dContainers.indexOf(name) >= 0) {
+              $container.removeClass('d-md-block');
+          } else {
+              $container.hide();
+          }
       }
 
       var tag_delim = '<$mt:var name="auth_pref_tag_delim"$>';
@@ -1833,9 +1849,9 @@ div.mce-notification-error {
     jQuery('div#display-options-detail :checkbox').click(function() {
         var $field_block = jQuery('div#'+this.value+'-field');
         if ( this.checked ) {
-            $field_block.show();
+            showField($field_block, this.value);
         } else {
-            $field_block.hide();
+            hideField($field_block, this.value);
         }
         jQuery('#entry_prefs').val('Custom');
         sendEntryPrefs();
