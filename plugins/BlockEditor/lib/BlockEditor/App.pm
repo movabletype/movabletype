@@ -163,7 +163,10 @@ sub replace_handler {
         $values,       $content_data
     ) = @_;
 
-    return 0 unless defined $values;
+    return 0
+        unless ( defined $values
+        or ref $values eq 'SCALAR'
+        or defined $$values );
 
     my $replaced = 0;
 
