@@ -19,7 +19,7 @@ use MT::Test;
 use Cwd;
 use File::Spec;
 use File::Temp qw( tempfile );
-plan tests => 41;
+plan tests => 42;
 
 use MT;
 use MT::ConfigMgr;
@@ -126,5 +126,12 @@ is( $mt->{cfg}->type('AltTemplatePath'), 'ARRAY', 'AltTemplatePath=ARRAY' );
 is( @altpaths,                    2,       'paths=2' );
 ok( File::Spec->file_name_is_absolute($altpaths[0]),  'alt-foo becomes absolute' );
 ok( File::Spec->file_name_is_absolute($altpaths[1]),  'alt-bar becomes absolute' );
+
+## Test FTPSOptions default (MTC-26629)
+is_deeply(
+    $cfg->FTPSOptions,
+    { ReuseSession => 1 },
+    'FTPSOptions ReuseSession=>1'
+);
 
 unlink $cfg_file or die "Can't unlink '$cfg_file': $!";
