@@ -1324,6 +1324,7 @@ sub do_search_replace {
                         $text = $obj->column($col);
                     }
                     $text = '' unless defined $text;
+                    my $replaced_text;
                     if ($do_replace) {
                         my $replaced;
                         my $replace_handler;
@@ -1340,11 +1341,10 @@ sub do_search_replace {
                                 $app->param( 'error', $error );
                             }
                             if ($replace_handler) {
-                                my $text_ref = $text;
-                                $text_ref = \$text unless ref $text_ref;
-                                $replaced = $replace_handler->(
-                                    $re, $replace, $field_data, $text_ref, $obj
+                                ($replaced, $replaced_text) = $replace_handler->(
+                                    $re, $replace, $field_data, $text, $obj
                                 );
+                                $text = $replaced_text if defined $replaced_text;
                             }
                         }
                         else {

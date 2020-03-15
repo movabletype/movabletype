@@ -163,14 +163,11 @@ sub replace_handler {
         $values,       $content_data
     ) = @_;
 
-    return 0
-        unless ( defined $values
-        or ref $values eq 'SCALAR'
-        or defined $$values );
+    return 0 unless defined $values;
 
     my $replaced = 0;
 
-    $replaced += $$values =~ s!$search_regex!$replace_string!g;
+    $replaced += $values =~ s!$search_regex!$replace_string!g;
 
     my $convert_breaks
         = $field_data
@@ -194,7 +191,7 @@ sub replace_handler {
         }
         $content_data->block_editor_data( MT::Util::to_json($data) );
     }
-    $replaced > 0;
+    return ($replaced > 0, $values);
 }
 
 1;
