@@ -1211,7 +1211,6 @@ sub i18n_default_settings {
         'NewsURL'            => 'NEWS_URL',
         'DefaultTimezone'    => 'DEFAULT_TIMEZONE',
         'TimeOffset'         => 'DEFAULT_TIMEZONE',
-        'MailEncoding'       => 'MAIL_ENCODING',
         'ExportEncoding'     => 'EXPORT_ENCODING',
         'LogExportEncoding'  => 'LOG_EXPORT_ENCODING',
         'CategoryNameNodash' => 'CATEGORY_NAME_NODASH',
@@ -2444,55 +2443,6 @@ sub set_default_tmpl_params {
     my ($tmpl) = @_;
     my $param  = {};
     $param->{mt_debug} = $MT::DebugMode;
-    if ( $param->{mt_debug} && $mt->isa('MT::App') ) {
-        $param->{mt_svn_revision} = $mt->_svn_revision();
-        if ( $ENV{MOD_PERL} && exists( $mt->{apache} ) ) {
-            $param->{mt_headers} = $mt->{apache}->headers_in();
-        }
-        else {
-            $param->{mt_headers} = \%ENV;
-        }
-        unless ( $mt->{cookies} ) {
-            if ( $ENV{MOD_PERL} ) {
-                eval { require Apache::Cookie };
-                $mt->{cookies} = Apache::Cookie->fetch;
-            }
-            else {
-                eval { require CGI::Cookie };
-                $mt->{cookies} = CGI::Cookie->fetch;
-            }
-        }
-        if ( $mt->{cookies} ) {
-            $param->{mt_cookies} = $mt->{cookies};
-        }
-        my %params = $mt->param_hash;
-        $param->{mt_queries} = \%params;
-        if ( $param->{mt_debug} & 4 ) {
-            if ( my $profiler = Data::ObjectDriver->profiler ) {
-                my $stats = $profiler->statistics;
-                $param->{mt_sql_profile}{statistics} = $stats;
-                $param->{mt_sql_profile}{total_queries}
-                    = $stats->{'DBI:total_queries'};
-
-                my $freq = $profiler->query_frequency;
-                my @cache_types;
-                foreach ( keys %$freq ) {
-                    my ( $cache_type, $memcache, $method )
-                        = $_ =~ /^(.+)CACHE(D?)_(.+)\s\?/;
-                    next unless $cache_type;
-                    push @cache_types,
-                        $cache_type . ':query_' . lc($method),
-                        delete $freq->{$_};
-                }
-                $param->{mt_sql_profile}{query_frequency} = $freq;
-                $param->{mt_cache_profile} = [];
-                while ( my $k = shift(@cache_types) ) {
-                    push @{ $param->{mt_cache_profile} }, $k,
-                        shift(@cache_types);
-                }
-            }
-        }
-    }
     $param->{mt_beta}         = 1 if MT->version_id =~ m/^\d+\.\d+(?:a|b|rc)/;
     $param->{static_uri}      = $mt->static_path;
     $param->{mt_version}      = MT->version_number;
@@ -2507,6 +2457,8 @@ sub set_default_tmpl_params {
         if ( my $author = $mt->user ) {
             $param->{author_id}   = $author->id;
             $param->{author_name} = $author->name;
+
+            delete $param->{mt_debug} unless $author->is_superuser;
         }
         ## We do this in load_tmpl because show_error and login don't call
         ## build_page; so we need to set these variables here.

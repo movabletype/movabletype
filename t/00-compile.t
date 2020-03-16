@@ -213,6 +213,7 @@ SKIP: {
 }
 use_ok('MT::Util::PerformanceData');
 use_ok('MT::Util::ReqTimer');
+use_ok('MT::Util::UniqueID');
 use_ok('MT::Util::YAML');
 SKIP: {
     if ( eval { require YAML::Syck } ) {

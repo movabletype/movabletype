@@ -28,6 +28,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+$test_env->fix_mysql_create_table_sql;
+
 use MT::Test::DDL;
 
 Test::Class->runtests;

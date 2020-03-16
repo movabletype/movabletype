@@ -15,6 +15,8 @@ BEGIN {
 use Test::MockModule;
 use MT::Test::DataAPI;
 
+$test_env->prepare_fixture('db_data');
+
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;
 
