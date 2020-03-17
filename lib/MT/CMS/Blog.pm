@@ -1410,6 +1410,14 @@ sub rebuild_confirm {
 
     $param{index_selected} = ( $app->param('prompt') || "" ) eq 'index';
 
+    require MT::Util::UniqueID;
+    my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+    $param{ott} = $token;
+    if ( my $session = $app->session ) {
+        $session->set( 'mt_rebuild_token', $token );
+        $session->save;
+    }
+
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
         require MT::Template;
         my $tmpl
