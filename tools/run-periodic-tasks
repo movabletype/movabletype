@@ -19,6 +19,9 @@ my $verbose   = 1;
 my $scoreboard;
 my $randomize_jobs = 0;
 my $trace_objects  = 0;
+my $workers;
+my $ignore;
+my $floor;
 
 require Getopt::Long;
 Getopt::Long::GetOptions(
@@ -30,6 +33,9 @@ Getopt::Long::GetOptions(
     "verbose"      => \$verbose,
     "leak"         => \$trace_objects,
     "quiet"        => sub { $verbose = 0 },
+    "workers=s"    => \$workers,
+    "ignore=s"     => \$ignore,
+    "floor=i"      => \$floor,
 );
 require MT::TheSchwartz;
 
@@ -50,6 +56,7 @@ $cfg{verbose}    = $verbose;
 $cfg{scoreboard} = $scoreboard;
 $cfg{prioritize} = 1;
 $cfg{randomize}  = $randomize_jobs;
+$cfg{floor}      = $floor;
 
 require MT::Bootstrap;
 require MT;
@@ -84,6 +91,28 @@ if ( MT->config('RPTFreeSwapLimit') ) {
             "Free swap memory below RPT limit; cancelling RPT launch\n";
     }
 }
+
+my @worker_classes;
+if ($workers) {
+    for my $name ( split /,/, $workers ) {
+        $name = "MT::Worker::" . $name unless $name =~ /::/;
+        push @worker_classes, $name;
+    }
+}
+elsif ($ignore) {
+    my %ignore_map;
+    for my $name ( split /,/, $ignore ) {
+        $name = "MT::Worker::" . $name unless $name =~ /::/;
+        $ignore_map{$name} = 1;
+    }
+    my $all_workers = MT->registry("task_workers") || {};
+    for my $worker ( values %$all_workers ) {
+        my $worker_class = $worker->{class} or next;
+        next if $ignore_map{$worker_class};
+        push @worker_classes, $worker_class;
+    }
+}
+$cfg{workers} = \@worker_classes if @worker_classes;
 
 $mt->{vtbl}                 = {};
 $mt->{is_admin}             = 0;
