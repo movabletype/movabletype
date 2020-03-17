@@ -4251,7 +4251,7 @@ sub redirect {
 sub redirect_to_home {
     my $app = shift;
     my $uri = MT::Util::is_mod_perl1()
-        ? $app->{query}->uri
+        ? $app->{apache}->uri
         : $app->{query}->url( -pathinfo => 1, -query => 0, -full => 1 );
     return $app->redirect($uri);
 }
