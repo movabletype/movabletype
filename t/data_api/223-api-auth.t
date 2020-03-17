@@ -15,6 +15,7 @@ BEGIN {
 }
 
 use MT::Test::DataAPI;
+use Test::Deep qw/re/;
 
 $test_env->prepare_fixture('db_data');
 
@@ -182,7 +183,7 @@ sub suite {
                     qq{MTAuth oneTimeToken="$magic_token"},
             },
             result => {
-                sessionId   => $magic_token,
+                sessionId   => re('\w+'),
                 accessToken => $magic_token,
                 expiresIn   => MT::AccessToken::ttl(),
                 remember    => $JSON::true,
