@@ -36,7 +36,22 @@ sub class_label {
 
 sub get_unexpired_value {
     my $timeout   = shift;
+    my $timeout = shift;
+
+    ## Do not use a cached session even when the driver supports it
+    my $driver = __PACKAGE__->driver;
+    my $disabled;
+    if ( $driver->isa('Data::ObjectDriver::Driver::BaseCache') ) {
+        $disabled = Data::ObjectDriver::Driver::BaseCache->Disabled || 0;
+        Data::ObjectDriver::Driver::BaseCache->Disabled(1);
+    }
+
     my $candidate = __PACKAGE__->load(@_);
+
+    if ( defined $disabled ) {
+        Data::ObjectDriver::Driver::BaseCache->Disabled($disabled);
+    }
+
     if ( $candidate && $candidate->start() < time - $timeout ) {
         $candidate->remove();
         $candidate = undef;
