@@ -171,7 +171,7 @@ sub init_app {
                 else {
                     $app->session_user( $user, $session_id );
                 }
-                $app->param( 'magic_token', $session_id );
+                $app->param( 'magic_token', $app->current_magic );
                 $app->user($user);
                 return ( $user, 0 );
             }

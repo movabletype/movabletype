@@ -1472,20 +1472,23 @@ sub session {
 }
 
 sub make_magic_token {
-    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $token = join '', map $alpha[ rand @alpha ], 1 .. 40;
-    $token;
+    require MT::Util::UniqueID;
+    MT::Util::UniqueID::create_magic_token();
 }
 
 sub make_session {
     my ( $auth, $remember ) = @_;
     require MT::Session;
+    require MT::Util::UniqueID;
+    my $new_id = MT::Util::UniqueID::create_session_id();
+    my $token  = MT::Util::UniqueID::create_magic_token();
     my $sess = new MT::Session;
-    $sess->id( make_magic_token() );
+    $sess->id($new_id);
     $sess->kind('US');    # US == User Session
     $sess->start(time);
     $sess->name( $auth->id );
     $sess->set( 'author_id', $auth->id );
+    $sess->set( 'magic_token', $token );
     $sess->set( 'remember', 1 ) if $remember;
     $sess->save;
     $sess;
