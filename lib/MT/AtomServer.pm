@@ -1061,7 +1061,7 @@ sub _upload_to_asset {
             500,
             MT->translate(
                 '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                $ext,
+                $ret[2],
                 $fname
             )
         ) if $ret[2];

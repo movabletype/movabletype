@@ -1587,7 +1587,7 @@ sub newMediaObject {
         die _fault(
             MT->translate(
                 '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                $ext,
+                $ret[2],
                 $fname
             )
         ) if $ret[2];
