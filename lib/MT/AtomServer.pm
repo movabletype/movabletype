@@ -1053,9 +1053,9 @@ sub _upload_to_asset {
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
+            if   ( $_ =~ m/^\./ ) {qr/$_(?:\..*)?/i}
+            else                  {qr/\.$_(?:\..*)?/i}
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         return $app->error(
             500,
