@@ -1155,6 +1155,25 @@ sub rebuild_new_phase {
 }
 
 sub start_rebuild_pages {
+    my $app = shift;
+
+    my $session = $app->session or return $app->errtrans('Invalid request.');
+
+    my $stored_token = $session->get('mt_rebuild_token');
+    if ($stored_token) {
+        $session->set( 'mt_rebuild_token', undef );
+        $session->save;
+    }
+
+    my $token_param = $app->param('ott');
+    if ( !$token_param or !$stored_token or $stored_token ne $token_param ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    start_rebuild_pages_directly($app);
+}
+
+sub start_rebuild_pages_directly {
     my $app        = shift;
     my $q          = $app->param;
     my $start_time = $q->param('start_time');
