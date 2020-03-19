@@ -162,7 +162,7 @@ sub suite {
                 sessionId   => re('\w+'),
                 accessToken => $magic_token,
                 expiresIn   => MT::AccessToken::ttl(),
-                remember    => 'true',
+                remember    => $JSON::true,
             },
         },
         {   note            => 'Get token from oneTimeToken again',
