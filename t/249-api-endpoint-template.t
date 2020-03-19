@@ -218,10 +218,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => $total_results,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -247,10 +243,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 1,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -275,10 +267,6 @@ sub suite {
                 );
 
                 $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,
@@ -309,10 +297,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => $total_count,
                     items => MT::DataAPI::Resource->from_object( \@tmpl ),
@@ -334,10 +318,6 @@ sub suite {
                 );
 
                 $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => scalar @tmpl,
@@ -414,10 +394,6 @@ sub suite {
  #                my @tmpl = $app->model('template')->load(@terms_args);
  #
  #                $app->user($author);
- #
- #                no warnings 'redefine';
- #                local *boolean::true  = sub {'true'};
- #                local *boolean::false = sub {'false'};
  #
  #                return +{
  #                    totalResults => $total_results,

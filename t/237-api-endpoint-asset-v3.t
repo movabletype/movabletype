@@ -463,9 +463,6 @@ sub suite {
                     { blog_id => 1,           class     => '*' },
                     { sort    => 'file_name', direction => 'descend' },
                 );
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 return +{
                     totalResults => scalar @assets,
                     items => MT::DataAPI::Resource->from_object( \@assets ),
@@ -586,9 +583,6 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
@@ -686,9 +680,6 @@ sub suite {
                 my $asset1 = $app->model('asset')->load(7);
                 my $asset2 = $app->model('asset')->load(6);
                 my $asset3 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 3,
                     items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3 ] ),
@@ -790,9 +781,6 @@ sub suite {
                 my $asset2 = $app->model('asset')->load(7);
                 my $asset3 = $app->model('asset')->load(6);
                 my $asset4 = $app->model('asset')->load(5);
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
                 my $res = +{
                     totalResults => 4,
                     items => MT::DataAPI::Resource->from_object( [ $asset1, $asset2, $asset3, $asset4 ] ),
