@@ -35,7 +35,6 @@ sub class_label {
 }
 
 sub get_unexpired_value {
-    my $timeout   = shift;
     my $timeout = shift;
 
     ## Do not use a cached session even when the driver supports it
