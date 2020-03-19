@@ -2004,11 +2004,17 @@ sub save {
             );
         }
         else {
+            my $token = $app->make_magic_token;
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     'mode' => 'start_rebuild',
                     args   => {
                         blog_id    => $obj->blog_id,
+                        ott        => $token,
                         'next'     => 0,
                         type       => 'entry-' . $obj->id,
                         entry_id   => $obj->id,
