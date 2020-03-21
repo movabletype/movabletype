@@ -45,7 +45,7 @@
 </mtapp:listing>
 
 <script type="text/javascript">
-jQuery('.category-tree').click( function(){
+jQuery('.category-tree').on('click', function(){
     var cat = this;
     if ( jQuery(cat).prop('checked') ) {
         var parent = jQuery( '#default_category_' + jQuery(cat).attr('category_parent') );

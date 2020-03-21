@@ -154,15 +154,15 @@ function loadAssetList(offset) {
       if (canPaginate) {
         jQuery('div.pagination').show();
       }
-      jQuery('#asset-class').removeAttr("disabled");
-      jQuery('#search').removeAttr("disabled");
-      jQuery('#search-button').removeAttr("disabled");
+      jQuery('#asset-class').prop("disabled", false);
+      jQuery('#search').prop("disabled", false);
+      jQuery('#search-button').prop("disabled", false);
 
       jQuery('table.listing-table tbody tr input[name="id"]').on('click', function(){
         if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
           // Enable submit button
           jQuery('.actions-bar button.primary')
-            .removeAttr('disabled')
+            .prop('disabled', false)
             .removeClass('disabled');
         }
         else {
@@ -239,22 +239,22 @@ function renderPagination(pager) {
       .append('<span class="pagenav end disabled"><__trans phrase="Last" escape="js"> &raquo;</span>');
   }
 
-  jQuery('a.start').click(function() {
+  jQuery('a.start').on('click', function() {
     saveChecked(page);
     loadAssetList(0);
     return false;
   });
-  jQuery('a.to-start').click(function() {
+  jQuery('a.to-start').on('click', function() {
     saveChecked(page);
     loadAssetList(prevPos);
     return false;
   });
-  jQuery('a.to-end').click(function() {
+  jQuery('a.to-end').on('click', function() {
     saveChecked(page);
     loadAssetList(nextPos);
     return false;
   });
-  jQuery('a.end').click(function() {
+  jQuery('a.end').on('click', function() {
     saveChecked(page);
     loadAssetList(last);
     return false;
@@ -269,13 +269,13 @@ function saveChecked(page) {
   });
 }
 
-jQuery('#asset-class').change(function() {
+jQuery('#asset-class').on('change', function() {
   checked = [];
   loadAssetList(0);
 });
 
 <mt:unless name="filter" eq="userpic">
-jQuery('#modal-search').submit(function(){
+jQuery('#modal-search').on('submit', function(){
   checked = [];
   loadAssetList(0);
   jQuery('.search-reset').removeClass('hidden').show();
@@ -283,7 +283,7 @@ jQuery('#modal-search').submit(function(){
 })
 
 
-jQuery('.search-reset').click(function() {
+jQuery('.search-reset').on('click', function() {
   checked = [];
   jQuery('#search').val('');
   loadAssetList(0);
@@ -291,7 +291,7 @@ jQuery('.search-reset').click(function() {
 });
 </mt:unless>
 
-jQuery('.actions-bar button.primary').click(function() {
+jQuery('.actions-bar button.primary').on('click', function() {
   if ( currentPanel != '#list-asset-panel' ) {
     return;
   }

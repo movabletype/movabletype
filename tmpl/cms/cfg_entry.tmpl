@@ -337,15 +337,15 @@
         "#image_default_width": '<__trans phrase="You must set valid default thumbnail width." escape="singlequotes">'
     });
 
-    jQuery('#cfg_entry').submit(function(eventObject) {
+    jQuery('#cfg_entry').on('submit', function(eventObject) {
         if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
         if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
         if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
         if ( !jQuery("#image_default_width").mtValidate('simple2') ) return false;
-        jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').removeAttr("disabled");
+        jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').prop("disabled", false);
     });
 
-    jQuery('#image_default_thumb').click(function() {
+    jQuery('#image_default_thumb').on('click', function() {
       if ( jQuery('#image_default_thumb').prop('checked') ) {
         jQuery("#image_default_width").mtValidate('simple2');
       }

@@ -7,7 +7,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery(window).bind('listReady', function() {
+jQuery(window).on('listReady', function() {
     jQuery('td.message').mtToggleField();
 
 })

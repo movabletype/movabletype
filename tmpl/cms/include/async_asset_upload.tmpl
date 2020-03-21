@@ -434,7 +434,7 @@ function createUploadBlock () {
   this.setCancelUpload = function(xhr) {
     var parent = this;
     this.cancelUpload.show();
-    this.cancelUpload.click( function() {
+    this.cancelUpload.on('click', function() {
       xhr.abort();
       parent.setCancelResult(trans('Cancelled: [_1]', parent.filename.html()));
     });
@@ -455,7 +455,7 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
-    jQuery('.upload-status-block-left-content').addClass('full-width');  
+    jQuery('.upload-status-block-left-content').addClass('full-width');
     jQuery('<p class="msg-error">' + err + '</p>').appendTo(this.uploadResult);
   }
 
@@ -463,7 +463,7 @@ function createUploadBlock () {
     this.cancelUpload.hide();
     this.progressbar.hide();
     this.filename.hide();
-    jQuery('.upload-status-block-left-content').addClass('full-width');  
+    jQuery('.upload-status-block-left-content').addClass('full-width');
     jQuery('<p class="msg-warning">' + msg+ '</p>').appendTo(this.uploadResult);
   }
 
@@ -548,7 +548,7 @@ function uploadFiles(files, items) {
     // Enable submit button
     if ( jQuery('#select_asset input[name="id"]').val().length > 0 ) {
       jQuery('.actions-bar button.primary')
-        .removeAttr('disabled')
+        .prop('disabled', false)
         .removeClass('disabled');
     }
   });
@@ -618,12 +618,12 @@ function uploadFile( formData, uploadBlock ) {
   return d.promise();
 }
 
-jQuery('#open-file-dialog').click( function() {
-  jQuery('#file').click();
+jQuery('#open-file-dialog').on('click', function() {
+  jQuery('#file').trigger('click');
   return false;
 });
 
-jQuery('#file').change( function(e) {
+jQuery('#file').on('change', function(e) {
   var files = e.originalEvent.target.files;
   uploadFiles(files);
   jQuery('#file').val('');
@@ -638,8 +638,8 @@ jQuery('#file').change( function(e) {
 </script>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  <mt:unless name="filter" eq="userpic">  
-    <mt:if name="allow_to_change_at_upload">    
+  <mt:unless name="filter" eq="userpic">
+    <mt:if name="allow_to_change_at_upload">
   jQuery.mtValidateAddRules({
     "#extra_path": function($e) {
       return is_valid_path($e.val());
@@ -664,10 +664,10 @@ jQuery('#file').change( function(e) {
 
       // Enable submit button
       jQuery('.actions-bar button.primary')
-        .removeAttr('disabled')
+        .prop('disabled', false)
         .removeClass('disabled');
     }
   });
   </mt:if>
-  jQuery('form').find('input:visible').first().focus();
+  jQuery('form').find('input:visible').first().trigger('focus');
 </mt:setvarblock>

@@ -275,7 +275,7 @@ var tag_inserts = {};
 
 if ( !window.Editor )
     Editor = { strings: {} };
-Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to this template that will be lost." escape="js">'; 
+Editor.strings.unsavedChanges = '<__trans phrase="You have unsaved changes to this template that will be lost." escape="js">';
 
 var fieldStorage = {};
 var dirty = false;
@@ -870,11 +870,11 @@ function saveTemplatePrefs( sync ) {
 /* ]]> */
 </script>
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.save, button.publish').click(function() {
+    jQuery('button.save, button.publish').on('click', function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
   <mt:if name="config.previewinnewwindow">
-        jQuery('form#template-listing-form').removeAttr('target');
+        jQuery('form#template-listing-form').prop('target', false);
   </mt:if>
         jQuery('button.save').attr('disabled', 'disabled');
         jQuery('button.publish').attr('disabled', 'disabled');
@@ -883,33 +883,33 @@ function saveTemplatePrefs( sync ) {
           rebuild = 1;
         }
         if(validate(this.form, rebuild)){
-          jQuery('form#template-listing-form').submit();
+          jQuery('form#template-listing-form').trigger('submit');
           return true;
         }
-        jQuery('button.save').removeAttr('disabled');
-        jQuery('button.publish').removeAttr('disabled');
+        jQuery('button.save').prop('disabled', false);
+        jQuery('button.publish').prop('disabled', false);
         return false;
     });
-    jQuery('button.preview').click(function() {
+    jQuery('button.preview').on('click', function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
         if(validate(this.form)){
-          jQuery('form#template-listing-form').submit();
+          jQuery('form#template-listing-form').trigger('submit');
           return true;
         }
         return false;
     });
-    jQuery('input#save_revision').click(function() {
+    jQuery('input#save_revision').on('click', function() {
         jQuery('input#revision-note').toggle();
     });
     jQuery('button.mt-template-listing-form-action').mtDoPluginAction({
         plural: 'Templates',
         phrase: 'to act upon'
     });
-    jQuery('#syntaxon, #syntaxoff').click(function() {
+    jQuery('#syntaxon, #syntaxoff').on('click', function() {
         syncEditor();
         var wrapper = editor.getWrapperElement();
         jQuery('#syntaxon, #syntaxoff').removeClass('active');
@@ -927,8 +927,8 @@ function saveTemplatePrefs( sync ) {
         saveTemplatePrefs( syntax );
         return false;
     });
-    jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').click();
-    jQuery(window).bind('pre_autosave', function(){
+    jQuery('#syntax<mt:var name="disp_prefs_syntax" default="on">').trigger('click');
+    jQuery(window).on('pre_autosave', function(){
         syncEditor();
     });
 

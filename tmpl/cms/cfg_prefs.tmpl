@@ -611,7 +611,7 @@ function setLicense() {
 </mtapp:form>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('input#enable_archive_paths').click(function() {
+    jQuery('input#enable_archive_paths').on('click', function() {
         jQuery('div#enable_archive_paths_prefs').toggleClass('hidden');
     });
 
@@ -723,7 +723,7 @@ function setLicense() {
         "#extra_path": '<__trans phrase="You must set a valid path." escape="singlequotes">'
     });
 
-    jQuery('#cfg_form').submit( function () {
+    jQuery('#cfg_form').on('submit', function () {
         var $form = jQuery(this),
             $url = $form.find('#site_url_path, #site_url_subdomain, #archive_url_path, #archive_url_subdomain'),
             $simple = $form.find('input:visible, select:visible').filter(function() {

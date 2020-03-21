@@ -299,7 +299,7 @@ TC.attachLoadEvent( init );
         errorClass: "msg-error",
         errorPlacement: function(error, element) {
             element.parents('div.field').addClass('error-field');
-            error.removeAttr('generated').insertAfter(element);
+            error.prop('generated', false).insertAfter(element);
         }
     });
 
@@ -308,7 +308,7 @@ TC.attachLoadEvent( init );
         isDirty = true;
     });
 
-    jQuery('button.primary').click( function() {
+    jQuery('button.primary').on('click', function() {
       isDirty = false;
     })
 
@@ -317,7 +317,7 @@ TC.attachLoadEvent( init );
             return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
         }
     });
-    jQuery('.image-editor a').click(function(event) {
+    jQuery('.image-editor a').on('click', function(event) {
         if (isDirty) {
             var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
             if ( confirm(msg) ) {
@@ -330,7 +330,7 @@ TC.attachLoadEvent( init );
         }
         return false;
     });
-    jQuery('#btn-copy-url').click(function() {
+    jQuery('#btn-copy-url').on('click', function() {
       var fld = document.createElement("textarea");
       fld.value = '<mt:var name="url" escape="js">';
       document.body.appendChild(fld);

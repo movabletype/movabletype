@@ -178,11 +178,10 @@
         "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
     });
 
-    jQuery('#profile').submit(function(eventObject) {
+    jQuery('#profile').on('submit', function(eventObject) {
         if ( !jQuery("#password").mtValidate('simple') ) return false;
         if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
     });
 </mt:setvarblock>
 
 <mt:include name="include/chromeless_footer.tmpl">
-
