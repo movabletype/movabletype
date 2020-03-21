@@ -217,7 +217,7 @@ $.extend( $.fn, {
 } );
 
 // Custom selectors
-$.extend( $.expr.pseudos || $.expr[ ":" ], {		// '|| $.expr[ ":" ]' here enables backwards compatibility to jQuery 1.7. Can be removed when dropping jQ 1.7.x support
+$.extend( $.expr.pseudos, {		// '|| $.expr[ ":" ]' here enables backwards compatibility to jQuery 1.7. Can be removed when dropping jQ 1.7.x support
 
 	// https://jqueryvalidation.org/blank-selector/
 	blank: function( a ) {
@@ -1120,7 +1120,7 @@ $.extend( $.validator, {
 			delete this.pending[ element.name ];
 			$( element ).removeClass( this.settings.pendingClass );
 			if ( valid && this.pendingRequest === 0 && this.formSubmitted && this.form() ) {
-				$( this.currentForm ).submit();
+				$( this.currentForm ).trigger('submit');
 
 				// Remove the hidden input that was used as a replacement for the
 				// missing submit button. The hidden input is added by `handle()`

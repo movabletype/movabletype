@@ -90,9 +90,9 @@
           jQuery('ul.pagination__mobile').removeClass('d-none');
           jQuery('.page-status').show();
         }
-        jQuery('#asset-class').removeAttr("disabled");
-        jQuery('#search').removeAttr("disabled");
-        jQuery('#search-button').removeAttr("disabled");
+        jQuery('#asset-class').prop('disabled', false);
+        jQuery('#search').prop('disabled', false);
+        jQuery('#search-button').prop('disabled', false);
         jQuery(document).trigger('complete_list_asset');
 
         toggleClassOfPaginationContainer();
@@ -168,12 +168,12 @@
 
     $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
 
-    jQuery('a.start').click(function() {
+    jQuery('a.start').on('click', function() {
       saveChecked(page);
       loadAssetList(0);
       return false;
     });
-    jQuery('a.to-start').click(function() {
+    jQuery('a.to-start').on('click', function() {
       if (!usefirst) {
         return false;
       }
@@ -181,7 +181,7 @@
       loadAssetList(prevPos);
       return false;
     });
-    jQuery('a.to-end').click(function() {
+    jQuery('a.to-end').on('click', function() {
       if (!uselast) {
         return false;
       }
@@ -189,7 +189,7 @@
       loadAssetList(nextPos);
       return false;
     });
-    jQuery('a.end').click(function() {
+    jQuery('a.end').on('click', function() {
       saveChecked(page);
       loadAssetList(last);
       return false;
@@ -296,13 +296,13 @@
     });
   }
 
-  jQuery('#asset-class').change(function() {
+  jQuery('#asset-class').on('change', function() {
     checked = [];
     loadAssetList(0);
   });
 
   <mt:unless name="filter" eq="userpic">
-  jQuery('#modal-search').submit(function(){
+  jQuery('#modal-search').on('submit', function(){
     checked = [];
     loadAssetList(0);
     jQuery('.search-reset').removeClass('hidden').show();
@@ -310,7 +310,7 @@
   })
 
 
-  jQuery('.search-reset').click(function() {
+  jQuery('.search-reset').on('click', function() {
     checked = [];
     jQuery('#search').val('');
     loadAssetList(0);
@@ -427,7 +427,7 @@
         <input type="text" id="search" name="search" class="form-control search-input text" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
       </div>
       <div class="form-group ml-3">
-        <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').click(); return false;">
+        <a href="javascript:void(0)" class="d-inline-block" onclick="jQuery('#search-button:enabled').trigger('click'); return false;">
           <mtapp:svgicon id="ic_search" title="Search">
         </a>
         <button id="search-button" class="search-command search-submit" style="display: none;">
@@ -637,7 +637,7 @@ function step1(){
     } else {
       next_button.prop('disabled', true).addClass('disabled');
     }
-  })<mt:if name="asset_id">.change()</mt:if>;
+  })<mt:if name="asset_id">.trigger('change')</mt:if>;
   next_button.on('click',function(){
     if(jQuery(this).is(':disabled')) return false;
     var asset_id = jQuery('[name=asset_id]').val();
@@ -766,7 +766,7 @@ function step3(data){
   var step3 = jQuery('<div class="step3"></div>');
   step3.append(data);
   jQuery('.modal-blockeditor .modal-body .step2').after(step3);
-  jQuery('.modal-blockeditor .actions-bar:eq(0) .submit').click();
+  jQuery('.modal-blockeditor .actions-bar:eq(0) .submit').trigger('click');
 }
 });
 </script>

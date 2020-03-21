@@ -71,7 +71,7 @@ jQuery('.alignbutton button').each(function(){
 });
 <mt:if name="align">
 setTimeout(function(){
-  jQuery('[data-align="<mt:var name="align" escape="html">"]').click();
+  jQuery('[data-align="<mt:var name="align" escape="html">"]').trigger('click');
 },0);
 </mt:if>
 

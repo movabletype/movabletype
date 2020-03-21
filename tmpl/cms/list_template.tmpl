@@ -349,7 +349,7 @@ function init() {
         var $selectBox = jQuery('select#new-template-type');
         var $button = jQuery('button#create-template');
         if ($selectBox.val()) {
-            $button.removeAttr('disabled');
+            $button.prop('disabled', false);
         } else {
             $button.attr('disabled', 'disabled');
         }

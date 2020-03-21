@@ -18,7 +18,7 @@
 </form>
 
 <script>
-  jQuery('input[name="asset-option-width"]').keypress(function(event){
+  jQuery('input[name="asset-option-width"]').on('keypress', function(event){
     var key = event.charCode || event.keyCode;
     if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
         ( key == 9 ) || ( key == 13 ) || ( key == 27 ))

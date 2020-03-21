@@ -20,8 +20,8 @@ var test_url = "file:///"+path.resolve(__dirname,"../examples/index.html");
 describe('test',function(){
   it('align-right',function(done){
     nightmare.goto(test_url)
-      .mousedown('[data-cell-id="0-0"]')
-      .click('[data-action-click="align(right)"]')
+      .on('mousedown', '[data-cell-id="0-0"]')
+      .on('click', '[data-action-click="align(right)"]')
       .evaluate(function () {
         return document.querySelector('.test').innerText;
       })

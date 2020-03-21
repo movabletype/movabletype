@@ -186,7 +186,7 @@
         });
 
         // Resize image when clicking apply button.
-        jQuery('button#resize-apply').click(function() {
+        jQuery('button#resize-apply').on('click', function() {
             // Resize.
             var width = jQuery('input#resize-width').val();
             var height = jQuery('input#resize-height').val();
@@ -197,7 +197,7 @@
         });
 
         // Reset resize-width and resize-height when clicking reset button.
-        jQuery('button#resize-reset').click(function() {
+        jQuery('button#resize-reset').on('click', function() {
             // Reset.
             jQuery('input#resize-width').val(image.width);
             jQuery('input#resize-height').val(image.height);
@@ -212,7 +212,7 @@
         // Restrict input of resize textboxes.
         jQuery('input#resize-width, input#resize-height')
             .numeric({decimal: false, negative: false})  // Positive integer only.
-            .keydown(function(event) {
+            .on('keydown', function(event) {
                 // Forbid first zero.
                 if (event.keyCode === 48 && jQuery(this).val().length > 0 && jQuery(this).selection('getPos').start === 0) {
                     return false;
@@ -220,7 +220,7 @@
             });
 
         // Update resize-width or resize-height when changing either them.
-        jQuery('input#resize-width').keyup(function(event) {
+        jQuery('input#resize-width').on('keyup', function(event) {
             var resizeWidth = jQuery(this).val();
             var $resizeHeight = jQuery('input#resize-height');
 
@@ -262,7 +262,7 @@
             $resizeHeight.val(height);
         });
 
-        jQuery('input#resize-height').keyup(function(event) {
+        jQuery('input#resize-height').on('keyup', function(event) {
 
             var $resizeWidth = jQuery('input#resize-width');
             var resizeHeight = jQuery(this).val();
@@ -306,7 +306,7 @@
 
         // Also check "Remove GPS metadata" when checking "Remove All metadata".
         var gpsPreviousState;
-        jQuery('input#remove-all-metadata').click(function() {
+        jQuery('input#remove-all-metadata').on('click', function() {
             var $checkboxGps = jQuery('input#remove-gps-metadata');
             if (jQuery(this).prop('checked')) {
                 gpsPreviousState = $checkboxGps.prop('checked');
@@ -315,13 +315,13 @@
                     .prop('checked', true);
             } else {
                 $checkboxGps
-                    .removeAttr('disabled')
+                    .prop('disabled', false)
                     .prop('checked', gpsPreviousState);
             }
         });
 
         // Set parameters and submit form.
-        jQuery('button.primary').click(function(e) {
+        jQuery('button.primary').on('click', function(e) {
             window.onbeforeunload = null;
             jQuery('button.action').attr('disabled', 'disabled');
 
@@ -345,13 +345,13 @@
                 });
             }
 
-            $form.submit();
+            $form.trigger('submit');
             return false;
         });
 
         // Enable submit button when clicking checkbox/button.
         var isDirty;
-        jQuery('.enable-submit').click(function() {
+        jQuery('.enable-submit').on('click', function() {
             enableButton('button.primary');
             isDirty = true;
         });
@@ -411,7 +411,7 @@
         function enableButton(element) {
             jQuery(element)
                 .removeClass('disabled')
-                .removeAttr('disabled');
+                .prop('disabled', false);
         }
 
         // Disable element.

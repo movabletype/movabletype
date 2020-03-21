@@ -103,7 +103,7 @@ $.extend(MT.EditorManager.prototype, {
 
         $('#' + id).data('mt-editor', this);
 
-        $(window).bind('pre_autosave', function() {
+        $(window).on('pre_autosave', function() {
             manager.save();
         });
     },

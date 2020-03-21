@@ -146,7 +146,7 @@ var categorySetId = <mt:if name="id"><mt:var name="id" escape="js"><mt:else>0</m
 function setDirty( dirty ) {
     isdirty = dirty;
     if ( isdirty ) {
-        jQuery('button.save').removeAttr('disabled').removeClass('disabled');
+        jQuery('button.save').prop('disabled', false).removeClass('disabled');
     }
     else {
         jQuery('button.save').attr('disabled', 'disabled').addClass('disabled');
@@ -155,14 +155,14 @@ function setDirty( dirty ) {
 
 function loginAgain(fn) {
   jQuery(window)
-    .unbind('dialogReady.loginAgain')
-    .bind('dialogReady.loginAgain', function(){
+    .off('dialogReady.loginAgain')
+    .on('dialogReady.loginAgain', function(){
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
           .text('<__trans phrase="Continue" escape="js">')
-          .unbind()
-          .click(function(){
+          .off()
+          .on('click', function(){
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',
@@ -249,8 +249,8 @@ function fixInteractions( options ) {
   };
   var opts = jQuery.extend(defaults, options);
   if ( opts.closeInlineForms ) {
-    jQuery('div.edit-form button.cancel').click();
-    jQuery('div.add-form button.cancel').click();
+    jQuery('div.edit-form button.cancel').trigger('click');
+    jQuery('div.add-form button.cancel').trigger('click');
   }
 
   if ( opts.sortable ) {
@@ -267,7 +267,7 @@ function fixInteractions( options ) {
   }
 }
 
-jQuery('div#area-action input[name=category_label]').focus( function() {
+jQuery('div#area-action input[name=category_label]').on('focus', function() {
   fixInteractions();
 });
 
@@ -316,7 +316,7 @@ function initItem($item) {
 
   jQuery('<a href="#" class="item-action edit-link clickable mr-2"><__trans phrase="Rename" escape="js"></a>')
     .appendTo($item.find('.item-ctrl'))
-    .bind('click', function() {
+    .on('click', function() {
       fixInteractions({
         sortable: false
       });
@@ -348,7 +348,7 @@ function initItem($item) {
       };
 
       jQuery('<button type="submit" class="btn btn-secondary rename button mr-2"><__trans phrase="Rename" escape="js"></button>')
-        .bind('click', function() {
+        .on('click', function() {
           if ( !$element.find('input.cat-label, input.basename').mtValidate() ) return false;
           fixInteractions({ closeInlineForms: false });
           $basename.text( $element.find('input.basename').val() );
@@ -360,34 +360,34 @@ function initItem($item) {
         })
         .appendTo($form);
       jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
-        .bind('click', function() {
+        .on('click', function() {
           fixInteractions({ closeInlineForms: false });
           $children.show();
           initItem($item);
         })
         .appendTo($form);
       $form.appendTo($element);
-      $form.find('.cat-label, .basename').bind('keypress', function (e) {
+      $form.find('.cat-label, .basename').on('keypress', function (e) {
         if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-          $form.find('button.rename').click();
+          $form.find('button.rename').trigger('click');
           return false;
         }
       });
-      $form.find('.cat-label').focus();
+      $form.find('.cat-label').trigger('focus');
       return false;
     });
 
 <mt:setvarblock name="add_icon_title"><__trans phrase="Add child [_1]" params="<mt:var name="object_label">" escape="js"></mt:setvarblock>
   jQuery('<span class="item-action plus clickable icon-plus icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_add" size="sm" title="$add_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
-    .bind('click', function() {
+    .on('click', function() {
       fixInteractions({ sortable: false });
       var $element = jQuery(this).parent('.item-ctrl').parents('.sortable-item');
       var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mt-draggable form-inline mod add-form" style="cursor: default;"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short mx-2" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
-      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').focus();
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').trigger('focus');
       jQuery('<button type="button" class="btn btn-secondary add button mr-2"><__trans phrase="Add" escape="js"></button>')
-        .bind('click', function() {
+        .on('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
           // sort of hack to do HTML escape.
           label = jQuery('<div />').text(label).html();
@@ -398,7 +398,7 @@ function initItem($item) {
         })
         .appendTo($form);
       jQuery('<button type="button" class="btn btn-default cancel button"><__trans phrase="Cancel" escape="js"></button>')
-        .bind('click', function() {
+        .on('click', function() {
             fixInteractions({ closeInlineForms: false });
             jQuery('#msg-block').empty();
             jQuery(this).parent('.add-form').remove();
@@ -410,7 +410,7 @@ function initItem($item) {
 <mt:setvarblock name="remove_icon_title"><__trans phrase="Remove [_1]" params="<mt:var name="object_label_plural">" escape="js"></mt:setvarblock>
   jQuery('<span class="item-action delete clickable icon-delete icon16 action-icon d-inline-block" style="cursor: pointer;"><mtapp:svgicon id="ic_trash" size="sm" title="$remove_icon_title"></span>')
     .appendTo($item.find('.item-ctrl'))
-    .bind('click', function() {
+    .on('click', function() {
       fixInteractions();
       var id = jQuery(this).parents('.sortable-item').attr('id').slice(4);
       removeItems(id);
@@ -503,7 +503,7 @@ function addItem(parent, label) {
 
 jQuery('#area-action input').on('keypress',function(e){
     if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-        jQuery(this).siblings('button.add').click();
+        jQuery(this).siblings('button.add').trigger('click');
         return false;
     }
 });
@@ -640,8 +640,8 @@ function initMoving() {
         jQuery('#new-label').val($item.find('.item-label').text())
         jQuery('#new-basename').val($item.find('.item-basename-text').text())
         jQuery('#change-and-move')
-          .unbind('click')
-          .bind( 'click', function(){
+          .off('click')
+          .on( 'click', function(){
 <mt:if name="object_type" eq="category">
             if ( jQuery('#new-label').mtValidate('simple') && jQuery('#new-basename').mtValidate('simple') ) {
               var $label = $item.find('.item-label a').length ? $item.find('.item-label a') : $item.find('.item-label');
@@ -662,8 +662,8 @@ function initMoving() {
             return false;
           });
         jQuery('#cancel-move')
-          .unbind('click')
-          .bind('click', function () {
+          .off('click')
+          .on('click', function () {
             jQuery('.sortable').sortable('cancel');
             $item.attr('class', original_class);
             jQuery('.pcat-'+catid).show();
@@ -769,12 +769,15 @@ function initMoving() {
 }
 
 function setHoverAction($elements) {
-  $elements.hover(function() {
-    var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
-    jQuery('.pcat-'+parent).addClass('highlight');
-  }, function() {
-    var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
-    jQuery('.pcat-'+parent).removeClass('highlight');
+  $elements.on({
+    'mouseenter': function() {
+      var parent = jQuery(this).addClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).addClass('highlight');
+    },
+    'mouseleave': function() {
+      var parent = jQuery(this).removeClass('highlight on').attr('id').slice(4);
+      jQuery('.pcat-'+parent).removeClass('highlight');
+    }
   });
 }
 
@@ -801,7 +804,7 @@ function renderItems(data) {
   checksum = data.result.checksum;
   setHoverAction(jQuery('.sortable-item'));
 
-  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
 }
 
 function fixZeroStateMessage () {
@@ -860,7 +863,7 @@ function renderNestedList() {
   });
 }
 
-jQuery('.add').click(function() {
+jQuery('.add').on('click', function() {
   var $focusParent = jQuery(':focus').parent('div');
   var parent = '';
   var label = '';
@@ -887,7 +890,7 @@ jQuery('.add').click(function() {
   return false;
 });
 
-jQuery('.save').click( bulkUpdateCategories );
+jQuery('.save').on('click', bulkUpdateCategories );
 
 function bulkUpdateCategories() {
   if ( !jQuery('#set_name').mtValidate('simple') ) {
@@ -978,19 +981,19 @@ jQuery(window).on('resize', function () {
 });
 
   <mt:if name="is_category_set">
-jQuery('#set_name').keyup(function() {
+jQuery('#set_name').on('keyup', function() {
   setDirty(true);
 });
   </mt:if>
 
-jQuery(window).bind('beforeunload', function() {
+jQuery(window).on('beforeunload', function() {
   if (isdirty) {
     return trans('You have unsaved changes to this page that will be lost.');
   }
 });
 
-jQuery(window).bind('listReady', function() {
-  jQuery('#area-action').children().removeClass('disabled').removeAttr('disabled');
+jQuery(window).on('listReady', function() {
+  jQuery('#area-action').children().removeClass('disabled').prop('disabled', false);
 });
 renderNestedList();
 </mt:setvarblock>

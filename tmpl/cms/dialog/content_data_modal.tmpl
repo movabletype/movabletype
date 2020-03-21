@@ -50,7 +50,7 @@ var currentPanel = '#create-content-data-panel';
 <mt:else>
 var currentPanel = '#select-content-data-panel';
 </mt:if>
-jQuery('.left-menu-item').click(function () {
+jQuery('.left-menu-item').on('click', function () {
   // Make custom event
   var event = new jQuery.Event('changePanel');
 
@@ -83,7 +83,7 @@ jQuery('.left-menu-item').click(function () {
   }
   jQuery('button.primary').text(buttonText);
 });
-jQuery('.actions-bar button.primary').click(function() {
+jQuery('.actions-bar button.primary').on('click', function() {
   var contentFieldId = '<mt:var name="content_field_id" escape="js">';
   var canMulti = <mt:if name="can_multi">true<mt:else>false</mt:if>;
 

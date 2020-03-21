@@ -95,7 +95,7 @@ jQuery(function($) {
                 $name.val() + ' (' + $('#ga_profile_web_property_id').val() + ')'
             ));
             $label.append('&nbsp;<span class="remove clickable">x</span></span>');
-            $label.find('span.remove').click(function() {
+            $label.find('span.remove').on('click', function() {
                 $('#ga_profile_name, #ga_profile_web_property_id, #ga_profile_id')
                     .val('');
                 updateProfile();
@@ -113,7 +113,7 @@ jQuery(function($) {
                 ($('#ga_client_id').val() && $('#ga_client_secret').val()) ||
                 ($('#use-parent-client:visible').length === 1)
             ) {
-                $('#ga_select_profile').removeAttr('disabled');
+                $('#ga_select_profile').prop('disabled', false);
             }
             else {
                 $('#ga_select_profile').attr('disabled', 'disabled');
@@ -121,7 +121,7 @@ jQuery(function($) {
         })
         .triggerHandler('input');
 
-    $('#ga_select_profile').click(function() {
+    $('#ga_select_profile').on('click', function() {
         var clientId     = $('#ga_client_id').val() || $('#ga_parent_client_id').val();
 
         if (! clientId) {
