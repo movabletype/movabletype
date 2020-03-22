@@ -1156,7 +1156,27 @@ sub rebuild_new_phase {
 }
 
 sub start_rebuild_pages {
-    my $app        = shift;
+    my $app = shift;
+
+    my $session = $app->session or return $app->errtrans('Invalid request.');
+
+    my $stored_token = $session->get('mt_rebuild_token');
+    if ($stored_token) {
+        $session->set( 'mt_rebuild_token', undef );
+        $session->save;
+    }
+
+    my $token_param = $app->param('ott');
+    if ( !$token_param or !$stored_token or $stored_token ne $token_param ) {
+        return $app->errtrans('Invalid request.');
+    }
+
+    start_rebuild_pages_directly($app);
+}
+
+sub start_rebuild_pages_directly {
+    my $app = shift;
+
     my $q          = $app->param;
     my $start_time = $q->param('start_time');
 
@@ -1323,6 +1343,14 @@ sub rebuild_confirm {
     _create_build_order( $app, $blog, \%param );
 
     $param{index_selected} = ( $app->param('prompt') || "" ) eq 'index';
+
+    require MT::Util::UniqueID;
+    my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+    $param{ott} = $token;
+    if ( my $session = $app->session ) {
+        $session->set( 'mt_rebuild_token', $token );
+        $session->save;
+    }
 
     if ( my $tmpl_id = $app->param('tmpl_id') ) {
         require MT::Template;

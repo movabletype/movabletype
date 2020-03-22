@@ -17,15 +17,18 @@ use constant {
     MT_CONTENT_FIELD_NS => 'f9db3d31-12d7-465b-b354-a36f396f6ab6',
     MT_CONTENT_DATA_NS  => 'e1ed48bb-26f9-4728-b373-cf43d116fdce',
     MT_MAGIC_TOKEN_NS   => 'fed9a282-57d5-456b-9eb5-defae08e03f2',
+    MT_SESSION_NS       => 'fb57b748-6a3d-4702-bb16-1fc196474cbf',
     MT_SITE_SECRET_NS   => '253cf8e5-7f6e-49f3-adf6-856031564b88',
 };
 
 our @EXPORT_OK = qw(
     create_uuid create_sha1_id create_md5_id
+    create_magic_token create_session_id
     MT_CONTENT_TYPE_NS
     MT_CONTENT_FIELD_NS
     MT_CONTENT_DATA_NS
     MT_MAGIC_TOKEN_NS
+    MT_SESSION_NS
     MT_SITE_SECRET_NS
 );
 
@@ -76,6 +79,14 @@ sub create_sha256_id {    ## 64
 
 sub create_sha512_id {    ## 128
     MT::Util::Digest::SHA::sha512_hex( _random_bytes_with_namespaces(@_) );
+}
+
+sub create_magic_token {
+    create_sha1_id( MT_MAGIC_TOKEN_NS(), @_ );
+}
+
+sub create_session_id {
+    create_sha1_id( MT_SESSION_NS(), @_ );
 }
 
 1;

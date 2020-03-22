@@ -2012,11 +2012,18 @@ sub save {
             );
         }
         else {
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     'mode' => 'start_rebuild',
                     args   => {
                         blog_id    => $obj->blog_id,
+                        ott        => $token,
                         'next'     => 0,
                         type       => 'entry-' . $obj->id,
                         entry_id   => $obj->id,

@@ -86,7 +86,7 @@ sub request {
         else {
             $app->session_user( $user, $self->{session} );
         }
-        $app->param( 'magic_token', $self->{session} );
+        $app->param( 'magic_token', $app->current_magic );
         $app->user($user);
         $login = sub { return ( $user, 0 ) };
     }
