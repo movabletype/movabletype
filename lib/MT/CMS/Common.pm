@@ -532,7 +532,7 @@ sub save {
                         @{ $param{archive_type_loop} };
                     $q->param( 'type', join( ',', @ats ) );
                 }
-                return MT::CMS::Blog::start_rebuild_pages($app);
+                return MT::CMS::Blog::start_rebuild_pages_directly($app);
             }
         }
         if ( $cfg_screen eq 'cfg_templatemaps' ) {
@@ -597,7 +597,7 @@ sub save {
                     $q->param( 'template_id',     $obj->id );
                     $q->param( 'single_template', 1 );
                     require MT::CMS::Blog;
-                    return MT::CMS::Blog::start_rebuild_pages($app);
+                    return MT::CMS::Blog::start_rebuild_pages_directly($app);
                 }
             }
         }

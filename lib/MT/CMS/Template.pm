@@ -2852,7 +2852,7 @@ sub publish_archive_templates {
     $app->param( 'template_id',     $tmpl_id );
     $app->param( 'single_template', 1 );          # forces fullscreen mode
     $app->param( 'type', join( ",", keys %ats ) );
-    return MT::CMS::Blog::start_rebuild_pages($app);
+    return MT::CMS::Blog::start_rebuild_pages_directly($app);
 }
 
 sub save_widget {
