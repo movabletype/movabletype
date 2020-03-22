@@ -2281,6 +2281,12 @@ sub login {
                 class    => 'author',
                 category => 'login_user',
             );
+
+            ## magic_token = the user is trying to post something
+            ## (after a long pause, or because of CSRF)
+            if ( defined $app->param('magic_token') ) {
+                return $app->redirect_to_home;
+            }
         }
         else {
             $author = $app->session_user( $author, $ctx->{session_id},
@@ -4208,6 +4214,14 @@ sub redirect {
     }
     $app->{redirect} = $url;
     return;
+}
+
+sub redirect_to_home {
+    my $app = shift;
+    my $uri = $ENV{MOD_PERL}
+        ? $app->{apache}->uri
+        : $app->{query}->url( -pathinfo => 1, -query => 0, -full => 1 );
+    return $app->redirect($uri);
 }
 
 sub is_valid_redirect_target {
