@@ -16,7 +16,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         mode: "exact",
 
-        plugins: "lists,style,mt_inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt",
+        plugins: "lists,style,mt_inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt,table",
 
         language: $('html').attr('lang'),
 
@@ -45,6 +45,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // Buttons using in wysiwyg mode.
         plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
         plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
+        plugin_mt_wysiwyg_buttons3: 'tablecontrols',
         plugin_mt_inlinepopups_window_sizes: {
             'advanced/link.htm': {
                 width: 350,
@@ -96,6 +97,22 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
                     };
                     dialog.resize();
                 }
+            },
+            'table/table.htm': {
+                width: 600,
+                height: 450
+            },
+            'table/row.htm': {
+                width: 450,
+                height: 350
+            },
+            'table/cell.htm': {
+                width: 450,
+                height: 350
+            },
+            'table/merge_cells.htm': {
+                width: 250,
+                height: 140
             }
         },
 
@@ -209,7 +226,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
 
         tinyMCE.init(config);
-            
+
         adapter.setFormat(format, true);
     },
 

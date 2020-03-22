@@ -105,3 +105,12 @@ table th {
 .mceHideBrInPre pre br { 
     display: none;
 }
+
+/* table */
+.mceItemTable,
+.mceItemTable td,
+.mceItemTable th,
+.mceItemTable caption,
+.mceItemVisualAid {
+    outline: 1px dotted #adadad;
+}

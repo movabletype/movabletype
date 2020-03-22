@@ -579,3 +579,31 @@
     text-decoration: underline
 }
 
+/* table */
+.mtSkin span.mce_table,
+.mtSkin span.mce_row_props,
+.mtSkin span.mce_cell_props,
+.mtSkin span.mce_row_before,
+.mtSkin span.mce_row_after,
+.mtSkin span.mce_delete_row,
+.mtSkin span.mce_col_before,
+.mtSkin span.mce_col_after,
+.mtSkin span.mce_delete_col,
+.mtSkin span.mce_split_cells,
+.mtSkin span.mce_merge_cells,
+.mtSkin span.mce_visualaid {
+    background: transparent url(./img/table-icons.png) no-repeat top left;
+}
+
+.mtSkin span.mce_table { background-position: 0 0; }
+.mtSkin span.mce_row_props { background-position: -50px 0; }
+.mtSkin span.mce_cell_props { background-position: -100px 0; }
+.mtSkin span.mce_row_before { background-position: -150px 0; }
+.mtSkin span.mce_row_after { background-position: -200px 0; }
+.mtSkin span.mce_delete_row { background-position: -250px 0; }
+.mtSkin span.mce_col_before { background-position: -300px 0; }
+.mtSkin span.mce_col_after { background-position: -350px 0; }
+.mtSkin span.mce_delete_col { background-position: -400px 0; }
+.mtSkin span.mce_split_cells { background-position: -450px 0; }
+.mtSkin span.mce_merge_cells { background-position: -500px 0; }
+.mtSkin span.mce_visualaid { background-position: -550px 0; }
