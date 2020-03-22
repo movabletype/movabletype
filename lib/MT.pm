@@ -2083,8 +2083,7 @@ sub update_ping_list {
             }
             else {
                 $args{params} = '' unless defined $args{params};
-                my @p = map MT::Util::decode_html($_),
-                        split /\s*%%\s*/, $args{params}, -1;
+                my @p = split /\s*%%\s*/, $args{params}, -1;
                 @p = ('') unless @p;
                 my $phrase = $args{phrase};
                 $phrase = Encode::decode('utf8', $phrase)
