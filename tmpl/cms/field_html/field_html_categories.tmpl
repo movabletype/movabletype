@@ -4,41 +4,98 @@
 <mt:var name="setup_categories_css" value="1">
 <mt:setvarblock name="css_include" append="1">
 <style>
+.category-list li {
+  clear:both;
+}
+
 .category-list li:not(:first-child) > a.primary {
     text-decoration: none;
 }
 
-.category-list li:not(:first-child) > a.primary > span:first-child {
+.category-list li:not(:first-child) > a.primary > div.category-selected-icon > span:first-child {
     display: none;
 }
 
-.category-list li:not(:first-child) > a.primary > span:not(:first-child) {
+.category-list li:not(:first-child) > a.primary > div.category-selected-icon > span:not(:first-child) {
     display: inline-block;
 }
 
-.category-list li:not(:first-child):hover > a.primary > span:first-child {
+.category-list li:not(:first-child):hover > a.primary > div.category-selected-icon > span:first-child {
     display: inline-block;
 }
 
-.category-list li:not(:first-child):hover > a.primary > span:not(:first-child) {
+.category-list li:not(:first-child):hover > a.primary > div.category-selected-icon > span:not(:first-child) {
     display: none;
 }
 
-.category-list li:not(:hover) a.delete {
-    display: none !important;
-}
-.category-list li:hover a.delete:not(:hover) span:not(:first-child) {
+.category-list li:not(:hover) a.delete span {
     display: none;
 }
 
-.category-list li a.delete:hover span:first-child {
+.category-list li:hover a.delete span:not(:first-child) {
     display: none;
+}
+
+.category-list li:hover a.delete span:hover(:first-child) {
+    display: none;
+}
+
+.category-list li:hover a.delete:hover span:first-child {
+    display: none;
+}
+
+.category-list li:hover a.delete:hover span:not(:first-child) {
+    display: inline-block;
 }
 
 .form-group.add-category-form {
     margin-top: 1rem;
+    clear:both;
+}
+input.add-category-input {
+    float:left;
 }
 
+.category-selector-list {
+    text-align:left;
+    clear:both;
+}
+
+.category-selector-item {
+  width: 80%;
+  word-break: break-all;
+  word-wrap: break-word;
+  float: left;
+}
+
+.category-selector-add {
+  width: 21px;
+  height: auto;
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
+
+.category-selected-icon {
+  text-align: left;
+  float: left;
+  clear: both;
+}
+
+.category-selected-item {
+  width: 75%;
+  word-break: break-all;
+  word-wrap: break-word;
+  float: left;
+  margin-left:5px;
+}
+
+.category-selected-delete {
+  width: 21px;
+  display: inline-block;
+  margin-left: 10px;
+  vertical-align: middle;
+}
 @media (max-width: 767.98px) {
   .categories-field-container [id^=category-selector-] .list-item {
     padding: 0.5rem;
@@ -115,9 +172,13 @@ jQuery(window).on('load resize', function () {
                       [# if ( multiple ) { #]
                           [# if ( i == 0 ) { #]
                           <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                            <mtapp:svgicon id="ic_fav" color="success" title="Primary" size="sm">
-                            <strong>[#= label #]</strong>
-                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
+                            <div class="category-selected-icon">
+                              <mtapp:svgicon id="ic_fav" color="success" title="Primary" size="sm">
+                            </div>
+                            <div class="category-selected-item">
+                              <strong class="">[#= label #]</strong>
+                            </div>
+                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block category-selected-delete" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
                               </span>
@@ -129,13 +190,17 @@ jQuery(window).on('load resize', function () {
                           [# } else { #]
                           <li mt:focus-hover="1" mt:id="[#= cat.id #]">
                             <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
-                              <span>
-                                <mtapp:svgicon id="ic_fav" title="Primary" size="sm">
-                              </span>
-                              <span>
-                                <mtapp:svgicon id="ic_blank" title="Blank" size="sm">
-                              </span>
+                              <div class="category-selected-icon">
+                                <span>
+                                  <mtapp:svgicon id="ic_fav" title="Primary" size="sm">
+                                </span>
+                                <span>
+                                  <mtapp:svgicon id="ic_blank" title="Blank" size="sm">
+                                </span>
+                              </div>
+                              <div class="category-selected-item">
                               [#= label #]
+                              </div>
                             </a>
                             <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
                               <span>
@@ -148,7 +213,7 @@ jQuery(window).on('load resize', function () {
                           </li>
                           [# } #]
                       [# } else { #]
-                      <li mt:focus-hover="1" mt:id="[#= cat.id #]">[#= label #]</li>
+                      <li mt:focus-hover="1" mt:id="[#= cat.id #]"><div class="category-selected-item">[#= label #]</div></li>
                       [# } #]
                   [# } #]
                   </ul>
@@ -156,21 +221,23 @@ jQuery(window).on('load resize', function () {
 
               Template.templates.categorySelectorList<mt:var name="content_field_id" escape="js"> = '<mt:section encode_js="1">
                       [# if ( item.path == null ) item.path = [] #]
-                      <div style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
-                          <div class="custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if>" style="width: auto;">
+                      <div class="category-selector-list" style="margin-left:[#= item.path.length * 10 #]px;">
+                          <div class="custom-control <mt:if name="options{multiple}">custom-checkbox<mt:else>custom-radio</mt:if> category-selector-item">
                               <input type="<mt:if name="options{multiple}">checkbox<mt:else>radio</mt:if>" name="content-field-<mt:var name="content_field_id">" id="content-field-<mt:var name="content_field_id">-[#= item.id #]" class="custom-control-input add-category-checkbox category group content-field" value="[#= item.id #]" <mt:if name="category_is_selected">checked="checked"</mt:if> mt:watch-change="1" mt:raw-name="1" />
                               <label class="custom-control-label" for="content-field-<mt:var name="content_field_id">-[#= item.id #]">
                                   [#|h item.label #]
                               </label>
-                          <mt:if name="options{can_add}">
-                              <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link d-none d-md-inline"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
-                          </mt:if>
                           </div>
+                          <mt:if name="options{can_add}">
+                          <div class="category-selector-add">
+                            <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:content-field-id="<mt:var name="content_field_id" escape="html">" mt:command="show-add-category" class="add-category-new-link d-none d-md-inline"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a>
+                          </div>
+                          </mt:if>
                       </div>
               </mt:section>';
 
               Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
-              [# div.className="form-group form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a>
+              [# div.className="form-group form-inline add-category-form hidden" #]<input id="add-category-input-movable-[#= contentFieldId #]" class="form-control add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" /> <div><a href="javascript:void(0);" mt:command="add" class="add-category-save-link"><span class="d-inline-block"><mtapp:svgicon id="ic_add" color="success" title="Add" size="sm"></span></a><a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link"><span class="d-inline-block"><mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm"></span></a></div>
               </mt:section>';
 
               jQuery(window).on('load', function () {
