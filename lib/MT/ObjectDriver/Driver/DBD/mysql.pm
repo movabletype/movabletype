@@ -77,6 +77,7 @@ sub _set_names {
             $c = $Charset{$c} ? $Charset{$c} : $c;
             $dbh->do( "SET NAMES " . $c )
                 or return ( $dbh->errstr );
+            $dbh->{private_set_names} = $c;
             if ( !defined $set_names ) {
 
                # SQLSetNames has never been assigned; we had a successful
