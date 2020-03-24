@@ -600,7 +600,7 @@ sub rebuild_content_data {
 
             if ( $archiver->category_based ) {
                 for my $map (@maps) {
-                    my @cats = map { @$_ } values %{ $categories_for_rebuild || {} };
+                    my @cats = @{ $categories_for_rebuild->{$map->cat_field_id} || [] };
                     for my $cat (@cats) {
                         MT::Util::Log->debug(
                             " Rebuilding $at (" . $cat->label . ")" );
