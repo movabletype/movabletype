@@ -32,6 +32,7 @@ my @allowed_sub_dirs = qw(
     tag
     task
     template
+    tools
     util
     xt
 );
