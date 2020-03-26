@@ -931,7 +931,7 @@ $.extend( $.mtValidator.prototype, {
         this.errstr = msg || trans('Invalid value');
         return false;
     },
-    validClass: 'valid',
+    validClass: 'is-valid',
     errorClass: 'is-invalid',
     doFocus: true,
     wrapError: function ( $target, msg ) {
