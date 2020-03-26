@@ -1133,6 +1133,8 @@ sub rebuild_file {
     {
         $finfo->remove();
         MT::Util::Log->info( ' Removed ' . $finfo->file_path );
+        $map->{__saved_but_removed} = 1;
+
         if ( MT->config->DeleteFilesAtRebuild ) {
             $mt->_delete_archive_file(
                 Blog        => $blog,
@@ -1776,7 +1778,8 @@ sub _rebuild_content_archive_type {
             EndDate     => $end,
             Force       => $param{Force} ? 1 : 0,
         ) or return;
-        $done->{ $map->{__saved_output_file} }++;
+        $done->{ $map->{__saved_output_file} }++
+            unless delete $map->{__saved_but_removed};
     }
     1;
 }
