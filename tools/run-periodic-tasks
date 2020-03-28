@@ -22,20 +22,22 @@ my $trace_objects  = 0;
 my $workers;
 my $ignore;
 my $floor;
+my $process_cap;
 
 require Getopt::Long;
 Getopt::Long::GetOptions(
-    "daemon"       => \$daemonize,
-    "sleep=i"      => \$sleep,
-    "load=i"       => \$load,
-    "scoreboard=s" => \$scoreboard,
-    "randomly"     => \$randomize_jobs,
-    "verbose"      => \$verbose,
-    "leak"         => \$trace_objects,
-    "quiet"        => sub { $verbose = 0 },
-    "workers=s"    => \$workers,
-    "ignore=s"     => \$ignore,
-    "floor=i"      => \$floor,
+    "daemon"        => \$daemonize,
+    "sleep=i"       => \$sleep,
+    "load=i"        => \$load,
+    "scoreboard=s"  => \$scoreboard,
+    "randomly"      => \$randomize_jobs,
+    "verbose"       => \$verbose,
+    "leak"          => \$trace_objects,
+    "quiet"         => sub { $verbose = 0 },
+    "workers=s"     => \$workers,
+    "ignore=s"      => \$ignore,
+    "floor=i"       => \$floor,
+    "process_cap=i" => \$process_cap,
 );
 require MT::TheSchwartz;
 
@@ -62,7 +64,8 @@ require MT::Bootstrap;
 require MT;
 
 my $mt = MT->new() or die MT->errstr;
-if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
+$process_cap ||= MT->config('RPTProcessCap');
+if ( $process_cap && $proc_process_table ) {
     my $t         = new Proc::ProcessTable;
     my $rpt_count = 0;
     my $cmndfile  = File::Basename::basename(__FILE__);
@@ -71,7 +74,7 @@ if ( defined(MT->config('RPTProcessCap')) && $proc_process_table ) {
     foreach my $p ( @{ $t->table } ) {
         $rpt_count++ if $p->cmndline =~ m/^\Q$cmndline\E/;
     }
-    if ( $rpt_count > MT->config('RPTProcessCap') ) {
+    if ( $rpt_count > $process_cap ) {
         $rpt_count = $rpt_count - 1;    # Don't report this RPT
         die "$rpt_count processes already running; cancelling RPT launch\n";
     }
