@@ -71,14 +71,16 @@
           <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span>
         </p>
       </mt:if>
-        <ul>
         <mt:if name="pings_loop">
+        <ul>
         <mt:loop name="pings_loop">
           <li><input type="checkbox" name="ping_<mt:var name="key" escape="html">" id="ping_<mt:var name="key" escape="html">" value="1"<mt:if name="selected"> checked="checked"</mt:if> class="cb" /> <label for="ping_<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label></li>
         </mt:loop>
-        </mt:if>
         </ul>
         <label for="ping_others"><__trans phrase="Others:"> <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span><br />
+        <mt:else>
+        <span class="hint"><__trans phrase="(Separate URLs with a carriage return.)"></span><br />
+        </mt:if>
         <textarea name="ping_others" id="ping_others" class="text low"><mt:var name="ping_others" escape="html"></textarea>
         </label>
       </mtapp:setting>
