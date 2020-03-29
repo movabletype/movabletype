@@ -108,6 +108,7 @@ on 'test' => sub {
     requires 'String::CamelCase';
     requires 'Term::Encoding';
     requires 'Test::Base';
+    requires 'Test::Base::Less';
     requires 'Test::Class';
     requires 'Test::Data';
     requires 'Test::Deep';
