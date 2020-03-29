@@ -119,7 +119,7 @@ test2</li>
 test4</li>
 </ul>
 
-=== multiple paragraphs, multiple lines, mixed (kind of weird)
+=== multiple paragraphs, multiple lines, mixed (edge cases)
 --- input
 <ul>
 <li>test1
@@ -138,6 +138,12 @@ test5-3
 
 test6-1
 test6-2</li>
+
+<li>test7-1
+test7-2
+
+test8-1
+test8-2</li>
 </ul>
 --- expected
 <ul>
@@ -157,6 +163,12 @@ test5-3</p>
 
 test6-1<br />
 test6-2</li>
+
+<li>test7-1<br />
+test7-2<br /><br />
+
+test8-1<br />
+test8-2</li>
 </ul>
 
 === multiple paragraphs, multiple lines, no mix
