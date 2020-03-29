@@ -80,8 +80,8 @@
           <span class="alert-warning-inline"><__trans phrase="Note: This option is currently ignored because outbound notification pings are disabled system-wide."></span>
         </p>
       </mt:if>
-        <ul class="list-unstyled">
         <mt:if name="pings_loop">
+        <ul class="list-unstyled">
         <mt:loop name="pings_loop">
           <li>
             <div class="custom-control custom-checkbox">
@@ -90,12 +90,14 @@
             </div>
           </li>
         </mt:loop>
-        </mt:if>
         </ul>
         <label for="ping_others">
           <__trans phrase="Others:">
           <span class="text-muted hint"><__trans phrase="(Separate URLs with a carriage return.)"></span>
         </label>
+        <mt:else>
+          <span class="text-muted hint"><__trans phrase="(Separate URLs with a carriage return.)"></span>
+        </mt:if>
         <textarea name="ping_others" id="ping_others" class="form-control text low"><mt:var name="ping_others" escape="html"></textarea>
       </mtapp:setting>
       </mt:if>
