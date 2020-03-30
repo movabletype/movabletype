@@ -345,7 +345,7 @@ sub content_actions {
     }
     $actions = $app->filter_conditional_list( \@actions, @param );
     no warnings;
-    @$actions = sort { $a->{order} <=> $b->{order} } @$actions;
+    @$actions = sort { $a->{order} <=> $b->{order} or $a->{key} cmp $b->{key} } @$actions;
     return $actions;
 }
 

@@ -680,11 +680,27 @@ sub html_text_transform {
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)!;
     my @paras = split /\r?\n\r?\n/, $str;
-    for my $p (@paras) {
-        if ( $p !~ m!(?:^</?$tags|</$tags>$)! ) {
-            $p = "<p>$p</p>";
+    for my $i ( 0 .. @paras - 1 ) {
+        ## If the paragraph does not start nor end with a block(-ish) tag,
+        ## then wrap it with <p>.
+        if ( $paras[$i] !~ m!(?:^</?$tags|</$tags>$)! ) {
+            $paras[$i] = "<p>$paras[$i]</p>";
         }
-        $p =~ s|(?<!>)\r?\n|<br />\n|g;
+        ## If a line in the paragraph does not end with a tag,
+        ## append a <br>. (Let's hope it does not end with an inline tag.)
+        $paras[$i] =~ s|(?<!>)\r?\n|<br />\n|g;
+
+        ## Special case: if the paragraph starts with a block(-ish) tag,
+        ## and does not end with a closing tag, then the paragraph should have
+        ## two <br>s to make a blank line, but only when the next paragraph
+        ## does not start with a block(-ish) tag and it ends with a block(-ish)
+        ## tag that prevents wrapping.
+        if ( $paras[$i] =~ m|(?<!>)\z| ) {
+            my $next = $i < @paras - 1 ? $paras[$i + 1] : undef;
+            if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags! ) {
+                $paras[$i] .= '<br /><br />';
+            }
+        }
     }
     join "\n\n", @paras;
 }

@@ -92,7 +92,7 @@
     var $this = jQuery(this);
     var $detail = $this.find('span.exception');
     $detail.hide();
-    $this.find('.detail-link').bind( 'mousedown', function() {
+    $this.find('.detail-link').on( 'mousedown', function() {
       if ( $detail.hasClass('active') ) {
         $detail.hide().removeClass('active');
       } else {

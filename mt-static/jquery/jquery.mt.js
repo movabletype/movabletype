@@ -35,12 +35,12 @@ $.mtMenu = function(options) {
     opts = $.extend(defaults, options);
     $('.top-menu > div a').after('<a href="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
     $('.top-menu .toggle-button')
-        .mousedown(function(event) {
+        .on('mousedown', function(event) {
             $(this).parents('li.top-menu').toggleClass('top-menu-open active');
             $(this).parents('li.top-menu').find('.sub-menu').toggle();
             return false;
         })
-        .click(function(event) {
+        .on('click', function(event) {
             return false;
         });
 };
@@ -61,14 +61,14 @@ $.mtSelector = function(options) {
     $('#selector-nav').prepend('<a hre="#" class="toggle-button"><img src="'+opts.arrow_image+'" /></a>');
 
     $('#selector-nav .toggle-button ')
-        .mousedown(function(event) {
+        .on('mousedown', function(event) {
             $(this).parent('#selector-nav').toggleClass('show-selector active');
             return false;
         })
-        .click(function(event) {
+        .on('click', function(event) {
             return false;
         });
-    $(document).mousedown(function(event) {
+    $(document).on('mousedown', function(event) {
         if ($(event.target).parents('#selector-nav').length === 0) {
             $('#selector-nav').removeClass('show-selector active');
         }
@@ -92,7 +92,7 @@ $.mtUseSubdomain = function(options) {
             $(this).parents('.field-content').find('.subdomain').hide();
         }
     });
-    $checkboxes.click(function() {
+    $checkboxes.on('click', function() {
         var $subdomain, $subdomain_input;
 
         if (this.checked) {
@@ -156,7 +156,7 @@ $.mtEditSiteUrl = function(options) {
                     .hide();
             }
         }
-        $('button#mt-set-'+this+'_url_path').click(function() {
+        $('button#mt-set-'+this+'_url_path').on('click', function() {
             $(this).hide();
             $('span.'+id+'_url_subdomain-text').hide();
             var subdomain = $subdomain.val();
@@ -201,7 +201,7 @@ $.mtUseAbsolute = function() {
             $obj.find('.absolute-site_path-hint').show();
         }
     });
-    $checkboxes.click(function() {
+    $checkboxes.on('click', function() {
         var $obj;
         if (this.checked) {
             $obj = $(this).prop('checked', true).parents('.field-content');
@@ -259,7 +259,7 @@ $.mtEditSitePath = function(options) {
         }
 
 
-        $('button#mt-set-'+id+'_path_absolute').click(function() {
+        $('button#mt-set-'+id+'_path_absolute').on('click', function() {
             $('span.'+id+'_path_absolute-text').hide();
             $absolute_path.addClass('show-input').show();
             $('p#'+id+'_path-warning').show();
@@ -267,11 +267,11 @@ $.mtEditSitePath = function(options) {
             $path.parents('.field-content').find('.use-absolute').show();
 
             if ( !$path.hasClass('show-input') ) {
-                $('button#mt-set-'+id+'_path').click();
+                $('button#mt-set-'+id+'_path').trigger('click');
             }
             return false;
         });
-        $('button#mt-set-'+id+'_path').click(function() {
+        $('button#mt-set-'+id+'_path').on('click', function() {
             $('span.'+id+'_path-text').hide();
             $path.addClass('show-input').show();
             $('p#'+id+'_path-warning').show();
@@ -279,7 +279,7 @@ $.mtEditSitePath = function(options) {
             $path.parents('.field-content').find('.use-absolute').show();
 
             if ( !$absolute_path.hasClass('show-input') ) {
-                $('button#mt-set-'+id+'_path_absolute').click();
+                $('button#mt-set-'+id+'_path_absolute').trigger('click');
             }
             return false;
         });
@@ -303,7 +303,7 @@ $.mtCheckbox = function() {
         }
     }
 
-    $('thead :checkbox, tfoot :checkbox').click(function() {
+    $('thead :checkbox, tfoot :checkbox').on('click', function() {
         var $checkboxes = $(this).parents('table').find(':checkbox');
         if (this.checked) {
             $checkboxes.prop('checked', true).parents('tr').addClass('selected').next('.slave').addClass('selected');
@@ -312,7 +312,7 @@ $.mtCheckbox = function() {
         }
     });
 
-    $('tbody :checkbox').click(function() {
+    $('tbody :checkbox').on('click', function() {
         if (this.checked) {
             $(this).parents('tr').addClass('selected').next('.slave').addClass('selected');
         } else {
@@ -337,8 +337,8 @@ $.mtCheckbox = function() {
  */
 $.mtQuickFilter = function() {
     $('form#list-filter button').hide();
-    $('select.filter-keys').change(function() {
-        $('form#list-filter').submit();
+    $('select.filter-keys').on('change', function() {
+        $('form#list-filter').trigger('submit');
     });
 };
 
@@ -370,7 +370,7 @@ $.fn.mtDialog = function(options) {
     opts = $.extend(defaults, options);
     init_dialog();
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             open_dialog(this.href, opts);
             return false;
         });
@@ -385,7 +385,7 @@ function init_dialog() {
     if (!$dialog.length) {
         $('body').append('<div class="mt-dialog"><span>Close</span></div>');
         $('.mt-dialog').after('<div class="mt-dialog-overlay overlay"></div>');
-        $(".mt-dialog > div > span").click(function() {
+        $(".mt-dialog > div > span").on('click', function() {
             close_dialog();
         });
 
@@ -417,7 +417,7 @@ function open_dialog(href, opts) {
                 frameborder: '0',
                 width: '100%'
             })
-            .load(function() {
+            .on('load', function() {
                 $('.mt-dialog .loading').remove();
             })
             .appendTo($('.mt-dialog'));
@@ -458,7 +458,7 @@ function open_dialog(href, opts) {
                 src: href+'&dialog=1',
                 width: '100%'
             })
-            .load(function() {
+            .on('load', function() {
                 $('.mt-dialog .loading').remove();
             })
             .appendTo($('.mt-dialog'));
@@ -474,12 +474,12 @@ function open_dialog(href, opts) {
         $('body').addClass('has-dialog');
     }
     $('.mt-dialog').show();
-    $('.mt-dialog').bind('close', function(event, fn) {
+    $('.mt-dialog').on('close', function(event, fn) {
         fn(event);
     });
     $('.mt-dialog-overlay').show();
     if (opts.esckeyclose) {
-        $(document).bind('keyup.mt-dialog', function(event){
+        $(document).on('keyup.mt-dialog', function(event){
             if (event.keyCode == 27) {
                 close_dialog();
             }
@@ -498,8 +498,8 @@ function close_dialog(url, fn) {
     if (fn) {
         $('.mt-dialog').trigger('close', fn);
     }
-    $(document).unbind('keyup.mt-dialog');
-    $('.mt-dialog').unbind('close');
+    $(document).off('keyup.mt-dialog');
+    $('.mt-dialog').off('close');
     $('.mt-dialog').hide();
 
     // Removing "iframe" in delay.
@@ -556,7 +556,7 @@ $.fn.mtDialogReady = function(options) {
 $.fn.mtRebuild = function(options) {
     var defaults = {},
         opts = $.extend(defaults, options);
-    $(this).click(function() {
+    $(this).on('click', function() {
         window.open($(this).attr('href'), 'rebuild_blog_'+opts.blog_id, 'width=400,height=400,resizable=yes');
         return false;
     });
@@ -579,12 +579,12 @@ $.fn.mtSetTip = function(options) {
     return this.each(function() {
         var text = $(this).attr('title');
         $(this).val(text).css('color', opts.tip_color);
-        $(this).focus(function() {
+        $(this).on('focus', function() {
             if (this.value == text) {
                 $(this).val('').css('color', '#000');
             }
         });
-        $(this).blur(function() {
+        $(this).on('blur', function() {
             if ($(this).val() == '') {
                 $(this).val(text).css('color', opts.tip_color);
             }
@@ -606,7 +606,7 @@ $.fn.mtPublishItems = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             doForMarkedInThisWindow($('#'+opts.id)[0], opts.singular, opts.plural, opts.name, opts.mode, opts.args, opts.phrase);
             return false;
         });
@@ -621,7 +621,7 @@ $.fn.mtSubmitItems = function(options) {
     var defaults = {},
         opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             $('form#'+opts.id+' > input[name=__mode]').val('save_entries');
         });
     });
@@ -637,7 +637,7 @@ $.fn.mtDeleteItems = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             doRemoveItems($('#'+opts.id)[0], opts.singular, opts.plural, '', opts.args);
             return false;
         });
@@ -654,7 +654,7 @@ $.fn.mtEnableUsers = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 1, '', opts.args);
             return false;
         });
@@ -671,11 +671,11 @@ $.fn.mtDisableUsers = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             var sysadmin = $('#sysadmin')[0];
             if (sysadmin && sysadmin.checked) {
                 alert(opts.message);
-                sysadmin.click();
+                sysadmin.trigger('click');
                 return false;
             }
             setObjectStatus($('#'+opts.id)[0], opts.plural, opts.phrase, 0, '', opts.args);
@@ -694,7 +694,7 @@ $.fn.mtDoPluginAction = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             doPluginAction($('#'+opts.id)[0], opts.plural, opts.args, opts.phrase);
             return false;
         });
@@ -711,7 +711,7 @@ $.fn.mtSetObjectStatus = function(options) {
     },
     opts = $.extend(defaults, options);
     return this.each(function() {
-        $(this).click(function() {
+        $(this).on('click', function() {
             setObjectStatus($('#'+opts.id)[0], opts.singular, opts.plural, opts.status, '', opts.args);
             return false;
         });
@@ -737,7 +737,7 @@ $.fn.mtRebasename = function(options) {
         } else {
             $('span.basename-text').text(dirify_text || opts.text);
         }
-        $(this).keyup(function() {
+        $(this).on('keyup', function() {
             if (!opts.basename) {
                 dirify_text = dirify($(this).val());
                 if (opts.limit) {
@@ -747,7 +747,7 @@ $.fn.mtRebasename = function(options) {
                 $input.val(dirify_text);
             }
         });
-        $('button#mt-set-basename').click(function() {
+        $('button#mt-set-basename').on('click', function() {
             $(this).hide();
             $('span.basename-text').hide();
             $('input#basename').show();
@@ -787,7 +787,7 @@ $.fn.mtEditInput = function(options) {
                 .after('<button type="button" id="mt-set-'+id+'" class="btn btn-default mt-edit-field-button button">'+opts.edit+'</button>')
                 .hide();
         }
-        $('button#mt-set-'+id).click(function() {
+        $('button#mt-set-'+id).on('click', function() {
             $(this).hide();
             $('span.'+id+'-text').hide();
             $('input#'+id).show();
@@ -811,7 +811,7 @@ $.fn.mtCheckboxOption = function() {
         if (!$checkbox.prop('checked')) {
             $('div#'+id+'-option').hide();
         }
-        $checkbox.click(function() {
+        $checkbox.on('click', function() {
             $('div#'+id+'-option').toggle();
         });
     });
@@ -840,19 +840,19 @@ $.fn.mtToggleField = function(options, openCallback) {
         if (opts.default_hide)
             $field.find('.'+opts.detail_class).hide();
         $field.find('.'+opts.click_class)
-            .mousedown(function(event) {
+            .on('mousedown', function(event) {
                 $field.toggleClass('active').find('.'+opts.detail_class).toggle();
                 if ($field.hasClass('active') && openCallback) {
                     openCallback();
                 }
                 return false;
             })
-            .click(function(event) {
+            .on('click', function(event) {
                 return false;
             });
 
         if (opts.hide_clicked) {
-            $(document).mousedown(function(event) {
+            $(document).on('mousedown', function(event) {
                 if ($(event.target).parents('.active').length === 0) {
                     $field.removeClass('active').find('.'+opts.detail_class).hide();
                 }
@@ -931,7 +931,7 @@ $.extend( $.mtValidator.prototype, {
         this.errstr = msg || trans('Invalid value');
         return false;
     },
-    validClass: 'valid',
+    validClass: 'is-valid',
     errorClass: 'is-invalid',
     doFocus: true,
     wrapError: function ( $target, msg ) {
@@ -1151,8 +1151,8 @@ $.mtValidator('default', {
         jQuery.data( $target.get(0), 'validate_focus', focus );
         jQuery.data( $target.get(0), 'validate_blur',  blur );
         $target
-            .bind('focus', focus)
-            .bind('blur', blur);
+            .on('focus', focus)
+            .on('blur', blur);
         if ( $target.get(0) === document.activeElement )
             $error_block.show();
         else
@@ -1168,18 +1168,14 @@ $.mtValidator('default', {
             // But in that error, $target is already wrapped probably.
         }
         $target.after($error_block);
-        $error_block
-            .css('left', $target.width() )
-            .css('top',   -1 * $target.height() )
-            .css('z-index', 200);
     },
     removeError: function( $target, $error_block ) {
         $error_block.remove();
         var focus = jQuery.data( $target.get(0), 'validate_focus'),
             blur  = jQuery.data( $target.get(0), 'validate_blur');
         $target
-            .unbind('focus', focus)
-            .unbind('blur', blur);
+            .off('focus', focus)
+            .off('blur', blur);
     },
     doFocus: false
 });
@@ -1431,7 +1427,7 @@ $.fn.extend({
             }
         });
         if ( opts.focus && error_elements.length ) {
-            error_elements[0].focus();
+            error_elements[0].trigger('focus');
         }
         if ( opts.afterTrigger ) {
             this.trigger('after-mt-valid');
@@ -1497,7 +1493,7 @@ $.fn.mtPlaceholder = function() {
                 .attr('data-showing-placeholder', 'showing');
         }
         $that
-            .focus( function () {
+            .on('focus', function () {
                 if ( $that.attr('data-showing-placeholder') ) {
                     $that
                         .val('')
@@ -1505,14 +1501,14 @@ $.fn.mtPlaceholder = function() {
                         .removeAttr('data-showing-placeholder');
                 }
             })
-            .blur( function () {
+            .on('blur', function () {
                 if ( 1 > $that.val().length) {
                     $that.val(placeholder_text)
                         .css('color', 'GrayText')
                         .attr('data-showing-placeholder', 'showing');
                 }
             })
-            .parents('form').submit( function () {
+            .parents('form').on('submit', function () {
                 if ( $that.attr('data-showing-placeholder') ) {
                     $that.removeAttr('data-showing-placeholder');
                     $that.val('');
@@ -1547,7 +1543,7 @@ $.fn.mtEditInputBlock = function(options) {
       } else {
           $div.show();
       }
-      $('button#mt-edit-'+id).click(function() {
+      $('button#mt-edit-'+id).on('click', function() {
           $(this).hide();
           $('span.'+id+'-text').hide();
           $div.show();

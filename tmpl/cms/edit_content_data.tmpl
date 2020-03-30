@@ -769,14 +769,14 @@ Template.templates.autoSave = '<mt:section encode_js="1">
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery('button.preview').click(function(event) {
+  jQuery('button.preview').on('click', function(event) {
     jQuery('form#edit-content-type-data-form input[name=__mode]').val('preview_content_data');
   <mt:if name="config.previewinnewwindow">
     jQuery('form#edit-content-type-data-form').attr('target', 'mt_preview_content_data_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
   });
   <mt:if name="config.previewinnewwindow">
-    jQuery('button.publish').click(function(event) {
+    jQuery('button.publish').on('click', function(event) {
         jQuery('form#edit-content-type-data-form input[name=__mode]').val('save');
         jQuery('form#edit-content-type-data-form').removeAttr('target');
     });
@@ -909,7 +909,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
       basename: '<$mt:var name="identifier" escape="js"$>'
   });
 
-  jQuery('select#status').change(function() {
+  jQuery('select#status').on('change', function() {
       setSaveButtonText();
       clearUnpublishDate();
   });

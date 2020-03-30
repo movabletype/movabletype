@@ -495,7 +495,7 @@ function createUploadBlock () {
   this.setCancelUpload = function(xhr) {
     var parent = this;
     this.cancelUpload.show();
-    this.cancelUpload.click( function() {
+    this.cancelUpload.on('click', function() {
       xhr.abort();
       parent.setCancelResult(trans('Cancelled: [_1]', parent.filename.html()));
     });
@@ -527,7 +527,7 @@ function createUploadBlock () {
   }
   this.setAssetID = function(asset) {
     var id = asset.id;
-    jQuery('#select_asset input[name="asset_id"]').val(id).change();
+    jQuery('#select_asset input[name="asset_id"]').val(id).trigger('change');
   }
 
   this.setError = function(err) {
@@ -572,7 +572,7 @@ function createUploadBlock () {
           var upload_status_block = jQuery(self).parents('.upload-status-block');
           upload_status_block.find('.upload-status-block-left-panel').text('<__trans phrase="You have successfully deleted the asset(s).">');
           upload_status_block.find('.upload-status-block-right-panel').hide();
-          jQuery('#select_asset input[name="asset_id"]').val('').change();
+          jQuery('#select_asset input[name="asset_id"]').val('').trigger('change');
       });
     });
     this.deleteAsset.show();
@@ -653,7 +653,7 @@ function uploadFiles(files, items) {
     // Enable submit button
     if ( jQuery('#select_asset input[name="id"]').val().length > 0 ) {
       jQuery('#blockeditor-upload-asset-panel .actions-bar button.primary')
-        .removeAttr('disabled')
+        .prop('disabled', false)
         .removeClass('disabled');
     }
   });
@@ -717,12 +717,12 @@ function uploadFile( formData, uploadBlock ) {
 }
 /* ]]> */
 
-jQuery('#open-file-dialog, #open-file-dialog-for-mobile').click( function() {
-  jQuery('#file').click();
+jQuery('#open-file-dialog, #open-file-dialog-for-mobile').on('click', function() {
+  jQuery('#file').trigger('click');
   return false;
 });
 
-jQuery('#file').change( function(e) {
+jQuery('#file').on('change', function(e) {
   var files = e.originalEvent.target.files;
   uploadFiles(files);
   jQuery('#file').val('');

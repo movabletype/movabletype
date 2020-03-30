@@ -931,7 +931,6 @@ sub _build_entry_preview {
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
     $ctx->stash( 'blog',     $blog );
-    $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );

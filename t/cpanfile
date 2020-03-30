@@ -85,6 +85,7 @@ requires 'Net::IP';
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
     requires 'App::Prove::Plugin::MySQLPool';
+    requires 'Class::Unload';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
@@ -98,8 +99,10 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Minimal';
     requires 'Net::SFTP';
+    requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
     requires 'PHP::Serialization';
+    requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
@@ -119,6 +122,7 @@ on 'test' => sub {
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Requires';
+    requires 'Test::SharedFork';
     requires 'Test::Spec';
     requires 'Text::Diff';
     requires 'Time::Piece';

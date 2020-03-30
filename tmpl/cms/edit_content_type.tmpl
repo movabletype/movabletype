@@ -80,25 +80,25 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  jQuery('input[type="text"]').keyup(function() {
+  jQuery('input[type="text"]').on('keyup', function() {
     setDirty(true);
   });
-  jQuery('textarea').keyup(function() {
+  jQuery('textarea').on('keyup', function() {
     setDirty(true);
   });
-  jQuery('input[type="radio"]').change(function() {
+  jQuery('input[type="radio"]').on('change', function() {
     setDirty(true);
   });
-  jQuery('input[type="checkbox"]').change(function() {
+  jQuery('input[type="checkbox"]').on('change', function() {
     setDirty(true);
   });
-  jQuery('select').change(function() {
+  jQuery('select').on('change', function() {
     setDirty(true);
   });
 
   // https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/12756142/
   jQuery(document).on('mouseup', '.content-field-block input, .content-field-block textarea', function () {
-    jQuery(this).blur().focus();
+    jQuery(this).trigger('blur').trigger('focus');
   });
 
   jQuery.mtValidator('selection-field-values-option',

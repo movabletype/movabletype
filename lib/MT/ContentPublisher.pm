@@ -1133,6 +1133,8 @@ sub rebuild_file {
     {
         $finfo->remove();
         MT::Util::Log->info( ' Removed ' . $finfo->file_path );
+        $map->{__saved_but_removed} = 1;
+
         if ( MT->config->DeleteFilesAtRebuild ) {
             $mt->_delete_archive_file(
                 Blog        => $blog,
@@ -1255,10 +1257,15 @@ sub rebuild_file {
         if ( !$map->is_preferred ) {
             my $category = $ctx->{__stash}{archive_category};
             my $author   = $ctx->{__stash}{author};
+            my $obj
+                = (    $archiver->contenttype_based
+                    || $archiver->contenttype_group_based )
+                ? $content_data
+                : $entry;
             $ctx->stash(
                 'preferred_mapping_url',
                 sub {
-                    my $file = $mt->archive_file_for( $entry, $blog, $at,
+                    my $file = $mt->archive_file_for( $obj, $blog, $at,
                         $category, undef, $start, $author );
                     my $url = $base_url . $file;
                     $url =~ s{(?<!:)//+}{/}g;
@@ -1771,7 +1778,8 @@ sub _rebuild_content_archive_type {
             EndDate     => $end,
             Force       => $param{Force} ? 1 : 0,
         ) or return;
-        $done->{ $map->{__saved_output_file} }++;
+        $done->{ $map->{__saved_output_file} }++
+            unless delete $map->{__saved_but_removed};
     }
     1;
 }

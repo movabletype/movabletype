@@ -190,7 +190,7 @@ function validate (f) {
                 f.dbpath.focus();
                 return false;
             }
-        } else {    
+        } else {
             if ((!f.dbuser.value) && (db != "mssqlserver") && (db != "umssqlserver")) {
                 alert('<__trans phrase="You must set your Username." escape="js">');
                 f.dbuser.focus();
@@ -211,8 +211,8 @@ function go(mode) {
 }
 
 function reTest() {
-  needValidate = false; 
-  go('retry'); 
+  needValidate = false;
+  go('retry');
   document.forms[0].submit();
 }
 
@@ -255,12 +255,12 @@ var database = new Array();
         }
     }
 
-    jQuery('#dbtype').change(function() {
+    jQuery('#dbtype').on('change', function() {
         show_fields();
     });
     show_fields();
 
-    jQuery('#more').click(function(event) {
+    jQuery('#more').on('click', function(event) {
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });
@@ -271,4 +271,3 @@ var database = new Array();
 
 <mt:include name="layout/chromeless.tmpl">
 <mt:var name="layout">
-

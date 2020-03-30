@@ -140,13 +140,13 @@ sub replace_handler {
     my ($search_regex, $replace_string, $field_data,
         $values,       $content_data
     ) = @_;
-    return 0 unless defined $values;
+    return (0, $values) unless defined $values;
     $values = [$values] unless ref $values eq 'ARRAY';
     my $replaced = 0;
     for (@$values) {
         $replaced += $_ =~ s!$search_regex!$replace_string!g;
     }
-    $replaced > 0;
+    return ($replaced > 0, $values);
 }
 
 sub search_handler {

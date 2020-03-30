@@ -324,7 +324,7 @@ function resize_upload_overlay() {
     .css('left', left);
 }
 
-jQuery(window).load(function () {
+jQuery(window).on('load', function () {
 
   // Create upload overlay DOM once.
   if (!jQuery('#upload-overlay-container').length) {
@@ -501,7 +501,7 @@ function createUploadBlock () {
   this.setCancelUpload = function(xhr) {
     var parent = this;
     this.cancelUpload.show();
-    this.cancelUpload.click( function() {
+    this.cancelUpload.on('click', function() {
       xhr.abort();
       parent.setCancelResult(trans('Cancelled: [_1]', parent.filename.html()));
     });
@@ -638,7 +638,7 @@ function uploadFiles(files, items) {
     // Enable submit button
     if ( jQuery('#select_asset input[name="id"]').val().length > 0 ) {
       jQuery('.actions-bar button.primary')
-        .removeAttr('disabled')
+        .prop('disabled', false)
         .removeClass('disabled');
     }
   });
@@ -728,12 +728,12 @@ function toggleUploadSettings() {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-jQuery('#open-file-dialog, #open-file-dialog-for-mobile').click( function() {
-  jQuery('#file').click();
+jQuery('#open-file-dialog, #open-file-dialog-for-mobile').on('click', function() {
+  jQuery('#file').trigger('click');
   return false;
 });
 
-jQuery('#file').change( function(e) {
+jQuery('#file').on('change', function(e) {
   var files = e.originalEvent.target.files;
   uploadFiles(files);
   jQuery('#file').val('');
@@ -771,7 +771,7 @@ jQuery('#upload-asset-panel').on('changePanel', function() {
 
     // Enable submit button
     jQuery('.actions-bar button.primary')
-      .removeAttr('disabled')
+      .prop('disabled', false)
       .removeClass('disabled');
   }
 });

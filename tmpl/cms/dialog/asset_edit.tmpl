@@ -53,7 +53,7 @@ function initTags() {
     autoTag.delimiter = tag_delim;
 }
 
-jQuery(window).load(init);
+jQuery(window).on('load', init);
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -232,7 +232,7 @@ window.onbeforeunload = closeModalWithCheck;
 
 <mt:setvarblock name="jq_js_include" append="1">
 
-jQuery('#save').click(function(){
+jQuery('#save').on('click', function(){
   jQuery('#msg-block').empty();
   jQuery.ajax({
     type: 'POST',
@@ -269,7 +269,7 @@ jQuery(':input:visible').on('keydown', function(){
     isDirty = true;
 });
 
-jQuery('.image-editor a').click(function(event) {
+jQuery('.image-editor a').on('click', function(event) {
     if (!closeModalWithCheck()) {
         return false;
     }

@@ -75,7 +75,7 @@
         jQuery('#content-actions').hide();
         jQuery('#create-inline-ipban').show();
         jQuery('#actions-bar-top').hide();
-        jQuery('#ip-address').mtUnvalidate().val('').focus();
+        jQuery('#ip-address').mtUnvalidate().val('').trigger('focus');
     }
 
     function closeCreateMode () {
@@ -85,12 +85,12 @@
         current_edit = 0;
     }
 
-    jQuery('#create-inline-ipban').submit(function() {
+    jQuery('#create-inline-ipban').on('submit', function() {
         // If input has focus, jQuery.wrap() throws exception...
         // Change focus before validate.
-        jQuery('#submit-ipban').focus();
+        jQuery('#submit-ipban').trigger('focus');
         if ( !jQuery('#ip-address').mtValidate('simple') ) {
-            jQuery('#ip-address').focus();
+            jQuery('#ip-address').trigger('focus');
             return false;
         }
         closeCreateMode();
@@ -123,13 +123,13 @@
         return false;
     });
 
-    jQuery('#create-inline-ipban button.mt-cancel-action').click(function() {
+    jQuery('#create-inline-ipban button.mt-cancel-action').on('click', function() {
         jQuery('#ip-address').mtUnvalidate();
         closeCreateMode();
         return false;
     });
 
-    jQuery('#action-ban-ip').click( function() {
+    jQuery('#action-ban-ip').on('click', function() {
         openCreateMode();
         return false;
     });

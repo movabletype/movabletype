@@ -73,7 +73,7 @@
             this.footer.find('.submit').attr('disabled','disabled');
         },
         set_enabled_action: function(){
-            this.footer.find('.submit').removeAttr('disabled');
+            this.footer.find('.submit').prop('disabled', false);
         },
         clear: function(){
             this.title.empty();
