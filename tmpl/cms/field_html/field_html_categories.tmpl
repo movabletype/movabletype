@@ -90,12 +90,6 @@ input.add-category-input {
   margin-left:5px;
 }
 
-.category-selected-delete {
-  width: 21px;
-  display: inline-block;
-  margin-left: 10px;
-  vertical-align: middle;
-}
 @media (max-width: 767.98px) {
   .categories-field-container [id^=category-selector-] .list-item {
     padding: 0.5rem;
@@ -213,7 +207,19 @@ jQuery(window).on('load resize', function () {
                           </li>
                           [# } #]
                       [# } else { #]
-                      <li mt:focus-hover="1" mt:id="[#= cat.id #]"><div class="category-selected-item">[#= label #]</div></li>
+                      <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="focus">
+                        <div class="category-selected-item">
+                          [#= label #]
+                        </div>
+                        <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-none d-md-inline-block category-selected-delete" title="[#|h trans("Remove") #]">
+                          <span>
+                            <mtapp:svgicon id="ic_remove" title="Remove" size="sm">
+                          </span>
+                          <span>
+                            <mtapp:svgicon id="ic_remove" color="danger" title="Remove" size="sm">
+                          </span>
+                        </a>
+                      </li>
                       [# } #]
                   [# } #]
                   </ul>
