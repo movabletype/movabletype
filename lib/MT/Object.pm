@@ -230,7 +230,8 @@ sub install_properties {
     # convert them to a hashref for easier lookup.
     if ( ( ref $props->{child_classes} ) eq 'ARRAY' ) {
         my $classes = $props->{child_classes};
-        $props->{child_classes} = {};
+        $props->{child_classes}
+            = $super_props && $super_props->{child_classes} || {};
         @{ $props->{child_classes} }{@$classes} = ();
     }
 
