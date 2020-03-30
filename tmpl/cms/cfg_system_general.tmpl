@@ -314,7 +314,7 @@ function validate (f) {
         width: 450
     });
 
-    jQuery('#send-test-email').click(function() {
+    jQuery('#send-test-email').on('click', function() {
         jQuery('span.indicator').hide();
         jQuery('#email_sent').hide();
         jQuery('#email_sent_error').hide();
@@ -322,7 +322,7 @@ function validate (f) {
         return false;
     });
 
-    jQuery('#test_form').submit(function() {
+    jQuery('#test_form').on('submit', function() {
         jQuery('#email_sent').hide();
         jQuery('#email_sent_error').hide();
 
@@ -356,7 +356,7 @@ function validate (f) {
         return false;
     });
 
-    jQuery('input#system_performance_logging').click(function() {
+    jQuery('input#system_performance_logging').on('click', function() {
         jQuery('div#system_performance_logging_prefs').toggleClass('hidden');
     });
     jQuery.mtValidateAddRules({
@@ -377,8 +377,8 @@ function validate (f) {
         '.jpeg-quality': '<__trans phrase="You must set an integer value between 0 and 100." escape="singlequotes">',
         '.png-quality': '<__trans phrase="You must set an integer value between 0 and 9.", escape="singlequotes">'
     });
-    jQuery('#sys_conf').submit( function () {
-        jQuery('#auto-change-image-quality').removeAttr('disabled'); 
+    jQuery('#sys_conf').on('submit', function () {
+        jQuery('#auto-change-image-quality').prop('disabled', false);
         if ( !jQuery(this).find('input:not(:disabled), select:not(:disabled)').filter('input:visible, select:visible').mtValidate('simple') ) return false;
     });
 

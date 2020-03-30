@@ -74,7 +74,7 @@ JSCRIPT;
 
     $vs .= <<< JSCRIPT
         jQuery(document).ready(function() {
-            jQuery("form#$form_id").submit(function(e){
+            jQuery("form#$form_id").on('submit', function(e){
                 var form = jQuery(this);
                 var passwd = form.find("input[name=$pass_field]").val();
                 if (passwd == null || passwd == "") {

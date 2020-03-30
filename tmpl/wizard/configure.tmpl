@@ -250,12 +250,12 @@ var database = new Array();
         }
     }
 
-    jQuery('#dbtype').change(function() {
+    jQuery('#dbtype').on('change', function() {
         show_fields();
     });
     show_fields();
 
-    jQuery('#more').click(function(event) {
+    jQuery('#more').on('click', function(event) {
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });

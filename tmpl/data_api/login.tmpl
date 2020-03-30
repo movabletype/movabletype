@@ -37,22 +37,22 @@ jQuery(function() {
         .val( window.top.jQuery('#user .username').text())
         .addClass('disabled')
         .attr('disabled','disabled');
-      jQuery('#sign-in-button').click(function(){
-        jQuery('#username').removeAttr('disabled');
+      jQuery('#sign-in-button').on('click', function(){
+        jQuery('#username').prop('disabled', false);
       });
     }
 });
 
 jQuery(function($) {
     function initFocus() {
-        $('#username').focus();
-        if ($('#username').focus().val() != '') {
-            $('#password').focus();
+        $('#username').trigger('focus');
+        if ($('#username').trigger('focus').val() != '') {
+            $('#password').trigger('focus');
         }
     }
     initFocus();
 
-    $('#login_form').submit(function() {
+    $('#login_form').on('submit', function() {
         var form = this;
         $.ajax({
             url: this.action,

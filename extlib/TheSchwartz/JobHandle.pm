@@ -1,4 +1,4 @@
-# $Id: JobHandle.pm 1098 2007-12-12 01:47:58Z hachi $
+# $Id$
 
 package TheSchwartz::JobHandle;
 use strict;
@@ -11,12 +11,13 @@ use TheSchwartz::Job;
 
 sub new_from_string {
     my $class = shift;
-    my($hstr) = @_;
-    my($hashdsn, $jobid) = split /\-/, $hstr, 2;
-    return TheSchwartz::JobHandle->new({
-            dsn_hashed => $hashdsn,
+    my ($hstr) = @_;
+    my ( $hashdsn, $jobid ) = split /\-/, $hstr, 2;
+    return TheSchwartz::JobHandle->new(
+        {   dsn_hashed => $hashdsn,
             jobid      => $jobid,
-        });
+        }
+    );
 }
 
 sub as_string {
@@ -26,15 +27,16 @@ sub as_string {
 
 sub driver {
     my $handle = shift;
-    unless (exists $handle->{__driver}) {
-        $handle->{__driver} = $handle->client->driver_for($handle->dsn_hashed);
+    unless ( exists $handle->{__driver} ) {
+        $handle->{__driver}
+            = $handle->client->driver_for( $handle->dsn_hashed );
     }
     return $handle->{__driver};
 }
 
 sub job {
     my $handle = shift;
-    my $job = $handle->client->lookup_job($handle->as_string) or return;
+    my $job = $handle->client->lookup_job( $handle->as_string ) or return;
     $job->handle($handle);
     return $job;
 }
@@ -46,17 +48,17 @@ sub is_pending {
 
 sub exit_status {
     my $handle = shift;
-    my $status = $handle->driver->lookup(
-            'TheSchwartz::ExitStatus' => $handle->jobid
-        ) or return;
+    my $status
+        = $handle->driver->lookup(
+        'TheSchwartz::ExitStatus' => $handle->jobid )
+        or return;
     return $status->status;
 }
 
 sub failure_log {
-    my $handle = shift;
-    my @failures = $handle->driver->search('TheSchwartz::Error' =>
-            { jobid => $handle->jobid },
-        );
+    my $handle   = shift;
+    my @failures = $handle->driver->search(
+        'TheSchwartz::Error' => { jobid => $handle->jobid }, );
     return map { $_->message } @failures;
 }
 

@@ -50,7 +50,7 @@ $.fn.numeric = function(config, callback)
 	// callback function
 	callback = (typeof(callback) == "function" ? callback : function() {});
 	// set data and methods
-	return this.data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).data("numeric.decimalPlaces", decimalPlaces).keypress($.fn.numeric.keypress).keyup($.fn.numeric.keyup).blur($.fn.numeric.blur);
+	return this.data("numeric.decimal", decimal).data("numeric.negative", negative).data("numeric.callback", callback).data("numeric.decimalPlaces", decimalPlaces).on('keypress', $.fn.numeric.keypress).on('keyup', $.fn.numeric.keyup).on('blur', $.fn.numeric.blur);
 };
 
 $.fn.numeric.keypress = function(e)
@@ -281,7 +281,7 @@ $.fn.numeric.blur = function()
 
 $.fn.removeNumeric = function()
 {
-	return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).data("numeric.decimalPlaces", null).unbind("keypress", $.fn.numeric.keypress).unbind("keyup", $.fn.numeric.keyup).unbind("blur", $.fn.numeric.blur);
+	return this.data("numeric.decimal", null).data("numeric.negative", null).data("numeric.callback", null).data("numeric.decimalPlaces", null).off("keypress", $.fn.numeric.keypress).off("keyup", $.fn.numeric.keyup).off("blur", $.fn.numeric.blur);
 };
 
 // Based on code from http://javascript.nwbox.com/cursor_position/ (Diego Perini <dperini@nwbox.com>)

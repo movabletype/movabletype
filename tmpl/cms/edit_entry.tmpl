@@ -1016,10 +1016,10 @@
           cmtTableSelect = new TC.TableSelect( "manage-comments" );
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
-          <mt:unless name="id">jQuery('#title').focus();</mt:unless>
-          jQuery('#convert_breaks').change(changedTextFormat);
+          <mt:unless name="id">jQuery('#title').trigger('focus');</mt:unless>
+          jQuery('#convert_breaks').on('change', changedTextFormat);
       }
-      
+
       var tagPos = 0;
       function initTags() {
           /* browsers don't want to cache the tags field, so we use a hidden input field to cache them */
@@ -1307,16 +1307,16 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.preview').click(function(event) {
+    jQuery('button.preview').on('click', function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#entry_form').attr('target', 'mt_preview_entry_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
     });
   <mt:if name="config.previewinnewwindow">
-    jQuery('button.publish').click(function(event) {
+    jQuery('button.publish').on('click', function(event) {
         jQuery('form#entry_form input[name=__mode]').val('save_entry');
-        jQuery('form#entry_form').removeAttr('target');
+        jQuery('form#entry_form').prop('target', false);
         jQuery('form#entry_form').attr('mt:once', '1');
     });
   </mt:if>
@@ -1329,11 +1329,11 @@
         limit: '<$mt:var name="basename_limit" escape="js"$>',
         basename: '<$mt:var name="basename" escape="js"$>'
     });
-    jQuery('input#save_revision').click(function() {
+    jQuery('input#save_revision').on('click', function() {
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('select#status').change(function() {
+    jQuery('select#status').on('change', function() {
         setSaveButtonText();
         clearUnpublishDate();
     });
@@ -1380,7 +1380,7 @@
         }
     });
 
-    jQuery('div#display-options-detail :checkbox').click(function() {
+    jQuery('div#display-options-detail :checkbox').on('click', function() {
         var $field_block = jQuery('div#'+this.value+'-field');
         if ( this.checked ) {
             $field_block.removeClass('hidden');
@@ -1395,4 +1395,3 @@
 
 </mt:setvarblock>
 <mt:include name="include/footer.tmpl" id="footer_include">
-  

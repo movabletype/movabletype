@@ -2915,6 +2915,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/aim_logo.png',
             login_form        => 'comment/auth_aim.tmpl',
             order             => 15,
+            disable           => 1,
         },
         'WordPress' => {
             class             => 'MT::Auth::WordPress',
@@ -2925,6 +2926,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/wordpress_logo.png',
             login_form        => 'comment/auth_wordpress.tmpl',
             order             => 16,
+            disable           => 1,
         },
         'TypeKey' => {
             disable           => 1,
@@ -2968,6 +2970,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/favicon_yahoo.png',
             login_form        => 'comment/auth_yahoojapan.tmpl',
             order             => 18,
+            disable           => 1,
         },
         'livedoor' => {
             class             => 'MT::Auth::OpenID',

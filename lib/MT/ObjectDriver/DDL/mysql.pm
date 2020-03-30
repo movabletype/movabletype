@@ -258,6 +258,16 @@ sub cast_column_sql {
         "CAST(${field_prefix}_$name AS " . $cast_type{ $def->{type} } . ')';
 }
 
+sub create_table_sql {
+    my ( $ddl, $class ) = @_;
+    my $sql = $ddl->SUPER::create_table_sql($class);
+    my $dbh = $class->driver->rw_handle;
+    if ( $dbh->{private_set_names} eq 'utf8mb4' ) {
+        $sql .= " ROW_FORMAT=DYNAMIC";
+    }
+    $sql;
+}
+
 sub drop_table_sql {
     my $ddl        = shift;
     my ($class)    = @_;

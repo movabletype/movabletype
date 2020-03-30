@@ -98,14 +98,17 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Minimal';
     requires 'Net::SFTP';
+    requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
     requires 'PHP::Serialization';
+    requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'pQuery';
     requires 'SQL::Maker';
     requires 'SQL::Translator';
     requires 'String::CamelCase';
     requires 'Term::Encoding';
     requires 'Test::Base';
+    requires 'Test::Base::Less';
     requires 'Test::Class';
     requires 'Test::Data';
     requires 'Test::Deep';
@@ -116,6 +119,7 @@ on 'test' => sub {
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Requires';
+    requires 'Test::SharedFork';
     requires 'Test::Spec';
     requires 'Text::Diff';
     requires 'Time::Piece';

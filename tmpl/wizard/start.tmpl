@@ -182,9 +182,9 @@ function check_static_uri() {
 
     function submit_uri_valid() {
         jQuery('form')
-            .removeAttr('onload')
+            .prop('onload', false)
             .append(input)
-            .submit();
+            .trigger('submit');
     }
 
     function submit_uri_invalid() {

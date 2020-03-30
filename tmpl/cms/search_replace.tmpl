@@ -35,7 +35,7 @@ function reSearch(type) {
             jQuery('#search_form input[name=do_search]').val(1);
         }
         jQuery('#search_form input[name=_type]').val(type);
-        jQuery('#search_form').submit();
+        jQuery('#search_form').trigger('submit');
     }
     return false;
 }
@@ -43,14 +43,14 @@ function reSearch(type) {
 function unLimit(newLimit) {
     jQuery('#search_form input[name=limit]').val(newLimit);
     jQuery('#search_form input[name=do_search]').val(1);
-    jQuery('#search_form').submit();
+    jQuery('#search_form').trigger('submit');
     return false;
 }
 
 function doSearch() {
     jQuery('#search_form input[name=limit]').val('');
     jQuery('#search_form input[name=do_search]').val(1);
-    jQuery('#search_form').submit();
+    jQuery('#search_form').trigger('submit');
 }
 
 function doReplace() {
@@ -62,7 +62,7 @@ function doReplace() {
         });
         jQuery('#search_form input[name=replace_ids]').val(ids.join(','));
         jQuery('#search_form input[name=do_replace]').val(1);
-        jQuery('#search_form').submit();
+        jQuery('#search_form').trigger('submit');
     } else {
         alert("<__trans phrase="You must select one or more item to replace.">");
     }
@@ -290,7 +290,7 @@ jQuery(function() {
 
     jQuery.mtCheckbox();
 <mt:unless name="have_results">
-    jQuery('#search').focus();
+    jQuery('#search').trigger('focus');
 </mt:unless>
 });
 /* ]]> */

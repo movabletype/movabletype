@@ -80,7 +80,7 @@ $.widget = function( name, base, prototype ) {
 	}
 
 	// Create selector for plugin
-	$.expr[ ":" ][ fullName.toLowerCase() ] = function( elem ) {
+	$.expr.pseudos[ fullName.toLowerCase() ] = function( elem ) {
 		return !!$.data( elem, fullName );
 	};
 
@@ -373,7 +373,7 @@ $.Widget.prototype = {
 			.removeData( this.widgetFullName );
 		this.widget()
 			.off( this.eventNamespace )
-			.removeAttr( "aria-disabled" );
+			.prop( "aria-disabled" , false);
 
 		// Clean up events and states
 		this.bindings.off( this.eventNamespace );
@@ -514,7 +514,7 @@ $.Widget.prototype = {
 			for ( i = 0; i < classes.length; i++ ) {
 				current = that.classesElementLookup[ classes[ i ] ] || $();
 				if ( options.add ) {
-					current = $( $.unique( current.get().concat( options.element.get() ) ) );
+					current = $( jQuery.uniqueSort( current.get().concat( options.element.get() ) ) );
 				} else {
 					current = $( current.not( options.element ).get() );
 				}
@@ -792,7 +792,7 @@ function getDimensions( elem ) {
 			offset: { top: 0, left: 0 }
 		};
 	}
-	if ( $.isWindow( raw ) ) {
+	if ( raw != null && raw === raw.window ) {
 		return {
 			width: elem.width(),
 			height: elem.height(),
@@ -854,7 +854,7 @@ $.position = {
 	},
 	getWithinInfo: function( element ) {
 		var withinElement = $( element || window ),
-			isWindow = $.isWindow( withinElement[ 0 ] ),
+			isWindow = (withinElement[ 0 ] != null && withinElement[ 0 ] === withinElement[ 0 ].window),
 			isDocument = !!withinElement[ 0 ] && withinElement[ 0 ].nodeType === 9,
 			hasOffset = !isWindow && !isDocument;
 		return {
@@ -1246,7 +1246,7 @@ var position = $.ui.position;
 //>>docs: http://api.jqueryui.com/data-selector/
 
 
-var data = $.extend( $.expr[ ":" ], {
+var data = $.extend( $.expr.pseudos, {
 	data: $.expr.createPseudo ?
 		$.expr.createPseudo( function( dataName ) {
 			return function( elem ) {
@@ -2220,12 +2220,12 @@ $.fn.extend( {
 
 ( function() {
 
-if ( $.expr && $.expr.filters && $.expr.filters.animated ) {
-	$.expr.filters.animated = ( function( orig ) {
+if ( $.expr && $.expr.pseudos && $.expr.pseudos.animated ) {
+	$.expr.pseudos.animated = ( function( orig ) {
 		return function( elem ) {
 			return !!$( elem ).data( dataSpaceAnimated ) || orig( elem );
 		};
-	} )( $.expr.filters.animated );
+	} )( $.expr.pseudos.animated );
 }
 
 if ( $.uiBackCompat !== false ) {
@@ -3935,7 +3935,7 @@ function visible( element ) {
 	return visibility !== "hidden";
 }
 
-$.extend( $.expr[ ":" ], {
+$.extend( $.expr.pseudos, {
 	focusable: function( element ) {
 		return $.ui.focusable( element, $.attr( element, "tabindex" ) != null );
 	}
@@ -4245,7 +4245,7 @@ var scrollParent = $.fn.scrollParent = function( includeHidden ) {
 
 
 
-var tabbable = $.extend( $.expr[ ":" ], {
+var tabbable = $.extend( $.expr.pseudos, {
 	tabbable: function( element ) {
 		var tabIndex = $.attr( element, "tabindex" ),
 			hasTabindex = tabIndex != null;
@@ -4286,7 +4286,7 @@ var uniqueId = $.fn.extend( {
 	removeUniqueId: function() {
 		return this.each( function() {
 			if ( /^ui-id-\d+$/.test( this.id ) ) {
-				$( this ).removeAttr( "id" );
+				$( this ).prop( "id" , false);
 			}
 		} );
 	}
@@ -4407,11 +4407,11 @@ var widgetsAccordion = $.widget( "ui.accordion", {
 		var contents;
 
 		// Clean up main element
-		this.element.removeAttr( "role" );
+		this.element.prop( "role" , false);
 
 		// Clean up headers
 		this.headers
-			.removeAttr( "role aria-expanded aria-selected aria-controls tabIndex" )
+			.prop( "role aria-expanded aria-selected aria-controls tabIndex" , false)
 			.removeUniqueId();
 
 		this._destroyIcons();
@@ -4419,7 +4419,7 @@ var widgetsAccordion = $.widget( "ui.accordion", {
 		// Clean up content panels
 		contents = this.headers.next()
 			.css( "display", "" )
-			.removeAttr( "role aria-hidden aria-labelledby" )
+			.prop( "role aria-hidden aria-labelledby" , false)
 			.removeUniqueId();
 
 		if ( this.options.heightStyle !== "content" ) {
@@ -5077,14 +5077,14 @@ var widgetsMenu = $.widget( "ui.menu", {
 
 	_destroy: function() {
 		var items = this.element.find( ".ui-menu-item" )
-				.removeAttr( "role aria-disabled" ),
+				.prop( "role aria-disabled" , false),
 			submenus = items.children( ".ui-menu-item-wrapper" )
 				.removeUniqueId()
-				.removeAttr( "tabIndex role aria-haspopup" );
+				.prop( "tabIndex role aria-haspopup" , false);
 
 		// Destroy (sub)menus
 		this.element
-			.removeAttr( "aria-activedescendant" )
+			.prop( "aria-activedescendant" , false)
 			.find( ".ui-menu" ).addBack()
 				.removeAttr( "role aria-labelledby aria-expanded aria-hidden aria-disabled " +
 					"tabIndex" )
@@ -5379,7 +5379,7 @@ var widgetsMenu = $.widget( "ui.menu", {
 
 		submenu
 			.show()
-			.removeAttr( "aria-hidden" )
+			.prop( "aria-hidden" , false)
 			.attr( "aria-expanded", "true" )
 			.position( position );
 	},
@@ -5884,14 +5884,14 @@ $.widget( "ui.autocomplete", {
 		// if the page is unloaded before the widget is destroyed. #7790
 		this._on( this.window, {
 			beforeunload: function() {
-				this.element.removeAttr( "autocomplete" );
+				this.element.prop( "autocomplete" , false);
 			}
 		} );
 	},
 
 	_destroy: function() {
 		clearTimeout( this.searching );
-		this.element.removeAttr( "autocomplete" );
+		this.element.prop( "autocomplete" , false);
 		this.menu.element.remove();
 		this.liveRegion.remove();
 	},
@@ -6289,7 +6289,7 @@ var widgetsControlgroup = $.widget( "ui.controlgroup", {
 	_destroy: function() {
 		this._callChildMethod( "destroy" );
 		this.childWidgets.removeData( "ui-controlgroup-data" );
-		this.element.removeAttr( "role" );
+		this.element.prop( "role" , false);
 		if ( this.options.items.controlgroupLabel ) {
 			this.element
 				.find( this.options.items.controlgroupLabel )
@@ -6378,7 +6378,7 @@ var widgetsControlgroup = $.widget( "ui.controlgroup", {
 				} );
 		} );
 
-		this.childWidgets = $( $.unique( childWidgets ) );
+		this.childWidgets = $( jQuery.uniqueSort( childWidgets ) );
 		this._addClass( this.childWidgets, "ui-controlgroup-item" );
 	},
 
@@ -6963,7 +6963,7 @@ $.widget( "ui.button", {
 	},
 
 	_destroy: function() {
-		this.element.removeAttr( "role" );
+		this.element.prop( "role" , false);
 
 		if ( this.icon ) {
 			this.icon.remove();
@@ -6972,7 +6972,7 @@ $.widget( "ui.button", {
 			this.iconSpace.remove();
 		}
 		if ( !this.hasTitle ) {
-			this.element.removeAttr( "title" );
+			this.element.prop( "title" , false);
 		}
 	},
 
@@ -8048,7 +8048,7 @@ $.extend( Datepicker.prototype, {
 			inst = this._getInst( obj ),
 			isRTL = this._get( inst, "isRTL" );
 
-		while ( obj && ( obj.type === "hidden" || obj.nodeType !== 1 || $.expr.filters.hidden( obj ) ) ) {
+		while ( obj && ( obj.type === "hidden" || obj.nodeType !== 1 || $.expr.pseudos.hidden( obj ) ) ) {
 			obj = obj[ isRTL ? "previousSibling" : "nextSibling" ];
 		}
 
@@ -9881,7 +9881,7 @@ $.widget( "ui.draggable", $.ui.mouse, {
 			helper = helperIsFunction ?
 				$( o.helper.apply( this.element[ 0 ], [ event ] ) ) :
 				( o.helper === "clone" ?
-					this.element.clone().removeAttr( "id" ) :
+					this.element.clone().prop( "id" , false) :
 					this.element );
 
 		if ( !helper.parents( "body" ).length ) {
@@ -12056,7 +12056,7 @@ $.widget( "ui.dialog", {
 
 		this.element
 			.show()
-			.removeAttr( "title" )
+			.prop( "title" , false)
 			.appendTo( this.uiDialog );
 
 		this._addClass( "ui-dialog-content", "ui-widget-content" );
@@ -13396,7 +13396,7 @@ var widgetsProgressbar = $.widget( "ui.progressbar", {
 	},
 
 	_destroy: function() {
-		this.element.removeAttr( "role aria-valuemin aria-valuemax aria-valuenow" );
+		this.element.prop( "role aria-valuemin aria-valuemax aria-valuenow" , false);
 
 		this.valueDiv.remove();
 	},
@@ -13474,7 +13474,7 @@ var widgetsProgressbar = $.widget( "ui.progressbar", {
 			._toggleClass( "ui-progressbar-indeterminate", null, this.indeterminate );
 
 		if ( this.indeterminate ) {
-			this.element.removeAttr( "aria-valuenow" );
+			this.element.prop( "aria-valuenow" , false);
 			if ( !this.overlayDiv ) {
 				this.overlayDiv = $( "<div>" ).appendTo( this.valueDiv );
 				this._addClass( this.overlayDiv, "ui-progressbar-overlay" );
@@ -16817,7 +16817,7 @@ $.widget( "ui.spinner", {
 		// if the page is unloaded before the widget is destroyed. #7790
 		this._on( this.window, {
 			beforeunload: function() {
-				this.element.removeAttr( "autocomplete" );
+				this.element.prop( "autocomplete" , false);
 			}
 		} );
 	},
@@ -17219,7 +17219,7 @@ $.widget( "ui.spinner", {
 	_destroy: function() {
 		this.element
 			.prop( "disabled", false )
-			.removeAttr( "autocomplete role aria-valuemin aria-valuemax aria-valuenow" );
+			.prop( "autocomplete role aria-valuemin aria-valuemax aria-valuenow" , false);
 
 		this.uiSpinner.replaceWith( this.element );
 	},
@@ -17372,7 +17372,7 @@ $.widget( "ui.tabs", {
 		// Take disabling tabs via class attribute from HTML
 		// into account and update option properly.
 		if ( $.isArray( options.disabled ) ) {
-			options.disabled = $.unique( options.disabled.concat(
+			options.disabled = jQuery.uniqueSort( options.disabled.concat(
 				$.map( this.tabs.filter( ".ui-state-disabled" ), function( li ) {
 					return that.tabs.index( li );
 				} )
@@ -17794,7 +17794,7 @@ $.widget( "ui.tabs", {
 				currentItem.attr( "aria-disabled", "true" );
 				this._addClass( currentItem, null, "ui-state-disabled" );
 			} else {
-				currentItem.removeAttr( "aria-disabled" );
+				currentItem.prop( "aria-disabled" , false);
 				this._removeClass( currentItem, null, "ui-state-disabled" );
 			}
 		}
@@ -18022,11 +18022,11 @@ $.widget( "ui.tabs", {
 		}
 
 		this.tablist
-			.removeAttr( "role" )
+			.prop( "role" , false)
 			.off( this.eventNamespace );
 
 		this.anchors
-			.removeAttr( "role tabIndex" )
+			.prop( "role tabIndex" , false)
 			.removeUniqueId();
 
 		this.tabs.add( this.panels ).each( function() {
@@ -18046,7 +18046,7 @@ $.widget( "ui.tabs", {
 					.attr( "aria-controls", prev )
 					.removeData( "ui-tabs-aria-controls" );
 			} else {
-				li.removeAttr( "aria-controls" );
+				li.prop( "aria-controls" , false);
 			}
 		} );
 
@@ -18118,7 +18118,7 @@ $.widget( "ui.tabs", {
 				}
 
 				that._removeClass( tab, "ui-tabs-loading" );
-				panel.removeAttr( "aria-busy" );
+				panel.prop( "aria-busy" , false);
 
 				if ( jqXHR === that.xhr ) {
 					delete that.xhr;
@@ -18272,7 +18272,7 @@ $.widget( "ui.tooltip", {
 		if ( describedby ) {
 			elem.attr( "aria-describedby", describedby );
 		} else {
-			elem.removeAttr( "aria-describedby" );
+			elem.prop( "aria-describedby" , false);
 		}
 	},
 
@@ -18335,7 +18335,7 @@ $.widget( "ui.tooltip", {
 					if ( element.is( "[title]" ) ) {
 						return element
 							.data( "ui-tooltip-title", element.attr( "title" ) )
-							.removeAttr( "title" );
+							.prop( "title" , false);
 					}
 				} )
 		);
@@ -18462,7 +18462,7 @@ $.widget( "ui.tooltip", {
 			if ( event && event.type === "mouseover" ) {
 				target.attr( "title", "" );
 			} else {
-				target.removeAttr( "title" );
+				target.prop( "title" , false);
 			}
 		}
 
@@ -18476,8 +18476,8 @@ $.widget( "ui.tooltip", {
 		// Voiceover will sometimes re-read the entire log region's contents from the beginning
 		this.liveRegion.children().hide();
 		a11yContent = $( "<div>" ).html( tooltip.find( ".ui-tooltip-content" ).html() );
-		a11yContent.removeAttr( "name" ).find( "[name]" ).removeAttr( "name" );
-		a11yContent.removeAttr( "id" ).find( "[id]" ).removeAttr( "id" );
+		a11yContent.prop( "name" ).find( "[name]" ).removeAttr( "name" , false);
+		a11yContent.prop( "id" ).find( "[id]" ).removeAttr( "id" , false);
 		a11yContent.appendTo( this.liveRegion );
 
 		function position( event ) {

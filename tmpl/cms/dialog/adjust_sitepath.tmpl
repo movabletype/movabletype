@@ -428,7 +428,7 @@ function init() {
         '.parent_website': '<__trans phrase="You must select a parent website." escape="singlequotes">'
     });
 
-    jQuery('#adjust_sitepath').submit( function () {
+    jQuery('#adjust_sitepath').on('submit', function () {
         var $form = jQuery(this),
             $url = $form.find('.site-url .blog-url-text,.site-url .blog-subdomain-text,.archive-url  .archive-url-text,.archive-url .archive-subdomain-text');
             $simple = $form.find('input:visible, select:visible').filter(function() {
@@ -443,7 +443,7 @@ function init() {
         </mt:if>
     });
 
-    jQuery('.website-path-text').change( function () {
+    jQuery('.website-path-text').on('change', function () {
         // Remove unnecessary trailing directory separators in website path.
         this.value = this.value.replace(/\<mt:var name="path_separator">+$/, '');
 
@@ -461,7 +461,7 @@ function init() {
         }
     });
 
-    jQuery('.website-url-text').change( function () {
+    jQuery('.website-url-text').on('change', function () {
         // Remove unnecessary trailing slashes in website URL.
         this.value  = this.value.replace(/\/+$/, '');
         this.value += '/';

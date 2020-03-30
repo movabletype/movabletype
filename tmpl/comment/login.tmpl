@@ -99,10 +99,10 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
-    jQuery('#auth_options').change(function() {
+    jQuery('#auth_options').on('change', function() {
         jQuery('div[id^=signin_with_]').hide();
         jQuery('#signin_with_'+jQuery(this).val()).show();
-    }).change();
+    }).trigger('change');
 });
 /* ]]> */
 </script>

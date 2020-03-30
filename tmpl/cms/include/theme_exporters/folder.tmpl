@@ -45,7 +45,7 @@
 </mtapp:listing>
 
 <script type="text/javascript">
-jQuery('.folder-tree').click( function(){
+jQuery('.folder-tree').on('click', function(){
     var cat = this;
     if ( jQuery(cat).prop('checked') ) {
         var parent = jQuery( '#default_folder_' + jQuery(cat).attr('folder_parent') );

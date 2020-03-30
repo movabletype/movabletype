@@ -153,13 +153,13 @@ var currentPanel = '#upload-asset-panel';
 <mt:else>
 var currentPanel = '#list-asset-panel';
 </mt:if>
-jQuery('.left-menu-item').click( function() {
+jQuery('.left-menu-item').on('click', function() {
   // Make custom event
   var event = new jQuery.Event('changePanel');
 
   currentPanel = jQuery(this).attr('data-panel-id');
   jQuery('#select_asset input[name="id"]').val('');
-  
+
   jQuery('.actions-bar button.primary')
     .attr('disabled', 'disabled')
     .addClass('disabled');
@@ -178,8 +178,8 @@ jQuery('.left-menu-item').click( function() {
     .parent('li')
     .addClass('active');
 });
-jQuery('.actions-bar button.primary').click(function() {
-  jQuery('#select_asset').submit();
+jQuery('.actions-bar button.primary').on('click', function() {
+  jQuery('#select_asset').trigger('submit');
 });
 </mt:setvarblock>
 

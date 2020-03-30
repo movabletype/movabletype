@@ -2264,16 +2264,7 @@ BEGIN {
                 template => 'archetype_editor.tmpl',
             },
         },
-        ping_servers => {
-            'weblogs' => {
-                label => 'weblogs.com',
-                url   => 'http://rpc.weblogs.com/RPC2',
-            },
-            'google' => {
-                label => 'google.com',
-                url   => 'http://blogsearch.google.com/ping/RPC2',
-            },
-        },
+        ping_servers => {},
         commenter_authenticators => \&load_core_commenter_auth,
         captcha_providers        => \&load_captcha_providers,
         tasks                    => \&load_core_tasks,

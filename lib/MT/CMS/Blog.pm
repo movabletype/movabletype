@@ -3523,7 +3523,7 @@ HTML
 <script type="text/javascript">
 /* <![CDATA[ */
 jQuery(function() {
-    jQuery('button.mt-close-dialog-url').click(function() {
+    jQuery('button.mt-close-dialog-url').on('click', function() {
         parent.jQuery.fn.mtDialog.close('$return_url');
     });
 });
