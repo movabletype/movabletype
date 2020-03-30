@@ -279,7 +279,7 @@ sub suite {
                     'entry'     => { 'id' => '1' },
                     'status'    => 'Approved',
                     'date'      => '2004-07-14T18:28:00-03:30',
-                    'updatable' => 'true',
+                    'updatable' => $JSON::true,
                     'blog'      => { 'id' => '1' },
                     'author'    => {
                         'userpicUrl'  => undef,
@@ -307,7 +307,7 @@ sub suite {
                     'entry'     => { 'id' => '1' },
                     'status'    => 'Approved',
                     'date'      => '2004-07-14T18:28:00-03:30',
-                    'updatable' => 'true',
+                    'updatable' => $JSON::true,
                     'blog'      => { 'id' => '1' },
                     'author'    => {
                         'userpicUrl'  => undef,
@@ -330,7 +330,7 @@ sub suite {
                     'entry'     => { 'id' => '1' },
                     'status'    => 'Approved',
                     'date'      => '2004-07-14T18:28:00-03:30',
-                    'updatable' => 'true',
+                    'updatable' => $JSON::true,
                     'blog'      => { 'id' => '1' },
                     'author'    => {
                         'userpicUrl'  => undef,
@@ -361,7 +361,7 @@ sub suite {
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
                     'modifiedDate' => undef,
-                    'updatable'    => 'true',
+                    'updatable'    => $JSON::true,
                     'blog'         => { 'id' => '1' },
                     'author'       => {
                         'userpicUrl'  => undef,
@@ -392,7 +392,7 @@ sub suite {
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
                     'modifiedDate' => undef,
-                    'updatable'    => 'true',
+                    'updatable'    => $JSON::true,
                     'blog'         => { 'id' => '1' },
                     'author'       => {
                         'userpicUrl'  => undef,
@@ -417,7 +417,7 @@ sub suite {
                     'date'         => '2004-07-14T18:28:00-03:30',
                     'createdDate'  => '2004-07-14T18:28:00-03:30',
                     'modifiedDate' => undef,
-                    'updatable'    => 'true',
+                    'updatable'    => $JSON::true,
                     'blog'         => { 'id' => '1' },
                     'author'       => {
                         'userpicUrl'  => undef,
