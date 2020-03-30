@@ -45,12 +45,12 @@
 
             <mt:if name="log.tbping.can_change_status">
             <mt:if name="log.tbping.visible">
-            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=unapprove_item&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=unapprove_ping&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Unpublish">&lt;/a&gt;&lt;/li&gt;
             <mt:else>
             <mt:if name="log.tbping.junk_status" eq="-1">
             &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=not_junk&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             <mt:else>
-            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=approve_item&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=approve_ping&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Publish">&lt;/a&gt;&lt;/li&gt;
             </mt:if>
             </mt:if>
             &lt;li&gt;&lt;a href="<mt:var name="mt_url">?__mode=handle_junk&amp;_type=ping&amp;blog_id=<mt:var name="log.tbping.blog_id">&amp;id=<mt:var name="log.tbping.id">&amp;return_args=__mode%3Dview%26_type%3Dping%26id%3D<mt:var name="log.tbping.id">%26blog_id%3D<mt:var name="log.tbping.blog_id">&amp;feed_token=<mt:var name="feed_token">"&gt;<__trans phrase="Junk">&lt;/a&gt;&lt;/li&gt;
