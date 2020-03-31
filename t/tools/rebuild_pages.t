@@ -85,7 +85,7 @@ my @cmd = (
 
 run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
 
-ok $stdout !~ /failed/, "no failures" or note $stdout;
+ok $stdout !~ /failed/, "no failures" or diag $stdout;
 
 done_testing;
 
