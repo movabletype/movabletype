@@ -312,10 +312,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@tm ),
@@ -348,10 +344,6 @@ sub suite {
 
                 $app->user($author);
 
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
-
                 return +{
                     totalResults => 2,
                     items => MT::DataAPI::Resource->from_object( \@tm ),
@@ -371,10 +363,6 @@ sub suite {
                 );
 
                 $app->user($author);
-
-                no warnings 'redefine';
-                local *boolean::true  = sub {'true'};
-                local *boolean::false = sub {'false'};
 
                 return +{
                     totalResults => 1,

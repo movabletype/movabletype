@@ -32,6 +32,7 @@ use MT::Util;
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
+use JSON;
 
 sub test_data_api {
     my ( $suite, $args ) = @_;

@@ -316,16 +316,17 @@ sub replace {
     }
     if (! $driver->txn_active) {
         $driver->begin_work;
+        my $res;
         eval {
             $driver->remove(@_);
-            $driver->insert(@_);
+            $res = $driver->insert(@_);
         };
         if ($@) {
             $driver->rollback;
             Carp::croak("REPLACE transaction error $driver: $@");
         }
         $driver->commit;
-        return;
+        return $res;
     }
     $driver->remove(@_);
     $driver->insert(@_);
