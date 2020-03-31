@@ -28,8 +28,13 @@ my $start = Time::Piece->new( timegm( 0, 0, 0, 1, 1, 2020 ) );
 
 $test_env->prepare_fixture('db');
 my $objs = MT::Test::Fixture->prepare(
-    {   author => [qw/author1/],
-        blog   => [
+    {   author => [
+            {   name         => 'admin',
+                password     => 'pass',
+                is_superuser => 1,
+            }
+        ],
+        blog => [
             {   name      => 'my_blog',
                 site_path => File::Spec->catdir( $test_env->root . '/site' ),
                 archive_path =>
@@ -41,7 +46,7 @@ my $objs = MT::Test::Fixture->prepare(
             map {
                 +{  basename => "entry$_",
                     title    => "entry$_",
-                    author   => 'author1',
+                    author   => 'admin',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -55,7 +60,7 @@ my $objs = MT::Test::Fixture->prepare(
             map {
                 +{  basename => "page$_",
                     title    => "page$_",
-                    author   => 'author1',
+                    author   => 'admin',
                     status   => 'publish',
                     authored_on =>
                         ( $start + ONE_DAY * $_ )->strftime('%Y%m%d%H%M%S'),
@@ -76,9 +81,9 @@ my @cmd = (
     File::Spec->catdir( $home, 't/lib' ),
     File::Spec->catfile( $home, 'tools/rebuild-pages' ),
     '--user',
-    'Melody',
+    'admin',
     '--pass',
-    'Nelson',
+    'pass',
     '--blog_id',
     $blog->id,
 );
@@ -86,6 +91,7 @@ my @cmd = (
 run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
 
 ok $stdout !~ /failed/, "no failures" or diag $stdout;
+note $stderr if $stderr;
 
 done_testing;
 
