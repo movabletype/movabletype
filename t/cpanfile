@@ -128,4 +128,5 @@ on 'test' => sub {
     requires 'Time::Piece';
     requires 'URI::Escape';
     requires 'Web::Query';
+    requires 'Web::Scraper';
 };
