@@ -297,3 +297,7 @@ Dockerfile
 .proverc
 
 shippable.yml
+
+# Composer
+^composer.json
+^composer.lock
