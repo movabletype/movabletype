@@ -810,6 +810,15 @@ sub edit {
     $param->{dirty} = 1
         if $app->param('dirty');
 
+    if ( $app->param('saved') ) {
+        my $token = $app->make_magic_token;
+        if ( my $session = $app->session ) {
+            $session->set( 'mt_rebuild_token', $token );
+            $session->save;
+        }
+        $param->{ott} = $token;
+    }
+
     $param->{can_preview} = 1
         if ( !$param->{is_special} )
         && ( !$obj
