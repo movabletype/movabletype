@@ -943,6 +943,16 @@ sub edit {
     $param->{dirty} = 1
         if $app->param('dirty');
 
+    if ( $app->param('saved') ) {
+        require MT::Util::UniqueID;
+        my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+        if ( my $session = $app->session ) {
+            $session->set( 'mt_rebuild_token', $token );
+            $session->save;
+        }
+        $param->{ott} = $token;
+    }
+
     $param->{can_preview} = 1
         if ( !$param->{is_special} )
         && ( !$obj
