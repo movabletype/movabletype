@@ -554,9 +554,17 @@ sub save {
         }
         if ( $obj->build_type ) {
             if ( $obj->type eq 'index' ) {
+                require MT::Util::UniqueID;
+                my $token = MT::Util::UniqueID::create_magic_token(
+                    'rebuild' . time );
+                if ( my $session = $app->session ) {
+                    $session->set( 'mt_rebuild_token', $token );
+                    $session->save;
+                }
                 $q->param( 'type',            'index-' . $obj->id );
                 $q->param( 'tmpl_id',         $obj->id );
                 $q->param( 'single_template', 1 );
+                $q->param( 'ott' => $token );
                 $app->add_return_arg( 'saved'     => 1 );
                 $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
