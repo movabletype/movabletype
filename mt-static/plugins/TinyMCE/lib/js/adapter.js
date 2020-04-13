@@ -14,11 +14,12 @@
             return false;
         },
         config: {
-            mode: "exact",
-            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen,compat3x,table',
+            // mode: "exact",
+            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textpattern,fullscreen,table,quickbars',
+  
             language: $('html').attr('lang'),
-            theme: "modern",
-            skin: 'lightgray',
+            // theme: "modern",
+            // skin: 'lightgray',
             menubar: false,
             branding: false,
             forced_root_block: 'p',
@@ -28,13 +29,16 @@
             plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
-            plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
+            plugin_mt_source_buttons1:'mt_source_bold mt_source_italic mt_source_blockquote mt_source_unordered_list mt_source_ordered_list mt_source_list_item | mt_source_link mt_insert_file mt_insert_image | mt_fullscreen',
             // Buttons using in wysiwyg mode.
-            plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image,|,table,',
-            plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,alignleft,aligncenter,alignright,indent,outdent,|,formatselect,|,mt_fullscreen',
+            plugin_mt_wysiwyg_buttons1:'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
+            plugin_mt_wysiwyg_buttons2:'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
 
-            plugin_mt_wysiwyg_insert_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
-            plugin_mt_wysiwyg_selection_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
+            plugin_mt_wysiwyg_inline_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            // plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+
+            toolbar1: '',
+            toolbar2: '',
 
             plugin_mt_inlinepopups_window_sizes: {
                 'advanced/link.htm': {
@@ -135,17 +139,17 @@
 
             entity_encoding: 'raw',
             convert_urls: false,
-            media_strict: false,
-            verify_html: false,
+            // media_strict: false,
+            // verify_html: false,
             valid_children: '+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area]',
-            non_empty_elements: 'td,th,iframe,video,audio,object,script,img,area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,source,wbr',
+            // non_empty_elements: 'td,th,iframe,video,audio,object,script,img,area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,source,wbr',
 
             cleanup: true,
-            dialog_type: 'modal',
+            // dialog_type: 'modal',
 
             init_instance_callback: function(ed) {},
 
-            content_css: '',
+            // content_css: '',
             body_class: '',
             body_id: '',
             content_security_policy: "script-src 'none';",
@@ -171,11 +175,13 @@
                 init_instance_callback.apply(this, arguments);
                 adapter._init_instance_callback.apply(adapter, arguments);
             };
-            config['elements'] = adapter.id;
+            config['selector'] = '#' + adapter.id;
 
-            config['content_css'] =
-            (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
-            .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+            if (adapter.commonOptions['content_css_list'].length > 0){
+                config['content_css'] =
+                (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
+                .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+            }
             config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
             if (! ('plugin_mt_tainted_input' in config)) {
@@ -189,10 +195,10 @@
             var text_format = $('[data-target=' + adapter.id+']').val();
             if( text_format == 'richtext'){
                 if ($('#'+adapter.id).attr('data-full_rich_text')) {
-                    config.theme = "modern";
+                    config.theme = "silver";
                     config.inline = false;
                 } else {
-                    config.theme = "inlite";
+                    config.theme = "silver";
                     config.inline = true;
                 }
             }
@@ -350,11 +356,11 @@
                 if (node && node.nodeName === 'IMG') {
                     originalIsCollapsed = selection.isCollapsed;
                     selection.isCollapsed = function(){ return true; };
-                    this.editor.execCommand('mceInsertContent', false, value);
+                    this.editor.execCommand('insertContent', false, value);
                     selection.isCollapsed = originalIsCollapsed;
                 }
                 else {
-                    this.editor.execCommand('mceInsertContent', false, value);
+                    this.editor.execCommand('insertContent', false, value);
                 }
             }
         },
@@ -409,29 +415,30 @@
 
             ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
-            var resizeTo = ed.theme.resizeTo;
-            ed.theme.resizeTo = function(width, height, store, isFullscreen) {
-                if (isFullscreen) {
-                    adapter.$editorTextarea.height(height);
-                }
-                else {
-                    var base       = adapter.$editorTextarea.data('base-height');
-                    var adjustment = adapter.$editorTextarea.data('base-height-adjustment');
-                    if (base) {
-                        adapter.$editorTextarea.height(base+height-adjustment);
-                        if (store) {
-                            adapter.$editorTextarea
-                            .data('base-height', base+height-adjustment);
-                        }
-                    }
-                }
-                resizeTo.apply(ed.theme, arguments);
-            };
+            // TODO: 
+            // var resizeTo = ed.theme.resizeTo;
+            // ed.theme.resizeTo = function(width, height, store, isFullscreen) {
+            //     if (isFullscreen) {
+            //         adapter.$editorTextarea.height(height);
+            //     }
+            //     else {
+            //         var base       = adapter.$editorTextarea.data('base-height');
+            //         var adjustment = adapter.$editorTextarea.data('base-height-adjustment');
+            //         if (base) {
+            //             adapter.$editorTextarea.height(base+height-adjustment);
+            //             if (store) {
+            //                 adapter.$editorTextarea
+            //                 .data('base-height', base+height-adjustment);
+            //             }
+            //         }
+            //     }
+            //     resizeTo.apply(ed.theme, arguments);
+            // };
 
             var Cookie = tinymce.plugins.MovableType.Cookie;
             var size = Cookie.getHash("TinyMCE_" + ed.id + "_size");
-            if(size && !this.tinymce.inline)
-                ed.theme.resizeTo(size.cw, size.ch);
+            // if(size && !this.tinymce.inline)
+            //     ed.theme.resizeTo(size.cw, size.ch);
 
 
             $('#' + adapter.id + '_tbl').css({

@@ -1,487 +1,598 @@
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.2.1 (2020-03-25)
+ */
 (function () {
+    'use strict';
 
-var defs = {}; // id -> {dependencies, definition, instance (possibly undefined)}
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-// Used when there is no 'main' module.
-// The name is probably (hopefully) unique so minification removes for releases.
-var register_3795 = function (id) {
-  var module = dem(id);
-  var fragments = id.split('.');
-  var target = Function('return this;')();
-  for (var i = 0; i < fragments.length - 1; ++i) {
-    if (target[fragments[i]] === undefined)
-      target[fragments[i]] = {};
-    target = target[fragments[i]];
-  }
-  target[fragments[fragments.length - 1]] = module;
-};
-
-var instantiate = function (id) {
-  var actual = defs[id];
-  var dependencies = actual.deps;
-  var definition = actual.defn;
-  var len = dependencies.length;
-  var instances = new Array(len);
-  for (var i = 0; i < len; ++i)
-    instances[i] = dem(dependencies[i]);
-  var defResult = definition.apply(null, instances);
-  if (defResult === undefined)
-     throw 'module [' + id + '] returned undefined';
-  actual.instance = defResult;
-};
-
-var def = function (id, dependencies, definition) {
-  if (typeof id !== 'string')
-    throw 'module id must be a string';
-  else if (dependencies === undefined)
-    throw 'no dependencies for ' + id;
-  else if (definition === undefined)
-    throw 'no definition function for ' + id;
-  defs[id] = {
-    deps: dependencies,
-    defn: definition,
-    instance: undefined
-  };
-};
-
-var dem = function (id) {
-  var actual = defs[id];
-  if (actual === undefined)
-    throw 'module [' + id + '] was undefined';
-  else if (actual.instance === undefined)
-    instantiate(id);
-  return actual.instance;
-};
-
-var req = function (ids, callback) {
-  var len = ids.length;
-  var instances = new Array(len);
-  for (var i = 0; i < len; ++i)
-    instances.push(dem(ids[i]));
-  callback.apply(null, callback);
-};
-
-var ephox = {};
-
-ephox.bolt = {
-  module: {
-    api: {
-      define: def,
-      require: req,
-      demand: dem
-    }
-  }
-};
-
-var define = def;
-var require = req;
-var demand = dem;
-// this helps with minificiation when using a lot of global references
-var defineGlobal = function (id, ref) {
-  define(id, [], function () { return ref; });
-};
-/*jsc
-["tinymce.plugins.template.Plugin","tinymce.core.dom.DOMUtils","tinymce.core.PluginManager","tinymce.core.util.JSON","tinymce.core.util.Tools","tinymce.core.util.XHR","global!tinymce.util.Tools.resolve"]
-jsc*/
-defineGlobal("global!tinymce.util.Tools.resolve", tinymce.util.Tools.resolve);
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.dom.DOMUtils',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.dom.DOMUtils');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.PluginManager',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.PluginManager');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.util.JSON',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.util.JSON');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.util.Tools',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.util.Tools');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.util.XHR',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.util.XHR');
-  }
-);
-
-/**
- * Plugin.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-/**
- * This class contains all core logic for the code plugin.
- *
- * @class tinymce.template.Plugin
- * @private
- */
-define(
-  'tinymce.plugins.template.Plugin',
-  [
-    'tinymce.core.dom.DOMUtils',
-    'tinymce.core.PluginManager',
-    'tinymce.core.util.JSON',
-    'tinymce.core.util.Tools',
-    'tinymce.core.util.XHR'
-  ],
-  function (DOMUtils, PluginManager, JSON, Tools, XHR) {
-    PluginManager.add('template', function (editor) {
-      function createTemplateList(callback) {
-        return function () {
-          var templateList = editor.settings.templates;
-
-          if (typeof templateList == "function") {
-            templateList(callback);
-            return;
-          }
-
-          if (typeof templateList == "string") {
-            XHR.send({
-              url: templateList,
-              success: function (text) {
-                callback(JSON.parse(text));
-              }
-            });
-          } else {
-            callback(templateList);
-          }
-        };
+    var noop = function () {
+    };
+    var constant = function (value) {
+      return function () {
+        return value;
+      };
+    };
+    function curry(fn) {
+      var initialArgs = [];
+      for (var _i = 1; _i < arguments.length; _i++) {
+        initialArgs[_i - 1] = arguments[_i];
       }
+      return function () {
+        var restArgs = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          restArgs[_i] = arguments[_i];
+        }
+        var all = initialArgs.concat(restArgs);
+        return fn.apply(null, all);
+      };
+    }
+    var never = constant(false);
+    var always = constant(true);
 
-      function showDialog(templateList) {
-        var win, values = [], templateHtml;
+    var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-        if (!templateList || templateList.length === 0) {
-          var message = editor.translate('No templates defined.');
-          editor.notificationManager.open({ text: message, type: 'info' });
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.XHR');
+
+    var getCreationDateClasses = function (editor) {
+      return editor.getParam('template_cdate_classes', 'cdate');
+    };
+    var getModificationDateClasses = function (editor) {
+      return editor.getParam('template_mdate_classes', 'mdate');
+    };
+    var getSelectedContentClasses = function (editor) {
+      return editor.getParam('template_selected_content_classes', 'selcontent');
+    };
+    var getPreviewReplaceValues = function (editor) {
+      return editor.getParam('template_preview_replace_values');
+    };
+    var getTemplateReplaceValues = function (editor) {
+      return editor.getParam('template_replace_values');
+    };
+    var getTemplates = function (editorSettings) {
+      return editorSettings.templates;
+    };
+    var getCdateFormat = function (editor) {
+      return editor.getParam('template_cdate_format', editor.translate('%Y-%m-%d'));
+    };
+    var getMdateFormat = function (editor) {
+      return editor.getParam('template_mdate_format', editor.translate('%Y-%m-%d'));
+    };
+    var Settings = {
+      getCreationDateClasses: getCreationDateClasses,
+      getModificationDateClasses: getModificationDateClasses,
+      getSelectedContentClasses: getSelectedContentClasses,
+      getPreviewReplaceValues: getPreviewReplaceValues,
+      getTemplateReplaceValues: getTemplateReplaceValues,
+      getTemplates: getTemplates,
+      getCdateFormat: getCdateFormat,
+      getMdateFormat: getMdateFormat
+    };
+
+    var addZeros = function (value, len) {
+      value = '' + value;
+      if (value.length < len) {
+        for (var i = 0; i < len - value.length; i++) {
+          value = '0' + value;
+        }
+      }
+      return value;
+    };
+    var getDateTime = function (editor, fmt, date) {
+      var daysShort = 'Sun Mon Tue Wed Thu Fri Sat Sun'.split(' ');
+      var daysLong = 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday Sunday'.split(' ');
+      var monthsShort = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ');
+      var monthsLong = 'January February March April May June July August September October November December'.split(' ');
+      date = date || new Date();
+      fmt = fmt.replace('%D', '%m/%d/%Y');
+      fmt = fmt.replace('%r', '%I:%M:%S %p');
+      fmt = fmt.replace('%Y', '' + date.getFullYear());
+      fmt = fmt.replace('%y', '' + date.getYear());
+      fmt = fmt.replace('%m', addZeros(date.getMonth() + 1, 2));
+      fmt = fmt.replace('%d', addZeros(date.getDate(), 2));
+      fmt = fmt.replace('%H', '' + addZeros(date.getHours(), 2));
+      fmt = fmt.replace('%M', '' + addZeros(date.getMinutes(), 2));
+      fmt = fmt.replace('%S', '' + addZeros(date.getSeconds(), 2));
+      fmt = fmt.replace('%I', '' + ((date.getHours() + 11) % 12 + 1));
+      fmt = fmt.replace('%p', '' + (date.getHours() < 12 ? 'AM' : 'PM'));
+      fmt = fmt.replace('%B', '' + editor.translate(monthsLong[date.getMonth()]));
+      fmt = fmt.replace('%b', '' + editor.translate(monthsShort[date.getMonth()]));
+      fmt = fmt.replace('%A', '' + editor.translate(daysLong[date.getDay()]));
+      fmt = fmt.replace('%a', '' + editor.translate(daysShort[date.getDay()]));
+      fmt = fmt.replace('%%', '%');
+      return fmt;
+    };
+    var DateTimeHelper = { getDateTime: getDateTime };
+
+    var createTemplateList = function (editorSettings, callback) {
+      return function () {
+        var templateList = Settings.getTemplates(editorSettings);
+        if (typeof templateList === 'function') {
+          templateList(callback);
           return;
         }
+        if (typeof templateList === 'string') {
+          global$2.send({
+            url: templateList,
+            success: function (text) {
+              callback(JSON.parse(text));
+            }
+          });
+        } else {
+          callback(templateList);
+        }
+      };
+    };
+    var replaceTemplateValues = function (html, templateValues) {
+      global$1.each(templateValues, function (v, k) {
+        if (typeof v === 'function') {
+          v = v(k);
+        }
+        html = html.replace(new RegExp('\\{\\$' + k + '\\}', 'g'), v);
+      });
+      return html;
+    };
+    var replaceVals = function (editor, e) {
+      var dom = editor.dom, vl = Settings.getTemplateReplaceValues(editor);
+      global$1.each(dom.select('*', e), function (e) {
+        global$1.each(vl, function (v, k) {
+          if (dom.hasClass(e, k)) {
+            if (typeof vl[k] === 'function') {
+              vl[k](e);
+            }
+          }
+        });
+      });
+    };
+    var hasClass = function (n, c) {
+      return new RegExp('\\b' + c + '\\b', 'g').test(n.className);
+    };
+    var insertTemplate = function (editor, ui, html) {
+      var el;
+      var n;
+      var dom = editor.dom;
+      var sel = editor.selection.getContent();
+      html = replaceTemplateValues(html, Settings.getTemplateReplaceValues(editor));
+      el = dom.create('div', null, html);
+      n = dom.select('.mceTmpl', el);
+      if (n && n.length > 0) {
+        el = dom.create('div', null);
+        el.appendChild(n[0].cloneNode(true));
+      }
+      global$1.each(dom.select('*', el), function (n) {
+        if (hasClass(n, Settings.getCreationDateClasses(editor).replace(/\s+/g, '|'))) {
+          n.innerHTML = DateTimeHelper.getDateTime(editor, Settings.getCdateFormat(editor));
+        }
+        if (hasClass(n, Settings.getModificationDateClasses(editor).replace(/\s+/g, '|'))) {
+          n.innerHTML = DateTimeHelper.getDateTime(editor, Settings.getMdateFormat(editor));
+        }
+        if (hasClass(n, Settings.getSelectedContentClasses(editor).replace(/\s+/g, '|'))) {
+          n.innerHTML = sel;
+        }
+      });
+      replaceVals(editor, el);
+      editor.execCommand('insertContent', false, el.innerHTML);
+      editor.addVisual();
+    };
+    var Templates = {
+      createTemplateList: createTemplateList,
+      replaceTemplateValues: replaceTemplateValues,
+      replaceVals: replaceVals,
+      insertTemplate: insertTemplate
+    };
 
-        Tools.each(templateList, function (template) {
-          values.push({
-            selected: !values.length,
+    var register = function (editor) {
+      editor.addCommand('mceInsertTemplate', curry(Templates.insertTemplate, editor));
+    };
+    var Commands = { register: register };
+
+    var setup = function (editor) {
+      editor.on('PreProcess', function (o) {
+        var dom = editor.dom, dateFormat = Settings.getMdateFormat(editor);
+        global$1.each(dom.select('div', o.node), function (e) {
+          if (dom.hasClass(e, 'mceTmpl')) {
+            global$1.each(dom.select('*', e), function (e) {
+              if (dom.hasClass(e, editor.getParam('template_mdate_classes', 'mdate').replace(/\s+/g, '|'))) {
+                e.innerHTML = DateTimeHelper.getDateTime(editor, dateFormat);
+              }
+            });
+            Templates.replaceVals(editor, e);
+          }
+        });
+      });
+    };
+    var FilterContent = { setup: setup };
+
+    var none = function () {
+      return NONE;
+    };
+    var NONE = function () {
+      var eq = function (o) {
+        return o.isNone();
+      };
+      var call = function (thunk) {
+        return thunk();
+      };
+      var id = function (n) {
+        return n;
+      };
+      var me = {
+        fold: function (n, s) {
+          return n();
+        },
+        is: never,
+        isSome: never,
+        isNone: always,
+        getOr: id,
+        getOrThunk: call,
+        getOrDie: function (msg) {
+          throw new Error(msg || 'error: getOrDie called on none.');
+        },
+        getOrNull: constant(null),
+        getOrUndefined: constant(undefined),
+        or: id,
+        orThunk: call,
+        map: none,
+        each: noop,
+        bind: none,
+        exists: never,
+        forall: always,
+        filter: none,
+        equals: eq,
+        equals_: eq,
+        toArray: function () {
+          return [];
+        },
+        toString: constant('none()')
+      };
+      if (Object.freeze) {
+        Object.freeze(me);
+      }
+      return me;
+    }();
+    var some = function (a) {
+      var constant_a = constant(a);
+      var self = function () {
+        return me;
+      };
+      var bind = function (f) {
+        return f(a);
+      };
+      var me = {
+        fold: function (n, s) {
+          return s(a);
+        },
+        is: function (v) {
+          return a === v;
+        },
+        isSome: always,
+        isNone: never,
+        getOr: constant_a,
+        getOrThunk: constant_a,
+        getOrDie: constant_a,
+        getOrNull: constant_a,
+        getOrUndefined: constant_a,
+        or: self,
+        orThunk: self,
+        map: function (f) {
+          return some(f(a));
+        },
+        each: function (f) {
+          f(a);
+        },
+        bind: bind,
+        exists: bind,
+        forall: bind,
+        filter: function (f) {
+          return f(a) ? me : NONE;
+        },
+        toArray: function () {
+          return [a];
+        },
+        toString: function () {
+          return 'some(' + a + ')';
+        },
+        equals: function (o) {
+          return o.is(a);
+        },
+        equals_: function (o, elementEq) {
+          return o.fold(never, function (b) {
+            return elementEq(a, b);
+          });
+        }
+      };
+      return me;
+    };
+    var from = function (value) {
+      return value === null || value === undefined ? NONE : some(value);
+    };
+    var Option = {
+      some: some,
+      none: none,
+      from: from
+    };
+
+    var typeOf = function (x) {
+      if (x === null) {
+        return 'null';
+      }
+      var t = typeof x;
+      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      }
+      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      }
+      return t;
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isFunction = isType('function');
+
+    var nativeSlice = Array.prototype.slice;
+    var map = function (xs, f) {
+      var len = xs.length;
+      var r = new Array(len);
+      for (var i = 0; i < len; i++) {
+        var x = xs[i];
+        r[i] = f(x, i);
+      }
+      return r;
+    };
+    var find = function (xs, pred) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        if (pred(x, i)) {
+          return Option.some(x);
+        }
+      }
+      return Option.none();
+    };
+    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
+      return nativeSlice.call(x);
+    };
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+
+    var hasOwnProperty = Object.hasOwnProperty;
+    var get = function (obj, key) {
+      return has(obj, key) ? Option.from(obj[key]) : Option.none();
+    };
+    var has = function (obj, key) {
+      return hasOwnProperty.call(obj, key);
+    };
+
+    var entitiesAttr = {
+      '"': '&quot;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '&': '&amp;',
+      '\'': '&#039;'
+    };
+    var htmlEscape = function (html) {
+      return html.replace(/["'<>&]/g, function (match) {
+        return get(entitiesAttr, match).getOr(match);
+      });
+    };
+
+    var getPreviewContent = function (editor, html) {
+      if (html.indexOf('<html>') === -1) {
+        var contentCssLinks_1 = '';
+        global$1.each(editor.contentCSS, function (url) {
+          contentCssLinks_1 += '<link type="text/css" rel="stylesheet" href="' + editor.documentBaseURI.toAbsolute(url) + '">';
+        });
+        var bodyClass = editor.settings.body_class || '';
+        if (bodyClass.indexOf('=') !== -1) {
+          bodyClass = editor.getParam('body_class', '', 'hash');
+          bodyClass = bodyClass[editor.id] || '';
+        }
+        var encode = editor.dom.encode;
+        var directionality = editor.getBody().dir;
+        var dirAttr = directionality ? ' dir="' + encode(directionality) + '"' : '';
+        html = '<!DOCTYPE html>' + '<html>' + '<head>' + contentCssLinks_1 + '</head>' + '<body class="' + encode(bodyClass) + '"' + dirAttr + '>' + html + '</body>' + '</html>';
+      }
+      return Templates.replaceTemplateValues(html, Settings.getPreviewReplaceValues(editor));
+    };
+    var open = function (editor, templateList) {
+      var createTemplates = function () {
+        if (!templateList || templateList.length === 0) {
+          var message = editor.translate('No templates defined.');
+          editor.notificationManager.open({
+            text: message,
+            type: 'info'
+          });
+          return Option.none();
+        }
+        return Option.from(global$1.map(templateList, function (template, index) {
+          var isUrlTemplate = function (t) {
+            return t.url !== undefined;
+          };
+          return {
+            selected: index === 0,
             text: template.title,
             value: {
-              url: template.url,
-              content: template.content,
+              url: isUrlTemplate(template) ? Option.from(template.url) : Option.none(),
+              content: !isUrlTemplate(template) ? Option.from(template.content) : Option.none(),
               description: template.description
             }
-          });
+          };
+        }));
+      };
+      var createSelectBoxItems = function (templates) {
+        return map(templates, function (t) {
+          return {
+            text: t.text,
+            value: t.text
+          };
         });
-
-        function onSelectTemplate(e) {
-          var value = e.control.value();
-
-          function insertIframeHtml(html) {
-            if (html.indexOf('<html>') == -1) {
-              var contentCssLinks = '';
-
-              Tools.each(editor.contentCSS, function (url) {
-                contentCssLinks += '<link type="text/css" rel="stylesheet" href="' +
-                  editor.documentBaseURI.toAbsolute(url) +
-                  '">';
-              });
-
-              var bodyClass = editor.settings.body_class || '';
-              if (bodyClass.indexOf('=') != -1) {
-                bodyClass = editor.getParam('body_class', '', 'hash');
-                bodyClass = bodyClass[editor.id] || '';
-              }
-
-              html = (
-                '<!DOCTYPE html>' +
-                '<html>' +
-                '<head>' +
-                contentCssLinks +
-                '</head>' +
-                '<body class="' + bodyClass + '">' +
-                html +
-                '</body>' +
-                '</html>'
-              );
-            }
-
-            html = replaceTemplateValues(html, 'template_preview_replace_values');
-
-            var doc = win.find('iframe')[0].getEl().contentWindow.document;
-            doc.open();
-            doc.write(html);
-            doc.close();
-          }
-
-          if (value.url) {
-            XHR.send({
-              url: value.url,
+      };
+      var findTemplate = function (templates, templateTitle) {
+        return find(templates, function (t) {
+          return t.text === templateTitle;
+        });
+      };
+      var loadFailedAlert = function (api) {
+        editor.windowManager.alert('Could not load the specified template.', function () {
+          return api.focus('template');
+        });
+      };
+      var getTemplateContent = function (t) {
+        return new global$3(function (resolve, reject) {
+          t.value.url.fold(function () {
+            return resolve(t.value.content.getOr(''));
+          }, function (url) {
+            return global$2.send({
+              url: url,
               success: function (html) {
-                templateHtml = html;
-                insertIframeHtml(templateHtml);
+                resolve(html);
+              },
+              error: function (e) {
+                reject(e);
               }
             });
-          } else {
-            templateHtml = value.content;
-            insertIframeHtml(templateHtml);
-          }
-
-          win.find('#description')[0].text(e.control.value().description);
-        }
-
-        win = editor.windowManager.open({
-          title: 'Insert template',
-          layout: 'flex',
-          direction: 'column',
-          align: 'stretch',
-          padding: 15,
-          spacing: 10,
-
-          items: [
-            {
-              type: 'form', flex: 0, padding: 0, items: [
-                {
-                  type: 'container', label: 'Templates', items: {
-                    type: 'listbox', label: 'Templates', name: 'template', values: values, onselect: onSelectTemplate
-                  }
-                }
-              ]
-            },
-            { type: 'label', name: 'description', label: 'Description', text: '\u00a0' },
-            { type: 'iframe', flex: 1, border: 1 }
-          ],
-
-          onsubmit: function () {
-            insertTemplate(false, templateHtml);
-          },
-
-          minWidth: Math.min(DOMUtils.DOM.getViewPort().w, editor.getParam('template_popup_width', 600)),
-          minHeight: Math.min(DOMUtils.DOM.getViewPort().h, editor.getParam('template_popup_height', 500))
-        });
-
-        win.find('listbox')[0].fire('select');
-      }
-
-      function getDateTime(fmt, date) {
-        var daysShort = "Sun Mon Tue Wed Thu Fri Sat Sun".split(' ');
-        var daysLong = "Sunday Monday Tuesday Wednesday Thursday Friday Saturday Sunday".split(' ');
-        var monthsShort = "Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec".split(' ');
-        var monthsLong = "January February March April May June July August September October November December".split(' ');
-
-        function addZeros(value, len) {
-          value = "" + value;
-
-          if (value.length < len) {
-            for (var i = 0; i < (len - value.length); i++) {
-              value = "0" + value;
-            }
-          }
-
-          return value;
-        }
-
-        date = date || new Date();
-
-        fmt = fmt.replace("%D", "%m/%d/%Y");
-        fmt = fmt.replace("%r", "%I:%M:%S %p");
-        fmt = fmt.replace("%Y", "" + date.getFullYear());
-        fmt = fmt.replace("%y", "" + date.getYear());
-        fmt = fmt.replace("%m", addZeros(date.getMonth() + 1, 2));
-        fmt = fmt.replace("%d", addZeros(date.getDate(), 2));
-        fmt = fmt.replace("%H", "" + addZeros(date.getHours(), 2));
-        fmt = fmt.replace("%M", "" + addZeros(date.getMinutes(), 2));
-        fmt = fmt.replace("%S", "" + addZeros(date.getSeconds(), 2));
-        fmt = fmt.replace("%I", "" + ((date.getHours() + 11) % 12 + 1));
-        fmt = fmt.replace("%p", "" + (date.getHours() < 12 ? "AM" : "PM"));
-        fmt = fmt.replace("%B", "" + editor.translate(monthsLong[date.getMonth()]));
-        fmt = fmt.replace("%b", "" + editor.translate(monthsShort[date.getMonth()]));
-        fmt = fmt.replace("%A", "" + editor.translate(daysLong[date.getDay()]));
-        fmt = fmt.replace("%a", "" + editor.translate(daysShort[date.getDay()]));
-        fmt = fmt.replace("%%", "%");
-
-        return fmt;
-      }
-
-      function replaceVals(e) {
-        var dom = editor.dom, vl = editor.getParam('template_replace_values');
-
-        Tools.each(dom.select('*', e), function (e) {
-          Tools.each(vl, function (v, k) {
-            if (dom.hasClass(e, k)) {
-              if (typeof vl[k] == 'function') {
-                vl[k](e);
-              }
-            }
           });
         });
-      }
-
-      function replaceTemplateValues(html, templateValuesOptionName) {
-        Tools.each(editor.getParam(templateValuesOptionName), function (v, k) {
-          if (typeof v == 'function') {
-            v = v(k);
-          }
-
-          html = html.replace(new RegExp('\\{\\$' + k + '\\}', 'g'), v);
-        });
-
-        return html;
-      }
-
-      function insertTemplate(ui, html) {
-        var el, n, dom = editor.dom, sel = editor.selection.getContent();
-
-        html = replaceTemplateValues(html, 'template_replace_values');
-        el = dom.create('div', null, html);
-
-        // Find template element within div
-        n = dom.select('.mceTmpl', el);
-        if (n && n.length > 0) {
-          el = dom.create('div', null);
-          el.appendChild(n[0].cloneNode(true));
-        }
-
-        function hasClass(n, c) {
-          return new RegExp('\\b' + c + '\\b', 'g').test(n.className);
-        }
-
-        Tools.each(dom.select('*', el), function (n) {
-          // Replace cdate
-          if (hasClass(n, editor.getParam('template_cdate_classes', 'cdate').replace(/\s+/g, '|'))) {
-            n.innerHTML = getDateTime(editor.getParam("template_cdate_format", editor.getLang("template.cdate_format")));
-          }
-
-          // Replace mdate
-          if (hasClass(n, editor.getParam('template_mdate_classes', 'mdate').replace(/\s+/g, '|'))) {
-            n.innerHTML = getDateTime(editor.getParam("template_mdate_format", editor.getLang("template.mdate_format")));
-          }
-
-          // Replace selection
-          if (hasClass(n, editor.getParam('template_selected_content_classes', 'selcontent').replace(/\s+/g, '|'))) {
-            n.innerHTML = sel;
-          }
-        });
-
-        replaceVals(el);
-
-        editor.execCommand('mceInsertContent', false, el.innerHTML);
-        editor.addVisual();
-      }
-
-      editor.addCommand('mceInsertTemplate', insertTemplate);
-
-      editor.addButton('template', {
-        title: 'Insert template',
-        onclick: createTemplateList(showDialog)
-      });
-
-      editor.addMenuItem('template', {
-        text: 'Template',
-        onclick: createTemplateList(showDialog),
-        context: 'insert'
-      });
-
-      editor.on('PreProcess', function (o) {
-        var dom = editor.dom;
-
-        Tools.each(dom.select('div', o.node), function (e) {
-          if (dom.hasClass(e, 'mceTmpl')) {
-            Tools.each(dom.select('*', e), function (e) {
-              if (dom.hasClass(e, editor.getParam('template_mdate_classes', 'mdate').replace(/\s+/g, '|'))) {
-                e.innerHTML = getDateTime(editor.getParam("template_mdate_format", editor.getLang("template.mdate_format")));
-              }
+      };
+      var onChange = function (templates, updateDialog) {
+        return function (api, change) {
+          if (change.name === 'template') {
+            var newTemplateTitle = api.getData().template;
+            findTemplate(templates, newTemplateTitle).each(function (t) {
+              api.block('Loading...');
+              getTemplateContent(t).then(function (previewHtml) {
+                updateDialog(api, t, previewHtml);
+              }).catch(function () {
+                updateDialog(api, t, '');
+                api.disable('save');
+                loadFailedAlert(api);
+              });
             });
-
-            replaceVals(e);
           }
+        };
+      };
+      var onSubmit = function (templates) {
+        return function (api) {
+          var data = api.getData();
+          findTemplate(templates, data.template).each(function (t) {
+            getTemplateContent(t).then(function (previewHtml) {
+              Templates.insertTemplate(editor, false, previewHtml);
+              api.close();
+            }).catch(function () {
+              api.disable('save');
+              loadFailedAlert(api);
+            });
+          });
+        };
+      };
+      var openDialog = function (templates) {
+        var selectBoxItems = createSelectBoxItems(templates);
+        var buildDialogSpec = function (bodyItems, initialData) {
+          return {
+            title: 'Insert Template',
+            size: 'large',
+            body: {
+              type: 'panel',
+              items: bodyItems
+            },
+            initialData: initialData,
+            buttons: [
+              {
+                type: 'cancel',
+                name: 'cancel',
+                text: 'Cancel'
+              },
+              {
+                type: 'submit',
+                name: 'save',
+                text: 'Save',
+                primary: true
+              }
+            ],
+            onSubmit: onSubmit(templates),
+            onChange: onChange(templates, updateDialog)
+          };
+        };
+        var updateDialog = function (dialogApi, template, previewHtml) {
+          var content = getPreviewContent(editor, previewHtml);
+          var bodyItems = [
+            {
+              type: 'selectbox',
+              name: 'template',
+              label: 'Templates',
+              items: selectBoxItems
+            },
+            {
+              type: 'htmlpanel',
+              html: '<p aria-live="polite">' + htmlEscape(template.value.description) + '</p>'
+            },
+            {
+              label: 'Preview',
+              type: 'iframe',
+              name: 'preview',
+              sandboxed: false
+            }
+          ];
+          var initialData = {
+            template: template.text,
+            preview: content
+          };
+          dialogApi.unblock();
+          dialogApi.redial(buildDialogSpec(bodyItems, initialData));
+          dialogApi.focus('template');
+        };
+        var dialogApi = editor.windowManager.open(buildDialogSpec([], {
+          template: '',
+          preview: ''
+        }));
+        dialogApi.block('Loading...');
+        getTemplateContent(templates[0]).then(function (previewHtml) {
+          updateDialog(dialogApi, templates[0], previewHtml);
+        }).catch(function () {
+          updateDialog(dialogApi, templates[0], '');
+          dialogApi.disable('save');
+          loadFailedAlert(dialogApi);
         });
+      };
+      var optTemplates = createTemplates();
+      optTemplates.each(openDialog);
+    };
+    var Dialog = { open: open };
+
+    var showDialog = function (editor) {
+      return function (templates) {
+        Dialog.open(editor, templates);
+      };
+    };
+    var register$1 = function (editor) {
+      editor.ui.registry.addButton('template', {
+        icon: 'template',
+        tooltip: 'Insert template',
+        onAction: Templates.createTemplateList(editor.settings, showDialog(editor))
       });
-    });
+      editor.ui.registry.addMenuItem('template', {
+        icon: 'template',
+        text: 'Insert template...',
+        onAction: Templates.createTemplateList(editor.settings, showDialog(editor))
+      });
+    };
+    var Buttons = { register: register$1 };
 
+    function Plugin () {
+      global.add('template', function (editor) {
+        Buttons.register(editor);
+        Commands.register(editor);
+        FilterContent.setup(editor);
+      });
+    }
 
-    return function () { };
-  }
-);
-dem('tinymce.plugins.template.Plugin')();
-})();
+    Plugin();
+
+}());
