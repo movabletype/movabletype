@@ -635,13 +635,6 @@ my @CORE_OPT = (
         )
     ],
 
-    [   'Crypt::SSLeay',
-        0, 0,
-        translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.'
-        )
-    ],
-
     [   'Cache::File',
         0, 0,
         translate(

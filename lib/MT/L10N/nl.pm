@@ -7321,7 +7321,7 @@ use vars qw( @ISA %Lexicon );
 	'Authentication failure: [_1], reason:[_2]' => 'Authenticatie mislukt: [_1], reden: [_2]',
 	'Failed to created commenter.' => 'Aanmaken reageerder mislukt.',
 	'Failed to create a session.' => 'Aanmaken sessie mislukt.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters vereist dat ofwel Crypt::SSLeay of IO::Socket::SSL geÏnstalleerd zijn om met Facebook te kunnen communiceren.',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters vereist dat IO::Socket::SSL geÏnstalleerd zijn om met Facebook te kunnen communiceren.',
 	'Please enter your Facebook App key and secret.' => 'Gelieve uw Facebook App key en secret in te vullen.',
 	'Could not verify this app with Facebook: [_1]' => 'Kon deze app niet verifiÃ«ren bij Facebook: [_1]',
 
