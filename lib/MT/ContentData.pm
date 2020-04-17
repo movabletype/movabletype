@@ -104,7 +104,7 @@ __PACKAGE__->install_properties(
         audit           => 1,
         meta            => 1,
         child_classes => [ 'MT::ContentFieldIndex', 'MT::FileInfo' ],
-        child_of      => [ 'MT::Blog', 'MT::Website', 'MT::ContentType' ],
+        child_of => [ 'MT::Blog', 'MT::Website', 'MT::ContentType' ],
     }
 );
 
@@ -979,6 +979,12 @@ sub list_props {
         status => {
             base    => 'entry.status',
             display => 'none',
+        },
+        blog_id => {
+            auto            => 1,
+            col             => 'blog_id',
+            display         => 'none',
+            filter_editable => 0,
         },
     };
 }
