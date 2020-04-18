@@ -100,10 +100,6 @@
       buttonSettings : '',
 
       _initButtonSettings : function(ed) {
-          // ed.settings['toolbar'] = 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_file | table';
-          // ed.settings['toolbar1'] = 'mt_source_mode';
-          // ed.settings['toolbar2'] = 'mt_source_mode bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table';
-          // return [];
           // TODO: 
 
           var plugin = this;
@@ -117,11 +113,19 @@
           var index = 1;
           if( ed.inline ) {
               $.each(['wysiwyg'], function(i, k) {
-                  var p = 'plugin_mt_' + k + 'inline_toolbar';
+                  var p = 'plugin_mt_' + k + '_insert_toolbar';
                   plugin.buttonSettings +=
                       (plugin.buttonSettings ? ',' : '') + ed.settings[p];
 
-                  ed.settings['toolbar'] += ed.settings[p];
+                  ed.settings['quickbars_insert_toolbar'] += ed.settings[p];
+                  buttonRows[k][index-1] = 1;
+                  index++;
+
+                  var p = 'plugin_mt_' + k + '_selection_toolbar';
+                  plugin.buttonSettings +=
+                      (plugin.buttonSettings ? ',' : '') + ed.settings[p];
+
+                  ed.settings['quickbars_selection_toolbar'] += ed.settings[p];
                   buttonRows[k][index-1] = 1;
                   index++;
               });

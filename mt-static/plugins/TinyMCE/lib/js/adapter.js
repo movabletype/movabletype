@@ -15,7 +15,12 @@
         },
         config: {
             // mode: "exact",
-            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textpattern,fullscreen,table,quickbars',
+            // plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textpattern,fullscreen,table,quickbars',
+            plugins: 'lists,media,paste,hr,link,textpattern,fullscreen,table,quickbars',
+            external_plugins: {
+                'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin.js',
+                'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin.js',
+            },
   
             language: $('html').attr('lang'),
             // theme: "modern",
@@ -24,6 +29,8 @@
             branding: false,
             forced_root_block: 'p',
             resize: true,
+            icons: 'mt',
+            icons_url: StaticURI + 'plugins/TinyMCE/lib/js/icons.js',
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
@@ -34,11 +41,13 @@
             plugin_mt_wysiwyg_buttons1:'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
             plugin_mt_wysiwyg_buttons2:'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
 
-            plugin_mt_wysiwyg_inline_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
-            // plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_insert_toolbar: 'mt_insert_html mt_insert_file mt_insert_image | table | ',
 
             toolbar1: '',
             toolbar2: '',
+            quickbars_insert_toolbar: false,
+            quickbars_iselection_toolbar: false,
 
             plugin_mt_inlinepopups_window_sizes: {
                 'advanced/link.htm': {
@@ -515,12 +524,11 @@
                 adapter.$editorTextarea.height(height);
                 var width = '100%';
                 var Cookie = tinymce.plugins.MovableType.Cookie;
-				Cookie.setHash("TinyMCE_" + ed.id + "_size", {
-					cw : width,
-					ch : height
-				});
+		            Cookie.setHash("TinyMCE_" + ed.id + "_size", {
+	                 cw : width,
+                   ch : height
+                 });
             });
-
         },
         reload: function(){
             if(this.tinymce) {
