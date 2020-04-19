@@ -24,11 +24,11 @@ let icons_set = {
   'outdent': 'ic_unindent',
   'sourcecode': 'ic_code',
   'fullscreen': 'ic_fullscreen',
+  'template': 'ic_template',
 };
 var icons = {};
 Object.keys(icons_set).forEach(function (key) {
   icons[key] = '<svg width="24" height="24" role="' + key + '"><use xlink:href="' + StaticURI + 'images/sprite.svg#' + icons_set[key] + '"></use></svg>';
-  // icons[key] = '<svg width="24" height="24" role="' + key + '"><title>' + key + '</title><use xlink:href="' + StaticURI + 'images/sprite.svg#' + icons_set[key] + '"></use></svg>';
 });
 
 tinymce.IconManager.add('mt', {
