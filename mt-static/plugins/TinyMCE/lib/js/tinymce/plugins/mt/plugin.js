@@ -314,51 +314,6 @@
               });
           }
 
-          function mtSourceLinkDialog(c, close) {
-
-              function onSubmit(e) {
-                  proxies
-                      .source
-                      .execCommand(
-                          'createLink',
-                          null,
-                          e.data.href,
-                          {
-                              'target': e.data.target,
-                              'title': e.data.title
-                          }
-                      );
-                  if(typeof(close) == "function")
-                      close();
-              };
-              c["window"].on('submit', onSubmit);
-
-              if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
-                  c['$contents']
-                      .find('#targetlistlabel')
-                      .closest('tr')
-                      .hide();
-              }
-              c["window"].find('[name=text]')[0].parent().hide();
-          }
-
-          function mtSourceTemplateDialog(c, close) {
-              function insertContent(e) {
-                  if (e.command == 'insertContent' && e.value) {
-                      proxies
-                          .source
-                          .editor
-                          .insertContent(e.value);
-                  }
-              };
-
-              function onSubmit(e) {
-                  ed.off('beforeExecCommand', insertContent);
-              };
-              c["window"].on('submit', onSubmit);
-              ed.on('beforeExecCommand', insertContent);
-          }
-
           function initSourceButtons(mode, format) {
               $.each(ed.mtButtons, function(name, button) {
                   var command;
@@ -692,23 +647,35 @@
               }
           });
 
+          let _before_insert_content = function(){
+            ed.off('beforeExecCommand', _insertContent);
+            ed.once('beforeExecCommand', _insertContent);
+          }
+          let _insertContent = function(e) {
+              if (e.command == 'insertContent' && e.value) {
+                  ed.mtProxies.source.editor.insertContent(e.value);
+              }
+              ed.off('beforeExecCommand', _insertContent);
+          };
+
           ed.addMTButton('mt_source_link', {
               icon : 'link',
               tooltip : 'mt_insert_link',
               onclickFunctions : {
                   source: function(cmd, ui, val) {
                       ed.execCommand('mceLink');
-                      setPopupWindowLoadedHook(mtSourceLinkDialog);
+                      _before_insert_content()
                   }
               }
           });
 
           ed.addMTButton('mt_source_template', {
-              tooltip : 'template.desc',
+              tooltip : 'template',
+              icon: 'template',
               onclickFunctions : {
-                  source: function(cmd, ui, val) {
-                      ed.buttons.template.onclick();
-                      setPopupWindowLoadedHook(mtSourceTemplateDialog);
+                  source: function(buttonApi) {
+                      ed.ui.registry.getAll().buttons.template.onAction(editor);
+                      _before_insert_content()
                   }
               },
           });
