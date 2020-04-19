@@ -17,7 +17,7 @@
           var modes = {};
           var funcs = opts['onclickFunctions'];
           if (funcs) {
-              opts['onAction'] = function() {
+              opts['onAction'] = function(e) {
                   var mode = ed.mtEditorStatus['mode'];
                   var func = funcs[mode];
                   if (typeof(func) == 'string') {
@@ -26,7 +26,7 @@
                   else {
                       func.apply(ed, arguments);
                   }
-                  ed.fire('onMTSourceButtonClick');
+                  ed.fire('onMTSourceButtonClick', e);
               };
               for (k in funcs) {
                   modes[k] = 1;
@@ -57,16 +57,13 @@
               };
           }
           if (! opts['onSetup']) {
-              opts['onSetup'] = function() {
-                  var self = this;
-  
+              opts['onSetup'] = function(buttonApi) {
                   ed.on('onMTSourceButtonClick', function(e) {
-                      if(ed.mtProxies['source']){
-                          self.active(ed.mtProxies['source'].isStateActive(ed.sourceButtons[name]));
+                      if(ed.mtProxies['source'] && buttonApi.setActive){
+                          buttonApi.setActive( ed.mtProxies['source'].isStateActive(ed.sourceButtons[name]) );
                       }
                   });
               }
-  
           }
   
           if (typeof(ed.mtButtons) == 'undefined') {
@@ -597,15 +594,17 @@
               tooltip : 'mt_source_bold',
               text : 'strong',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'bold'
-              }
+              },
           });
 
           ed.addMTButton('mt_source_italic', {
               tooltip : 'mt_source_italic',
               text : 'em',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'italic'
               }
@@ -615,6 +614,7 @@
               tooltip : 'mt_source_blockquote',
               text : 'blockquote',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'blockquote'
               }
@@ -624,6 +624,7 @@
               tooltip : 'mt_source_unordered_list',
               text : 'ul',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'insertUnorderedList'
               }
@@ -633,6 +634,7 @@
               tooltip : 'mt_source_ordered_list',
               text : 'ol',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'insertOrderedList'
               }
@@ -642,6 +644,7 @@
               tooltip : 'mt_source_list_item',
               text : 'li',
               mtButtonClass: 'text',
+              toggle: true,
               onclickFunctions : {
                   source: 'insertListItem'
               }
