@@ -47,7 +47,7 @@
             toolbar1: '',
             toolbar2: '',
             quickbars_insert_toolbar: false,
-            quickbars_iselection_toolbar: false,
+            quickbars_selection_toolbar: false,
 
             plugin_mt_inlinepopups_window_sizes: {
                 'advanced/link.htm': {
