@@ -8,21 +8,23 @@ package Net::SMTPS;
 
 use vars qw ( $VERSION @ISA );
 
-$VERSION = "0.04";
+$VERSION = '0.10';
 
+use strict;
 use base qw ( Net::SMTP );
 use Net::Cmd;  # import CMD_OK, CMD_MORE, ...
 use Net::Config;
 
 eval {
+    require IO::Socket::IP
+	and unshift @ISA, 'IO::Socket::IP';
+} or eval {
     require IO::Socket::INET6
 	and unshift @ISA, 'IO::Socket::INET6';
 } or do {
     require IO::Socket::INET
 	and unshift @ISA, 'IO::Socket::INET';
 };
-
-use strict;
 
 # Override to support SSL/TLS.
 sub new {
@@ -38,6 +40,9 @@ sub new {
       $host = delete $arg{Host};
   }
   my $ssl = delete $arg{doSSL};
+  if ($ssl =~ /ssl/i) {
+      $arg{Port} ||= 465;
+  }
 
   my $hosts = defined $host ? $host : $NetConfig{smtp_hosts};
   my $obj;
@@ -74,23 +79,11 @@ sub new {
 
   $obj->debug(exists $arg{Debug} ? $arg{Debug} : undef);
 
-# common in SSL
-  my %ssl_args;
-  if ($ssl) {
-    eval {
-      require IO::Socket::SSL;
-    } or do {
-      $obj->set_status(500, ["Need working IO::Socket::SSL"]);
-      $obj->close;
-      return undef;
-    };
-    %ssl_args = map { +"$_" => $arg{$_} } grep {/^SSL/} keys %arg;
-    $IO::Socket::SSL::DEBUG = (exists $arg{Debug} ? $arg{Debug} : undef); 
-  }
+  ${*$obj}{'net_smtp_arg'} = \%arg;
 
 # OverSSL
   if (defined($ssl) && $ssl =~ /ssl/i) {
-    $obj->ssl_start(\%ssl_args)
+    $obj->ssl_start()
       or do {
 	$obj->set_status(500, ["Cannot start SSL"]);
 	$obj->close;
@@ -115,89 +108,93 @@ sub new {
   }
 
 # STARTTLS
-  if (defined($ssl) && $ssl =~ /starttls/i && $obj->supports('STARTTLS') ) {
-    (($obj->command('STARTTLS')->response() == CMD_OK)
-     and $obj->ssl_start(\%ssl_args)
-     and $obj->hello($arg{Hello} || ""))
-       or do {
-	 $obj->set_status(500, ["Cannot start SSL session"]);
-	 $obj->close();
-	 return undef;
-       };
+  if (defined($ssl) && $ssl =~ /starttls/i && defined($obj->supports('STARTTLS')) ) {
+      #123006 $obj->supports('STARTTLS') returns '' issue.
+      unless ($obj->starttls()) {
+	  return undef;
+      }
+      $obj->hello($arg{Hello} || "");
   }
 
   $obj;
 }
 
 sub ssl_start {
-    my ($self, $args) = @_;
+    my $self = shift;
     my $type = ref($self);
+    my %arg = %{ ${*$self}{'net_smtp_arg'} };
+    my %ssl_args = map { +"$_" => $arg{$_} } grep {/^SSL/} keys %arg;
 
+    eval {
+      require IO::Socket::SSL;
+    } or do {
+      $self->set_status(500, ["Need working IO::Socket::SSL"]);
+      $self->close;
+      return undef;
+    };
+
+    my $ssl_debug = (exists $arg{Debug} ? $arg{Debug} : undef);
+    $ssl_debug = (exists $arg{Debug_SSL} ? $arg{Debug_SSL} : $ssl_debug);
+    
+    local $IO::Socket::SSL::DEBUG = $ssl_debug; 
+     
     (unshift @ISA, 'IO::Socket::SSL'
-     and IO::Socket::SSL->start_SSL($self, %$args)
+     and IO::Socket::SSL->start_SSL($self, %ssl_args, @_)
      and $self->isa('IO::Socket::SSL')
      and bless $self, $type     # re-bless 'cause IO::Socket::SSL blesses himself.
     ) or return undef;
 }
 
+sub starttls {
+    my $self = shift;
+    (
+     $self->_STARTTLS()
+     and $self->ssl_start(@_)
+    ) or do {
+	$self->set_status(500, ["Cannot start SSL session"]);
+	$self->close();
+	return undef;
+    };
+}
+
+
 # Override to specify a certain auth mechanism.
 sub auth {
-  my ($self, $username, $password, $mech) = @_;
+    my ($self, $username, $password, $mech) = @_;
 
-  eval {
-    require MIME::Base64;
-    require Authen::SASL;
-  } or $self->set_status(500, ["Need MIME::Base64 and Authen::SASL todo auth"]), return 0;
+    if ($mech) {
+	$self->debug_print(1, "AUTH-my favorite: ". $mech . "\n") if $self->debug;
 
-  my $mechanisms = $self->supports('AUTH', 500, ["Command unknown: 'AUTH'"]);
-  if ($mech) {
-    $mechanisms = $mech;
-  }
-  return unless $mechanisms;
+	my @cl_mech = split /\s+/, $mech;
+	my @matched = ();
+	if (exists ${*$self}{'net_smtp_esmtp'}->{'AUTH'}) {
+	    my $sv = ${*$self}{'net_smtp_esmtp'}->{'AUTH'};
+	    $self->debug_print(1, "AUTH-server offerred: ". $sv . "\n") if $self->debug;
 
-  my $sasl;
-
-  if (ref($username) and UNIVERSAL::isa($username, 'Authen::SASL')) {
-    $sasl = $username;
-    $sasl->mechanism($mechanisms);
-  }
-  else {
-    die "auth(username, password)" if not length $username;
-    $sasl = Authen::SASL->new(
-      mechanism => $mechanisms,
-      callback  => {
-        user     => $username,
-        pass     => $password,
-        authname => $username,
-      }
-    );
-  }
-
-  # We should probably allow the user to pass the host, but I don't
-  # currently know and SASL mechanisms that are used by smtp that need it
-  my $client = $sasl->client_new('smtp', ${*$self}{'net_smtp_host'}, 0);
-  my $str    = $client->client_start;
-
-  # We dont support sasl mechanisms that encrypt the socket traffic.
-  # todo that we would really need to change the ISA hierarchy
-  # so we dont inherit from IO::Socket, but instead hold it in an attribute
-
-  my @cmd = ("AUTH", $client->mechanism);
-  my $code;
-
-  push @cmd, MIME::Base64::encode_base64($str, '')
-    if defined $str and length $str;
-
-  while (($code = $self->command(@cmd)->response()) == CMD_MORE) {
-    @cmd = (
-      MIME::Base64::encode_base64(
-        $client->client_step(MIME::Base64::decode_base64(($self->message)[0])), ''
-      )
-    );
-  }
-
-  $code == CMD_OK;
+	    foreach my $i (@cl_mech) {
+		if (index($sv, $i) >= 0 && !grep(/$i/i, @matched)) {
+		    push @matched, uc($i);
+		}
+	    }
+	}
+	if (@matched) {
+	    ## override AUTH mech as specified.
+	    ## if multiple mechs are specified, priority is still up to Authen::SASL module.
+	    ${*$self}{'net_smtp_esmtp'}->{'AUTH'} = join " ", @matched;
+	    $self->debug_print(1, "AUTH-negotiated: ". ${*$self}{'net_smtp_esmtp'}->{'AUTH'} . "\n") if $self->debug;
+	}
+    }
+    $self->SUPER::auth($username, $password);
 }
+
+
+# Fix #121006 no timeout issue.
+sub getline {
+    my $self = shift;
+    $self->Net::Cmd::getline(@_);
+}
+
+sub _STARTTLS { shift->command("STARTTLS")->response() == CMD_OK }
 
 1;
 
@@ -218,15 +215,31 @@ Net::SMTPS - SSL/STARTTLS support for Net::SMTP
 =head1 DESCRIPTION
 
 This module implements a wrapper for Net::SMTP, enabling over-SSL/STARTTLS support.
-This module inherits all the methods from Net::SMTP. You may use all the friendly
-options that came bundled with Net::SMTP.
+This module inherits most of all the methods from Net::SMTP(2.X). You may use all
+the friendly options that came bundled with Net::SMTP.
 You can control the SSL usage with the options of new() constructor method.
 'doSSL' option is the switch, and, If you would like to control detailed SSL settings,
 you can set SSL_* options that are brought from IO::Socket::SSL. Please see the
 document of IO::Socket::SSL about these options detail.
 
-Just one method difference from the Net::SMTP, you may select SMTP AUTH mechanism
+Just one method difference from the Net::SMTP, you can select SMTP AUTH mechanism
 as the third option of auth() method.
+
+As of Version 3.10 of Net::SMTP(libnet) includes SSL/STARTTLS capabilities, so
+this wrapper module's significance disappareing.
+
+=head1 CONSTRUCTOR
+
+=over 4
+
+=item new ( [ HOST ] [, OPTIONS ] )
+
+A few options added to Net::SMTP(2.X).
+
+B<doSSL> { C<ssl> | C<starttls> | undef } - to specify SSL connection type.
+C<ssl> makes connection wrapped with SSL, C<starttls> uses SMTP command C<STARTTLS>.
+
+=back
 
 =head1 METHODS
 
@@ -238,9 +251,19 @@ Most of all methods of Net::SMTP are inherited as is, except auth().
 =item auth ( USERNAME, PASSWORD [, AUTHMETHOD])
 
 Attempt SASL authentication through Authen::SASL module. AUTHMETHOD is your required
-method of authentication, like 'CRAM-MD5', 'LOGIN', ... etc. the default is 'CRAM-MD5'.
+method of authentication, like 'CRAM-MD5', 'LOGIN', ... etc. If your selection does
+not match the server-offerred AUTH mechanism, authentication negotiation may fail.
+
+=item starttls ( SSLARGS )
+
+Upgrade existing plain connection to SSL.
 
 =back
+
+=head1 BUGS
+
+Constructor option 'Debug => (N)' (for Net::Cmd) also sets $IO::Socket::SSL::DEBUG when SSL is enabled. You can set 'Debug_SSL => {0-3}' separately.
+
 
 =head1 SEE ALSO
 
@@ -254,7 +277,7 @@ Tomo.M <tomo at cpan.org>
 
 =head1 COPYRIGHT
 
-Copyright (c) 2013 Tomo.M All rights reserved.
+Copyright (c) 2020 Tomo.M All rights reserved.
 This program is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
