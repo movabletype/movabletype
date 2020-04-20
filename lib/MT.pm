@@ -2882,8 +2882,8 @@ sub core_commenter_authenticators {
                 my @missing;
                 eval { require Digest::SHA1; };
                 push @missing, 'Digest::SHA1' if $@;
-                eval { require Crypt::SSLeay; };
-                push @missing, 'Crypt::SSLeay' if $@;
+                eval { require IO::Socket::SSL; };
+                push @missing, 'IO::Socket::SSL' if $@;
                 return 1 unless @missing;
                 $$reason = MT->translate(
                     'A Perl module required for Google ID commenter authentication is missing: [_1].',
