@@ -558,7 +558,7 @@ use vars qw( @ISA %Lexicon );
 	'Loading of blog \'[_1]\' failed: [_2]' => 'ブログ(ID:[_1])をロードできませんでした: [_2]',
 	'Loading template \'[_1]\' failed.' => 'テンプレート「[_1]」のロードに失敗しました。',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
