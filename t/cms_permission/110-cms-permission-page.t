@@ -492,7 +492,6 @@ subtest 'action = set_draft' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'set_draft',
             id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
@@ -513,7 +512,6 @@ subtest 'action = set_draft' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'set_draft',
             id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
@@ -534,7 +532,6 @@ subtest 'action = set_draft' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'set_draft',
             id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
@@ -555,7 +552,6 @@ subtest 'action = set_draft' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'set_draft',
             id                     => $page->id,
             plugin_action_selector => 'set_draft',
         }
@@ -576,7 +572,6 @@ subtest 'action = set_draft' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'set_draft',
             id                     => $entry->id,
             plugin_action_selector => 'set_draft',
         }
@@ -605,7 +600,6 @@ subtest 'action = add_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
@@ -626,7 +620,6 @@ subtest 'action = add_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
@@ -647,7 +640,6 @@ subtest 'action = add_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
@@ -668,7 +660,6 @@ subtest 'action = add_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $page->id,
             plugin_action_selector => 'add_tags',
         }
@@ -689,7 +680,6 @@ subtest 'action = add_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $entry->id,
             plugin_action_selector => 'add_tags',
         }
@@ -718,7 +708,6 @@ subtest 'action = remove_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -739,7 +728,6 @@ subtest 'action = remove_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -760,7 +748,6 @@ subtest 'action = remove_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -781,7 +768,6 @@ subtest 'action = remove_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $page->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -802,7 +788,6 @@ subtest 'action = remove_tags' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $entry->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -831,7 +816,6 @@ subtest 'action = open_batch_editor' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
             id                     => $page->id,
             plugin_action_selector => 'open_batch_editor',
         }
@@ -852,7 +836,6 @@ subtest 'action = open_batch_editor' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
             id                     => $page->id,
             plugin_action_selector => 'open_batch_editor',
         }
@@ -873,7 +856,6 @@ subtest 'action = open_batch_editor' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
             id                     => $page->id,
             plugin_action_selector => 'open_batch_editor',
         }
@@ -895,7 +877,6 @@ subtest 'action = open_batch_editor' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
             id                     => $page->id,
             plugin_action_selector => 'open_batch_editor',
         }
@@ -916,7 +897,6 @@ subtest 'action = open_batch_editor' => sub {
                 . $blog->id
                 . '%26filter_key%3Dmy_posts_on_this_context',
             blog_id                => $blog->id,
-            plugin_action_selector => 'open_batch_editor',
             id                     => $entry->id,
             plugin_action_selector => 'open_batch_editor',
         }
