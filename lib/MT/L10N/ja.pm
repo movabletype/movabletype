@@ -4098,7 +4098,7 @@ use vars qw( @ISA %Lexicon );
 	'(No role selected)' => '(ロールが選択されていません)',
 	'Select roles' => 'ロール選択',
 	'Authentication Methods' => '認証方式',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'Please select authentication methods to accept comments.' => 'コメント投稿者の認証方式を選択してください。',
 	'One or more Perl modules may be missing to use this authentication method.' => '認証を利用するのに必要なPerlモジュールが見つかりませんでした。',
 
