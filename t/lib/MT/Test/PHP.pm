@@ -9,8 +9,10 @@ use File::Temp 'tempfile';
 sub run {
     my ( $class, $script ) = @_;
 
+    my $dir = $ENV{MT_TEST_ROOT} || '.';
+
     my ( $fh, $ini_file ) = tempfile(
-        DIR    => $ENV{MT_TEST_ROOT} || '.',
+        DIR    => $dir,
         SUFFIX => '.ini',
     );
     print $fh <<'INI';
@@ -22,7 +24,8 @@ log_errors = On;
 INI
     close $fh;
 
-    IPC::Run3::run3 [ 'php', '--php-ini', $ini_file ],
+    $ENV{PHP_INI_SCAN_DIR} = $dir;
+    IPC::Run3::run3 [ 'php' ],
         \$script, \my $result, undef,
         { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
