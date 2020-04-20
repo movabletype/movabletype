@@ -15,7 +15,6 @@ BEGIN {
 }
 
 plan tests => 54;
-use File::Temp qw( tempfile );
 
 use MT;
 use MT::Author;

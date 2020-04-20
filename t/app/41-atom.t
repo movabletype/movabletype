@@ -17,8 +17,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use POSIX;
-
 use MT;
 use MT::Atom;
 use MT::Util;
@@ -27,7 +25,6 @@ use XML::XPath;
 use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
-use POSIX qw( ceil );
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';
