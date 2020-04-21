@@ -24,9 +24,18 @@ log_errors = On;
 INI
     close $fh;
 
-    my $separator = $^O eq 'MSWin32' ? ';' : ':';
-    $ENV{PHP_INI_SCAN_DIR} = "$separator$dir";
-    IPC::Run3::run3 [ 'php' ],
+    my @args;
+    my $ini_setting = `php --ini`;
+    if ($ini_setting =~ /Scan for additional .ini files in: \(none\)/) {
+        $ENV{PHP_INI_SCAN_DIR} = $dir;
+        @args = ();
+    }
+    else {
+        @args = ( '--php-ini', $ini_file );
+    }
+
+
+    IPC::Run3::run3 [ 'php', @args ],
         \$script, \my $result, undef,
         { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
