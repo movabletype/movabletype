@@ -24,7 +24,8 @@ log_errors = On;
 INI
     close $fh;
 
-    $ENV{PHP_INI_SCAN_DIR} = $dir;
+    my $separator = $^O eq 'MSWin32' ? ';' : ':';
+    $ENV{PHP_INI_SCAN_DIR} = "$separator$dir";
     IPC::Run3::run3 [ 'php' ],
         \$script, \my $result, undef,
         { binmode_stdin => 1 } or die $?;
