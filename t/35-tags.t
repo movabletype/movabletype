@@ -57,6 +57,8 @@ filters {
     expected_php => [qw( var )],
 };
 
+sub fix_path { File::Spec->canonpath(shift) }
+
 my $blog_id = 1;
 
 MT::Test::Tag->run_perl_tests($blog_id);
@@ -1650,7 +1652,7 @@ image/jpeg
 === test 254
 --- template
 <MTAssets lastn='1'><$MTAssetFilePath$></MTAssets>
---- expected
+--- expected fix_path
 CURRENT_WORKING_DIRECTORY/t/images/test.jpg
 
 === test 255
