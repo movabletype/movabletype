@@ -269,7 +269,6 @@ subtest 'Test cfg_entry mode' => sub {
                 . $website->id . '&id='
                 . $website->id,
             cfg_screen         => 'cfg_entry',
-            entry_custom_prefs => 'title',
             entry_custom_prefs => 'text',
         },
     );

@@ -499,6 +499,7 @@ sub fix_mysql_create_table_sql {
     my $class = shift;
     return unless $class->mysql_charset eq 'utf8mb4';
 
+    require MT::ObjectDriver::DDL::mysql;
     no warnings 'redefine';
     *MT::ObjectDriver::DDL::mysql::create_table_sql = \&_create_table_sql_for_old_mysql;
 }

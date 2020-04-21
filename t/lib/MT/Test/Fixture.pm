@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use Carp;
 use MT::Test::Permission;
+use MT::Serialize;
 
 sub prepare {
     my ( $class, $spec ) = @_;
@@ -98,12 +99,15 @@ sub prepare_category {
     return unless $spec->{category};
 
     if ( ref $spec->{category} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: category";
         for my $item ( @{ $spec->{category} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{category}{$parent_name}
                         or croak "unknown parent category: $parent_name";
@@ -113,10 +117,9 @@ sub prepare_category {
             else {
                 %arg = ( label => $item );
             }
-            my $cat = MT::Test::Permission->make_category(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: category";
+            my $cat = MT::Test::Permission->make_category(%arg);
             $objs->{category}{ $cat->label } = $cat;
         }
     }
@@ -127,12 +130,15 @@ sub prepare_folder {
     return unless $spec->{folder};
 
     if ( ref $spec->{folder} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: folder";
         for my $item ( @{ $spec->{folder} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{folder}{$parent_name}
                         or croak "unknown parent folder: $parent_name";
@@ -142,10 +148,9 @@ sub prepare_folder {
             else {
                 %arg = ( label => $item );
             }
-            my $folder = MT::Test::Permission->make_folder(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: folder";
+            my $folder = MT::Test::Permission->make_folder(%arg);
             $objs->{folder}{ $folder->label } = $folder;
         }
     }
@@ -156,12 +161,15 @@ sub prepare_customfield {
     return unless $spec->{customfield};
 
     if ( ref $spec->{customfield} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: customfield";
         for my $item ( @{ $spec->{customfield} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
             }
             else {
                 %arg = (
@@ -172,10 +180,9 @@ sub prepare_customfield {
                     tag      => $item,
                 );
             }
-            my $field = MT::Test::Permission->make_field(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: customfield";
+            my $field = MT::Test::Permission->make_field(%arg);
             $objs->{customfield}{ $field->name } = $field;
         }
     }
@@ -196,6 +203,11 @@ sub prepare_entry {
                         "unknown author: $author_name: entry: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
                     require MT::Entry;
@@ -205,7 +217,7 @@ sub prepare_entry {
             else {
                 %arg = ( title => $item );
             }
-            my $title     = $arg{title} || '(no title)';
+            my $title = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -247,6 +259,11 @@ sub prepare_page {
                         or croak
                         "unknown author: $author_name: page: $arg{title}";
                     $arg{author_id} = $author->id;
+                }
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
@@ -290,7 +307,7 @@ sub prepare_category_set {
     return unless $spec->{category_set};
 
     if ( ref $spec->{category_set} eq 'HASH' ) {
-        for my $name ( keys %{ $spec->{category_set} } ) {
+        for my $name ( sort keys %{ $spec->{category_set} } ) {
             my $items = $spec->{category_set}{$name};
             if ( ref $items eq 'ARRAY' ) {
                 my $blog_id = $objs->{blog_id}
@@ -334,7 +351,7 @@ sub prepare_content_type {
     return unless $spec->{content_type};
 
     if ( ref $spec->{content_type} eq 'HASH' ) {
-        for my $name ( keys %{ $spec->{content_type} } ) {
+        for my $name ( sort keys %{ $spec->{content_type} } ) {
             my $item = $spec->{content_type}{$name};
             my @fields;
             my ( $ct, %cfs );
@@ -364,14 +381,32 @@ sub prepare_content_type {
                         my $set_name = $item->{category_set};
                         my $set
                             = $objs->{category_set}{$set_name}{category_set}
-                            || croak
+                            or croak
                             "category_set is required: content_field: $set_name";
                         $cf_arg{related_cat_set_id} = $set->id;
                         %options = (
                             label        => $cf_name,
                             category_set => $set->id,
-                            %{delete $item->{options} || {}},
+                            %{ delete $item->{options} || {} },
                         );
+                    }
+                    elsif ( $cf_type eq 'content_type' ) {
+                        my $source_name = $item->{source};
+                        my $source
+                            = $objs->{content_type}{$source_name}
+                            {content_type}
+                            or croak
+                            "source content_type is required: content_field: $source_name";
+                        %options = (
+                            %{ delete $item->{options} || {} },
+                            source => $source->id,
+                        );
+                    }
+                    elsif ( $cf_type =~ /\A(?:checkboxes|radio_button|select_box)\z/ ) {
+                        for my $key (qw/min max values required multiple/) {
+                            next unless defined $item->{$key};
+                            $options{$key} = delete $item->{$key};
+                        }
                     }
                     my $cf = MT::Test::Permission->make_content_field(
                         blog_id         => $blog_id,
@@ -453,11 +488,36 @@ sub prepare_content_data {
                         }
                         $data{ $cf->id } = \@cat_ids;
                     }
+                    elsif ( $cf_type eq 'content_type' ) {
+                        my @cd_ids;
+                        for my $cd_name (@$cf_arg) {
+                            my $cd = $objs->{content_data}{$cd_name}
+                                or croak
+                                "content_data is required: content_data: $cd_name";
+                            push @cd_ids, $cd->id;
+                        }
+                        $data{ $cf->id } = \@cd_ids;
+                    }
                     else {
                         $data{ $cf->id } = $cf_arg;
                     }
                 }
                 $arg{data} = \%data;
+
+                if ( $arg{convert_breaks} ) {
+                    my %convert_breaks;
+                    for my $cf_name ( keys %{ $arg{convert_breaks} } ) {
+                        my $cf
+                            = $objs->{content_type}{$ct_name}{content_field}
+                            {$cf_name}
+                            or croak
+                            "content_field is required: content_data: $cf_name";
+                        $convert_breaks{ $cf->id }
+                            = $arg{convert_breaks}{$cf_name};
+                    }
+                    $arg{convert_breaks}
+                        = MT::Serialize->serialize( \{%convert_breaks} );
+                }
 
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
@@ -486,6 +546,11 @@ sub prepare_template {
                 $archiver = MT->publisher->archiver($archive_type)
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
+            }
+            if ( my $blog_name = delete $arg{blog} ) {
+                my $blog = $objs->{blog}{$blog_name}
+                    or croak "unknown blog: $blog_name";
+                $arg{blog_id} = $blog->id;
             }
             my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
                 or croak "blog_id is required: template: $arg{type}";

@@ -1751,7 +1751,6 @@ subtest 'action = refresh_blog_templates' => sub {
             action_name          => 'refresh_blog_templates',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
@@ -1769,7 +1768,6 @@ subtest 'action = refresh_blog_templates' => sub {
             action_name          => 'refresh_blog_templates',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
@@ -1788,7 +1786,6 @@ subtest 'action = refresh_blog_templates' => sub {
             action_name          => 'refresh_blog_templates',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
@@ -1807,7 +1804,6 @@ subtest 'action = refresh_blog_templates' => sub {
             action_name          => 'refresh_blog_templates',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
@@ -1825,7 +1821,6 @@ subtest 'action = refresh_blog_templates' => sub {
             action_name          => 'refresh_blog_templates',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'refresh_blog_templates',
             id                     => $blog->id,
             plugin_action_selector => 'refresh_blog_templates',
         }
@@ -1846,7 +1841,6 @@ subtest 'action = move_blogs' => sub {
             action_name          => 'move_blogs',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
             id                     => $blog->id,
             plugin_action_selector => 'move_blogs',
             dialog                 => 1,
@@ -1865,7 +1859,6 @@ subtest 'action = move_blogs' => sub {
             action_name          => 'move_blogs',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
             id                     => $blog->id,
             plugin_action_selector => 'move_blogs',
             dialog                 => 1,
@@ -1886,7 +1879,6 @@ subtest 'action = clone_blog' => sub {
             action_name          => 'clone_blog',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'clone_blog',
             id                     => $blog->id,
             plugin_action_selector => 'clone_blog',
         }
@@ -1905,7 +1897,6 @@ subtest 'action = clone_blog' => sub {
             action_name          => 'clone_blog',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'clone_blog',
             id                     => $blog->id,
             plugin_action_selector => 'clone_blog',
         }
@@ -1926,7 +1917,6 @@ subtest 'action = clone_blog' => sub {
             action_name          => 'clone_blog',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blog%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'clone_blog',
             id                     => $blog->id,
             plugin_action_selector => 'clone_blog',
         }

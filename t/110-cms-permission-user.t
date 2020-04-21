@@ -1473,7 +1473,6 @@ subtest 'action = recover_passwords' => sub {
             action_name            => 'recover_passwords',
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'recover_passwords',
             id                     => $aikawa->id,
             plugin_action_selector => 'recover_passwords',
         }
@@ -1491,7 +1490,6 @@ subtest 'action = recover_passwords' => sub {
             action_name            => 'recover_passwords',
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'recover_passwords',
             id                     => $aikawa->id,
             plugin_action_selector => 'recover_passwords',
         }
@@ -1512,7 +1510,6 @@ subtest 'action = delete_user' => sub {
             action_name            => 'delete_user',
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'delete_user',
             id                     => $aikawa->id,
             plugin_action_selector => 'delete_user',
         }
@@ -1530,7 +1527,6 @@ subtest 'action = delete_user' => sub {
             action_name            => 'delete_user',
             itemset_action_input   => '',
             return_args            => '__mode%3Dlist_author%26blog_id%3D0',
-            plugin_action_selector => 'delete_user',
             id                     => $aikawa->id,
             plugin_action_selector => 'delete_user',
         }

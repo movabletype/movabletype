@@ -1917,7 +1917,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'refresh_tmpl_templates',
                 id                     => $tmpl->id,
                 blog_id                => $blog->id,
                 plugin_action_selector => 'refresh_tmpl_templates',
@@ -1941,7 +1940,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'refresh_tmpl_templates',
                 id                     => $tmpl->id,
                 blog_id                => $blog->id,
                 plugin_action_selector => 'refresh_tmpl_templates',
@@ -1966,7 +1964,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'refresh_tmpl_templates',
                 id                     => $tmpl->id,
                 plugin_action_selector => 'refresh_tmpl_templates',
             }
@@ -1990,7 +1987,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'refresh_tmpl_templates',
                 id                     => $tmpl->id,
                 blog_id                => $blog->id,
                 plugin_action_selector => 'refresh_tmpl_templates',
@@ -2015,7 +2011,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'refresh_tmpl_templates',
                 id                     => $tmpl->id,
                 blog_id                => $blog->id,
                 plugin_action_selector => 'refresh_tmpl_templates',
@@ -2044,7 +2039,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'copy_templates',
                 id                     => $tmpl->id,
                 blog_id                => $blog->id,
                 plugin_action_selector => 'copy_templates',
@@ -2068,7 +2062,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'copy_templates',
                 blog_id                => $blog->id,
                 id                     => $tmpl->id,
                 plugin_action_selector => 'copy_templates',
@@ -2092,7 +2085,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'copy_templates',
                 id                     => $tmpl->id,
                 plugin_action_selector => 'copy_templates',
             }
@@ -2116,7 +2108,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'copy_templates',
                 blog_id                => $blog->id,
                 id                     => $tmpl->id,
                 plugin_action_selector => 'copy_templates',
@@ -2140,7 +2131,6 @@ SKIP: {
                 itemset_action_input => '',
                 return_args          => '__mode%3Dlist_template%26blog_id%3D'
                     . $blog->id,
-                plugin_action_selector => 'copy_templates',
                 blog_id                => $blog->id,
                 id                     => $tmpl->id,
                 plugin_action_selector => 'copy_templates',
@@ -2430,7 +2420,6 @@ subtest 'website scope' => sub {
                         itemset_action_input => '',
                         return_args => '__mode%3Dlist_template%26blog_id%3D'
                             . $website->id,
-                        plugin_action_selector => 'refresh_tmpl_templates',
                         id                     => $tmpl->id,
                         blog_id                => $website->id,
                         plugin_action_selector => 'refresh_tmpl_templates',

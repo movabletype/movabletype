@@ -60,7 +60,6 @@ MT::Association->link( $ukawa,  $designer,        $blog );
 MT::Association->link( $ichikawa, $edit_categories, $second_blog );
 
 # Run tests
-my ( $app, $out );
 
 subtest 'permission_filter methods check' => sub {
     my $cat = MT::Test::Permission->make_category(
