@@ -1780,14 +1780,12 @@ subtest 'action = unapprove_comment' => sub {
         {   __test_user          => $admin,
             __request_method     => 'POST',
             __mode               => 'itemset_action',
-            blog_id              => $blog->id,
             _type                => 'comment',
             action_name          => 'unapprove_comment',
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
             blog_id                => $blog->id,
-            plugin_action_selector => 'unapprove_comment',
             id                     => $comment->id,
             plugin_action_selector => 'unapprove_comment',
         }
@@ -1807,7 +1805,6 @@ subtest 'action = unapprove_comment' => sub {
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
             blog_id                => $blog->id,
-            plugin_action_selector => 'unapprove_comment',
             id                     => $comment->id,
             plugin_action_selector => 'unapprove_comment',
         }
@@ -1827,7 +1824,6 @@ subtest 'action = unapprove_comment' => sub {
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
             blog_id                => $blog->id,
-            plugin_action_selector => 'unapprove_comment',
             id                     => $comment->id,
             plugin_action_selector => 'unapprove_comment',
         }
@@ -1849,7 +1845,6 @@ subtest 'action = unapprove_comment' => sub {
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
             blog_id                => $blog->id,
-            plugin_action_selector => 'unapprove_comment',
             id                     => $comment->id,
             plugin_action_selector => 'unapprove_comment',
         }
@@ -1875,7 +1870,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
             blog_id                => $blog->id,
@@ -1895,7 +1889,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
             blog_id                => $blog->id,
@@ -1916,7 +1909,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
             blog_id                => $blog->id,
@@ -1938,7 +1930,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
             blog_id                => $blog->id,
@@ -1971,7 +1962,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
@@ -1990,7 +1980,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
@@ -2010,7 +1999,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
@@ -2031,7 +2019,6 @@ subtest 'action = ban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'ban_commenter',
             id                     => $comment->id,
             plugin_action_selector => 'ban_commenter',
         }
@@ -2072,7 +2059,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
             blog_id                => $blog->id,
@@ -2092,7 +2078,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
             blog_id                => $blog->id,
@@ -2113,7 +2098,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
             blog_id                => $blog->id,
@@ -2135,7 +2119,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
             blog_id                => $blog->id,
@@ -2167,7 +2150,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
         }
@@ -2186,7 +2168,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
         }
@@ -2206,7 +2187,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
         }
@@ -2225,7 +2205,6 @@ subtest 'action = unban_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban_commenter',
         }
@@ -2261,7 +2240,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
             blog_id                => $blog->id,
@@ -2281,7 +2259,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
             blog_id                => $blog->id,
@@ -2302,7 +2279,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
             blog_id                => $blog->id,
@@ -2324,7 +2300,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
             blog_id                => $blog->id,
@@ -2356,7 +2331,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
         }
@@ -2375,7 +2349,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
         }
@@ -2395,7 +2368,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
         }
@@ -2414,7 +2386,6 @@ subtest 'action = trust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'trust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'trust_commenter',
         }
@@ -2450,7 +2421,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
             blog_id                => $blog->id,
@@ -2470,7 +2440,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
             blog_id                => $blog->id,
@@ -2491,7 +2460,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
             blog_id                => $blog->id,
@@ -2511,7 +2479,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
             blog_id                => $blog->id,
@@ -2543,7 +2510,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
         }
@@ -2562,7 +2528,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
         }
@@ -2582,7 +2547,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
         }
@@ -2602,7 +2566,6 @@ subtest 'action = untrust_commenter' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust_commenter',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust_commenter',
         }
@@ -2638,7 +2601,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
             blog_id                => $blog->id,
@@ -2658,7 +2620,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
             blog_id                => $blog->id,
@@ -2678,7 +2639,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
             blog_id                => $blog->id,
@@ -2699,7 +2659,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
             blog_id                => $blog->id,
@@ -2730,7 +2689,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
         }
@@ -2749,7 +2707,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
         }
@@ -2768,7 +2725,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
         }
@@ -2787,7 +2743,6 @@ subtest 'action = untrust' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'untrust',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'untrust',
         }
@@ -2827,7 +2782,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
             blog_id                => $blog->id,
@@ -2847,7 +2801,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
             blog_id                => $blog->id,
@@ -2867,7 +2820,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
             blog_id                => $blog->id,
@@ -2887,7 +2839,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
             blog_id                => $blog->id,
@@ -2918,7 +2869,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
         }
@@ -2937,7 +2887,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
         }
@@ -2956,7 +2905,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
         }
@@ -2975,7 +2923,6 @@ subtest 'action = unban' => sub {
             itemset_action_input => '',
             return_args => '__mode%3Dlist&_type%3Dcomment%26blog_id%3D'
                 . $blog->id,
-            plugin_action_selector => 'unban',
             id                     => $comment->commenter_id,
             plugin_action_selector => 'unban',
         }

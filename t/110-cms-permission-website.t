@@ -718,7 +718,6 @@ subtest 'mode = move_blogs' => sub {
             action_name          => 'move_blogs',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blogs%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
             id                     => $blog->id,
             plugin_action_selector => 'move_blogs',
         }
@@ -736,7 +735,6 @@ subtest 'mode = move_blogs' => sub {
             action_name          => 'move_blogs',
             itemset_action_input => '',
             return_args => '__mode%3Dlist_blogs%26blog_id%3D' . $website->id,
-            plugin_action_selector => 'move_blogs',
             id                     => $blog->id,
             plugin_action_selector => 'move_blogs',
         }
@@ -757,7 +755,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -776,7 +773,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -796,7 +792,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -816,7 +811,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -835,7 +829,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
