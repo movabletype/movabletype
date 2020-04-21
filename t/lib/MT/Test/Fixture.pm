@@ -99,12 +99,15 @@ sub prepare_category {
     return unless $spec->{category};
 
     if ( ref $spec->{category} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: category";
         for my $item ( @{ $spec->{category} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{category}{$parent_name}
                         or croak "unknown parent category: $parent_name";
@@ -114,10 +117,9 @@ sub prepare_category {
             else {
                 %arg = ( label => $item );
             }
-            my $cat = MT::Test::Permission->make_category(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: category";
+            my $cat = MT::Test::Permission->make_category(%arg);
             $objs->{category}{ $cat->label } = $cat;
         }
     }
@@ -128,12 +130,15 @@ sub prepare_folder {
     return unless $spec->{folder};
 
     if ( ref $spec->{folder} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: folder";
         for my $item ( @{ $spec->{folder} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
                 if ( my $parent_name = $arg{parent} ) {
                     my $parent = $objs->{folder}{$parent_name}
                         or croak "unknown parent folder: $parent_name";
@@ -143,10 +148,9 @@ sub prepare_folder {
             else {
                 %arg = ( label => $item );
             }
-            my $folder = MT::Test::Permission->make_folder(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: folder";
+            my $folder = MT::Test::Permission->make_folder(%arg);
             $objs->{folder}{ $folder->label } = $folder;
         }
     }
@@ -157,12 +161,15 @@ sub prepare_customfield {
     return unless $spec->{customfield};
 
     if ( ref $spec->{customfield} eq 'ARRAY' ) {
-        my $blog_id = $objs->{blog_id}
-            or croak "blog_id is required: customfield";
         for my $item ( @{ $spec->{customfield} } ) {
             my %arg;
             if ( ref $item eq 'HASH' ) {
                 %arg = %$item;
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
+                }
             }
             else {
                 %arg = (
@@ -173,10 +180,9 @@ sub prepare_customfield {
                     tag      => $item,
                 );
             }
-            my $field = MT::Test::Permission->make_field(
-                blog_id => $blog_id,
-                %arg,
-            );
+            $arg{blog_id} ||= $objs->{blog_id}
+                or croak "blog_id is required: customfield";
+            my $field = MT::Test::Permission->make_field(%arg);
             $objs->{customfield}{ $field->name } = $field;
         }
     }
@@ -196,6 +202,11 @@ sub prepare_entry {
                         or croak
                         "unknown author: $author_name: entry: $arg{title}";
                     $arg{author_id} = $author->id;
+                }
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
@@ -248,6 +259,11 @@ sub prepare_page {
                         or croak
                         "unknown author: $author_name: page: $arg{title}";
                     $arg{author_id} = $author->id;
+                }
+                if ( my $blog_name = delete $arg{blog} ) {
+                    my $blog = $objs->{blog}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $arg{blog_id} = $blog->id;
                 }
                 my $status = $arg{status} || 'publish';
                 if ( $status =~ /\w+/ ) {
@@ -530,6 +546,11 @@ sub prepare_template {
                 $archiver = MT->publisher->archiver($archive_type)
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
+            }
+            if ( my $blog_name = delete $arg{blog} ) {
+                my $blog = $objs->{blog}{$blog_name}
+                    or croak "unknown blog: $blog_name";
+                $arg{blog_id} = $blog->id;
             }
             my $blog_id = $arg{blog_id} ||= $objs->{blog_id}
                 or croak "blog_id is required: template: $arg{type}";

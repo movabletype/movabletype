@@ -101,7 +101,6 @@ sub register_3rd_blog {
             excerpt        => "3rd Blog's entry excerpt",
             keywords       => 'keywords',
             created_on     => '19780131074500',
-            authored_on    => '19780131074500',
             modified_on    => '19780131074600',
             authored_on    => '19780131074500',
             author_id      => 1,
