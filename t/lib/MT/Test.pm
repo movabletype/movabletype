@@ -17,9 +17,7 @@ use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use File::Path qw( rmtree );
 use File::Spec;
-use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
 use MT::Mail;

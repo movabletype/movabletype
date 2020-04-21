@@ -3,7 +3,6 @@ package MT::Test::App;
 use strict;
 use warnings;
 use CGI;
-use Cwd qw/abs_path/;
 use File::Spec;
 use HTTP::Response;
 use URI;
