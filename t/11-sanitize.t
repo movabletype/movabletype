@@ -19,9 +19,7 @@ use MT;
 use MT::Test;
 use MT::Sanitize;
 
-my($atts, $str);
-
-$atts = MT::Sanitize->parse_spec('a href');
+my $atts = MT::Sanitize->parse_spec('a href');
 isa_ok($atts, 'HASH');
 ok($atts->{ok}, '{ok}');
 ok($atts->{ok}{a}, '{ok}{a}');
