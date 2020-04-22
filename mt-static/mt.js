@@ -1501,7 +1501,6 @@ MT.App = new Class( App, {
                 if ( ( tabs = tareas[ j ].getAttribute( "mt:allow-tabs" ) ) )
                     if ( truth ( tabs ) )
                         this.attachTabsToTextarea( tareas[ j ] );
-                }
             }
         }
     },
