@@ -10,6 +10,8 @@ use warnings;
 
 use base qw( MT::Image );
 
+$ENV{MAGICK_THREAD_LIMIT} ||= 1;
+
 sub load_driver {
     my $image = shift;
     eval { require Image::Magick };
