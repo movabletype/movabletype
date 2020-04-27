@@ -449,7 +449,6 @@
         default:
           type = 'range'
         }
-        $node.parents('.item-content').find('input').mtUnvalidate()
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
@@ -467,9 +466,6 @@
         showMonthAfterYear: true,
         prevText: '&lt;',
         nextText: '&gt;',
-        onSelect: function( dateText, inst ) {
-          inst.input.mtValid();
-        }
       })
     }
 
