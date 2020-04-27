@@ -53,7 +53,7 @@
       if (this.isAllpassFilter()) {
         this.createNewFilter(trans('Unknown Filter'))
       }
-      this.currentFilter.items.push({ type: filterType })
+      this.currentFilter.items.push({ type: filterType, args: {} })
       this.update()
     }
 
