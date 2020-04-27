@@ -1,7 +1,7 @@
 <?php
 /*
 
-@version   v5.20.16  12-Jan-2020
+@version   v5.20.17  31-Mar-2020
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Latest version is available at http://adodb.org/
@@ -510,7 +510,7 @@ class ADODB_Active_Record {
 				$attr[$name] = $fldobj;
 			}
 			foreach($pkeys as $k => $name) {
-				$keys[$name] = $cols[$name]->name;
+				$keys[$name] = $cols[strtoupper($name)]->name;
 			}
 			break;
 		}
@@ -1087,20 +1087,7 @@ global $_ADODB_ACTIVE_DBS;
 
 
 	$save = $db->SetFetchMode(ADODB_FETCH_NUM);
-	// Separate table name if table name was already joined other table.
 	$qry = "select * from ".$table;
-	// Separate table name if table name was already joined other table. 
-	if (preg_match('/^(.+)\sJOIN\s.+ON/i', $table)) {
-		$matches = preg_split('/\s/i', $table);
-		$tblname = trim($matches[0]);
-		$qry = "$tblname.* from ".$table; 
-		$table = $tblname; 
-	} else 
-		$qry = "* from ".$table;
-
-	if (isset($extra['distinct']))
-	$qry = "distinct " . $qry;
-	$qry = "select " . $qry;
 
 	if (!empty($whereOrderBy)) {
 		$qry .= ' WHERE '.$whereOrderBy;
@@ -1143,22 +1130,11 @@ global $_ADODB_ACTIVE_DBS;
 	$bTos = array(); // Will store belongTo's indices if any
 	foreach($rows as $row) {
 
-        $obj = new $class($table,$primkeyArr,$db);
-        if ($db->databaseType == 'mssqlnative') {
-            if ($obj->ErrorMsg()) {
-                if ($obj->ErrorNo())
-                    $has_error = true;
-            }
-        }
-        else {
-            if ($obj->ErrorNo())
-                $has_error = true;
-        }
-        if ($has_error){
-            $db->_errorMsg = $obj->ErrorMsg();
-            return $false;
-        }
-
+		$obj = new $class($table,$primkeyArr,$db);
+		if ($obj->ErrorNo()){
+			$db->_errorMsg = $obj->ErrorMsg();
+			return $false;
+		}
 		$obj->Set($row);
 		$arr[] = $obj;
 	} // foreach($rows as $row)
