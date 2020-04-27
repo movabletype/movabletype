@@ -27,7 +27,7 @@ $test_env->prepare_fixture('db');
 
 my $cfg = MT->config;
 
-for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
+for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, 'Set ImageDriver' );
