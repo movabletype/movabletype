@@ -10,7 +10,7 @@ use Fcntl qw/:flock/;
 use File::Find ();
 use File::Path 'mkpath';
 use File::Temp 'tempdir';
-use File::Basename 'dirname';
+use File::Basename qw/dirname basename/;
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
@@ -189,6 +189,11 @@ sub save_file {
     open my $fh, '>', $file or die $!;
     binmode $fh;
     print $fh $body;
+}
+
+sub image_drivers {
+    my $self = shift;
+    map { basename($_) =~ s/\.pm$//r } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub connect_info {
