@@ -7,7 +7,6 @@ package MT::CMS::AddressBook;
 
 use strict;
 use MT::Util qw( is_valid_email is_url dirify );
-use MT::I18N qw( wrap_text );
 
 sub entry_notify {
     my $app = shift;
@@ -49,7 +48,6 @@ sub send_notify {
 
     my $author = $entry->author;
 
-    my $cols = 72;
     my %params;
     $params{blog}         = $blog;
     $params{entry}        = $entry;
@@ -58,7 +56,8 @@ sub send_notify {
     if ( $q->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    $params{message} = wrap_text( $q->param('message'), $cols, '', '' );
+    my $message = $q->param('message');
+    $params{message} = defined $message ? $message : '';
     if ( $q->param('send_body') ) {
         $params{send_body} = 1;
     }
@@ -314,7 +313,7 @@ sub post_delete {
 }
 
 sub cms_pre_load_filtered_list {
-    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+    my ( $cb, $app, $filter, $load_options ) = @_;
 
     my $user = $app->user;
     return if $user->is_superuser;
