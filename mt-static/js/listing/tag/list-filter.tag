@@ -392,6 +392,20 @@
     addFilterItemContent(e) {
       var itemIndex = this.getListItemIndex(e.target)
       var contentIndex = this.getListItemContentIndex(e.target)
+      var item = this.listFilterTop.currentFilter.items[itemIndex]
+      if (item.type == 'pack') {
+        item = item.args.items[contentIndex]
+      }
+      jQuery(e.target).parent().each(function() {
+        jQuery(this).find(':input').each(function() {
+          var re = new RegExp(item.type+'-(\\w+)');
+          jQuery(this).attr('class').match(re);
+            var key = RegExp.$1;
+            if (key && !item.args.hasOwnProperty(key)) {
+            item.args[key] = jQuery(this).val();
+          }
+        });
+      });
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
       this.initializeDateOption()
       this.initializeOptionWithBlank()
