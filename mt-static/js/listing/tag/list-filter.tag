@@ -393,6 +393,8 @@
       var itemIndex = this.getListItemIndex(e.target)
       var contentIndex = this.getListItemContentIndex(e.target)
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
+      this.initializeDateOption()
+      this.initializeOptionWithBlank()
     }
 
     getListItemIndex(element) {
