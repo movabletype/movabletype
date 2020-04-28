@@ -5715,7 +5715,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => '検索/置換',
-	'You must select one or more item to replace.' => '置き換えるアイテムを1つ以上選択してください。',
+	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',
 	'Search Again' => '再検索',
 	'Case Sensitive' => '大文字/小文字を区別する',
 	'Regex Match' => '正規表現',
