@@ -5909,7 +5909,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Buscar &amp; Reemplazar',
-	'You must select one or more item to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
+	'You must select one or more items to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
 	'Search Again' => 'Buscar de nuevo',
 	'Case Sensitive' => 'Distinguir mayúsculas y minúsculas',
 	'Regex Match' => 'Expresión regular',
