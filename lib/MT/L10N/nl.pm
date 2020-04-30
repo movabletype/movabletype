@@ -5917,7 +5917,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Zoeken en vervangen',
-	'You must select one or more item to replace.' => 'U moet één of meer items selecteren om te vervangen.',
+	'You must select one or more items to replace.' => 'U moet één of meer items selecteren om te vervangen.',
 	'Search Again' => 'Opnieuw zoeken',
 	'Case Sensitive' => 'Hoofdlettergevoelig',
 	'Regex Match' => 'Regex-overeenkomst',
