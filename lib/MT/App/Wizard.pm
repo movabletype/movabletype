@@ -243,11 +243,6 @@ sub init_core_registry {
                 label =>
                     'This module accelerates comment registration sign-ins.',
             },
-            'Crypt::SSLeay' => {
-                link => 'https://metacpan.org/pod/Crypt::SSLeay',
-                label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.',
-            },
             'Cache::File' => {
                 link => 'https://metacpan.org/pod/Cache::File',
                 label =>

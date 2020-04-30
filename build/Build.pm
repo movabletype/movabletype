@@ -151,7 +151,7 @@ sub setup {
     ) if $@ && @{ $self->{'plugin=s@'} };
 
     # Do we have SSL support?
-    $prereq = 'Crypt::SSLeay';
+    $prereq = 'IO::Socket::SSL';
     eval "require $prereq;";
     warn("WARNING: $prereq not found. Can't use SSL.\n") if $@;
 

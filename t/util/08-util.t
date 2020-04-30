@@ -22,23 +22,21 @@ use MT;
 use MT::FileMgr;
 use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
-    start_end_period week2ymd munge_comment
+    start_end_period week2ymd
     rich_text_transform html_text_transform encode_html decode_html
     iso2ts ts2iso offset_time offset_time_list first_n_words
-    archive_file_for format_ts dirify remove_html
-    days_in wday_from_ts encode_js decode_js get_entry spam_protect
+    format_ts dirify remove_html
+    days_in wday_from_ts encode_js decode_js spam_protect
     is_valid_email encode_php encode_url decode_url encode_xml
     decode_xml is_valid_url is_url convert_high_ascii
-    mark_odd_rows dsa_verify perl_sha1_digest relative_date
-    perl_sha1_digest_hex dec2bin bin2dec xliterate_utf8
-    start_background_task launch_background_tasks substr_wref
+    mark_odd_rows relative_date xliterate_utf8
+    start_background_task substr_wref
     extract_urls extract_domain extract_domains is_valid_date
     epoch2ts ts2epoch escape_unicode unescape_unicode
-    sax_parser trim ltrim rtrim asset_cleanup caturl multi_iter
+    sax_parser trim ltrim rtrim asset_cleanup caturl
     weaken log_time make_string_csv browser_language sanitize_embed
     extract_url_path break_up_text dir_separator deep_do
     deep_copy canonicalize_path is_valid_ip clear_site_stats_widget_cache);
-use MT::I18N qw( encode_text );
 
 $test_env->prepare_fixture('db_data');
 
@@ -777,7 +775,6 @@ for my $clear_cache ( 0, 1 ) {
                 excerpt        => 'A story of a stroll.',
                 keywords       => 'keywords',
                 created_on     => '19780131074500',
-                authored_on    => '19780131074500',
                 modified_on    => '19780131074600',
                 authored_on    => '19780131074500',
                 author_id      => 3,
