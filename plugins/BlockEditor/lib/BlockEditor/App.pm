@@ -241,7 +241,7 @@ sub search_handler {
             return 1
                 if $data->{$editor_key}->{$key}->{asset_url} =~ $search_regex;
 
-            # replace image options
+            # search image options
             my $options = $data->{$editor_key}->{$key}->{options};
             if ( ref $options eq 'HASH' && %{$options} ) {
                 return 1
