@@ -4440,6 +4440,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
 	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
+        'Execute' => '実行',
 
 ## tmpl/cms/dialog/recover.tmpl
 	'Reset Password' => 'パスワードのリセット',
