@@ -17,7 +17,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         // mode: "exact",
 
         // plugins: "lists,style,mt_inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt,table",
-        plugins: "lists,media,paste,hr,link,textpattern,fullscreen,table",
+        plugins: "lists,media,paste,hr,link,textpattern,table",
         external_plugins: {
             'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin.js',
             'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin.js',

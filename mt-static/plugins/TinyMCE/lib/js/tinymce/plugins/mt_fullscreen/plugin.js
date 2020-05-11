@@ -9,7 +9,6 @@
     var enabled = false;
     var fitToWindow = function(){};
     var editorSize = null;
-    var last_updated = null;
 
     tinymce
         .ScriptLoader
@@ -36,29 +35,17 @@
                 if (! enabled) {
                     return;
                 }
-                var now = new Date();
-                if (last_updated && now - last_updated < 150 ) {
-                    return;
-                }
-                last_updated = now;
-
                 var header_height = $header.height();
 
                 fitToWindow = function() {
-                    var $outer = $parent.find('table:visible');
-                    var $inner = $parent.find('.mceIframeContainer:visible');
+                    var $outer = $parent.find('.tox-tinymce');
+                    var $inner = $parent.find('.tox-tinymce iframe');
 
-                    var offset_width  = $outer.width() - $inner.width();
                     var offset_height =
                         $outer.height() - $inner.height() + header_height;
 
                     forEachAffectedEditors(function() {
-                        this.theme.resizeTo(
-                            $window.width() - offset_width,
-                            $window.height() - offset_height,
-                            false,
-                            true
-                        );
+                        $outer.height($window.height() - header_height);
                     });
                 };
             });
@@ -80,16 +67,16 @@
                     editorSize = ed.execCommand('mtGetEditorSize');
 
                     $parent
-                        .addClass('fullscreen_editor')
+                        .addClass('fullscreen_editor tox-fullscreen')
                         .css({
                             width: '100%',
                             margin: '0',
                             padding: '0'
                         });
-                    $('body').addClass('fullscreen_editor_screen');
+                    $('body').addClass('fullscreen_editor_screen tox-fullscreen');
 
                     forEachAffectedEditors(function() {
-                        $('#' + this.id + '_resize').hide();
+                        $('.tox-statusbar__resize-handle').hide();
                     });
 
 
@@ -102,16 +89,16 @@
                     ed.execCommand('mtRestoreEditorSize', editorSize);
 
                     $parent
-                        .removeClass('fullscreen_editor')
+                        .removeClass('fullscreen_editor tox-fullscreen')
                         .css({
                             width: '',
                             margin: '',
                             padding: ''
                         });
-                    $('body').removeClass('fullscreen_editor_screen');
+                    $('body').removeClass('fullscreen_editor_screen tox-fullscreen');
 
                     forEachAffectedEditors(function() {
-                        $('#' + this.id + '_resize').show();
+                        $('.tox-statusbar__resize-handle').show();
                     });
 
 
@@ -119,6 +106,7 @@
                     fitToWindow = function(){};
                     $window.off('resize.mt_fullscreen');
                 }
+                ed.fire('mtFullscreenStateChanged', {state: enabled});
 
                 forEachAffectedEditors(function() {
                     this.nodeChanged();

@@ -192,7 +192,7 @@
             var plugin         = this;
             var id             = ed.id;
             var idLengbth      = id.length;
-            var blogId         = $('#blog-id').val() || 0;
+            var blogId         = $('[name=blog_id]').val() || 0;
             var proxies        = {};
             var hiddenControls = [];
             var $container     = null;
@@ -200,7 +200,7 @@
 
             var supportedButtonsCache = {};
             var buttonRows            = this._initButtonSettings(ed);
-            var sourceButtons         = {};
+            ed.sourceButtons         = {};
 
 
 
@@ -291,61 +291,6 @@
                 });
             }
 
-            function mtSourceLinkDialog(c, close) {
-                function onSubmit() {
-                    var $form = $(this);
-                    proxies
-                        .source
-                        .execCommand(
-                            'createLink',
-                            null,
-                            $form.find('#href').val(),
-                            {
-                                'target': $form.find('#target_list').val(),
-                                'title': $form.find('#linktitle').val()
-                            }
-                        );
-                    close();
-                };
-
-                c['$contents']
-                    .find('form')
-                    .attr('onsubmit', '')
-                    .on('submit', onSubmit);
-
-                if (! proxies.source.isSupported('createLink', ed.mtEditorStatus['format'], 'target')) {
-                    c['$contents']
-                        .find('#targetlistlabel')
-                        .closest('tr')
-                        .hide();
-                }
-            }
-
-            function mtSourceTemplateDialog(c, close) {
-                function insertContent(ed, cmd, ui, val, a) {
-                    if (cmd == 'mceInsertContent') {
-                        proxies
-                            .source
-                            .editor
-                            .insertContent(val);
-                        a.terminate = true;
-                    }
-                };
-
-                function onSubmit() {
-                    ed.onBeforeExecCommand.add(insertContent);
-                    c['window'].TemplateDialog.insert();
-                    ed.onBeforeExecCommand.remove(insertContent);
-                };
-
-                setTimeout(function() {
-                    c['$contents']
-                        .find('form')
-                        .attr('onsubmit', '')
-                        .on('submit', onSubmit);
-                }, 0);
-            }
-
             function initSourceButtons(mode, format) {
                 $.each(ed.mtButtons, function(name, button) {
                     var command;
@@ -355,14 +300,8 @@
                         (typeof(command) == 'string') &&
                         (plugin.buttonSettings.indexOf(name) != -1)
                        ) {
-                        sourceButtons[name] = command;
+                        ed.sourceButtons[name] = command;
                     }
-                });
-            }
-
-            function updateSourceButtonState(ed, cm) {
-                $.each(sourceButtons, function(k, command) {
-                    cm.setActive(k, ed.mtProxies['source'].isStateActive(command));
                 });
             }
 
@@ -704,7 +643,7 @@
               ed.once('beforeExecCommand', _insertContent);
             }
             let _insertContent = function(e) {
-                if (e.command == 'insertContent' && e.value) {
+                if (e.command == 'mceInsertContent' && e.value) {
                     ed.mtProxies.source.editor.insertContent(e.value);
                 }
                 ed.off('beforeExecCommand', _insertContent);
@@ -751,8 +690,6 @@
                 }
             });
 
-
-            // ed.on('onMTSourceButtonClick', updateSourceButtonState);
 
             ed.on('NodeChange', function() {
               
