@@ -488,6 +488,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         });
         ed.addCommand('mtSetFormat', function(format) {
             adapter.manager.setFormat(format);
+            ed.fire('mtChangeFormat', {format: format});
         });
 
         ed.addQueryValueHandler('mtGetEditorSize', function() {

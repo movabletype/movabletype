@@ -683,7 +683,7 @@
                     }
                 },
                 onSetup: function(buttonApi) {
-                    ed.on('onMTSourceButtonClick', function(e) {
+                    ed.on('mtChangeFormat', function(){
                         var s = ed.mtEditorStatus;
                         buttonApi.setActive( s.mode && s.mode == 'source');
                     });
