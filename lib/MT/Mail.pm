@@ -300,7 +300,7 @@ sub _send_mt_smtp {
             return $class->error(
                 MT->translate(
                     "Authentication failure: [_1]",
-                    $@ ? $@ : $smtp->message
+                    $@ ? $@ : scalar $smtp->message
                 )
             );
         }
@@ -338,7 +338,7 @@ sub _send_mt_smtp {
             return unless $smtp->can('status');
 
             # status 4xx or 5xx is not send message.
-            die $smtp->message() if $smtp->status() =~ /^[45]$/;
+            die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
         };
     }
 
