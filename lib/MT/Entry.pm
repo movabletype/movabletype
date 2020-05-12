@@ -730,13 +730,7 @@ sub list_props {
             },
         },
         current_context => { base => '__common.current_context', },
-        blog_id         => {
-            auto            => 1,
-            col             => 'blog_id',
-            display         => 'none',
-            filter_editable => 0,
-        },
-        content => {
+        content         => {
             base    => '__virtual.content',
             fields  => [qw(title text text_more keywords excerpt basename)],
             display => 'none',
@@ -1231,8 +1225,8 @@ sub save {
     }
 
     require bytes;
-    if ( bytes::length($entry->basename) > 246 ) {
-        return $entry->error( MT->translate("basename is too long." ) );
+    if ( bytes::length( $entry->basename ) > 246 ) {
+        return $entry->error( MT->translate("basename is too long.") );
     }
 
     if ( !$entry->id && !$entry->authored_on ) {
