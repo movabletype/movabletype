@@ -38,7 +38,7 @@
   <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">">
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">">
   <input type="hidden" name="id" value="">
-  
+
   <mtapp:setting
        id="email"
        required="1"
@@ -92,7 +92,7 @@
             note_links[i].hide();
             note_fields[i].show();
         }
-        $note_email.focus();
+        $note_email.trigger('focus');
         $note_email.select();
         return false;
     }
@@ -149,7 +149,7 @@
       $form.find('input[name="email"]').val(new_note_email);
       $form.find('input[name="url"]').val(new_note_url);
       $form.find('input[name="id"]').val(id);
-      $form.submit();
+      $form.trigger('submit');
     }
 
     function setCreateMode () {
@@ -169,12 +169,12 @@
         current_edit = 0;
     }
 
-    jQuery('#action-create-contact').click( function() {
+    jQuery('#action-create-contact').on('click', function() {
         setCreateMode();
         return false;
     });
 
-    jQuery('#create-inline-notification button.mt-cancel-action').click(function() {
+    jQuery('#create-inline-notification button.mt-cancel-action').on('click', function() {
         cancelCreateMode();
         return false;
     });

@@ -211,8 +211,8 @@ sub content_is_updated {
     ## read in the file and compare the strings.
     my $fh = gensym();
     open $fh, "<", $file or return 1;
-    if ( eval { require Digest::MD5; 1 } ) {
-        my $ctx = Digest::MD5->new;
+    if ( eval { require MT::Util::Digest::MD5; 1 } ) {
+        my $ctx = MT::Util::Digest::MD5->new;
         $ctx->addfile($fh);
         close $fh;
         my $data;
@@ -227,7 +227,7 @@ sub content_is_updated {
         else {
             $data = $$content;
         }
-        return $ctx->digest ne Digest::MD5::md5($data);
+        return $ctx->digest ne MT::Util::Digest::MD5::md5($data);
     }
     else {
         my $data;

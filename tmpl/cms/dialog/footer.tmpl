@@ -8,7 +8,7 @@ App.bootstrapInline( false );
 jQuery(function() {
 <mt:var name="jq_js_include">
     jQuery.mtAddEdgeClass();
-    jQuery('button.mt-close-dialog').click(function() {
+    jQuery('button.mt-close-dialog').on('click', function() {
         parent.jQuery.fn.mtDialog.close();
         return false;
     });

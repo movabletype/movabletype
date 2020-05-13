@@ -1098,9 +1098,9 @@ sub appendChild {
 # compute a cache-key based on the template fields
 sub get_cache_key {
     my $self = shift;
-    require Digest::MD5;
+    require MT::Util::Digest::MD5;
     require Encode;
-    my $cache_key = Digest::MD5::md5_hex(
+    my $cache_key = MT::Util::Digest::MD5::md5_hex(
         Encode::encode_utf8(
                   'blog::'
                 . $self->blog_id

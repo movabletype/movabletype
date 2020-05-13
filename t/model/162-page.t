@@ -16,8 +16,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::CMS::Page;
 
-MT::Test->init_app;
-
 ### Make test data
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;

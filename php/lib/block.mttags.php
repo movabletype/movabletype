@@ -103,7 +103,13 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
                 }
             } elseif (isset($args['sort_by']) && $args['sort_by'] == 'id') {
                 $fn = function($a, $b) {
-                    return intval($a->id) == intval($b->id) ? 0 : intval($a->id) > intval($b->id) ? 1 : -1;
+                    if (intval($a->id) == intval($b->id)) {
+                        return 0;
+                    } elseif (intval($a->id) > intval($b->id)) {
+                        return 1;
+                    } else {
+                        return -1;
+                    }
                 };
                 usort($tags, $fn);
                 if ( !isset($args['sort_order']) )

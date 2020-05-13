@@ -697,13 +697,13 @@ sub set_password {
     my $salt   = join '', map $alpha[ rand @alpha ], 1 .. 16;
     my $crypt_sha;
 
-    if ( eval { require Digest::SHA } ) {
+    if ( eval { require MT::Util::Digest::SHA } ) {
 
         # Can use SHA512
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . Digest::SHA::sha512_base64( $salt . $pass );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . $pass );
     }
     else {
 

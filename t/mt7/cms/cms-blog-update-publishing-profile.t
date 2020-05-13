@@ -20,7 +20,6 @@ use MT::CMS::Blog;
 use MT::PublishOption;
 my $app = MT->instance;
 
-MT::Test->init_app;
 $test_env->prepare_fixture('archive_type');
 
 my $blog_id = 2;

@@ -32,6 +32,7 @@ use MT::Util;
 use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
+use Test::Deep qw/cmp_deeply/;
 
 sub test_data_api {
     my ( $suite, $args ) = @_;
@@ -70,6 +71,9 @@ sub test_data_api {
     my $format = MT::DataAPI::Format->find_format('json');
 
     $suite = [$suite] unless ref $suite eq 'ARRAY';
+    if ( my @only = grep { $_->{only} } @$suite ) {
+        $suite = \@only;
+    }
     for my $data (@$suite) {
         $mock_app_api->mock( 'authenticate', sub {$author} )
             if !$mock_app_api->is_mocked('authenticate');
@@ -218,7 +222,7 @@ sub test_data_api {
             my $params_list = $callbacks{ $cb->{name} } || [];
             if ( my $params = $cb->{params} ) {
                 for ( my $i = 0; $i < scalar(@$params); $i++ ) {
-                    is_deeply( $params_list->[$i], $cb->{params}[$i] );
+                    cmp_deeply( $params_list->[$i], $cb->{params}[$i] );
                 }
             }
 
@@ -246,7 +250,7 @@ sub test_data_api {
             }
 
             $result = $format->{unserialize}->($body);
-            is_deeply( $result, $expected_result, 'result' );
+            cmp_deeply( $result, $expected_result, 'result' );
         }
 
         if ( exists $data->{error} ) {

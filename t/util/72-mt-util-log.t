@@ -6,13 +6,6 @@ use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
-BEGIN { plan skip_all => 'FIXME: Needs reconsideration' }
-
-BEGIN {
-    eval { require Test::MockModule }
-        or plan skip_all => 'Test::MockModule is not installed';
-}
-
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
@@ -24,7 +17,8 @@ use MT::Test;
 require_ok('MT::Util::Log');
 
 my $mt   = MT->instance;
-my $path = File::Spec->catfile( $mt->config->TempDir );
+my $path = $test_env->path('log');
+mkdir $path;
 
 # initialize
 require MT::FileMgr;
@@ -36,20 +30,30 @@ for my $module (qw/ Log4perl Minimal /) {
             $mt->config( 'LoggerLevel',  $level );
             $mt->config( 'LoggerPath',   $path );
             $mt->config( 'LoggerModule', $module );
-            unless ( MT::Util::Log::_find_module( $level, $path, $module ) ) {
-                skip "Log::$module class isn't installed.", 1;
-            }
+
+            no warnings 'once';
+            $MT::Util::Log::Initialized = 0;
+            $MT::Util::Log::Logger      = undef;
+            $Log::Minimal::PRINT        = undef;
+
             my $logfile_path = MT::Util::Log::_get_logfile_path();
             $fmgr->delete($logfile_path) if $fmgr->exists($logfile_path);
+            ok !-f $logfile_path, "logfile does not exist yet";
+
+            unless ( MT::Util::Log::_find_module() ) {
+                skip "Log::$module class isn't installed.", 1;
+            }
+            ok !-s $logfile_path, "logfile is empty";
+
             MT::Util::Log->info("--- $module / $level ---");
             if ( $level eq 'debug' ) {
-                ok( $fmgr->exists($logfile_path),
-                    'A data was written to a file.'
+                ok( -s $logfile_path,
+                    "A data was written to a file. ($module)"
                 );
             }
             else {
-                ok( !$fmgr->exists($logfile_path),
-                    'A data was not written to a file.'
+                ok( !-s $logfile_path,
+                    "A data was not written to a file. ($module)"
                 );
             }
         }

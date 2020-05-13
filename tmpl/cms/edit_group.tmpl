@@ -182,11 +182,10 @@ function toggleDisabled( state ){
         '#name.required': '<__trans phrase="Each group must have a name." escape="singlequotes">'
     });
 
-    jQuery('form#edit_group').submit( function () {
+    jQuery('form#edit_group').on('submit', function () {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">
 <mt:var name="layout">
-

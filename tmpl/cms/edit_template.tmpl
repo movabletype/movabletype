@@ -85,7 +85,7 @@
       <mt:unless name="build_type_0">
         <mt:if name="has_rebuild">
           <mt:if name="can_rebuild">
-          <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1&amp;content_type_id=<mt:var name="content_type_id" escape="url">">
+          <__trans phrase="<a href="[_1]" class="rebuild-link">Publish</a> this template." params="<mt:var name="script_url">?__mode=start_rebuild&amp;ott=<mt:var name="ott" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;next=0&amp;type=index-<mt:var name="id" escape="url">&amp;tmpl_id=<mt:var name="id" escape="url">&amp;single_template=1&amp;content_type_id=<mt:var name="content_type_id" escape="url">">
           </mt:if>
         </mt:if>
       </mt:unless>
@@ -586,7 +586,7 @@ function setSyntaxHighlight(on_or_off) {
   <input type="hidden" name="action_input" value="" />
 <mt:if name="use_revision">
   <input type="hidden" name="save_revision" id="save_revision" value="1" />
-  <input type="hidden" name="current_revision" id="current_revision" value="<mt:ifNonEmpty name="current_revision"><mt:var name="current_revision"><mt:else>0</mt:IfNonEmpty>" />
+  <input type="hidden" name="current_revision" id="current_revision" value="<mt:ifNonEmpty name="current_revision"><mt:var name="current_revision" escape="html"><mt:else>0</mt:IfNonEmpty>" />
 </mt:if>
   <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
@@ -1063,7 +1063,7 @@ function saveTemplatePrefs( sync ) {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.save, button.publish').click(function() {
+    jQuery('button.save, button.publish').on('click', function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
   <mt:if name="config.previewinnewwindow">
@@ -1076,39 +1076,39 @@ function saveTemplatePrefs( sync ) {
           rebuild = 1;
         }
         if(validate(this.form, rebuild)){
-          jQuery('form#template-listing-form').submit();
+          jQuery('form#template-listing-form').trigger('submit');
           return true;
         }
-        jQuery('button.save').removeAttr('disabled');
-        jQuery('button.publish').removeAttr('disabled');
+        jQuery('button.save').prop('disabled', false);
+        jQuery('button.publish').prop('disabled', false);
         return false;
     });
-    jQuery('button.preview').click(function() {
+    jQuery('button.preview').on('click', function() {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('preview_template');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#template-listing-form').attr('target', 'mt_preview_template_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
         if(validate(this.form)){
-          jQuery('form#template-listing-form').submit();
+          jQuery('form#template-listing-form').trigger('submit');
           return true;
         }
         return false;
     });
-    jQuery('input#save_revision').click(function() {
+    jQuery('input#save_revision').on('click', function() {
         jQuery('input#revision-note').toggle();
     });
     jQuery('button.mt-template-listing-form-action').mtDoPluginAction({
         plural: 'Templates',
         phrase: 'to act upon'
     });
-    jQuery('#code-highlight-switch').change(function() {
+    jQuery('#code-highlight-switch').on('change', function() {
         var syntax = this.checked ? 'on' : 'off';
         setSyntaxHighlight( syntax );
         saveTemplatePrefs( syntax );
         return false;
     });
-    jQuery('#syntaxon, #syntaxoff').click(function() {
+    jQuery('#syntaxon, #syntaxoff').on('click', function() {
         syncEditor();
         var wrapper = editor.getWrapperElement();
         jQuery('#syntaxon, #syntaxoff').removeClass('active');
@@ -1131,7 +1131,7 @@ function saveTemplatePrefs( sync ) {
 <mt:else>
     setSyntaxHighlight('off');
 </mt:if>
-    jQuery(window).bind('pre_autosave', function(){
+    jQuery(window).on('pre_autosave', function(){
         syncEditor();
     });
     function saveArchiveMapChange(param) {
@@ -1152,13 +1152,13 @@ function saveTemplatePrefs( sync ) {
         var map = getByID('template-maps');
         if (map)
             map.innerHTML = res;
-        jQuery("[id^=toggle_edit_mapping_]").click(function(){
+        jQuery("[id^=toggle_edit_mapping_]").on('click', function(){
           toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
         });
-        jQuery("[id^=delete_map_]").click(function(){
+        jQuery("[id^=delete_map_]").on('click', function(){
           deleteMap(jQuery(this).attr('id').match(/\d+/));
         });
-        jQuery("[id^=archive_file_sel]").change(function(){
+        jQuery("[id^=archive_file_sel]").on('change', function(){
           selectArchiveFile(this);
         });
         jQuery("[id^=archive_file_label_]").each(function(){
@@ -1259,16 +1259,16 @@ function saveTemplatePrefs( sync ) {
       var label = jQuery("#archive_file_sel_" + mapid).val() ? jQuery("#archive_file_sel_" + mapid + " option:selected").text() : jQuery("#archive_file_tmpl_" + mapid).val();
       jQuery("#archive_file_label_" + mapid).val(label);
     }
-    jQuery("[id^=toggle_edit_mapping_]").click(function(){
+    jQuery("[id^=toggle_edit_mapping_]").on('click', function(){
       toggleEditMapping(jQuery(this).attr('id').match(/\d+/));
     });
-    jQuery("[id^=delete_map_]").click(function(){
+    jQuery("[id^=delete_map_]").on('click', function(){
       deleteMap(jQuery(this).attr('id').match(/\d+/));
     });
-    jQuery("[id^=archive_file_sel]").change(function(){
+    jQuery("[id^=archive_file_sel]").on('change', function(){
       selectArchiveFile(this);
     });
-    jQuery("#add_map").click(function(){
+    jQuery("#add_map").on('click', function(){
       addMap();
     });
     jQuery("[id^=archive_file_label_]").each(function(){
@@ -1314,21 +1314,21 @@ function saveTemplatePrefs( sync ) {
       }
     }
 
-    jQuery("#content_type_id").change(function(){
+    jQuery("#content_type_id").on('change', function(){
       setContentTypeInfo();
     });
-    jQuery("#content_type_sel").change(function(){
+    jQuery("#content_type_sel").on('change', function(){
       setContentTypeInfo();
     });
-    jQuery("#content_field_sel").change(function(){
+    jQuery("#content_field_sel").on('change', function(){
       setContentFieldInfo();
     });
-    jQuery("#copy_ct_unique_id").click(function(){
-      jQuery('#ct_unique_id').select();
+    jQuery("#copy_ct_unique_id").on('click', function(){
+      jQuery('#ct_unique_id').trigger('select');
       document.execCommand('copy');
     });
-    jQuery("#copy_cf_unique_id").click(function(){
-      jQuery('#cf_unique_id').select();
+    jQuery("#copy_cf_unique_id").on('click', function(){
+      jQuery('#cf_unique_id').trigger('select');
       document.execCommand('copy');
     });
 
@@ -1337,7 +1337,7 @@ function saveTemplatePrefs( sync ) {
     </mt:if>
 
     <mt:if name="archive_types">
-    jQuery("#new_archive_type").change(function(){
+    jQuery("#new_archive_type").on('change', function(){
       jQuery("#archive_file_sel").css("display", "block");
       jQuery("#archive_file_tmpl").css("display", "none");
       getDefaultArchiveTemplates();

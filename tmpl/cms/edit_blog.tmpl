@@ -41,11 +41,11 @@ function dirify_blog_name(fld) {
 }
 function init() {
 <mt:if name="new_object">
-    jQuery('#name').focus();
+    jQuery('#name').trigger('focus');
 </mt:if>
 }
 
-jQuery(window).load(function () {
+jQuery(window).on('load', function () {
   init();
   jQuery.mtUseSubdomain();
   jQuery.mtUseAbsolute();
@@ -82,7 +82,7 @@ jQuery(window).load(function () {
     '#site_path_absolute': '<__trans phrase="You must set a valid local site path." escape="singlequotes">'
   });
 
-  jQuery('#cfg_form').submit( function () {
+  jQuery('#cfg_form').on('submit', function () {
       var $form = jQuery(this),
           $url = $form.find('#site_url_path, #site_url_subdomain'),
           $simple = $form.find('input:visible, select:visible').filter(function() {

@@ -15,7 +15,7 @@
   ListActionClient.prototype.post = function (args) {
     var $form = this.createPostForm(args);
     $(document.body).append($form);
-    $form.submit();
+    $form.trigger('submit');
   };
 
   ListActionClient.prototype.createPostForm = function (args) {

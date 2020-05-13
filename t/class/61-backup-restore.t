@@ -25,12 +25,12 @@ use MT::Association;
 use MT::Test;
 use MT::Test::Permission;
 
-BEGIN { MT::Test->init_app; }
-
 use MT::BackupRestore;
 use Data::Dumper;
 
 $test_env->prepare_fixture('db_data');
+
+binmode STDOUT, ':encoding(utf8)';
 
 # MTC-26702
 my $group = MT::Test::Permission->make_group;
@@ -315,9 +315,9 @@ sub finish {
 
     use MT::Association;
     use MT::Role;
-    my $ba = MT::Role->load( { name => 'Site Administrator' } );
-    my $ed = MT::Role->load( { name => 'Editor' } );
-    my $au = MT::Role->load( { name => 'Author' } );
+    my $ba = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    my $ed = MT::Role->load( { name => MT->translate('Editor') } );
+    my $au = MT::Role->load( { name => MT->translate('Author') } );
     MT::Association->remove(
         { author_id => $chuck->id, blog_id => 1, role_id => $ba->id },
     );
@@ -381,13 +381,13 @@ sub setup {
 
     require MT::Association;
     my $b1 = MT::Blog->load(1);
-    my $r = MT::Role->load( { name => 'Site Administrator' } );
+    my $r = MT::Role->load( { name => MT->translate('Site Administrator') } );
     MT::Association->link( $chuck => $r => $b1 );    # Chuck is a blog admin
 
-    my $r2 = MT::Role->load( { name => 'Editor' } );
+    my $r2 = MT::Role->load( { name => MT->translate('Editor') } );
     MT::Association->link( $bob => $r2 => $b1 );     # Bob is a editor
 
-    my $r3 = MT::Role->load( { name => 'Author' } );
+    my $r3 = MT::Role->load( { name => MT->translate('Author') } );
     MT::Association->link( $mel => $r3 => $b1 );     # Melody is a author
 
     # Add website records

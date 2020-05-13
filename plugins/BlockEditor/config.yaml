@@ -24,6 +24,7 @@ content_field_types:
     field_html: cms/field_html/field_html_multi_line_text.tmpl
     field_html_params: $BlockEditor::BlockEditor::App::field_html_params
     data_load_handler: $BlockEditor::BlockEditor::App::data_load_handler
+    replace_handler: $BlockEditor::BlockEditor::App::replace_handler
 
 applications:
   cms:

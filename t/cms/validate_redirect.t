@@ -9,7 +9,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -30,8 +32,8 @@ subtest 'invalid start_recover' => sub {
         },
     );
     $app->status_is(200);
-    $app->content_like('Reset Password');
-    $app->content_unlike('Invalid request');
+    $app->content_unlike('Reset Password');
+    $app->content_like('Invalid request');
     $app->content_doesnt_expose('http://foo');
 };
 
@@ -45,6 +47,35 @@ subtest 'valid start_recover' => sub {
     $app->status_is(200);
     $app->content_like('Reset Password');
     $app->content_unlike('Invalid request');
+    $app->content_like('http://narnia.na');
+};
+
+subtest 'invalid recover with nonexistent email' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => 'test@example.jp',
+            return_to => 'http://foo',
+        },
+    );
+    $app->status_is(200);
+    $app->content_like('Invalid request');
+    $app->content_unlike('Reset Password');
+    $app->content_unlike('http://foo');
+    $app->content_doesnt_expose('http://foo');
+};
+
+subtest 'valid recover' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->get(
+        {   __mode    => 'recover',
+            email     => $admin->email,
+            return_to => 'http://narnia.na',
+        },
+    );
+    $app->status_is(200);
+    $app->content_unlike('Invalid request');
+    $app->content_like('Reset Password');
     $app->content_like('http://narnia.na');
 };
 

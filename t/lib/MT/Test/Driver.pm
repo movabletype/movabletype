@@ -29,8 +29,9 @@ __PACKAGE__->install_properties(
 );
 
 package Test::GroupBy;
-use base qw( Test::Class MT::Test );
+use base qw( Test::Class );
 use Test::More;
+use MT::Test::DriverUtil;
 use POSIX qw(strftime);
 
 sub reset_db : Test(setup) {
@@ -286,21 +287,21 @@ sub max_group_by : Tests(7) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 package Test::Joins;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'MacBook',
@@ -467,7 +468,7 @@ sub count_with_joins : Tests(2) {
 
 sub count_group_by_with_joins : Tests(3) {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'Snow Leopard',
@@ -598,21 +599,21 @@ sub only_join : Tests(1) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 package Test::Search;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 sub make_basic_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             __wait  => 1,
             name    => 'foo',
@@ -632,7 +633,7 @@ sub make_basic_data {
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'MacBook',
@@ -778,8 +779,12 @@ sub ranges : Tests(9) {
     my $tmp;
     my @foo = map { Foo->load($_) } ( 1 .. 2 );
 
+    my $created_on     = $foo[1]->column('created_on');
+    my $one_sec_before = fix_ts($created_on, -1);
+    my $one_sec_after  = fix_ts($created_on, +1);
+
     ## Load using range search, one less than foo[1]->created_on and newer
-    $tmp = Foo->load( { created_on => [ $foo[1]->column('created_on') - 1 ] },
+    $tmp = Foo->load( { created_on => [ $one_sec_before ] },
         { range => { created_on => 1 } } );
     is_object( $tmp, $foo[1],
         'Foo from open-ended date range before Foo #2 is Foo #2' );
@@ -787,8 +792,8 @@ sub ranges : Tests(9) {
     ## Load using EXCLUSIVE range search, up through the momment $foo[1] created
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on') - 1,
-                $foo[1]->column('created_on')
+                $one_sec_before,
+                $created_on,
             ]
         },
         { range => { created_on => 1 } }
@@ -798,8 +803,8 @@ sub ranges : Tests(9) {
 
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on'),
-                $foo[1]->column('created_on') + 1
+                $created_on,
+                $one_sec_after,
             ]
         },
         { range => { created_on => 1 } }
@@ -811,8 +816,8 @@ sub ranges : Tests(9) {
     ## Load using INCLUSIVE range search, up through the momment $foo[1] created
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on') - 1,
-                $foo[1]->column('created_on')
+                $one_sec_before,
+                $created_on,
             ]
         },
         { range_incl => { created_on => 1 } }
@@ -824,8 +829,8 @@ sub ranges : Tests(9) {
 
     $tmp = Foo->load(
         {   created_on => [
-                $foo[1]->column('created_on'),
-                $foo[1]->column('created_on') + 1
+                $created_on,
+                $one_sec_after,
             ]
         },
         { range_incl => { created_on => 1 } }
@@ -843,7 +848,7 @@ sub ranges : Tests(9) {
     ## Range search, all items with created_on less than foo[1]->created_on
     $tmp
         = Foo->load(
-        { created_on => [ undef, $foo[1]->column('created_on') - 1 ] },
+        { created_on => [ undef, $one_sec_before ] },
         { range => { created_on => 1 } } );
     is_object( $tmp, $foo[0],
         "Foo from exclusive open-started date-range load() ending before Foo #1 is Foo #1"
@@ -1015,7 +1020,7 @@ SKIP: {
 
 sub null_column_join : Tests(2) {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'tetsuya',
             text    => 'Tetsuya Masuda',
@@ -1098,18 +1103,18 @@ sub null_column_join : Tests(2) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar ));
+    reset_table_for(qw( Foo Bar ));
 }
 
 package Test::Classy;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 use Sock;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Sock ));
+    reset_table_for(qw( Sock ));
 }
 
 sub a_plain_old_sock : Tests(3) {
@@ -1437,21 +1442,21 @@ sub sock_array_class_terms : Tests(12) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Sock ));
+    reset_table_for(qw( Sock ));
 }
 
 package Test::TypedJoin;
 use Test::More;
-use MT::Test;
-use base qw( Test::Class MT::Test );
+use MT::Test::DriverUtil;
+use base qw( Test::Class );
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub make_pc_data {
     my $self = shift;
-    $self->make_objects(
+    make_objects(
         {   __class => 'Foo',
             name    => 'Apple',
             text    => 'OSX',
@@ -1727,20 +1732,20 @@ sub left_join_inner_join : Tests(1) {
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 package Test::DriverBasic;
-use base qw( Test::Class MT::Test );
-use MT::Test;
+use base qw( Test::Class );
+use MT::Test::DriverUtil;
 use Test::More;
 
 sub reset_db : Test(setup) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub clean_db : Test(teardown) {
-    MT::Test->reset_table_for(qw( Foo Bar Baz ));
+    reset_table_for(qw( Foo Bar Baz ));
 }
 
 sub basic : Test(137) {
@@ -1827,7 +1832,7 @@ sub basic : Test(137) {
     is( Foo->count( { status => 0 } ),
         1, 'Count of all status=0 Foos finds all one' );
     my $ranged_count
-        = Foo->count( { created_on => [ $foo[1]->column('created_on') - 1 ] },
+        = Foo->count( { created_on => [ fix_ts( $foo[1]->created_on, -1 ) ] },
         { range => { created_on => 1 } } );
     is( $ranged_count, 1,
         'Count of all Foos in open-ended date range starting before Foo #1 finds all one'
@@ -1893,7 +1898,7 @@ sub basic : Test(137) {
         {   limit     => 1,
             sort      => 'created_on',
             direction => 'descend',
-            start_val => $foo[1]->created_on - 1
+            start_val => fix_ts( $foo[1]->created_on, -1 ),
         }
     );
     is_object( $tmp, $foo[0],
@@ -1906,7 +1911,7 @@ sub basic : Test(137) {
         {   limit     => 1,
             sort      => 'created_on',
             direction => 'ascend',
-            start_val => $foo[1]->created_on - 1
+            start_val => fix_ts( $foo[1]->created_on, -1 ),
         }
     );
     is_object( $tmp, $foo[1],

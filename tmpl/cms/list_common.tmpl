@@ -373,14 +373,14 @@ function handleMessages( data, additional_class ) {
 
 function loginAgain(fn) {
   jQuery(window)
-    .unbind('dialogReady.loginAgain')
-    .bind('dialogReady.loginAgain', function(){
+    .off('dialogReady.loginAgain')
+    .on('dialogReady.loginAgain', function(){
       var dialog = jQuery('#mt-dialog-iframe').contents();
       dialog
         .find('#sign-in-button')
           .text('<__trans phrase="Continue" escape="js">')
-          .unbind()
-          .click(function(){
+          .off()
+          .on('click', function(){
             dialog.find('#msg-block').empty();
             jQuery.ajax({
               type: 'POST',

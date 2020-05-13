@@ -73,7 +73,7 @@ $.extend(MT.EditorManager, {
     },
 
     insertContent: function(html, field) {
-        app.editors[field].insertContent(html);
+        $('#' + field).data('mt-editor').currentEditor.insertContent(html)
     }
 });
 
@@ -103,7 +103,7 @@ $.extend(MT.EditorManager.prototype, {
 
         $('#' + id).data('mt-editor', this);
 
-        $(window).bind('pre_autosave', function() {
+        $(window).on('pre_autosave', function() {
             manager.save();
         });
     },

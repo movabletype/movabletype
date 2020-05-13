@@ -176,9 +176,12 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
 }
 
 function _context_prefix($tag) {
-    $prefix = $tag === 'mtsites'      ? 'sites_'
-            : $tag === 'mtchildsites' ? 'childsites_'
-            : 'multiblog_';
-    return $prefix;
+    if ($tag === 'mtsites') {
+        return 'sites_';
+    } elseif ($tag === 'mtchildsites') {
+        return 'childsites_';
+    } else {
+        return 'multiblog_';
+    }
 }
 ?>

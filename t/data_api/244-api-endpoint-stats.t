@@ -24,8 +24,6 @@ use MT::Test;
 use MT::App::DataAPI;
 use MT::DataAPI::Endpoint::Stats;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 my $app  = MT::App::DataAPI->new;
@@ -36,6 +34,7 @@ subtest 'fill_in_archive_info' => sub {
         glob( File::Spec->catfile( $spec_dir, 'fill_in_archive_info', '*' ) )
         )
     {
+        local $YAML::Syck::LoadBlessed = 1;
         my $suite = YAML::Syck::LoadFile($f);
         for my $data (@$suite) {
             subtest $data->{note} => sub {

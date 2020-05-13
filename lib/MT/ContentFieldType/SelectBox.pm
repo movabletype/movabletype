@@ -24,25 +24,14 @@ sub field_html_params {
     my $options = $field_data->{options};
     my $options_values = $options->{values} || [];
 
-    if (%values) {
-        @$options_values = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                $values{ $_->{value} }
-                ? ( selected => 'selected="selected"' )
-                : (),
-            }
-        } @$options_values;
-    }
-    else {
-        @{$options_values} = map {
-            {   l => $_->{label},
-                v => $_->{value},
-                (   $_->{checked} ? ( selected => 'selected="selected"' ) : ()
-                ),
-            }
-        } @{$options_values};
-    }
+    @$options_values = map {
+        {   l => $_->{label},
+            v => $_->{value},
+            $values{ $_->{value} }
+            ? ( selected => 'selected="selected"' )
+            : (),
+        }
+    } @$options_values;
 
     my $required = $options->{required} ? 'required' : '';
 

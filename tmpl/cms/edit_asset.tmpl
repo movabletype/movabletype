@@ -203,7 +203,7 @@ function initTags() {
     autoTag.delimiter = tag_delim;
 }
 
-jQuery(window).load( init );
+jQuery(window).on('load', init );
 /* ]]> */
 </script>
 </mt:setvarblock>
@@ -383,7 +383,7 @@ jQuery(window).load( init );
         isDirty = true;
     });
 
-    jQuery('button.primary').click( function() {
+    jQuery('button.primary').on('click', function() {
       isDirty = false;
     })
 
@@ -392,7 +392,7 @@ jQuery(window).load( init );
             return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
         }
     });
-    jQuery('.image-editor a').click(function(event) {
+    jQuery('.image-editor a').on('click', function(event) {
         if (isDirty) {
             var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
             if ( confirm(msg) ) {
@@ -409,7 +409,7 @@ jQuery(window).load( init );
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('#btn-copy-url').click(function() {
+    jQuery('#btn-copy-url').on('click', function() {
       var fld = document.createElement("textarea");
       fld.value = '<mt:var name="url" escape="js">';
       document.body.appendChild(fld);

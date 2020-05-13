@@ -5,12 +5,12 @@
 #
 # Revisions:    2013/03/28 - P. Harvey Created
 #
-# References:   1) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4898.0.html
+# References:   1) https://exiftool.org/forum/index.php/topic,4898.0.html
 #               2) http://www.nuage.ch/site/flir-i7-some-analysis/
 #               3) http://www.workswell.cz/manuals/flir/hardware/A3xx_and_A6xx_models/Streaming_format_ThermoVision.pdf
 #               4) http://support.flir.com/DocDownload/Assets/62/English/1557488%24A.pdf
 #               5) http://code.google.com/p/dvelib/source/browse/trunk/flirPublicFormat/fpfConverter/Fpfimg.h?spec=svn3&r=3
-#               6) http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5538.0.html
+#               6) https://exiftool.org/forum/index.php/topic,5538.0.html
 #               JD) Jens Duttke private communication
 #
 # Glossary:     FLIR = Forward Looking Infra Red
@@ -24,7 +24,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.16';
+$VERSION = '1.18';
 
 sub ProcessFLIR($$;$);
 sub ProcessFLIRText($$$);
@@ -165,7 +165,10 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     },
     0x2b => {
         Name => 'GPSInfo',
-        SubDirectory => { TagTable => 'Image::ExifTool::FLIR::GPSInfo' },
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::FLIR::GPSInfo',
+            ByteOrder => 'LittleEndian',
+        },
     },
     0x2c => {
         Name => 'MeterLink',
@@ -375,7 +378,7 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     NOTES => q{
         FLIR camera information.  The Planck tags are variables used in the
         temperature calculation.  See
-        L<http://u88.n24.queensu.ca/exiftool/forum/index.php?topic=4898.msg23972#msg23972>
+        L<https://exiftool.org/forum/index.php?topic=4898.msg23972#msg23972>
         for details.
     },
     0x00 => {
@@ -443,6 +446,8 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     0x21c => { Name => 'FilterSerialNumber',Format => 'string[32]' },
     0x308 => { Name => 'PlanckO',           Format => 'int32s' }, #1
     0x30c => { Name => 'PlanckR2',          %float8g }, #1
+    0x310 => { Name => 'RawValueRangeMin',  Format => 'int16u', Groups => { 2 => 'Image' } }, #forum10060
+    0x312 => { Name => 'RawValueRangeMax',  Format => 'int16u', Groups => { 2 => 'Image' } }, #forum10060
     0x338 => { Name => 'RawValueMedian',    Format => 'int16u', Groups => { 2 => 'Image' } },
     0x33c => { Name => 'RawValueRange',     Format => 'int16u', Groups => { 2 => 'Image' } },
     0x384 => {
@@ -602,19 +607,115 @@ my %float8g = ( Format => 'float', PrintConv => 'sprintf("%.8g",$val)' );
     7 => { Name => 'PiPY2', Description => 'PiP Y2' },
 );
 
-# FLIR GPS record (ref PH/JD)
+# FLIR GPS record (ref PH/JD/forum9615)
 %Image::ExifTool::FLIR::GPSInfo = (
-    GROUPS => { 0 => 'APP1', 2 => 'Image' },
+    GROUPS => { 0 => 'APP1', 2 => 'Location' },
     PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     FIRST_ENTRY => 0,
+    0x00 => {
+        Name => 'GPSValid',
+        Format => 'int32u',
+        RawConv => '$$self{GPSValid} = $val',
+        PrintConv => { 0 => 'No', 1 => 'Yes' },
+    },
+    0x04 => {
+        Name => 'GPSVersionID',
+        Format => 'undef[4]',
+        RawConv => '$val eq "\0\0\0\0" ? undef : $val',
+        PrintConv => 'join ".", split //, $val',
+    },
+    0x08 => {
+        Name => 'GPSLatitudeRef',
+        Format => 'string[2]',
+        RawConv => 'length($val) ? $val : undef',
+        PrintConv => {
+            N => 'North',
+            S => 'South',
+        },
+    },
+    0x0a => {
+        Name => 'GPSLongitudeRef',
+        Format => 'string[2]',
+        RawConv => 'length($val) ? $val : undef',
+        PrintConv => {
+            E => 'East',
+            W => 'West',
+        },
+    },
+  # 0x0c - 4 unknown bytes
+    0x10 => {
+        Name => 'GPSLatitude',
+        Condition => '$$self{GPSValid}',    # valid only if GPSValid is 1
+        Format => 'double', # (signed)
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "N")',
+    },
+    0x18 => {
+        Name => 'GPSLongitude',
+        Condition => '$$self{GPSValid}',    # valid only if GPSValid is 1
+        Format => 'double', # (signed)
+        PrintConv => 'Image::ExifTool::GPS::ToDMS($self, $val, 1, "E")',
+    },
+    0x20 => {
+        Name => 'GPSAltitude',
+        Condition => '$$self{GPSValid}',    # valid only if GPSValid is 1
+        Format => 'float',
+        # (have seen likely invalid value of -1 when GPSValid is 1)
+        PrintConv => 'sprintf("%.2f m", $val)',
+    },
+  # 0x24 - 28 unknown bytes:
+  # 0x28 - int8u: seen 0,49,51,55,57 (ASCII "1","3","7","9")
+  # 0x29 - int8u: seen 0,48 (ASCII "0")
+    0x40 => {
+        Name => 'GPSDOP',
+        Description => 'GPS Dilution Of Precision',
+        Format => 'float',
+        RawConv => '$val > 0 ? $val : undef', # (have also seen likely invalid value of 1)
+        PrintConv => 'sprintf("%.2f", $val)',
+    },
+    0x44 => {
+        Name => 'GPSSpeedRef',
+        Format => 'string[2]',
+        RawConv => 'length($val) ? $val : undef',
+        PrintConv => {
+            K => 'km/h',
+            M => 'mph',
+            N => 'knots',
+        },
+    },
+    0x46 => {
+        Name => 'GPSTrackRef',
+        Format => 'string[2]',
+        RawConv => 'length($val) ? $val : undef',
+        PrintConv => {
+            M => 'Magnetic North',
+            T => 'True North',
+        },
+    },
+  # 0x48 - int32u: seen 0,77
+    0x4c => {
+        Name => 'GPSSpeed',
+        %float2f,
+        RawConv => '$val < 0 ? undef : $val',
+    },
+    0x50 => {
+        Name => 'GPSTrack',
+        %float2f,
+        RawConv => '$val < 0 ? undef : $val',
+    },
+  # 0x54 - float: seen 0,-1
     0x58 => {
         Name => 'GPSMapDatum',
         Format => 'string[16]',
+        RawConv => 'length($val) ? $val : undef',
     },
+  # 0xa4 - string[6]: seen 000208,081210,020409,000608,010408,020808,091011
+  # 0x78 - double[2]: seen "-1 -1","0 0"
+  # 0x78 - float[2]: seen "-1 -1","0 0"
+  # 0xb2 - string[2]?: seen "5\0"
 );
 
 # humidity meter information
-# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5325.0.html)
+# (ref https://exiftool.org/forum/index.php/topic,5325.0.html)
 # The %Image::ExifTool::UserDefined hash defines new tags to be added to existing tables.
 %Image::ExifTool::FLIR::MeterLink = (
     GROUPS => { 0 => 'APP1', 2 => 'Image' },
@@ -1240,7 +1341,7 @@ sub GetImageType($$$)
 sub UnescapeFLIR($)
 {
     my $char = shift;
-    return $char unless length $char eq 4; # escaped ASCII char (eg. '\\')
+    return $char unless length $char == 4; # escaped ASCII char (eg. '\\')
     my $val = hex $char;
     return chr($val) if $val < 0x80;   # simple ASCII
     return pack('C0U', $val) if $] >= 5.006001;
@@ -1299,7 +1400,6 @@ sub ProcessMeasInfo($$$)
     my $dirStart = $$dirInfo{DirStart} || 0;
     my $dataPos = $$dirInfo{DataPos};
     my $dirEnd = $dirStart + $$dirInfo{DirLen};
-    my $verbose = $et->Options('Verbose');
 
     my $pos = $dirStart + 12;
     return 0 if $pos > $dirEnd;
@@ -1311,10 +1411,7 @@ sub ProcessMeasInfo($$$)
         last if $recLen < 0x28 or $pos + $recLen > $dirEnd;
         my $pre = 'Meas' . $i;
         $et->VerboseDir("MeasInfo $i", undef, $recLen);
-        if ($verbose > 2) {
-            HexDump($dataPt, $recLen,
-                Start=>$pos, Prefix=>$$et{INDENT}, DataPos=>$dataPos);
-        }
+        $et->VerboseDump($dataPt, Len => $recLen, Start=>$pos, DataPos=>$dataPos);
         my $coordLen = Get16u($dataPt, $pos+4);
         # generate tag table entries for this tool if necessary
         foreach $t ('Type', 'Params', 'Label') {
@@ -1448,9 +1545,7 @@ sub ProcessFLIR($$;$)
                 Size    => $recLen,
             );
         } elsif ($verbose > 2) {
-            my %parms = ( DataPos => $recPos, Prefix => $$et{INDENT} );
-            $parms{MaxLen} = 96 if $verbose < 4;
-            HexDump(\$rec, $recLen, %parms);
+            $et->VerboseDump(\$rec, Len => $recLen, DataPos => $recPos);
         }
     }
     delete $$et{SET_GROUP0};
@@ -1499,7 +1594,7 @@ Systems Inc. thermal image files (FFF, FPF and JPEG format).
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
@@ -1508,7 +1603,7 @@ under the same terms as Perl itself.
 
 =over 4
 
-=item L<http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4898.0.html>
+=item L<https://exiftool.org/forum/index.php/topic,4898.0.html>
 
 =item L<http://www.nuage.ch/site/flir-i7-some-analysis/>
 
@@ -1518,7 +1613,7 @@ under the same terms as Perl itself.
 
 =item L<http://code.google.com/p/dvelib/source/browse/trunk/flirPublicFormat/fpfConverter/Fpfimg.h?spec=svn3&r=3>
 
-=item L<http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,5538.0.html>
+=item L<https://exiftool.org/forum/index.php/topic,5538.0.html>
 
 =back
 

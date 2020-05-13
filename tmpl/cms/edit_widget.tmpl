@@ -135,7 +135,7 @@
         }
     }).disableSelection();
 
-    jQuery('button.save').click( function () {
+    jQuery('button.save').on('click', function () {
         var data = [];
         var rex = RegExp("module-([0-9]+)");
         jQuery('#installed-column-items .widget-item').each( function () {
@@ -150,7 +150,7 @@
         '#name.required': '<__trans phrase="You must set Widget Set Name." escape="js">'
     });
 
-    jQuery('#manager').submit( function () {
+    jQuery('#manager').on('submit', function () {
         if ( !jQuery(this).find('input, select').mtValidate('simple') )
             return false;
     });

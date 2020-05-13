@@ -88,10 +88,10 @@ sub recover_token {
         && $user->lockout_recover_salt;
 
     my $sha256_hex;
-    if ( eval { require Digest::SHA } ) {
+    if ( eval { require MT::Util::Digest::SHA } ) {
 
         # Can use SHA256
-        $sha256_hex = \&Digest::SHA::sha256_hex;
+        $sha256_hex = \&MT::Util::Digest::SHA::sha256_hex;
     }
     else {
 

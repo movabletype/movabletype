@@ -118,9 +118,6 @@ sub edit {
     $param->{has_multi_line_text_field}
         = $content_type->has_multi_line_text_field;
 
-    my $array        = $content_type->fields;
-    my $ct_unique_id = $content_type->unique_id;
-
     $param->{use_revision} = $blog->use_revision ? 1 : 0;
 
     my $content_data;
@@ -281,9 +278,12 @@ sub edit {
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
 
+    my $fields       = $content_type->fields;
+    my $ct_unique_id = $content_type->unique_id;
+
     my $content_field_types = $app->registry('content_field_types');
-    @$array = map {
-        my $e_unique_id = $_->{unique_id};
+    for my $field (@$fields) {
+        my $e_unique_id = $field->{unique_id};
         my $can_edit_field
             = $app->permissions->can_do( 'content_type:'
                 . $ct_unique_id
@@ -292,31 +292,28 @@ sub edit {
         if (   $can_edit_field
             || $app->permissions->can_do('edit_all_content_data') )
         {
-            $_->{can_edit} = 1;
+            $field->{can_edit} = 1;
         }
-        $_->{content_field_id} = $_->{id};
-        delete $_->{id};
+        $field->{content_field_id} = $field->{id};
+        delete $field->{id};
 
-        if ( $app->param( $_->{content_field_id} ) ) {
-            $_->{value} = $app->param( $_->{content_field_id} );
+        if ( $app->param( $field->{content_field_id} ) ) {
+            $field->{value} = $app->param( $field->{content_field_id} );
         }
         elsif ( $content_data_id || $data ) {
-            $_->{value} = $data->{ $_->{content_field_id} };
+            $field->{value} = $data->{ $field->{content_field_id} };
         }
         else {
-            # TODO: fix after updating values option.
-            if ( $_->{type} eq 'select_box' || $_->{type} eq 'checkboxes' ) {
-                my $delimiter = quotemeta( $_->{options_delimiter} || ',' );
-                my @values    = split $delimiter,
-                    ( $_->{options}{initial_value} || '' );
-                $_->{value} = \@values;
+            if ( $field->{type} =~ /^(?:select_box|radio_button|checkboxes)$/ ) {
+                my @checked = map { $_->{value} } grep { $_->{checked} } @{ $field->{options}{values} || [] };
+                $field->{value} = @checked > 1 ? \@checked : $checked[0];
             }
             else {
-                $_->{value} = $_->{options}{initial_value};
+                $field->{value} = $field->{options}{initial_value};
             }
         }
 
-        my $content_field_type = $content_field_types->{ $_->{type} };
+        my $content_field_type = $content_field_types->{ $field->{type} };
 
         if ( my $field_html_params
             = $content_field_type->{field_html_params} )
@@ -326,13 +323,13 @@ sub edit {
                     = MT->handler_to_coderef($field_html_params);
             }
             if ( 'CODE' eq ref $field_html_params ) {
-                $field_html_params = $field_html_params->( $app, $_ );
+                $field_html_params = $field_html_params->( $app, $field );
             }
 
             if ( ref $field_html_params eq 'HASH' ) {
                 for my $key ( keys %{$field_html_params} ) {
-                    unless ( exists $_->{$key} ) {
-                        $_->{$key} = $field_html_params->{$key};
+                    unless ( exists $field->{$key} ) {
+                        $field->{$key} = $field_html_params->{$key};
                     }
                 }
             }
@@ -353,39 +350,37 @@ sub edit {
                 }
             }
             if ( 'CODE' eq ref $field_html ) {
-                $_->{field_html} = $field_html->( $app, $_ );
+                $field->{field_html} = $field_html->( $app, $field );
             }
             else {
-                $_->{field_html} = $field_html;
+                $field->{field_html} = $field_html;
             }
         }
 
-        $_->{data_type} = $content_field_types->{ $_->{type} }{data_type};
-        if ( $_->{type} eq 'multi_line_text' ) {
+        $field->{data_type} = $content_field_types->{ $field->{type} }{data_type};
+        if ( $field->{type} eq 'multi_line_text' ) {
             my $key
                 = 'content-field-'
-                . $_->{content_field_id}
+                . $field->{content_field_id}
                 . '_convert_breaks';
 
             if ( $convert_breaks
-                && exists $$convert_breaks->{ $_->{content_field_id} } )
+                && exists $$convert_breaks->{ $field->{content_field_id} } )
             {
-                $_->{convert_breaks}
-                    = $$convert_breaks->{ $_->{content_field_id} };
+                $field->{convert_breaks}
+                    = $$convert_breaks->{ $field->{content_field_id} };
             }
             else {
-                $_->{convert_breaks} = $_->{options}{input_format};
+                $field->{convert_breaks} = $field->{options}{input_format};
             }
 
             if ( defined $app->param($key) && $app->param($key) ne '' ) {
-                $_->{convert_breaks} = $app->param($key);
+                $field->{convert_breaks} = $app->param($key);
             }
-
         }
-        $_;
-    } @$array;
+    }
 
-    $param->{fields} = $array;
+    $param->{fields} = $fields;
 
     foreach
         my $name (qw( saved_added saved_changes err_msg content_type_id id ))
@@ -700,7 +695,7 @@ sub save {
     my ( $previous_old, $next_old );
 
     # TODO: permission check
-    if ($ao_d) {
+    if ( $ao_d || $ao_t ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         my $ts    = MT::Util::valid_date_time2ts($ao);
@@ -822,9 +817,13 @@ sub save {
                 ArchiveType => $archive_type,
             );
         }
+        MT::Util::Log::init();
         for my $param (@old_archive_params) {
             $app->publisher->_delete_archive_file(%$param);
-            $param->{FileInfo}->remove if $param->{FileInfo};
+            if ( my $fi = $param->{FileInfo} ) {
+                $fi->remove;
+                MT::Util::Log->info( ' Removed ' . $fi->file_path );
+            }
         }
     }
 
@@ -862,11 +861,18 @@ sub save {
                 = %categories_old
                 ? MT::Util::to_json( \%categories_old )
                 : undef;
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
                     args => {
                         blog_id => $content_data->blog_id,
+                        ott     => $token,
                         next    => 0,
                         type    => 'content_data-' . $content_data->id,
                         content_data_id => $content_data->id,
