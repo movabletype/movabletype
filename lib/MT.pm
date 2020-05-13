@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.3.11',              '__PRODUCT_VERSION_ID__',
+        '6.3.12',             '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 11;
+        $RELEASE_NUMBER = 12;
     }
 
     $DebugMode = 0;
@@ -2083,8 +2083,7 @@ sub update_ping_list {
             }
             else {
                 $args{params} = '' unless defined $args{params};
-                my @p = map MT::Util::decode_html($_),
-                        split /\s*%%\s*/, $args{params}, -1;
+                my @p = split /\s*%%\s*/, $args{params}, -1;
                 @p = ('') unless @p;
                 my $phrase = $args{phrase};
                 $phrase = Encode::decode('utf8', $phrase)

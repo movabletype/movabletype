@@ -146,7 +146,7 @@ sub post_save {
         $q->param( 'template_id',     $obj->template_id );
         $q->param( 'single_template', 1 );
         require MT::CMS::Blog;
-        return MT::CMS::Blog::start_rebuild_pages($app);
+        return MT::CMS::Blog::start_rebuild_pages_directly($app);
     }
 }
 

@@ -103,6 +103,11 @@ sub start_recover {
         || $cfg->ReturnToURL
         || '';
 
+    if ( $param->{return_to} ) {
+        $app->is_valid_redirect_target( $param->{return_to} )
+            or return $app->errtrans("Invalid request.");
+    }
+
     if ( $param->{recovered} ) {
         $param->{return_to} = MT::Util::encode_js( $param->{return_to} );
     }
@@ -142,6 +147,12 @@ sub recover_password {
             { error => $app->translate('Invalid email address') } );
     }
 
+    my $return_to = $app->param('return_to');
+    if ($return_to) {
+        $app->is_valid_redirect_target($return_to)
+            or return $app->errtrans("Invalid request.");
+    }
+
     # Searching user by email (and username)
     my $class
         = ref $app eq 'MT::App::Upgrader'
@@ -164,12 +175,6 @@ sub recover_password {
         return $app->start_recover( { not_unique_email => 1, } );
     }
     $user = pop @authors;
-
-    my $return_to = $app->param('return_to');
-    if ($return_to) {
-        $app->is_valid_redirect_target($return_to)
-            or return $app->errtrans("Invalid request.");
-    }
 
     MT::Util::start_background_task(
         sub {

@@ -59,7 +59,7 @@ sub _rebuild_pages {
                 = map { $_->{archive_type} } @{ $param{archive_type_loop} };
             $app->param( 'type', join( ',', @ats ) );
         }
-        MT::CMS::Blog::start_rebuild_pages($app);
+        MT::CMS::Blog::start_rebuild_pages_directly($app);
     }
 
     my $site_path = $site->site_path;
