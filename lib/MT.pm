@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.5', '6.0022' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.6', '6.0022' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.5.3',              '__PRODUCT_VERSION_ID__',
+        '6.6',                '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 3;
+        $RELEASE_NUMBER = 0;
     }
 
     $DebugMode = 0;
@@ -2082,8 +2082,7 @@ sub update_ping_list {
             }
             else {
                 $args{params} = '' unless defined $args{params};
-                my @p = map MT::Util::decode_html($_),
-                        split /\s*%%\s*/, $args{params}, -1;
+                my @p = split /\s*%%\s*/, $args{params}, -1;
                 @p = ('') unless @p;
                 my $phrase = $args{phrase};
                 $phrase = Encode::decode('utf8', $phrase)

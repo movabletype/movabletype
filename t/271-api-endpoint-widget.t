@@ -334,6 +334,7 @@ sub suite {
                 @widget = sort { $a->name cmp $b->name } @widget;
 
                 $app->user($author);
+
                 return +{
                     totalResults => scalar @widget,
                     items => MT::DataAPI::Resource->from_object( \@widget ),
