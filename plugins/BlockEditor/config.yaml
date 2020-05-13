@@ -25,6 +25,7 @@ content_field_types:
     field_html_params: $BlockEditor::BlockEditor::App::field_html_params
     data_load_handler: $BlockEditor::BlockEditor::App::data_load_handler
     replace_handler: $BlockEditor::BlockEditor::App::replace_handler
+    search_handler: $BlockEditor::BlockEditor::App::search_handler
 
 applications:
   cms:

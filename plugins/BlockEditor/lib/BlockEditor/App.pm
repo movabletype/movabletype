@@ -211,4 +211,47 @@ sub replace_handler {
     return ( $replaced > 0, $values );
 }
 
+sub search_handler {
+    my ( $search_regex, $field_data, $values, $content_data ) = @_;
+    return 0 unless defined $values;
+
+    my $convert_breaks
+        = $field_data
+        ? MT::Serialize->unserialize( $content_data->convert_breaks )
+        : undef;
+
+    if ( $$convert_breaks->{ $field_data->{id} } ne 'blockeditor' ) {
+        return $search_regex ne '' ? $values =~ m!$search_regex! : 1;
+    }
+
+    my $block_editor_data = $content_data->block_editor_data;
+    my $data
+        = eval { MT::Util::from_json( $content_data->block_editor_data ) };
+    return 0 unless $data && ref $data eq 'HASH' && %$data;
+
+    my $editor_key
+        = 'editor-input-content-field-' . $field_data->{id} . '-blockeditor';
+    for my $key ( keys %{ $data->{$editor_key} } ) {
+        return 1
+            if $data->{$editor_key}->{$key}->{value} =~ /$search_regex/
+            || $data->{$editor_key}->{$key}->{html}  =~ /$search_regex/;
+
+        # parts image
+        if ( $data->{$editor_key}->{$key}->{type} eq 'image' ) {
+            return 1
+                if $data->{$editor_key}->{$key}->{asset_url} =~ $search_regex;
+
+            # search image options
+            my $options = $data->{$editor_key}->{$key}->{options};
+            if ( ref $options eq 'HASH' && %{$options} ) {
+                return 1
+                    if $options->{alt}     =~ /$search_regex/
+                    || $options->{caption} =~ /$search_regex/
+                    || $options->{title}   =~ /$search_regex/;
+            }
+        }
+    }
+    return 0;
+}
+
 1;
