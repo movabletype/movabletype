@@ -874,7 +874,7 @@ function saveTemplatePrefs( sync ) {
         syncEditor();
         jQuery('form#template-listing-form > input[name=__mode]').val('save');
   <mt:if name="config.previewinnewwindow">
-        jQuery('form#template-listing-form').prop('target', false);
+        jQuery('form#template-listing-form').removeAttr('target');
   </mt:if>
         jQuery('button.save').attr('disabled', 'disabled');
         jQuery('button.publish').attr('disabled', 'disabled');
