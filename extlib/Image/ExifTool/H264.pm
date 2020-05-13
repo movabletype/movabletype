@@ -25,7 +25,7 @@ use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 
-$VERSION = '1.15';
+$VERSION = '1.17';
 
 sub ProcessSEI($$);
 
@@ -64,7 +64,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         Information (SEI).  I<[Yes, this description is confusing, but nothing
         compared to the challenge of actually decoding the data!]>  This information
         may exist at regular intervals through the entire video, but only the first
-        occurrence is extracted unless the ExtractEmbedded (-ee) option is used (in
+        occurrence is extracted unless the L<ExtractEmbedded|../ExifTool.html#ExtractEmbedded> (-ee) option is used (in
         which case subsequent occurrences are extracted as sub-documents).
     },
     # (Note: all these are explained in IEC 61834-4, but it costs money so it is useless to me)
@@ -433,24 +433,24 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
     1.1 => {
         Name => 'ExposureProgram',
         Mask => 0xf0,
-        ValueConv => '$val == 0xf0 ? undef : $val',
+        ValueConv => '$val == 15 ? undef : $val',
         PrintConv => {
-            0x00 => 'Program AE',
-            0x10 => 'Gain', #?
-            0x20 => 'Shutter speed priority AE',
-            0x30 => 'Aperture-priority AE',
-            0x40 => 'Manual',
+            0 => 'Program AE',
+            1 => 'Gain', #?
+            2 => 'Shutter speed priority AE',
+            3 => 'Aperture-priority AE',
+            4 => 'Manual',
         },
     },
     2.1 => {
         Name => 'WhiteBalance',
         Mask => 0xe0,
-        ValueConv => '$val == 0xe0 ? undef : $val',
+        ValueConv => '$val == 7 ? undef : $val',
         PrintConv => {
-            0x00 => 'Auto',
-            0x20 => 'Hold',
-            0x40 => '1-Push',
-            0x60 => 'Daylight',
+            0 => 'Auto',
+            1 => 'Hold',
+            2 => '1-Push',
+            3 => 'Daylight',
         },
     },
     3 => {
@@ -458,7 +458,7 @@ my $parsePictureTiming; # flag to enable parsing of picture timing information (
         ValueConv => '$val == 0xff ? undef : $val',
         PrintConv => q{
             my $foc = ($val & 0x7e) / (($val & 0x01) ? 40 : 400);
-            return ($val & 0x80 ? 'Manual' : 'Auto') . " ($foc)";
+            return(($val & 0x80 ? 'Manual' : 'Auto') . " ($foc)");
         },
     },
 );
@@ -1055,9 +1055,7 @@ sub ParseH264Video($$)
         $buff .= substr($$dataPt, $pos, $end - $pos);
         if ($verbose > 1) {
             printf $out "  NAL Unit Type: 0x%x (%d bytes)\n",$nal_unit_type, length $buff;
-            my %parms = ( Out => $out );
-            $parms{MaxLen} = 96 if $verbose < 4;
-            HexDump(\$buff, undef, %parms) if $verbose > 2;
+            $et->VerboseDump(\$buff);
         }
         pos($$dataPt) = $pos = $nextPos;
 
@@ -1110,7 +1108,7 @@ information from H.264 video streams.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

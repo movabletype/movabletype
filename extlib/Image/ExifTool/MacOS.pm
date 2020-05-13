@@ -11,7 +11,7 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.03';
+$VERSION = '1.09';
 
 sub MDItemLocalTime($);
 
@@ -20,7 +20,7 @@ my %mdDateInfo = (
     PrintConv => '$self->ConvertDateTime($val)',
 );
 
-# "mdls" tags
+# "mdls" tags (ref PH)
 %Image::ExifTool::MacOS::MDItem = (
     WRITE_PROC => \&Image::ExifTool::DummyWriteProc,
     VARS => { NO_ID => 1 },
@@ -28,8 +28,10 @@ my %mdDateInfo = (
     NOTES => q{
         MDItem tags are extracted using the "mdls" utility.  They are extracted if
         any "MDItem*" tag or the MacOS group is specifically requested, or by
-        setting the L<MDItemTags API option|../ExifTool.html#MDItemTags> to 1 or the L<RequestAll API option|../ExifTool.html#RequestAll> to 2 or
-        higher.
+        setting the L<MDItemTags|../ExifTool.html#MDItemTags> API option to 1 or the L<RequestAll|../ExifTool.html#RequestAll> API option to 2 or
+        higher.  Note that these tags do not necessarily reflect the current
+        metadata of a file -- it may take some time for the MacOS mdworker daemon to
+        index the file after a metadata change.
     },
     MDItemFinderComment => {
         Writable => 1,
@@ -40,8 +42,17 @@ my %mdDateInfo = (
         Writable => 1,
         WritePseudo => 1,
         Protected => 1, # (all writable pseudo tags must be protected)
-        Notes => 'label number: 0-7',
         WriteCheck => '$val =~ /^[0-7]$/ ? undef : "Not an integer in the range 0-7"',
+        PrintConv => {
+            0 => '0 (none)',
+            1 => '1 (Gray)',
+            2 => '2 (Green)',
+            3 => '3 (Purple)',
+            4 => '4 (Blue)',
+            5 => '5 (Yellow)',
+            6 => '6 (Red)',
+            7 => '7 (Orange)',
+        },
     },
     MDItemFSCreationDate => {
         Writable => 1,
@@ -49,19 +60,14 @@ my %mdDateInfo = (
         DelCheck => q{"Can't delete"},
         Protected => 1, # (all writable pseudo tags must be protected)
         Shift => 'Time', # (but not supported yet)
-        Notes => 'file creation date. Requires "setfile" for writing',
+        Notes => q{
+            file creation date.  Requires "setfile" for writing.  Note that when
+            reading, it may take a few seconds after writing a file before this value
+            reflects the change.  However, L<FileCreateDate|Extra.html> is updated immediately
+        },
         Groups => { 2 => 'Time' },
         ValueConv => \&MDItemLocalTime,
-        ValueConvInv => sub {
-            my $val = shift;
-            # convert to local time if value has a time zone
-            if ($val =~ /[-+Z]/) {
-                my $time = Image::ExifTool::GetUnixTime($val, 1);
-                $val = Image::ExifTool::ConvertUnixTime($time, 1) if $time;
-            }
-            $val =~ s{(\d{4}):(\d{2}):(\d{2})}{$2/$3/$1};   # reformat for setfile
-            return $val;
-        },
+        ValueConvInv => '$val',
         PrintConv => '$self->ConvertDateTime($val)',
         PrintConvInv => '$self->InverseDateTime($val)',
     },
@@ -69,12 +75,16 @@ my %mdDateInfo = (
     MDItemAcquisitionModel        => { Groups => { 2 => 'Camera' } },
     MDItemAltitude                => { Groups => { 2 => 'Location' } },
     MDItemAperture                => { Groups => { 2 => 'Camera' } },
+    MDItemAudioBitRate            => { Groups => { 2 => 'Audio' } },
+    MDItemAudioChannelCount       => { Groups => { 2 => 'Audio' } },
     MDItemAuthors                 => { Groups => { 2 => 'Author' } },
     MDItemBitsPerSample           => { Groups => { 2 => 'Image' } },
     MDItemCity                    => { Groups => { 2 => 'Location' } },
+    MDItemCodecs                  => { },
     MDItemColorSpace              => { Groups => { 2 => 'Image' } },
     MDItemComment                 => { },
     MDItemContentCreationDate     => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemContentCreationDateRanking => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemContentModificationDate => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemContentType             => { },
     MDItemContentTypeTree         => { },
@@ -86,8 +96,9 @@ my %mdDateInfo = (
     MDItemDescription             => { },
     MDItemDisplayName             => { },
     MDItemDownloadedDate          => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemDurationSeconds         => { PrintConv => 'ConvertDuration($val)' },
     MDItemEncodingApplications    => { },
-    MDItemEXIFGPSVersion          => { Groups => { 2 => 'Location' } },
+    MDItemEXIFGPSVersion          => { Groups => { 2 => 'Location' }, Description => 'MD Item EXIF GPS Version' },
     MDItemEXIFVersion             => { },
     MDItemExposureMode            => { Groups => { 2 => 'Camera' } },
     MDItemExposureProgram         => { Groups => { 2 => 'Camera' } },
@@ -113,13 +124,17 @@ my %mdDateInfo = (
     MDItemGPSTrack                => { Groups => { 2 => 'Location' } },
     MDItemHasAlphaChannel         => { Groups => { 2 => 'Image' } },
     MDItemImageDirection          => { Groups => { 2 => 'Location' } },
+    MDItemInterestingDateRanking  => { Groups => { 2 => 'Time' }, %mdDateInfo },
     MDItemISOSpeed                => { Groups => { 2 => 'Camera' } },
     MDItemKeywords                => { },
     MDItemKind                    => { },
     MDItemLastUsedDate            => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemLastUsedDate_Ranking    => { },
     MDItemLatitude                => { Groups => { 2 => 'Location' } },
+    MDItemLensModel               => { },
     MDItemLogicalSize             => { },
     MDItemLongitude               => { Groups => { 2 => 'Location' } },
+    MDItemMediaTypes              => { },
     MDItemNumberOfPages           => { },
     MDItemOrientation             => { Groups => { 2 => 'Image' } },
     MDItemOriginApplicationIdentifier => { },
@@ -140,14 +155,61 @@ my %mdDateInfo = (
     MDItemSecurityMethod          => { },
     MDItemSpeed                   => { Groups => { 2 => 'Location' } },
     MDItemStateOrProvince         => { Groups => { 2 => 'Location' } },
+    MDItemStreamable              => { },
     MDItemTimestamp               => { Groups => { 2 => 'Time' } }, # (time only)
     MDItemTitle                   => { },
+    MDItemTotalBitRate            => { },
     MDItemUseCount                => { },
     MDItemUsedDates               => { Groups => { 2 => 'Time' }, %mdDateInfo },
-    MDItemUserTags                => { },
+    MDItemUserDownloadedDate      => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemUserDownloadedUserHandle=> { },
+    MDItemUserSharedReceivedDate  => { },
+    MDItemUserSharedReceivedRecipient => { },
+    MDItemUserSharedReceivedRecipientHandle => { },
+    MDItemUserSharedReceivedSender=> { },
+    MDItemUserSharedReceivedSenderHandle => { },
+    MDItemUserSharedReceivedTransport => { },
+    MDItemUserTags                => {
+        List => 1,
+        Writable => 1,
+        WritePseudo => 1,
+        Protected => 1, # (all writable pseudo tags must be protected)
+        Notes => q{
+            requires "tag" utility for writing -- install with "brew install tag".  Note
+            that user tags may not contain a comma, and that duplicate user tags will
+            not be written
+        },
+    },
     MDItemVersion                 => { },
+    MDItemVideoBitRate            => { Groups => { 2 => 'Video' } },
     MDItemWhereFroms              => { },
     MDItemWhiteBalance            => { Groups => { 2 => 'Image' } },
+    # tags used by Apple Mail on .emlx files
+    com_apple_mail_dateReceived   => { Name => 'AppleMailDateReceived', Groups => { 2 => 'Time' }, %mdDateInfo },
+    com_apple_mail_dateSent       => { Name => 'AppleMailDateSent',     Groups => { 2 => 'Time' }, %mdDateInfo },
+    com_apple_mail_flagged        => { Name => 'AppleMailFlagged' },
+    com_apple_mail_messageID      => { Name => 'AppleMailMessageID' },
+    com_apple_mail_priority       => { Name => 'AppleMailPriority' },
+    com_apple_mail_read           => { Name => 'AppleMailRead' },
+    com_apple_mail_repliedTo      => { Name => 'AppleMailRepliedTo' },
+    com_apple_mail_isRemoteAttachment => { Name => 'AppleMailIsRemoteAttachment' },
+    MDItemAccountHandles          => { },
+    MDItemAccountIdentifier       => { },
+    MDItemAuthorEmailAddresses    => { },
+    MDItemBundleIdentifier        => { },
+    MDItemContentCreationDate_Ranking=>{Groups=> { 2 => 'Time' }, %mdDateInfo },
+    MDItemDateAdded_Ranking       => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemEmailConversationID     => { },
+    MDItemIdentifier              => { },
+    MDItemInterestingDate_Ranking => { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemIsApplicationManaged    => { },
+    MDItemIsExistingThread        => { },
+    MDItemIsLikelyJunk            => { },
+    MDItemMailboxes               => { },
+    MDItemMailDateReceived_Ranking=> { Groups => { 2 => 'Time' }, %mdDateInfo },
+    MDItemPrimaryRecipientEmailAddresses => { },
+    MDItemRecipients              => { },
+    MDItemSubject                 => { },
 );
 
 # "xattr" tags
@@ -158,7 +220,7 @@ my %mdDateInfo = (
     NOTES => q{
         XAttr tags are extracted using the "xattr" utility.  They are extracted if
         any "XAttr*" tag or the MacOS group is specifically requested, or by setting
-        the L<XAttrTags API option|../ExifTool.html#XAttrTags> to 1 or the L<RequestAll API option|../ExifTool.html#RequestAll> to 2 or higher.
+        the L<XAttrTags|../ExifTool.html#XAttrTags> API option to 1 or the L<RequestAll|../ExifTool.html#RequestAll> API option to 2 or higher.
     },
     'com.apple.FinderInfo' => {
         Name => 'XAttrFinderInfo',
@@ -216,6 +278,17 @@ my %mdDateInfo = (
         },
         PrintConvInv => '$val',
     },
+    'com.apple.metadata:com_apple_mail_dateReceived' => {
+        Name => 'XAttrAppleMailDateReceived',
+        Groups => { 2 => 'Time' },
+    },
+    'com.apple.metadata:com_apple_mail_dateSent' => {
+        Name => 'XAttrAppleMailDateSent',
+        Groups => { 2 => 'Time' },
+    },
+    'com.apple.metadata:com_apple_mail_isRemoteAttachment' => {
+        Name => 'XAttrAppleMailIsRemoteAttachment',
+    },
     'com.apple.metadata:kMDItemDownloadedDate' => {
         Name => 'XAttrMDItemDownloadedDate',
         Groups => { 2 => 'Time' },
@@ -224,6 +297,13 @@ my %mdDateInfo = (
     'com.apple.metadata:kMDItemWhereFroms'     => { Name => 'XAttrMDItemWhereFroms' },
     'com.apple.metadata:kMDLabel'              => { Name => 'XAttrMDLabel', Binary => 1 },
     'com.apple.ResourceFork'                   => { Name => 'XAttrResourceFork', Binary => 1 },
+    'com.apple.lastuseddate#PS'                => {
+        Name => 'XAttrLastUsedDate',
+        Groups => { 2 => 'Time' },
+        # (first 4 bytes are date/time.  Not sure what remaining 12 bytes are for)
+        RawConv => 'ConvertUnixTime(unpack("V",$$val))',
+        PrintConv => '$self->ConvertDateTime($val)',
+    },
 );
 
 #------------------------------------------------------------------------------
@@ -255,24 +335,58 @@ sub SetMacOSTags($$$)
     my $tag;
 
     foreach $tag (@$setTags) {
-        my ($nvHash, $f, $v, $attr, $cmd, $silentErr);
+        my ($nvHash, $f, $v, $attr, $cmd, $err, $silentErr);
         my $val = $et->GetNewValue($tag, \$nvHash);
         next unless $nvHash;
-        my $overwrite = $et->IsOverwriting($nvHash) or next;
-        if ($overwrite < 0) {
-            my $operation = $$nvHash{Shift} ? 'Shifting' : 'Conditional replacement';
-            $et->Warn("$operation of $tag not yet supported");
-            next;
+        my $overwrite = $et->IsOverwriting($nvHash);
+        unless ($$nvHash{TagInfo}{List}) {
+            next unless $overwrite;
+            if ($overwrite < 0) {
+                my $operation = $$nvHash{Shift} ? 'Shifting' : 'Conditional replacement';
+                $et->Warn("$operation of MacOS $tag not yet supported");
+                next;
+            }
         }
-        if ($tag eq 'MDItemFSCreationDate') {
+        if ($tag eq 'MDItemFSCreationDate' or $tag eq 'FileCreateDate') {
             ($f = $file) =~ s/'/'\\''/g;
+            # convert to local time if value has a time zone
+            if ($val =~ /[-+Z]/) {
+                my $time = Image::ExifTool::GetUnixTime($val, 1);
+                $val = Image::ExifTool::ConvertUnixTime($time, 1) if $time;
+            }
+            $val =~ s{(\d{4}):(\d{2}):(\d{2})}{$2/$3/$1};   # reformat for setfile
             $cmd = "setfile -d '${val}' '${f}'";
+        } elsif ($tag eq 'MDItemUserTags') {
+            # (tested with "tag" version 0.9.0)
+            ($f = $file) =~ s/'/'\\''/g;
+            my @vals = $et->GetNewValue($nvHash);
+            if ($overwrite < 0 and @{$$nvHash{DelValue}}) {
+                # delete specified tags
+                my @dels = @{$$nvHash{DelValue}};
+                s/'/'\\''/g foreach @dels;
+                my $del = join ',', @dels;
+                $err = system "tag -r '${del}' '${f}'>/dev/null 2>&1";
+                unless ($err) {
+                    $et->VerboseValue("- $tag", $del);
+                    $result = 1;
+                    undef $err if @vals;    # more to do if there are tags to add
+                }
+            }
+            unless (defined $err) {
+                # add new tags, or overwrite or delete existing tags
+                s/'/'\\''/g foreach @vals;
+                my $opt = $overwrite > 0 ? '-s' : '-a';
+                $val = @vals ? join(',', @vals) : '';
+                $cmd = "tag $opt '${val}' '${f}'";
+                $et->VPrint(1,"    - $tag = (all)\n") if $overwrite > 0;
+                undef $val if $val eq '';
+            }
         } elsif ($tag eq 'XAttrQuarantine') {
             ($f = $file) =~ s/'/'\\''/g;
             $cmd = "xattr -d com.apple.quarantine '${f}'";
             $silentErr = 256;   # (will get this error if attribute doesn't exist)
         } else {
-            ($f = $file) =~ s/(["\\])/\\$1/g;   # escape necessary characters
+            ($f = $file) =~ s/(["\\])/\\$1/g;   # escape necessary characters for script
             $f =~ s/'/'"'"'/g;
             if ($tag eq 'MDItemFinderComment') {
                 # (write finder comment using osascript instead of xattr
@@ -289,9 +403,11 @@ sub SetMacOSTags($$$)
             $cmd = qq(osascript -e 'set fp to POSIX file "$f" as alias' -e \\
                 'tell application "Finder" to set $attr of file fp to "$v"');
         }
-        my $err = system $cmd . '>/dev/null 2>&1';  # (pipe all output to /dev/null)
+        if (defined $cmd) {
+            $err = system $cmd . '>/dev/null 2>&1'; # (pipe all output to /dev/null)
+        }
         if (not $err) {
-            $et->VerboseValue("+ $tag", $val);
+            $et->VerboseValue("+ $tag", $val) if defined $val;
             $result = 1;
         } elsif (not $silentErr or $err != $silentErr) {
             $cmd =~ s/ .*//s;
@@ -309,7 +425,7 @@ sub ExtractMDItemTags($$)
 {
     local $_;
     my ($et, $file) = @_;
-    my ($fn, $tag, $val);
+    my ($fn, $tag, $val, $tmp);
 
     ($fn = $file) =~ s/([`"\$\\])/\\$1/g;   # escape necessary characters
     $et->VPrint(0, '(running mdls)');
@@ -339,6 +455,7 @@ sub ExtractMDItemTags($$)
             s/,$//;             # remove trailing comma
             $_ = '' if $_ eq '(null)';
             s/^"// and s/"$//;  # remove quotes if they exist
+            s/\\"/"/g;          # un-escape quotes
             $_ = $et->Decode($_, 'UTF8');
             push @$val, $_;
             next;
@@ -352,7 +469,10 @@ sub ExtractMDItemTags($$)
                 ValueConv => \&MDItemLocalTime,
                 PrintConv => '$self->ConvertDateTime($val)',
             ) if /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/;
-            $tagInfo{Name} = Image::ExifTool::MakeTagName($tag);
+            # change tags like "com_apple_mail_xxx" to "AppleMailXxx"
+            ($tmp = $tag) =~ s/^com_//; # remove leading "com_"
+            $tmp =~ s/_([a-z])/\u$1/g;  # use CamelCase
+            $tagInfo{Name} = Image::ExifTool::MakeTagName($tmp);
             $tagInfo{List} = 1 if ref $val eq 'ARRAY';
             $tagInfo{Groups}{2} = 'Audio' if $tag =~ /Audio/;
             $tagInfo{Groups}{2} = 'Author' if $tag =~ /(Copyright|Author)/;
@@ -403,9 +523,11 @@ sub ExtractXAttrTags($$)
                 # generate tag name from attribute name
                 if ($tag =~ /^com\.apple\.(.*)$/) {
                     ($name = $1) =~ s/^metadata:_?k//;
+                    $name =~ s/^metadata:(com_)?//;
                 } else {
-                    ($name = $tag) =~ s/[.:]([a-z])/\U$1/g;
+                    $name = $tag;
                 }
+                $name =~ s/[.:_]([a-z])/\U$1/g;
                 $name = 'XAttr' . ucfirst $name;
                 my %tagInfo = ( Name => $name );
                 $tagInfo{Groups} = { 2 => 'Time' } if $tag=~/Date$/;
@@ -441,6 +563,27 @@ sub ExtractXAttrTags($$)
     $$et{INDENT} =~ s/\| $//;
 }
 
+#------------------------------------------------------------------------------
+# Extract MacOS file creation date/time
+# Inputs: 0) ExifTool object ref, 1) file name
+sub GetFileCreateDate($$)
+{
+    local $_;
+    my ($et, $file) = @_;
+    my ($fn, $tag, $val, $tmp);
+
+    ($fn = $file) =~ s/([`"\$\\])/\\$1/g;   # escape necessary characters
+    $et->VPrint(0, '(running stat)');
+    my $time = `stat -f '%SB' -t '%Y:%m:%d %H:%M:%S%z' "$fn" 2> /dev/null`;
+    if ($? or not $time or $time !~ s/([-+]\d{2})(\d{2})\s*$/$1:$2/) {
+        $et->Warn('Error running "stat" to extract FileCreateDate');
+        return;
+    }
+    $$et{SET_GROUP1} = 'MacOS';
+    $et->FoundTag(FileCreateDate => $time);
+    delete $$et{SET_GROUP1};
+}
+
 1;  # end
 
 __END__
@@ -462,7 +605,7 @@ for writing.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

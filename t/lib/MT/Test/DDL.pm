@@ -124,8 +124,9 @@ __PACKAGE__->install_properties(
 );
 
 package Test::DDL;
-use base qw( Test::Class MT::Test );
+use base qw( Test::Class );
 use Test::More;
+use MT::Test::DriverUtil;
 
 sub startup : Test(startup) {
     my $self = shift;
@@ -586,7 +587,7 @@ sub multikey_defs : Tests(8) {
         'Multikey value column def is correct'
     );
 
-    $self->reset_table_for('Ddltest::Multikey');
+    reset_table_for('Ddltest::Multikey');
     my $table_defs = MT::Object->driver->dbd->ddl_class->column_defs(
         'Ddltest::Multikey');
     ok( $table_defs, 'Multikey table DDL settings are defined' );
@@ -610,7 +611,7 @@ sub multikey_defs : Tests(8) {
 
 sub multikey_unique : Tests(1) {
     my $self = shift;
-    $self->reset_table_for('Ddltest::Multikey');
+    reset_table_for('Ddltest::Multikey');
 
     my $orig = Ddltest::Multikey->new();
     $orig->set_values(
@@ -670,7 +671,7 @@ SKIP: {
         skip( 'Only mysql supports shortened indexes', 4 )
             if $ddl_class !~ m{ mysql \z }xms;
 
-        $self->reset_table_for('Ddltest::ShortIndex');
+        reset_table_for('Ddltest::ShortIndex');
 
         my $index_defs = $ddl_class->index_defs('Ddltest::ShortIndex');
         is( $index_defs->{foo}, 1,
@@ -709,7 +710,7 @@ sub fixable : Tests(12) {
     my $dbh       = $driver->rw_handle;
     my $ddl_class = $driver->dbd->ddl_class;
 
-    $self->reset_table_for('Ddltest::Fixable');
+    reset_table_for('Ddltest::Fixable');
     for my $i ( 1 .. 5 ) {
         my $obj = Ddltest::Fixable->new;
         $obj->foo($i);

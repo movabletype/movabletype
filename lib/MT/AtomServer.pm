@@ -12,7 +12,7 @@ use XML::Atom;
 use XML::Atom::Util qw( first textValue );
 use base qw( MT::App );
 use MIME::Base64 ();
-use Digest::SHA1 ();
+use MT::Util::Digest::SHA ();
 use MT::Atom;
 use MT::Util qw( encode_xml );
 use MT::Author;
@@ -200,7 +200,7 @@ sub authenticate {
         return $app->auth_failure( 403, 'X-WSSE UsernameToken timed out' );
     }
     $auth->{Nonce} = MIME::Base64::decode_base64( $auth->{Nonce} );
-    my $expected = Digest::SHA1::sha1_base64(
+    my $expected = MT::Util::Digest::SHA::sha1_base64(
         $auth->{Nonce} . $auth->{Created} . $user->api_password );
 
     # Some base64 implementors do it wrong and don't put the =
@@ -1053,15 +1053,15 @@ sub _upload_to_asset {
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
+            if   ( $_ =~ m/^\./ ) {qr/$_(?:\..*)?/i}
+            else                  {qr/\.$_(?:\..*)?/i}
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         return $app->error(
             500,
             MT->translate(
                 '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                $ext,
+                $ret[2],
                 $fname
             )
         ) if $ret[2];

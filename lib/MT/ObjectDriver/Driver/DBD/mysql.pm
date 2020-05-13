@@ -67,7 +67,7 @@ sub _set_names {
             # MySQL 4.1+ and non-latin1(database) == needs SET NAMES call.
             my $c       = lc $cfg->PublishCharset;
             my %Charset = (
-                'utf-8'     => 'utf8',
+                'utf-8'     => $charset_db eq 'utf8mb4' ? 'utf8mb4' : 'utf8',
                 'shift_jis' => 'sjis',
                 'shift-jis' => 'sjis',
                 'euc-jp'    => 'ujis',
@@ -77,6 +77,7 @@ sub _set_names {
             $c = $Charset{$c} ? $Charset{$c} : $c;
             $dbh->do( "SET NAMES " . $c )
                 or return ( $dbh->errstr );
+            $dbh->{private_set_names} = $c;
             if ( !defined $set_names ) {
 
                # SQLSetNames has never been assigned; we had a successful

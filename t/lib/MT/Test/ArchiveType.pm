@@ -5,13 +5,12 @@ use warnings;
 use Test::More;
 use Encode;
 use MT::Test;
+use MT::Test::PHP;
 use MT::Test::Fixture::ArchiveType;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
         or plan skip_all => 'Test::Base is not installed';
-    eval qq{ use IPC::Run3 'run3'; 1 }
-        or plan skip_all => 'IPC::Run3 is not installed';
 }
 
 # Beware Spiffy magic ($self is provided automatically)
@@ -406,9 +405,7 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 
-            run3 [ 'php', '-q' ], \$test_script, \my $result, undef,
-                { binmode_stdin => 1 }
-                or die $?;
+            my $result = MT::Test::PHP->run($test_script);
 
             # those with $method_name have higher precedence
             # and todo does, too
@@ -432,8 +429,6 @@ PHP
                     last;
                 }
             }
-            $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-            $result = Encode::decode_utf8($result);
 
             my $expected = $block->$expected_method;
             $expected = '' unless defined $expected;

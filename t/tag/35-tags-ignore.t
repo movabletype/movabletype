@@ -21,7 +21,9 @@ use MT;
 use MT::Builder;
 use MT::Template::Context;
 
-use MT::Test qw( :app );
+use MT::Test;
+
+MT::Test->init_app;
 
 # setup
 my %callbacks;

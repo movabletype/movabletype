@@ -17,8 +17,6 @@ use MT;
 MT->instance;
 use MT::Test;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 my $registry = MT->registry('object_types');

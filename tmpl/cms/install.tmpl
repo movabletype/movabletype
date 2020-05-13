@@ -187,7 +187,7 @@ function show(id) {
 }
 
 jQuery(function() {
-    jQuery('#admin_username').focus();
+    jQuery('#admin_username').trigger('focus');
     jQuery.mtValidateAddRules({
         '#admin_password_confirm': function ($e) {
             return $e.val() == jQuery('#admin_password').val() ? true : false;
@@ -201,7 +201,7 @@ jQuery(function() {
         '#admin_password_confirm': '<__trans phrase="Both passwords must match." escape="singlequotes">'
 </mt:if>
     });
-    jQuery('#install_form').submit(function() {
+    jQuery('#install_form').on('submit', function() {
         return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
     });
 });

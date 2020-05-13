@@ -484,6 +484,9 @@ sub edit {
         $param->{tags_js} = MT::Tag->get_tags_js($blog_id);
 
         $param->{can_edit_categories} = $perms->can_do('edit_categories');
+        if ( $type eq 'page' ) {
+            $param->{can_edit_categories} ||= $perms->can_do('manage_pages');
+        }
     }
 
     my $data = $app->_build_category_list(
@@ -928,7 +931,6 @@ sub _build_entry_preview {
     my $ctx = $tmpl->context;
     $ctx->stash( 'entry',    $entry );
     $ctx->stash( 'blog',     $blog );
-    $ctx->stash( 'category', $cat ) if $cat;
     $ctx->{current_timestamp}    = $ao_ts;
     $ctx->{current_archive_type} = $at;
     $ctx->var( 'preview_template', 1 );
@@ -1411,7 +1413,7 @@ sub save {
     }
 
     my ( $previous_old, $next_old );
-    if ( $perms->can_do("edit_${type}_authored_on") && ($ao_d) ) {
+    if ( $perms->can_do("edit_${type}_authored_on") && ( $ao_d || $ao_t ) ) {
         my %param = ();
         my $ao    = $ao_d . ' ' . $ao_t;
         my $ts    = MT::Util::valid_date_time2ts($ao);
@@ -1699,11 +1701,18 @@ sub save {
             }
         }
         else {
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     'mode' => 'start_rebuild',
                     args   => {
                         blog_id    => $obj->blog_id,
+                        ott        => $token,
                         'next'     => 0,
                         type       => 'entry-' . $obj->id,
                         entry_id   => $obj->id,

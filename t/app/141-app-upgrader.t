@@ -8,7 +8,9 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -16,6 +18,8 @@ use MT::Test qw( :app :newdb );
 use MT::Test::Permission;
 use MT::Test::Upgrade;
 use MT::Theme;
+
+$test_env->fix_mysql_create_table_sql;
 
 my ( $app, $out );
 

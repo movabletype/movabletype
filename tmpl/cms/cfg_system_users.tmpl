@@ -135,7 +135,7 @@ function clearNotifyUsers() {
         '.positive-num': '<__trans phrase="This field must be a positive integer.">'
     });
 
-    jQuery('#cfg_user_settings').submit( function () {
+    jQuery('#cfg_user_settings').on('submit', function () {
         var ok = true;
         jQuery(this).find('input:visible, select:visible').each( function () {
             if ( jQuery(this).is('.positive-num') ) {

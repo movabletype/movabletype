@@ -512,24 +512,24 @@
       "rows" : [
          [
             2,
-            "2019-12-13 11:36:43",
+            "2020-02-11 13:34:41",
             2,
             1,
             null,
             "__NOW__",
-            "307fb4e211f33189242b3c4e06e4eb8b9d55436a",
+            "53b8c79d398c3d04763d0c35bd1546783ac95e2a",
             0,
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u000e20170603180500\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u00011-\u0000\u0000\u0000\u000e20170603180500",
             1,
-            "791ce17fbd6073972ba283d081bfb6d2a416bdd7",
+            "b4cebda0c61c1041728191f8701127e7f683618e",
             null,
             null,
             "__NOW__",
-            8,
+            0,
             4,
-            "791ce17fbd6073972ba283d081bfb6d2a416bdd7",
+            "b4cebda0c61c1041728191f8701127e7f683618e",
             null,
-            201950
+            202007
          ]
       ]
    },
@@ -567,7 +567,7 @@
             null,
             null,
             "date_and_time",
-            "030ae89d7b54e43db8f81580c51ddb4a09626bcb"
+            "f06a52ad0600d8d9982c06d3c608f64ae1894c47"
          ],
          [
             2,
@@ -584,7 +584,7 @@
             null,
             null,
             "categories",
-            "ce55f01b23e1e3839e4470a9ba383cca342f81b0"
+            "1569794b1b03dca5c08d7de6f837affd3b597400"
          ]
       ]
    },
@@ -650,7 +650,7 @@
       ],
       "rows" : [
          [
-            "PluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0046\n",
+            "DataAPIDisableSite 0\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0046\n",
             1
          ]
       ]
@@ -678,12 +678,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(030ae89d7b54e43db8f81580c51ddb4a09626bcb\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and timeH\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(f06a52ad0600d8d9982c06d3c608f64ae1894c47\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rdate and time\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\rdate_and_time\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00016H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u000215",
             1,
             null,
             "__NOW__",
             "test content type",
-            "307fb4e211f33189242b3c4e06e4eb8b9d55436a",
+            "53b8c79d398c3d04763d0c35bd1546783ac95e2a",
             null,
             null
          ]
@@ -740,7 +740,7 @@
             null,
             "__NOW__",
             null,
-            "'administer','edit_templates','manage_plugins','view_log','create_site','sign_in_cms','sign_in_data_api','manage_users_groups','manage_content_types','manage_content_data'",
+            "'administer','create_site','edit_templates','manage_content_data','manage_content_types','manage_plugins','manage_users_groups','sign_in_cms','sign_in_data_api','view_log'",
             null,
             0,
             null
@@ -820,7 +820,7 @@
             null,
             "__NOW__",
             "Editor",
-            "'comment','create_post','publish_post','edit_all_posts','edit_categories','edit_tags','manage_pages','rebuild','upload','send_notifications','manage_feedback','edit_assets','manage_content_data','manage_category_set'",
+            "'comment','create_post','edit_all_posts','edit_assets','edit_categories','edit_tags','manage_category_set','manage_content_data','manage_feedback','manage_pages','publish_post','rebuild','send_notifications','upload'",
             null,
             null,
             null,
@@ -835,7 +835,7 @@
             null,
             "__NOW__",
             "Author",
-            "'comment','create_post','publish_post','upload','send_notifications'",
+            "'comment','create_post','publish_post','send_notifications','upload'",
             null,
             null,
             null,
@@ -850,7 +850,7 @@
             null,
             "__NOW__",
             "Designer",
-            "'manage_themes','edit_templates','rebuild','upload','edit_assets'",
+            "'edit_assets','edit_templates','manage_themes','rebuild','upload'",
             144,
             null,
             null,
@@ -895,7 +895,7 @@
             null,
             "__NOW__",
             "Content Designer",
-            "'manage_content_types','manage_content_data','manage_category_set'",
+            "'manage_category_set','manage_content_data','manage_content_types'",
             null,
             null,
             null,

@@ -15,8 +15,6 @@ use MT::Test;
 use MT;
 use MT::Object;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db');
 
 MT->instance();

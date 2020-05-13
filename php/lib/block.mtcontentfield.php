@@ -91,9 +91,7 @@ function smarty_block_mtcontentfield($args, $res, &$ctx, &$repeat) {
         }
 
         $ctx->stash('_content_field_data', $field_data);
-        if (!$ctx->stash('content_field_data')) {
-            $ctx->stash('content_field_data', $field_data);
-        }
+        $ctx->stash('content_field_data', $field_data);
 
         $value = $content_data->data;
         if (isset($value)) {

@@ -95,7 +95,7 @@
                     enabled = true;
                     ed.execCommand('mtFullScreenUpdateFitToWindow');
                     fitToWindow();
-                    $window.bind('resize.mt_fullscreen', fitToWindow);
+                    $window.on('resize.mt_fullscreen', fitToWindow);
                 }
                 else {
                     ed.execCommand('mtRestoreEditorSize', editorSize);
@@ -116,7 +116,7 @@
 
                     enabled = false;
                     fitToWindow = function(){};
-                    $window.unbind('resize.mt_fullscreen');
+                    $window.off('resize.mt_fullscreen');
                 }
                 ed.fire('mtFullscreenStateChanged', {state: enabled});
 

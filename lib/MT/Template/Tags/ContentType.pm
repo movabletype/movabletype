@@ -1828,8 +1828,7 @@ sub _hdlr_content_field {
         || ( $args->{content_field} ? undef : $content_type->fields->[0] )
         or return $ctx->_no_content_field_error( $args->{content_field} );
 
-    local $ctx->{__stash}{content_field_data} = $field_data
-        unless $ctx->stash('content_field_data');
+    local $ctx->{__stash}{content_field_data} = $field_data;
 
     my $value = $content_data->data->{ $field_data->{id} };
     my $check_value = defined $value ? $value : '';

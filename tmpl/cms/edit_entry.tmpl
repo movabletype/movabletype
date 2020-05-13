@@ -369,7 +369,7 @@
   </script>
 <mt:if name="object_type" eq="page">
   <div mt:delegate="category-list" id="category-list"></div>
-  <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Add folder">">
+  <a href="javascript:void(0);" class="change-folder-link" mt:command="open-category-selector" title="<__trans phrase="Change Folder">">
     <__trans phrase="Change Folder"/>
   </a>
 </mt:if>
@@ -836,7 +836,7 @@
 </div>
 
 <mt:if name="enabled_plugins{CommentsTrackback}">
-<div id="feedback-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
+<div id="feedback-field"<mt:unless name="disp_prefs_show_feedback"> style="display: none;"</mt:unless>>
   <mtapp:widget
      id="entry-feedback-widget"
      label="<__trans phrase="Comments">">
@@ -905,7 +905,7 @@
 </mt:if>
 
 <mt:if name="object_type" like="(entry|page)">
-<div id="assets-field" class="d-none d-md-block"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
+<div id="assets-field"<mt:unless name="disp_prefs_show_assets"> style="display: none;"</mt:unless>>
   <mt:setvarblock name="widget_label"><__trans phrase="[_1] Assets" params="<mt:var name="object_label">"></mt:setvarblock>
   <mtapp:widget
      id="asset_container"
@@ -1356,8 +1356,8 @@ div.mce-notification-error {
           cmtTableSelect = new TC.TableSelect( "manage-comments" );
           cmtTableSelect.rowSelect = true;
           <mt:if name="tags_js">initTags();</mt:if>
-          <mt:unless name="id">jQuery('#title').focus();</mt:unless>
-          jQuery('#convert_breaks, #convert_breaks_for_mobile').change(changedTextFormat);
+          <mt:unless name="id">jQuery('#title').trigger('focus');</mt:unless>
+          jQuery('#convert_breaks, #convert_breaks_for_mobile').on('change', changedTextFormat);
       }
 
       var tagPos = 0;
@@ -1752,14 +1752,14 @@ div.mce-notification-error {
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-    jQuery('button.preview').click(function(event) {
+    jQuery('button.preview').on('click', function(event) {
         jQuery('form#entry_form input[name=__mode]').val('preview_entry');
   <mt:if name="config.previewinnewwindow">
         jQuery('form#entry_form').attr('target', 'mt_preview_entry_<mt:var name="blog_id" escape="js" default="0">_<mt:var name="id" escape="js" default="0">');
   </mt:if>
     });
   <mt:if name="config.previewinnewwindow">
-    jQuery('button.publish').click(function(event) {
+    jQuery('button.publish').on('click', function(event) {
         jQuery('form#entry_form input[name=__mode]').val('save_entry');
         jQuery('form#entry_form').removeAttr('target');
         jQuery('form#entry_form').attr('mt:once', '1');
@@ -1774,11 +1774,11 @@ div.mce-notification-error {
         limit: '<$mt:var name="basename_limit" escape="js"$>',
         basename: '<$mt:var name="basename" escape="js"$>'
     });
-    jQuery('input#save_revision').click(function() {
+    jQuery('input#save_revision').on('click', function() {
         jQuery('input#revision-note').toggle();
     });
 
-    jQuery('select#status').change(function() {
+    jQuery('select#status').on('change', function() {
         setSaveButtonText();
         clearUnpublishDate();
     });
@@ -1830,7 +1830,7 @@ div.mce-notification-error {
         }
     });
 
-    jQuery('div#display-options-detail :checkbox').click(function() {
+    jQuery('div#display-options-detail :checkbox').on('click', function() {
         var $field_block = jQuery('div#'+this.value+'-field');
         if ( this.checked ) {
             $field_block.show();

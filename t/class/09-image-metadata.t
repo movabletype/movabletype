@@ -11,18 +11,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use File::Basename;
-use File::Copy;
-use File::Spec;
-use File::Temp qw( tempfile );
-
 use MT::Test;
 use MT;
 use MT::Image;
+use MT::Test::Image;
 
 use Image::ExifTool;
-
-MT::Test->init_app;
 
 $test_env->prepare_fixture('db');
 
@@ -34,14 +28,13 @@ for my $driver (qw/ ImageMagick GD Imager NetPBM /) {
         $cfg->ImageDriver($driver);
         is( $cfg->ImageDriver, $driver, qq{ImageDriver is "$driver".} );
 
-        my $jpg_file
-            = File::Spec->catfile( $ENV{MT_HOME}, 't', 'images', 'test.jpg' );
+        my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+            DIR    => $test_env->root,
+            SUFFIX => '.jpg',
+        );
+        close $guard;
 
-        # Copy JPEG file.
-        my ( $fh, $tempfile ) = tempfile( SUFFIX => '.jpg' );
-        close $fh;
-        copy( $jpg_file, $tempfile );
-        ok( -s $tempfile, 'Copy JPEG file.' );
+        ok( -s $tempfile, 'JPEG file exists.' );
 
         # JPEG file does not have 'Orientation' tag.
         my $tag  = 'Orientation';

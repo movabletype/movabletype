@@ -15,7 +15,7 @@
         },
         config: {
             mode: "exact",
-            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen,compat3x',
+            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen,compat3x,table',
             language: $('html').attr('lang'),
             theme: "modern",
             skin: 'lightgray',
@@ -30,7 +30,7 @@
             // Buttons using in source mode.
             plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
             // Buttons using in wysiwyg mode.
-            plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
+            plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image,|,table,',
             plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,alignleft,aligncenter,alignright,indent,outdent,|,formatselect,|,mt_fullscreen',
 
             plugin_mt_wysiwyg_insert_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
@@ -50,7 +50,7 @@
                         $contents.find('a[onmouseover^=showColor]')
                         .each(function() {
                             var callback = this.onmouseover;
-                            $(this).click(function() {
+                            $(this).on('click', function() {
                                 callback();
                                 return false;
                             });

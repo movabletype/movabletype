@@ -1511,7 +1511,7 @@ use vars qw( @ISA %Lexicon );
 	'(All child sites in this site)' => 'このサイトの全ての子サイト',
 	'Select to apply this trigger to all child sites in this site.' => 'サイト内のすべての子サイトでトリガーを有効にする',
 	'(All sites and child sites in this system)' => 'システム内のすべてのサイトと子サイト',
-	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトとこサイトでトリガーを有効にする',
+	'Select to apply this trigger to all sites and child sites in this system.' => 'システム内のすべてのサイトと子サイトでトリガーを有効にする',
 	'Entry or Page' => '記事/ウェブページ',
 	'Comment' => 'コメント',
 	'Trackback' => 'トラックバック',
@@ -3233,7 +3233,7 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want to remove filter \'[_1]\'?' => 'フィルタ\'[_1]\'を削除してよろしいですか?',
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
-	'Show' => '表示項目',
+	'Show' => '表示件数',
 	'25 rows' => '25件',
 	'50 rows' => '50件',
 	'100 rows' => '100件',

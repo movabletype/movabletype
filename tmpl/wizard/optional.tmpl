@@ -47,7 +47,7 @@
     </mtapp:statusmsg>
     </mt:if>
   </mt:if>
-  
+
     <!-- EmailAddressMain -->
       <mtapp:setting
          id="email_address_main"
@@ -266,7 +266,7 @@ function go(mode) {
 }
 
 jQuery(function() {
-    jQuery('#mail_transfer').change(function() {
+    jQuery('#mail_transfer').on('change', function() {
         var type = jQuery(':selected', this).val();
         if ((type == "smtp")) {
             jQuery('#sendmail_path').hide();
@@ -275,7 +275,7 @@ jQuery(function() {
             jQuery('#smtp_port').show();
             jQuery('#submit').show();
             jQuery('#params').show();
-            jQuery('#smtp_server').focus();
+            jQuery('#smtp_server').trigger('focus');
         } else if (type == "sendmail") {
             jQuery('#sendmail_path').show();
             jQuery('#goback').hide();
@@ -283,7 +283,7 @@ jQuery(function() {
             jQuery('#smtp_port').hide();
             jQuery('#submit').show();
             jQuery('#params').show();
-            jQuery('#sendmail_path').focus();
+            jQuery('#sendmail_path').trigger('focus');
         } else {
             jQuery('#goback').show();
             jQuery('#submit').hide();
@@ -291,7 +291,7 @@ jQuery(function() {
         }
     });
 
-    jQuery('#smtp_auth').click(function() {
+    jQuery('#smtp_auth').on('click', function() {
         if ( jQuery(this).is(':checked') ) {
             jQuery('#smtpauth_params').show();
         } else {
@@ -299,7 +299,7 @@ jQuery(function() {
         }
     });
 
-    jQuery('#smtp_ssl').change(function() {
+    jQuery('#smtp_ssl').on('change', function() {
         var type = jQuery(':selected', this).val();
         if ( type == "ssl" && ( jQuery('#smtp_port').val().length == 0 || jQuery('#smtp_port').val() == 25 ) ) {
             jQuery('#smtp_port').val(465).mtUnvalidate();
@@ -308,19 +308,19 @@ jQuery(function() {
         }
     });
 
-    jQuery('#back_to_settings').click(function() {
+    jQuery('#back_to_settings').on('click', function() {
         jQuery('#settings').show();
         jQuery('#testing').hide();
     });
 
-    jQuery('#go_to_testing').click(function() {
+    jQuery('#go_to_testing').on('click', function() {
         if ( jQuery('#optional_form').find('input:visible, select:visible').mtValidate('simple') ) {
             jQuery('#settings').hide();
             jQuery('#testing').show();
         }
     });
 
-    jQuery('#optional_form').submit( function () {
+    jQuery('#optional_form').on('submit', function () {
         if ( !( jQuery(this).find('input[name="__mode"]').val() == 'previous_step' ) ) {
             if ( !jQuery(this).find('input:visible, select:visible').mtValidate('simple') )
                 return false;
@@ -379,4 +379,3 @@ jQuery(function() {
 
 <mt:include name="layout/chromeless.tmpl">
 <mt:var name="layout">
-

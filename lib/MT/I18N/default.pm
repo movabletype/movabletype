@@ -39,7 +39,6 @@ sub NEWSBOX_URL() {
 sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {0}
 sub DEFAULT_TIMEZONE()     {0}
-sub MAIL_ENCODING()        {'ISO-8859-1'}
 sub LOG_EXPORT_ENCODING()  {''}
 sub EXPORT_ENCODING()      {''}
 sub PUBLISH_CHARSET()      {'UTF-8'}

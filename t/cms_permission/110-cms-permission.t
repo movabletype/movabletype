@@ -9,7 +9,9 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -1559,7 +1561,7 @@ sub make_data {
     require MT::Role;
     my $role = MT::Role->new();
     $role->set_values(
-        {   name  => 'Entry Editor',
+        {   name  => MT->translate('Entry Editor'),
             perms => [
                 'create_post',  'edit_all_posts',
                 'edit_tags',    'edit_categories',
@@ -1572,11 +1574,11 @@ sub make_data {
         or die "Couldn't save role record 20: " . $role->errstr;
 
     ### Association
-    my $designer_role = MT::Role->load( { name => 'Designer' } );
-    my $author_role   = MT::Role->load( { name => 'Author' } );
-    my $site_role     = MT::Role->load( { name => 'Site Administrator' } );
-    my $page_role     = MT::Role->load( { name => 'Webmaster' } );
-    my $editor_role   = MT::Role->load( { name => 'Entry Editor' } );
+    my $designer_role = MT::Role->load( { name => MT->translate('Designer') } );
+    my $author_role   = MT::Role->load( { name => MT->translate('Author') } );
+    my $site_role     = MT::Role->load( { name => MT->translate('Site Administrator') } );
+    my $page_role     = MT::Role->load( { name => MT->translate('Webmaster') } );
+    my $editor_role   = MT::Role->load( { name => MT->translate('Entry Editor') } );
 
     require MT::Association;
     my $assoc = MT::Association->new();

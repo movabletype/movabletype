@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 # Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
@@ -115,11 +115,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.2';
+    $version = '7.3';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4605';
+    $release_version = 'r.4607';
 }
 
 my ( $mt, $LH );

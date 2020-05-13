@@ -37,3 +37,4 @@ class StatsBaseProvider {
         $this->blog = $blog;
     }
 }
+?>

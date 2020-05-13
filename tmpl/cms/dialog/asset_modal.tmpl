@@ -143,7 +143,7 @@ var currentPanel = '#upload-asset-panel';
 <mt:else>
 var currentPanel = '#list-asset-panel';
 </mt:if>
-jQuery('.left-menu-item').click( function() {
+jQuery('.left-menu-item').on('click', function() {
   // Make custom event
   var event = new jQuery.Event('changePanel');
 
@@ -161,7 +161,7 @@ jQuery('.top-menu-item').on('click', function () {
   var event = new jQuery.Event('changePanel');
 
   var panelIdSelector = jQuery(this).data('panelId');
-  jQuery('a.left-menu-item[href=' + panelIdSelector + ']').click();
+  jQuery('a.left-menu-item[href=' + panelIdSelector + ']').trigger('click');
 
   jQuery('a.top-menu-item.btn-primary')
     .removeClass('btn-primary')
@@ -175,8 +175,8 @@ jQuery('.top-menu-item').on('click', function () {
   return false;
 });
 
-jQuery('.actions-bar button.primary').click(function() {
-  jQuery('#select_asset').submit();
+jQuery('.actions-bar button.primary').on('click', function() {
+  jQuery('#select_asset').trigger('submit');
 });
 </mt:setvarblock>
 

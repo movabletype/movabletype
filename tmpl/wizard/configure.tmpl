@@ -15,7 +15,7 @@
     <mt:var name="error" escape="html"><mt:if name="error_more"> <a href="#" class="detail-link"><__trans phrase="Details"></a></mt:if>
     <mt:if name="error_more">
       <div class="detail">
-        <p><mt:var name="error_more" escape="html"></p>
+        <mt:var name="error_more" escape="html">
       </div>
     </mt:if>
   </mtapp:statusmsg>
@@ -96,7 +96,7 @@
              type="<mt:var name="type">"
              name="<mt:var name="id">"
              class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
-             value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
+             value="<mt:var name="$id" escape="html">" />
         </mt:if>
         </mtapp:setting>
       </mt:loop>
@@ -190,7 +190,7 @@ function validate (f) {
                 f.dbpath.focus();
                 return false;
             }
-        } else {    
+        } else {
             if ((!f.dbuser.value) && (db != "mssqlserver") && (db != "umssqlserver")) {
                 alert('<__trans phrase="You must set your Username." escape="js">');
                 f.dbuser.focus();
@@ -211,8 +211,8 @@ function go(mode) {
 }
 
 function reTest() {
-  needValidate = false; 
-  go('retry'); 
+  needValidate = false;
+  go('retry');
   document.forms[0].submit();
 }
 
@@ -255,20 +255,19 @@ var database = new Array();
         }
     }
 
-    jQuery('#dbtype').change(function() {
+    jQuery('#dbtype').on('change', function() {
         show_fields();
     });
     show_fields();
 
-    jQuery('#more').click(function(event) {
+    jQuery('#more').on('click', function(event) {
         jQuery('#advanced_fields').show();
         jQuery(this).remove();
     });
 <mt:if name="connect_error">
-    jQuery('.msg').mtToggleField();
+    jQuery('#connect_error').mtToggleField();
 </mt:if>
 </mt:setvarblock>
 
 <mt:include name="layout/chromeless.tmpl">
 <mt:var name="layout">
-

@@ -23,6 +23,8 @@ use strict;
 use Image::ExifTool qw(:Utils);
 use Image::ExifTool::XMP;
 
+sub Init_crd($);
+
 #------------------------------------------------------------------------------
 
 # xmpDM structure definitions
@@ -73,6 +75,18 @@ my %sTimecode = (
     },
     timeValue   => { },
     value       => { Writable => 'integer', Notes => 'only in XMP 2008 spec; an error?' },
+);
+
+# camera-raw defaults
+%Image::ExifTool::XMP::crd = (
+    %xmpTableDefaults,
+    INIT_TABLE => \&Init_crd,
+    GROUPS => { 1 => 'XMP-crd', 2 => 'Image' },
+    NAMESPACE   => 'crd',
+    AVOID => 1,
+    TABLE_DESC => 'Photoshop Camera Defaults namespace',
+    NOTES => 'Adobe Camera Raw Defaults tags.',
+    # (tags added dynamically when WRITE_PROC is called)
 );
 
 # XMP Dynamic Media namespace properties (xmpDM)
@@ -359,12 +373,13 @@ my %sEntityWithRole = (
     Name        => { Writable => 'lang-alt' },
     Role        => { List => 'Bag' },
 );
-my %sFrameSize = (
-    STRUCT_NAME => 'FrameSize',
-    NAMESPACE   => 'Iptc4xmpExt',
-    WidthPixels  => { Writable => 'integer' },
-    HeightPixels => { Writable => 'integer' },
-);
+# (no longer used)
+#my %sFrameSize = (
+#    STRUCT_NAME => 'FrameSize',
+#    NAMESPACE   => 'Iptc4xmpExt',
+#    WidthPixels  => { Writable => 'integer' },
+#    HeightPixels => { Writable => 'integer' },
+#);
 my %sRating = (
     STRUCT_NAME => 'Rating',
     NAMESPACE   => 'Iptc4xmpExt',
@@ -374,7 +389,7 @@ my %sRating = (
     RatingScaleMaxValue => { FlatName => 'ScaleMaxValue' },
     RatingValueLogoLink => { FlatName => 'ValueLogoLink' },
     RatingRegion => {
-        FlatName => 'RatingRegion',
+        FlatName => 'Region',
         Struct => \%sLocationDetails,
         List => 'Bag',
     },
@@ -421,6 +436,39 @@ my %sLinkedImage = (
     HeightPixels=> { Writable => 'integer' },
     UsedVideoFrame => { Struct => \%sTimecode },
 );
+my %sBoundaryPoint = ( # new in 1.5
+    STRUCT_NAME => 'BoundaryPoint',
+    NAMESPACE   => 'Iptc4xmpExt',
+    rbX => { FlatName => 'X', Writable => 'real' },
+    rbY => { FlatName => 'Y', Writable => 'real' },
+);
+my %sRegionBoundary = ( # new in 1.5
+    STRUCT_NAME => 'RegionBoundary',
+    NAMESPACE   => 'Iptc4xmpExt',
+    rbShape => { FlatName => 'Shape', PrintConv => { rectangle => 'Rectangle', circle => 'Circle', polygon => 'Polygon' } },
+    rbUnit  => { FlatName => 'Unit',  PrintConv => { pixel => 'Pixel', relative => 'Relative' } },
+    rbX => { FlatName => 'X', Writable => 'real' },
+    rbY => { FlatName => 'Y', Writable => 'real' },
+    rbW => { FlatName => 'W', Writable => 'real' },
+    rbH => { FlatName => 'H', Writable => 'real' },
+    rbRx => { FlatName => 'Rx', Writable => 'real' },
+    rbVertices => { FlatName => 'Vertices', List => 'Seq', Struct => \%sBoundaryPoint },
+);
+my %sImageRegion = ( # new in 1.5
+    STRUCT_NAME => 'ImageRegion',
+    NAMESPACE   => undef,   # undefined to allow variable-namespace extensions
+    NOTES => q{
+        This structure is new in the IPTC Extension version 1.5 specification.  As
+        well as the fields defined below, this structure may contain any top-level
+        XMP tags, but since they aren't pre-defined the only way to add these tags
+        is to write ImageRegion as a structure with these tags as new fields.
+    },
+    RegionBoundary => { Namespace => 'Iptc4xmpExt', FlatName => 'Boundary', Struct => \%sRegionBoundary },
+    rId    => { Namespace => 'Iptc4xmpExt', FlatName => 'ID' },
+    Name   => { Namespace => 'Iptc4xmpExt', Writable => 'lang-alt' },
+    rCtype => { Namespace => 'Iptc4xmpExt', FlatName => 'Ctype', List => 'Bag', Struct => \%sEntity },
+    rRole  => { Namespace => 'Iptc4xmpExt', FlatName => 'Role',  List => 'Bag', Struct => \%sEntity },
+);
 
 # IPTC Extension namespace properties (Iptc4xmpExt) (ref 4)
 %Image::ExifTool::XMP::iptcExt = (
@@ -429,9 +477,9 @@ my %sLinkedImage = (
     NAMESPACE   => 'Iptc4xmpExt',
     TABLE_DESC => 'XMP IPTC Extension',
     NOTES => q{
-        IPTC Extension namespace tags.  The actual namespace prefix is
-        "Iptc4xmpExt", but ExifTool shortens this for the family 1 group name. (see
-        L<http://www.iptc.org/IPTC4XMP/>)
+        This table contains tags defined by the IPTC Extension schema version 1.5. 
+        The actual namespace prefix is "Iptc4xmpExt", but ExifTool shortens this for
+        the family 1 group name. (see L<http://www.iptc.org/IPTC4XMP/>)
     },
     AboutCvTerm => {
         Struct => \%sCVTermDetails,
@@ -488,12 +536,13 @@ my %sLinkedImage = (
         List => 'Bag',
         Notes => 'deprecated by version 1.2',
     },
-    DigImageGUID            => { Name => 'DigitalImageGUID' },
+    DigImageGUID            => { Groups => { 2 => 'Image' }, Name => 'DigitalImageGUID' },
     DigitalSourcefileType   => {
         Name => 'DigitalSourceFileType',
         Notes => 'now deprecated -- replaced by DigitalSourceType',
+        Groups => { 2 => 'Image' },
     },
-    DigitalSourceType       => { Name => 'DigitalSourceType' },
+    DigitalSourceType       => { Name => 'DigitalSourceType', Groups => { 2 => 'Image' } },
     EmbdEncRightsExpr => {
         Struct => {
             STRUCT_NAME => 'EEREDetails',
@@ -536,8 +585,8 @@ my %sLinkedImage = (
         Groups => { 2 => 'Location' },
         List => 'Bag',
     },
-    MaxAvailHeight          => { Writable => 'integer' },
-    MaxAvailWidth           => { Writable => 'integer' },
+    MaxAvailHeight          => { Groups => { 2 => 'Image' }, Writable => 'integer' },
+    MaxAvailWidth           => { Groups => { 2 => 'Image' }, Writable => 'integer' },
     ModelAge                => { List => 'Bag', Writable => 'integer' },
     OrganisationInImageCode => { List => 'Bag' },
     OrganisationInImageName => { List => 'Bag' },
@@ -669,6 +718,24 @@ my %sLinkedImage = (
     # new IPTC video metadata 1.1 properties
     # (ref https://www.iptc.org/std/videometadatahub/recommendation/IPTC-VideoMetadataHub-props-Rec_1.1.html)
     SnapshotLink => { Groups => { 2 => 'Image' }, List => 'Bag', Struct => \%sLinkedImage, Name => 'Snapshot' },
+    # new IPTC video metadata 1.2 properties
+    # (ref http://www.iptc.org/std/videometadatahub/recommendation/IPTC-VideoMetadataHub-props-Rec_1.2.html)
+    RecDevice => {
+        Groups => { 2 => 'Device' },
+        Struct => {
+            STRUCT_NAME => 'Device',
+            NAMESPACE   => 'Iptc4xmpExt',
+            Manufacturer        => { },
+            ModelName           => { },
+            SerialNumber        => { },
+            AttLensDescription  => { },
+            OwnersDeviceId      => { },
+        },
+    },
+    PlanningRef         => { List => 'Bag', Struct => \%sEntityWithRole },
+    audioBitsPerSample  => { Groups => { 2 => 'Audio' }, Writable => 'integer' },
+    # new IPTC Extension schema 1.5 property
+    ImageRegion => { Groups => { 2 => 'Image' }, List => 'Bag', Struct => \%sImageRegion },
 );
 
 #------------------------------------------------------------------------------
@@ -706,7 +773,7 @@ my %prismPublicationDate = (
         Publishing Requirements for Industry Standard Metadata 3.0 namespace
         tags.  (see L<http://www.prismstandard.org/>)
     },
-    acedemicField   => { }, # (3.0)
+    academicField   => { }, # (3.0)
     aggregateIssueNumber => { Writable => 'integer' }, # (3.0)
     aggregationType => { List => 'Bag' },
     alternateTitle  => {
@@ -1158,15 +1225,15 @@ my %sSubVersion = (
     TagStructure => { Struct => \%sTagStruct, List => 'Bag' },
     TagStructureLabelName => { Name => 'LabelName1', Flat => 1 },
     TagStructureReference => { Name => 'Reference1', Flat => 1 },
-    TagStructureSubLabels => { Name => 'SubLables1', Flat => 1 },
+    TagStructureSubLabels => { Name => 'SubLabels1', Flat => 1 },
     TagStructureParentReference => { Name => 'ParentReference1', Flat => 1 },
     TagStructureSubLabelsLabelName => { Name => 'LabelName2', Flat => 1 },
     TagStructureSubLabelsReference => { Name => 'Reference2', Flat => 1 },
-    TagStructureSubLabelsSubLabels => { Name => 'SubLables2', Flat => 1 },
+    TagStructureSubLabelsSubLabels => { Name => 'SubLabels2', Flat => 1 },
     TagStructureSubLabelsParentReference => { Name => 'ParentReference2', Flat => 1 },
     TagStructureSubLabelsSubLabelsLabelName => { Name => 'LabelName3', Flat => 1 },
     TagStructureSubLabelsSubLabelsReference => { Name => 'Reference3', Flat => 1 },
-    TagStructureSubLabelsSubLabelsSubLabels => { Name => 'SubLables3', Flat => 1 },
+    TagStructureSubLabelsSubLabelsSubLabels => { Name => 'SubLabels3', Flat => 1 },
     TagStructureSubLabelsSubLabelsParentReference => { Name => 'ParentReference3', Flat => 1 },
     TagStructureSubLabelsSubLabelsSubLabelsLabelName => { Name => 'LabelName4', Flat => 1 },
     TagStructureSubLabelsSubLabelsSubLabelsReference => { Name => 'Reference4', Flat => 1 },
@@ -1357,7 +1424,7 @@ my %sSubVersion = (
 );
 
 # Microsoft ExpressionMedia namespace properties (expressionmedia)
-# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4235.0.html)
+# (ref https://exiftool.org/forum/index.php/topic,4235.0.html)
 %Image::ExifTool::XMP::ExpressionMedia = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-expressionmedia', 2 => 'Image' },
@@ -1550,7 +1617,7 @@ my %sSubVersion = (
 );
 
 # Google panorama namespace properties
-# (ref http://u88.n24.queensu.ca/exiftool/forum/index.php/topic,4569.0.html)
+# (ref https://exiftool.org/forum/index.php/topic,4569.0.html)
 %Image::ExifTool::XMP::GPano = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-GPano', 2 => 'Image' },
@@ -1592,11 +1659,13 @@ my %sSubVersion = (
 %Image::ExifTool::XMP::GSpherical = (
     %xmpTableDefaults,
     GROUPS => { 1 => 'XMP-GSpherical', 2 => 'Image' },
+    WRITE_GROUP => 'GSpherical', # write in special location for video files
     NAMESPACE => 'GSpherical',
     AVOID => 1,
     NOTES => q{
         Not actually XMP.  These RDF/XML tags are used in Google spherical MP4
-        videos.  See
+        videos.  These tags are written into the video track of MOV/MP4 files, and
+        not at the top level like other XMP tags.  See
         L<https://github.com/google/spatial-media/blob/master/docs/spherical-video-rfc.md>
         for the specification.
     },
@@ -1631,8 +1700,8 @@ my %sSubVersion = (
 # Google depthmap information (ref https://developers.google.com/depthmap-metadata/reference)
 %Image::ExifTool::XMP::GDepth = (
     GROUPS      => { 0 => 'XMP', 1 => 'XMP-GDepth', 2 => 'Image' },
-    NAMESPACE   => { 'GDepth' => 'http://ns.google.com/photos/1.0/depthmap/' },
-    AVOID       => 1, # (too potential tag name conflicts)
+    NAMESPACE   => 'GDepth',
+    AVOID       => 1, # (too many potential tag name conflicts)
     NOTES       => q{
         Google depthmap information. See
         L<https://developers.google.com/depthmap-metadata/> for the specification.
@@ -1649,6 +1718,7 @@ my %sSubVersion = (
     Far         => { Writable => 'real' },
     Mime        => { },
     Data => {
+        Name => 'DepthImage',
         ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
         ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
     },
@@ -1683,6 +1753,42 @@ my %sSubVersion = (
     FocalPointY     => { Writable => 'real' },
 );
 
+# Google camera namespace (ref PH)
+%Image::ExifTool::XMP::GCamera = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-GCamera', 2 => 'Camera' },
+    NAMESPACE => 'GCamera',
+    NOTES => 'Camera information found in Google panorama images.',
+    BurstID         => { },
+    BurstPrimary    => { },
+    PortraitNote    => { },
+    PortraitRequest => {
+        Notes => 'High Definition Render Pipeline (HDRP) data', #PH (guess)
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
+    PortraitVersion => { },
+    SpecialTypeID   => { List => 'Bag' },
+    PortraitNote    => { },
+    DisableAutoCreation => { List => 'Bag' },
+    hdrp_makernote => {
+        Name => 'HDRPMakerNote',
+        # decoded data starts with the following bytes, but nothing yet is known about its contents:
+        # 48 44 52 50 02 ef 64 35 6d 5e 70 1e 2c ea e3 4c [HDRP..d5m^p.,..L]
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
+);
+
+# Google creations namespace (ref PH)
+%Image::ExifTool::XMP::GCreations = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-GCreations', 2 => 'Camera' },
+    NAMESPACE => 'GCreations',
+    NOTES => 'Google creations tags.',
+    CameraBurstID  => { },
+);
+
 # Getty Images namespace (ref PH)
 %Image::ExifTool::XMP::GettyImages = (
     %xmpTableDefaults,
@@ -1693,7 +1799,7 @@ my %sSubVersion = (
         prefix recorded in the file, but ExifTool shortens this for the family 1
         group name.
     },
-    Personality         => { },
+    Personality         => { List => 'Bag' },
     OriginalFilename    => { Name => 'OriginalFileName' },
     ParentMEID          => { },
     # the following from StarGeek
@@ -1714,6 +1820,22 @@ my %sSubVersion = (
     RoutingExclusions   => { List => 'Bag' },
     SecondaryFTP        => { List => 'Bag' },
     TimeShot            => { },
+);
+
+# RED smartphone images (ref PH)
+%Image::ExifTool::XMP::LImage = (
+    %xmpTableDefaults,
+    GROUPS => { 1 => 'XMP-LImage', 2 => 'Image' },
+    NAMESPACE => 'LImage',
+    NOTES => 'Tags written by RED smartphones.',
+    MajorVersion => { },
+    MinorVersion => { },
+    RightAlbedo => {
+        Notes => 'Right stereoscopic image',
+        Groups => { 2 => 'Preview' },
+        ValueConv => 'Image::ExifTool::XMP::DecodeBase64($val)',
+        ValueConvInv => 'Image::ExifTool::XMP::EncodeBase64($val)',
+    },
 );
 
 # SVG namespace properties (ref 9)
@@ -1748,6 +1870,23 @@ my %sSubVersion = (
     NAMESPACE => undef, # variable namespace
 );
 
+#------------------------------------------------------------------------------
+# Generate crd tags
+# Inputs: 0) tag table ref
+sub Init_crd($)
+{
+    my $tagTablePtr = shift;
+    # import tags from CRS namespace
+    my $crsTable = GetTagTable('Image::ExifTool::XMP::crs');
+    my $tag;
+    foreach $tag (Image::ExifTool::TagTableKeys($crsTable)) {
+        my $crsInfo = $$crsTable{$tag};
+        my $tagInfo = $$tagTablePtr{$tag} = { %$crsInfo };
+        $$tagInfo{Groups} = { 0 => 'XMP', 1 => 'XMP-crd' , 2 => $$crsInfo{Groups}{2} } if $$crsInfo{Groups};
+    }
+}
+
+
 1;  #end
 
 __END__
@@ -1766,7 +1905,7 @@ This file contains definitions for less common XMP namespaces.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

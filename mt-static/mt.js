@@ -2687,12 +2687,6 @@ MT.App.CategorySelector = new Class( Component, {
 
                 $input.mtValidate('simple-group');
             }
-
-            var that = this;
-            Object.values( app.fieldCategorySelectors ).forEach(function (sel) {
-                if ( sel.contentFieldId === that.contentFieldId ) return;
-                sel.addCategory( obj.result.id, p.label, obj.result.basename, p.arguments.parent, true );
-            });
         }
     },
 

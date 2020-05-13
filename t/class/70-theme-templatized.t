@@ -21,8 +21,6 @@ use FindBin qw( $Bin );
 use MT;
 use utf8;
 
-MT::Test->init_app;
-
 $test_env->prepare_fixture('db_data');
 
 my $mt = MT->instance;

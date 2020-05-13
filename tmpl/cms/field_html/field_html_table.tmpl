@@ -87,9 +87,8 @@ if (browserIsFirefox) {
     updateTableInputValue();
   });
 
-  jQuery('form#edit-content-type-data-form').submit(function() {
+  jQuery('form#edit-content-type-data-form').on('submit', function() {
     updateTableInputValue();
   });
 })();
 </mt:setvarblock>
-

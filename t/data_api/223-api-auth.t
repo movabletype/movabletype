@@ -8,11 +8,14 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        DefaultLanguage => 'en_US',  ## for now
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test::DataAPI;
+use Test::Deep qw/re/;
 
 $test_env->prepare_fixture('db_data');
 
@@ -180,7 +183,7 @@ sub suite {
                     qq{MTAuth oneTimeToken="$magic_token"},
             },
             result => {
-                sessionId   => $magic_token,
+                sessionId   => re('\w+'),
                 accessToken => $magic_token,
                 expiresIn   => MT::AccessToken::ttl(),
                 remember    => $JSON::true,

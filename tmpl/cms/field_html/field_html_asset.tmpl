@@ -180,7 +180,7 @@ jQuery('.asset-field-container').on('click', '.mobile-remove-asset', function (e
   if (e.target.tagName == 'A') {
     return;
   }
-  jQuery(this).find('a.remove').click();
+  jQuery(this).find('a.remove').trigger('click');
   return false;
 });
 
@@ -222,4 +222,3 @@ jQuery('#asset-field-<mt:var name="content_field_id" escape="html">').sortable({
   }
 });
 </mt:setvarblock>
-

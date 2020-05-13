@@ -29,9 +29,11 @@ use strict;
 use vars qw($VERSION);
 use Image::ExifTool qw(:DataAccess :Utils);
 
-$VERSION = '1.45';
+$VERSION = '1.54';
 
 sub ConvertTimecode($);
+sub ProcessSGLT($$$);
+sub ProcessSLLT($$$);
 
 # recognized RIFF variants
 my %riffType = (
@@ -518,6 +520,52 @@ my %code2charset = (
         Name => 'ALPH',
         SubDirectory => { TagTable => 'Image::ExifTool::RIFF::ALPH' },
     },
+    SGLT => { #PH (BikeBro)
+        Name => 'BikeBroAccel',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            ProcessProc => \&ProcessSGLT,
+        },
+    },
+    SLLT => { #PH (BikeBro)
+        Name => 'BikeBroGPS',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            ProcessProc => \&ProcessSLLT,
+        },
+    },
+    iXML => { #PH
+        SubDirectory => { TagTable => 'Image::ExifTool::XMP::XML' },
+    },
+    aXML => { #PH
+        SubDirectory => { TagTable => 'Image::ExifTool::XMP::XML' },
+    },
+#
+# tags found in an AlphaImagingTech AVI video - PH
+#
+    LIST_INF0 => {  # ('0' instead of 'O' -- odd)
+        Name => 'Info',
+        SubDirectory => { TagTable => 'Image::ExifTool::RIFF::Info' },
+    },
+    gps0 => {
+        Name => 'GPSTrack',
+        SetGroups => 'RIFF', # (moves "QuickTime" tags to the "RIFF" group)
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            # (don't use code ref here or get "Prototype mismatch" warning with some Perl versions)
+            ProcessProc => 'Image::ExifTool::QuickTime::Process_gps0',
+        },
+    },
+    gsen => {
+        Name => 'GSensor',
+        SetGroups => 'RIFF', # (moves "QuickTime" tags to the "RIFF" group)
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::QuickTime::Stream',
+            ProcessProc => 'Image::ExifTool::QuickTime::Process_gsen',
+        },
+    },
+    # gpsa - seen hex "01 20 00 00", same as QuickTime
+    # gsea - 16 bytes hex "04 08 02 00 20 02 00 00 1f 03 00 00 01 00 00 00"
 );
 
 # the maker notes used by some digital cameras
@@ -589,7 +637,11 @@ my %code2charset = (
         Name => 'BWFVersion',
         Format => 'int16u',
     },
-    # 348 - int8u[64] - SMPTE 330M UMID (Unique Material Identifier)
+    348 => {
+        Name => 'BWF_UMID',
+        Format => 'undef[64]',
+        ValueConv => '$_=unpack("H*",$val); s/0{64}$//; uc $_',
+    },
     # 412 - int8u[190] - reserved
     602 => {
         Name => 'CodingHistory',
@@ -862,9 +914,9 @@ my %code2charset = (
 
 # RIFF character set chunk
 %Image::ExifTool::RIFF::CSET = (
-    PROCESS_PROC => \&Image::ExifTool::RIFF::ProcessBinaryData,
+    PROCESS_PROC => \&Image::ExifTool::ProcessBinaryData,
     GROUPS => { 2 => 'Other' },
-    Format => 'int16u',
+    FORMAT => 'int16u',
     0 => {
         Name => 'CodePage',
         RawConv => '$$self{CodePage} = $val',
@@ -1070,7 +1122,6 @@ my %code2charset = (
     0 => {
         Name => 'VP8Version',
         Mask => 0x0e,
-        ValueConv => '$val >> 1',
         PrintConv => {
             0 => '0 (bicubic reconstruction, normal loop)',
             1 => '1 (bilinear reconstruction, simple loop)',
@@ -1087,7 +1138,6 @@ my %code2charset = (
         Name => 'HorizontalScale',
         Format => 'int16u',
         Mask => 0xc000,
-        ValueConv => '$val >> 14',
     },
     8 => {
         Name => 'ImageHeight',
@@ -1098,7 +1148,6 @@ my %code2charset = (
         Name => 'VerticalScale',
         Format => 'int16u',
         Mask => 0xc000,
-        ValueConv => '$val >> 14',
     },
 );
 
@@ -1235,7 +1284,7 @@ my %code2charset = (
         # (can't calculate duration like this for compressed audio types)
         RawConv => q{
             return undef if $$self{VALUE}{FileType} =~ /^(LA|OFR|PAC|WV)$/;
-            return ($val[0] and not ($val[2] or $val[3])) ? $val[1] / $val[0] : undef;
+            return(($val[0] and not ($val[2] or $val[3])) ? $val[1] / $val[0] : undef);
         },
         PrintConv => 'ConvertDuration($val)',
     },
@@ -1282,7 +1331,12 @@ sub ConvertTimecode($)
     $val -= $hr * 3600;
     my $min = int($val / 60);
     $val -= $min * 60;
-    return sprintf("%d:%.2d:%05.2f", $hr, $min, $val);
+    my $ss = sprintf('%05.2f', $val);
+    if ($ss >= 60) {    # handle round-off problems
+        $ss = '00.00';
+        ++$min >= 60 and $min -= 60, ++$hr;
+    }
+    return sprintf('%d:%.2d:%s', $hr, $min, $ss);
 }
 
 #------------------------------------------------------------------------------
@@ -1302,7 +1356,8 @@ sub CalcDuration($@)
         # FujiFilm REAL 3D AVI's), but the video stream information isn't reliable for
         # some cameras (eg. Olympus FE models), so use the video stream information
         # only if the RIFF header duration is 2 to 3 times longer
-        my $dur1 = $val[1] / $val[0] if $val[0];
+        my $dur1;
+        $dur1 = $val[1] / $val[0] if $val[0];
         if ($val[2] and $val[3]) {
             my $dur2 = $val[3] / $val[2];
             my $rat = $dur1 / $dur2;
@@ -1344,7 +1399,7 @@ sub CalcDuration($@)
 # Returns: 1 on success
 sub ProcessStreamData($$$)
 {
-    my ($et, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTbl) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
     my $size = $$dirInfo{DirLen};
@@ -1353,9 +1408,9 @@ sub ProcessStreamData($$$)
         $et->VerboseDir($$dirInfo{DirName}, 0, $size);
     }
     my $tag = substr($$dataPt, $start, 4);
-    my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
+    my $tagInfo = $et->GetTagInfo($tagTbl, $tag);
     unless ($tagInfo) {
-        $tagInfo = $et->GetTagInfo($tagTablePtr, 'unknown');
+        $tagInfo = $et->GetTagInfo($tagTbl, 'unknown');
         return 1 unless $tagInfo;
     }
     my $subdir = $$tagInfo{SubDirectory};
@@ -1382,7 +1437,7 @@ sub ProcessStreamData($$$)
         my $subTable = GetTagTable($$subdir{TagTable});
         $et->ProcessDirectory(\%subdirInfo, $subTable);
     } else {
-        $et->HandleTag($tagTablePtr, $tag, undef,
+        $et->HandleTag($tagTbl, $tag, undef,
             DataPt  => $dataPt,
             DataPos => $$dirInfo{DataPos},
             Start   => $start,
@@ -1398,12 +1453,12 @@ sub ProcessStreamData($$$)
 # Inputs: 0) Tag table ref, 1) tag ID
 sub MakeTagInfo($$)
 {
-    my ($tagTablePtr, $tag) = @_;
+    my ($tagTbl, $tag) = @_;
     my $name = $tag;
     my $n = ($name =~ s/([\x00-\x1f\x7f-\xff])/'x'.unpack('H*',$1)/eg);
     # print in hex if tag is numerical
     $name = sprintf('0x%.4x',unpack('N',$tag)) if $n > 2;
-    AddTagToTable($tagTablePtr, $tag, {
+    AddTagToTable($tagTbl, $tag, {
         Name => "Unknown_$name",
         Description => "Unknown $name",
         Unknown => 1,
@@ -1413,12 +1468,11 @@ sub MakeTagInfo($$)
 
 #------------------------------------------------------------------------------
 # Process RIFF chunks
-# Inputs: 0) ExifTool object reference, 1) directory information reference
-#         2) tag table reference
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
 # Returns: 1 on success
 sub ProcessChunks($$$)
 {
-    my ($et, $dirInfo, $tagTablePtr) = @_;
+    my ($et, $dirInfo, $tagTbl) = @_;
     my $dataPt = $$dirInfo{DataPt};
     my $start = $$dirInfo{DirStart};
     my $size = $$dirInfo{DirLen};
@@ -1451,7 +1505,7 @@ sub ProcessChunks($$$)
             $len -= 4;
             $start += 4;
         }
-        my $tagInfo = $et->GetTagInfo($tagTablePtr, $tag);
+        my $tagInfo = $et->GetTagInfo($tagTbl, $tag);
         my $baseShift = 0;
         my $val;
         if ($tagInfo) {
@@ -1468,7 +1522,7 @@ sub ProcessChunks($$$)
                     $start -= $base;
                 }
             } elsif (not $$tagInfo{Binary}) {
-                my $format = $$tagInfo{Format} || $$tagTablePtr{FORMAT};
+                my $format = $$tagInfo{Format} || $$tagTbl{FORMAT};
                 if ($format and $format eq 'string') {
                     $val = substr($$dataPt, $start, $len);
                     $val =~ s/\0+$//;   # remove trailing nulls from strings
@@ -1477,9 +1531,9 @@ sub ProcessChunks($$$)
                 }
             }
         } elsif ($verbose or $unknown) {
-            MakeTagInfo($tagTablePtr, $tag);
+            MakeTagInfo($tagTbl, $tag);
         }
-        $et->HandleTag($tagTablePtr, $tag, $val,
+        $et->HandleTag($tagTbl, $tag, $val,
             DataPt  => $dataPt,
             DataPos => $$dirInfo{DataPos} - $baseShift,
             Start   => $start,
@@ -1490,6 +1544,80 @@ sub ProcessChunks($$$)
         ++$len if $len & 0x01;  # must account for padding if odd number of bytes
         $start += $len;
     }
+    return 1;
+}
+
+#------------------------------------------------------------------------------
+# Process BikeBro SGLT chunk (accelerometer data) (ref PH)
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
+sub ProcessSGLT($$$)
+{
+    my ($et, $dirInfo, $tagTbl) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $dataLen = length $$dataPt;
+    my $ee = $et->Options('ExtractEmbedded');
+    my $pos;
+    # example accelerometer record:
+    # 0           1  2  3           4  5           6  7
+    # 00 00 00 24 02 00 00 01 17 04 00 00 00 00 00 00 00 00 9b 02
+    # frame------ ?? Xs X---------- Ys Y---------- Zs Z----------
+    $$et{SET_GROUP0} = $$et{SET_GROUP1} = 'RIFF';
+    for ($pos=0; $pos<=$dataLen-20; $pos+=20) {
+        $$et{DOC_NUM} = ++$$et{DOC_COUNT};
+        my $buff = substr($$dataPt, $pos);
+        my @a = unpack('NCCNCNCN', $buff);
+        my @acc = ($a[3]*($a[2]?-1:1)/1e5, $a[5]*($a[4]?-1:1)/1e5, $a[7]*($a[6]?-1:1)/1e5);
+        $et->HandleTag($tagTbl, FrameNumber   => $a[0]);
+        $et->HandleTag($tagTbl, Accelerometer => "@acc");
+        unless ($ee) {
+            $et->Warn('Use ExtractEmbedded option to extract all accelerometer data', 3);
+            last;
+        }
+    }
+    delete $$et{SET_GROUP0};
+    delete $$et{SET_GROUP1};
+    $$et{DOC_NUM} = 0;
+    return 0;
+}
+
+#------------------------------------------------------------------------------
+# Process BikeBro SLLT chunk (GPS information) (ref PH)
+# Inputs: 0) ExifTool ref, 1) dirInfo ref, 2) tag table ref
+# Returns: 1 on success
+sub ProcessSLLT($$$)
+{
+    my ($et, $dirInfo, $tagTbl) = @_;
+    my $dataPt = $$dirInfo{DataPt};
+    my $dataLen = length $$dataPt;
+    my $ee = $et->Options('ExtractEmbedded');
+    my $pos;
+    # example GPS record:
+    # 0           1  2     3           4     5           6     7     8  9  10 11    12 13 14 15
+    # 00 00 00 17 01 00 00 03 fa 21 ec 00 35 01 6e c0 06 00 08 00 62 10 0b 1b 07 e2 03 0e 57 4e
+    # frame------ ?? lonDD lonDDDDDDDD latDD latDDDDDDDD alt-- spd-- hr mn sc yr--- mn dy EW NS
+    $$et{SET_GROUP0} = $$et{SET_GROUP1} = 'RIFF';
+    for ($pos=0; $pos<=$dataLen-30; $pos+=30) {
+        $$et{DOC_NUM} = ++$$et{DOC_COUNT};
+        my $buff = substr($$dataPt, $pos);
+        my @a = unpack('NCnNnNnnCCCnCCaa', $buff);
+        # - is $a[1] perhaps GPSStatus? (only seen 1, or perhaps record type 1=GPS, 2=acc?)
+        my $time = sprintf('%.4d:%.2d:%.2d %.2d:%.2d:%.2dZ', @a[11..13, 8..10]);
+        $et->HandleTag($tagTbl, FrameNumber  => $a[0]);
+        $et->HandleTag($tagTbl, GPSDateTime  => $time);
+        $et->HandleTag($tagTbl, GPSLatitude  => ($a[4] + $a[5]/1e8) * ($a[15] eq 'S' ? -1 : 1));
+        $et->HandleTag($tagTbl, GPSLongitude => ($a[2] + $a[3]/1e8) * ($a[14] eq 'W' ? -1 : 1));
+        $et->HandleTag($tagTbl, GPSAltitude  => $a[6]);
+        $et->HandleTag($tagTbl, GPSSpeed     => $a[7]);
+        $et->HandleTag($tagTbl, GPSSpeedRef  => 'K');
+        unless ($ee) {
+            $et->Warn('Use ExtractEmbedded option to extract timed GPS', 3);
+            last;
+        }
+    }
+    delete $$et{SET_GROUP0};
+    delete $$et{SET_GROUP1};
+    $$et{DOC_NUM} = 0;
     return 1;
 }
 
@@ -1517,12 +1645,13 @@ sub ProcessRIFF($$)
         $buff .= $buf2;
         return 0 unless $buff =~ /WAVE(.{4})?fmt /sg and $raf->Seek(pos($buff) - 4, 0);
     }
+    $$raf{NoBuffer} = 1 if $et->Options('FastScan'); # disable buffering in FastScan mode
     $mime = $riffMimeType{$type} if $type;
     $et->SetFileType($type, $mime);
     $$et{VALUE}{FileType} .= ' (RF64)' if $rf64;
     $$et{RIFFStreamType} = '';    # initialize stream type
     SetByteOrder('II');
-    my $tagTablePtr = GetTagTable('Image::ExifTool::RIFF::Main');
+    my $tagTbl = GetTagTable('Image::ExifTool::RIFF::Main');
     my $pos = 12;
 #
 # Read chunks in RIFF image
@@ -1567,16 +1696,25 @@ sub ProcessRIFF($$)
         }
         # RIFF chunks are padded to an even number of bytes
         my $len2 = $len + ($len & 0x01);
-        if ($$tagTablePtr{$tag} or (($verbose or $unknown) and $tag !~ /^(data|idx1|LIST_movi|RIFF)$/)) {
+        my $tagInfo = $$tagTbl{$tag};
+        if ($tagInfo or (($verbose or $unknown) and $tag !~ /^(data|idx1|LIST_movi|RIFF)$/)) {
             $raf->Read($buff, $len2) == $len2 or $err=1, last;
-            MakeTagInfo($tagTablePtr, $tag) if not $$tagTablePtr{$tag} and ($verbose or $unknown);
-            $et->HandleTag($tagTablePtr, $tag, $buff,
+            my $setGroups;
+            if ($tagInfo and ref $tagInfo eq 'HASH' and $$tagInfo{SetGroups}) {
+                $setGroups = $$et{SET_GROUP0} = $$et{SET_GROUP1} = $$tagInfo{SetGroups};
+            }
+            MakeTagInfo($tagTbl, $tag) if not $tagInfo and ($verbose or $unknown);
+            $et->HandleTag($tagTbl, $tag, $buff,
                 DataPt  => \$buff,
                 DataPos => 0,   # (relative to Base)
                 Start   => 0,
                 Size    => $len2,
                 Base    => $pos,
             );
+            if ($setGroups) {
+                delete $$et{SET_GROUP0};
+                delete $$et{SET_GROUP1};
+            }
         } elsif ($tag eq 'RIFF') {
             # don't read into RIFF chunk (eg. concatenated video file)
             $raf->Read($buff, 4) == 4 or $err=1, last;
@@ -1616,7 +1754,7 @@ including AVI videos, WAV audio files and WEBP images.
 
 =head1 AUTHOR
 
-Copyright 2003-2018, Phil Harvey (phil at owl.phy.queensu.ca)
+Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
