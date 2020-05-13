@@ -17,6 +17,8 @@ use MT::ConfigMgr;
 use MT::Image;
 use MT::Test::Image;
 
+MT->instance;
+
 my $cfg = MT::ConfigMgr->instance;
 
 for my $d ( $test_env->image_drivers ) {
