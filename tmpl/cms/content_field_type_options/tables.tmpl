@@ -4,13 +4,13 @@
   <mtapp:ContentFieldOption
      id="tables-initial_rows"
      label="<__trans phrase="Initial Rows">">
-    <input ref="initial_rows" type="number" name="initial_rows" id="tables-initial_rows" class="form-control w-25" min="1" value={ options.initial_rows }>
+    <input ref="initial_rows" type="number" name="initial_rows" id="tables-initial_rows" class="form-control w-25" min="1" value={ options.initial_rows || 1 }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
      id="tables-initial_cols"
      label="<__trans phrase="Initial Cols">">
-    <input ref="initial_cols" type="number" name="initial_cols" id="tables-initial_cols" class="form-control w-25" min="1" value={ options.initial_cols }>
+    <input ref="initial_cols" type="number" name="initial_cols" id="tables-initial_cols" class="form-control w-25" min="1" value={ options.initial_cols || 1 }>
   </mtapp:ContentFieldOption>
 
   <mtapp:ContentFieldOption
