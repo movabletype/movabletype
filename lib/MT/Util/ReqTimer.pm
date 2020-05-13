@@ -96,9 +96,9 @@ sub dump_line {
             $dur = $_->[2];
         }
 
-        #if ($dur >= $threshold) {
-        #    push @lines, sprintf("%s=%.5f", $_->[1], $dur);
-        #}
+        if ($dur >= $threshold) {
+            push @lines, sprintf("%s=%.5f", $_->[1], $dur);
+        }
         $total += $_->[0];
     }
     return '' if ( $total < $threshold );
