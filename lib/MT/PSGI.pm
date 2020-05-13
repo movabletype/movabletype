@@ -312,7 +312,7 @@ sub apply_plack_middlewares {
         my $name = $middleware->{name};
         my %options;
         foreach my $opt ( @{ $middleware->{options} } ) {
-            if ( $opt->{value} ) {
+            if ( defined $opt->{value} ) {
                 $options{ $opt->{key} } = $opt->{value};
             }
             elsif ( $opt->{code} ) {

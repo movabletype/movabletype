@@ -196,7 +196,6 @@ sub make_entry {
         excerpt        => 'A story of a stroll.',
         keywords       => 'keywords',
         created_on     => '19780131074500',
-        authored_on    => '19780131074500',
         modified_on    => '19780131074600',
         authored_on    => '19780131074500',
         author_id      => 1,

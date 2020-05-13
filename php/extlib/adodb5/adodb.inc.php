@@ -14,7 +14,7 @@
 /**
 	\mainpage
 
-	@version   v5.20.16  12-Jan-2020
+	@version   v5.20.17  31-Mar-2020
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -224,7 +224,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.20.16  12-Jan-2020';
+		$ADODB_vers = 'v5.20.17  31-Mar-2020';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -302,8 +302,8 @@ if (!defined('_ADODB_LAYER')) {
 		//print "Errorno ($fn errno=$errno m=$errmsg) ";
 		$thisConnection->_transOK = false;
 		if ($thisConnection->_oldRaiseFn) {
-			$fn = $thisConnection->_oldRaiseFn;
-			$fn($dbms, $fn, $errno, $errmsg, $p1, $p2,$thisConnection);
+			$errfn = $thisConnection->_oldRaiseFn;
+			$errfn($dbms, $fn, $errno, $errmsg, $p1, $p2,$thisConnection);
 		}
 	}
 
@@ -3522,7 +3522,6 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			foreach( $keys as $key )
 				$new_rs[strtolower($key)] = $rs[$key];
 			$results[] = $new_rs;
-			
 			$this->MoveNext();
 			$cnt++;
 		}

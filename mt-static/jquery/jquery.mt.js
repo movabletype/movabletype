@@ -1706,7 +1706,7 @@ function getNextIframeId() {
 
 function getIframe() {
   var id = getNextIframeId();
-  var html = '<iframe class="mt-dialog-iframe embed-responsive-item" name="modal-'+id+'"></iframe>';
+  var html = '<iframe id="mt-dialog-iframe" class="embed-responsive-item" name="modal-'+id+'"></iframe>';
   var $iframe = window.top.jQuery(html);
   $iframe.on('load', resizeModal);
   return $iframe;

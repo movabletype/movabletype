@@ -16,6 +16,7 @@ BEGIN {
 use MT;
 use MT::Test;
 use MT::Test::Permission;
+use File::Spec;
 
 MT::Test->init_app;
 
@@ -91,16 +92,13 @@ sub create_preview_file_path {
         '%Y%m%d'
     );
 
-    my $preview_file_path = join(
-        '/',
-        (
-            $blog->site_path,
-            $preview_date->year,
-            sprintf('%02d', $preview_date->mon),
-            sprintf('%02d', $preview_date->mday),
-            $preview_file_name,
-            $preview_file_name . '.html',
-        )
+    my $preview_file_path = File::Spec->catfile(
+        $blog->site_path,
+        $preview_date->year,
+        sprintf('%02d', $preview_date->mon),
+        sprintf('%02d', $preview_date->mday),
+        $preview_file_name,
+        $preview_file_name . '.html',
     );
 
     return ($preview_file_path, $preview_file_name);

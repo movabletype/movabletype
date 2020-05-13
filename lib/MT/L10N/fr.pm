@@ -5920,7 +5920,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Chercher &amp; remplacer',
-	'You must select one or more item to replace.' => 'Vous devez sélectionner un ou plusieurs objets à remplacer.',
+	'You must select one or more items to replace.' => 'Vous devez sélectionner un ou plusieurs objets à remplacer.',
 	'Search Again' => 'Chercher encore',
 	'Case Sensitive' => 'Sensible à la casse',
 	'Regex Match' => 'Expression rationnelle',
@@ -7342,7 +7342,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Authentication failure: [_1], reason:[_2]' => 'Échec de l\'authentification : [_1], raison : [_2]',
 	'Failed to created commenter.' => 'Impossible de créer le commentateur.',
 	'Failed to create a session.' => 'Impossible de créer une session.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters nécessite l\'installation de Crypt::SSLeay ou de IO::Socket::SSL pour communiquer avec Facebook.',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters nécessite l\'installation de IO::Socket::SSL pour communiquer avec Facebook.',
 	'Please enter your Facebook App key and secret.' => 'Veuillez entrer votre clé et code secret d\'application Facebook.',
 	'Could not verify this app with Facebook: [_1]' => 'impossible de vérifier cette application avec Facebook : [_1]',
 

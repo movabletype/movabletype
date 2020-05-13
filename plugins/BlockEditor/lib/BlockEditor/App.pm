@@ -188,10 +188,27 @@ sub replace_handler {
                 =~ s!$search_regex!$replace_string!g;
             $replaced += $data->{$editor_key}->{$key}->{html}
                 =~ s!$search_regex!$replace_string!g;
+
+            # replace image
+            if ( $data->{$editor_key}->{$key}->{type} eq 'image' ) {
+                $replaced += $data->{$editor_key}->{$key}->{asset_url}
+                    =~ s!$search_regex!$replace_string!g;
+
+                # replace image options
+                my $options = $data->{$editor_key}->{$key}->{options};
+                if ( ref $options eq 'HASH' && %{$options} ) {
+                    $replaced += $options->{alt}
+                        =~ s!$search_regex!$replace_string!g;
+                    $replaced += $options->{caption}
+                        =~ s!$search_regex!$replace_string!g;
+                    $replaced += $options->{title}
+                        =~ s!$search_regex!$replace_string!g;
+                }
+            }
         }
         $content_data->block_editor_data( MT::Util::to_json($data) );
     }
-    return ($replaced > 0, $values);
+    return ( $replaced > 0, $values );
 }
 
 1;
