@@ -118,10 +118,10 @@ my $admin = MT::Author->load(1);
 
 subtest 'BlockEditor Search' => sub {
     foreach my $field_type ( keys %$test_data ) {
-        my $data = $test_data->{$field_type};
+        my %data = %{ $test_data->{$field_type} };
         my $search_value
-            = %$data{type} eq 'horizon' ? %$data{html} : %$data{type};
-        subtest "Search BlockEditor :" . %$data{type} => sub {
+            = $data{type} eq 'horizon' ? $data{html} : $data{type};
+        subtest "Search BlockEditor :" . $data{type} => sub {
             my $app = _run_app(
                 'MT::App::CMS',
                 {   __test_user      => $admin,
@@ -148,14 +148,14 @@ subtest 'BlockEditor Search' => sub {
 
 subtest 'BlockEditor Replace' => sub {
     foreach my $field_type ( keys %$test_data ) {
-        my $data = $test_data->{$field_type};
-        my $search_value = %$data{type} eq 'horizon' ? %$data{html} : %$data{type};
+        my %data = %{ $test_data->{$field_type} };
+        my $search_value = $data{type} eq 'horizon' ? $data{html} : $data{type};
         my $replace_value = "replace_after_$search_value";
         my @matches = $cd->block_editor_data =~ /$search_value/g;
         my $match_count = scalar(@matches);
         # remove key name and type name.
-        $match_count -= 2 if %$data{type} ne 'horizon';
-        subtest "Replace BlockEditor :" . %$data{type} => sub {
+        $match_count -= 2 if $data{type} ne 'horizon';
+        subtest "Replace BlockEditor :" . $data{type} => sub {
             my $app = _run_app(
                 'MT::App::CMS',
                 {   __test_user      => $admin,
