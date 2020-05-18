@@ -34,6 +34,7 @@ BEGIN {
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
                     'dbport',   'dbsocket'
                 ],
+                recommended => 1,
             },
             'postgres' => {
                 label          => 'PostgreSQL Database',
