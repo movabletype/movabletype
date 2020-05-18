@@ -66,6 +66,8 @@ sub config {
             ( $blog_id ? "blog:$blog_id" : 'system' ) );
     }
 
+    $app->add_breadcrumb( $app->translate('Rebuild Trigger') );
+
     $param->{saved} = $app->param('saved');
     $app->load_tmpl( 'cfg_rebuild_trigger.tmpl', $param );
 }
