@@ -195,7 +195,7 @@ BEGIN {
             cf        => ['content_field'],
             cf_idx    => ['content_field_index'],
             ipbanlist => ['banlist'],
-            tbping    => [ 'ping', 'ping_cat' ],
+            tbping    => ['ping', 'ping_cat'],
         },
         list_properties => {
             __virtual => {
@@ -1110,12 +1110,6 @@ BEGIN {
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
-                blog_id => {
-                    auto            => 1,
-                    col             => 'blog_id',
-                    display         => 'none',
-                    filter_editable => 0,
-                },
                 blog_name => {
                     label        => 'Site Name',
                     filter_label => 'Site Name',
@@ -1865,9 +1859,9 @@ BEGIN {
                 type    => 'HASH',
                 default => { ReuseSession => 1 }
             },
-            'SSLVerifyNone'     => undef,
-            'SSLVersion'        => undef,
-            'DebugEmailAddress' => undef,
+            'SSLVerifyNone'         => undef,
+            'SSLVersion'            => undef,
+            'DebugEmailAddress'     => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -2141,8 +2135,7 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
-                default =>
-                    'html jpg jpeg gif png js css ico flv swf otf ttf svg'
+                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
