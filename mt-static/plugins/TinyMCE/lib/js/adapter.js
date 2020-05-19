@@ -345,11 +345,11 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             if (node && node.nodeName === 'IMG') {
                 originalIsCollapsed = selection.isCollapsed;
                 selection.isCollapsed = function(){ return true; };
-                this.editor.execCommand('insertContent', false, value);
+                this.editor.execCommand('mceInsertContent', false, value);
                 selection.isCollapsed = originalIsCollapsed;
             }
             else {
-                this.editor.execCommand('insertContent', false, value);
+                this.editor.execCommand('mceInsertContent', false, value);
             }
         }
     },

@@ -546,7 +546,7 @@
                           }
                         ],
                         onSubmit: function(api) {
-                            ed.execCommand('insertContent', false, api.getData().insert_html);
+                            ed.execCommand('mceInsertContent', false, api.getData().insert_html);
                             api.close()
                         },
                         size: 'large',
