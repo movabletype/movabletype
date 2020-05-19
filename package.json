@@ -1,0 +1,29 @@
+{
+  "name": "movabletype",
+  "version": "1.0.0",
+  "description": "Welcome to Movable Type",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "tinymce": "5.2.2",
+    "tinymce-i18n": "20.4.4"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "copy": "npm run copy-tinymce; npm run copy-tinymce-language;",
+    "copy-tinymce": "rm -rf mt-static/plugins/TinyMCE/tiny_mce/*; cp -rf node_modules/tinymce/* mt-static/plugins/TinyMCE/tiny_mce/",
+    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE/tiny_mce/langs/*; mkdir mt-static/plugins/TinyMCE/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE/tiny_mce/langs/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movabletype/movabletype.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/movabletype/movabletype/issues"
+  },
+  "homepage": "https://github.com/movabletype/movabletype#readme"
+}
