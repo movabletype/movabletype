@@ -12,7 +12,6 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
-use Encode::Locale;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
 
@@ -387,9 +386,6 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode( 'locale',
-        MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode;
 
     require MT::Util::Log;
     MT::Util::Log::init();
