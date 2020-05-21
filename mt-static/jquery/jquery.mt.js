@@ -917,7 +917,7 @@ $.extend( $.mtValidator.prototype, {
                         validator.raise(
                             $.mtValidateMessages['#' + $elem.attr('id') + selector]
                             || $.mtValidateMessages[selector]
-                            || 'Invalid value'
+                            || trans('Invalid value')
                         );
                     }
                     return false;
