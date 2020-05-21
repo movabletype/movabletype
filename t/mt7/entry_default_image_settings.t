@@ -76,6 +76,8 @@ subtest 'Save default image settings for entry.' => sub {
     };
 };
 
+done_testing;
+
 sub entry_config_request {
     my $app = _run_app(
         'MT::App::CMS',
