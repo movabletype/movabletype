@@ -74,7 +74,7 @@ sub metadata {
 }
 
 sub image_height {
-    my $asset = shift;
+    my $asset  = shift;
     my $height = $asset->meta( 'image_height', @_ );
     return $height if $height || @_;
 
@@ -179,7 +179,7 @@ sub thumbnail_file {
         delete $param{Height} if exists $param{Height};
     }
 
-    my $file = $asset->thumbnail_filename(%param) or return;
+    my $file      = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
 
     # thumbnail file exists and is dated on or later than source image
@@ -483,7 +483,7 @@ sub on_upload {
     my ( $base_url, $fname ) = $url =~ m|(.*)/([^/]*)|;
     $url = $base_url . '/'
         . $fname;    # no need to re-encode filename; url is already encoded
-    my $blog = $asset->blog or return;
+    my $blog    = $asset->blog or return;
     my $blog_id = $blog->id;
 
     my $thumb_width = $param->{thumb_width};
@@ -660,7 +660,7 @@ sub on_upload {
             $ctx->stash( 'image_height', $height );
             my $popup = $tmpl->build($ctx);
             die $tmpl->errstr unless defined $popup;
-            my $root_path = $asset->_make_cache_path;
+            my $root_path   = $asset->_make_cache_path;
             my $pseudo_path = $asset->_make_cache_path( undef, 1 );
             my $abs_file_path
                 = File::Spec->catfile( $root_path, $rel_path . $ext );

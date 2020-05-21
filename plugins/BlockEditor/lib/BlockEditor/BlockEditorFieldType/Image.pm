@@ -213,7 +213,7 @@ sub dialog_asset_modal {
     $param{class_filter_loop} = \@class_filters if @class_filters;
 
     # Set directory separator
-    $param{dir_separator} = MT::Util::dir_separator;
+    $param{dir_separator}    = MT::Util::dir_separator;
     $param{can_delete_files} = $app->can_do('delete_asset_file') ? 1 : 0;
 
     MT::CMS::Asset::_set_start_upload_params( $app, \%param );
@@ -310,7 +310,7 @@ sub dialog_insert_options {
 
     my %param;
     $param{options_loop} = $options_loop;
-    $param{edit_field} = $app->param('edit_field') || '';
+    $param{edit_field}   = $app->param('edit_field') || '';
 
     my $html
         = $app->build_page( 'cms/dialog/multi_asset_options.tmpl', \%param );
