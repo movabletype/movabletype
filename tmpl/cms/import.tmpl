@@ -52,18 +52,6 @@ function selectBlog() {
   <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
 
   <mtapp:settinggroup id="import-entry-settings">
-    <mtapp:setting
-       id="import_to"
-       label="<__trans phrase="Import data into">">
-      <div>
-    <mt:if name="blog_id">
-        <mt:var name="blog_name" escape="html"> (<mt:var name="blog_id" escape="html">)
-    <mt:else>
-        <a href="javascript:void(0)" onclick="return selectBlog()"><__trans phrase="Select site"></a>
-    </mt:if>
-      </div>
-    </mtapp:setting>
-
   <mt:if name="importer_loop">
     <mtapp:setting
        id="import_type"
