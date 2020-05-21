@@ -404,12 +404,17 @@ sub _insert_options {
             ? $blog->image_default_align
             : 'none';
     }
+
+    my $width;
+
     if ( !$param->{width} ) {
-        $param->{width}
+        $width
             = $blog->image_default_width
             || $asset->image_width
             || 0;
     }
+
+    $param->{width} = $width >= 600 ? 600 : $width;
 
     return plugin()->load_tmpl( 'cms/include/insert_options.tmpl', $param );
 }

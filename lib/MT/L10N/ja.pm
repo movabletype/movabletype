@@ -3855,6 +3855,9 @@ use vars qw( @ISA %Lexicon );
 	'Save changes to these settings (s)' => '設定を保存 (s)',
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
+    'Side width' => '横幅',
+    'Original size' => 'オリジナルサイズ',
+    'Custom...' => '指定する...',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Spam Settings' => 'スパム設定',

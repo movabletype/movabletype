@@ -2,29 +2,38 @@
 <mt:if name="do_thumb">
   <mtapp:setting
      id="create_thumbnail-<mt:var name="id">"
-     label="<__trans phrase="Use thumbnail">"
+     label="<__trans phrase="Side width">"
      help_page="file_upload"
-     help_section="creating_thumbnails">
+     help_section="creating_thumbnails"
+     style="clear:both;">
     <div class="form-group">
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" name="thumb" id="create_thumbnail-<mt:var name="id">" class="custom-control-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
-        <label class="custom-control-label form-inline" for="create_thumbnail-<mt:var name="id" escape="html">">
-          <__trans phrase="Use thumbnail">
-        </label>
+      <div  class="group-container">
+        <div style="float:left;">
+          <select name="thumb" id="create_thumbnail-<mt:var name="id">" class="custom-select form-control" style="width: max-content;margin-right: 10px;" data-thumb-id="<mt:var name="id">">
+            <option value="0" class="first-child" data-width="<mt:var name="thumb_original_width" escape="html">">
+            <__trans phrase="Original size">
+            </option>
+            <option value="1" selected="selected" data-width="<mt:var name="thumb_width" escape="html">">
+            <__trans phrase="Custom...">
+            </option>
+          </select>
+        </div>
+        <div class="form-inline">
+          (<__trans phrase="width:">
+          <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number w-10 mx-2" value="<mt:var name="thumb_width" escape="html">" style="min-width: 70px;"/>
+          px)
+        </div>
+        <div style="clear:both;"></div>
       </div>
-      <div class="form-group form-inline mt-3 ml-5">
-        (<__trans phrase="width:">
-        <input type="text" name="thumb_width" id="thumb_width-<mt:var name="id">" class="form-control text num required number w-10 mx-2" value="<mt:var name="thumb_width" escape="html">" style="min-width: 70px;"/>
-        <__trans phrase="pixels">)
-      </div>
-      <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
     </div>
+    <input type="hidden" name="thumb_height" value="<mt:var name="thumb_height" escape="html">" />
   </mtapp:setting>
 </mt:if>
 <mtapp:setting
    id="image_alignment-<mt:var name="id">"
    label="<__trans phrase="Alignment">"
-   label_class="top-header">
+   label_class="top-header"
+   style="clear:both;">
   <div id="alignment-<mt:var name="id">" class="form-group">
     <div class="custom-control custom-radio icon-left icon-left-xwide icon-align icon-align-none">
       <input type="radio" name="align-<mt:var name="id">" id="align-none-<mt:var name="id">" class="custom-control-input rb" value="none" <mt:if name="align_none">checked="checked" </mt:if>/>

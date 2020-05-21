@@ -453,10 +453,14 @@ sub insert_options {
     $param->{ 'unit_w' . $_ }
         = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
         for qw(percent pixels);
-    $param->{thumb_width}
+
+    my $image_width
         = $blog->image_default_width
         || $asset->image_width
         || 0;
+
+    $param->{thumb_original_width} = $image_width;
+    $param->{thumb_width}          = $image_width >= 600 ? 600 : $image_width;
 
     return $app->build_page( 'include/insert_options_image.tmpl', $param );
 }

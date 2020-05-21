@@ -416,20 +416,30 @@
     <legend class="h3"><__trans phrase="Image default insertion options"></legend>
 
     <mtapp:setting
-       id="image_default_thumb"
-       label="<__trans phrase="Use thumbnail">"
-     >
-      <div class="custom-control custom-checkbox">
-        <input type="checkbox" name="image_default_thumb" id="image_default_thumb" class="custom-control-input" value="1" <mt:if name="make_thumb">checked="checked" </mt:if>/>
-        <label class="custom-control-label form-inline" for="image_default_thumb">
-          <__trans phrase="Use thumbnail">
+            id="image_default_thumb"
+            label="<__trans phrase="Side width">"
+    >
+    <div class="form-group">
+      <div  class="group-container">
+        <div style="float:left;">
+          <select name="image_default_thumb" id="image_default_thumb" class="custom-select form-control" style="width: max-content;margin-right: 10px;" data-thumb-id="<mt:var name="id">">
+          <option value="0" class="first-child">
+            <__trans phrase="Original size">
+          </option>
+          <option value="1" <mt:if name="make_thumb">selected="selected"</mt:if>>
+          <__trans phrase="Custom...">
+            </option>
+            </select>
+        </div>
+        <div class="form-inline image_default_inline_block">
           (<__trans phrase="width:">
-          <input type="text" name="image_default_width" id="image_default_width" class="form-control w-10 text num" value="<mt:var name="thumb_width" escape="html">"/>
-          <__trans phrase="pixels">
-          )
-        </label>
+          <input type="text" name="image_default_width" id="image_default_width" class="form-control text num required number w-10 mx-2" value="<mt:var name="thumb_width" escape="html">" style="min-width: 70px;"/>
+          px)
+        </div>
+        <div style="clear:both;"></div>
       </div>
-      <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
+    </div>
+    <div id="image_default_thumb-field-msg-block" style="display: none;"></div>
     </mtapp:setting>
 
     <mtapp:setting
@@ -494,6 +504,7 @@
 
 <mt:setvarblock name="js_include" append="1">
 <script>
+  jQuery(function() {
     jQuery.mtValidateAddRules({
         "#basename_limit": function($e) {
             if ( $e.val() < 15 || $e.val() > 250 ) {
@@ -502,7 +513,7 @@
             return true;
         },
         "#image_default_width": function($e) {
-          if ( jQuery('#image_default_thumb').prop('checked') ) {
+          if ( jQuery('#image_default_thumb').val() == 1 ) {
             if (!$e.val()) {
               return false;
             }
@@ -516,26 +527,38 @@
     });
 
     jQuery.mtValidateAddMessages({
-        "#basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
-        "#image_default_width": '<__trans phrase="You must set valid default thumbnail width." escape="singlequotes">'
+        "basename_limit": '<__trans phrase="The range for Basename Length is 15 to 250." escape="singlequotes">',
+        "image_default_width": '<__trans phrase="You must set valid default thumbnail width." escape="singlequotes">'
     });
 
     jQuery('#cfg_entry').on('submit', function(eventObject) {
         if ( !jQuery("#list_on_index").mtValidate('simple2') ) return false;
         if ( !jQuery("#words_in_excerpt").mtValidate('simple') ) return false;
         if ( !jQuery("#basename_limit").mtValidate('simple') ) return false;
-        if ( !jQuery("#image_default_width").mtValidate('simple2') ) return false;
+        if ( !jQuery("#image_default_width").mtValidate('simple-group') ) return false;
         jQuery('input[name="page_custom_prefs"], input[name="entry_custom_prefs"]').prop('disabled', false);
     });
 
-    jQuery('#image_default_thumb').on('click', function() {
-      if ( jQuery('#image_default_thumb').prop('checked') ) {
-        jQuery("#image_default_width").mtValidate('simple2');
+    jQuery('#image_default_thumb').on('change', function() {
+      if ( jQuery('#image_default_thumb').val() == 1 ) {
+        //jQuery("#image_default_width").mtValidate('simple-group');
+        if (jQuery('#image_default_width').val() == 0) {
+          jQuery('#image_default_width').val(600);
+        }
+        jQuery('.image_default_inline_block').show();
       }
       else {
         jQuery("#image_default_width").mtUnvalidate();
+        jQuery('#image_default_width').val(0);
+        jQuery('.image_default_inline_block').hide();
       }
     });
+
+    if ( jQuery('#image_default_thumb').val() != 1 ) {
+        jQuery('.image_default_inline_block').hide();
+    }
+  });
+
 </script>
 </mt:setvarblock>
 

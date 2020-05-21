@@ -1747,7 +1747,15 @@ sub pre_save {
             my $image_default_width = $app->param('image_default_width');
             my $image_default_align = $app->param('image_default_align');
             my $image_default_popup = $app->param('image_default_popup');
-            $obj->image_default_thumb( $image_default_thumb ? 1 : 0 );
+
+            if ($image_default_thumb) {
+                $image_default_thumb = 1;
+            }
+            else {
+                $image_default_thumb = 0;
+                $image_default_width = 0;
+            }
+            $obj->image_default_thumb($image_default_thumb);
             $obj->image_default_width($image_default_width);
             $obj->image_default_align($image_default_align);
             $obj->image_default_popup( $image_default_popup ? 1 : 0 );

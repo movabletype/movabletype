@@ -120,12 +120,13 @@
       var id = $this.attr('data-asset-id');
       var opts = {};
       opts.id = id;
-      if(jQuery(this).find('[name="thumb"]').prop('checked')){
-        if ( !jQuery(this).find('[name="thumb_width"]').mtValidate('default')) {
+      if (jQuery(this).find('[name="thumb"]').val() == 1 ) {
+        if ( !jQuery(this).find('[name="thumb_width"]').mtValidate('simple-group')) {
           // each continue
           errors = 1;
           return true;
         }
+        opts['thumb'] = jQuery(this).find('[name="thumb"]').val();
       }
       jQuery(this).find('input').each(function() {
         if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
@@ -147,6 +148,20 @@
       $form.trigger('submit');
     }
     return false;
+  });
+
+  jQuery('select[name="thumb"]').on('change', function() {
+    var target_block = jQuery(this).parent().next();
+    var input_target = jQuery(target_block).find('input');
+
+    if (jQuery(this).val() == 1 ) {
+      jQuery(target_block).show();
+    } else {
+      jQuery(input_target).mtUnvalidate();
+      jQuery(target_block).hide();
+    }
+
+    jQuery(input_target).val(jQuery(this).find('option:selected').data('width'));
   });
 
   jQuery('input[name="thumb_width"]').on('keypress', function(event){
