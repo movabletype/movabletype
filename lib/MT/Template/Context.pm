@@ -540,21 +540,19 @@ sub get_content_type_context {
     my $blog_id      = $args->{blog_id} || $blog->id || '';
 
     if ( my $str = $args->{content_type} ) {
-        if (!$content_type
-            || (   $content_type
-                && ( $str =~ /^[0-9]+$/ && $content_type->id != $str )
-                && $content_type->unique_id ne $str
-                && ($content_type->blog_id != $blog_id
-                    || (   $content_type->blog_id == $blog_id
-                        && $content_type->name ne $str )
-                )
+        ## If $str points to $content_type, just return it
+        return $content_type
+            if (
+            $content_type
+            && (   ( $str =~ /^[0-9]+$/ && $content_type->id eq $str )
+                || ( $str eq $content_type->unique_id )
+                || (   $str eq $content_type->name
+                    && $content_type->blog_id eq $blog_id )
             )
-            )
-        {
-            $content_type = MT->model('content_type')
-                ->load_by_id_or_name( $str, $blog_id );
-            return $ctx->_no_content_type_error() unless $content_type;
-        }
+            );
+        $content_type
+            = MT->model('content_type')->load_by_id_or_name( $str, $blog_id );
+        return $ctx->_no_content_type_error() unless $content_type;
     }
 
     return $content_type;
