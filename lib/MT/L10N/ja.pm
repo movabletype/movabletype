@@ -4443,6 +4443,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
 	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
+	'Execute' => '実行',
 
 ## tmpl/cms/dialog/recover.tmpl
 	'Reset Password' => 'パスワードのリセット',
@@ -5717,7 +5718,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => '検索/置換',
-	'You must select one or more item to replace.' => '置き換えるアセットを1つ以上選択してください。',
+	'You must select one or more items to replace.' => '置き換える対象を1つ以上選択してください。',
 	'Search Again' => '再検索',
 	'Case Sensitive' => '大文字/小文字を区別する',
 	'Regex Match' => '正規表現',

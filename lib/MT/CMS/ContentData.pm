@@ -861,11 +861,18 @@ sub save {
                 = %categories_old
                 ? MT::Util::to_json( \%categories_old )
                 : undef;
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
                     args => {
                         blog_id => $content_data->blog_id,
+                        ott     => $token,
                         next    => 0,
                         type    => 'content_data-' . $content_data->id,
                         content_data_id => $content_data->id,

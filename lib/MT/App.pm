@@ -1465,21 +1465,24 @@ sub session {
 }
 
 sub make_magic_token {
-    my @alpha = ( 'a' .. 'z', 'A' .. 'Z', 0 .. 9 );
-    my $token = join '', map $alpha[ rand @alpha ], 1 .. 40;
-    $token;
+    require MT::Util::UniqueID;
+    MT::Util::UniqueID::create_magic_token();
 }
 
 sub make_session {
     my ( $auth, $remember ) = @_;
     require MT::Session;
+    require MT::Util::UniqueID;
+    my $new_id = MT::Util::UniqueID::create_session_id();
+    my $token  = MT::Util::UniqueID::create_magic_token();
     my $sess = new MT::Session;
-    $sess->id( make_magic_token() );
+    $sess->id( $new_id );
     $sess->kind('US');    # US == User Session
     $sess->start(time);
     $sess->name( $auth->id );
     $sess->set( 'author_id', $auth->id );
     $sess->set( 'remember', 1 ) if $remember;
+    $sess->set( 'magic_token', $token );
     $sess->save;
     $sess;
 }
@@ -2295,6 +2298,12 @@ sub login {
                 class    => 'author',
                 category => 'login_user',
             );
+
+            ## magic_token = the user is trying to post something
+            ## (after a long pause, or because of CSRF)
+            if ( defined $app->param('magic_token') ) {
+                return $app->redirect_to_home;
+            }
         }
         else {
             $author = $app->session_user( $author, $ctx->{session_id},
@@ -3943,7 +3952,7 @@ sub load_content_actions {
 sub current_magic {
     my $app  = shift;
     my $sess = $app->session;
-    return ( $sess ? $sess->id : undef );
+    return ( $sess ? $sess->get('magic_token') : undef );
 }
 
 sub validate_magic {
@@ -4240,6 +4249,14 @@ sub redirect {
     }
     $app->{redirect} = $url;
     return;
+}
+
+sub redirect_to_home {
+    my $app = shift;
+    my $uri = MT::Util::is_mod_perl1()
+        ? $app->{apache}->uri
+        : $app->{query}->url( -pathinfo => 1, -query => 0, -full => 1 );
+    return $app->redirect($uri);
 }
 
 sub is_valid_redirect_target {

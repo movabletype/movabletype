@@ -5920,7 +5920,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Chercher &amp; remplacer',
-	'You must select one or more item to replace.' => 'Vous devez sélectionner un ou plusieurs objets à remplacer.',
+	'You must select one or more items to replace.' => 'Vous devez sélectionner un ou plusieurs objets à remplacer.',
 	'Search Again' => 'Chercher encore',
 	'Case Sensitive' => 'Sensible à la casse',
 	'Regex Match' => 'Expression rationnelle',

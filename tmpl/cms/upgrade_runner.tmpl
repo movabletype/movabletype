@@ -127,6 +127,9 @@
         var lines = text.split(/\r?\n/);
         for (var i = 0; i < lines.length; i++) {
             var line = lines[i];
+            if (line.match(/ at .+ line \d+/)) { // ignore perlish stuff
+                continue;
+            }
             var matches = line.match(/^#([^ ]+?) (.*)/);
             if (matches && matches.length) {
                 var id = matches[1];
