@@ -248,7 +248,6 @@ sub suite {
                 my @users = $app->model('author')->load(
                     {   status => MT::Author::ACTIVE(),
                         type   => MT::Author::AUTHOR(),
-                        status => MT::Author::ACTIVE()
                     },
                     { sort => 'name', direction => 'ascend' },
                 );
@@ -975,12 +974,6 @@ sub suite {
             method    => 'POST',
             params    => { email => 'chuckd@example.com', },
             author_id => 0,
-            complete  => sub {
-                my $user = $app->model('author')
-                    ->load( { email => 'chuckd@example.com' } );
-                $user->password_reset_expires(0);
-                $user->save or die $user->errstr;
-            },
             result => sub {
                 return +{
                     status => 'success',

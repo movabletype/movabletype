@@ -1580,14 +1580,14 @@ sub newMediaObject {
         = File::Basename::fileparse( $fname, '\.[^\.]*' );
     if ( my $deny_exts = MT->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
+            if   ( $_ =~ m/^\./ ) {qr/$_(?:\..*)?/i}
+            else                  {qr/\.$_(?:\..*)?/i}
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $fname, @deny_exts );
         die _fault(
             MT->translate(
                 '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                $ext,
+                $ret[2],
                 $fname
             )
         ) if $ret[2];

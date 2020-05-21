@@ -5909,7 +5909,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Buscar &amp; Reemplazar',
-	'You must select one or more item to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
+	'You must select one or more items to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
 	'Search Again' => 'Buscar de nuevo',
 	'Case Sensitive' => 'Distinguir mayúsculas y minúsculas',
 	'Regex Match' => 'Expresión regular',
@@ -7327,7 +7327,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Authentication failure: [_1], reason:[_2]' => 'Fallo de autentificación: [_1], razón: [_2]',
 	'Failed to created commenter.' => 'Falló al crear comentarista.',
 	'Failed to create a session.' => 'Falló al crear una sesión.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Los comentaristas de Facebook necesitan que Crypt::SSLeay o IO::Socket::SSL estén instalados para la comunicación con Facebook.',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Los comentaristas de Facebook necesitan IO::Socket::SSL estén instalados para la comunicación con Facebook.',
 	'Please enter your Facebook App key and secret.' => 'Por favor, introduzca el identificador y código secreto de app de Facebook.',
 	'Could not verify this app with Facebook: [_1]' => 'No se pudo verificar esta aplicación en Facebook: [_1]',
 

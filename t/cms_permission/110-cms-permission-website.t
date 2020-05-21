@@ -744,7 +744,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -763,7 +762,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -783,7 +781,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -803,7 +800,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }
@@ -822,7 +818,6 @@ subtest 'action = refresh_website_templates' => sub {
             itemset_action_input => '',
             return_args          => '__mode%3Dlist_website%26blog_id%3D'
                 . $website->id,
-            plugin_action_selector => 'refresh_website_templates',
             id                     => $website->id,
             plugin_action_selector => 'refresh_website_templates',
         }

@@ -397,6 +397,7 @@ sub start_element {
                             if $name eq 'author'
                             && defined $realcolumn_data{external_id};
                         foreach my $metacol ( keys %metacolumns ) {
+                            next unless exists $column_data{$metacol};
                             next
                                 if ( 'vclob' eq $metacolumns{$metacol} )
                                 || ( 'vblob' eq $metacolumns{$metacol} );

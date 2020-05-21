@@ -192,7 +192,7 @@ sub post_save {
         $app->param( 'template_id',     $obj->template_id );
         $app->param( 'single_template', 1 );
         require MT::CMS::Blog;
-        return MT::CMS::Blog::start_rebuild_pages($app);
+        return MT::CMS::Blog::start_rebuild_pages_directly($app);
     }
 }
 

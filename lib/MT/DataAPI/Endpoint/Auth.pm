@@ -110,8 +110,11 @@ sub _authentication {
         or return $app->error(400);
 
     my ( $author, $new_login ) = $login->($app);
-    my $session = $app->{session}
-        or return $app->error( 'Invalid login', 401 );
+    my $session = $app->{session};
+    if ( !$author or !$session ) {
+        delete $app->{redirect};
+        return $app->error( 'Invalid login', 401 );
+    }
 
     # Check user permission
     if ( !$author->can_sign_in_data_api ) {

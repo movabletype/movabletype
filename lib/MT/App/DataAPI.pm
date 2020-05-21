@@ -3167,12 +3167,16 @@ sub session_kind {
 sub make_session {
     my ( $app, $auth, $remember ) = @_;
     require MT::Session;
+    require MT::Util::UniqueID;
+    my $new_id = MT::Util::UniqueID::create_session_id();
+    my $token  = MT::Util::UniqueID::create_magic_token();
     my $sess = new MT::Session;
-    $sess->id( $app->make_magic_token() );
+    $sess->id( $new_id );
     $sess->kind( $app->session_kind );
     $sess->start(time);
     $sess->set( 'author_id', $auth->id );
     $sess->set( 'client_id', $app->current_client_id );
+    $sess->set( 'magic_token', $token );
     $sess->set( 'remember',  1 ) if $remember;
     $sess->save;
     $sess;

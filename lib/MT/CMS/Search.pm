@@ -1787,7 +1787,7 @@ sub _default_results_table_template {
     else {
         return <<TMPL;
         <mtapp:statusmsg
-                id="no-$plural"
+                id="no-$type"
                 class="info"
                 can_close="0">
                 <__trans phrase="No [_1] were found that match the given criteria." params="$plural">

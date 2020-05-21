@@ -110,7 +110,6 @@ subtest 'mode = save' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'save',
-            _type            => 'config',
             _type            => 'objecttag',
             blog_id          => $blog->id,
             object_id        => 1,

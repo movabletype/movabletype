@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.16  12-Jan-2020
+@version   v5.20.17  31-Mar-2020
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -128,7 +128,7 @@ class ADODB_mssqlnative extends ADOConnection {
 	var $cachedSchemaFlush = false;
 	var $sequences = false;
 	var $mssql_version = '';
-    var $is_utf = false;
+	var $is_utf = false;
 
 	function __construct()
 	{
@@ -478,9 +478,9 @@ class ADODB_mssqlnative extends ADOConnection {
 		$connectionInfo["Database"]=$argDatabasename;
 		$connectionInfo["UID"]=$argUsername;
 		$connectionInfo["PWD"]=$argPassword;
-        if ( $this->is_utf )
-            $connectionInfo['CharacterSet'] = 'UTF-8';
-
+		if ( $this->is_utf )
+			$connectionInfo['CharacterSet'] = 'UTF-8';
+		
 		foreach ($this->connectionParameters as $parameter=>$value)
 		    $connectionInfo[$parameter] = $value;
 		
@@ -834,12 +834,11 @@ class ADODB_mssqlnative extends ADOConnection {
 		return $retarr;
 	}
 
-    function Execute($sql,$inputarr=false) {
-        if ( $this->is_utf )
-            $sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
-        return parent::Execute( $sql, $inputarr );
-    }
-
+	function Execute($sql,$inputarr=false) {
+		if ( $this->is_utf )
+			$sql = preg_replace( '/(\'.*\')/', 'N$1', $sql);
+		return parent::Execute( $sql, $inputarr );
+	}
 }
 
 /*--------------------------------------------------------------------------------------
@@ -903,7 +902,13 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 	/* Use associative array to get fields array */
 	function Fields($colname)
 	{
-		if ($this->fetchMode != ADODB_FETCH_NUM) return $this->fields[$colname];
+		if (!is_array($this->fields))
+			/*
+			* Too early
+			*/
+			return;
+		if ($this->fetchMode != ADODB_FETCH_NUM) 
+			return $this->fields[$colname];
 		if (!$this->bind) {
 			$this->bind = array();
 			for ($i=0; $i < $this->_numOfFields; $i++) {

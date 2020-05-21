@@ -50,7 +50,6 @@ sub send_notify {
 
     my $author = $entry->author;
 
-    my $cols = 72;
     my %params;
     $params{blog}         = $blog;
     $params{entry}        = $entry;
@@ -59,9 +58,9 @@ sub send_notify {
     if ( $app->param('send_excerpt') ) {
         $params{send_excerpt} = 1;
     }
-    my $message = $app->param('message');
-    $params{message}
-        = defined $message ? wrap_text( $message, $cols, '', '' ) : '';
+    $params{message} = $app->param('message');
+    $params{message} = '' unless defined $params{message};
+
     if ( $app->param('send_body') ) {
         $params{send_body} = 1;
     }
@@ -318,7 +317,7 @@ sub post_delete {
 }
 
 sub cms_pre_load_filtered_list {
-    my ( $cb, $app, $filter, $load_options, $cols ) = @_;
+    my ( $cb, $app, $filter, $load_options ) = @_;
 
     my $user = $app->user;
     return if $user->is_superuser;
