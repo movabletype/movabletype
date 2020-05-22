@@ -16,7 +16,7 @@ push @files,
 all_critic_ok(@files);
 
 sub _find {
-    return if $File::Find::name =~ m|/(?:extlib|Community\.pack)/|;
+    return if $File::Find::name =~ m!/(?:extlib|Community\.pack)/!;
     if ( $File::Find::name =~ /\.(?:cgi|pl|pm)\z/ ) {
         push @files, $File::Find::name;
     }
