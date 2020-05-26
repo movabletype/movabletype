@@ -385,7 +385,7 @@ function initItem($item) {
       var $element = jQuery(this).parent('.item-ctrl').parents('.sortable-item');
       var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mt-draggable form-inline mod add-form" style="cursor: default;"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="form-control text short mx-2" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
-      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').trigger('focus');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_type" lower_case="1">_label]').trigger('focus');
       jQuery('<button type="button" class="btn btn-secondary add button mr-2"><__trans phrase="Add" escape="js"></button>')
         .on('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
