@@ -302,7 +302,7 @@ function initItem($item) {
       var $element = jQuery(this).parent('.item-ctrl').parent('div');
       var parent = $element.attr('id').slice(4);
       var $form = jQuery('<div class="mod add-form"><input type="text" name="<mt:var name="object_type" lower_case="1">_label" class="text short" placeholder="<__trans phrase="[_1] label" params="<mt:var name="object_label">" escape="js">" />\n</div>');
-      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_label" lower_case="1">_label]').trigger('focus');
+      $form.css('margin-left', (nest.length+1)*indent).insertAfter($element).find('input[name=<mt:var name="object_type" lower_case="1">_label]').trigger('focus');
       jQuery('<button type="button" class="add button"><__trans phrase="Add" escape="js"></button>')
         .on('click', function() {
           var label = jQuery(this).parent('.add-form').find('input').val();
