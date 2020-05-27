@@ -1360,6 +1360,7 @@ my @apis = (
                 'markdown_with_smartypants' => 1,
                 'textile_2'                 => 1,
                 'blockeditor'               => 1,
+                'traditional'               => 1,
             );
 
             # __sanitize__ may come from the community pack
