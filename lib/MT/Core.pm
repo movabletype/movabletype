@@ -2346,6 +2346,10 @@ BEGIN {
         text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
+                handler => 'MT::Util::html_text_transform_extended',
+            },
+            'traditional' => {
+                label   => 'Convert Line Breaks (traditional)',
                 handler => 'MT::Util::html_text_transform',
             },
             'richtext' => {

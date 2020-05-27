@@ -22,7 +22,7 @@ use MT::Util::Deprecated qw(
 our @EXPORT_OK
     = qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd munge_comment
-    rich_text_transform html_text_transform encode_html decode_html
+    rich_text_transform html_text_transform html_text_transform_extended encode_html decode_html
     iso2ts ts2iso offset_time offset_time_list first_n_words
     archive_file_for format_ts dirify remove_html
     days_in wday_from_ts encode_js decode_js get_entry spam_protect
@@ -676,6 +676,22 @@ sub rich_text_transform {
 }
 
 sub html_text_transform {
+    my $str = shift;
+    $str = '' unless defined $str;
+    my @paras = split /\r?\n\r?\n/, $str;
+    for my $p (@paras) {
+        if ( $p
+            !~ m@^</?(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr)@
+            )
+        {
+            $p =~ s!\r?\n!<br />\n!g;
+            $p = "<p>$p</p>";
+        }
+    }
+    join "\n\n", @paras;
+}
+
+sub html_text_transform_extended {
     my $str = shift;
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;

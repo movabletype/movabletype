@@ -13,9 +13,9 @@ BEGIN {
 }
 
 use Test::Base::Less;
-use MT::Util qw( html_text_transform );
+use MT::Util qw( html_text_transform_extended );
 
-register_filter html_text_transform => \&html_text_transform;
+register_filter html_text_transform => \&html_text_transform_extended;
 
 filters {
     input    => [qw/chomp html_text_transform/],
