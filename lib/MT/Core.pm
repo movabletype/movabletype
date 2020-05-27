@@ -2129,6 +2129,8 @@ BEGIN {
 
             'RequiredUserEmail'       => { default => 1 },
             'DefaultClassParamFilter' => { default => 'all' },
+
+            'UseTraditionalTransformer' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2248,7 +2250,11 @@ BEGIN {
         text_filters    => {
             '__default__' => {
                 label   => 'Convert Line Breaks',
-                handler => 'MT::Util::html_text_transform',
+                handler => sub {
+                    MT->config->UseTraditionalTransformer
+                        ? MT::Util::html_text_transform_traditional(@_)
+                        : MT::Util::html_text_transform(@_);
+                }
             },
             'richtext' => {
                 label     => 'Rich Text',
