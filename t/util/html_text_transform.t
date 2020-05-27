@@ -243,7 +243,11 @@ pre-line3-1
 pre-line3-2
 </pre>
 
-<pre><code>
+<pre>
+pre-line0-1
+pre-line0-2
+
+<code>
 pre-line1-1
 pre-line1-2
 
@@ -252,7 +256,11 @@ pre-line2-2
 
 pre-line3-1
 pre-line3-2
-</code></pre>
+</code>
+
+pre-line4-1
+pre-line4-2
+</pre>
 
 <script>
 script1-1
@@ -294,7 +302,11 @@ pre-line3-1
 pre-line3-2
 </pre>
 
-<pre><code>
+<pre>
+pre-line0-1
+pre-line0-2
+
+<code>
 pre-line1-1
 pre-line1-2
 
@@ -303,7 +315,11 @@ pre-line2-2
 
 pre-line3-1
 pre-line3-2
-</code></pre>
+</code>
+
+pre-line4-1
+pre-line4-2
+</pre>
 
 <script>
 script1-1

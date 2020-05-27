@@ -683,7 +683,9 @@ sub html_text_transform {
     my @paras = split /\r?\n\r?\n/, $str;
     my $guard;
     for my $i ( 0 .. @paras - 1 ) {
-        if ( $paras[$i] =~ m!^<($special_tags)! ) {
+        ## If special tags (such as pre, script, style) are found,
+        ## mark them and do not add br tags in-between
+        if ( !$guard && $paras[$i] =~ m!^<($special_tags)! ) {
             $guard = $1;
         }
         if ( $guard && $paras[$i] =~ m!</$guard! ) {
