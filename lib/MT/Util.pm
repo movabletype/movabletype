@@ -683,7 +683,7 @@ sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
-    my $special_tags = qr!(?:script|style|pre|code)!;
+    my $special_tags = qr!(?:script|style|pre)!;
     my @paras = split /\r?\n\r?\n/, $str;
     my $guard;
     for my $i ( 0 .. @paras - 1 ) {
