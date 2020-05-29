@@ -691,26 +691,21 @@ sub html_text_transform_traditional {
     join "\n\n", @paras;
 }
 
+sub _change_lf {
+    my $str = shift;
+    $str =~ s/\n/\x00/g;
+    $str;
+}
+
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
     my $special_tags = qr!(?:script|style|pre)!;
+    $str =~ s!(<($special_tags).*?</\2)!_change_lf($1)!ges;
     my @paras = split /\r?\n\r?\n/, $str;
     my @guard;
     for my $i ( 0 .. @paras - 1 ) {
-        ## If special tags (such as pre, script, style) are found,
-        ## mark them and do not add br tags in-between
-        if ( my @open = $paras[$i] =~ m!<($special_tags)!g ) {
-            push @guard, @open;
-        }
-        if ( my @close = $paras[$i] =~ m!</($special_tags)!g ) {
-            ## Compare the number of open and close tags
-            pop @guard for @close;
-            next;
-        }
-        next if @guard;
-
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.
         if ( $paras[$i] !~ m!(?:^</?$tags|</$tags>$)! ) {
@@ -732,7 +727,9 @@ sub html_text_transform {
             }
         }
     }
-    join "\n\n", @paras;
+    my $joined = join "\n\n", @paras;
+    $joined =~ s/\x00/\n/g;
+    $joined;
 }
 
 {
