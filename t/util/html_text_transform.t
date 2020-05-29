@@ -422,7 +422,7 @@ foo
 </div>
 
 <!--
-foo
+foo <pre>
 -->
 
 line3
@@ -501,7 +501,7 @@ foo
 </div>
 
 <!--
-foo
+foo <pre>
 -->
 
 <p>line3<br />
