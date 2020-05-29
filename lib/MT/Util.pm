@@ -701,11 +701,16 @@ sub html_text_transform {
     for my $i ( 0 .. @paras - 1 ) {
         ## If special tags (such as pre, script, style) are found,
         ## mark them and do not add br tags in-between
-        if ( !$guard && $paras[$i] =~ m!^<($special_tags)! ) {
+        if ( !$guard && $paras[$i] =~ m!<($special_tags)! ) {
             $guard = $1;
         }
         if ( $guard && $paras[$i] =~ m!</$guard! ) {
-            $guard = '';
+            ## Compare the number of open and close tags
+            my $open  = $paras[$i] =~ m!<$special_tags!g;
+            my $close = $paras[$i] =~ m!</$special_tags!g;
+            if ( ( $open || 0 ) < $close ) {
+                $guard = '';
+            }
             next;
         }
         next if $guard;
