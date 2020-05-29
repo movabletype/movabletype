@@ -346,3 +346,163 @@ style3-2
 
 <p>line3<br />
 line4</p>
+
+=== guard pre, script, code tags more eagerly
+--- input
+line1
+line2
+
+<div>
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+</div>
+
+<p>
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+</p>
+
+<script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<script src=""></script>
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+<div>
+<!--
+foo
+-->
+</div>
+
+<!--
+foo <pre>
+-->
+
+line3
+line4
+--- expected
+<p>line1<br />
+line2</p>
+
+<div>
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+</div>
+
+<p>
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+</p>
+
+<script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<script src=""></script>
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+<div>
+<!--
+foo
+-->
+</div>
+
+<!--
+foo <pre>
+-->
+
+<p>line3<br />
+line4</p>
