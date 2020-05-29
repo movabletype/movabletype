@@ -702,9 +702,8 @@ sub html_text_transform {
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
     my $special_tags = qr!(?:script|style|pre)!;
-    $str =~ s!(<($special_tags).*?</\2)!_change_lf($1)!ges;
+    $str =~ s{(<($special_tags).*?</\2|<!--.*?-->)}{_change_lf($1)}ges;
     my @paras = split /\r?\n\r?\n/, $str;
-    my @guard;
     for my $i ( 0 .. @paras - 1 ) {
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.

@@ -415,6 +415,12 @@ style3-1
 style3-2
 </style>
 
+<div>
+<!--
+foo
+-->
+</div>
+
 line3
 line4
 --- expected
@@ -483,6 +489,12 @@ style2-2
 style3-1
 style3-2
 </style>
+
+<div>
+<!--
+foo
+-->
+</div>
 
 <p>line3<br />
 line4</p>
