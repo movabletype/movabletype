@@ -691,28 +691,23 @@ sub html_text_transform_traditional {
     join "\n\n", @paras;
 }
 
+sub _change_lf {
+    my $str = shift;
+    $str =~ s/\n/\x00/g;
+    $str;
+}
+
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
     my $special_tags = qr!(?:script|style|pre)!;
+    $str =~ s{(<!--.*?-->|<($special_tags).*?</\2)}{_change_lf($1)}ges;
     my @paras = split /\r?\n\r?\n/, $str;
-    my $guard;
     for my $i ( 0 .. @paras - 1 ) {
-        ## If special tags (such as pre, script, style) are found,
-        ## mark them and do not add br tags in-between
-        if ( !$guard && $paras[$i] =~ m!^<($special_tags)! ) {
-            $guard = $1;
-        }
-        if ( $guard && $paras[$i] =~ m!</$guard! ) {
-            $guard = '';
-            next;
-        }
-        next if $guard;
-
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.
-        if ( $paras[$i] !~ m!(?:^</?$tags|</$tags>$)! ) {
+        if ( $paras[$i] !~ m{(?:^(?:</?$tags|<!--)|(?:</$tags>|-->)$)} ) {
             $paras[$i] = "<p>$paras[$i]</p>";
         }
         ## If a line in the paragraph does not end with a tag,
@@ -731,7 +726,9 @@ sub html_text_transform {
             }
         }
     }
-    join "\n\n", @paras;
+    $str = join "\n\n", @paras;
+    $str =~ s/\x00/\n/g;
+    $str;
 }
 
 {
