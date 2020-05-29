@@ -697,26 +697,19 @@ sub html_text_transform {
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
     my $special_tags = qr!(?:script|style|pre)!;
     my @paras = split /\r?\n\r?\n/, $str;
-    my $guard;
+    my @guard;
     for my $i ( 0 .. @paras - 1 ) {
         ## If special tags (such as pre, script, style) are found,
         ## mark them and do not add br tags in-between
-        if ( !$guard && $paras[$i] =~ m!<($special_tags)! ) {
-            $guard = $1;
+        if ( my @open = $paras[$i] =~ m!<($special_tags)!g ) {
+            push @guard, @open;
         }
-        if ( $guard && $paras[$i] =~ m!</$guard! ) {
+        if ( my @close = $paras[$i] =~ m!</($special_tags)!g ) {
             ## Compare the number of open and close tags
-            my @open  = $paras[$i] =~ m!<($special_tags)!g;
-            my @close = $paras[$i] =~ m!</($special_tags)!g;
-            if ( @open > @close ) {
-                $guard = $open[-1];
-            }
-            else {
-                $guard = '';
-            }
+            pop @guard for @close;
             next;
         }
-        next if $guard;
+        next if @guard;
 
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.
