@@ -421,6 +421,10 @@ foo
 -->
 </div>
 
+<!--
+foo
+-->
+
 line3
 line4
 --- expected
@@ -495,6 +499,10 @@ style3-2
 foo
 -->
 </div>
+
+<!--
+foo
+-->
 
 <p>line3<br />
 line4</p>

@@ -707,7 +707,7 @@ sub html_text_transform {
     for my $i ( 0 .. @paras - 1 ) {
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.
-        if ( $paras[$i] !~ m!(?:^</?$tags|</$tags>$)! ) {
+        if ( $paras[$i] !~ m{(?:^(?:</?$tags|<!--)|(?:</$tags>|-->)$)} ) {
             $paras[$i] = "<p>$paras[$i]</p>";
         }
         ## If a line in the paragraph does not end with a tag,
