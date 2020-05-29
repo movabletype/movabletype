@@ -706,9 +706,12 @@ sub html_text_transform {
         }
         if ( $guard && $paras[$i] =~ m!</$guard! ) {
             ## Compare the number of open and close tags
-            my $open  = $paras[$i] =~ m!<$special_tags!g;
-            my $close = $paras[$i] =~ m!</$special_tags!g;
-            if ( ( $open || 0 ) < $close ) {
+            my @open  = $paras[$i] =~ m!<($special_tags)!g;
+            my @close = $paras[$i] =~ m!</($special_tags)!g;
+            if ( @open > @close ) {
+                $guard = $open[-1];
+            }
+            else {
                 $guard = '';
             }
             next;

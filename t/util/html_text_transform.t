@@ -387,6 +387,10 @@ pre-line4-2
 </p>
 
 <script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
 <script>
 script1-1
 script1-2
@@ -398,6 +402,7 @@ script3-1
 script3-2
 </script>
 
+<script src=""></script>
 <style>
 # though style tag should not appear in the html body...
 style1-1
@@ -451,6 +456,10 @@ pre-line4-2
 </p>
 
 <script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
 <script>
 script1-1
 script1-2
@@ -462,6 +471,7 @@ script3-1
 script3-2
 </script>
 
+<script src=""></script>
 <style>
 # though style tag should not appear in the html body...
 style1-1
