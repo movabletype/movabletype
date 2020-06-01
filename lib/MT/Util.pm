@@ -689,9 +689,10 @@ sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
     my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
+    $str =~ s/\r\n/\n/gs;
     my $special_tags = qr!(?:script|style|pre)!;
     $str =~ s{(<!--.*?-->|<($special_tags).*?</\2)}{_change_lf($1)}ges;
-    my @paras = split /\r?\n\r?\n/, $str;
+    my @paras = split /\n\n/, $str;
     for my $i ( 0 .. @paras - 1 ) {
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p>.
@@ -700,7 +701,7 @@ sub html_text_transform {
         }
         ## If a line in the paragraph does not end with a tag,
         ## append a <br>. (Let's hope it does not end with an inline tag.)
-        $paras[$i] =~ s|(?<!>)\r?\n|<br />\n|g;
+        $paras[$i] =~ s|(?<!>)\n|<br />\n|g;
 
         ## Special case: if the paragraph starts with a block(-ish) tag,
         ## and does not end with a closing tag, then the paragraph should have
