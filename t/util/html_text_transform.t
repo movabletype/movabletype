@@ -16,15 +16,26 @@ use Test::Base::Less;
 use MT::Util qw( html_text_transform );
 
 register_filter html_text_transform => \&html_text_transform;
+register_filter add_cr => sub {
+    my $str = shift;
+    $str =~ s/\r?\n/\r\n/gs;
+    $str;
+};
 
 filters {
-    input    => [qw/chomp html_text_transform/],
-    expected => [qw/trim chomp/],
+    input      => [qw/chomp html_text_transform/],
+    input_crlf => [qw/chomp add_cr html_text_transform/],
+    expected   => [qw/trim chomp/],
 };
 
 run {
     my $block = shift;
-    is($block->input, $block->expected);
+    if ( $block->get_section('input') ) {
+        is($block->input, $block->expected);
+    }
+    if ( $block->get_section('input_crlf') ) {
+        is($block->input_crlf, $block->expected);
+    }
 };
 
 done_testing;
@@ -506,3 +517,17 @@ foo <pre>
 
 <p>line3<br />
 line4</p>
+
+=== crlf
+--- input_crlf
+text
+
+<div>
+text
+</div>
+--- expected
+<p>text</p>
+
+<div>
+text<br />
+</div>
