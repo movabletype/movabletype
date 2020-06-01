@@ -187,7 +187,27 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         // content_css: '',
         body_class: '',
-        body_id: ''
+        body_id: '',
+        
+        // tinymce3
+        link_class_list: [
+            {title: 'unassigned', value: ''},
+            {title: 'button', value: 'button'},
+            {title: 'pagination', value: 'pagination'},
+            {title: 'class_description', value: 'description'},
+            {title: 'breadcrumb', value: 'breadcrumb'},
+            {title: 'entry', value: 'entry'},
+            {title: 'page', value: 'page'},
+            {title: 'license', value: 'license'},
+            {title: 'poweredby', value: 'poweredby'},
+            {title: 'rank-1', value: 'rank-1'},
+            {title: 'rank-2', value: 'rank-2'},
+            {title: 'rank-3', value: 'rank-3'},
+            {title: 'rank-4', value: 'rank-4'},
+            {title: 'rank-5', value: 'rank-5'},
+            {title: 'rank-6', value: 'rank-6'},
+            {title: 'rank-7', value: 'rank-7'}
+        ]
     }
 });
 
