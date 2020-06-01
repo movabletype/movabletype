@@ -189,6 +189,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         body_class: '',
         body_id: '',
         
+        content_security_policy: "script-src 'none';",
+        
         // tinymce3
         link_class_list: [
             {title: 'unassigned', value: ''},
