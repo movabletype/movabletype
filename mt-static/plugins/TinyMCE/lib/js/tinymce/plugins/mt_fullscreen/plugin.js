@@ -116,7 +116,7 @@
 
             ed.addMTButton('mt_fullscreen', {
                 icon: 'fullscreen',
-                tooltip: 'mt_fullscreen',
+                tooltip: 'fullscreen',
                 toggle: true,
                 onAction: function(){
                   return ed.execCommand('mtFullScreen');
