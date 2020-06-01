@@ -46,6 +46,7 @@
 
                     forEachAffectedEditors(function() {
                         $outer.height($window.height() - header_height);
+                        $inner.height($window.height() - header_height);
                     });
                 };
             });
@@ -64,7 +65,7 @@
 
             ed.addCommand('mtFullScreen', function() {
                 if (! enabled) {
-                    editorSize = ed.execCommand('mtGetEditorSize');
+                    editorSize = ed.queryCommandValue('mtGetEditorSize');
 
                     $parent
                         .addClass('fullscreen_editor tox-fullscreen')
