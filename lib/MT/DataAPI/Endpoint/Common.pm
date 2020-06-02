@@ -619,6 +619,8 @@ sub _restrict_site {
         ? 'id'
         : 'blog_id';
 
+    return if ( !$class->has_column($column) );
+
     # Load config settings.
     my $cfg = $app->config;
     my $data_api_disable_site

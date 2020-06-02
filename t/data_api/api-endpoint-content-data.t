@@ -150,6 +150,8 @@ normal_tests_for_update();
 irregular_tests_for_delete();
 normal_tests_for_delete();
 
+restriction_tests_for_list();
+
 done_testing;
 
 sub irregular_tests_for_create {
@@ -2429,6 +2431,49 @@ sub normal_tests_for_delete {
             result   => sub {$cd},
             complete => sub {
                 ok( !MT->model('content_data')->load( $cd->id ) );
+            },
+        }
+    );
+}
+
+sub restriction_tests_for_list {
+    test_data_api(
+        {   note   => 'restrict sitei_id = 1',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'GET',
+            setup        => sub {
+                $app->config->DataAPIDisableSite(1);
+                $app->config->save_config;
+            },
+            code => 403,
+        }
+    );
+
+    test_data_api(
+        {   note   => 'restrict site_id = 2',
+            path   => "/v4/sites/$site_id/contentTypes/$content_type_id/data",
+            method => 'GET',
+            setup        => sub {
+                $app->config->DataAPIDisableSite(2);
+                $app->config->save_config;
+            },
+            callbacks => [
+                {   name =>
+                        'MT::App::DataAPI::data_api_list_permission_filter.content_data',
+                    count => 1,
+                },
+                {   name  => 'data_api_pre_load_filtered_list.content_data',
+                    count => 2,
+                },
+            ],
+            result => sub {
+                my @cd = MT->model('content_data')->load(
+                    { content_type_id => $content_type_id, blog_id => { 'not' => 2 } },
+                    { sort => 'modified_on', direction => 'descend', },
+                );
+                +{  totalResults => scalar @cd,
+                    items => MT::DataAPI::Resource->from_object( \@cd ),
+                };
             },
         }
     );
