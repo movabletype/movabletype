@@ -201,8 +201,7 @@ sub _run {
     }
 }
 
-my @drivers = qw( ImageMagick NetPBM GD Imager );
-for my $driver (@drivers) {
+for my $driver ( $test_env->image_drivers ) {
     subtest $driver => sub {
         my ( $guard, $file ) = MT::Test::Image->tempfile(
             DIR    => $test_env->root,

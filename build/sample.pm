@@ -44,7 +44,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Fri'                                                       => '',
     'Saturday'                                                  => '',
     'Sat'                                                       => '',
-    'Search'                                                    => '',
     'Search this site:'                                         => '',
     'Archives'                                                  => '',
     'Recent Entries'                                            => '',
@@ -58,7 +57,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Email Address:'                                            => '',
     'IP Address:'                                               => '',
     'URL:'                                                      => '',
-    'Comments:'                                                 => '',
     'Previous Comments'                                         => '',
     'Comment Submission Error'                                  => '',
     'Your comment submission failed for the following reasons:' => '',
@@ -74,7 +72,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Listed below are links to weblogs that reference' => '',
     'from'                                             => '',
     'Excerpt:'                                         => '',
-    'Weblog:'                                          => '',
     'Tracked:'                                         => '',
 
     ## Global: Navigation
@@ -83,16 +80,13 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Entries'                     => '',
     'Create Entry'                => '',
     'List &amp; Edit Entries'     => '',
-    'Upload File'                 => '',
     'Manage'                      => '',
     'List &amp; Edit Templates'   => '',
-    'Edit Categories'             => '',
     'Edit Notification List'      => '',
     'Edit Weblog Configuration'   => '',
     'Utilities'                   => '',
     'Search &amp; Replace'        => '',
     'Import &amp; Export Entries' => '',
-    'Rebuild Files'               => '',
     'View Site'                   => '',
     'Go'                          => '',
 
@@ -104,7 +98,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'No title'      => '',
     'IP Address'    => '',
     'Author'        => '',
-    'URL'           => '',
     'None'          => '',
     'Open'          => '',
     'Closed'        => '',
@@ -123,12 +116,10 @@ sub encoding {"iso-8859-1"}    # Latin-1
 
     ## Global: Buttons
     'Cancel'         => '',
-    'Post'           => '',
     'Close'          => '',
     'Create'         => '',
     'Add new...'     => '',
     'Save'           => '',
-    'Delete'         => '',
     'Add'            => '',
     'Delete Checked' => '',
     'Preview'        => '',
@@ -142,7 +133,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Daily'      => '',
     'Weekly'     => '',
     'Monthly'    => '',
-    'Category'   => '',
 
     ## Global: Entry fields
     'Title'            => '',
@@ -178,7 +168,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'You must choose a weblog in which to post the new entry.' => '',
     'Enter URL:'                                               => '',
     'Select a weblog for this post:'                           => '',
-    'Select a weblog'                                          => '',
     'Ping TrackBack URL:'                                      => '',
     'Select a TrackBack entry to ping:'                        => '',
 
@@ -438,7 +427,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Edit Entry'                                 => '',
     'Your entry has been saved. You can now make any changes to the entry itself, edit the authored-on date, edit comments, or send a notification.'
         => '',
-    'Your changes have been saved.' => '',
     'Your customization preferences have been saved, and are visible in the form below.'
         => '',
     'Your changes to the comment have been saved.'          => '',
@@ -464,7 +452,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
         => '',
 
     ## Permission/author-adding screen (edit_permissions.tmpl)
-    'Add/Edit Weblog Authors' => '',
     'Edit Permissions'        => '',
     '_USAGE_PERMISSIONS_1'    => '',
     '_USAGE_PERMISSIONS_2'    => '',
@@ -504,7 +491,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Secondary categories:'    => '',
 
     ## Template-editing screen (edit_template.tmpl)
-    'List Templates'                => '',
     'Create Template'               => '',
     'Edit Template'                 => '',
     'Template Name'                 => '',
@@ -667,7 +653,6 @@ sub encoding {"iso-8859-1"}    # Latin-1
     'Save this entry'    => '',
 
     ## Rebuild confirmation screen (rebuild_confirm.tmpl)
-    'Rebuilding [_1]' => '',
     'Select the type of rebuild you would like to perform (press CANCEL if you do not want to rebuild any files):'
         => '',
     'Rebuild All Files'          => '',
@@ -887,9 +872,7 @@ sub encoding {"iso-8859-1"}    # Latin-1
     "You did not choose a file to upload."                         => "",
     "Invalid extra path '[_1]'"                                    => "",
     "Can't make path '[_1]': [_2]"                                 => "",
-    "Invalid temp file name '[_1]'"                                => "",
     "Error opening '[_1]': [_2]"                                   => "",
-    "Error deleting '[_1]': [_2]"                                  => "",
     "File with name '[_1]' already exists. (Install File::Temp if you'd like to be able to overwrite existing uploaded files.)"
         => "",
     "File with name '[_1]' already exists; Tried to write to tempfile, but open failed: [_2]"

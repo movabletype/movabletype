@@ -1810,15 +1810,15 @@ sub _upload_file_compat {
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
+            if   ( $_ =~ m/^\./ ) {qr/$_(?:\..*)?/i}
+            else                  {qr/\.$_(?:\..*)?/i}
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $basename, @deny_exts );
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
                     '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                    $ext,
+                    $ret[2],
                     $basename
                 )
             );
@@ -2369,15 +2369,15 @@ sub _upload_file {
 
     if ( my $deny_exts = $app->config->DeniedAssetFileExtensions ) {
         my @deny_exts = map {
-            if   ( $_ =~ m/^\./ ) {qr/$_/i}
-            else                  {qr/\.$_/i}
-        } split '\s?,\s?', $deny_exts;
+            if   ( $_ =~ m/^\./ ) {qr/$_(?:\..*)?/i}
+            else                  {qr/\.$_(?:\..*)?/i}
+        } grep { defined $_ && $_ ne '' } split '\s?,\s?', $deny_exts;
         my @ret = File::Basename::fileparse( $basename, @deny_exts );
         if ( $ret[2] ) {
             return $app->error(
                 $app->translate(
                     '\'[_1]\' is not allowed to upload by system settings.: [_2]',
-                    $ext,
+                    $ret[2],
                     $basename
                 )
             );

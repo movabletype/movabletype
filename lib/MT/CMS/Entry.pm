@@ -2011,11 +2011,18 @@ sub save {
             );
         }
         else {
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     'mode' => 'start_rebuild',
                     args   => {
                         blog_id    => $obj->blog_id,
+                        ott        => $token,
                         'next'     => 0,
                         type       => 'entry-' . $obj->id,
                         entry_id   => $obj->id,
@@ -2042,7 +2049,7 @@ sub save_entries {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start save_entries.');
+    MT::Util::Log->debug('--- Start save_entries.');
 
     my $perms = $app->permissions
         or $app->permission_denied();
@@ -2054,7 +2061,7 @@ sub save_entries {
     return $app->return_to_dashboard( redirect => 1 )
         unless $blog;
 
-    MT::Util::Log->info(' Start permission check.');
+    MT::Util::Log->debug(' Start permission check.');
 
 PERMCHECK: {
         my $action
@@ -2086,7 +2093,7 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    MT::Util::Log->info(' End   permission check.');
+    MT::Util::Log->debug(' End   permission check.');
 
     $app->validate_magic() or return;
 
@@ -2099,7 +2106,7 @@ PERMCHECK: {
     my $this_author_id = $this_author->id;
     my @objects;
 
-    MT::Util::Log->info(' Start check params.');
+    MT::Util::Log->debug(' Start check params.');
 
     for my $p (@p) {
         next unless $p =~ /^author_id_(\d+)/;
@@ -2301,19 +2308,19 @@ PERMCHECK: {
         push( @objects, { current => $entry, original => $orig_obj } );
     }
 
-    MT::Util::Log->info(' End   check params.');
+    MT::Util::Log->debug(' End   check params.');
 
-    MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+    MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
     $app->run_callbacks(
         'cms_post_bulk_save.' . ( $type eq 'entry' ? 'entries' : 'pages' ),
         $app, \@objects );
 
-    MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+    MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
 
     $app->add_return_arg( 'saved' => 1, is_power_edit => 1 );
 
-    MT::Util::Log->info('--- End   save_entries.');
+    MT::Util::Log->debug('--- End   save_entries.');
 
     $app->call_return;
 }
@@ -2416,7 +2423,7 @@ sub save_entry_prefs {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start save_entry_prefs.');
+    MT::Util::Log->debug('--- Start save_entry_prefs.');
 
     # Magic token check
     $app->validate_magic() or return;
@@ -2474,7 +2481,7 @@ sub save_entry_prefs {
         $app->translate( "Saving permissions failed: [_1]", $perms->errstr )
         );
 
-    MT::Util::Log->info('--- End   save_entry_prefs.');
+    MT::Util::Log->debug('--- End   save_entry_prefs.');
 
     return $app->json_result( { success => 1 } );
 }
@@ -3040,7 +3047,7 @@ sub update_entry_status {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start update_entry_status.');
+    MT::Util::Log->debug('--- Start update_entry_status.');
 
     my ( $new_status, @ids ) = @_;
     return $app->errtrans("Need a status to update entries")
@@ -3055,7 +3062,7 @@ sub update_entry_status {
 
     my @objects;
 
-    MT::Util::Log->info(' Start load entries.');
+    MT::Util::Log->debug(' Start load entries.');
 
     foreach my $id (@ids) {
         my $entry = MT::Entry->load($id)
@@ -3125,19 +3132,19 @@ sub update_entry_status {
         push( @objects, { current => $entry, original => $original } );
     }
 
-    MT::Util::Log->info(' End   load entries.');
+    MT::Util::Log->debug(' End   load entries.');
 
-    MT::Util::Log->info(' Start rebuild_these.');
+    MT::Util::Log->debug(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT::Util::Log->info(' End   rebuild_these.');
+    MT::Util::Log->debug(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks(
             'cms_post_bulk_save.'
@@ -3145,10 +3152,10 @@ sub update_entry_status {
             $app, \@objects
         );
 
-        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_entry_status.');
+    MT::Util::Log->debug('--- End   update_entry_status.');
 
     $tmpl;
 }
