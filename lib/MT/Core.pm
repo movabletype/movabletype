@@ -1028,6 +1028,12 @@ BEGIN {
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
+                blog_id => {
+                    auto            => 0,
+                    col             => 'blog_id',
+                    display         => 'none',
+                    filter_editable => 0,
+                },
                 blog_name => {
                     label        => 'Website/Blog Name',
                     filter_label => '__WEBSITE_BLOG_NAME',
@@ -1786,14 +1792,15 @@ BEGIN {
             'SMTPAuthSASLMechanism' => undef,
             'FTPSSSLVerifyNone'     => undef,
             'FTPSSSLVersion'        => undef,
+
             # MTC-26629
             'FTPSOptions' => {
                 type    => 'HASH',
                 default => { ReuseSession => 1 }
             },
-            'SSLVerifyNone'         => undef,
-            'SSLVersion'            => undef,
-            'DebugEmailAddress'     => undef,
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
+            'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -2052,7 +2059,8 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'rainier' },
             'DefaultBlogTheme'     => { default => 'rainier' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
+                default =>
+                    'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
@@ -2271,7 +2279,7 @@ BEGIN {
                 template => 'archetype_editor.tmpl',
             },
         },
-        ping_servers => {},
+        ping_servers             => {},
         commenter_authenticators => \&load_core_commenter_auth,
         captcha_providers        => \&load_captcha_providers,
         tasks                    => \&load_core_tasks,
