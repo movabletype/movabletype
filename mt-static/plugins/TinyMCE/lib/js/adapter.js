@@ -9,6 +9,12 @@
 
 MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
+var suffix = '';
+if(jQuery('script[src*="tinymce.min"]').length){
+    // min
+    suffix = '.min';
+}
+
 $.extend(MT.Editor.TinyMCE, MT.Editor, {
     isMobileOSWYSIWYGSupported: function() {
         return false;
@@ -16,8 +22,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         plugins: "lists,media,paste,hr,link,textpattern,table",
         external_plugins: {
-            'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin.js',
-            'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin.js',
+            'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
+            'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
         },
 
         language: $('html').attr('lang'),
