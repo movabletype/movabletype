@@ -421,7 +421,7 @@
             this._setupExplicitButtonActivation(ed);
             this._setupIframeStatus(ed);
 
-            ed.addCommand('mtGetStatus', function() {
+            ed.addQueryValueHandler('mtGetStatus', function() {
                 return ed.mtEditorStatus;
             });
 
@@ -430,7 +430,7 @@
                 updateButtonVisibility();
             });
 
-            ed.addCommand('mtGetProxies', function() {
+            ed.addQueryValueHandler('mtGetProxies', function() {
                 return proxies;
             });
 
@@ -447,7 +447,7 @@
                 }
             });
 
-            ed.addCommand('mtSaveBookmark', function() {
+            ed.addQueryValueHandler('mtSaveBookmark', function() {
                 return savedBookmark = ed.selection.getBookmark();
             });
 

@@ -186,16 +186,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 this.$editorTextarea
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
-                if (! this.tinymce.execCommand('mtFullScreenIsEnabled')) {
-                    var h = this.$editorIframe.height();
-                    this.$editorTextarea.data('base-height', h);
-                    if (tinyMCE.isIE) {
-                        this.$editorTextarea.data('base-height-adjustment', h);
-                    }
-                    else {
-                        this.$editorTextarea.data('base-height-adjustment', 0);
-                    }
-                }
 
                 if (! calledInInit) {
                     this.ignoreSetDirty(function() {
@@ -215,9 +205,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
         else {
             this.$editorIframe.height(this.$editorTextarea.innerHeight());
-            this.$editorTextarea
-                .data('base-height', null)
-                .prependTo(this.$editorTextareaParent);
+            this.$editorTextarea.prependTo(this.$editorTextareaParent);
 
             this.ignoreSetDirty(function() {
                 this.tinymce.setContent(this.source.getContent());
@@ -304,7 +292,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     domUpdated: function() {
-        var format = this.tinymce.execCommand('mtGetStatus')['format'];
+        var format = this.tinymce.queryCommandValue('mtGetStatus')['format'];
         try {
             this.tinymce.remove();
         }
@@ -358,8 +346,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
 
         $([
-            'onSetContent', 'onKeyDown', 'onReset', 'onPaste',
-            'onUndo', 'onRedo'
+            'SetContent', 'KeyDown', 'Reset', 'Paste',
+            'Undo', 'Redo'
         ]).each(function() {
             var ev = this;
             ed.on(ev, function() {

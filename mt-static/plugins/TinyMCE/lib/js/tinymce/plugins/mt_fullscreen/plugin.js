@@ -59,12 +59,6 @@
                 }
             });
 
-            ed.addCommand('mtFullScreenIsEnabled', function() {
-                // Return the string object.
-                // The IE makes an error when returning the boolean.
-                return enabled ? 'enabled' : '';
-            });
-
             ed.addCommand('mtFullScreen', function() {
                 if (! enabled) {
                     editorSize = ed.queryCommandValue('mtGetEditorSize');
