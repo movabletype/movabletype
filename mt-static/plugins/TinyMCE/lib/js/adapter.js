@@ -340,7 +340,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         var save = ed.save;
         ed.save = function () {
-            if (! ed.isHidden()) {
+            if (adapter.$editorIframe.css('display') != 'none') {
                 save.apply(ed, arguments);
             }
         }
