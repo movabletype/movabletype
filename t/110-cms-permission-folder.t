@@ -124,7 +124,6 @@ subtest 'mode = list' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $blog->id,
             _type            => 'folder',
         }
@@ -138,7 +137,6 @@ subtest 'mode = list' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $blog->id,
             _type            => 'folder',
         }
@@ -152,7 +150,6 @@ subtest 'mode = list' => sub {
         {   __test_user      => $ichikawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $blog->id,
             _type            => 'folder',
         }
@@ -166,7 +163,6 @@ subtest 'mode = list' => sub {
         {   __test_user      => $ukawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $blog->id,
             _type            => 'folder',
         }
@@ -182,7 +178,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $admin,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }
@@ -196,7 +191,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $ogawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }
@@ -210,7 +204,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $kagawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }
@@ -224,7 +217,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $aikawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }
@@ -238,7 +230,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $kikkawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }
@@ -252,7 +243,6 @@ subtest 'mode = list (website)' => sub {
         {   __test_user      => $kumekawa,
             __request_method => 'POST',
             __mode           => 'list',
-            _type            => 'folder',
             blog_id          => $website->id,
             _type            => 'folder',
         }

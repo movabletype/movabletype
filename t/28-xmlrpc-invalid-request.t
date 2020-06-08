@@ -13,9 +13,6 @@ BEGIN {
 
 use MT::Test qw(:db :data);
 use MT::Test::Permission;
-use MT::Util qw(archive_file_for);
-use File::Basename qw(dirname);
-use MIME::Base64;
 use Clone qw/ clone /;
 
 # To keep away from being under FastCGI

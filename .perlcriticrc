@@ -1,0 +1,2 @@
+only = 1
+include = ValuesAndExpressions::ProhibitDuplicateHashKeys

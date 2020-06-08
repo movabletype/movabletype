@@ -17,9 +17,7 @@ use warnings;
 
 # Handle cwd = MT_DIR, MT_DIR/t
 use lib 't/lib', 'extlib', 'lib', '../lib', '../extlib';
-use File::Path qw( rmtree );
 use File::Spec;
-use File::Temp qw( tempfile );
 use File::Basename;
 use MT;
 use MT::Mail;
@@ -545,7 +543,6 @@ sub init_data {
                 excerpt        => 'A story of a stroll.',
                 keywords       => 'keywords',
                 created_on     => '19780131074500',
-                authored_on    => '19780131074500',
                 modified_on    => '19780131074600',
                 authored_on    => '19780131074500',
                 author_id      => $chuckd->id,
@@ -571,7 +568,6 @@ sub init_data {
                 text           => 'It is sufficient to say...',
                 text_more      => 'I suck at making up test data.',
                 created_on     => '19790131074500',
-                authored_on    => '19790131074500',
                 modified_on    => '19790131074600',
                 authored_on    => '19780131074500',
                 author_id      => $bobd->id,
@@ -594,7 +590,6 @@ sub init_data {
                 text           => '...are better than the non-spurious',
                 text_more      => 'variety.',
                 created_on     => '19770131074500',
-                authored_on    => '19790131074500',
                 modified_on    => '19770131074600',
                 authored_on    => '19780131074500',
                 author_id      => $chuckd->id,
@@ -784,7 +779,6 @@ It\'s a hard rain\'s a-gonna fall',
                     text      => $verses[$i],
                     author_id => ( $i == 3 ? $bobd->id : $chuckd->id ),
                     created_on  => sprintf( "%04d0131074501", $i + 1960 ),
-                    authored_on => sprintf( "%04d0131074501", $i + 1960 ),
                     modified_on => sprintf( "%04d0131074601", $i + 1960 ),
                     authored_on => sprintf( "%04d0131074501", $i + 1960 ),
                     allow_comments => ( $i <= 2 ? 0 : 1 ),

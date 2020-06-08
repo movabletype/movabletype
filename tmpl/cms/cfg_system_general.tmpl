@@ -344,7 +344,7 @@ function validate (f) {
         jQuery('span.indicator').show();
         jQuery.post('<mt:var name="script_url">', postData, function( data ) {
             if( data.error ) {
-                jQuery('#email_sent_error p').text( data.error );
+                jQuery('#email_sent_error .msg-text').text( data.error );
                 jQuery('#email_sent_error').show();
             } else if( data.result ) {
                 jQuery('#email_sent').show();

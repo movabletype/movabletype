@@ -247,11 +247,6 @@ sub init_core_registry {
                 label =>
                     'This module accelerates comment registration sign-ins.',
             },
-            'Crypt::SSLeay' => {
-                link => 'https://metacpan.org/pod/Crypt::SSLeay',
-                label =>
-                    'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.',
-            },
             'Cache::File' => {
                 link => 'https://metacpan.org/pod/Cache::File',
                 label =>
@@ -611,7 +606,7 @@ sub start {
 
     my ($needed) = $app->module_check( \@REQ );
     if (@$needed) {
-        $param{package_loop} = $needed;
+        $param{package_loop} = _sort_modules($needed);
         $param{required}     = 1;
         return $app->build_page( "packages.tmpl", \%param );
     }
@@ -622,6 +617,7 @@ sub start {
         my $driver = $drivers->{$key};
         my $label  = $driver->{label};
         my $link   = 'https://metacpan.org/pod/' . $driver->{dbd_package};
+        $label     = $label->() if ref $label eq 'CODE';
         push @DATA,
             [
             $driver->{dbd_package},
@@ -631,12 +627,13 @@ sub start {
                 "The [_1] database driver is required to use [_2].",
                 $driver->{dbd_package}, $label
             ),
-            $label, $link
+            $label, $link, undef,
+            lc( $driver->{recommended} ? '_' . $label : $label ),
             ];
     }
     my ($db_missing) = $app->module_check( \@DATA );
     if ( ( scalar @$db_missing ) == ( scalar @DATA ) ) {
-        $param{package_loop}           = $db_missing;
+        $param{package_loop}           = _sort_modules( $db_missing, 'sort' );
         $param{missing_db_or_optional} = 1;
         $param{missing_db}             = 1;
         return $app->build_page( "packages.tmpl", \%param );
@@ -655,7 +652,7 @@ sub start {
     my ($opt_missing) = $app->module_check( \@OPT );
     push @$opt_missing, @$db_missing;
     if (@$opt_missing) {
-        $param{package_loop}           = $opt_missing;
+        $param{package_loop}           = _sort_modules($opt_missing);
         $param{missing_db_or_optional} = 1;
         $param{optional}               = 1;
         return $app->build_page( "packages.tmpl", \%param );
@@ -708,6 +705,7 @@ sub configure {
         my $driver  = $drivers->{$key};
         my $label   = $driver->{label};
         my $display = $driver->{display};
+        $label      = $label->() if ref $label eq 'CODE';
         my @ids;
         foreach my $id (@$display) {
             push @ids, "'" . $id . "'";
@@ -724,6 +722,7 @@ sub configure {
             ),
             $label, $link,
             join( ',', @ids ),
+            lc( $driver->{recommended} ? "_" . $label : $label ),
             ];
         my $form_data = $driver->{db_form_data};
         $app->set_form_fields( $form_data, \@fields, \@advanced );
@@ -732,7 +731,7 @@ sub configure {
     if ( scalar(@$dbmod) == 0 ) {
         $param{missing_db_or_optional} = 1;
         $param{missing_db}             = 1;
-        $param{package_loop}           = $missing;
+        $param{package_loop}           = _sort_modules( $missing, 'sort' );
         return $app->build_page( "packages.tmpl", \%param );
     }
     foreach (@$dbmod) {
@@ -766,7 +765,7 @@ sub configure {
     @advanced = sort { $a->{order} <=> $b->{order} } @advanced;
     $param{advanced_loop} = \@advanced;
 
-    $param{db_loop} = $dbmod;
+    $param{db_loop} = _sort_modules( $dbmod, 'sort' );
     $param{one_db}  = $#$dbmod == 0;    # db module is only one or not
     $param{config} = $app->serialize_config(%param);
 
@@ -1340,7 +1339,7 @@ sub module_check {
     my $modules = shift;
     my ( @missing, @ok );
     foreach my $ref (@$modules) {
-        my ( $mod, $ver, $req, $desc, $name, $link, $display ) = @$ref;
+        my ( $mod, $ver, $req, $desc, $name, $link, $display, $sort ) = @$ref;
         if ( 'CODE' eq ref($desc) ) {
             $desc = $desc->();
         }
@@ -1349,6 +1348,7 @@ sub module_check {
         }
         eval( "use $mod" . ( $ver ? " $ver;" : ";" ) );
         $mod .= $ver if $mod eq 'DBD::ODBC';
+        $sort = $mod unless defined $sort;
         if ($@) {
             push @missing,
                 {
@@ -1359,6 +1359,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
+                sort        => $sort,
                 };
         }
         else {
@@ -1371,6 +1372,7 @@ sub module_check {
                 label       => $name,
                 link        => $link,
                 display     => $display,
+                sort        => $sort,
                 };
         }
     }
@@ -1490,6 +1492,12 @@ sub set_form_fields {
             push @$fields, $field;
         }
     }
+}
+
+sub _sort_modules {
+    my ( $list, $key ) = @_;
+    my @sorted = sort { $a->{$key} cmp $b->{$key} } @$list;
+    \@sorted;
 }
 
 1;

@@ -18,6 +18,8 @@ sub EXPIRE        { 60 * 10 }
 
 use MT::Session;
 
+$ENV{MAGICK_THREAD_LIMIT} ||= 1;
+
 sub check_availability {
     my $class = shift;
 

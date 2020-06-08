@@ -183,7 +183,6 @@ use vars qw( @ISA %Lexicon );
 	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'IPC::Runのインストールは必須ではありません。MTのイメージドライバとしてNetPBMを利用する場合に必要となります。',
 	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storableは必須ではありません。外部プラグインの利用の際に必要となる場合があります。',
 	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Crypt::DSAのインストールは必須ではありません。インストールされていると、コメント投稿時のサインインが高速になります。',
-	'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.' => 'Crypt::SSLeayはAOLやYahoo!などのSSLを利用するOpenIDのコメント投稿者を認証する場合、または Google Analytics を利用するために必要となります。',
 	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::Fileのインストールは必須ではありません。Yahoo! Japanによるコメント投稿者のOpenID認証を許可する場合に必要となります。',
 	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64のインストールは必須ではありません。コメントの認証機能を利用する場合やメール送信にSMTPを利用する場合に必要となります。',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
@@ -558,7 +557,7 @@ use vars qw( @ISA %Lexicon );
 	'Loading of blog \'[_1]\' failed: [_2]' => 'ブログ(ID:[_1])をロードできませんでした: [_2]',
 	'Loading template \'[_1]\' failed.' => 'テンプレート「[_1]」のロードに失敗しました。',
 	'Error while creating email: [_1]' => 'メールの再構築中にエラーが発生しました: [_1]',
-	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
+	'The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.' => 'OpenIDプラグインを利用するのに必要なPerlモジュール(Digest::SHA1)がありません。',
 	'A Perl module required for Google ID commenter authentication is missing: [_1].' => 'Google ID認証を利用するのに必要なPerlモジュールのうちいくつがありません: [_1]',
 	'http://www.movabletype.org/documentation/' => 'http://www.movabletype.jp/documentation/',
 	'An error occurred: [_1]' => 'エラーが発生しました: [_1]',
@@ -1944,7 +1943,6 @@ _4]\'から削除しました。',
 	'Invalid backup_archive_format: [_1]' => '不正なアーカイブ形式が指定されました: [_1]',
 	'Invalid limit_size: [_1]' => '不正なファイルリミットが指定されました: [_1]',
 	'An error occurred during the restore process: [_1] Please check activity log for more details.' => '復元の過程でエラーが発生しました。[_1] 詳細についてはログを確認してください。',
-	'Make sure that you remove the files that you restored from the \'import\' folder, so that if/when you run the restore process again, those files will not be re-restored.' => '再度復元を行う際に同じファイルから復元しないよう、importフォルダからファイルを削除してください。',
 
 ## lib/MT/DataAPI/Endpoint/v2/Blog.pm
 	'Cannot create a blog under blog (ID:[_1]).' => 'ブログ(ID:[_1])の下にブログを作成する事はできません。',
@@ -1961,7 +1959,6 @@ _4]\'から削除しました。',
 	'Invalid convert_breaks: [_1]' => '不正なテキストフォーマットが指定されました: [_1]',
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
-	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => '\'import\'ディレクトリからインポートしたファイルを削除することを忘れないでください。もう一度インポート機能を利用した場合に、同じファイルが再度インポートされてしまう可能性があります。',
 	'A resource "[_1_]" is required.' => '"[_1]" リソースの指定は必須です。',
 	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 	'Preview data not found.' => 'プレビューするデータが存在しません。',
@@ -3927,6 +3924,7 @@ _4]\'から削除しました。',
 	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
 	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
+	'Execute' => '実行',
 
 ## tmpl/cms/dialog/recover.tmpl
 	'Reset Password' => 'パスワードのリセット',
@@ -5508,7 +5506,6 @@ _4]\'から削除しました。',
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
 ## addons/Cloud.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
 	'HTTP Redirect' => 'URLリダイレクト',
@@ -5701,7 +5698,6 @@ _4]\'から削除しました。',
 	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
 
 ## addons/Commercial.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Professional designed, well structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'バナー画像、水平型のナビゲーションなど、ホームページ用途に適したデザインです。あらかじめ用意されたページをカスタマイズして、簡単にウェブサイトを作成できます。',
 	'_PWT_ABOUT_BODY' => '
 <p><strong>以下の文章はサンプルです。内容を適切に書き換えてください。</strong></p>
@@ -5735,11 +5731,6 @@ _4]\'から削除しました。',
 	'Professional Styles' => 'プロフェッショナルスタイル',
 	'A collection of styles compatible with Professional themes.' => 'プロフェッショナルテーマと互換のあるスタイルです。',
 	'Professional Website' => 'プロフェッショナル ウェブサイト',
-	'Header' => 'ヘッダー',
-	'Footer' => 'フッター',
-	'Entry Detail' => '記事の詳細',
-	'Entry Metadata' => '記事のメタデータ',
-	'Page Detail' => 'ウェブページの詳細',
 	'Footer Links' => 'フッターのリンク',
 	'Powered By (Footer)' => 'Powered By (フッター)',
 	'Recent Entries Expanded' => '最近の記事 (拡張)',
@@ -5865,7 +5856,6 @@ _4]\'から削除しました。',
 ## addons/Commercial.pack/templates/professional/blog/entry_detail.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/entry_listing.mtml
-	'Recently by <em>[_1]</em>' => '<em>[_1]</em>の最近の記事',
 
 ## addons/Commercial.pack/templates/professional/blog/entry_metadata.mtml
 
@@ -5900,7 +5890,6 @@ _4]\'から削除しました。',
 ## addons/Commercial.pack/templates/professional/blog/recent_assets.mtml
 
 ## addons/Commercial.pack/templates/professional/blog/recent_comments.mtml
-	'<a href="[_1]">[_2] commented on [_3]</a>: [_4]' => '<a href="[_1]">[_2] から [_3] に対するコメント</a>: [_4]',
 
 ## addons/Commercial.pack/templates/professional/blog/recent_entries.mtml
 
@@ -6001,7 +5990,6 @@ _4]\'から削除しました。',
 
 ## addons/Commercial.pack/tmpl/cfg_customfields.tmpl
 	'Data have been saved to custom fields.' => 'データはカスタムフィールドに保存されました。',
-	'Save changes to blog (s)' => 'ブログに変更を保存',
 	'No custom fileds could be found. <a href="[_1]">Create a field</a> now.' => 'カスタムフィールドがありません。<a href="[_1]">カスタムフィールドを作成</a>する。',
 
 ## addons/Commercial.pack/tmpl/edit_field.tmpl
@@ -6037,7 +6025,6 @@ _4]\'から削除しました。',
 	', or press the enter key to %toggle% it' => '%toggle%ときはENTERキーを押します。',
 
 ## addons/Community.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Increase reader engagement - deploy features to your website that make it easier for your readers to engage with your content and your company.' => 'ブログの読者も参加して、コミュニティでコンテンツを更新するグループブログです。',
 	'Create forums where users can post topics and responses to topics.' => 'フォーラム形式のコミュニティ掲示板です。トピックを公開して、返信を投稿します。',
 	'Users followed by [_1]' => '[_1]に注目されているユーザー',
@@ -6455,7 +6442,6 @@ _4]\'から削除しました。',
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
 
 ## addons/Enterprise.pack/config.yaml
-	'http://www.sixapart.com/movabletype/' => 'http://www.sixapart.jp/movabletype/',
 	'Permissions of group: [_1]' => 'グループ[_1]の権限',
 	'Group' => 'グループ',
 	'Groups associated with author: [_1]' => 'ユーザー[_1]と関連付けられたグループ',
@@ -6876,7 +6862,7 @@ _4]\'から削除しました。',
 	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
 	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
 	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters を利用するには、Crypt::SSLeay または IO::Socket::SSLのいずれかがインストールされている必要があります。',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commenters を利用するには、IO::Socket::SSLのいずれかがインストールされている必要があります。',
 	'Please enter your Facebook App key and secret.' => 'FacebookアプリケーションキーとFacebookアプリケーションシークレットを入力してください。',
 	'Could not verify this app with Facebook: [_1]' => 'Facebookでこのアプリケーションを確認できません: [_1]',
 
@@ -6904,7 +6890,6 @@ _4]\'から削除しました。',
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
 	'Boilerplates' => '定型文',
-	'The boilerplate \'[_1]\' is already in use in this blog.' => '[_1]という定型文は既にこのブログに存在しています。',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => '定型文の編集',
@@ -7044,7 +7029,6 @@ _4]\'から削除しました。',
 	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
 
 ## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
-	'All' => '全て',
 	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
 
 ## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm

@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.5', '6.0022' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.6', '6.0022' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.5.3',              '__PRODUCT_VERSION_ID__',
+        '6.6.2',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 3;
+        $RELEASE_NUMBER = 2;
     }
 
     $DebugMode = 0;
@@ -532,9 +532,6 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode_utf8(
-        MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode && ( $^O ne "MSWin32" );
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -2881,8 +2878,8 @@ sub core_commenter_authenticators {
                 my @missing;
                 eval { require Digest::SHA1; };
                 push @missing, 'Digest::SHA1' if $@;
-                eval { require Crypt::SSLeay; };
-                push @missing, 'Crypt::SSLeay' if $@;
+                eval { require IO::Socket::SSL; };
+                push @missing, 'IO::Socket::SSL' if $@;
                 return 1 unless @missing;
                 $$reason = MT->translate(
                     'A Perl module required for Google ID commenter authentication is missing: [_1].',

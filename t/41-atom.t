@@ -21,7 +21,6 @@ use XML::XPath;
 use XML::Atom;
 use XML::Atom::Feed;
 use XML::Atom::Entry;
-use POSIX qw( ceil );
 
 # To keep away from being under FastCGI
 $ENV{HTTP_HOST} = 'localhost';

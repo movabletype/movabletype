@@ -28,7 +28,7 @@ my @Img = (
     [ 'test.jpg', 640, 480 ],
     [ 'test.png', 150, 150 ],
 );
-my @drivers = qw( ImageMagick NetPBM GD Imager );
+my @drivers = $test_env->image_drivers;
 
 MT->set_language('en-us');
 

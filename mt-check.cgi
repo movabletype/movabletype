@@ -110,7 +110,7 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '6.5.3';
+    $version = '6.6.2';
 }
 
 my ( $mt, $LH );
@@ -623,13 +623,6 @@ my @CORE_OPT = (
         0, 0,
         translate(
             'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.'
-        )
-    ],
-
-    [   'Crypt::SSLeay',
-        0, 0,
-        translate(
-            'This module and its dependencies are required to permit commenters to authenticate via OpenID providers such as AOL and Yahoo! that require SSL support. Also this module is required for Google Analytics site statistics.'
         )
     ],
 

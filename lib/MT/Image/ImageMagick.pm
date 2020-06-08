@@ -9,13 +9,18 @@ use strict;
 use warnings;
 
 use base qw( MT::Image );
+use constant MagickClass => 'Image::Magick';
+
+$ENV{MAGICK_THREAD_LIMIT} ||= 1;
 
 sub load_driver {
     my $image = shift;
-    eval { require Image::Magick };
+
+    my $magick_class = $image->MagickClass;
+    eval "require $magick_class";
     if ( my $err = $@ ) {
         return $image->error(
-            MT->translate( "Cannot load Image::Magick: [_1]", $err ) );
+            MT->translate( "Cannot load [_1]: [_2]", $magick_class, $err ) );
     }
     1;
 }
@@ -34,7 +39,7 @@ sub init {
         ( my $ext = $file ) =~ s/.*\.//;
         %arg = ( magick => lc($ext) );
     }
-    my $magick = $image->{magick} = Image::Magick->new(%arg);
+    my $magick = $image->{magick} = $image->MagickClass->new(%arg);
     if ( my $file = $param{Filename} ) {
         my $x;
         eval { $x = $magick->Read($file); };

@@ -878,7 +878,9 @@ and "MovableType". The identifier is case-insensitive.
 sub _hdlr_reg_allowed {
     my ( $ctx, $args ) = @_;
     my $blog = $ctx->stash('blog');
-    if ( $blog->allow_reg_comments && $blog->commenter_authenticators ) {
+    if ( $blog->allow_unreg_comments
+        || ( $blog->allow_reg_comments && $blog->commenter_authenticators ) )
+    {
         if ( my $type = $args->{type} ) {
             my %types = map { lc($_) => 1 }
                 split /,/, $blog->commenter_authenticators;
