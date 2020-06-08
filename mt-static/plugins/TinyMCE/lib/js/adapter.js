@@ -220,16 +220,6 @@
                     this.$editorTextarea
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
-                    if (! this.tinymce.queryCommandValue('mtFullScreenIsEnabled')) {
-                        var h = this.$editorIframe.height();
-                        this.$editorTextarea.data('base-height', h);
-                        if (tinyMCE.isIE) {
-                            this.$editorTextarea.data('base-height-adjustment', h);
-                        }
-                        else {
-                            this.$editorTextarea.data('base-height-adjustment', 0);
-                        }
-                    }
 
                     if (! calledInInit) {
                         this.ignoreSetDirty(function() {
@@ -250,9 +240,7 @@
             }
             else {
                 this.$editorIframe.height(this.$editorTextarea.innerHeight());
-                this.$editorTextarea
-                .data('base-height', null)
-                .prependTo(this.$editorTextareaParent);
+                this.$editorTextarea.prependTo(this.$editorTextareaParent);
 
                 this.ignoreSetDirty(function() {
                     this.tinymce.setContent(this.source.getContent());
@@ -338,7 +326,7 @@
         },
 
         domUpdated: function() {
-            var format = this.tinymce.execCommand('mtGetStatus')['format'];
+            var format = this.tinymce.queryCommandValue('mtGetStatus')['format'];
             try {
                 this.tinymce.remove();
             }
