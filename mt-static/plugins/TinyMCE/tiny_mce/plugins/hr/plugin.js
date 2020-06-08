@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.1 (2020-03-25)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function () {
     'use strict';
@@ -13,7 +13,7 @@
 
     var register = function (editor) {
       editor.addCommand('InsertHorizontalRule', function () {
-        editor.execCommand('insertContent', false, '<hr />');
+        editor.execCommand('mceInsertContent', false, '<hr />');
       });
     };
     var Commands = { register: register };

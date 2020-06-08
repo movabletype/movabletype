@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.1 (2020-03-25)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function (domGlobals) {
     'use strict';
@@ -22034,16 +22034,28 @@
         },
         layouts: {
           onLtr: function () {
-            return [southwest$1];
+            return [
+              southwest$1,
+              southeast$1
+            ];
           },
           onRtl: function () {
-            return [southeast$1];
+            return [
+              southeast$1,
+              southwest$1
+            ];
           },
           onBottomLtr: function () {
-            return [northwest$1];
+            return [
+              northwest$1,
+              northeast$1
+            ];
           },
           onBottomRtl: function () {
-            return [northeast$1];
+            return [
+              northeast$1,
+              northwest$1
+            ];
           }
         },
         getBounds: spec.getOverflowBounds,
@@ -22642,8 +22654,8 @@
           var headerBounds = absolute$1(headerElem);
           var docElem = documentElement(headerElem);
           var docBounds = absolute$1(docElem);
-          var minTop = Math.min(docBounds.y(), headerBounds.x());
-          return bounds$1(headerBounds.x() + overflowXOffset, minTop, headerBounds.width() - overflowXOffset * 2, Math.max(docBounds.height(), headerBounds.bottom() - minTop));
+          var height = Math.max(docElem.dom().scrollHeight, docBounds.height());
+          return bounds$1(headerBounds.x() + overflowXOffset, docBounds.y(), headerBounds.width() - overflowXOffset * 2, height);
         },
         parts: __assign(__assign({}, baseSpec.parts), {
           overflow: {
@@ -23754,33 +23766,6 @@
       });
     };
 
-    var onSetupFormatToggle = function (editor, name) {
-      return function (api) {
-        var unbindCell = Cell(Option.none());
-        var init = function () {
-          api.setActive(editor.formatter.match(name));
-          var unbind = editor.formatter.formatChanged(name, api.setActive).unbind;
-          unbindCell.set(Option.some(unbind));
-        };
-        editor.initialized ? init() : editor.on('init', init);
-        return function () {
-          return unbindCell.get().each(function (unbind) {
-            return unbind();
-          });
-        };
-      };
-    };
-    var onActionToggleFormat = function (editor) {
-      return function (rawItem) {
-        return function () {
-          editor.undoManager.transact(function () {
-            editor.focus();
-            editor.execCommand('mceToggleFormat', false, rawItem.format);
-          });
-        };
-      };
-    };
-
     var generateSelectItems = function (_editor, backstage, spec) {
       var generateItem = function (rawItem, response, disabled, value) {
         var translatedText = backstage.shared.providers.translate(rawItem.title);
@@ -23942,22 +23927,26 @@
       {
         title: 'Left',
         icon: 'align-left',
-        format: 'alignleft'
+        format: 'alignleft',
+        command: 'JustifyLeft'
       },
       {
         title: 'Center',
         icon: 'align-center',
-        format: 'aligncenter'
+        format: 'aligncenter',
+        command: 'JustifyCenter'
       },
       {
         title: 'Right',
         icon: 'align-right',
-        format: 'alignright'
+        format: 'alignright',
+        command: 'JustifyRight'
       },
       {
         title: 'Justify',
         icon: 'align-justify',
-        format: 'alignjustify'
+        format: 'alignjustify',
+        command: 'JustifyFull'
       }
     ];
     var getSpec = function (editor) {
@@ -23994,13 +23983,22 @@
         return updateSelectMenuIcon(comp);
       });
       var dataset = buildBasicStaticDataset(alignMenuItems);
+      var onAction = function (rawItem) {
+        return function () {
+          return find(alignMenuItems, function (item) {
+            return item.format === rawItem.format;
+          }).each(function (item) {
+            return editor.execCommand(item.command);
+          });
+        };
+      };
       return {
         tooltip: 'Align',
         icon: Option.some('align-left'),
         isSelectedFor: isSelectedFor,
         getCurrentValue: constant(Option.none()),
         getPreviewFor: getPreviewFor,
-        onAction: onActionToggleFormat(editor),
+        onAction: onAction,
         setInitialValue: setInitialValue,
         nodeChangeHandler: nodeChangeHandler,
         dataset: dataset,
@@ -24279,6 +24277,33 @@
       return editor.dom.getParents(currentNode, function () {
         return true;
       }, editor.getBody());
+    };
+
+    var onSetupFormatToggle = function (editor, name) {
+      return function (api) {
+        var unbindCell = Cell(Option.none());
+        var init = function () {
+          api.setActive(editor.formatter.match(name));
+          var unbind = editor.formatter.formatChanged(name, api.setActive).unbind;
+          unbindCell.set(Option.some(unbind));
+        };
+        editor.initialized ? init() : editor.on('init', init);
+        return function () {
+          return unbindCell.get().each(function (unbind) {
+            return unbind();
+          });
+        };
+      };
+    };
+    var onActionToggleFormat = function (editor) {
+      return function (rawItem) {
+        return function () {
+          editor.undoManager.transact(function () {
+            editor.focus();
+            editor.execCommand('mceToggleFormat', false, rawItem.format);
+          });
+        };
+      };
     };
 
     var defaultBlocks = 'Paragraph=p;' + 'Heading 1=h1;' + 'Heading 2=h2;' + 'Heading 3=h3;' + 'Heading 4=h4;' + 'Heading 5=h5;' + 'Heading 6=h6;' + 'Preformatted=pre';

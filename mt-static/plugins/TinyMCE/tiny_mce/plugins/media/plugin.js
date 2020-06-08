@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.1 (2020-03-25)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function () {
     'use strict';
@@ -255,34 +255,9 @@
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.html.SaxParser');
+    var global$2 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
-    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var trimPx = function (value) {
-      return value.replace(/px$/, '');
-    };
-    var addPx = function (value) {
-      return /^[0-9.]+$/.test(value) ? value + 'px' : value;
-    };
-    var getSize = function (name) {
-      return function (elm) {
-        return elm ? trimPx(elm.style[name]) : '';
-      };
-    };
-    var setSize = function (name) {
-      return function (elm, value) {
-        if (elm) {
-          elm.style[name] = addPx(value);
-        }
-      };
-    };
-    var Size = {
-      getMaxWidth: getSize('maxWidth'),
-      getMaxHeight: getSize('maxHeight'),
-      setMaxWidth: setSize('maxWidth'),
-      setMaxHeight: setSize('maxHeight')
-    };
+    var global$3 = tinymce.util.Tools.resolve('tinymce.html.SaxParser');
 
     var getVideoScriptMatch = function (prefixes, src) {
       if (prefixes) {
@@ -294,50 +269,64 @@
       }
     };
 
-    var DOM = global$3.DOM;
-    var getEphoxEmbedIri = function (elm) {
-      return DOM.getAttrib(elm, 'data-ephox-embed-iri');
+    var DOM = global$2.DOM;
+    var trimPx = function (value) {
+      return value.replace(/px$/, '');
     };
-    var isEphoxEmbed = function (html) {
-      var fragment = DOM.createFragment(html);
-      return getEphoxEmbedIri(fragment.firstChild) !== '';
+    var getEphoxEmbedData = function (attrs) {
+      var style = attrs.map.style;
+      var styles = style ? DOM.parseStyle(style) : {};
+      return {
+        type: 'ephox-embed-iri',
+        source: attrs.map['data-ephox-embed-iri'],
+        altsource: '',
+        poster: '',
+        width: get(styles, 'max-width').map(trimPx).getOr(''),
+        height: get(styles, 'max-height').map(trimPx).getOr('')
+      };
     };
-    var htmlToDataSax = function (prefixes, html) {
+    var htmlToData = function (prefixes, html) {
+      var isEphoxEmbed = Cell(false);
       var data = {};
-      global$2({
+      global$3({
         validate: false,
         allow_conditional_comments: true,
         start: function (name, attrs) {
-          if (!data.source && name === 'param') {
-            data.source = attrs.map.movie;
-          }
-          if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
-            if (!data.type) {
-              data.type = name;
+          if (isEphoxEmbed.get()) ; else if (has(attrs.map, 'data-ephox-embed-iri')) {
+            isEphoxEmbed.set(true);
+            data = getEphoxEmbedData(attrs);
+          } else {
+            if (!data.source && name === 'param') {
+              data.source = attrs.map.movie;
             }
-            data = global$1.extend(attrs.map, data);
-          }
-          if (name === 'script') {
-            var videoScript = getVideoScriptMatch(prefixes, attrs.map.src);
-            if (!videoScript) {
-              return;
+            if (name === 'iframe' || name === 'object' || name === 'embed' || name === 'video' || name === 'audio') {
+              if (!data.type) {
+                data.type = name;
+              }
+              data = global$1.extend(attrs.map, data);
             }
-            data = {
-              type: 'script',
-              source: attrs.map.src,
-              width: String(videoScript.width),
-              height: String(videoScript.height)
-            };
-          }
-          if (name === 'source') {
-            if (!data.source) {
-              data.source = attrs.map.src;
-            } else if (!data.altsource) {
-              data.altsource = attrs.map.src;
+            if (name === 'script') {
+              var videoScript = getVideoScriptMatch(prefixes, attrs.map.src);
+              if (!videoScript) {
+                return;
+              }
+              data = {
+                type: 'script',
+                source: attrs.map.src,
+                width: String(videoScript.width),
+                height: String(videoScript.height)
+              };
             }
-          }
-          if (name === 'img' && !data.poster) {
-            data.poster = attrs.map.src;
+            if (name === 'source') {
+              if (!data.source) {
+                data.source = attrs.map.src;
+              } else if (!data.altsource) {
+                data.altsource = attrs.map.src;
+              }
+            }
+            if (name === 'img' && !data.poster) {
+              data.poster = attrs.map.src;
+            }
           }
         }
       }).parse(html);
@@ -345,21 +334,6 @@
       data.altsource = data.altsource || '';
       data.poster = data.poster || '';
       return data;
-    };
-    var ephoxEmbedHtmlToData = function (html) {
-      var fragment = DOM.createFragment(html);
-      var div = fragment.firstChild;
-      return {
-        type: 'ephox-embed-iri',
-        source: getEphoxEmbedIri(div),
-        altsource: '',
-        poster: '',
-        width: Size.getMaxWidth(div),
-        height: Size.getMaxHeight(div)
-      };
-    };
-    var htmlToData = function (prefixes, html) {
-      return isEphoxEmbed(html) ? ephoxEmbedHtmlToData(html) : htmlToDataSax(prefixes, html);
     };
 
     var guess = function (url) {
@@ -378,56 +352,57 @@
     };
     var Mime = { guess: guess };
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.html.Writer');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.html.Schema');
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.html.Schema');
+    var global$5 = tinymce.util.Tools.resolve('tinymce.html.Writer');
 
-    var DOM$1 = global$3.DOM;
+    var DOM$1 = global$2.DOM;
+    var addPx = function (value) {
+      return /^[0-9.]+$/.test(value) ? value + 'px' : value;
+    };
     var setAttributes = function (attrs, updatedAttrs) {
-      var name;
-      var i;
-      var value;
-      var attr;
-      for (name in updatedAttrs) {
-        value = '' + updatedAttrs[name];
-        if (attrs.map[name]) {
-          i = attrs.length;
+      for (var name_1 in updatedAttrs) {
+        var value = '' + updatedAttrs[name_1];
+        if (attrs.map[name_1]) {
+          var i = attrs.length;
           while (i--) {
-            attr = attrs[i];
-            if (attr.name === name) {
+            var attr = attrs[i];
+            if (attr.name === name_1) {
               if (value) {
-                attrs.map[name] = value;
+                attrs.map[name_1] = value;
                 attr.value = value;
               } else {
-                delete attrs.map[name];
+                delete attrs.map[name_1];
                 attrs.splice(i, 1);
               }
             }
           }
         } else if (value) {
           attrs.push({
-            name: name,
+            name: name_1,
             value: value
           });
-          attrs.map[name] = value;
+          attrs.map[name_1] = value;
         }
       }
     };
-    var normalizeHtml = function (html) {
-      var writer = global$4();
-      var parser = global$2(writer);
-      parser.parse(html);
-      return writer.getContent();
+    var updateEphoxEmbed = function (data, attrs) {
+      var style = attrs.map.style;
+      var styleMap = style ? DOM$1.parseStyle(style) : {};
+      styleMap['max-width'] = addPx(data.width);
+      styleMap['max-height'] = addPx(data.height);
+      setAttributes(attrs, { style: DOM$1.serializeStyle(styleMap) });
     };
     var sources = [
       'source',
       'altsource'
     ];
-    var updateHtmlSax = function (html, data, updateAll) {
-      var writer = global$4();
+    var updateHtml = function (html, data, updateAll) {
+      var writer = global$5();
+      var isEphoxEmbed = Cell(false);
       var sourceCount = 0;
       var hasImage;
-      global$2({
+      global$3({
         validate: false,
         allow_conditional_comments: true,
         comment: function (text) {
@@ -440,100 +415,93 @@
           writer.text(text, raw);
         },
         start: function (name, attrs, empty) {
-          switch (name) {
-          case 'video':
-          case 'object':
-          case 'embed':
-          case 'img':
-          case 'iframe':
-            if (data.height !== undefined && data.width !== undefined) {
-              setAttributes(attrs, {
-                width: data.width,
-                height: data.height
-              });
-            }
-            break;
-          }
-          if (updateAll) {
+          if (isEphoxEmbed.get()) ; else if (has(attrs.map, 'data-ephox-embed-iri')) {
+            isEphoxEmbed.set(true);
+            updateEphoxEmbed(data, attrs);
+          } else {
             switch (name) {
             case 'video':
-              setAttributes(attrs, {
-                poster: data.poster,
-                src: ''
-              });
-              if (data.altsource) {
-                setAttributes(attrs, { src: '' });
+            case 'object':
+            case 'embed':
+            case 'img':
+            case 'iframe':
+              if (data.height !== undefined && data.width !== undefined) {
+                setAttributes(attrs, {
+                  width: data.width,
+                  height: data.height
+                });
               }
               break;
-            case 'iframe':
-              setAttributes(attrs, { src: data.source });
-              break;
-            case 'source':
-              if (sourceCount < 2) {
+            }
+            if (updateAll) {
+              switch (name) {
+              case 'video':
                 setAttributes(attrs, {
-                  src: data[sources[sourceCount]],
-                  type: data[sources[sourceCount] + 'mime']
+                  poster: data.poster,
+                  src: ''
                 });
-                if (!data[sources[sourceCount]]) {
+                if (data.altsource) {
+                  setAttributes(attrs, { src: '' });
+                }
+                break;
+              case 'iframe':
+                setAttributes(attrs, { src: data.source });
+                break;
+              case 'source':
+                if (sourceCount < 2) {
+                  setAttributes(attrs, {
+                    src: data[sources[sourceCount]],
+                    type: data[sources[sourceCount] + 'mime']
+                  });
+                  if (!data[sources[sourceCount]]) {
+                    return;
+                  }
+                }
+                sourceCount++;
+                break;
+              case 'img':
+                if (!data.poster) {
                   return;
                 }
+                hasImage = true;
+                break;
               }
-              sourceCount++;
-              break;
-            case 'img':
-              if (!data.poster) {
-                return;
-              }
-              hasImage = true;
-              break;
             }
           }
           writer.start(name, attrs, empty);
         },
         end: function (name) {
-          if (name === 'video' && updateAll) {
-            for (var index = 0; index < 2; index++) {
-              if (data[sources[index]]) {
-                var attrs = [];
-                attrs.map = {};
-                if (sourceCount < index) {
-                  setAttributes(attrs, {
-                    src: data[sources[index]],
-                    type: data[sources[index] + 'mime']
-                  });
-                  writer.start('source', attrs, true);
+          if (!isEphoxEmbed.get()) {
+            if (name === 'video' && updateAll) {
+              for (var index = 0; index < 2; index++) {
+                if (data[sources[index]]) {
+                  var attrs = [];
+                  attrs.map = {};
+                  if (sourceCount < index) {
+                    setAttributes(attrs, {
+                      src: data[sources[index]],
+                      type: data[sources[index] + 'mime']
+                    });
+                    writer.start('source', attrs, true);
+                  }
                 }
               }
             }
-          }
-          if (data.poster && name === 'object' && updateAll && !hasImage) {
-            var imgAttrs = [];
-            imgAttrs.map = {};
-            setAttributes(imgAttrs, {
-              src: data.poster,
-              width: data.width,
-              height: data.height
-            });
-            writer.start('img', imgAttrs, true);
+            if (data.poster && name === 'object' && updateAll && !hasImage) {
+              var imgAttrs = [];
+              imgAttrs.map = {};
+              setAttributes(imgAttrs, {
+                src: data.poster,
+                width: data.width,
+                height: data.height
+              });
+              writer.start('img', imgAttrs, true);
+            }
           }
           writer.end(name);
         }
-      }, global$5({})).parse(html);
+      }, global$4({})).parse(html);
       return writer.getContent();
-    };
-    var isEphoxEmbed$1 = function (html) {
-      var fragment = DOM$1.createFragment(html);
-      return DOM$1.getAttrib(fragment.firstChild, 'data-ephox-embed-iri') !== '';
-    };
-    var updateEphoxEmbed = function (html, data) {
-      var fragment = DOM$1.createFragment(html);
-      var div = fragment.firstChild;
-      Size.setMaxWidth(div, data.width);
-      Size.setMaxHeight(div, data.height);
-      return normalizeHtml(div.outerHTML);
-    };
-    var updateHtml = function (html, data, updateAll) {
-      return isEphoxEmbed$1(html) ? updateEphoxEmbed(html, data) : updateHtmlSax(html, data, updateAll);
     };
     var UpdateHtml = { updateHtml: updateHtml };
 
@@ -1059,9 +1027,9 @@
       if (Settings.shouldFilterHtml(editor) === false) {
         return html;
       }
-      var writer = global$4();
+      var writer = global$5();
       var blocked;
-      global$2({
+      global$3({
         validate: false,
         allow_conditional_comments: false,
         comment: function (text) {
@@ -1075,14 +1043,16 @@
         },
         start: function (name, attrs, empty) {
           blocked = true;
-          if (name === 'script' || name === 'noscript') {
+          if (name === 'script' || name === 'noscript' || name === 'svg') {
             return;
           }
-          for (var i = 0; i < attrs.length; i++) {
-            if (attrs[i].name.indexOf('on') === 0) {
-              return;
+          for (var i = attrs.length - 1; i >= 0; i--) {
+            var attrName = attrs[i].name;
+            if (attrName.indexOf('on') === 0) {
+              delete attrs.map[attrName];
+              attrs.splice(i, 1);
             }
-            if (attrs[i].name === 'style') {
+            if (attrName === 'style') {
               attrs[i].value = editor.dom.serializeStyle(editor.dom.parseStyle(attrs[i].value), name);
             }
           }
@@ -1095,7 +1065,7 @@
           }
           writer.end(name);
         }
-      }, global$5({})).parse(html);
+      }, global$4({})).parse(html);
       return writer.getContent();
     };
     var Sanitize = { sanitize: sanitize };

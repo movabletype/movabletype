@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.1 (2020-03-25)
+ * Version: 5.2.2 (2020-04-23)
  */
 (function (domGlobals) {
     'use strict';
@@ -18,7 +18,7 @@
 
     var insertChar = function (editor, chr) {
       var evtChr = Events.fireInsertCustomChar(editor, chr).chr;
-      editor.execCommand('insertContent', false, evtChr);
+      editor.execCommand('mceInsertContent', false, evtChr);
     };
     var Actions = { insertChar: insertChar };
 
