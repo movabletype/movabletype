@@ -14,8 +14,6 @@
             return false;
         },
         config: {
-            // mode: "exact",
-            // plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textpattern,fullscreen,table,quickbars',
             plugins: 'lists,media,paste,hr,link,textpattern,fullscreen,table,quickbars',
             external_plugins: {
                 'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin.js',
@@ -23,8 +21,6 @@
             },
   
             language: $('html').attr('lang'),
-            // theme: "modern",
-            // skin: 'lightgray',
             menubar: false,
             branding: false,
             forced_root_block: 'p',
@@ -48,60 +44,6 @@
             toolbar2: '',
             quickbars_insert_toolbar: false,
             quickbars_selection_toolbar: false,
-
-            plugin_mt_inlinepopups_window_sizes: {
-                'advanced/link.htm': {
-                    width: 350,
-                    height: 220
-                },
-                'advanced/color_picker.htm': {
-                    width: 370,
-                    height: 280,
-                    onload: function(context) {
-                        var $contents = $(context['iframe']).contents();
-
-                        $contents.find('a[onmouseover^=showColor]')
-                        .each(function() {
-                            var callback = this.onmouseover;
-                            $(this).on('click', function() {
-                                callback();
-                                return false;
-                            });
-                        })
-                        .attr('onmouseover', '')
-                        .attr('onfocus', '')
-                        .attr('href', 'javascript:;');
-                    }
-                },
-                'template/template.htm': {
-                    top: function() {
-                        var height = $(window).height() - 110,
-                        vp     = tinymce.DOM.getViewPort();
-                        return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
-                    },
-                    height: function() {
-                        return $(window).height() - 110;
-                    },
-                    onload: function(context) {
-                        var window = context['iframe'].contentWindow;
-                        var dialog = window.TemplateDialog;
-                        if (! dialog) {
-                            return;
-                        }
-                        var resize = dialog.resize;
-                        dialog.resize = function() {
-                            resize();
-
-                            var e = window.document.getElementById('templatesrc');
-                            if (e) {
-                                e.style.height =
-                                (parseInt(e.style.height, 10) - 30) + 'px';
-                            }
-                        };
-                        dialog.resize();
-                    }
-                }
-            },
 
             formats: {
                 strikethrough: [
@@ -148,13 +90,9 @@
 
             entity_encoding: 'raw',
             convert_urls: false,
-            // media_strict: false,
-            // verify_html: false,
             valid_children: '+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area]',
-            // non_empty_elements: 'td,th,iframe,video,audio,object,script,img,area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,source,wbr',
 
             cleanup: true,
-            // dialog_type: 'modal',
 
             init_instance_callback: function(ed) {},
 

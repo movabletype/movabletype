@@ -14,7 +14,7 @@
     background-color: #ffffff;
 }
 .fullscreen_editor #field-convert_breaks {
-    display: none;
+    display: none !important;
 }
 
 /* for wysiwyg type custom field */
