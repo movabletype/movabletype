@@ -77,22 +77,6 @@
           return ed.ui.registry.addButton(name, opts);
       };
 
-      // TODO: 
-/*  
-      tinymce.create('tinymce.ui.MTTextButton:tinymce.ui.Button', {
-          renderHTML : function() {
-              var DOM = tinymce.DOM;
-              var cp = this.classPrefix, s = this.settings, h, l;
-  
-              l = DOM.encode(s.label || '');
-              h = '<a role="button" id="' + this.id + '" href="javascript:;" class="mceMTTextButton ' + cp + ' ' + cp + 'Enabled ' + s['class'] + (l ? ' ' + cp + 'Labeled' : '') +'" onmousedown="return false;" onclick="return false;" aria-labelledby="' + this.id + '_voice" title="' + DOM.encode(s.title) + '">';
-              h += s.text;
-              h += '</a>';
-              return h;
-          }
-      });
-*/
-
   tinymce.create('tinymce.plugins.MovableType', {
       buttonSettings : '',
 
@@ -332,42 +316,6 @@
           });
 
           ed.on('PreInit', function() {
-              var attrPrefix  = 'data-mce-mt-',
-                  attrRegExp  = new RegExp('^' + attrPrefix),
-                  placeholder = 'javascript:void("mce-mt-event-placeholer");return false';
-
-              // Save/Restore event handler of the node.
-              ed.parser.addAttributeFilter([/^on|action/], function(nodes, name) {
-                  var i, node,
-                      internalName = attrPrefix + name;
-
-                  for (i = 0; i < nodes.length; i++) {
-                      node = nodes[i];
-
-                      node.attr(internalName, node.attr(name));
-                      node.attr(name, placeholder);
-                  }
-              });
-
-              ed.serializer.addAttributeFilter([attrRegExp], function(nodes, internalName) {
-                  var i, node, savedValue, attrValue,
-                      name = internalName.substring(attrPrefix.length);
-
-                  for (i = 0; i < nodes.length; i++) {
-                      node       = nodes[i];
-                      attrValue  = node.attr(name)
-                      savedValue = node.attr(internalName);
-
-                      if (attrValue === placeholder) {
-                          if (! (savedValue && savedValue.length > 0)) {
-                              savedValue = null;
-                          }
-                          node.attr(name, savedValue);
-                      }
-                      node.attr(internalName, null);
-                  }
-              });
-
               // Escape/Unescape comment/cdata for security
               ed.parser.addNodeFilter('#comment,#cdata', function(nodes, name) {
                   var i, node;
@@ -702,7 +650,53 @@
                   });
               }
           });
+
+          var filterd_attrs = [];
+          var regexp = new RegExp(/^on|action/);
+          function addAttributeFilterRegexp(){
+              var attrPrefix  = 'data-mce-mt-';
+              var attrRegExp  = new RegExp('^' + attrPrefix);
+              var placeholder = 'javascript:void("mce-mt-event-placeholer");return false';
+
+              tinymce.util.Tools.each(ed.dom.select('*'), function (node) {
+                  tinymce.util.Tools.each(node.attributes, function(attr){
+                      if(filterd_attrs[attr.name]) return;
+                      if(!regexp.test(attr.name)) return;
+                      
+                      // Save/Restore event handler of the node.
+                      ed.parser.addAttributeFilter(attr.name, function(nodes, name) {
+                          var internalName = attrPrefix + name;
+                          tinymce.util.Tools.each(nodes, function(targetNode){
+                              targetNode.attr(internalName, targetNode.attr(name));
+                              targetNode.attr(name, placeholder);
+                          });
+                      });
+                      
+                      ed.serializer.addAttributeFilter(attrPrefix + attr.name, function(nodes, internalName) {
+                          var name = internalName.substring(attrPrefix.length);
+      
+                          tinymce.util.Tools.each(nodes, function(targetNode){
+                              var attrValue  = targetNode.attr(name)
+                              var savedValue = targetNode.attr(internalName);
+      
+                              if (attrValue === placeholder) {
+                                  if (! (savedValue && savedValue.length > 0)) {
+                                      savedValue = null;
+                                  }
+                                  targetNode.attr(name, savedValue);
+                              }
+                              targetNode.attr(internalName, null);
+                          });
+                      });
+
+                      filterd_attrs[attr.name] = 1;
+                });
+              });
+          }
+
           ed.on('NodeChange', function() {
+              
+              addAttributeFilterRegexp();
 
               var s = ed.mtEditorStatus;
 
