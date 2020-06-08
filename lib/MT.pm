@@ -12,7 +12,6 @@ use base qw( MT::ErrorHandler );
 use filetest 'access';
 use File::Spec;
 use File::Basename;
-use Encode::Locale;
 use MT::Util qw( weaken );
 use MT::I18N qw( const );
 
@@ -42,7 +41,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.3',                '__PRODUCT_VERSION_ID__',
+        '7.3.1',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -64,7 +63,7 @@ BEGIN {
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4607';
+        $RELEASE_VERSION_ID = 'r.4608';
     }
 
     $DebugMode = 0;
@@ -387,9 +386,6 @@ sub log {
     $log->class('system')
         unless defined $log->class;
     $log->save();
-    print STDERR Encode::encode( 'locale',
-        MT->translate( "Message: [_1]", $log->message ) . "\n" )
-        if $MT::DebugMode;
 
     require MT::Util::Log;
     MT::Util::Log::init();

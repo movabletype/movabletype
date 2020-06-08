@@ -66,7 +66,7 @@ use vars qw( %Lexicon );
 
 ## plugins/BlockEditor/tmpl/cms/include/insert_options.tmpl
 	'Alt' => '代替テキスト',
-	'Caption' => 'タイトル',
+	'Caption' => 'キャプション',
 
 );
 

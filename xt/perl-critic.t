@@ -1,8 +1,9 @@
 use strict;
 use warnings;
+use FindBin;
 
 use File::Find;
-use Test::Perl::Critic;
+use Test::Perl::Critic (-profile => "$FindBin::Bin/../.perlcriticrc" );
 
 my @files = grep -d $_, qw( lib tools t build );
 for my $dir ( 'addons', 'plugins' ) {

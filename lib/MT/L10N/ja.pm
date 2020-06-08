@@ -2202,7 +2202,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid convert_breaks: [_1]' => '不正なテキストフォーマットが指定されました: [_1]',
 	'Invalid default_cat_id: [_1]' => '不正な規定のカテゴリーIDが指定されました: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'インポートの途中でエラーが発生しました : [_1]。インポートファイルを確認してください。',
-	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => '\'import\'ディレクトリからインポートしたファイルを削除することを忘れないでください。もう一度インポート機能を利用した場合に、同じファイルが再度インポートされてしまう可能性があります。',
 	'A resource "[_1]" is required.' => '"[_1]"リソースを指定する必要があります。',
 	'Could not found archive template for [_1].' => '[_1]のアーカイブテンプレートが見つかりません。',
 	'Preview data not found.' => 'プレビューするデータが存在しません。',
@@ -4440,6 +4439,7 @@ use vars qw( @ISA %Lexicon );
 	'Publish all Archive templates dynamically. Immediately publish all other templates statically.' => 'アーカイブテンプレートをすべてダイナミックパブリッシングします。他のテンプレートはスタティックパブリッシングします。',
 	'This new publishing profile will update your publishing settings.' => '公開プロファイルの設定内容を使って、すべてのテンプレートの設定を更新します。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',
+	'Execute' => '実行',
 
 ## tmpl/cms/dialog/recover.tmpl
 	'Reset Password' => 'パスワードのリセット',
@@ -5995,7 +5995,6 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'ウィザードで新しく構成ファイルを作るときは、現在の構成ファイルを別の場所に移動してこのページを更新してください。',
 
 ## addons/Cloud.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Cloud Services' => 'クラウドサービス',
 	'Basic Authentication' => 'Basic認証',
 	'Redirect' => 'リダイレクト',
@@ -6191,7 +6190,6 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want restore from selected backup file?' => '選択されたバックアップファイルからの復元を行いますか?',
 
 ## addons/Commercial.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Professionally designed, well-structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'バナー画像、水平型のナビゲーションなど、ホームページ用途に適したデザインです。あらかじめ用意されたページをカスタマイズして、簡単にウェブサイトを作成できます。',
 	'_PWT_ABOUT_BODY' => '
 <p><strong>以下の文章はサンプルです。内容を適切に書き換えてください。</strong></p>
@@ -6526,7 +6524,6 @@ use vars qw( @ISA %Lexicon );
 	'This module is required in order to use the LDAP Authentication.' => 'LDAP認証を利用する場合に必要です。',
 
 ## addons/Enterprise.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.jp/movabletype/',
 	'Advanced Pack' => 'Advanced Pack',
 	'Oracle Database (Recommended)' => 'Oracleデータベース(推奨)',
 	'Microsoft SQL Server Database' => 'Microsoft SQL Serverデータベース',
@@ -6856,8 +6853,6 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'コメント機能を提供します。',
-	'Mark as Spam' => 'スパムに指定',
-	'Remove Spam status' => 'スパム指定を解除',
 	'Unpublish Comment(s)' => 'コメントの公開取り消し',
 	'Trust Commenter(s)' => 'コメント投稿者を承認',
 	'Untrust Commenter(s)' => 'コメント投稿者の承認を解除',
@@ -6921,8 +6916,6 @@ use vars qw( @ISA %Lexicon );
 	'(Deleted)' => '削除されたユーザー',
 	'Edit this [_1] commenter.' => '[_1]であるコメンターを編集する。',
 	'Comments on [_1]: [_2]' => '[_1] [_2]のコメント',
-	'Not spam' => 'スパムではない',
-	'Reported as spam' => 'スパム',
 	'All comments by [_1] \'[_2]\'' => '[_1]\'[_2]\'のコメント',
 	'__COMMENTER_APPROVED' => '承認',
 	'Moderator' => 'モデレータ',
@@ -6961,8 +6954,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Comments/lib/Comments/CMS/Search.pm
 
 ## plugins/Comments/lib/Comments/Import.pm
-	'Creating new comment (from \'[_1]\')...' => '\'[_1]\'からのコメントをインポートしています...',
-	'Saving comment failed: [_1]' => 'コメントを保存できませんでした: [_1]',
 
 ## plugins/Comments/lib/Comments/Upgrade.pm
 	'Creating initial comment roles...' => 'コメント権限を作成しています...',
@@ -6991,7 +6982,6 @@ use vars qw( @ISA %Lexicon );
 	'Comment text is required.' => 'コメントを入力していません。',
 	'Registration is required.' => '登録しなければなりません。',
 	'Name and E-mail address are required.' => '名前とメールアドレスは必須です。',
-	'Invalid URL \'[_1]\'' => 'URL([_1])は不正です。',
 	'Comment save failed with [_1]' => 'コメントを保存できませんでした: [_1]',
 	'Comment on "[_1]" by [_2].' => '[_2]が\'[_1]\'にコメントしました。',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'まだ登録を完了していないユーザー\'[_1]\'がコメントしようとしました。',
@@ -7015,9 +7005,6 @@ use vars qw( @ISA %Lexicon );
 	'You cannot create a comment for an unpublished entry.' => '公開されていない記事にはコメントできません。',
 	'You cannot reply to unpublished comment.' => '公開されていないコメントには返信できません。',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => '\'[_3]\'がコメント\'[_1]\'(ID:[_2])を削除しました。',
-	'You do not have permission to approve this trackback.' => 'トラックバックを承認する権限がありません。',
-	'The entry corresponding to this comment is missing.' => '存在しない記事に対してコメントしています。',
-	'You do not have permission to approve this comment.' => 'コメントを公開する権限がありません。',
 	'Orphaned comment' => '記事のないコメント',
 
 ## plugins/Comments/lib/MT/DataAPI/Endpoint/Comment.pm
@@ -7038,14 +7025,12 @@ use vars qw( @ISA %Lexicon );
 ## plugins/Comments/php/function.mtcommentreplytolink.php
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/from_object.yaml
-	'Image photo' => 'Image photo',
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/to_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/from_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/to_object.yaml
-	'Original Test' => 'Original Test',
 
 ## plugins/Comments/t/211-api-resource-objects.d/entry/from_object.yaml
 
@@ -7083,7 +7068,6 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => '定型文を管理します。',
-	'Boilerplate' => '定型文',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Boilerplates' => '定型文',
@@ -7097,7 +7081,6 @@ use vars qw( @ISA %Lexicon );
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
-	'The boilerplate \'[_1]\' is already in use in this blog.' => '[_1]という定型文は既にこのブログに存在しています。',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => '定型文の編集',
@@ -7321,8 +7304,6 @@ _4]\'から削除しました。',
 	'Source URL' => '送信元のURL',
 
 ## plugins/Trackback/lib/Trackback/Import.pm
-	'Creating new ping (\'[_1]\')...' => '\'[_1]\'のトラックバックをインポートしています...',
-	'Saving ping failed: [_1]' => 'トラックバックを保存できませんでした: [_1]',
 
 ## plugins/Trackback/t/211-api-resource-objects.d/asset/from_object.yaml
 	'Image photo' => 'Image photo',
