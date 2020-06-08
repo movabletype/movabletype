@@ -47,18 +47,16 @@
                  fitToWindow = function() {
                      var $outer = $parent.find('table:visible');
                      var $inner = $parent.find('.mceIframeContainer:visible');
+                     var $inner_text = $parent.find('.tox-tinymce textarea');
  
                      var offset_height =
                          $outer.height() - $inner.height() + header_height;
  
-                     // forEachAffectedEditors(function() {
-                     //     this.theme.resizeTo(
-                     //         '100%',
-                     //         $window.height() - offset_height,
-                     //         false,
-                     //         true
-                     //     );
-                     // });
+                     forEachAffectedEditors(function() {
+                         $outer.height($window.height() - header_height);
+                         $inner.height($window.height() - header_height);
+                         $inner_text.height($window.height() - header_height);
+                     });
                  };
              });
              ed.addCommand('mtFullScreenFitToWindow', function() {
