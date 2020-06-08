@@ -511,11 +511,12 @@
                 }
                 last_updated = now;
                 var height = adapter.$editorIframe.parents('.tox-tinymce').height();
+
                 adapter.$editorTextarea.height(height);
                 var width = '100%';
                 var Cookie = tinymce.plugins.MovableType.Cookie;
-		            Cookie.setHash("TinyMCE_" + ed.id + "_size", {
-	                 cw : width,
+                Cookie.setHash("TinyMCE_" + ed.id + "_size", {
+                   cw : width,
                    ch : height
                  });
             });
