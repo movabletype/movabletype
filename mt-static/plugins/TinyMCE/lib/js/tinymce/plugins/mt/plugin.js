@@ -523,7 +523,7 @@
           // Register buttons
           ed.ui.registry.addButton('mt_insert_html', {
               icon : 'addhtml',
-              tooltip : 'mt_insert_html',
+              tooltip : 'insert_html',
               onAction : function() {
 
                   win = ed.windowManager.open({
@@ -568,7 +568,7 @@
 
           ed.addMTButton('mt_insert_image', {
               icon : 'image',
-              tooltip : 'mt_insert_image',
+              tooltip : 'insert_image',
               onAction : function() {
                   ed.execCommand('mtSaveBookmark');
                   openDialog(
@@ -580,7 +580,7 @@
 
           ed.addMTButton('mt_insert_file', {
               icon : 'new-document',
-              tooltip : 'mt_insert_file',
+              tooltip : 'insert_file',
               onAction : function() {
                   ed.execCommand('mtSaveBookmark');
                   openDialog(
@@ -591,7 +591,7 @@
           });
 
           ed.addMTButton('mt_source_bold', {
-              tooltip : 'mt_source_bold',
+              tooltip : 'source_bold',
               text : 'strong',
               mtButtonClass: 'text',
               toggle: true,
@@ -601,7 +601,7 @@
           });
 
           ed.addMTButton('mt_source_italic', {
-              tooltip : 'mt_source_italic',
+              tooltip : 'source_italic',
               text : 'em',
               mtButtonClass: 'text',
               toggle: true,
@@ -611,8 +611,8 @@
           });
 
           ed.addMTButton('mt_source_blockquote', {
-              tooltip : 'mt_source_blockquote',
-              text : 'blockquote',
+              tooltip : 'source_blockquote',
+              text : 'btn_blockquote',
               mtButtonClass: 'text',
               toggle: true,
               onclickFunctions : {
@@ -621,7 +621,7 @@
           });
 
           ed.addMTButton('mt_source_unordered_list', {
-              tooltip : 'mt_source_unordered_list',
+              tooltip : 'source_unordered_list',
               text : 'ul',
               mtButtonClass: 'text',
               toggle: true,
@@ -631,7 +631,7 @@
           });
 
           ed.addMTButton('mt_source_ordered_list', {
-              tooltip : 'mt_source_ordered_list',
+              tooltip : 'source_ordered_list',
               text : 'ol',
               mtButtonClass: 'text',
               toggle: true,
@@ -641,7 +641,7 @@
           });
 
           ed.addMTButton('mt_source_list_item', {
-              tooltip : 'mt_source_list_item',
+              tooltip : 'source_list_item',
               text : 'li',
               mtButtonClass: 'text',
               toggle: true,
@@ -663,7 +663,7 @@
 
           ed.addMTButton('mt_source_link', {
               icon : 'link',
-              tooltip : 'mt_insert_link',
+              tooltip : 'insert_link',
               onclickFunctions : {
                   source: function(cmd, ui, val) {
                       ed.execCommand('mceLink');
@@ -685,7 +685,7 @@
 
           ed.addMTButton('mt_source_mode', {
               icon : 'sourcecode',
-              tooltip : 'mt_source_mode',
+              tooltip : 'source_mode',
               toggle: true,
               onclickFunctions : {
                   wysiwyg: function() {
