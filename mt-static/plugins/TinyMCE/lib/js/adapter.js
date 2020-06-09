@@ -43,8 +43,8 @@
             plugin_mt_wysiwyg_buttons1:'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
             plugin_mt_wysiwyg_buttons2:'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
 
-            plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
-            plugin_mt_wysiwyg_insert_toolbar: 'mt_insert_html mt_insert_file mt_insert_image | table | ',
+            plugin_mt_wysiwyg_selection_toolbar: 'italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_insert_toolbar: 'italic underline strikethrough | blockquote bullist numlist hr | link unlink',
 
             toolbar1: '',
             toolbar2: '',
@@ -180,6 +180,8 @@
                         'overflow-x': 'auto',
                     });
                 }
+                config["quickbars_insert_toolbar"] = config["plugin_mt_wysiwyg_insert_toolbar"];
+                config["quickbars_selection_toolbar"] = config["plugin_mt_wysiwyg_selection_toolbar"];
             } else {
                 if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
                     var div  = $('#' + adapter.id);
@@ -200,6 +202,8 @@
                         'overflow-x': '',
                     });
                 }
+                config["quickbars_insert_toolbar"] = false;
+                config["quickbars_selection_toolbar"] = false;
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 
@@ -432,7 +436,7 @@
                 adapter.$editorIframe.height(size['iframeHeight']);
                 adapter.$editorTextarea.height(size['textareaHeight']);
                 adapter.$editorIframe.css({'width': '100%'});
-                adapter.$editorTextarea.css({'width': ''});
+                adapter.$editorTextarea.css({'width': '100%'});
                 adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight']);
             });
             var last_updated;

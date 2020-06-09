@@ -180,7 +180,7 @@ clean:
 	-rm -rf $(local_js)
 	-rm -rf mt-static/js/mt_core_compact.js
 	-rm -rf mt-static/js/editor.js
-  -rm -f mt-static/jquery/jquery.mt.min.js
+	-rm -f mt-static/jquery/jquery.mt.min.js
 	-rm -f mt-static/plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin.min.js
 	-rm -f mt-static/plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin.min.js
 	-rm -rf mt-static/css/main.css mt-static/css/simple.css

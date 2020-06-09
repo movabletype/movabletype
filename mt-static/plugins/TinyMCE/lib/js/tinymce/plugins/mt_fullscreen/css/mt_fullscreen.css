@@ -16,6 +16,18 @@
 .fullscreen_editor #field-convert_breaks {
     display: none !important;
 }
+/* content-data fullscreen */
+/* header hide */
+#content_data .fullscreen_editor div.first-child {
+    display: none;
+}
+
+/* formattext fullscreen */
+/* label hide */
+.tox-fullscreen > label.first-child {
+    display: none;
+}
+
 
 /* for wysiwyg type custom field */
 .field-top-label .field-content.fullscreen_editor {
