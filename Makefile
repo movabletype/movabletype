@@ -188,7 +188,7 @@ clean:
 	-rm -rf build-language-stamp
 	-git checkout lib/MT.pm php/mt.php mt-check.cgi mt-config.cgi-original VERSIONS
 
-	# test tasks
-	-include t/test.mk
-	-include t/docker-test.mk
+# test tasks
+-include t/test.mk
+-include t/docker-test.mk
 	
