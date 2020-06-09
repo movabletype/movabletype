@@ -504,7 +504,7 @@
                         }
                       ],
                       onSubmit: function(api) {
-                          ed.execCommand('insertContent', false, api.getData().insert_html);
+                          ed.execCommand('mceInsertContent', false, api.getData().insert_html);
                           api.close()
                       },
                       size: 'large',
@@ -603,7 +603,7 @@
             ed.once('beforeExecCommand', _insertContent);
           }
           let _insertContent = function(e) {
-              if (e.command == 'insertContent' && e.value) {
+              if (e.command == 'mceInsertContent' && e.value) {
                   ed.mtProxies.source.editor.insertContent(e.value);
               }
               ed.off('beforeExecCommand', _insertContent);
