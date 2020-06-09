@@ -35,19 +35,16 @@
                 if (! enabled) {
                     return;
                 }
-                var header_height = $header.height();
+                var header_height = $header.length > 0 ? $header.height() : 0;
 
                 fitToWindow = function() {
                     var $outer = $parent.find('.tox-tinymce');
-                    var $inner = $parent.find('.tox-tinymce iframe');
+                    var $inner_ifr = $parent.find('.tox-tinymce iframe');
                     var $inner_text = $parent.find('.tox-tinymce textarea');
-
-                    var offset_height =
-                        $outer.height() - $inner.height() + header_height;
 
                     forEachAffectedEditors(function() {
                         $outer.height($window.height() - header_height);
-                        $inner.height($window.height() - header_height);
+                        $inner_ifr.height($window.height() - header_height);
                         $inner_text.height($window.height() - header_height);
                     });
                 };
@@ -130,7 +127,7 @@
                 $parent     = $container.closest('#text-field');
                 $header     = $parent.find('.editor-header');
                 $tabs       = $header.find('.tab');
-                if ($header.length == 0 || $tabs.length == 0) {
+                if ($parent.lenght == 0 && ($header.length == 0 || $tabs.length == 0)) {
                     $parent = $container.closest('.field-content');
                 }
                 fitToWindow = function(){};

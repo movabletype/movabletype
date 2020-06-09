@@ -384,7 +384,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             adapter.$editorIframe.height(size['iframeHeight']);
             adapter.$editorTextarea.height(size['textareaHeight']);
             adapter.$editorIframe.css({'width': '100%'});
-            adapter.$editorTextarea.css({'width': ''});
+            adapter.$editorTextarea.css({'width': '100%'});
             adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight']);
         });
         var last_updated;
