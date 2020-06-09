@@ -671,7 +671,6 @@ use vars qw( @ISA %Lexicon );
 	'Permissions' => 'Berechtigungen',
 
 ## lib/MT/App/DataAPI.pm
-	'[_1] must be a number.' => '[_1] muss eine Zahl sein.',
 	'[_1] must be an integer and between [_2] and [_3].' => '[_1] muss eine ganze Zahl zwischen [_2] und [_3] sein.',
 
 ## lib/MT/App.pm
@@ -2141,7 +2140,6 @@ use vars qw( @ISA %Lexicon );
 	'Invalid convert_breaks: [_1]' => 'convert_breaks-Parameter ungültig: [_1]',
 	'Invalid default_cat_id: [_1]' => 'default_cat_it-Parameter ungültig: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'Beim Importieren ist ein Fehler aufgetreten: [_1]. Bitte überprüfen Sie Ihre Import-Datei.',
-	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Vergessen Sie nicht, die verwendeten Dateien aus dem &#8222;import&#8220;-Ordner zu entfernen, damit sie bei künftigen Importvorgängen nicht erneut importiert werden.',
 	'A resource "[_1]" is required.' => 'Resource "[_1]" erforderlich.',
 	'Could not found archive template for [_1].' => 'Archiv-Vorlage für [_1] nicht gefunden.',
 	'Preview data not found.' => 'Vorschaudaten nicht gefunden.',
@@ -5897,7 +5895,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Suchen &amp; Ersetzen',
-	'You must select one or more item to replace.' => 'Wählen Sie mindestens ein Element aus, das ersetzt werden soll.',
+	'You must select one or more items to replace.' => 'Wählen Sie mindestens ein Element aus, das ersetzt werden soll.',
 	'Search Again' => 'Erneut suchen',
 	'Case Sensitive' => 'Groß/Kleinschreibung beachten',
 	'Regex Match' => 'Reguläre Ausdrücke verwenden',
@@ -6177,7 +6175,6 @@ use vars qw( @ISA %Lexicon );
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Um mit dem Konfigurationsassistenten eine neue Konfigurationsdatei zu erzeugen, entfernen Sie die vorhandene Konfigurationsdatei und laden Sie diese Seite neu.',
 
 ## addons/Cloud.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Cloud Services' => 'Cloud-Dienste',
 	'Basic Authentication' => 'Basisauthentifizierung',
 	'Redirect' => 'Weiterleitung',
@@ -6372,7 +6369,6 @@ use vars qw( @ISA %Lexicon );
 	'Are you sure you want restore from selected backup file?' => 'Daten aus ausgewählter Sicherungsdatei wirklich wiederherstellen?',
 
 ## addons/Commercial.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Professionally designed, well-structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Professionell gestaltete, gut strukturierte und einfach anpassbare Website. Die Standardseiten, Fußzeile und Navigation können Sie einfach konfigurieren.',
 	'_PWT_ABOUT_BODY' => '
 <p><strong>Platzhalter - Geben Sie hier Ihren eigenen Text ein.</strong></p>
@@ -6734,7 +6730,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'This module is required in order to use the LDAP Authentication.' => 'Dieses Modul ist zur Nutzung der LDAP-Authentifizierung erforderlich.',
 
 ## addons/Enterprise.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Advanced Pack' => 'Advanced-Pack',
 	'Oracle Database (Recommended)' => 'Oracle-Datenbank (empfohlen)',
 	'Microsoft SQL Server Database' => 'Microsoft SQL Server-Datenbank',
@@ -6791,7 +6786,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Invalid number of columns for [_1]' => 'Ungültige Spaltenzahl für [_1]',
 	'Invalid user name: [_1]' => 'Ungültiger Benutzername: [_1]',
 	'Invalid display name: [_1]' => 'Ungültiger Anzeigename: [_1]',
-	'Invalid email address: [_1]' => 'Ungültige E-Mail-Adresse: [_1]',
 	'Invalid password: [_1]' => 'Ungültiges Passwort: [_1]',
 	'A user with the same name was found.  The registration was not processed: [_1]' => 'Benutzer mit gleichem Namen gefunden und Konto daher nicht angelegt: [_1]',
 	'Permission granted to user \'[_1]\'' => 'Berechtigungenga an Benutzer \'[_1]\' vergeben',
@@ -6960,10 +6954,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Error switching directory.' => 'Fehler beim Verzeichniswechsel.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Synchronisation([_1]) mit externem Server([_2]) erfolgreich abgeschlossen.',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisation([_1]) mit externem Server([_2]) fehlgeschlagen.',
-	'FTP Server' => 'FTP-Server',
-	'Port' => 'Port',
-	'Start Directory' => 'Ausgangsverzeichnis',
-	'Rsync Destination' => 'Rsync-Ziel',
 	'Rsync Additional Options' => 'Rsync-Optionen',
 	'Synchronization has successfully finished.' => 'Synchronisation erfolgreich abgeschlossen.',
 	'  tried [_1] times but failed. ([_2]): [_3]' => ' [_1] mal versucht, aber fehlgeschlagen. ([_2]): [_3]',
@@ -6982,12 +6972,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Sync setting is not specified.' => 'Keine Synchronisation-Einstellung angegeben',
 	'Invalid email address: [_1]' => 'Ungültige E-Mail-Adresse: [_1]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Mailversand fehlgeschlagen ([_1]). Sind die MailTransfer-Einstellungen richtig?',
-	'Sync Type' => 'Art der Synchronisation',
 	'Sync Result' => 'Synchronisation-Ergebnis',
 	'*Sync setting deleted*' => '*Synchronisation-Einstellung gelöscht*',
 	'Parallel' => 'Parallel',
-	'FTP' => 'FTP',
-	'Rsync' => 'Rsync',
 	'Are you sure you want to reset the sync log?' => 'Synchronisation-Protokoll wirklich zurücksetzen?',
 	'Start Time' => 'Start-Zeitpunkt',
 	'Start Date' => 'Start-Datum',
@@ -7054,7 +7041,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Start Directory' => 'Ausgangsverzeichnis',
 	'Rsync Destination' => 'Rsync-Ziel',
 	'Are you sure you want to run synchronization?' => 'Wirklich synchronisieren?',
-	'Sync all files' => 'Alle Dateien synchronisieren',
 	'Please select a sync type.' => 'Bitte wählen Sie eine Synchronisationsart',
 	'Sync name is required.' => 'Bitte geben Sie einen Namen an.',
 	'Sync name should be shorter than [_1] characters.' => 'Der Name sollte höchstens [_1] Zeichen lang sein.',
@@ -7113,8 +7099,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'Ermöglicht Kommentare. ',
-	'Mark as Spam' => 'Als Spam markieren',
-	'Remove Spam status' => 'Kein Spam',
 	'Unpublish Comment(s)' => 'Kommentar(e) nicht mehr veröffentlichen',
 	'Trust Commenter(s)' => 'Kommentarautor(en) vertrauen',
 	'Untrust Commenter(s)' => 'Kommentarautor(en) nicht mehr vertrauen',
@@ -7185,8 +7169,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/Comments/lib/Comments/CMS/Search.pm
 
 ## plugins/Comments/lib/Comments/Import.pm
-	'Creating new comment (from \'[_1]\')...' => 'Lege neuen Kommentar (von &#8222;[_1]&#8220;) an...',
-	'Saving comment failed: [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
 
 ## plugins/Comments/lib/Comments.pm
 	'Search for other comments from anonymous commenters' => 'Nach anderen anonym abgegeben Kommentaren suchen',
@@ -7195,8 +7177,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'(Deleted)' => '(Gelöscht)',
 	'Edit this [_1] commenter.' => 'Diesen [_1] Kommentar-Autor bearbeiten',
 	'Comments on [_1]: [_2]' => 'Kommentare zu [_1]: [_2]',
-	'Not spam' => 'Nicht Spam',
-	'Reported as spam' => 'Als Spam gemeldet',
 	'All comments by [_1] \'[_2]\'' => 'Alle Kommentare von [_1] &#8222;[_2]&#8220;',
 	'__COMMENTER_APPROVED' => 'Bestätigt',
 	'Moderator' => 'Moderator',
@@ -7248,7 +7228,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Comment text is required.' => 'Bitte geben Sie einen Kommentartext ein.',
 	'Registration is required.' => 'Registrierung erforderlich',
 	'Name and E-mail address are required.' => 'Name und E-Mail-Adresse sind erforderlich',
-	'Invalid URL \'[_1]\'' => 'Ungültige Web-Adresse (URL) &#8222;[_1]&#8220;',
 	'Comment save failed with [_1]' => 'Der Kommentar konnte nicht gespeichert werden: [_1]',
 	'Comment on "[_1]" by [_2].' => 'Kommentar zu "[_1]" von [_2].',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Fehlgeschlagener Kommentierungsversuch durch wartenden Kommentarautoren &#8222;[_1]&#8220;',
@@ -7272,9 +7251,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'You cannot create a comment for an unpublished entry.' => 'Nicht veröffentlichte Einträge können nicht kommentiert werden.',
 	'You cannot reply to unpublished comment.' => 'Auf nicht veröffentlichte Kommentare kann nicht geantwortet werden.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Kommentar (ID:[_1]) von &#8222;[_2]&#8220; von &#8222;[_3]&#8220; aus Eintrag &#8222;[_4]&#8220; gelöscht',
-	'You do not have permission to approve this trackback.' => 'Sie haben keine Benutzerrechte zur Freischaltung des TrackBacks.',
-	'The entry corresponding to this comment is missing.' => 'Zugehöriger Eintrag fehlt.',
-	'You do not have permission to approve this comment.' => 'Sie haben keine Benutzerrechte zur Freischaltung des Kommentars.',
 	'Orphaned comment' => 'Verwaister Kommentar',
 
 ## plugins/Comments/lib/MT/DataAPI/Endpoint/Comment.pm
@@ -7295,14 +7271,12 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/Comments/php/function.mtcommentreplytolink.php
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/from_object.yaml
-	'Image photo' => 'Bild',
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/to_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/from_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/to_object.yaml
-	'Original Test' => 'Original-Test',
 
 ## plugins/Comments/t/211-api-resource-objects.d/entry/from_object.yaml
 
@@ -7324,7 +7298,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Authentication failure: [_1], reason:[_2]' => 'Authentifizierung fehlgeschlagen: [_1]. Grund: [_2]',
 	'Failed to created commenter.' => 'Konnte Kommentarautoren nicht anlegen.',
 	'Failed to create a session.' => 'Konnte Session nicht anlegen.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Zur Verwendung des Facebook-Kommentarautoren-Plugins muss eines der Perl-Module Crypt::SSLeay oder IO::Socket::SSL installiert sein.',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Zur Verwendung des Facebook-Kommentarautoren-Plugins muss ein Perl-Module IO::Socket::SSL installiert sein.',
 	'Please enter your Facebook App key and secret.' => 'Geben Sie Ihren Facebook-App-Key und den zugehörigen Code ein.',
 	'Could not verify this app with Facebook: [_1]' => 'Die App konnte nicht mit Facebook verknüpft werden:  [_1]',
 
@@ -7340,7 +7314,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Textbausteine verwalten',
-	'Boilerplate' => 'Textbaustein',
 
 ## plugins/FormattedTextForTinyMCE/config.yaml
 	'Add the "Insert Boilerplate" button to the TinyMCE.' => '&#8222;Textbaustein einfügen&#8220;-Symbol in der TinyMCE-Symbolleiste anzeigen',
@@ -7349,7 +7322,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Cannot load boilerplate.' => 'Konnte Textbaustein nicht laden',
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
-	'Boilerplate' => 'Textbaustein',
 	'Select a Boilerplate' => 'Textbaustein wählen',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
@@ -7365,7 +7337,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
-	'The boilerplate \'[_1]\' is already in use in this blog.' => 'Der Textbaustein  &#8222;[_1]&#8220; wird in diesem Blog bereits verwendet.',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => 'Textbaustein bearbeiten',
@@ -7695,8 +7666,6 @@ itte versuchen Sie es später erneut.',
 	'Source URL' => 'Quell-URL',
 
 ## plugins/Trackback/lib/Trackback/Import.pm
-	'Creating new ping (\'[_1]\')...' => 'Erzeuge neuen Ping &#8222;[_1]&#8220;)...',
-	'Saving ping failed: [_1]' => 'Der Ping konnte nicht gespeichert werden: [_1]',
 
 ## plugins/Trackback/lib/Trackback.pm
 	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">Ping von: [_2] - [_3]</a>',

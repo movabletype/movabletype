@@ -943,6 +943,16 @@ sub edit {
     $param->{dirty} = 1
         if $app->param('dirty');
 
+    if ( $app->param('saved') ) {
+        require MT::Util::UniqueID;
+        my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+        if ( my $session = $app->session ) {
+            $session->set( 'mt_rebuild_token', $token );
+            $session->save;
+        }
+        $param->{ott} = $token;
+    }
+
     $param->{can_preview} = 1
         if ( !$param->{is_special} )
         && ( !$obj
@@ -2496,7 +2506,7 @@ sub refresh_all_templates {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start refresh_all_templates.');
+    MT::Util::Log->debug('--- Start refresh_all_templates.');
 
     my $backup = 0;
     if ( $app->param('backup') ) {
@@ -2551,7 +2561,7 @@ BLOG: for my $blog_id (@id) {
             next BLOG unless $blog;
         }
 
-        MT::Util::Log->info(
+        MT::Util::Log->debug(
             ' Start refresh all templates. blog_id:' . $blog_id );
 
         my $tmpl_lang;
@@ -2841,7 +2851,7 @@ BLOG: for my $blog_id (@id) {
         }
         $refreshed = 1;
 
-        MT::Util::Log->info(
+        MT::Util::Log->debug(
             ' End   refresh all templates. blog_id:' . $blog_id );
     }
     if (@blogs_not_refreshed) {
@@ -2851,7 +2861,7 @@ BLOG: for my $blog_id (@id) {
     }
     $app->add_return_arg( 'refreshed' => 1 ) if $refreshed;
 
-    MT::Util::Log->info('--- End   refresh_all_templates.');
+    MT::Util::Log->debug('--- End   refresh_all_templates.');
 
     $app->call_return;
 }
@@ -2875,7 +2885,7 @@ sub refresh_individual_templates {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start refresh_individual_templates.');
+    MT::Util::Log->debug('--- Start refresh_individual_templates.');
 
     my $set;
     my $blog_id = $app->param('blog_id');
@@ -3020,7 +3030,7 @@ sub refresh_individual_templates {
 
     $app->mode('view');    # set mode for blog selector
 
-    MT::Util::Log->info('--- End   refresh_individual_templates.');
+    MT::Util::Log->debug('--- End   refresh_individual_templates.');
 
     $app->build_page( 'refresh_results.tmpl',
         { message_loop => \@msg_loop, return_url => $app->return_uri } );
@@ -3246,7 +3256,7 @@ sub publish_archive_templates {
     }
     $app->param( 'single_template', 1 );    # forces fullscreen mode
     $app->param( 'type', join( ",", keys %ats ) );
-    return MT::CMS::Blog::start_rebuild_pages($app);
+    return MT::CMS::Blog::start_rebuild_pages_directly($app);
 }
 
 sub save_widget {

@@ -262,7 +262,7 @@ riot.tag2('list-filter', '<div data-is="list-filter-header" class="card-header">
       if (this.isAllpassFilter()) {
         this.createNewFilter(trans('Unknown Filter'))
       }
-      this.currentFilter.items.push({ type: filterType })
+      this.currentFilter.items.push({ type: filterType, args: {} })
       this.update()
     }.bind(this)
 
@@ -450,7 +450,23 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
     this.addFilterItemContent = function(e) {
       var itemIndex = this.getListItemIndex(e.target)
       var contentIndex = this.getListItemContentIndex(e.target)
+      var item = this.listFilterTop.currentFilter.items[itemIndex]
+      if (item.type == 'pack') {
+        item = item.args.items[contentIndex]
+      }
+      jQuery(e.target).parent().each(function() {
+        jQuery(this).find(':input').each(function() {
+          var re = new RegExp(item.type+'-(\\w+)');
+          jQuery(this).attr('class').match(re);
+            var key = RegExp.$1;
+            if (key && !item.args.hasOwnProperty(key)) {
+            item.args[key] = jQuery(this).val();
+          }
+        });
+      });
       this.listFilterTop.addFilterItemContent(itemIndex, contentIndex)
+      this.initializeDateOption()
+      this.initializeOptionWithBlank()
     }.bind(this)
 
     this.getListItemIndex = function(element) {
@@ -491,7 +507,6 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         default:
           type = 'range'
         }
-        $node.parents('.item-content').find('input').mtUnvalidate()
         $node.parents('.item-content').find('.date-options span.date-option').hide()
         $node.parents('.item-content').find('.date-option.'+type).show()
       }
@@ -509,9 +524,6 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         showMonthAfterYear: true,
         prevText: '&lt;',
         nextText: '&gt;',
-        onSelect: function( dateText, inst ) {
-          inst.input.mtValid();
-        }
       })
     }.bind(this)
 

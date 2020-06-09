@@ -17,7 +17,6 @@ use MT::Test;
 use MT::Test::Permission;
 use YAML::Tiny;
 use File::Spec;
-use FindBin qw( $Bin );
 use MT;
 use utf8;
 

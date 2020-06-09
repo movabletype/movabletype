@@ -551,7 +551,7 @@ sub save {
                         @{ $param{archive_type_loop} };
                     $app->param( 'type', join( ',', @ats ) );
                 }
-                return MT::CMS::Blog::start_rebuild_pages($app);
+                return MT::CMS::Blog::start_rebuild_pages_directly($app);
             }
         }
         if ( $cfg_screen eq 'cfg_templatemaps' ) {
@@ -573,9 +573,17 @@ sub save {
         }
         if ( $obj->build_type ) {
             if ( $obj->type eq 'index' ) {
+                require MT::Util::UniqueID;
+                my $token = MT::Util::UniqueID::create_magic_token(
+                    'rebuild' . time );
+                if ( my $session = $app->session ) {
+                    $session->set( 'mt_rebuild_token', $token );
+                    $session->save;
+                }
                 $app->param( 'type',            'index-' . $obj->id );
                 $app->param( 'tmpl_id',         $obj->id );
                 $app->param( 'single_template', 1 );
+                $app->param( 'ott' => $token );
                 $app->add_return_arg( 'saved'     => 1 );
                 $app->add_return_arg( 'published' => 1 );
                 return $app->forward('start_rebuild');
@@ -618,7 +626,7 @@ sub save {
                     $app->param( 'template_id',     $obj->id );
                     $app->param( 'single_template', 1 );
                     require MT::CMS::Blog;
-                    return MT::CMS::Blog::start_rebuild_pages($app);
+                    return MT::CMS::Blog::start_rebuild_pages_directly($app);
                 }
             }
         }

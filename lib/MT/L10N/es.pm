@@ -671,7 +671,6 @@ use vars qw( @ISA %Lexicon );
 	'Permissions' => 'Permisos',
 
 ## lib/MT/App/DataAPI.pm
-	'[_1] must be a number.' => '[_1] debe ser un número.',
 	'[_1] must be an integer and between [_2] and [_3].' => '[_1] debe ser un entero entre [_2] y [_3].',
 
 ## lib/MT/App.pm
@@ -2142,7 +2141,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid convert_breaks: [_1]' => 'convert_breaks no válido: [_1]',
 	'Invalid default_cat_id: [_1]' => 'default_cat_id no válido: [_1]',
 	'An error occurred during the import process: [_1]. Please check your import file.' => 'Ocurrió un error durante el proceso de importación: [_1]. Por favor, compruebe su fichero de importación.',
-	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Asegúrese de borrar los ficheros importados del directorio \'import\', para evitar procesarlos de nuevo al ejecutar en otra ocasión el proceso de importación.',
 	'A resource "[_1]" is required.' => 'El recurso "[_1]" es necesario.',
 	'Could not found archive template for [_1].' => 'No se pudo encontrar la plantilla de archivos para [_1].',
 	'Preview data not found.' => 'Datos de previsualización no encontrados.',
@@ -3707,13 +3705,7 @@ No se pudo escribir el fichero. Disco lleno.",
 ## themes/eiger/theme.yaml
 	'_THEME_DESCRIPTION' => '"Eiger" es un tema personalizable y adaptativo, diseñado para sitios web corporativos. Además de soporte multidispositivo, a través de Media Query (CSS), las funciones de Movable Type facilitan la personalización de los contenidos navegables y de los elementos gráficos, como logotipos, cabeceras y carteles.',
 	'_ABOUT_PAGE_TITLE' => 'Página "Acerca de"',
-	'_ABOUT_PAGE_BODY' => '
-                 <p>Esta es una página "Acerca de" de ejemplo. (Habitualmente, una página "Acerca de" ofrece información destacable sobre una persona o una organización).</p>
-                 <p>Si se utiliza la etiqueta <code>@ABOUT_PAGE</code> en una página web, se añadirá la página "Acerca de" a la lista de navegación tanto en la cabecera como en el pie.</p>',
 	'_SAMPLE_PAGE_TITLE' => 'Página de ejemplo',
-	'_SAMPLE_PAGE_BODY' => '
-                 <p>Esta es una página "Acerca de" de ejemplo. (Habitualmente, una página "Acerca de" ofrece información destacable sobre una persona o una organización).</p>
-                 <p>Si se utiliza la etiqueta <code>@ABOUT_PAGE</code> en una página web, se añadirá la página "Acerca de" a la lista de navegación tanto en la cabecera como en el pie.</p>',
 	'Eiger' => 'Eiger',
 	'Index Page' => 'Página índice',
 	'Stylesheet for IE (8 or lower)' => 'Hoja de estilo para IE (8 o menor)',
@@ -5909,7 +5901,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## tmpl/cms/search_replace.tmpl
 	'Search &amp; Replace' => 'Buscar &amp; Reemplazar',
-	'You must select one or more item to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
+	'You must select one or more items to replace.' => 'Debe seleccionar uno o más elementos a reemplazar.',
 	'Search Again' => 'Buscar de nuevo',
 	'Case Sensitive' => 'Distinguir mayúsculas y minúsculas',
 	'Regex Match' => 'Expresión regular',
@@ -6189,7 +6181,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page' => 'Para crear una nueva configuración del archivo usando Wizard, borre la configuración actual del archivo y actualice la página',
 
 ## addons/Cloud.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Cloud Services' => 'Servicios en la nube',
 	'Basic Authentication' => 'Autentifiación básica',
 	'Redirect' => 'Redirección',
@@ -6385,7 +6376,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Are you sure you want restore from selected backup file?' => '¿Desea restaurar la copia de seguridad desde el fichero seleccionado?',
 
 ## addons/Commercial.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Professionally designed, well-structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Sitio web con diseño profesional, bien estructurado y fácilmente adaptable. Puede personalizar fácilmente las páginas predefinidas, el pie y la navegación.',
 	q{_PWT_ABOUT_BODY} => q{
 <p><strong>Vuelva a colocar el texto de ejemplo con su propia información.</strong></p>
@@ -6737,7 +6727,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'This module is required in order to use the LDAP Authentication.' => 'Este módulo es requerido para usar la identificación LDAP.',
 
 ## addons/Enterprise.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.sixapart.com/movabletype/',
 	'Advanced Pack' => 'Advanced Pack',
 	'Oracle Database (Recommended)' => 'Base de datos Oracle (recomendada)',
 	'Microsoft SQL Server Database' => 'Base de Datos Microsoft SQL Server',
@@ -6794,7 +6783,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Invalid number of columns for [_1]' => 'Número de columnas para [_1] inválido',
 	'Invalid user name: [_1]' => 'Nombre de usuario inválido: [_1]',
 	'Invalid display name: [_1]' => 'Nombre mostrado inválido: [_1]',
-	'Invalid email address: [_1]' => 'Dirección de correo electrónico inválida: [_1]',
 	'Invalid password: [_1]' => 'Contraseña inválida: [_1]',
 	'A user with the same name was found.  The registration was not processed: [_1]' => 'Se encontró un usuario con el mismo nombre. No se procesó el registro: [_1]',
 	'Permission granted to user \'[_1]\'' => 'Los derechos han sido atribuidos al usuario [_1]',
@@ -6963,10 +6951,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Error switching directory.' => 'Error cambiando de directorio.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'Ha finalizado con éxito la sincronización ([_1]) con un servidor externo ([_2]).',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Falló la sincronización ([_1]) con un servidor externo ([_2]).',
-	'FTP Server' => 'Servidor FTP',
-	'Port' => 'Puerto',
-	'Start Directory' => 'Directorio de inicio',
-	'Rsync Destination' => 'Destino de Rsync',
 	'Rsync Additional Options' => 'Opciones adicionales de Rsync',
 	'Synchronization has successfully finished.' => 'La sincronización finalizó correctamente.',
 	'  tried [_1] times but failed. ([_2]): [_3]' => ' intentó [_1] veces pero falló. ([_2]): [_3]',
@@ -6985,12 +6969,9 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Sync setting is not specified.' => 'No se ha especificado la opción de sincronización.',
 	'Invalid email address: [_1]' => 'Dirección de correo no válida: [_1]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Error al enviar el correol ([_1]); ¿Intente otra configuración de MailTransfer?',
-	'Sync Type' => 'Tipo de sincronización',
 	'Sync Result' => 'Resultado de sincronización',
 	'*Sync setting deleted*' => '*Opción de sincronización borrada*',
 	'Parallel' => 'Paralelo',
-	'FTP' => 'FTP',
-	'Rsync' => 'Rsync',
 	'Are you sure you want to reset the sync log?' => '¿Está seguro de que desea reiniciar el registro de sincronización?',
 	'Start Time' => 'Hora inicial',
 	'Start Date' => 'Fecha inicial',
@@ -7057,7 +7038,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Start Directory' => 'Directorio de inicio',
 	'Rsync Destination' => 'Destino de Rsync',
 	'Are you sure you want to run synchronization?' => '¿Está seguro de que desea realizar la sincronización?',
-	'Sync all files' => 'Sincronizar todos los ficheros',
 	'Please select a sync type.' => 'Por favor, seleccione un tipo de sincronización.',
 	'Sync name is required.' => 'Debe indicar un nombre de sincronización.',
 	'Sync name should be shorter than [_1] characters.' => 'El nombre de sincronización debe tener menos de [_1] caracteres.',
@@ -7116,8 +7096,6 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'Provee comentarios.',
-	'Mark as Spam' => 'Marcar como basura',
-	'Remove Spam status' => 'Desmarcar como basura',
 	'Unpublish Comment(s)' => 'Despublicar comentario/s',
 	'Trust Commenter(s)' => 'Confiar en comentarista/s',
 	'Untrust Commenter(s)' => 'Desconfiar de comentarista/s',
@@ -7188,8 +7166,6 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/Comments/lib/Comments/CMS/Search.pm
 
 ## plugins/Comments/lib/Comments/Import.pm
-	'Creating new comment (from \'[_1]\')...' => 'Creando nuevo comentario (de \'[_1]\')...',
-	'Saving comment failed: [_1]' => 'Fallo guardando comentario: [_1]',
 
 ## plugins/Comments/lib/Comments.pm
 	'Search for other comments from anonymous commenters' => 'Buscar otros comentarios anónimos',
@@ -7198,8 +7174,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'(Deleted)' => '(Borrado)',
 	'Edit this [_1] commenter.' => 'Editar este comentarista [_1].',
 	'Comments on [_1]: [_2]' => 'Comentarios en [_1]: [_2]',
-	'Not spam' => 'No es spam',
-	'Reported as spam' => 'Marcado como spam',
 	'All comments by [_1] \'[_2]\'' => 'Todos los comentarios de [_1] \'[_2]\'',
 	'__COMMENTER_APPROVED' => 'Aprobado',
 	'Moderator' => 'Moderador',
@@ -7251,7 +7225,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Comment text is required.' => 'El texto del comentario es obligatorio.',
 	'Registration is required.' => 'El registro es obligatorio.',
 	'Name and E-mail address are required.' => 'El nombre y la dirección de correo son obligatorios.',
-	'Invalid URL \'[_1]\'' => 'URL no válida \'[_1]\'',
 	'Comment save failed with [_1]' => 'Fallo guardando comentario con [_1]',
 	'Comment on "[_1]" by [_2].' => 'Comentario en "[_1]" por [_2].',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Falló el intento de comentar por el comentarista pendiente \'[_1]\'',
@@ -7275,9 +7248,6 @@ No se pudo escribir el fichero. Disco lleno.",
 	'You cannot create a comment for an unpublished entry.' => 'No puede crear un comentario en una entrada sin publicar.',
 	'You cannot reply to unpublished comment.' => 'No puede contestar a comentarios no publicados.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Comentario (ID:[_1]) por \'[_2]\' borrado por \'[_3]\' de la entrada \'[_4]\'',
-	'You do not have permission to approve this trackback.' => 'No tiene permiso para aprobar este trackback.',
-	'The entry corresponding to this comment is missing.' => 'No se encuentra la entrada correspondiente a este comentario.',
-	'You do not have permission to approve this comment.' => 'No tiene permisos para aprobar este comentario.',
 	'Orphaned comment' => 'Comentario huérfano',
 
 ## plugins/Comments/lib/MT/DataAPI/Endpoint/Comment.pm
@@ -7298,14 +7268,12 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/Comments/php/function.mtcommentreplytolink.php
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/from_object.yaml
-	'Image photo' => 'Imagen foto',
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/to_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/from_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/to_object.yaml
-	'Original Test' => 'Prueba original',
 
 ## plugins/Comments/t/211-api-resource-objects.d/entry/from_object.yaml
 
@@ -7327,7 +7295,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Authentication failure: [_1], reason:[_2]' => 'Fallo de autentificación: [_1], razón: [_2]',
 	'Failed to created commenter.' => 'Falló al crear comentarista.',
 	'Failed to create a session.' => 'Falló al crear una sesión.',
-	'Facebook Commenters needs either Crypt::SSLeay or IO::Socket::SSL installed to communicate with Facebook.' => 'Los comentaristas de Facebook necesitan que Crypt::SSLeay o IO::Socket::SSL estén instalados para la comunicación con Facebook.',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Los comentaristas de Facebook necesitan IO::Socket::SSL estén instalados para la comunicación con Facebook.',
 	'Please enter your Facebook App key and secret.' => 'Por favor, introduzca el identificador y código secreto de app de Facebook.',
 	'Could not verify this app with Facebook: [_1]' => 'No se pudo verificar esta aplicación en Facebook: [_1]',
 
@@ -7352,14 +7320,12 @@ No se pudo escribir el fichero. Disco lleno.",
 	'Cannot load boilerplate.' => 'No se pudo cargar el texto con formato.',
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
-	'Boilerplate' => 'Texto con formato',
 	'Select a Boilerplate' => 'Seleccionar un text con formato',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Boilerplates' => 'Textos con formato',
 	'Create Boilerplate' => 'Crear texto con formato',
 	'Are you sure you want to delete the selected boilerplates?' => '¿Está seguro que desea borrar los textos con formato seleccionados?',
-	'Boilerplate' => 'Texto con formato',
 	'My Boilerplate' => 'Mis textos con formato',
 
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Callback/FormattedText.pm
@@ -7368,7 +7334,6 @@ No se pudo escribir el fichero. Disco lleno.",
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
-	'The boilerplate \'[_1]\' is already in use in this blog.' => 'Este blog ya usa el texto con formato \'[_1]\'.',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => 'Editar texto con formato',
@@ -7697,8 +7662,6 @@ trada \'[_4]\'',
 	'Source URL' => 'URL origen',
 
 ## plugins/Trackback/lib/Trackback/Import.pm
-	'Creating new ping (\'[_1]\')...' => 'Creando nuevo ping (\'[_1]\')...',
-	'Saving ping failed: [_1]' => 'Fallo guardando ping: [_1]',
 
 ## plugins/Trackback/lib/Trackback.pm
 	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">Ping desde: [_2] - [_3]</a>',

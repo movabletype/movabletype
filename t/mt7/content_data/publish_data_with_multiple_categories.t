@@ -102,7 +102,9 @@ sub get_files {
         sub {
             my $file = shift;
             return unless -f $file;
-            push @files, File::Spec->abs2rel( $file, $archive_path );
+            my $path = File::Spec->abs2rel( $file, $archive_path );
+            $path =~ s|\\|/|g if $^O eq 'MSWin32';
+            push @files, $path;
         }
     );
     @files;

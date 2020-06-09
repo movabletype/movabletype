@@ -861,11 +861,18 @@ sub save {
                 = %categories_old
                 ? MT::Util::to_json( \%categories_old )
                 : undef;
+            require MT::Util::UniqueID;
+            my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
+            if ( my $session = $app->session ) {
+                $session->set( 'mt_rebuild_token', $token );
+                $session->save;
+            }
             return $app->redirect(
                 $app->uri(
                     mode => 'start_rebuild',
                     args => {
                         blog_id => $content_data->blog_id,
+                        ott     => $token,
                         next    => 0,
                         type    => 'content_data-' . $content_data->id,
                         content_data_id => $content_data->id,
@@ -1861,7 +1868,7 @@ sub _update_content_data_status {
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('--- Start update_content_data_status.');
+    MT::Util::Log->debug('--- Start update_content_data_status.');
 
     return $app->errtrans('Need a status to update content data')
         unless $new_status;
@@ -1871,7 +1878,7 @@ sub _update_content_data_status {
     my $app_author = $app->user;
     my $perms      = $app->permissions;
 
-    MT::Util::Log->info(' Start load content data.');
+    MT::Util::Log->debug(' Start load content data.');
 
     my ( @objects, %rebuild_these );
     require MT::ContentData;
@@ -1931,27 +1938,27 @@ sub _update_content_data_status {
         push( @objects, { current => $content_data, original => $original } );
     }
 
-    MT::Util::Log->info(' End   load content data.');
+    MT::Util::Log->debug(' End   load content data.');
 
-    MT::Util::Log->info(' Start rebuild_these.');
+    MT::Util::Log->debug(' Start rebuild_these.');
 
     my $tmpl = $app->rebuild_these_content_data( \%rebuild_these,
         how => MT::App::CMS::NEW_PHASE() );
 
-    MT::Util::Log->info(' End   rebuild_these.');
+    MT::Util::Log->debug(' End   rebuild_these.');
 
     if (@objects) {
         my $obj = $objects[0]{current};
 
-        MT::Util::Log->info(' Start callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' Start callbacks cms_post_bulk_save.');
 
         $app->run_callbacks( 'cms_post_bulk_save.content_data',
             $app, \@objects );
 
-        MT::Util::Log->info(' End   callbacks cms_post_bulk_save.');
+        MT::Util::Log->debug(' End   callbacks cms_post_bulk_save.');
     }
 
-    MT::Util::Log->info('--- End   update_content_data_status.');
+    MT::Util::Log->debug('--- End   update_content_data_status.');
 
     $tmpl;
 }
