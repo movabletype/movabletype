@@ -1035,7 +1035,7 @@ sub post_save {
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] '[_5]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+            "[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
             $app->translate(
