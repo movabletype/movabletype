@@ -102,7 +102,6 @@
 
             init_instance_callback: function(ed) {},
 
-            // content_css: '',
             body_class: '',
             body_id: '',
             content_security_policy: "script-src 'none';",
@@ -132,7 +131,7 @@
 
             if (adapter.commonOptions['content_css_list'].length > 0){
                 config['content_css'] =
-                (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
+                ((config['content_css'] ? config['content_css'] + ',' : '') + adapter.commonOptions['content_css_list'].join(','))
                 .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
             }
             config['body_class'] =
