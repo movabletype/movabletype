@@ -31,7 +31,7 @@
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-riot-ss\" && test `git status -s | wc -l` = 0",
     "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/license.txt mt-static/plugins/TinyMCE/tiny_mce/",
-    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE/tiny_mce/langs/*; mkdir mt-static/plugins/TinyMCE/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE/tiny_mce/langs/"
+    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE/tiny_mce/langs/"
   },
   "repository": {
     "type": "git",
