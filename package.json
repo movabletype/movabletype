@@ -29,6 +29,7 @@
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-json": "cp -rf node_modules/jquery-json/src/jquery.json.* mt-static/jquery/ && cp -rf node_modules/jquery-json/dist/jquery.json.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
+    "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-riot-ss\" && test `git status -s | wc -l` = 0"
   },
   "repository": {
@@ -50,6 +51,7 @@
     "mt7-style-guide": "git+ssh://git@github.com:movabletype/mt7-style-guide.git",
     "popper.js": "^1.12.1",
     "riot": "3.7.4",
-    "svg4everybody": "^2.1.9"
+    "svg4everybody": "^2.1.9",
+    "codemirror": "5.54"
   }
 }
