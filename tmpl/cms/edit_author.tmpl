@@ -546,7 +546,7 @@ function showPasswordField() {
 <mt:setvarblock name="jq_js_include" append="1">
 jQuery('input[type="checkbox"].permission-checkbox').each(function(){
     if (this.checked)
-        jQuery(this).trigger('click');
+        this.onclick();
 });
 
 jQuery.mtValidateAddRules({
