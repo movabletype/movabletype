@@ -1,0 +1,26 @@
+{
+  "name": "movabletype",
+  "version": "1.0.0",
+  "description": "Welcome to Movable Type",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "codemirror": "5.54"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/movabletype/movabletype.git"
+  },
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/movabletype/movabletype/issues"
+  },
+  "homepage": "https://github.com/movabletype/movabletype#readme"
+}
