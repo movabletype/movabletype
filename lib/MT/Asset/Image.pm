@@ -1125,13 +1125,9 @@ sub remove_all_metadata {
 sub is_metadata_broken {
     my ($asset) = @_;
     if ( my $exif = $asset->exif ) {
-        return ( $exif->GetValue('Error') || $exif->GetValue('Warning') )
-            ? 1
-            : 0;
+        return 1 if $exif->GetValue('Error');
     }
-    else {
-        return 0;
-    }
+    return 0;
 }
 
 1;
