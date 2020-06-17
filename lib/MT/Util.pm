@@ -726,14 +726,15 @@ sub html_text_transform {
         ## two <br>s to make a blank line, but only when the next paragraph
         ## does not start with a block(-ish) tag and it ends with a block(-ish)
         ## tag that prevents wrapping.
-        if ( !$wrap and $last_line !~ m!(?:</?$tags\s*/?>|-->)\z! ) {
+        if ( !$wrap and defined $last_line && $last_line !~ m!(?:</?$tags\s*/?>|-->)\z! ) {
             my $next = $i < @paras - 1 ? $paras[$i + 1] : undef;
             if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags! ) {
                 $last_line .= '<br /><br />';
             }
         }
 
-        $paras[$i] = join "\n", @lines, $last_line;
+        push @lines, $last_line if defined $last_line;
+        $paras[$i] = join "\n", @lines;
         if ($wrap) {
             $paras[$i] = "<p>$paras[$i]</p>";
         }
