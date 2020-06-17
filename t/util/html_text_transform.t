@@ -531,3 +531,67 @@ text
 <div>
 text<br />
 </div>
+
+=== comment in a block (MTC-27365)
+--- input
+a
+<!--b-->
+--- expected
+<p>a<br />
+<!--b--></p>
+
+=== end with non-block tag (MTC-27373)
+--- input
+line<strong>strong</strong>
+line<em>strong</em>
+line line
+
+<a href="url1">text1</a>
+<a href="url2">text2</a>
+
+or even <MTAuthor>
+and such.
+--- expected
+<p>line<strong>strong</strong><br />
+line<em>strong</em><br />
+line line</p>
+
+<p><a href="url1">text1</a><br />
+<a href="url2">text2</a></p>
+
+<p>or even <MTAuthor><br />
+and such.</p>
+
+=== two or more consecutive empty lines (MTC-27374)
+--- input
+a
+
+b
+
+
+c
+
+
+
+d
+
+
+
+
+e
+--- expected
+<p>a</p>
+
+<p>b</p>
+
+<p><br />
+c</p>
+
+<p></p>
+
+<p>d</p>
+
+<p></p>
+
+<p><br />
+e</p>
