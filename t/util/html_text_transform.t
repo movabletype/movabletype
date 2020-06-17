@@ -536,10 +536,17 @@ text<br />
 --- input
 a
 <!--b-->
+
+<!--c-->
+d<!--d-->
+<!--e-->
 --- expected
 <p>a<br />
 <!--b--></p>
 
+<p><!--c-->
+d<!--d--><br />
+<!--e--></p>
 === end with non-block tag (MTC-27373)
 --- input
 line<strong>strong</strong>
@@ -550,6 +557,12 @@ line line
 <a href="url2">text2</a>
 
 or even <MTAuthor>
+and such.
+
+or even
+<div class="start">
+foo
+</div>
 and such.
 --- expected
 <p>line<strong>strong</strong><br />
@@ -562,6 +575,11 @@ line line</p>
 <p>or even <MTAuthor><br />
 and such.</p>
 
+<p>or even<br />
+<div class="start">
+foo<br />
+</div>
+and such.</p>
 === two or more consecutive empty lines (MTC-27374)
 --- input
 a
