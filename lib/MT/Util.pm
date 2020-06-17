@@ -718,7 +718,7 @@ sub html_text_transform {
         my @lines = split /\n/, $paras[$i];
         my $last_line = pop @lines;  ## but not for the last line
         for my $line (@lines) {
-            $line .= "<br />" unless $line =~ m!(?:</?$tags\s*/?>|-->)$!;
+            $line .= "<br />" unless $line =~ m{(?:</?$tags\s*[^<>]*/?>|\A<!--.*?-->\z)$};
         }
 
         ## Special case: if the paragraph starts with a block(-ish) tag,
