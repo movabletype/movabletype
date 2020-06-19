@@ -540,6 +540,10 @@ a
 <!--c-->
 d<!--d-->
 <!--e-->
+
+1
+<!--a-->b<!--c-->
+3
 --- expected
 <p>a<br />
 <!--b--></p>
@@ -547,6 +551,10 @@ d<!--d-->
 <p><!--c-->
 d<!--d--><br />
 <!--e--></p>
+
+<p>1<br />
+<!--a-->b<!--c--><br />
+3</p>
 === end with non-block tag (MTC-27373)
 --- input
 line<strong>strong</strong>
