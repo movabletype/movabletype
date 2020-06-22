@@ -119,6 +119,7 @@ sub request {
         # avoid processing multiple requests in a second
         sleep 1;
 
+        push @{ $self->{locations} ||= [] }, $uri;
         return $self->request($params);
     }
 
@@ -130,6 +131,17 @@ sub request {
     }
 
     $self->{res} = $res;
+}
+
+sub locations {
+    my ( $self, $id ) = @_;
+    return unless $self->{locations};
+    $self->{locations}[$id];
+}
+
+sub last_location {
+    my $self = shift;
+    $self->locations(-1);
 }
 
 my %app_params_mapping = (
