@@ -122,6 +122,13 @@ sub request {
         return $self->request($params);
     }
 
+    if ( my $message = $self->message_text ) {
+        if ( $message =~ /Compilation failed/ ) {
+            BAIL_OUT $message;
+        }
+        diag $message;
+    }
+
     $self->{res} = $res;
 }
 
