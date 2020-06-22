@@ -188,7 +188,7 @@ sub _create_cgi_object {
             $cgi->param( $k, ref $v eq 'ARRAY' ? @$v : $v );
         }
     }
-    $cgi;
+    $self->{cgi} = $cgi;
 }
 
 sub _clear_cache {
