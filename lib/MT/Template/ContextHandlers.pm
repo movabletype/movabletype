@@ -63,6 +63,8 @@ sub core_tags {
             ## Site
             Sites => '$Core::MT::Template::Tags::Website::_hdlr_websites',
             ChildSites => '$Core::MT::Template::Tags::Blog::_hdlr_blogs',
+            ParentSite =>
+                '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             SiteParentSite =>
                 '$Core::MT::Template::Tags::Website::_hdlr_blog_parent_website',
             'SiteHasChildSite?' =>
