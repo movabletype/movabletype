@@ -36,6 +36,18 @@ binmode $builder->output,         ":encoding($enc)";
 binmode $builder->failure_output, ":encoding($enc)";
 binmode $builder->todo_output,    ":encoding($enc)";
 
+my $envfile = "$MT_HOME/.mt_test_env";
+if (-f $envfile) {
+    open my $fh, '<', $envfile;
+    while(<$fh>) {
+        chomp;
+        next if /^#/;
+        s/(?:^\s*|\s*$)//g;
+        my ($key, $value) = split /\s*=\s*/;
+        $ENV{uc $key} = $value;
+    }
+}
+
 sub new {
     my ( $class, %extra_config ) = @_;
     my $template = "MT_TEST_" . $$ . "_XXXX";
