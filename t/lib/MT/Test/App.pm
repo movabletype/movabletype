@@ -299,6 +299,7 @@ sub wq_find {
 
 sub _trim {
     my $str = shift;
+    return '' unless defined $str;
     $str =~ s/\A\s+//s;
     $str =~ s/\s+\z//s;
     $str;
