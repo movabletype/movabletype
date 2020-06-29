@@ -43,8 +43,8 @@
             plugin_mt_wysiwyg_buttons1:'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
             plugin_mt_wysiwyg_buttons2:'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
 
-            plugin_mt_wysiwyg_selection_toolbar: 'italic underline strikethrough | blockquote bullist numlist hr | link unlink',
-            plugin_mt_wysiwyg_insert_toolbar: 'italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_insert_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
 
             toolbar1: '',
             toolbar2: '',
