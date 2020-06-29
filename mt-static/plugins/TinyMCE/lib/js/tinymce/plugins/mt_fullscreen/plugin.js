@@ -44,8 +44,8 @@
 
                     forEachAffectedEditors(function() {
                         $outer.height($window.height() - header_height);
-                        $inner_ifr.height($window.height() - header_height);
-                        $inner_text.height($window.height() - header_height);
+                        $inner_ifr.height('100%');
+                        $inner_text.height('100%');
                     });
                 };
             });
