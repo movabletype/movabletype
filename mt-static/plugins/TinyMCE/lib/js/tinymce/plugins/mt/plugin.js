@@ -277,10 +277,15 @@
 
           function openDialog(mode, param) {
               createSessionHistoryFallback(location.href);
-              $.fn.mtModal.open(
-                  ScriptURI + '?' + '__mode=' + mode + '&amp;' + param,
-                  { large: true }
-              );
+              var url = ScriptURI + '?' + '__mode=' + mode + '&amp;' + param;
+              $.fn.mtModal.open(url, { large: true });
+              var modal_close = function(e){
+                if (e.keyCode == 27){
+                  $.fn.mtModal.close();
+                  $('body').off('keyup', modal_close);
+                }
+              };
+              $('body').on('keyup', modal_close);
           }
 
           function setPopupWindowLoadedHook(callback) {
