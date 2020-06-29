@@ -162,6 +162,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         if (! config['body_id']) {
             config['body_id'] = adapter.id;
         }
+        if(tinymce.Env.browser.isIE()){
+            config["verify_html"] = true;
+        }
 
         tinyMCE.init(config);
 

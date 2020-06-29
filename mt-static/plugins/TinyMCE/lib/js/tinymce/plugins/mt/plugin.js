@@ -639,6 +639,7 @@
                 }
             });
 
+/*
             var filterd_attrs = [];
             var regexp = new RegExp(/^on|action/);
             function addAttributeFilterRegexp(){
@@ -681,10 +682,9 @@
                   });
                 });
             }
-            
-            ed.on('NodeChange', function() {
-                addAttributeFilterRegexp();
+*/
 
+            ed.on('NodeChange', function() {
                 var s = ed.mtEditorStatus;
 
                 if (s.mode == 'source' &&
