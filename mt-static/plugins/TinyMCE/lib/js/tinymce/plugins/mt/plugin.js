@@ -651,6 +651,7 @@
               }
           });
 
+/*
           var filterd_attrs = [];
           var regexp = new RegExp(/^on|action/);
           function addAttributeFilterRegexp(){
@@ -688,16 +689,13 @@
                               targetNode.attr(internalName, null);
                           });
                       });
-
                       filterd_attrs[attr.name] = 1;
                 });
               });
           }
+*/
 
           ed.on('NodeChange', function() {
-              
-              addAttributeFilterRegexp();
-
               var s = ed.mtEditorStatus;
 
               if (s.mode == 'source' &&

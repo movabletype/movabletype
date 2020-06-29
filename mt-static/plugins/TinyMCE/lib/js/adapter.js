@@ -206,6 +206,10 @@
                 config["quickbars_insert_toolbar"] = false;
                 config["quickbars_selection_toolbar"] = false;
                 config["verify_html"] = false;
+
+                if(tinymce.Env.browser.isIE()){
+                    config["verify_html"] = true;
+                }
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 
