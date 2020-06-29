@@ -462,7 +462,7 @@
             // Register buttons
             ed.ui.registry.addButton('mt_insert_html', {
                 icon : 'addhtml',
-                tooltip : trans('Insert HTML'),
+                tooltip : 'insert_html',
                 onAction : function() {
                     win = ed.windowManager.open({
                         title: trans('Insert HTML'),
