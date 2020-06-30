@@ -9,113 +9,42 @@
 
 MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
+var suffix = '';
+if(jQuery('script[src*="tinymce.min"]').length){
+    // min
+    suffix = '.min';
+}
+
 $.extend(MT.Editor.TinyMCE, MT.Editor, {
     isMobileOSWYSIWYGSupported: function() {
         return false;
     },
     config: {
-        mode: "exact",
-
-        plugins: "lists,style,mt_inlinepopups,media,paste,mt_fullscreen,xhtmlxtras,mt,table",
+        plugins: "lists,media,paste,hr,link,textpattern,table",
+        external_plugins: {
+            'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
+            'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+        },
 
         language: $('html').attr('lang'),
-
-        theme: "advanced",
-        skin: 'mt',
-        inlinepopups_skin: 'mt',
-        theme_advanced_toolbar_location: "top",
-        theme_advanced_toolbar_align: "left",
-        theme_advanced_resizing: true,
-        theme_advanced_resize_horizontal: false,
-        theme_advanced_resizing_min_height: 100,
-        theme_advanced_statusbar_location: "bottom",
-        theme_advanced_blockformats: 'h1,h2,h3,h4,h5,h6,p,pre',
+        
+        menubar: false,
+        branding: false,
+        icons: 'mt',
+        icons_url: StaticURI + 'plugins/TinyMCE/lib/js/tinymce/icons.js',
 
         indent_before : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
         indent_after : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
 
-        // The "theme_advanced_buttons" should not use in Movable Type.
-        // Use "plugin_mt_*_buttons" instead.
-        // theme_advanced_buttons1: '',
-
+        toolbar1: '',
         // Buttons using both in source and wysiwyg modes.
         plugin_mt_common_buttons1: 'mt_source_mode',
         // Buttons using in source mode.
-        plugin_mt_source_buttons1: 'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
+        plugin_mt_source_buttons1: 'mt_source_bold mt_source_italic mt_source_blockquote mt_source_unordered_list mt_source_ordered_list mt_source_list_item | mt_source_link mt_insert_file mt_insert_image | mt_fullscreen',
         // Buttons using in wysiwyg mode.
-        plugin_mt_wysiwyg_buttons1: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image',
-        plugin_mt_wysiwyg_buttons2: 'undo,redo,|,forecolor,backcolor,removeformat,|,justifyleft,justifycenter,justifyright,indent,outdent,|,formatselect,|,mt_fullscreen',
-        plugin_mt_wysiwyg_buttons3: 'tablecontrols',
-        plugin_mt_inlinepopups_window_sizes: {
-            'advanced/link.htm': {
-                width: 350,
-                height: 220
-            },
-            'advanced/color_picker.htm': {
-                width: 370,
-                height: 280,
-                onload: function(context) {
-                    var $contents = $(context['iframe']).contents();
-
-                    $contents.find('a[onmouseover^=showColor]')
-                        .each(function() {
-                            var callback = this.onmouseover;
-                            $(this).on('click', function() {
-                                callback();
-                                return false;
-                            });
-                        })
-                        .attr('onmouseover', '')
-                        .attr('onfocus', '')
-                        .attr('href', 'javascript:;');
-                }
-            },
-            'template/template.htm': {
-                top: function() {
-                    var height = $(window).height() - 110,
-                        vp     = tinymce.DOM.getViewPort();
-                    return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
-                },
-                height: function() {
-                    return $(window).height() - 110;
-                },
-                onload: function(context) {
-                    var window = context['iframe'].contentWindow;
-                    var dialog = window.TemplateDialog;
-                    if (! dialog) {
-                        return;
-                    }
-                    var resize = dialog.resize;
-                    dialog.resize = function() {
-                        resize();
-
-                        var e = window.document.getElementById('templatesrc');
-                        if (e) {
-                            e.style.height =
-                                (parseInt(e.style.height, 10) - 30) + 'px';
-                        }
-                    };
-                    dialog.resize();
-                }
-            },
-            'table/table.htm': {
-                width: 600,
-                height: 450
-            },
-            'table/row.htm': {
-                width: 450,
-                height: 350
-            },
-            'table/cell.htm': {
-                width: 450,
-                height: 350
-            },
-            'table/merge_cells.htm': {
-                width: 250,
-                height: 140
-            }
-        },
-
+        plugin_mt_wysiwyg_buttons1: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image',
+        plugin_mt_wysiwyg_buttons2: 'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | tablecontrols | mt_fullscreen',
+        plugin_mt_wysiwyg_buttons3: 'table',
         formats: {
             strikethrough: [
                 {
@@ -161,20 +90,39 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
 
         entity_encoding: 'raw',
         convert_urls: false,
-        media_strict: false,
         verify_html: false,
-        ie7_compat: false,
-        valid_children: 'html[#comment|head|body],head[#comment|title|style|script|noscript|meta|link|command|base],title[#comment|#text],link[#comment],meta[#comment],+style[#text],+script[#text],+noscript[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+body[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],section[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],nav[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],article[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],aside[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+h1[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h2[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h3[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h4[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h5[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h6[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],hgroup[#comment|h6|h5|h4|h3|h2|h1],header[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],footer[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+address[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+p[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+pre[video|time|svg|sup|sub|small|ruby|progress|output|object|noscript|meter|meta|mark|map|link|keygen|img|iframe|embed|datalist|command|canvas|audio|area],dialog[#comment|dt|dd],+blockquote[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+li[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+dt[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+dd[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+em[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+strong[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+small[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+cite[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+q[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+dfn[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+abbr[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+code[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+var[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+samp[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+kbd[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+sub[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+sup[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+i[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+b[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],mark[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],progress[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],meter[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],time[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],ruby[#comment|rp|rt|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],rt[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],rp[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],+bdo[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+span[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+ins[video|time|svg|ruby|progress|output|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],del[#comment|#text|a|abbr|acronym|applet|area|audio|b|basefont|bdo|big|br|button|canvas|cite|code|command|datalist|del|dfn|em|embed|font|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|meta|meter|noscript|object|output|progress|q|ruby|s|samp|script|select|small|span|strike|strong|sub|sup|svg|textarea|time|tt|u|var|video],figure[#comment|figcaption|legend|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],figcaption[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],embed[#comment],details[#comment|legend|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],command[#comment],+menu[video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+legend[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area|ul|table|style|section|pre|p|ol|nav|menu|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|dl|div|dialog|details|blockquote|aside|article|address],+div[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],source[#comment],audio[#comment|source],video[#comment|source|object],+form[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|form|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+fieldset[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+label[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+button[video|time|textarea|svg|select|ruby|progress|output|meter|meta|mark|link|label|keygen|input|iframe|embed|datalist|command|canvas|button|audio|area|a],datalist[#comment|option|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],keygen[#comment],output[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],canvas[#comment],+map[video|var|time|textarea|svg|sup|sub|style|strong|span|small|select|section|samp|ruby|q|progress|output|object|nav|meter|meta|mark|map|link|label|keygen|kbd|input|img|iframe|i|hgroup|header|footer|figure|embed|em|dialog|dfn|details|datalist|command|code|cite|canvas|button|br|bdo|b|audio|aside|article|abbr|a|#text],mathml[#comment],svg[#comment],+caption[video|ul|time|table|svg|style|section|ruby|progress|pre|p|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+th[video|time|svg|ruby|progress|output|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+td[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+object[embed|param]',
+        valid_children: 'html[#comment|head|body],head[#comment|title|style|script|noscript|meta|link|command|base],title[#comment|#text],link[#comment],meta[#comment],+style[#text],+noscript[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+body[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],section[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],nav[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],article[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],aside[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+h1[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h2[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h3[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h4[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h5[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+h6[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],hgroup[#comment|h6|h5|h4|h3|h2|h1],header[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],footer[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+address[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+p[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+pre[video|time|svg|sup|sub|small|ruby|progress|output|object|noscript|meter|meta|mark|map|link|keygen|img|iframe|embed|datalist|command|canvas|audio|area],dialog[#comment|dt|dd],+blockquote[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+li[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+dt[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+dd[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+em[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+strong[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+small[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+cite[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+q[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+dfn[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+abbr[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+code[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+var[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+samp[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+kbd[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+sub[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+sup[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+i[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+b[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],mark[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],progress[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],meter[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],time[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],ruby[#comment|rp|rt|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],rt[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],rp[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],+bdo[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+span[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+ins[video|time|svg|ruby|progress|output|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],del[#comment|#text|a|abbr|acronym|applet|area|audio|b|basefont|bdo|big|br|button|canvas|cite|code|command|datalist|del|dfn|em|embed|font|i|iframe|img|input|ins|kbd|keygen|label|link|map|mark|meta|meter|noscript|object|output|progress|q|ruby|s|samp|script|select|small|span|strike|strong|sub|sup|svg|textarea|time|tt|u|var|video],figure[#comment|figcaption|legend|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],figcaption[#comment|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],embed[#comment],details[#comment|legend|video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],command[#comment],+menu[video|var|ul|time|textarea|table|svg|sup|sub|style|strong|span|small|select|section|script|samp|ruby|q|progress|pre|p|output|object|ol|noscript|nav|meter|meta|menu|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|em|dl|div|dialog|dfn|details|del|datalist|command|code|cite|canvas|button|br|blockquote|bdo|b|audio|aside|article|address|area|abbr|a|#text],+legend[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area|ul|table|style|section|pre|p|ol|nav|menu|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|dl|div|dialog|details|blockquote|aside|article|address],+div[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],source[#comment],audio[#comment|source],video[#comment|source|object],+form[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|form|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+fieldset[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+label[video|time|svg|ruby|progress|output|noscript|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+button[video|time|textarea|svg|select|ruby|progress|output|meter|meta|mark|link|label|keygen|input|iframe|embed|datalist|command|canvas|button|audio|area|a],datalist[#comment|option|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],keygen[#comment],output[#comment|video|var|time|textarea|svg|sup|sub|strong|span|small|select|script|samp|ruby|q|progress|output|object|noscript|meter|meta|mark|map|link|label|keygen|kbd|ins|input|img|iframe|i|embed|em|dfn|del|datalist|command|code|cite|canvas|button|br|bdo|b|audio|area|abbr|a|#text],canvas[#comment],+map[video|var|time|textarea|svg|sup|sub|style|strong|span|small|select|section|samp|ruby|q|progress|output|object|nav|meter|meta|mark|map|link|label|keygen|kbd|input|img|iframe|i|hgroup|header|footer|figure|embed|em|dialog|dfn|details|datalist|command|code|cite|canvas|button|br|bdo|b|audio|aside|article|abbr|a|#text],mathml[#comment],svg[#comment],+caption[video|ul|time|table|svg|style|section|ruby|progress|pre|p|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area],+th[video|time|svg|ruby|progress|output|meter|meta|mark|link|keygen|embed|datalist|command|canvas|audio|area],+td[video|time|svg|style|section|ruby|progress|output|nav|meter|meta|mark|link|keygen|hgroup|header|footer|figure|embed|dialog|details|datalist|command|canvas|audio|aside|article|area],+object[embed|param]',
         non_empty_elements: 'td,th,iframe,video,audio,object,script,img,area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,source,wbr',
 
         cleanup: true,
-        dialog_type: 'modal',
 
         init_instance_callback: function(ed) {},
 
-        content_css: '',
+        // content_css: '',
         body_class: '',
-        body_id: ''
+        body_id: '',
+        
+        content_security_policy: "script-src 'none';",
+        
+        // tinymce3
+        link_class_list: [
+            {title: 'unassigned', value: ''},
+            {title: 'button', value: 'button'},
+            {title: 'pagination', value: 'pagination'},
+            {title: 'class_description', value: 'description'},
+            {title: 'breadcrumb', value: 'breadcrumb'},
+            {title: 'entry', value: 'entry'},
+            {title: 'page', value: 'page'},
+            {title: 'license', value: 'license'},
+            {title: 'poweredby', value: 'poweredby'},
+            {title: 'rank-1', value: 'rank-1'},
+            {title: 'rank-2', value: 'rank-2'},
+            {title: 'rank-3', value: 'rank-3'},
+            {title: 'rank-4', value: 'rank-4'},
+            {title: 'rank-5', value: 'rank-5'},
+            {title: 'rank-6', value: 'rank-6'},
+            {title: 'rank-7', value: 'rank-7'}
+        ]
     }
 });
 
@@ -188,19 +136,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             'white-space': 'pre-wrap',
             resize: 'none'
         });
-        if (tinyMCE.isIE8) {
-            // The workaround for IE8 textarea bug.
-            // The "width" value is overwrote by the "max-width" and the "min-width".
-            // But this workaround requires the "width" value.
-            adapter.$editorTextarea
-                .css({
-                    'width': '100px',
-                    'min-width': '100%',
-                    'max-width': '100%',
-                    padding: '0px'
-                })
-                .attr('cols', '5000');
-        }
         adapter.$editorTextareaParent = adapter.$editorTextarea.parent();
         adapter.$editorElement = adapter.$editorTextarea;
 
@@ -210,11 +145,14 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             init_instance_callback.apply(this, arguments);
             adapter._init_instance_callback.apply(adapter, arguments);
         };
-        config['elements'] = adapter.id;
+        config['selector'] = '#' + adapter.id;
 
-        config['content_css'] =
-            (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
-            .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+        if (adapter.commonOptions['content_css_list'].length > 0){
+          config['content_css'] =
+              (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
+              .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+        }
+
         config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
         if (! ('plugin_mt_tainted_input' in config)) {
@@ -223,6 +161,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         if (! config['body_id']) {
             config['body_id'] = adapter.id;
+        }
+        if(tinymce.Env.browser.isIE()){
+            config["verify_html"] = true;
         }
 
         tinyMCE.init(config);
@@ -248,16 +189,6 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 this.$editorTextarea
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
-                if (! this.tinymce.execCommand('mtFullScreenIsEnabled')) {
-                    var h = this.$editorIframe.height();
-                    this.$editorTextarea.data('base-height', h);
-                    if (tinyMCE.isIE) {
-                        this.$editorTextarea.data('base-height-adjustment', h);
-                    }
-                    else {
-                        this.$editorTextarea.data('base-height-adjustment', 0);
-                    }
-                }
 
                 if (! calledInInit) {
                     this.ignoreSetDirty(function() {
@@ -277,9 +208,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         }
         else {
             this.$editorIframe.height(this.$editorTextarea.innerHeight());
-            this.$editorTextarea
-                .data('base-height', null)
-                .prependTo(this.$editorTextareaParent);
+            this.$editorTextarea.prependTo(this.$editorTextareaParent);
 
             this.ignoreSetDirty(function() {
                 this.tinymce.setContent(this.source.getContent());
@@ -366,7 +295,7 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
     },
 
     domUpdated: function() {
-        var format = this.tinymce.execCommand('mtGetStatus')['format'];
+        var format = this.tinymce.queryCommandValue('mtGetStatus')['format'];
         try {
             this.tinymce.remove();
         }
@@ -390,72 +319,41 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
-        // Stop adding root blocks on key up for IE.
-        // Because if used with IME, this function will not work well.
-        if (tinyMCE.isIE) {
-            $.each(ed.onKeyUp.listeners, function(i, listener) {
-                if (! listener) {
-                    return;
-                }
-                var f = listener.cb;
-                if (f.toString().match(/^function addRootBlocks\(\)|^function\s+\w+\(\).*forced_root_block/)) {
-                    ed.onKeyUp.remove(f);
-                    return false;
-                }
-            });
-        }
+        adapter.$editorIframe = $('#' + adapter.id + '_ifr');
+        adapter.$editorElement = adapter.$editorIframe;
+        adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
 
-        if (ed.getContent() == '') {
-            // Browser compatibility
-            // Set the "formatselect" to default value for empty content.
-            var formatselect;
-            if (formatselect = ed.controlManager.get('formatselect')) {
-                setTimeout(function() {
-                    formatselect.select('');
-                }, 0);
-            }
-        }
-
-        var resizeTo = ed.theme.resizeTo;
-        ed.theme.resizeTo = function(width, height, store, isFullscreen) {
+        ed.resizeTo = function(width, height, store, isFullscreen) {
             if (isFullscreen) {
                 adapter.$editorTextarea.height(height);
             }
             else {
-                var base       = adapter.$editorTextarea.data('base-height');
-                var adjustment = adapter.$editorTextarea.data('base-height-adjustment');
-                if (base) {
-                    adapter.$editorTextarea.height(base+height-adjustment);
-                    if (store) {
-                        adapter.$editorTextarea
-                            .data('base-height', base+height-adjustment);
-                    }
-                }
+                adapter.$editorIframe.parents('.tox-tinymce').height(height);
+                adapter.$editorIframe.height(size['iframeHeight']);
             }
-            resizeTo.apply(ed.theme, arguments);
         };
+        var Cookie = tinymce.plugins.MovableType.Cookie;
+        var size = Cookie.getHash("TinyMCE_" + ed.id + "_size");
+        if(size)
+            ed.resizeTo(size.cw, size.ch);
 
         $('#' + adapter.id + '_tbl').css({
             width: '100%'
         });
 
-        adapter.$editorIframe = $('#' + adapter.id + '_ifr');
-        adapter.$editorElement = adapter.$editorIframe;
-        adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
-
         var save = ed.save;
         ed.save = function () {
-            if (! ed.isHidden()) {
+            if (adapter.$editorIframe.css('display') != 'none') {
                 save.apply(ed, arguments);
             }
         }
 
         $([
-            'onSetContent', 'onKeyDown', 'onReset', 'onPaste',
-            'onUndo', 'onRedo'
+            'SetContent', 'KeyDown', 'Reset', 'Paste',
+            'Undo', 'Redo'
         ]).each(function() {
             var ev = this;
-            ed[ev].add(function() {
+            ed.on(ev, function() {
                 if (! adapter.tinymce.isDirty()) {
                     return;
                 }
@@ -467,24 +365,47 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             });
         });
 
-        ed.onSaveContent.add(function(ed, o) {
-            o.content = o.content.replace(/\u00a0/g, '\u0020');
+        ed.on('SaveContent', function(ed) {
+            ed.content = ed.content.replace(/\u00a0/g, '\u0020');
         });
-
         ed.addCommand('mtSetFormat', function(format) {
             adapter.manager.setFormat(format);
+            ed.fire('mtChangeFormat', {format: format});
         });
 
-        ed.addCommand('mtGetEditorSize', function() {
+        ed.addQueryValueHandler('mtGetEditorSize', function() {
             return {
-                iframeHeight: adapter.$editorIframe.height(),
-                textareaHeight: adapter.$editorTextarea.height()
+                iframeHeight: adapter.$editorIframe.parents('.tox-tinymce').height(),
+                textareaHeight: adapter.$editorTextarea.height(),
             };
         });
 
         ed.addCommand('mtRestoreEditorSize', function(size) {
+            if(!size) return;
+            editorContainer = adapter.tinymce.getContainer();
+            jQuery(editorContainer).width('');
             adapter.$editorIframe.height(size['iframeHeight']);
             adapter.$editorTextarea.height(size['textareaHeight']);
+            adapter.$editorIframe.css({'width': '100%'});
+            adapter.$editorTextarea.css({'width': '100%'});
+            adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight']);
+        });
+        var last_updated;
+        ed.on('ResizeEditor', function(e){
+            var now = new Date();
+            if (last_updated && now - last_updated < 150 ) {
+                return;
+            }
+            last_updated = now;
+            var height = adapter.$editorIframe.parents('.tox-tinymce').height();
+
+            adapter.$editorTextarea.height(height);
+            var width = '100%';
+            var Cookie = tinymce.plugins.MovableType.Cookie;
+            Cookie.setHash("TinyMCE_" + ed.id + "_size", {
+               cw : width,
+               ch : height
+             });
         });
     }
 });
