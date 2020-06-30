@@ -124,7 +124,7 @@ function validate (f) {
          label="<__trans phrase="Logging Threshold">"
          hint="<__trans phrase="The time limit for unlogged events in seconds. Any event that takes this amount of time or longer will be reported.">"
          show_hint="1">
-        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text number" maxlength="3" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
+        <input type="text"<mt:if name="config_warnings_performanceloggingthreshold"> disabled="disable"</mt:if> name="system_performance_logging_threshold" id="system-performance-logging-threshold" class="text number" value="<mt:var name="system_performance_logging_threshold" escape="html">" />
       </mt:app:setting>
     </div>
     </mt:unless>
