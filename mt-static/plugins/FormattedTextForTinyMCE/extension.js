@@ -1,11 +1,11 @@
 (function($) {
 
 var config  = MT.Editor.TinyMCE.config;
-var wisiwyg_buttons = config.plugin_mt_wysiwyg_buttons1 + ',|,template';
+var wisiwyg_buttons = config.plugin_mt_wysiwyg_buttons1 + ' | template';
 var source_buttons  = (function(buttons) {
     var replaced        = false;
-    var before          = /,mt_insert_image/;
-    var template_button = ',|,mt_source_template';
+    var before          = /mt_insert_image/;
+    var template_button = ' | mt_source_template';
 
     buttons = buttons.replace(before, function($0) {
         replaced = true;
