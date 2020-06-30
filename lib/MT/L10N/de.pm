@@ -1311,7 +1311,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => 'Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.',
 	'Cannot load content_type #[_1]' => 'Konnte content_type #[_1] nicht laden',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => '[_3] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' hinzugefügt',
-	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_5]\' von Benutzer \'[_5]\' bearbeitet und Status von [_3] in [_4] geändert',
+	'[_1] \'[_6]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_6]\' von Benutzer \'[_5]\' bearbeitet und Status von [_3] in [_4] geändert',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' bearbeitet',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) von Benutzer \'[_3]\' gelöscht',
 	'Create new [_1]' => '[_1] anlegen',

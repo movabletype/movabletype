@@ -1615,7 +1615,12 @@ sub _parse_query {
 }
 
 sub _run_rpt {
-    `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    if ( $res =~ /Compilation failed|Can't locate/ ) {
+        diag $res;
+        BAIL_OUT;
+    }
+    $res;
 }
 
 sub _run_tasks {

@@ -50,3 +50,19 @@ __END__
 --- expected
 2
 
+=== mt:ParentSite - blog
+--- blog_id
+1
+--- template
+<mt:ParentSite><mt:SiteID></mt:ParentSite>
+--- expected
+2
+
+=== mt:ParentSite - website
+--- blog_id
+2
+--- template
+<mt:ParentSite><mt:SiteID></mt:ParentSite>
+--- expected
+2
+

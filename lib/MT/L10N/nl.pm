@@ -1314,7 +1314,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => 'Ongeldige datum \'[_1]\'; \'Publicatie ongedaan op\' datums moeten later zijn dan de corresponderende \'Gepubliceerd op\' datum.',
 	'Cannot load content_type #[_1]' => 'Kan content_type #[_1] niet laden',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => 'Nieuwe [_1] \'[_4]\' (ID:[_2]) toegevoegd door gebruiker \'[_3]\'',
-	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_5]\' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker \'[_5]\'',
+	'[_1] \'[_6]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_6]\' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker \'[_5]\'',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) bewerkt door gebruiker \'[_3]\'',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) verwijderd door \'[_3]\'',
 	'Create new [_1]' => 'Nieuwe [_1] aanmaken',
