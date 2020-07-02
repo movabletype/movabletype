@@ -626,7 +626,7 @@
           });
 
           ed.addMTButton('mt_source_template', {
-              tooltip : 'template',
+              tooltip : 'Insert template',
               icon: 'template',
               onclickFunctions : {
                   source: function(buttonApi) {
