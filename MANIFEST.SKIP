@@ -171,6 +171,7 @@ themes/broken_blog_theme
 \bknown-issues
 ^t/
 .*/t/
+^xt/
 ^phpunit.xml
 ^php/tests
 ^php/extlib/adodb5/tests
@@ -272,6 +273,11 @@ readme\.html\..*
 build-language-stamp
 ^mt-config.cgi$
 ^exports/
+^Gruntfile.js
+^package-lock.json
+^package.json
+^node_modules/
+^\.node-version
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
@@ -291,12 +297,17 @@ wercker.yml
 # CircleCI
 circle.yml
 Dockerfile
-.circleci
+\.circleci
+
+# Etc
+\.perltidyrc
+\.perlcriticrc
+\.gitattributes
+shippable.yml
+yarn.lock
 
 # Test
-.proverc
-
-shippable.yml
+\.proverc
 
 # Composer
 ^composer.json
