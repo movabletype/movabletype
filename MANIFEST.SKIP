@@ -250,6 +250,7 @@ themes/broken_blog_theme
 \bknown-issues
 ^t/
 .*/t/
+^xt/
 ^phpunit.xml
 ^php/tests
 ^php/extlib/adodb5/tests
@@ -396,7 +397,6 @@ Dockerfile
 \.gitattributes
 shippable.yml
 yarn.lock
-\.circleci
 
 # Test
 \.proverc
