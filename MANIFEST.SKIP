@@ -305,7 +305,6 @@ Dockerfile
 \.gitattributes
 shippable.yml
 yarn.lock
-\.circleci
 
 # Test
 \.proverc
