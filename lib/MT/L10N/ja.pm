@@ -4851,6 +4851,9 @@ use vars qw( @ISA %Lexicon );
 	'Content Type Privileges' => 'コンテンツタイプごとの権限',
 	'Duplicate Roles' => '同じ権限のロール',
 	'Save changes to this role (s)' => 'ロールへの変更を保存 (s)',
+	'Content Field Privileges' => 'フィールドごとの編集権限',
+	'Check All' => 'すべてチェック',
+	'Uncheck All' => 'チェックを外す',
 
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'ウィジェットの編集',
