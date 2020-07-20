@@ -294,8 +294,8 @@ function init() {
 
                     <div class="form-group ml-3 mb-3">
                         <div class="row ml-2 mb-2">
-                        <div class="col-auto"><a href="#" class="all_check_content_field"><__trans phrase="Check All"></a></div>
-                        <div class="col-auto"><a href="#" class="all_uncheck_content_field"><__trans phrase="Uncheck All"></a></div>
+                        <div class="col-auto"><a href="#" class="check_all_content_field"><__trans phrase="Check All"></a></div>
+                        <div class="col-auto"><a href="#" class="uncheck_all_content_field"><__trans phrase="Uncheck All"></a></div>
                         </div>
                         <div class="manage_content_field d-flex flex-wrap">
                         <mt:var name="manage_content_field">
@@ -346,14 +346,14 @@ function init() {
             this.disabled = false;
         });
     });
-    jQuery('.all_check_content_field').on('click', function(){
+    jQuery('.check_all_content_field').on('click', function(){
         const $parent = jQuery(this).closest('.collapse');
         const $target = $parent.find('.manage_content_field input[type="checkbox"]')
         if($target.prop('disabled')) return false;
         $target .prop('checked', true);
         return false;
     });
-    jQuery('.all_uncheck_content_field').on('click', function(){
+    jQuery('.uncheck_all_content_field').on('click', function(){
         const $parent = jQuery(this).closest('.collapse');
         const $target = $parent.find('.manage_content_field input[type="checkbox"]')
         if($target.prop('disabled')) return false;
