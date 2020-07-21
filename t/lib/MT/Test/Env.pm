@@ -262,6 +262,9 @@ sub _connect_info_mysql {
         if ( $opts{port} ) {
             $info{DBPort} = $opts{port};
         }
+        if ( $opts{password} ) {
+            $info{DBPassword} = $opts{password};
+        }
         $self->{dsn}
             = "dbi:mysql:" . ( join ";", map {"$_=$opts{$_}"} keys %opts );
 
