@@ -168,8 +168,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
         // default height
         config["height"] = 350;
-        if(parseInt(adapter.$editorTextarea.css('height').replace('px', '')) > config["height"]){
-            config["height"] = adapter.$editorTextarea.css('height').replace('px', '');
+        var text_height = parseInt(adapter.$editorTextarea.css('height').replace('px', ''));
+        if( config["height"] < text_height ){
+            config["height"] = text_height;
         }
 
         tinyMCE.init(config);
