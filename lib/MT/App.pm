@@ -18,6 +18,7 @@ use MT::I18N qw( wrap_text );
 
 my $COOKIE_NAME = 'mt_user';
 sub COMMENTER_COOKIE_NAME () {"mt_commenter"}
+sub CURRENT_RELEASE_COOKIE_NAME () {"mt_current_release"}
 use vars qw( %Global_actions );
 
 sub core_menus {
@@ -860,6 +861,31 @@ sub set_x_xss_protection_header {
     return unless $xss_protection;
 
     $app->set_header( 'X-XSS-Protection', $xss_protection );
+}
+
+sub check_release_updated {
+    my $app   = shift;
+
+    return unless $app->{is_admin}; # Do not send in MT::App::Search::*
+
+    my $name  = CURRENT_RELEASE_COOKIE_NAME();
+    my $value = $MT::RELEASE_VERSION_ID;
+
+    if (   $app->cookies
+        && $app->cookies->{$name}
+        && $app->cookies->{$name}->value eq $value )
+    {
+        return;
+    }
+
+    $app->set_header( 'Clear-Site-Data' => '"cache"' );
+    $app->bake_cookie(
+        -name     => $name,
+        -value    => $value,
+        -path     => $app->config->CookiePath || $app->mt_path,
+        -expires  => '+10y',
+        -httponly => 1,
+    );
 }
 
 sub send_http_header {
@@ -3143,6 +3169,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->check_release_updated;
 
     my ($body);
 

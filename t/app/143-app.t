@@ -59,4 +59,41 @@ subtest 'do_reboot' => sub {
     ok( !$app->do_reboot, 'do not run do_reboot twice' );
 };
 
+subtest 'check_release_updated' => sub {
+    my $name = MT::App::CURRENT_RELEASE_COOKIE_NAME();
+    my $current_release = $MT::RELEASE_VERSION_ID;
+
+    subtest 'initial' => sub {
+        my $app = _run_app('MT::App::CMS');
+
+        is $app->{cgi_headers}{'-clear_site_data'}, '"cache"';
+        is $app->{cgi_headers}{'-cookie'}[0]->name, $name;
+        is $app->{cgi_headers}{'-cookie'}[0]->value, $current_release;
+    };
+
+    subtest 'match to current release' => sub {
+        local $ENV{COOKIE} = "$name=$current_release";
+        my $app = _run_app('MT::App::CMS');
+
+        ok !$app->{cgi_headers}{'-clear_site_data'};
+        ok !$app->{cgi_headers}{'-cookie'};
+    };
+
+    subtest 'does not match to current release' => sub {
+        local $ENV{COOKIE} = "$name=$current_release-rc1";
+        my $app = _run_app('MT::App::CMS');
+
+        is $app->{cgi_headers}{'-clear_site_data'}, '"cache"';
+        is $app->{cgi_headers}{'-cookie'}[0]->name, $name;
+        is $app->{cgi_headers}{'-cookie'}[0]->value, $current_release;
+    };
+
+    subtest 'do not send in mt-search.cgi' => sub {
+        my $app = _run_app('MT::App::Search');
+
+        ok !$app->{cgi_headers}{'-clear_site_data'};
+        ok !$app->{cgi_headers}{'-cookie'};
+    };
+};
+
 done_testing;
