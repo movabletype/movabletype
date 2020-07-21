@@ -862,6 +862,25 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub check_release_updated {
+    my $app = shift;
+
+    my $value = $MT::RELEASE_VERSION_ID;
+
+    return unless $app->{is_admin};    # Do not send in MT::App::Search::*
+
+    my $sess = $app->session
+        or return;
+
+    if ( ( $sess->get('current_release') || '' ) eq $value ) {
+        return;
+    }
+
+    $app->set_header( 'Clear-Site-Data' => '"cache"' );
+    $sess->set( 'current_release' => $value );
+    $sess->save;
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -3055,6 +3074,8 @@ sub pre_run {
             $app->session->save;
         }
     }
+
+    $app->check_release_updated;
 
     $app->{breadcrumbs} = [];
 
