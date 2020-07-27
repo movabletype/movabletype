@@ -12027,9 +12027,13 @@ fieldset.form-group {
   line-height: 2;
 }
 
-.mt-widget__contenttype {
+.mt-widget__contenttype,
+.mt-widget__entry {
   padding: 0.5rem 0;
   border-bottom: 1px solid #CACACA;
+}
+.mt-widget__page {
+  padding: 0.5rem 0;
 }
 
 .mt-widget__contenttype:last-of-type {

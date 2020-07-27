@@ -843,6 +843,19 @@ sub site_list_widget {
             ->can_do('open_blog_config_screen') ? 1
             : 0;
 
+        $row->{can_create_post} =
+            $user->is_superuser                                    ? 1
+          : $user->permissions( $site->id )->can_do('create_post') ? 1
+          :                                                          0;
+        $row->{can_access_to_entry_list} =
+            $user->is_superuser                                             ? 1
+          : $user->permissions( $site->id )->can_do('access_to_entry_list') ? 1
+          :                                                                   0;
+        $row->{can_manage_pages} =
+            $user->is_superuser                                     ? 1
+          : $user->permissions( $site->id )->can_do('manage_pages') ? 1
+          :                                                           0;
+
         # Recent post
         my $MAX_POSTS = 3;
         my @recent;
@@ -970,12 +983,15 @@ sub site_list_widget {
         # Content Type list
         my @content_types;
         my $ct_class = MT->model('content_type');
-        my $ct_iter  = $ct_class->load_iter(
+        my $ct_iter = $ct_class->load_iter(
             { blog_id => $site->id, },
-            {   sort      => 'name',
+            {
+                sort      => 'name',
                 direction => 'ascend',
+                fetchonly => { id => 1, name => 1, unique_id => 1, }
             }
         );
+
         while ( my $ct = $ct_iter->() ) {
             my $perm = $user->permissions( $site->id );
             my $item;
