@@ -1041,7 +1041,7 @@ sub make_list_props {
                     else {
                         $content_type_id = $db_terms->{content_type_id};
                     }
-                    die MT->translate('Cannot load content type')
+                    die MT->translate('No Content Type could be found.')
                       unless $content_type_id;
                     my $ct = MT->model('content_type')->load($content_type_id)
                       or die MT->translate( 'Cannot load content type #[_1]',
