@@ -1,0 +1,64 @@
+.fullscreen_editor_screen {
+    overflow: hidden;
+}
+
+.fullscreen_editor {
+    position: fixed !important;
+    z-index: 1001;
+    top: 0;
+    left: 0;
+}
+
+.fullscreen_editor .editor-header {
+    padding: 0 0.62em;
+    background-color: #ffffff;
+}
+.fullscreen_editor #field-convert_breaks {
+    display: none !important;
+}
+/* content-data fullscreen */
+/* header hide */
+#content_data .fullscreen_editor div.first-child {
+    display: none;
+}
+
+/* formattext fullscreen */
+/* label hide */
+.tox-fullscreen > label.first-child {
+    display: none;
+}
+
+
+/* for wysiwyg type custom field */
+.field-top-label .field-content.fullscreen_editor {
+    margin: 0;
+    padding: 0;
+}
+
+.fullscreen_editor .editor-header .tab {
+    margin-top: 0.62em;
+}
+
+.fullscreen_editor .mtSkin table.mceLayout, 
+.fullscreen_editor .mtSkin table.mceLayout tr.mceFirst td,
+.fullscreen_editor .mtSkin table.mceLayout tr.mceLast td,
+.fullscreen_editor .mtSkin .mceIframeContainer {
+    border-right: 0;
+    border-left: 0;
+}
+.fullscreen_editor .mtSkin table.mceLayout tr.mceFirst td {
+    border-radius: 0;
+}
+.fullscreen_editor .mtSkin table.mceLayout tr.mceLast td {
+    border-bottom: 0;
+}
+.fullscreen_editor .mtSkin iframe,
+.fullscreen_editor .mtSkin iframe.state-hover,
+.fullscreen_editor .mtSkin iframe.state-focus,
+.fullscreen_editor #editor-content textarea,
+.fullscreen_editor #editor-content textarea:hover,
+.fullscreen_editor #editor-content textarea:focus {
+    border-width: 1px 0;
+    border-color: #adadad;
+    box-shadow: none;
+}

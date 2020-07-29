@@ -623,7 +623,7 @@ function step1(){
   var actions_bar = jQuery('<div class="actions-bar step1"></div>');
   actions_bar.append(cancel_button);
   actions_bar.append(next_button);
-  jQuery('.modal-blockeditor .actions-bar').after(actions_bar);
+  jQuery('.modal-blockeditor .actions-bar:eq(0)').after(actions_bar);
   jQuery('.step1 [name="asset-img-id"]').off('change').on('change', function(){
     if(jQuery(this).prop('checked')){
       jQuery('.step1 .submit').prop('disabled', false).removeClass('disabled');
@@ -685,6 +685,7 @@ function step2(data) {
   step2.append(data);
   jQuery('.modal-blockeditor .modal-body .step1').after(step2);
   jQuery('.modal-blockeditor .actions-bar').hide();
+  jQuery('.modal-blockeditor .actions-bar.asset-actions.step2').remove();
   var actions_bar = jQuery('<div class="actions-bar asset-actions step2"></div>');
   var cancel_button = jQuery('<a data-dismiss="modal" class="action modal-cancel">' + trans('Cancel') + '</a>');
   var back_button = jQuery('<button type="button" class="action previous button btn btn-default mr-3">' + trans('Back') + '</button>');

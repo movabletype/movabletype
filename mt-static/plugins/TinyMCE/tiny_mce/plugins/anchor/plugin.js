@@ -1,235 +1,146 @@
+/**
+ * Copyright (c) Tiny Technologies, Inc. All rights reserved.
+ * Licensed under the LGPL or a commercial license.
+ * For LGPL see License.txt in the project root for license information.
+ * For commercial licenses see https://www.tiny.cloud/
+ *
+ * Version: 5.2.2 (2020-04-23)
+ */
 (function () {
+    'use strict';
 
-var defs = {}; // id -> {dependencies, definition, instance (possibly undefined)}
+    var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-// Used when there is no 'main' module.
-// The name is probably (hopefully) unique so minification removes for releases.
-var register_3795 = function (id) {
-  var module = dem(id);
-  var fragments = id.split('.');
-  var target = Function('return this;')();
-  for (var i = 0; i < fragments.length - 1; ++i) {
-    if (target[fragments[i]] === undefined)
-      target[fragments[i]] = {};
-    target = target[fragments[i]];
-  }
-  target[fragments[fragments.length - 1]] = module;
-};
-
-var instantiate = function (id) {
-  var actual = defs[id];
-  var dependencies = actual.deps;
-  var definition = actual.defn;
-  var len = dependencies.length;
-  var instances = new Array(len);
-  for (var i = 0; i < len; ++i)
-    instances[i] = dem(dependencies[i]);
-  var defResult = definition.apply(null, instances);
-  if (defResult === undefined)
-     throw 'module [' + id + '] returned undefined';
-  actual.instance = defResult;
-};
-
-var def = function (id, dependencies, definition) {
-  if (typeof id !== 'string')
-    throw 'module id must be a string';
-  else if (dependencies === undefined)
-    throw 'no dependencies for ' + id;
-  else if (definition === undefined)
-    throw 'no definition function for ' + id;
-  defs[id] = {
-    deps: dependencies,
-    defn: definition,
-    instance: undefined
-  };
-};
-
-var dem = function (id) {
-  var actual = defs[id];
-  if (actual === undefined)
-    throw 'module [' + id + '] was undefined';
-  else if (actual.instance === undefined)
-    instantiate(id);
-  return actual.instance;
-};
-
-var req = function (ids, callback) {
-  var len = ids.length;
-  var instances = new Array(len);
-  for (var i = 0; i < len; ++i)
-    instances.push(dem(ids[i]));
-  callback.apply(null, callback);
-};
-
-var ephox = {};
-
-ephox.bolt = {
-  module: {
-    api: {
-      define: def,
-      require: req,
-      demand: dem
-    }
-  }
-};
-
-var define = def;
-var require = req;
-var demand = dem;
-// this helps with minificiation when using a lot of global references
-var defineGlobal = function (id, ref) {
-  define(id, [], function () { return ref; });
-};
-/*jsc
-["tinymce.plugins.anchor.Plugin","tinymce.core.Env","tinymce.core.PluginManager","global!tinymce.util.Tools.resolve"]
-jsc*/
-defineGlobal("global!tinymce.util.Tools.resolve", tinymce.util.Tools.resolve);
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.Env',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.Env');
-  }
-);
-
-/**
- * ResolveGlobal.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-define(
-  'tinymce.core.PluginManager',
-  [
-    'global!tinymce.util.Tools.resolve'
-  ],
-  function (resolve) {
-    return resolve('tinymce.PluginManager');
-  }
-);
-
-/**
- * Plugin.js
- *
- * Released under LGPL License.
- * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
- *
- * License: http://www.tinymce.com/license
- * Contributing: http://www.tinymce.com/contributing
- */
-
-/**
- * This class contains all core logic for the anchor plugin.
- *
- * @class tinymce.anchor.Plugin
- * @private
- */
-define(
-  'tinymce.plugins.anchor.Plugin',
-  [
-    'tinymce.core.Env',
-    'tinymce.core.PluginManager'
-  ],
-
-  function (Env, PluginManager) {
-    PluginManager.add('anchor', function (editor) {
-      var isAnchorNode = function (node) {
-        return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
-      };
-
-      var setContentEditable = function (state) {
-        return function (nodes) {
-          for (var i = 0; i < nodes.length; i++) {
-            if (isAnchorNode(nodes[i])) {
-              nodes[i].attr('contenteditable', state);
-            }
-          }
-        };
-      };
-
-      var isValidId = function (id) {
-        // Follows HTML4 rules: https://www.w3.org/TR/html401/types.html#type-id
-        return /^[A-Za-z][A-Za-z0-9\-:._]*$/.test(id);
-      };
-
-      var showDialog = function () {
-        var selectedNode = editor.selection.getNode();
-        var isAnchor = selectedNode.tagName == 'A' && editor.dom.getAttrib(selectedNode, 'href') === '';
-        var value = '';
-
-        if (isAnchor) {
-          value = selectedNode.id || selectedNode.name || '';
-        }
-
-        editor.windowManager.open({
-          title: 'Anchor',
-          body: { type: 'textbox', name: 'id', size: 40, label: 'Id', value: value },
-          onsubmit: function (e) {
-            var id = e.data.id;
-
-            if (!isValidId(id)) {
-              e.preventDefault();
-              editor.windowManager.alert(
-                'Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.'
-              );
-              return;
-            }
-
-            if (isAnchor) {
-              selectedNode.removeAttribute('name');
-              selectedNode.id = id;
-            } else {
-              editor.selection.collapse(true);
-              editor.execCommand('mceInsertContent', false, editor.dom.createHTML('a', {
-                id: id
-              }));
-            }
-          }
-        });
-      };
-
-      if (Env.ceFalse) {
-        editor.on('PreInit', function () {
-          editor.parser.addNodeFilter('a', setContentEditable('false'));
-          editor.serializer.addNodeFilter('a', setContentEditable(null));
-        });
+    var isNamedAnchor = function (editor, node) {
+      return node.tagName === 'A' && editor.dom.getAttrib(node, 'href') === '';
+    };
+    var isValidId = function (id) {
+      return /^[A-Za-z][A-Za-z0-9\-:._]*$/.test(id);
+    };
+    var getId = function (editor) {
+      var selectedNode = editor.selection.getNode();
+      return isNamedAnchor(editor, selectedNode) ? selectedNode.getAttribute('id') || selectedNode.getAttribute('name') : '';
+    };
+    var insert = function (editor, id) {
+      var selectedNode = editor.selection.getNode();
+      if (isNamedAnchor(editor, selectedNode)) {
+        selectedNode.removeAttribute('name');
+        selectedNode.id = id;
+        editor.undoManager.add();
+      } else {
+        editor.focus();
+        editor.selection.collapse(true);
+        editor.insertContent(editor.dom.createHTML('a', { id: id }));
       }
+    };
+    var Anchor = {
+      isValidId: isValidId,
+      getId: getId,
+      insert: insert
+    };
 
-      editor.addCommand('mceAnchor', showDialog);
+    var insertAnchor = function (editor, newId) {
+      if (!Anchor.isValidId(newId)) {
+        editor.windowManager.alert('Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.');
+        return false;
+      } else {
+        Anchor.insert(editor, newId);
+        return true;
+      }
+    };
+    var open = function (editor) {
+      var currentId = Anchor.getId(editor);
+      editor.windowManager.open({
+        title: 'Anchor',
+        size: 'normal',
+        body: {
+          type: 'panel',
+          items: [{
+              name: 'id',
+              type: 'input',
+              label: 'ID',
+              placeholder: 'example'
+            }]
+        },
+        buttons: [
+          {
+            type: 'cancel',
+            name: 'cancel',
+            text: 'Cancel'
+          },
+          {
+            type: 'submit',
+            name: 'save',
+            text: 'Save',
+            primary: true
+          }
+        ],
+        initialData: { id: currentId },
+        onSubmit: function (api) {
+          if (insertAnchor(editor, api.getData().id)) {
+            api.close();
+          }
+        }
+      });
+    };
+    var Dialog = { open: open };
 
-      editor.addButton('anchor', {
-        icon: 'anchor',
+    var register = function (editor) {
+      editor.addCommand('mceAnchor', function () {
+        Dialog.open(editor);
+      });
+    };
+    var Commands = { register: register };
+
+    var isNamedAnchorNode = function (node) {
+      return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
+    };
+    var setContentEditable = function (state) {
+      return function (nodes) {
+        for (var i = 0; i < nodes.length; i++) {
+          if (isNamedAnchorNode(nodes[i])) {
+            nodes[i].attr('contenteditable', state);
+          }
+        }
+      };
+    };
+    var setup = function (editor) {
+      editor.on('PreInit', function () {
+        editor.parser.addNodeFilter('a', setContentEditable('false'));
+        editor.serializer.addNodeFilter('a', setContentEditable(null));
+      });
+    };
+    var FilterContent = { setup: setup };
+
+    var register$1 = function (editor) {
+      editor.ui.registry.addToggleButton('anchor', {
+        icon: 'bookmark',
         tooltip: 'Anchor',
-        onclick: showDialog,
-        stateSelector: 'a:not([href])'
+        onAction: function () {
+          return editor.execCommand('mceAnchor');
+        },
+        onSetup: function (buttonApi) {
+          return editor.selection.selectorChangedWithUnbind('a:not([href])', buttonApi.setActive).unbind;
+        }
       });
-
-      editor.addMenuItem('anchor', {
-        icon: 'anchor',
-        text: 'Anchor',
-        context: 'insert',
-        onclick: showDialog
+      editor.ui.registry.addMenuItem('anchor', {
+        icon: 'bookmark',
+        text: 'Anchor...',
+        onAction: function () {
+          return editor.execCommand('mceAnchor');
+        }
       });
-    });
+    };
+    var Buttons = { register: register$1 };
 
-    return function () { };
-  }
-);
-dem('tinymce.plugins.anchor.Plugin')();
-})();
+    function Plugin () {
+      global.add('anchor', function (editor) {
+        FilterContent.setup(editor);
+        Commands.register(editor);
+        Buttons.register(editor);
+      });
+    }
+
+    Plugin();
+
+}());

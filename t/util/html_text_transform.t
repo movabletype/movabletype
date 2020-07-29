@@ -16,15 +16,26 @@ use Test::Base::Less;
 use MT::Util qw( html_text_transform );
 
 register_filter html_text_transform => \&html_text_transform;
+register_filter add_cr => sub {
+    my $str = shift;
+    $str =~ s/\r?\n/\r\n/gs;
+    $str;
+};
 
 filters {
-    input    => [qw/chomp html_text_transform/],
-    expected => [qw/trim chomp/],
+    input      => [qw/chomp html_text_transform/],
+    input_crlf => [qw/chomp add_cr html_text_transform/],
+    expected   => [qw/trim chomp/],
 };
 
 run {
     my $block = shift;
-    is($block->input, $block->expected);
+    if ( $block->get_section('input') ) {
+        is($block->input, $block->expected);
+    }
+    if ( $block->get_section('input_crlf') ) {
+        is($block->input_crlf, $block->expected);
+    }
 };
 
 done_testing;
@@ -226,3 +237,387 @@ test6-2</p>
 
 </li>
 </ul>
+
+=== guard pre, script, code tags
+--- input
+line1
+line2
+
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+line3
+line4
+--- expected
+<p>line1<br />
+line2</p>
+
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+<p>line3<br />
+line4</p>
+
+=== guard pre, script, code tags more eagerly
+--- input
+line1
+line2
+
+<div>
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+</div>
+
+<p>
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+</p>
+
+<script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<script src=""></script>
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+<div>
+<!--
+foo
+-->
+</div>
+
+<!--
+foo <pre>
+-->
+
+line3
+line4
+--- expected
+<p>line1<br />
+line2</p>
+
+<div>
+<pre>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</pre>
+</div>
+
+<p>
+<pre><code>
+pre-line0-1
+pre-line0-2
+
+<script>
+pre-line1-1
+pre-line1-2
+
+pre-line2-1
+pre-line2-2
+
+pre-line3-1
+pre-line3-2
+</script>
+
+pre-line4-1
+pre-line4-2
+</code></pre>
+</p>
+
+<script src=""></script>
+<script src=""></script>
+<script src=""></script>
+
+<script src=""></script>
+<script>
+script1-1
+script1-2
+
+script2-1
+script2-2
+
+script3-1
+script3-2
+</script>
+
+<script src=""></script>
+<style>
+# though style tag should not appear in the html body...
+style1-1
+style1-2
+
+style2-1
+style2-2
+
+style3-1
+style3-2
+</style>
+
+<div>
+<!--
+foo
+-->
+</div>
+
+<!--
+foo <pre>
+-->
+
+<p>line3<br />
+line4</p>
+
+=== crlf
+--- input_crlf
+text
+
+<div>
+text
+</div>
+--- expected
+<p>text</p>
+
+<div>
+text<br />
+</div>
+
+=== comment in a block (MTC-27365)
+--- input
+a
+<!--b-->
+
+<!--c-->
+d<!--d-->
+<!--e-->
+
+1
+<!--a-->b<!--c-->
+3
+--- expected
+<p>a<br />
+<!--b--></p>
+
+<p><!--c-->
+d<!--d--><br />
+<!--e--></p>
+
+<p>1<br />
+<!--a-->b<!--c--><br />
+3</p>
+=== end with non-block tag (MTC-27373)
+--- input
+line<strong>strong</strong>
+line<em>strong</em>
+line line
+
+<a href="url1">text1</a>
+<a href="url2">text2</a>
+
+or even <MTAuthor>
+and such.
+
+or even
+<div class="start">
+foo
+</div>
+and such.
+--- expected
+<p>line<strong>strong</strong><br />
+line<em>strong</em><br />
+line line</p>
+
+<p><a href="url1">text1</a><br />
+<a href="url2">text2</a></p>
+
+<p>or even <MTAuthor><br />
+and such.</p>
+
+<p>or even<br />
+<div class="start">
+foo<br />
+</div>
+and such.</p>
+=== two or more consecutive empty lines (MTC-27374)
+--- input
+a
+
+b
+
+
+c
+
+
+
+d
+
+
+
+
+e
+--- expected
+<p>a</p>
+
+<p>b</p>
+
+<p><br />
+c</p>
+
+<p></p>
+
+<p>d</p>
+
+<p></p>
+
+<p><br />
+e</p>

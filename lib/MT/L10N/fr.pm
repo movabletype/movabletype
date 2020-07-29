@@ -188,7 +188,6 @@ use vars qw( @ISA %Lexicon );
 
 ## php/lib/function.mtpasswordvalidation.php
 	'Password should be longer than [_1] characters' => 'Le mot de passe doit faire plus de [_1] caractères',
-	q{Password should not include your Username} => q{Le mot de passe ne doit pas être composé de votre nom d'utilisateur},
 	'Password should include letters and numbers' => 'Le mot de passe doit être composé de lettres et de chiffres',
 	'Password should include lowercase and uppercase letters' => 'Le mot de passe doit être composé de lettres en minuscule et majuscule',
 	'Password should contain symbols such as #!$%' => 'Le mot de passe doit contenir des caractères spéciaux comme #!$%',
@@ -241,7 +240,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1] [_2] Modules' => '[_1] modules [_2]',
 	q{The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.} => q{Les modules suivants sont <strong>optionnels</strong>. Si votre serveur ne dispose pas de ces modules, vous n'avez besoin de les installer que si vous avez besoin de leurs fonctionnalités.},
 	q{The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.} => q{Les modules suivants sont requis par les bases de données utilisables par Movable Type. DBI et au moins l'un des modules idoines doivent être installés sur votre serveur pour que l'application fonctionne.},
-	q{Either your server does not have [_1] installed, the version that is installed is too old, or [_1] requires another module that is not installed.} => q{Soit votre serveur n'a pas [_1] d'installé, soit la version installée est trop vieille, ou [_1] nécessite un autre module qui n'est pas installé},
 	q{Your server does not have [_1] installed, or [_1] requires another module that is not installed.} => q{Votre serveur n'a pas [_1] d'installé ou [_1] nécessite un autre module qui n'est pas installé.},
 	q{Please consult the installation instructions for help in installing [_1].} => q{Veuillez consulter les instructions d'installation pour obtenir de l'aide pour installer [_1].},
 	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'La version installée de DBD::mysql est connue pour être incompatible avec Movable Type. Veuillez installer la dernière version disponible.',
@@ -329,7 +327,6 @@ use vars qw( @ISA %Lexicon );
 ## default_templates/archive_index.mtml
 	'HTML Head' => 'Entête HTML',
 	'Archives' => 'Archives',
-	q{Banner Header} => q{Bloc de l'entête},
 	'Monthly Archives' => 'Archives mensuelles',
 	'Categories' => 'Catégories',
 	'Author Archives' => 'Archives par auteurs',
@@ -428,7 +425,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1]Sign in[_2] to comment.' => '[_1]Identifiez-vous[_2] pour commenter.',
 	'[_1]Sign in[_2] to comment, or comment anonymously.' => '[_1]Identifiez-vous[_2] pour commenter, ou laissez un commentaire anonyme.',
 	'Replying to <a href="[_1]" onclick="[_2]">comment from [_3]</a>' => 'En réponse au <a href="[_1]" onclick="[_2]">commentaire de [_3]</a>',
-	q{The sign-in attempt was not successful; Please try again.} => q{La tentative d'enregistrement a échoué. Veuillez réessayer.},
 
 ## default_templates/lockout-ip.mtml
 	q{This email is to notify you that an IP address has been locked out.} => q{Cet e-mail est pour vous notifier qu'une adresse IP a été verrouillée.},
@@ -561,7 +557,6 @@ use vars qw( @ISA %Lexicon );
 	'[_1]\'s Group' => 'Le Groupe de [_1]',
 	'Invalid request' => 'Demande incorrecte',
 	'Add a user to this [_1]' => 'Ajouter un utilisateur à ce [_1]',
-	'Are you sure you want to reset the activity log?' => 'Voulez-vous vraiment réinitialiser le journal d\'activité ?',
 	'_WARNING_PASSWORD_RESET_MULTI' => 'Vous êtes sur le point d\'envoyer des e-mails pour permettre aux utilisateurs sélectionnés de réinitialiser leur mot de passe. Voulez-vous continuer ?',
 	'_WARNING_DELETE_USER_EUM' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous voulez retirer un utilisateur ou supprimer ses accès nous vous recommandons de désactiver son compte. Voulez-vous vraiment supprimer cet utilisateur ? Attention, il pourra se créer un nouvel accès s\'il existe encore dans le répertoire externe.',
 	'_WARNING_DELETE_USER' => 'Supprimer un utilisateur est une action définitive qui va rendre des notes orphelines. Si vous souhaitez supprimer un utilisateur ou lui retirer ses accès nous vous recommandons de désactiver son compte. Voulez-vous vraiment supprimer cet utilisateur ?',
@@ -586,14 +581,12 @@ use vars qw( @ISA %Lexicon );
 	'Notification Dashboard' => 'Tableau des notifications',
 	'Site Stats' => 'Statistiques du site',
 	'Updates' => 'Mise à jour',
-	'Activity Log' => 'Journal d\'activité',
 	'Site List' => 'Liste des sites',
 	'Site List for Mobile' => 'Liste des sites pour mobiles',
 	'Refresh Templates' => 'Réactualiser les gabarits',
 	'Use Publishing Profile' => 'Utiliser un profil de publication',
 	'Create Role' => 'Créer un rôle',
 	'Grant Permission' => 'Ajouter une autorisation',
-	'Clear Activity Log' => 'Effacer le journal d\'activité',
 	'Download Log (CSV)' => 'Télécharger le journal (CSV)',
 	'Add IP Address' => 'Ajouter une adresse IP',
 	'Add Contact' => 'Ajouter un contact',
@@ -671,7 +664,6 @@ use vars qw( @ISA %Lexicon );
 	'Permissions' => 'Autorisations',
 
 ## lib/MT/App/DataAPI.pm
-	'[_1] must be a number.' => '[_1] doit être un nombre.',
 	'[_1] must be an integer and between [_2] and [_3].' => '_1] doit être un entier entre [_2] et [_3].',
 
 ## lib/MT/App.pm
@@ -700,9 +692,7 @@ use vars qw( @ISA %Lexicon );
 	'Display Name' => 'Nom affiché',
 	'Email Address is invalid.' => 'L\'adresse e-mail est invalide.',
 	'Email Address' => 'Adresse e-mail',
-	'Email Address is required for password reset.' => 'L\'adresse e-mail est requise pour la réinitialisation du mot de passe',
 	'User requires username.' => 'L\'utilisateur doit avoir un nom d\'utilisateur.',
-	'Username' => 'Nom d\'utilisateur',
 	'A user with the same name already exists.' => 'Un utilisateur possédant ce nom existe déjà.',
 	'Text entered was wrong.  Try again.' => 'Le texte entré est invalide. Réessayez.',
 	'An error occurred while trying to process signup: [_1]' => 'Une erreur est survenue lors de l\'enregistrement : [_1]',
@@ -923,7 +913,6 @@ use vars qw( @ISA %Lexicon );
 	'Error creating thumbnail file: [_1]' => 'Erreur lors de la création de la vignette : [_1]',
 	'%f-thumb-%wx%h-%i%x' => '%f-thumb-%wx%h-%i%x',
 	'Cannot load image #[_1]' => 'Impossible de charger l\'image #[_1]',
-	'View image' => 'Voir l\'image',
 	'Thumbnail image for [_1]' => 'Vignette de [_1]',
 	'Saving [_1] failed: [_2]' => 'L\'enregistrement de [_1] a échoué : [_2]',
 	'Invalid basename \'[_1]\'' => 'Nom de base invalide \'[_1]\'',
@@ -1018,7 +1007,6 @@ use vars qw( @ISA %Lexicon );
 	'Commenters' => 'Commentateurs',
 	'Registered User' => 'Utilisateur enregistré',
 	'The approval could not be committed: [_1]' => 'L\'approbation ne peut être réalisée : [_1]',
-	'Userpic' => 'Image de l\'utilisateur',
 	'User Info' => 'Infos de l\'utilisateur',
 	'__ENTRY_COUNT' => 'Nombre de notes',
 	'Content Data Count' => 'Nombre de données de contenu',
@@ -1214,7 +1202,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error' => 'Erreur',
 	'Finished!' => 'Terminé !',
 	'General Settings' => 'Paramètres généraux',
-	'Compose Settings' => 'Paramètres d\'édition',
 	'These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.' => 'Ce ou ces paramètres sont invalidés par une valeur dans le fichier de configuration de MT : [_1]. Supprimez la valeur du fichier de configuration afin de la contrôler depuis cette page.',
 	'Feedback Settings' => 'Paramètres des feedbacks',
 	'Plugin Settings' => 'Paramètres des plugins',
@@ -1242,7 +1229,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Archive URL must be an absolute URL.' => 'Les URLs d\'archive doivent être des URLs absolues.',
 	'You did not specify an Archive Root.' => 'Vous n\'avez pas spécifié une racine d\'archive.',
 	'The number of revisions to store must be a positive integer.' => 'Le nombre de révisions à stocker doit être un entier positif.',
-	'Please choose a preferred archive type.' => 'Veuillez choisir le type d\'archive préférée.',
 	'Blog \'[_1]\' (ID:[_2]) deleted by \'[_3]\'' => 'Blog \'[_1]\' (ID:[_2]) supprimé par \'[_3]\'',
 	'Saving blog failed: [_1]' => 'Échec de la sauvegarde du blog : [_1]',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Erreur : Movable Type ne peut pas écrire dans le répertoire de cache de gabarits. Merci de vérifier les autorisations du répertoire <code>[_1]</code> situé dans le répertoire du blog.',
@@ -1315,7 +1301,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => 'Date invalide \'[_1]\'. La date de dépublication doit être postérieure à celle de publication.',
 	'Cannot load content_type #[_1]' => 'Impossible de charger le content_type #[_1]',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => 'Nouveau [_1] \'[_4]\' (ID:[_2]) ajouté par l\'utilisateur \'[_3]\'',
-	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_5]\' (ID:[_2]) édité et son status changé de [_3] à [_4] par l\'utilisateur \'[_5]\'',
+	'[_1] \'[_6]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_1] \'[_6]\' (ID:[_2]) édité et son status changé de [_3] à [_4] par l\'utilisateur \'[_5]\'',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) édité par l\'utilisateur \'[_3]\'',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_1] \'[_4]\' (ID:[_2]) supprimé par \'[_3]\'',
 	'Create new [_1]' => 'Créer un nouveau  [_1]',
@@ -1543,8 +1529,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Create Widget' => 'Créer un widget',
 	'Create Template' => 'Créer un gabarit',
 	'No Name' => 'Pas de nom',
-	'Index Templates' => 'Gabarits d\'index',
-	'Archive Templates' => 'Gabarits d\'archives',
 	'Content Type Templates' => 'Gabarits de type de contenu',
 	'Template Modules' => 'Modules de gabarits',
 	'System Templates' => 'Gabarits système',
@@ -1822,7 +1806,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid Content Data Ids: [_1] in "[_2]" field.' => 'Identifiants de données de contenu invalides : [_1] dans le champ "[_2]".',
 	'You must select a source content type.' => 'Vous devez sélectionner une source de type de contenu.',
 	'The source Content Type is not found in this site.' => 'La source de type de contenu est introuvable dans ce site.',
-	'There is no content type that can be selected. Please create new content type if you use Content Type field type.' => 'Aucun type de contenu sélectionnable. Veuillez créer un type de contenu afin d\'utiliser le type de champ de type de contenu.',
 
 ## lib/MT/ContentFieldType/Date.pm
 	'Invalid date \'[_1]\'; An initial date value must be in the format YYYY-MM-DD.' => 'Date invalide \'[_1]\'. Une valeur initiale de date doit avoir le format AAAA-MM-JJ.',
@@ -1965,7 +1948,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Legacy Quick Filter' => 'Filtre rapide d\'obsolescence',
 	'My Items' => 'Mes items',
 	'Log' => 'Journal',
-	'Activity Feed' => 'Flux d\'activité',
 	'Folder' => 'Répertoire',
 	'Member' => 'membre',
 	'Members' => 'Membres',
@@ -2039,7 +2021,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Publish Entries' => 'Publier les notes',
 	'Send Notifications' => 'Envoyer des notifications',
 	'Set Publishing Paths' => 'Régler les chemins de publication',
-	'View Activity Log' => 'Afficher le journal d\'activité',
 	'Manage Category Set' => 'Gérer les groupes de catégories',
 	'Upload File' => 'Télécharger un fichier',
 	'Create Child Sites' => 'Créer des sites enfants',
@@ -2143,8 +2124,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid encoding: [_1]' => 'Paramètre "encoding" invalide [_1]',
 	'Invalid convert_breaks: [_1]' => 'Paramètre "convert_breaks" invalide [_1]',
 	'Invalid default_cat_id: [_1]' => 'Paramètre "default_cat_id" invalide [_1]',
-	'An error occurred during the import process: [_1]. Please check your import file.' => 'Une erreur s\'est produite pendant le processus: [_1]. Merci de vérifier le fichier d\'import.',
-	'Make sure that you remove the files that you imported from the \'import\' folder, so that if/when you run the import process again, those files will not be re-imported.' => 'Assurez vous d\'avoir bien enlevé les fichiers importés du répertoire \'import\', pour éviter une ré-importation des mêmes fichiers à l\'avenir.',
 	'A resource "[_1]" is required.' => 'Une ressource "[_1]" est requise.',
 	'Could not found archive template for [_1].' => 'Impossible de trouver un gabarit d\'archive pour [_1].',
 	'Preview data not found.' => 'Données de prévisualisation introuvables.',
@@ -2624,7 +2603,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Actions' => 'Actions',
 	q{The entered message is displayed as a input field hint.} => q{Le message renseigné est affiché comme aide du champ d'entrée.},
 	'Is this field required?' => 'Ce champ est-il requis ?',
-	q{Display Options} => q{Options d'affichage},
 	q{Choose the display options for this content field in the listing screen.} => q{Choisissez les options d'affichage pour ce champ de contenu dans la liste affichée.},
 	'Force' => 'Forcer',
 	'Default' => 'Défaut',
@@ -3136,7 +3114,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## mt-static/addons/Cloud.pack/js/cms.js
 	'Continue' => 'Continuer',
-	'You have unsaved changes to this page that will be lost.' => 'Certains de vos changements dans cette page n\'ont pas été enregistrés, ils seront perdus.',
 
 ## mt-static/addons/Sync.pack/js/cms.js
 
@@ -3224,7 +3201,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Plugin Actions' => 'Actions du plugin',
 
 ## mt-static/js/listing/tag/list-actions-for-pc.tag
-	'More actions...' => 'Plus d\'actions...',
 
 ## mt-static/js/listing/tag/list-actions.tag
 
@@ -3281,7 +3257,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'unlock' => 'déverrouiller',
 	'to mark as spam' => 'pour classer comme spam',
 	'to remove spam status' => 'pour retirer le statut de spam',
-	'Enter email address:' => 'Saisissez l\'adresse e-mail :',
 	'Enter URL:' => 'Saisissez l\'URL :',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\'?' => 'Le tag \'[_2]\' existe déjà. Voulez-vous vraiment fusionner \'[_1]\' avec \'[_2]\' ?',
 	'The tag \'[_2]\' already exists. Are you sure you want to merge \'[_1]\' with \'[_2]\' across all weblogs?' => 'Le tag \'[_2]\' existe déjà. Voulez-vous vraiment fusionner \'[_1]\' avec \'[_2]\' sur tous les blogs ?',
@@ -4202,7 +4177,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{Warning: Changing the archive URL can result in breaking all links in your [_1].} => q{Attention : modifier l'URL de l'archive peut casser les liens de votre [_1].},
 	q{The URL of the archives section of your child site. Example: http://www.example.com/blog/archives/} => q{L'URL de la section des archives de votre site enfant. Exemple : http://www.example.com/blog/archives/},
 	q{The URL of the archives section of your site. Example: http://www.example.com/archives/} => q{L'URL de la section des archives de votre site. Exemple : http://www.example.com/archives/},
-	q{Archive Root} => q{Racine de l'archive},
 	q{Warning: Changing the archive path can result in breaking all links in your [_1].} => q{Attention : modifier le chemin de l'archive peut casser tous les liens de votre [_1].},
 	q{The path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog} => q{Le chemin où les fichiers d'index de votre section des archives seront publiés. Ne pas terminer par '/' ou '\''. Exemple : /home/mt/public_html/blog ou C:\www\public_html\blog},
 	q{The path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html} => q{Le chemin où les fichiers d'index de votre section des archives seront publiés. Un chemin absolu (commençant par '/' pour Linux ou 'C:\' pour Windows) est conseillé.  Ne pas terminer par '/' ou '\'. Exemple : /home/mt/public_html ou C:\www\public_html},
@@ -4289,7 +4263,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'(No role selected)' => '(aucun role sélectionné)',
 	'Select roles' => 'Sélectionnez des rôles',
 	q{Authentication Methods} => q{Méthode d'authentification},
-	q{The Perl module required for OpenID commenter authentication (Digest::SHA1) is missing.} => q{Le module Perl nécessaire pour l'authentification OpenID (Digest::SHA1) est manquant.},
 	q{Please select authentication methods to accept comments.} => q{Veuillez sélectionner les méthodes d'authorisation acceptées pour les commentaires.},
 	q{One or more Perl modules may be missing to use this authentication method.} => q{Un ou plusieurs modules Perl manquent peut-être pour utiliser cette méthode d'authentification.},
 
@@ -6203,7 +6176,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	q{To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page} => q{Pour créer un nouveau fichier de configuration avec l'assistant, supprimez le fichier de configuration actuel puis rechargez cette page},
 
 ## addons/Cloud.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Cloud Services' => 'Services Cloud',
 	'Basic Authentication' => 'Authentification basique',
 	'Redirect' => 'Redirection',
@@ -6398,7 +6370,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Are you sure you want restore from selected backup file?' => 'Voulez-vous vraiment restaurer depuis le fichier de sauvegarde sélectionné ?',
 
 ## addons/Commercial.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Professionally designed, well-structured and easily adaptable web site. You can customize default pages, footer and top navigation easily.' => 'Site au design professionnel, bien structuré et facilement adaptable. Vous pouvez personnaliser les pages par défaut, le pied de page et la navigation principale aisément.',
 	q{_PWT_ABOUT_BODY} => q{
 <p><strong>Remplacez par vos propres informations. </strong></p>
@@ -6751,7 +6722,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'This module is required in order to use the LDAP Authentication.' => 'Ce module est nécessaire pour utiliser l\'identification LDAP.',
 
 ## addons/Enterprise.pack/config.yaml
-	'https://www.sixapart.com/movabletype/' => 'https://www.movabletype.com/',
 	'Advanced Pack' => 'Advanced Pack',
 	'Oracle Database (Recommended)' => 'Base de données Oracle (Recommendé)',
 	'Microsoft SQL Server Database' => 'Base de données Microsoft SQL Server',
@@ -6808,7 +6778,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Invalid number of columns for [_1]' => 'Nombre de colonnes invalide pour [_1]',
 	'Invalid user name: [_1]' => 'Identifiant invalide : [_1]',
 	'Invalid display name: [_1]' => 'Nom d\'affichage invalide : [_1]',
-	'Invalid email address: [_1]' => 'Adresse email invalide : [_1]',
 	'Invalid password: [_1]' => 'Mot de passe invalide : [_1]',
 	'A user with the same name was found.  The registration was not processed: [_1]' => 'Un utilisateur avec le même nom a été trouvé. L\'entregistrement n\'a pas été effectué : [_1]',
 	'Permission granted to user \'[_1]\'' => 'Permission accordée à l\'utilisateur \'[_1]\'',
@@ -6978,10 +6947,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Error switching directory.' => 'Erreur au changement de répertoire.',
 	'Synchronization([_1]) with an external server([_2]) has been successfully finished.' => 'La synchronisation ([_1]) avec un serveur externe ([_2]) s\'est terminée avec succès.',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Impossible de synchroniser ([_1]) avec un serveur externe ([_2]).',
-	'FTP Server' => 'Serveur FTP',
-	'Port' => 'Port',
-	'Start Directory' => 'Répertoire de départ',
-	'Rsync Destination' => 'Destination rsync',
 	'Rsync Additional Options' => 'Options rsync aditionnelles',
 	'Synchronization has successfully finished.' => 'La synchronisation s\'est correctement terminée.',
 	'  tried [_1] times but failed. ([_2]): [_3]' => '  [_1] tentatives en échec. ([_2]) : [_3]',
@@ -7000,12 +6965,9 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Sync setting is not specified.' => 'Réglage de synchronisation manquant.',
 	'Invalid email address: [_1]' => 'Adresse e-mail invalide : [_1]',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Erreur d\'envoi d\'e-mail ([_1]). Tentez avec un autre paramètre MailTransfer.',
-	'Sync Type' => 'Type de synchronisation',
 	'Sync Result' => 'Résultat de synchronisation',
 	'*Sync setting deleted*' => '*Paramètre de synchronisation supprimé*',
 	'Parallel' => 'Parallèle',
-	'FTP' => 'FTP',
-	'Rsync' => 'Rsync',
 	'Are you sure you want to reset the sync log?' => 'Voulez-vous vraiment réinitialiser le log de synchronisation ?',
 	'Start Time' => 'Horaire de démarrage',
 	'Start Date' => 'Date de démarrage',
@@ -7130,8 +7092,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## plugins/Comments/config.yaml
 	'Provides Comments.' => 'Fournit des commentaires.',
-	'Mark as Spam' => 'Considérer comme spam',
-	'Remove Spam status' => 'Ne plus considérer comme spam',
 	'Unpublish Comment(s)' => 'Annuler la publication de ce (ou ces) commentaire(s)',
 	'Trust Commenter(s)' => 'Donner le statut fiable à ce commentateur',
 	'Untrust Commenter(s)' => 'Retirer le statut fiable à ce commentateur',
@@ -7202,8 +7162,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## plugins/Comments/lib/Comments/CMS/Search.pm
 
 ## plugins/Comments/lib/Comments/Import.pm
-	'Creating new comment (from \'[_1]\')...' => 'Création d\'un nouveau commentaire (de \'[_1]\')...',
-	'Saving comment failed: [_1]' => 'Échec de la sauvegarde du commentaire : [_1]',
 
 ## plugins/Comments/lib/Comments.pm
 	'Search for other comments from anonymous commenters' => 'Chercher d\'autres commentaires anynomes',
@@ -7212,8 +7170,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'(Deleted)' => '(supprimé)',
 	'Edit this [_1] commenter.' => 'Supprimer ce commentateur [_1]',
 	'Comments on [_1]: [_2]' => 'Commentaires sur [_1] : [_2]',
-	'Not spam' => 'Non spam',
-	'Reported as spam' => 'Notifié comme spam',
 	'All comments by [_1] \'[_2]\'' => 'Tous les commentaires par [_1] \'[_2]\'',
 	'__COMMENTER_APPROVED' => 'Approuvé',
 	'Moderator' => 'Modérateur',
@@ -7265,7 +7221,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Comment text is required.' => 'Le texte de commentaire est requis.',
 	'Registration is required.' => 'L\'inscription est requise.',
 	'Name and E-mail address are required.' => 'Le nom et l\'adresse e-mail sont requis.',
-	'Invalid URL \'[_1]\'' => 'URL invalide \'[_1]\'',
 	'Comment save failed with [_1]' => 'La sauvegarde du commentaire a échoué [_1]',
 	'Comment on "[_1]" by [_2].' => 'Commentaire sur « [_1] » par [_2].',
 	'Failed comment attempt by pending registrant \'[_1]\'' => 'Tentative de commentaire échoué par utilisateur  \'[_1]\' en cours d\'inscription',
@@ -7290,9 +7245,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'You cannot create a comment for an unpublished entry.' => 'Vous ne pouvez pas créer un commentaire sur une note non publiée.',
 	'You cannot reply to unpublished comment.' => 'Vous ne pouvez pas répondre à un commentaire non publié.',
 	'Comment (ID:[_1]) by \'[_2]\' deleted by \'[_3]\' from entry \'[_4]\'' => 'Commentaire (ID:[_1]) de \'[_2]\' supprimé par \'[_3]\' de la note \'[_4]\'',
-	'You do not have permission to approve this trackback.' => 'Vous n\'avez pas la permission d\'approuver ce TrackBack.',
-	'The entry corresponding to this comment is missing.' => 'La note correspondante à ce commentaire est manquante.',
-	'You do not have permission to approve this comment.' => 'Vous n\'avez pas la permission d\'approuver ce commentaire.',
 	'Orphaned comment' => 'Commentaire orphelin',
 
 ## plugins/Comments/lib/MT/DataAPI/Endpoint/Comment.pm
@@ -7313,14 +7265,12 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## plugins/Comments/php/function.mtcommentreplytolink.php
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/from_object.yaml
-	'Image photo' => 'Photo image',
 
 ## plugins/Comments/t/211-api-resource-objects.d/asset/to_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/from_object.yaml
 
 ## plugins/Comments/t/211-api-resource-objects.d/category/to_object.yaml
-	'Original Test' => 'Test original',
 
 ## plugins/Comments/t/211-api-resource-objects.d/entry/from_object.yaml
 
@@ -7358,7 +7308,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Gérer le texte formaté',
-	'Boilerplate' => 'Texte formaté',
 
 ## plugins/FormattedTextForTinyMCE/config.yaml
 	'Add the "Insert Boilerplate" button to the TinyMCE.' => 'Ajoute le bouton "Insérer du texte formaté" à TinyMCE.',
@@ -7367,7 +7316,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'Cannot load boilerplate.' => 'Impossible de charger le texte formaté.',
 
 ## plugins/FormattedTextForTinyMCE/tmpl/extension.tmpl
-	'Boilerplate' => 'Texte formaté',
 	'Select a Boilerplate' => 'Sélectionnez un texte formaté',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
@@ -7383,7 +7331,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## plugins/FormattedText/lib/FormattedText/DataAPI/Endpoint/v2/FormattedText.pm
 
 ## plugins/FormattedText/lib/FormattedText/FormattedText.pm
-	'The boilerplate \'[_1]\' is already in use in this blog.' => 'Le texte formaté \'[_1]\' est déjà utilisé sur ce blog.',
 
 ## plugins/FormattedText/tmpl/cms/edit_formatted_text.tmpl
 	'Edit Boilerplate' => 'Éditer le texte formaté',
@@ -7436,7 +7383,6 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 ## plugins/Loupe/lib/Loupe/App.pm
 	q{Loupe settings has been successfully. You can send invitation email to users via <a href="[_1]">Loupe Plugin Settings</a>.} => q{Le paramétrage de Loupe est correct. Vous pouvez envoyer un e-mail d'invitation via les <a href="[_1]">réglages du plugin Loupe</a>.},
 	'Error saving Loupe settings: [_1]' => 'Impossible de sauvegarder les réglages de Loupe : [_1]',
-	'Send invitation email' => 'Envoyer un e-mail d\'invitation',
 	'Could not send a invitation mail because Loupe is not enabled.' => 'Impossible d\'envoyer un e-mail d\'invitation car Loupe n\'est pas activée.',
 	'Welcome to Loupe' => 'Bienvenue sur Loupe',
 
@@ -7714,8 +7660,6 @@ atégorie \'[_4]\'',
 	'Source URL' => 'URL Source',
 
 ## plugins/Trackback/lib/Trackback/Import.pm
-	'Creating new ping (\'[_1]\')...' => 'Création d\'un nouveau ping (\'[_1]\')...',
-	'Saving ping failed: [_1]' => 'Échec de la sauvegarde du ping : [_1]',
 
 ## plugins/Trackback/lib/Trackback.pm
 	'<a href="[_1]">Ping from: [_2] - [_3]</a>' => '<a href="[_1]">Ping de : [_2] - [_3]</a>',

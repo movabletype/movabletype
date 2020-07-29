@@ -623,12 +623,17 @@ sub _get_normal_ids_for_reference_fields {
                 MT->model('content_field_index')->join_on(
                     undef,
                     { content_data_id => \'= cd_id' },
-                    {   join =>
+                    {   joins => [
                             MT->model( $type_registry->{search_class} )
                             ->join_on(
                             undef,
                             [ { id => \'= cf_idx_value_integer' }, \@terms, ],
                             ),
+                            MT->model('content_field')->join_on(
+                                undef,
+                                { id => \'= cf_idx_content_field_id', type => $type },
+                            ),
+                        ],
                     },
                 ),
             ],
