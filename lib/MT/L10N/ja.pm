@@ -1836,6 +1836,7 @@ use vars qw( @ISA %Lexicon );
 	'(No label)' => '(ラベルなし)',
 	'Identifier' => '識別子',
 	'Link' => 'リンク',
+	'Cannot load content field data_type [_1]' => 'コンテンツフィールド ([_1]) のdata_typeが見つかりません',
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'コンテンツフィールド',

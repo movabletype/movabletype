@@ -1086,16 +1086,22 @@ sub make_list_props {
                             or die MT->translate(
                             'Cannot load content field #[_1]',
                             $ct->data_label );
+                        
+                        my $data_type = eval {
+                            MT->registry('content_field_types')->{ $cf->type }
+                              ->{data_type};
+                        }
+                          or die MT->translate(
+                            'Cannot load content field data_type [_1]',
+                            $ct->data_label );
 
                         $db_args->{joins} ||= [];
                         push @{ $db_args->{joins} },
                             MT->model('content_field_index')->join_on(
                             undef,
-                            [   { content_data_id => \'= cd_id' },
-                                [   { value_varchar => $query },
-                                    '-or',
-                                    { value_text => $query },
-                                ],
+                            [   
+                                { content_data_id => \'= cd_id' },
+                                { "value_$data_type" => $query },
                             ],
                             {   join => MT->model('content_field')->join_on(
                                     undef,
