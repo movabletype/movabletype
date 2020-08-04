@@ -1087,13 +1087,7 @@ sub make_list_props {
                             'Cannot load content field #[_1]',
                             $ct->data_label );
                         
-                        my $data_type = eval {
-                            MT->registry('content_field_types')->{ $cf->type }
-                              ->{data_type};
-                        }
-                          or die MT->translate(
-                            'Cannot load content field data_type [_1]',
-                            $ct->data_label );
+                        my $data_type = $cf->data_type;
 
                         $db_args->{joins} ||= [];
                         push @{ $db_args->{joins} },
