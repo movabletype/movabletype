@@ -38,10 +38,8 @@ YAML
 use MT::Test;
 use MT::Test::App;
 
-$test_env->prepare_fixture('db_data');
-
-## force save config
-MT->instance->config->save_config;
+## Explicitly ->init_data to include plugin setting
+$test_env->prepare_fixture( sub { MT::Test->init_db; MT::Test->init_data } );
 
 my $admin = MT::Author->load(1);
 
