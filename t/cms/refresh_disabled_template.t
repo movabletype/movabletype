@@ -40,6 +40,9 @@ use MT::Test::App;
 
 $test_env->prepare_fixture('db_data');
 
+## force save config
+MT->instance->config->save_config;
+
 my $admin = MT::Author->load(1);
 
 my $test_template = template_is_ok();
