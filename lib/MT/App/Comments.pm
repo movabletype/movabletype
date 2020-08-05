@@ -1894,7 +1894,7 @@ sub do_preview {
         else {
             my $return_url = $app->param('return_url') || '';
             return $app->errtrans("Invalid request")
-                unless $app->is_valid_redirect_target($return_url);
+                if $return_url && !$app->is_valid_redirect_target($return_url);
 
             $ctx->stash( 'error_message', $err );
             $tmpl->context($ctx);
