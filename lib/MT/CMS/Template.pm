@@ -2920,7 +2920,6 @@ sub refresh_individual_templates {
     }
     $tmpl_list ||= MT::DefaultTemplates->templates();
 
-    my $tmpl_types        = {};
     my $tmpl_ids          = {};
     my $tmpls             = {};
     my $current_component = MT->app->{component};
@@ -2932,14 +2931,7 @@ sub refresh_individual_templates {
         MT->app->{component} = $current_component;
         $tmpl_ids->{ $tmpl->{identifier} } = $tmpl
             if $tmpl->{identifier};
-        if ( $tmpl->{type}
-            !~ m/^(archive|individual|page|category|index|custom|widget)$/ )
-        {
-            $tmpl_types->{ $tmpl->{type} } = $tmpl;
-        }
-        else {
-            $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
-        }
+        $tmpls->{ $tmpl->{type} }{ $tmpl->{name} } = $tmpl;
     }
     $app->set_language($user_lang);
 
@@ -2962,7 +2954,6 @@ sub refresh_individual_templates {
         my $val
             = (
             $tmpl->identifier ? $tmpl_ids->{ $tmpl->identifier() } : undef )
-            || $tmpl_types->{ $tmpl->type() }
             || $tmpls->{ $tmpl->type() }{ $tmpl->name };
         if ( !$val ) {
             push @msg,
