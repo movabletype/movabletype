@@ -159,6 +159,15 @@ sub write_config {
     $self->_write_config;
 }
 
+sub config {
+    my $self = shift;
+    if (@_ == 1) {
+        my $key = shift;
+        return $self->{_config}{$key};
+    }
+    $self->{_config};
+}
+
 sub _write_config {
     my $self = shift;
 
