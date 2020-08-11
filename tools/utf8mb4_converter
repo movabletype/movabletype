@@ -74,9 +74,10 @@ for my $table (@$tables) {
         $modify .= " NOT NULL" if $col->{Null} eq 'NO';
         push @alter_specs, $modify;
     }
-    push @alter_specs, "CONVERT TO CHARSET utf8mb4 COLLATE $collate";
-
     $dbh->do( "ALTER TABLE $table " . join( ",", @alter_specs ) ) ;
+
+    ## split overall conversion (MariaDB keeps mediumtext, but MySQL converts it to longtext)
+    $dbh->do( "ALTER TABLE $table CONVERT TO CHARSET utf8mb4 COLLATE $collate");
     if ($verbose) {
         print "Altered '$table'\n";
     }

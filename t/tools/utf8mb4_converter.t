@@ -14,6 +14,8 @@ BEGIN {
     $test_env->skip_unless_mysql_version_is_greater_than('5.7');
 }
 
+plan skip_all => "Already utf8mb4" if $test_env->mysql_db_charset eq 'utf8mb4';
+
 $test_env->prepare_fixture('db_data');
 
 use MT;
