@@ -11,7 +11,7 @@ BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 
-    $test_env->skip_unless_mysql_version_is_greater_than('5.5');
+    $test_env->skip_unless_mysql_version_is_greater_than('5.7');
 }
 
 $test_env->prepare_fixture('db_data');
