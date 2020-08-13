@@ -34,7 +34,11 @@ sub prepare {
 
 sub prepare_author {
     my ( $class, $spec, $objs ) = @_;
-    return unless $spec->{author};
+    if ( !$spec->{author} ) {
+        my $author = MT::Author->load(1) or croak "No author";
+        $objs->{author_id} = $author->id;
+        return;
+    }
 
     my @author_names;
     if ( ref $spec->{author} eq 'ARRAY' ) {
