@@ -37,10 +37,10 @@ my $objs = MT::Test::Fixture->prepare(
         ],
         content_type => {
             news => [
-                cf_text => 'multiple_line_text',
+                cf_text => 'multi_line_text',
             ],
             topics => [
-                cf_text => 'multiple_line_text',
+                cf_text => 'multi_line_text',
             ],
         },
         content_data => {
