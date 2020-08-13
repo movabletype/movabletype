@@ -277,8 +277,7 @@ sub prepare_entry {
                 %arg = %$item;
                 if ( my $author_name = delete $arg{author} ) {
                     my $author = $objs->{author}{$author_name}
-                        or croak
-                        "unknown author: $author_name: entry: $arg{title}";
+                        or croak "unknown author: $author_name: entry: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
                 $arg{author_id} ||= $objs->{author_id};
@@ -296,7 +295,7 @@ sub prepare_entry {
             else {
                 %arg = ( title => $item );
             }
-            my $title = $arg{title} || '(no title)';
+            my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
             my $blog_id = $arg{blog_id} || $objs->{blog_id}
@@ -335,8 +334,7 @@ sub prepare_page {
                 %arg = %$item;
                 if ( my $author_name = delete $arg{author} ) {
                     my $author = $objs->{author}{$author_name}
-                        or croak
-                        "unknown author: $author_name: page: $arg{title}";
+                        or croak "unknown author: $author_name: page: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
                 $arg{author_id} ||= $objs->{author_id};
@@ -405,8 +403,7 @@ sub prepare_category_set {
                         %arg = %$item;
                         if ( my $parent_name = $arg{parent} ) {
                             my $parent = $categories{$parent_name}
-                                or croak
-                                "unknown parent category: $parent_name";
+                                or croak "unknown parent category: $parent_name";
                             $arg{parent} = $parent->id;
                         }
                     }
@@ -588,11 +585,8 @@ sub prepare_content_data {
                 if ( $arg{convert_breaks} ) {
                     my %convert_breaks;
                     for my $cf_name ( keys %{ $arg{convert_breaks} } ) {
-                        my $cf
-                            = $objs->{content_type}{$ct_name}{content_field}
-                            {$cf_name}
-                            or croak
-                            "content_field is required: content_data: $cf_name";
+                        my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name}
+                            or croak "unknown content_field: $cf_name: content_data: $name";
                         $convert_breaks{ $cf->id }
                             = $arg{convert_breaks}{$cf_name};
                     }
@@ -619,8 +613,7 @@ sub prepare_template {
 
     if ( ref $spec->{template} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{template} } ) {
-            my %arg
-                = ref $item eq 'HASH' ? %$item : ( archive_type => $item );
+            my %arg          = ref $item eq 'HASH' ? %$item : ( archive_type => $item );
             my $archive_type = delete $arg{archive_type};
             my $archiver;
             if ($archive_type) {
@@ -651,8 +644,7 @@ sub prepare_template {
 
             ## Remove (to replace) if a template identifier is specified
             if ( $arg{identifier} ) {
-                MT::Template->remove(
-                    { blog_id => $blog_id, identifier => $arg{identifier} },
+                MT::Template->remove( { blog_id => $blog_id, identifier => $arg{identifier} },
                     { nofetch => 1 } );
             }
 
@@ -676,8 +668,7 @@ sub prepare_template {
                 $map->{archive_type} = $archive_type;
 
                 if ( my $cat_field_name = delete $map->{cat_field} ) {
-                    my @cat_fields = grep { $_->{type} eq 'categories' }
-                        @{ $ct->fields };
+                    my @cat_fields = grep { $_->{type} eq 'categories' } @{ $ct->fields };
                     my ($cat)
                         = grep { $_->{name} eq $cat_field_name } @cat_fields;
 
