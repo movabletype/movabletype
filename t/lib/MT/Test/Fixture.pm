@@ -281,6 +281,7 @@ sub prepare_entry {
                         "unknown author: $author_name: entry: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
+                $arg{author_id} ||= $objs->{author_id};
                 if ( my $blog_name = delete $arg{blog} ) {
                     my $blog = $objs->{blog}{$blog_name}
                         or croak "unknown blog: $blog_name";
@@ -338,6 +339,7 @@ sub prepare_page {
                         "unknown author: $author_name: page: $arg{title}";
                     $arg{author_id} = $author->id;
                 }
+                $arg{author_id} ||= $objs->{author_id};
                 if ( my $blog_name = delete $arg{blog} ) {
                     my $blog = $objs->{blog}{$blog_name}
                         or croak "unknown blog: $blog_name";
@@ -537,7 +539,8 @@ sub prepare_content_data {
                         or croak "author is required: content_data: $name";
                     $arg{author_id} = $author->id;
                 }
-                $arg{blog_id} ||= $objs->{blog_id}
+                $arg{author_id} ||= $objs->{author_id};
+                $arg{blog_id}   ||= $objs->{blog_id}
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name;
 
