@@ -79,7 +79,7 @@ sub load_envfile {
             chomp;
             next if /^#/;
             s/(?:^\s*|\s*$)//g;
-            my ($key, $value) = split /\s*=\s*/;
+            my ($key, $value) = split /\s*=\s*/, 2;
             $ENV{uc $key} = $value;
         }
     }
