@@ -15,6 +15,8 @@ sub prepare {
     $class->prepare_author( $spec, \%objs );
     $class->prepare_website( $spec, \%objs );
     $class->prepare_blog( $spec, \%objs );
+    $class->prepare_image( $spec, \%objs );
+    $class->prepare_tag( $spec, \%objs );
     $class->prepare_category( $spec, \%objs );
     $class->prepare_customfield( $spec, \%objs );
     $class->prepare_entry( $spec, \%objs );
@@ -91,6 +93,69 @@ sub prepare_blog {
     }
     elsif ( @blog_names == 1 ) {
         $objs->{blog_id} = $objs->{blog}{ $blog_names[0] }->id;
+    }
+}
+
+sub prepare_image {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{image};
+
+    require MT::Test::Image;
+    require Image::ExifTool;
+    require File::Path;
+
+    my $image_dir = "$ENV{MT_TEST_ROOT}/images";
+    File::Path::mkpath($image_dir) unless -d $image_dir;
+
+    if ( ref $spec->{image} eq 'HASH' ) {
+        for my $name ( sort keys %{ $spec->{image} } ) {
+            my $item = $spec->{image}{$name};
+            if ( ref $item eq 'HASH' ) {
+                my $blog_id = $item->{blog_id} || $objs->{blog_id}
+                    or croak "blog_id is required: image";
+                my $file = "$image_dir/$name";
+                MT::Test::Image->write( file => $file );
+                my $info = Image::ExifTool::ImageInfo($file);
+                my %args = (
+                    class        => 'image',
+                    blog_id      => $blog_id,
+                    url          => "%s/images/$name",
+                    file_path    => $file,
+                    file_ext     => $info->{FileTypeExtension},
+                    image_width  => $info->{ImageWidth},
+                    image_height => $info->{ImageHeight},
+                    mime_type    => $info->{MIMEType},
+                    %$item,
+                );
+
+                if ( my $parent_name = delete $args{parent} ) {
+                    my $parent = $objs->{image}{$parent_name}
+                        or croak "unknown parent image: $parent_name";
+                    $args{parent} = $parent->id;
+                }
+                my $image = MT::Test::Permission->make_asset(%args);
+                $objs->{image}{$name} = $image;
+            }
+        }
+    }
+}
+
+sub prepare_tag {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{tag};
+
+    if ( ref $spec->{tag} eq 'ARRAY' ) {
+        for my $item ( @{ $spec->{tag} } ) {
+            my %arg;
+            if ( ref $item eq 'HASH' ) {
+                %arg = %$item;
+            }
+            else {
+                %arg = ( name => $item );
+            }
+            my $tag = MT::Test::Permission->make_tag(%arg);
+            $objs->{tag}{ $tag->name } = $tag;
+        }
     }
 }
 
