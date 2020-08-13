@@ -80,7 +80,12 @@ sub prepare_website {
 
 sub prepare_blog {
     my ( $class, $spec, $objs ) = @_;
-    return unless $spec->{blog};
+    if ( !$spec->{blog} ) {
+        if ( my $blog_id = $spec->{blog_id} ) {
+            $objs->{blog_id} = $blog_id;
+        }
+        return;
+    }
 
     my @blog_names;
     if ( ref $spec->{blog} eq 'ARRAY' ) {
