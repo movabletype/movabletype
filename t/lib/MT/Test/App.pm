@@ -127,7 +127,7 @@ sub request {
         if ( $message =~ /Compilation failed/ ) {
             BAIL_OUT $message;
         }
-        diag $message;
+        note $message;
     }
 
     $self->{res} = $res;
