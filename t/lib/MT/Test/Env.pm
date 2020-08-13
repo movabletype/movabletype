@@ -146,6 +146,11 @@ sub write_config {
             elsif ( ref $value eq 'ARRAY' ) {
                 push @{ $config{$key} }, @$value;
             }
+            elsif ( ref $value eq 'HASH' ) {
+                for my $k (sort keys %$value) {
+                    push @{ $config{$key} }, "$k=$value->{$k}";
+                }
+            }
             else {
                 $config{$key} = $extra->{$key};
             }
