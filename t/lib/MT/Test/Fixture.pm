@@ -9,7 +9,7 @@ use MT::Serialize;
 sub prepare {
     my ( $class, $spec ) = @_;
 
-    my $test_root = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
+    local $ENV{MT_TEST_ROOT} = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
 
     my %objs;
     $class->prepare_author( $spec, \%objs );
