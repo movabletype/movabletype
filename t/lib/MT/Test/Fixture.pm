@@ -91,6 +91,10 @@ sub prepare_blog {
     if ( ref $spec->{blog} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{blog} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+            if ( my $parent_name = delete $arg{parent} ) {
+                my $parent = $objs->{website}{$parent_name} or croak "unknown parent: $parent_name";
+                $arg{parent_id} = $parent->id;
+            }
 
             my $blog = MT::Test::Permission->make_blog(%arg);
             $objs->{blog}{ $blog->name } = $blog;
