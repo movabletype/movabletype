@@ -50,6 +50,9 @@ if (-f $envfile) {
 
 sub new {
     my ( $class, %extra_config ) = @_;
+
+    $class->load_envfile;
+
     my $template = "MT_TEST_" . $$ . "_XXXX";
     my $root     = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
@@ -65,6 +68,21 @@ sub new {
     $self->write_config( \%extra_config );
 
     $self;
+}
+
+sub load_envfile {
+    my $class = shift;
+    my $envfile = "$MT_HOME/.mt_test_env";
+    if ( -f $envfile ) {
+        open my $fh, '<', $envfile or die $!;
+        while(<$fh>) {
+            chomp;
+            next if /^#/;
+            s/(?:^\s*|\s*$)//g;
+            my ($key, $value) = split /\s*=\s*/;
+            $ENV{uc $key} = $value;
+        }
+    }
 }
 
 sub config_file {
