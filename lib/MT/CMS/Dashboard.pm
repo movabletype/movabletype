@@ -1037,9 +1037,15 @@ sub site_list_widget {
             # Children
             for my $child ( @{ $blog->blogs } ) {
                 next
-                    unless $user->has_perm( $child->id )
-                    || $user->is_superuser
-                    || $user->permissions(0)->can_do('edit_templates');
+                  unless MT::Permission->count(
+                    {
+                        author_id => $user->id,
+                        blog_id   => $child->id,
+                    }
+                  )
+                  || $user->is_superuser
+                  || $user->permissions(0)->can_do('edit_templates');
+
                 my $row = $site_builder->($child);
                 push @sites, $row if $row;
             }
@@ -1050,9 +1056,14 @@ sub site_list_widget {
         if ( my @recent = @{ $user->favorite_sites || [] } ) {
             for my $site_id (@recent) {
                 next
-                    unless $user->has_perm($site_id)
-                    || $user->is_superuser
-                    || $user->permissions(0)->can_do('edit_templates');
+                  unless MT::Permission->count(
+                    {
+                        author_id   => $user->id,
+                        blog_id     => $site_id,
+                    }
+                  )
+                  || $user->is_superuser
+                  || $user->permissions(0)->can_do('edit_templates');
 
                 my $site = MT->model('website')->load($site_id);
                 next unless $site;
