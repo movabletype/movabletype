@@ -72,3 +72,4 @@ cover_db/
 
 /vendor/
 
+.mt_test_env
