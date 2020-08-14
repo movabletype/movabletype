@@ -819,8 +819,9 @@ sub site_list_widget {
     my $blog = $app->blog || undef;
 
     my $site_builder = sub {
-        my $site = shift;
-        return if !$user->is_superuser and !$user->permissions( $site->id );
+        my $site             = shift;
+        my $user_permissions = $user->permissions($site);
+        return if !$user->is_superuser and !$user_permissions;
 
         my $row;
 
@@ -832,29 +833,33 @@ sub site_list_widget {
         $row->{blog_id}  = $site->id;
 
         # Action link
-        $row->{can_edit_template}
-            = $user->is_superuser ? 1
-            : $user->permissions( $site->id )
-            ->can_do('access_to_template_list') ? 1
-            : 0;
-        $row->{can_edit_config}
-            = $user->is_superuser ? 1
-            : $user->permissions( $site->id )
-            ->can_do('open_blog_config_screen') ? 1
-            : 0;
+        $row->{can_edit_template} =
+            $user->is_superuser                                  ? 1
+          : $user_permissions->can_do('access_to_template_list') ? 1
+          :                                                        0;
+        $row->{can_edit_config} =
+            $user->is_superuser                                  ? 1
+          : $user_permissions->can_do('open_blog_config_screen') ? 1
+          :                                                        0;
 
         $row->{can_create_post} =
-            $user->is_superuser                                    ? 1
-          : $user->permissions( $site->id )->can_do('create_post') ? 1
-          :                                                          0;
+            $user->is_superuser                      ? 1
+          : $user_permissions->can_do('create_post') ? 1
+          :                                            0;
         $row->{can_access_to_entry_list} =
-            $user->is_superuser                                             ? 1
-          : $user->permissions( $site->id )->can_do('access_to_entry_list') ? 1
-          :                                                                   0;
+            $user->is_superuser                               ? 1
+          : $user_permissions->can_do('access_to_entry_list') ? 1
+          :                                                     0;
         $row->{can_manage_pages} =
-            $user->is_superuser                                     ? 1
-          : $user->permissions( $site->id )->can_do('manage_pages') ? 1
-          :                                                           0;
+            $user->is_superuser                       ? 1
+          : $user_permissions->can_do('manage_pages') ? 1
+          :                                             0;
+
+        if (   $row->{can_create_post} == 1
+            || $row->{can_access_to_entry_list} == 1 )
+        {
+            $row->{permitted_entry} = 1;
+        }
 
         # Recent post
         my $MAX_POSTS = 3;
@@ -993,18 +998,17 @@ sub site_list_widget {
         );
 
         while ( my $ct = $ct_iter->() ) {
-            my $perm = $user->permissions( $site->id );
             my $item;
             $item->{name} = $ct->name;
             $item->{can_create}
-                = $perm->can_do( "create_new_content_data_" . $ct->unique_id )
-                || $perm->can_do('create_new_content_data')
+                = $user_permissions->can_do( "create_new_content_data_" . $ct->unique_id )
+                || $user_permissions->can_do('create_new_content_data')
                 ? 1
                 : 0;
             $item->{can_list}
-                = $perm->can_do(
+                = $user_permissions->can_do(
                 "access_to_content_data_list_" . $ct->unique_id )
-                || $perm->can_do('access_to_content_data_list')
+                || $user_permissions->can_do('access_to_content_data_list')
                 ? 1
                 : 0;
             $item->{type_id}         = 'content_data_' . $ct->id;
