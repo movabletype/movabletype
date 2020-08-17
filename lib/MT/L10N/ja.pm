@@ -3849,11 +3849,13 @@ use vars qw( @ISA %Lexicon );
 	'Left' => '左',
 	'Center' => '中央',
 	'Right' => '右',
-	'Link to popup window' => 'ポップアップウィンドウへのリンク',
-	'Link image to full-size version in a popup window.' => 'ポップアップウィンドウで元の大きさの画像にリンクします。',
+	'Link from image' => '画像からのリンク',
+	'Link to original image' => 'オリジナル画像にリンクする',
 	'Save changes to these settings (s)' => '設定を保存 (s)',
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
+    'Display on the same screen' => '同じ画面に表示する',
+    'Display in popup' => 'ポップアップで表示する',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Spam Settings' => 'スパム設定',

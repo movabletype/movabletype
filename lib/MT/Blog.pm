@@ -96,6 +96,7 @@ __PACKAGE__->install_properties(
             'image_default_constrain'  => 'integer meta',
             'image_default_popup'      => 'integer meta',
             'commenter_authenticators' => 'string meta',
+            'image_default_link'      => 'integer meta',
             'require_typekey_emails'   => 'integer meta',
             'nofollow_urls'            => 'integer meta',
             'follow_auth_links'        => 'integer meta',
