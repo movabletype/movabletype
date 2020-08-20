@@ -14,6 +14,7 @@
         // min
         suffix = '.min';
     }
+    var cache_suffix = jQuery('script[src*="tinymce"]').attr("src").replace(/.*\?/, '');
 
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
@@ -106,6 +107,7 @@
             body_class: '',
             body_id: '',
             content_security_policy: "script-src 'none';",
+            cache_suffix: cache_suffix,
         }
     });
 
