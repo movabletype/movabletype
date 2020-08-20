@@ -12,6 +12,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use utf8;
 use Test::Base::Less;
 use MT::Util qw( html_text_transform );
 
@@ -621,3 +622,93 @@ c</p>
 
 <p><br />
 e</p>
+=== table tags (MTC-27461)
+--- input
+<table>
+<thead>
+<tr>
+<th>年月</th>
+<th align="right">時間</th>
+<th align="right">累計</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020年1月</td>
+<td align="right">1.7</td>
+<td align="right">1.7</td>
+</tr>
+</tbody>
+</table>
+--- expected
+<table>
+<thead>
+<tr>
+<th>年月</th>
+<th align="right">時間</th>
+<th align="right">累計</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020年1月</td>
+<td align="right">1.7</td>
+<td align="right">1.7</td>
+</tr>
+</tbody>
+</table>
+=== form tags (MTC-27461)
+--- input
+<form>
+<fieldset>
+<legend>legend</legend>
+<select>
+<optgroup label="foo">
+<option>opt1</option>
+<option>opt2</option>
+<option>opt3</option>
+</optgroup>
+</select>
+</fieldset>
+</form>
+--- expected
+<form>
+<fieldset>
+<legend>legend</legend>
+<select>
+<optgroup label="foo">
+<option>opt1</option>
+<option>opt2</option>
+<option>opt3</option>
+</optgroup>
+</select>
+</fieldset>
+</form>
+=== dl tags (MTC-27461)
+--- input
+<dl>
+<dt>title1</dt>
+<dd>foo
+bar</dd>
+<dt>title2</dt>
+<dd>baz</dd>
+<dl>
+--- expected
+<dl>
+<dt>title1</dt>
+<dd>foo<br />
+bar</dd>
+<dt>title2</dt>
+<dd>baz</dd>
+<dl>
+=== svg tags (MTC-27461)
+--- input
+<svg>
+<title>image</title>
+<use xlink:href="foo"></use>
+</svg>
+--- expected
+<svg>
+<title>image</title>
+<use xlink:href="foo"></use>
+</svg>
