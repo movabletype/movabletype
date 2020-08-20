@@ -700,9 +700,9 @@ sub _change_lf {
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
-    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style)!;
+    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style|article|aside|details|dialog|figcaption|figure|footer|header|hgroup|main|map|nav|section|template|thead|tfoot|tbody|tr|th|td|caption|colgroup|col|dt|dd|optgroup|legend|menuitem|option|param|summary|area|svg)!;
     $str =~ s/\r\n/\n/gs;
-    my $special_tags = qr!(?:script|style|pre)!;
+    my $special_tags = qr!(?:script|style|pre|svg)!;
     $str =~ s{(<!--.*?-->|<($special_tags).*?</\2)}{_change_lf($1)}ges;
     my @paras = split /\n\n/, $str;
     for my $i ( 0 .. @paras - 1 ) {
