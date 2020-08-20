@@ -14,6 +14,7 @@ if(jQuery('script[src*="tinymce.min"]').length){
     // min
     suffix = '.min';
 }
+var cache_suffix = jQuery('script[src*="tinymce"]').attr("src").replace(/.*\?/, '');
 
 $.extend(MT.Editor.TinyMCE, MT.Editor, {
     isMobileOSWYSIWYGSupported: function() {
@@ -122,7 +123,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
             {title: 'rank-5', value: 'rank-5'},
             {title: 'rank-6', value: 'rank-6'},
             {title: 'rank-7', value: 'rank-7'}
-        ]
+        ],
+        cache_suffix: cache_suffix
     }
 });
 
