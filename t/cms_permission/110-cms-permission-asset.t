@@ -1901,7 +1901,6 @@ subtest 'mode = add_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
@@ -1921,7 +1920,6 @@ subtest 'mode = add_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
@@ -1941,7 +1939,6 @@ subtest 'mode = add_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
@@ -1961,7 +1958,6 @@ subtest 'mode = add_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'add_tags',
             id                     => $asset->id,
             plugin_action_selector => 'add_tags',
         }
@@ -1998,7 +1994,6 @@ subtest 'mode = remove_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -2018,7 +2013,6 @@ subtest 'mode = remove_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -2038,7 +2032,6 @@ subtest 'mode = remove_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }
@@ -2058,7 +2051,6 @@ subtest 'mode = remove_tags' => sub {
             itemset_action_input => 'New Tag',
             return_args => '__mode%3Dlist_asset%26blog_id%3D' . $blog->id,
             blog_id     => $blog->id,
-            plugin_action_selector => 'remove_tags',
             id                     => $asset->id,
             plugin_action_selector => 'remove_tags',
         }

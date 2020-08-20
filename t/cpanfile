@@ -101,13 +101,15 @@ on 'test' => sub {
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
+    requires 'Perl::Critic::Pulp';
+    requires 'Perl::Critic::TooMuchCode';
     requires 'PHP::Serialization';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
     requires 'SQL::Maker';
-    requires 'SQL::Translator';
+    requires 'SQL::Translator', '1.61';   # changed comment generation
     requires 'String::CamelCase';
     requires 'Term::Encoding';
     requires 'Test::Base';
@@ -128,4 +130,5 @@ on 'test' => sub {
     requires 'Time::Piece';
     requires 'URI::Escape';
     requires 'Web::Query';
+    requires 'Web::Scraper';
 };

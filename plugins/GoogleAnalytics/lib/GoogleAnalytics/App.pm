@@ -149,7 +149,7 @@ sub config_tmpl {
     my $missing = undef;
     $missing = $app->translate(
         'A Perl module required for using Google Analytics API is missing: [_1].',
-        'Crypt::SSLeay'
+        'IO::Socket::SSL'
         )
         unless eval { require IO::Socket::SSL }
         || eval     { require Crypt::SSLeay };

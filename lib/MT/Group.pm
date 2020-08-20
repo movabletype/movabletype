@@ -849,7 +849,6 @@ sub member_list_props {
         },
         email => {
             base         => '__virtual.string',
-            col          => 'name',
             label        => 'Email',
             filter_label => 'Email Address',
             display      => 'none',

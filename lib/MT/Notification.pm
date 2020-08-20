@@ -56,7 +56,7 @@ sub list_props {
                 return qq{
                     <a href="javascript:void(0)" title="$title" class="edit-link note-email-link start-edit" id="note-email-link-$id" data-id="$id">$email</a>
                     <span id="note-email-field-$id" style="display: none">
-                    <input type="text" name="note-email-$id" id="note-email-$id" class="form-control text email" value="$email" />
+                    <input type="text" name="note-email-$id" id="note-email-$id" class="form-control text required email" value="$email" />
                     </span>
                 };
             },

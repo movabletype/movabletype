@@ -35,6 +35,7 @@ sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
     ok $res->is_success, "get succeeded";
+    $res;
 }
 
 sub post {
@@ -48,6 +49,7 @@ sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
     ok $res->is_success, "post succeeded";
+    $res;
 }
 
 sub post_form_ok {
@@ -60,6 +62,7 @@ sub post_form_ok {
 
     my $res = $self->post( $form->click );
     ok $res->is_success, "post succeeded";
+    $res;
 }
 
 sub forms {

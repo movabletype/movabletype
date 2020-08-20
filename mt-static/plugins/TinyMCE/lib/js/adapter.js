@@ -9,86 +9,48 @@
 
     MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
+    var suffix = '';
+    if(jQuery('script[src*="tinymce.min"]').length){
+        // min
+        suffix = '.min';
+    }
+    var cache_suffix = jQuery('script[src*="tinymce"]').attr("src").replace(/.*\?/, '');
+
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
             return false;
         },
         config: {
-            mode: "exact",
-            plugins: 'lists,media,paste,mt_fullscreen,mt,hr,link,textcolor,colorpicker,textpattern,fullscreen,compat3x,table',
+            plugins: 'lists,media,paste,hr,link,textpattern,fullscreen,table,quickbars',
+            external_plugins: {
+                'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
+                'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+            },
+  
             language: $('html').attr('lang'),
-            theme: "modern",
-            skin: 'lightgray',
             menubar: false,
             branding: false,
             forced_root_block: 'p',
             resize: true,
+            icons: 'mt',
+            icons_url: StaticURI + 'plugins/TinyMCE/lib/js/icons.js',
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
 
             // Buttons using in source mode.
-            plugin_mt_source_buttons1:'mt_source_bold,mt_source_italic,mt_source_blockquote,mt_source_unordered_list,mt_source_ordered_list,mt_source_list_item,|,mt_source_link,mt_insert_file,mt_insert_image,|,mt_fullscreen',
+            plugin_mt_source_buttons1:'mt_source_bold mt_source_italic mt_source_blockquote mt_source_unordered_list mt_source_ordered_list mt_source_list_item | mt_source_link mt_insert_file mt_insert_image | mt_fullscreen',
             // Buttons using in wysiwyg mode.
-            plugin_mt_wysiwyg_buttons1:'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink,|,mt_insert_html,mt_insert_file,mt_insert_image,|,table,',
-            plugin_mt_wysiwyg_buttons2:'undo,redo,|,forecolor,backcolor,removeformat,|,alignleft,aligncenter,alignright,indent,outdent,|,formatselect,|,mt_fullscreen',
+            plugin_mt_wysiwyg_buttons1:'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink | mt_insert_html mt_insert_file mt_insert_image | table',
+            plugin_mt_wysiwyg_buttons2:'undo redo | forecolor backcolor removeformat | alignleft aligncenter alignright indent outdent | formatselect | mt_fullscreen',
 
-            plugin_mt_wysiwyg_insert_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
-            plugin_mt_wysiwyg_selection_toolbar: 'bold,italic,underline,strikethrough,|,blockquote,bullist,numlist,hr,|,link,unlink',
+            plugin_mt_wysiwyg_selection_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
+            plugin_mt_wysiwyg_insert_toolbar: 'bold italic underline strikethrough | blockquote bullist numlist hr | link unlink',
 
-            plugin_mt_inlinepopups_window_sizes: {
-                'advanced/link.htm': {
-                    width: 350,
-                    height: 220
-                },
-                'advanced/color_picker.htm': {
-                    width: 370,
-                    height: 280,
-                    onload: function(context) {
-                        var $contents = $(context['iframe']).contents();
-
-                        $contents.find('a[onmouseover^=showColor]')
-                        .each(function() {
-                            var callback = this.onmouseover;
-                            $(this).on('click', function() {
-                                callback();
-                                return false;
-                            });
-                        })
-                        .attr('onmouseover', '')
-                        .attr('onfocus', '')
-                        .attr('href', 'javascript:;');
-                    }
-                },
-                'template/template.htm': {
-                    top: function() {
-                        var height = $(window).height() - 110,
-                        vp     = tinymce.DOM.getViewPort();
-                        return Math.round(Math.max(vp.y, vp.y + (vp.h / 2.0) - ((height+60) / 2.0)));
-                    },
-                    height: function() {
-                        return $(window).height() - 110;
-                    },
-                    onload: function(context) {
-                        var window = context['iframe'].contentWindow;
-                        var dialog = window.TemplateDialog;
-                        if (! dialog) {
-                            return;
-                        }
-                        var resize = dialog.resize;
-                        dialog.resize = function() {
-                            resize();
-
-                            var e = window.document.getElementById('templatesrc');
-                            if (e) {
-                                e.style.height =
-                                (parseInt(e.style.height, 10) - 30) + 'px';
-                            }
-                        };
-                        dialog.resize();
-                    }
-                }
-            },
+            toolbar1: '',
+            toolbar2: '',
+            quickbars_insert_toolbar: false,
+            quickbars_selection_toolbar: false,
 
             formats: {
                 strikethrough: [
@@ -135,20 +97,17 @@
 
             entity_encoding: 'raw',
             convert_urls: false,
-            media_strict: false,
             verify_html: false,
             valid_children: '+a[video|ul|time|table|svg|style|section|ruby|progress|pre|output|ol|noscript|nav|meter|meta|menu|mark|link|keygen|hr|hgroup|header|h6|h5|h4|h3|h2|h1|form|footer|figure|fieldset|embed|dl|div|dialog|details|datalist|command|canvas|blockquote|audio|aside|article|address|area]',
-            non_empty_elements: 'td,th,iframe,video,audio,object,script,img,area,base,basefont,br,col,frame,hr,img,input,isindex,link,meta,param,embed,source,wbr',
 
             cleanup: true,
-            dialog_type: 'modal',
 
             init_instance_callback: function(ed) {},
 
-            content_css: '',
             body_class: '',
             body_id: '',
             content_security_policy: "script-src 'none';",
+            cache_suffix: cache_suffix,
         }
     });
 
@@ -171,11 +130,13 @@
                 init_instance_callback.apply(this, arguments);
                 adapter._init_instance_callback.apply(adapter, arguments);
             };
-            config['elements'] = adapter.id;
+            config['selector'] = '#' + adapter.id;
 
-            config['content_css'] =
-            (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
-            .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+            if (adapter.commonOptions['content_css_list'].length > 0){
+                config['content_css'] =
+                ((config['content_css'] ? config['content_css'] + ',' : '') + adapter.commonOptions['content_css_list'].join(','))
+                .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+            }
             config['body_class'] =
             config['body_class'] + ' ' + adapter.commonOptions['body_class_list'].join(' ')
             if (! ('plugin_mt_tainted_input' in config)) {
@@ -189,10 +150,10 @@
             var text_format = $('[data-target=' + adapter.id+']').val();
             if( text_format == 'richtext'){
                 if ($('#'+adapter.id).attr('data-full_rich_text')) {
-                    config.theme = "modern";
+                    config.theme = "silver";
                     config.inline = false;
                 } else {
-                    config.theme = "inlite";
+                    config.theme = "silver";
                     config.inline = true;
                 }
             }
@@ -221,6 +182,9 @@
                         'overflow-x': 'auto',
                     });
                 }
+                config["quickbars_insert_toolbar"] = config["plugin_mt_wysiwyg_insert_toolbar"];
+                config["quickbars_selection_toolbar"] = config["plugin_mt_wysiwyg_selection_toolbar"];
+                config["verify_html"] = true;
             } else {
                 if( $('#' + adapter.id).prop('nodeName') == 'DIV') {
                     var div  = $('#' + adapter.id);
@@ -240,6 +204,13 @@
                         'max-width': '',
                         'overflow-x': '',
                     });
+                }
+                config["quickbars_insert_toolbar"] = false;
+                config["quickbars_selection_toolbar"] = false;
+                config["verify_html"] = false;
+
+                if(tinymce.Env.browser.isIE()){
+                    config["verify_html"] = true;
                 }
             }
             adapter.$editorTextarea = $('#' + adapter.id);
@@ -267,16 +238,6 @@
                     this.$editorTextarea
                     .insertAfter(this.$editorIframe)
                     .height(this.$editorIframe.height());
-                    if (! this.tinymce.queryCommandValue('mtFullScreenIsEnabled')) {
-                        var h = this.$editorIframe.height();
-                        this.$editorTextarea.data('base-height', h);
-                        if (tinyMCE.isIE) {
-                            this.$editorTextarea.data('base-height-adjustment', h);
-                        }
-                        else {
-                            this.$editorTextarea.data('base-height-adjustment', 0);
-                        }
-                    }
 
                     if (! calledInInit) {
                         this.ignoreSetDirty(function() {
@@ -297,9 +258,7 @@
             }
             else {
                 this.$editorIframe.height(this.$editorTextarea.innerHeight());
-                this.$editorTextarea
-                .data('base-height', null)
-                .prependTo(this.$editorTextareaParent);
+                this.$editorTextarea.prependTo(this.$editorTextareaParent);
 
                 this.ignoreSetDirty(function() {
                     this.tinymce.setContent(this.source.getContent());
@@ -385,7 +344,7 @@
         },
 
         domUpdated: function() {
-            var format = this.tinymce.execCommand('mtGetStatus')['format'];
+            var format = this.tinymce.queryCommandValue('mtGetStatus')['format'];
             try {
                 this.tinymce.remove();
             }
@@ -409,38 +368,28 @@
 
             ed.execCommand('mtSetProxies', adapter.proxies, null, {skip_focus: true});
 
-            var resizeTo = ed.theme.resizeTo;
-            ed.theme.resizeTo = function(width, height, store, isFullscreen) {
+            adapter.$editorIframe = $('#' + adapter.id + '_ifr');
+            adapter.$editorElement = adapter.$editorIframe;
+            adapter.$editorPathRow = $('#' + adapter.id + '_path_row');
+
+            ed.resizeTo = function(width, height, store, isFullscreen) {
                 if (isFullscreen) {
                     adapter.$editorTextarea.height(height);
                 }
                 else {
-                    var base       = adapter.$editorTextarea.data('base-height');
-                    var adjustment = adapter.$editorTextarea.data('base-height-adjustment');
-                    if (base) {
-                        adapter.$editorTextarea.height(base+height-adjustment);
-                        if (store) {
-                            adapter.$editorTextarea
-                            .data('base-height', base+height-adjustment);
-                        }
-                    }
+                    adapter.$editorIframe.parents('.tox-tinymce').height(height);
+                    adapter.$editorIframe.height(size['iframeHeight']);
                 }
-                resizeTo.apply(ed.theme, arguments);
             };
-
             var Cookie = tinymce.plugins.MovableType.Cookie;
             var size = Cookie.getHash("TinyMCE_" + ed.id + "_size");
-            if(size && !this.tinymce.inline)
-                ed.theme.resizeTo(size.cw, size.ch);
-
+            if(size)
+                ed.resizeTo(size.cw, size.ch);
 
             $('#' + adapter.id + '_tbl').css({
                 width: '100%'
             });
 
-            adapter.$editorIframe = $('#' + adapter.id + '_ifr');
-            adapter.$editorElement = adapter.$editorIframe;
-            adapter.$editorPathRow = $(ed.getContainer()).find('.mce-path');
             if(adapter.$editorIframe.length){
                 adapter.$editorIframeDoc = adapter.$editorIframe.get(0).contentWindow.document;
                 adapter.$editorIframeBody = jQuery('body', adapter.$editorIframeDoc);
@@ -483,7 +432,7 @@
 
             ed.addQueryValueHandler('mtGetEditorSize', function() {
                 return {
-                    iframeHeight: adapter.$editorIframe.height(),
+                    iframeHeight: adapter.$editorIframe.parents('.tox-tinymce').height(),
                     textareaHeight: adapter.$editorTextarea.height(),
                 };
             });
@@ -495,7 +444,8 @@
                 adapter.$editorIframe.height(size['iframeHeight']);
                 adapter.$editorTextarea.height(size['textareaHeight']);
                 adapter.$editorIframe.css({'width': '100%'});
-                adapter.$editorTextarea.css({'width': ''});
+                adapter.$editorTextarea.css({'width': '100%'});
+                adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight']);
             });
             var last_updated;
             ed.on('ResizeEditor', function(e){
@@ -504,16 +454,16 @@
                     return;
                 }
                 last_updated = now;
-                var height = adapter.$editorIframe.height();
+                var height = adapter.$editorIframe.parents('.tox-tinymce').height();
+
                 adapter.$editorTextarea.height(height);
                 var width = '100%';
                 var Cookie = tinymce.plugins.MovableType.Cookie;
-				Cookie.setHash("TinyMCE_" + ed.id + "_size", {
-					cw : width,
-					ch : height
-				});
+                Cookie.setHash("TinyMCE_" + ed.id + "_size", {
+                   cw : width,
+                   ch : height
+                 });
             });
-
         },
         reload: function(){
             if(this.tinymce) {

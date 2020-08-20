@@ -35,6 +35,7 @@ BEGIN {
                     'dbserver', 'dbname', 'dbuser', 'dbpass',
                     'dbport',   'dbsocket'
                 ],
+                recommended => 1,
             },
             'postgres' => {
                 label          => 'PostgreSQL Database',
@@ -195,7 +196,7 @@ BEGIN {
             cf        => ['content_field'],
             cf_idx    => ['content_field_index'],
             ipbanlist => ['banlist'],
-            tbping    => ['ping', 'ping_cat'],
+            tbping    => [ 'ping', 'ping_cat' ],
         },
         list_properties => {
             __virtual => {
@@ -1110,6 +1111,12 @@ BEGIN {
                     grep          => \&MT::Filter::pack_grep,
                     requires_grep => \&MT::Filter::pack_requires_grep,
                 },
+                blog_id => {
+                    auto            => 0,
+                    col             => 'blog_id',
+                    display         => 'none',
+                    filter_editable => 0,
+                },
                 blog_name => {
                     label        => 'Site Name',
                     filter_label => 'Site Name',
@@ -1859,9 +1866,9 @@ BEGIN {
                 type    => 'HASH',
                 default => { ReuseSession => 1 }
             },
-            'SSLVerifyNone'         => undef,
-            'SSLVersion'            => undef,
-            'DebugEmailAddress'     => undef,
+            'SSLVerifyNone'     => undef,
+            'SSLVersion'        => undef,
+            'DebugEmailAddress' => undef,
             'WeblogsPingURL' => { default => 'http://rpc.weblogs.com/RPC2', },
             'MTPingURL' =>
                 { default => 'http://www.movabletype.org/update/', },
@@ -2135,7 +2142,8 @@ BEGIN {
             'DefaultWebsiteTheme'  => { default => 'mont-blanc' },
             'DefaultBlogTheme'     => { default => 'mont-blanc' },
             'ThemeStaticFileExtensions' => {
-                default => 'html jpg jpeg gif png js css ico flv swf otf ttf svg'
+                default =>
+                    'html jpg jpeg gif png js css ico flv swf otf ttf svg'
             },
             'AssetFileTypes'            => { type    => 'HASH' },
             'AssetFileExtensions'       => { default => undef },
@@ -3051,7 +3059,6 @@ sub load_core_permissions {
                 'remove_tags_from_content_data_via_list'  => 1,
                 'set_content_data_draft_via_list'         => 1,
                 'use_content_data:manage_menu'            => 1,
-                'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
@@ -3363,7 +3370,6 @@ sub load_core_permissions {
                 'search_authors'                 => 1,
                 'remove_user_assoc'              => 1,
                 'revoke_role'                    => 1,
-                'use_tools:search'               => 1,
                 'access_to_any_group_list'       => 1,
                 'access_to_system_dashboard'     => 1,
                 'grant_administer_role'          => 1,
@@ -3371,7 +3377,6 @@ sub load_core_permissions {
                 'access_to_all_association_list' => 1,
                 'access_to_system_author_list'   => 1,
                 'create_user'                    => 1,
-                'create_any_association'         => 1,
                 'access_to_any_permission_list'  => 1,
                 'edit_authors'                   => 1,
                 'edit_groups'                    => 1,
@@ -3409,7 +3414,6 @@ sub load_core_permissions {
                 'remove_tags_from_content_data_via_list'  => 1,
                 'set_content_data_draft_via_list'         => 1,
                 'use_content_data:manage_menu'            => 1,
-                'use_tools:search'                        => 1,
                 'get_content_data_feed'                   => 1,
                 'save_multiple_content_data'              => 1,
                 'open_select_author_dialog'               => 1,
@@ -3423,7 +3427,6 @@ sub load_core_permissions {
         },
         'system.manage_content_types' => {
             group          => 'sys_admin',
-            'inherit_from' => ['system.sign_in_cms'],
             label          => 'Manage Content Types',
             order          => 1000,
             inherit_from   => [

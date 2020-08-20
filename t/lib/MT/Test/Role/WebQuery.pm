@@ -17,20 +17,25 @@ sub _trim {
     $str;
 }
 
+sub _find_text {
+    my ( $self, $selector ) = @_;
+    eval { $self->wq_find($selector)->text };
+}
+
 sub page_title {
     my $self = shift;
-    _trim( $self->wq_find("#page-title")->text );
+    _trim( $self->_find_text("#page-title") );
 }
 
 sub message_text {
     my $self = shift;
     my $message_class = MT->version_number >= 7 ? '.alert' : '.msg';
-    _trim( $self->wq_find($message_class)->text );
+    _trim( $self->_find_text($message_class) );
 }
 
 sub generic_error {
     my $self = shift;
-    _trim( $self->wq_find("#generic-error")->text );
+    _trim( $self->_find_text("#generic-error") );
 }
 
 1;
