@@ -165,6 +165,18 @@
                 config['body_id'] = adapter.id;
             }
 
+            // Compatibility with 3.x / 4.x
+            // TinyMCE 5.x requires a space-separated list of buttons
+            for (k in config) {
+                if (! /^plugin_mt_.*_buttons\d+/.test(k)) {
+                    continue;
+                }
+                if (! config[k]) {
+                    continue;
+                }
+                config[k] = config[k].replace(/,/g, ' ');
+            }
+
             var text_format = $('[data-target=' + adapter.id+']').val();
             if( text_format == 'richtext'){
                 if ($('#'+adapter.id).attr('data-full_rich_text')) {
