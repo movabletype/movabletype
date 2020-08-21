@@ -193,6 +193,18 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             config["height"] = text_height;
         }
 
+        // Compatibility with 3.x / 4.x
+        // TinyMCE 5.x requires a space-separated list of buttons
+        for (k in config) {
+            if (! /^plugin_mt_.*_buttons\d+/.test(k)) {
+                continue;
+            }
+            if (! config[k]) {
+                continue;
+            }
+            config[k] = config[k].replace(/,/g, ' ');
+        }
+
         tinyMCE.init(config);
 
         adapter.setFormat(format, true);
