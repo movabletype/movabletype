@@ -701,6 +701,41 @@ bar</dd>
 <dt>title2</dt>
 <dd>baz</dd>
 <dl>
+=== audio/picture/video tags (MTC-27461)
+--- input
+<audio controls>
+<source src="myAudio.mp4" type="audio/mp4">
+<source src="myAudio.ogg" type="audio/ogg">
+<p>Your browser doesn't support HTML5 audio.</p>
+</audio>
+
+<picture>
+<source srcset="/media/examples/surfer-240-200.jpg">
+<img src="/media/examples/painted-hand-298-332.jpg" alt="" />
+</picture>
+
+<video controls>
+<source src="myVideo.mp4" type="video/mp4">
+<source src="myVideo.webm" type="video/webm">
+<p>Your browser doesn't support HTML5 video.</p>
+</video>
+--- expected
+<p><audio controls>
+<source src="myAudio.mp4" type="audio/mp4">
+<source src="myAudio.ogg" type="audio/ogg">
+<p>Your browser doesn't support HTML5 audio.</p>
+</audio></p>
+
+<p><picture>
+<source srcset="/media/examples/surfer-240-200.jpg">
+<img src="/media/examples/painted-hand-298-332.jpg" alt="" />
+</picture></p>
+
+<p><video controls>
+<source src="myVideo.mp4" type="video/mp4">
+<source src="myVideo.webm" type="video/webm">
+<p>Your browser doesn't support HTML5 video.</p>
+</video></p>
 === svg tags (MTC-27461)
 --- input
 <svg>
@@ -708,7 +743,7 @@ bar</dd>
 <use xlink:href="foo"></use>
 </svg>
 --- expected
-<svg>
+<p><svg>
 <title>image</title>
 <use xlink:href="foo"></use>
-</svg>
+</svg></p>
