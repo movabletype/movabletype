@@ -688,16 +688,16 @@ sub _change_lf {
 sub html_text_transform {
     my $str = shift;
     $str = '' unless defined $str;
-    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style|article|aside|details|dialog|figcaption|figure|footer|header|hgroup|main|map|nav|section|template|thead|tfoot|tbody|tr|th|td|caption|colgroup|col|dt|dd|optgroup|legend|menuitem|option|param|summary|area|svg)!;
+    my $tags = qr!(?:h1|h2|h3|h4|h5|h6|table|ol|dl|ul|li|menu|dir|p|pre|center|form|fieldset|select|blockquote|address|div|hr|script|style|article|aside|details|dialog|figcaption|figure|footer|header|hgroup|main|nav|section|template|thead|tfoot|tbody|tr|th|td|caption|colgroup|col|dt|dd|legend|summary)!;
     $str =~ s/\r\n/\n/gs;
-    my $special_tags = qr!(?:script|style|pre|svg)!;
+    my $special_tags = qr!(?:script|style|pre|object|map|menu|select|svg|audio|picture|video)!;
     $str =~ s{(<!--.*?-->|<($special_tags).*?</\2)}{_change_lf($1)}ges;
     my @paras = split /\n\n/, $str;
     for my $i ( 0 .. @paras - 1 ) {
         ## If the paragraph does not start nor end with a block(-ish) tag,
         ## then wrap it with <p> (later).
         my $wrap = 0;
-        if ( $paras[$i] !~ m{(?:^</?$tags|</$tags>$|\A(?><!--.*?-->)+\z)} ) {
+        if ( $paras[$i] !~ m{(?:^</?$tags\b|</$tags>$|\A(?><!--.*?-->)+\z)} ) {
             $wrap = 1;
         }
 
@@ -716,7 +716,7 @@ sub html_text_transform {
         ## tag that prevents wrapping.
         if ( !$wrap and defined $last_line && $last_line !~ m!(?:</?$tags\s*/?>|-->)\z! ) {
             my $next = $i < @paras - 1 ? $paras[$i + 1] : undef;
-            if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags! ) {
+            if ( defined $next && $next =~ m!</$tags>$! && $next !~ m!^</?$tags\b! ) {
                 $last_line .= '<br /><br />';
             }
         }
