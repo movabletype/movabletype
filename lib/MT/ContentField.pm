@@ -310,7 +310,11 @@ sub type_registry {
     my $self = shift;
     return unless defined $self->type && $self->type ne '';
     MT->registry( 'content_field_types', $self->type )
-      or $self->error( MT->translate("No Content Field Type could be found.") );
+      or $self->error(
+        MT->translate(
+            "Cannot load content field data_type [_1]", $self->type
+        )
+      );
 
 }
 
