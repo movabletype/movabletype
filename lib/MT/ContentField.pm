@@ -309,7 +309,13 @@ sub is_parent_content_type_id {
 sub type_registry {
     my $self = shift;
     return unless defined $self->type && $self->type ne '';
-    MT->registry( 'content_field_types', $self->type );
+    MT->registry( 'content_field_types', $self->type )
+      or $self->error(
+        MT->translate(
+            "Cannot load content field data_type [_1]", $self->type
+        )
+      );
+
 }
 
 sub data_type {
