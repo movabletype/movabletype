@@ -48,7 +48,7 @@
 
     <mt:If name="permitted_entry">
     <div class="row mt-widget__entry">
-      <div class="col-8"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentdata"></use></svg><__trans phrase="Entry"></div>
+      <div class="col-8"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_entry"></use></svg><__trans phrase="Entry"></div>
       <div class="col text-right pr-0">
         <span class="mr-5"><mt:If name="can_access_to_entry_list"><a href="<mt:var name="mt_url">?__mode=list&_type=entry&blog_id=<mt:var name="blog_id">"><__trans phrase="List"></a></mt:If></span>
         <mt:If name="can_create_post"><a href="<mt:var name="mt_url">?__mode=edit&_type=entry&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
@@ -58,7 +58,7 @@
 
     <mt:If name="can_manage_pages">
     <div class="row mt-widget__page">
-      <div class="col-8"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentdata"></use></svg><__trans phrase="Page"></div>
+      <div class="col-8"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_page"></use></svg><__trans phrase="Page"></div>
       <div class="col text-right pr-0">
         <span class="mr-5"><a href="<mt:var name="mt_url">?__mode=list&_type=page&blog_id=<mt:var name="blog_id">"><__trans phrase="List"></a></span>
         <a href="<mt:var name="mt_url">?__mode=edit&_type=page&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a>
