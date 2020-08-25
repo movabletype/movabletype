@@ -11306,7 +11306,7 @@ li {
 .flex-items-1, .mt-primaryNavigation__content {
   -webkit-box-flex: 1;
       -ms-flex: 1;
-          flex: 1;
+      flex: 1 0 auto;
 }
 
 /* Breadcrumb */
