@@ -12026,9 +12026,20 @@ fieldset.form-group {
   line-height: 2;
 }
 
-.mt-widget__contenttype {
+.mt-collapse.mt-widget__contenttype__block {
+  border: none;
+  border-bottom: 1px solid #E0E0E0;
+  overflow: hidden;
+}
+
+.mt-widget__contenttype,
+.mt-widget__entry {
   padding: 0.5rem 0;
-  border-bottom: 1px solid #CACACA;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.mt-widget__page {
+  padding: 0.5rem 0 1.5rem 0;
 }
 
 .mt-widget__contenttype:last-of-type {
