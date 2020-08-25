@@ -16,7 +16,9 @@ my $tmpl      = $test_env->slurp("$ENV{MT_HOME}/tmpl/$tmpl_path");
 my $bom       = "\xef\xbb\xbf";
 $test_env->save_file( "alt-tmpl/$tmpl_path", "$bom$tmpl" );
 $test_env->save_file( "alt-tmpl/my_header.tmpl",
-    "$bom<!DOCTYPE html>\n<html><head><title>My HEADER</title></head><body>" );
+    "$bom\n<!DOCTYPE html>\n<html><head><title><mt:Var name='title' _default='My HEADER' /></title></head><body>" );
+$test_env->save_file( "alt-tmpl/my_nested_header.tmpl",
+    "$bom\n<mt:Ignore>define special variable</mt:Ignore>\n<mt:Include name='my_header.tmpl' title='NESTED HEADER'>" );
 
 use MT;
 use MT::Test;
@@ -54,6 +56,16 @@ Index
 </html>
 TMPL
                 outfile => 'index.html',
+            },
+            {   type => 'index',
+                name => 'tmpl_index_nested',
+                text => <<'TMPL',
+<mt:Include name="my_nested_header.tmpl">
+Index
+</body>
+</html>
+TMPL
+                outfile => 'index_nested.html',
             },
             {   archive_type => 'Individual',
                 name         => 'tmpl_individual',
@@ -107,6 +119,9 @@ $test_env->ls;
 my $index = $test_env->slurp( $test_env->path("index.html") );
 test_bom( $index, "index", 1 );
 
+my $index_nested = $test_env->slurp( $test_env->path("index_nested.html") );
+test_bom( $index_nested, "index_nested" );
+
 my $entry = $test_env->slurp( $test_env->path("entry/entry1.html") );
 test_bom( $entry, "entry", 1 );
 
@@ -123,7 +138,7 @@ sub test_bom {
     if ($has_my_header) {
         ok $body =~ /My HEADER/, "$where has My HEADER" or note $body;
     }
-    my ($leading_whitespaces) = $content =~ /\A(.*)<!DOCTYPE/is;
+    my ($leading_whitespaces) = $body =~ /\A(.*)<!DOCTYPE/is;
 
     ok !$leading_whitespaces or note join ",", map { ord($_) } split //, $leading_whitespaces;
     ok $leading_whitespaces !~ /$bom/s, "no bom in $where";
