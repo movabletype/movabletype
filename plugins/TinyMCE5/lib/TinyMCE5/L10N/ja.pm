@@ -4,11 +4,11 @@
 #
 # $Id$
 
-package TinyMCE::L10N::ja;
+package TinyMCE5::L10N::ja;
 
 use strict;
 use utf8;
-use base 'TinyMCE::L10N::en_us';
+use base 'TinyMCE5::L10N::en_us';
 use vars qw( %Lexicon );
 
 ## The following is the translation table.
