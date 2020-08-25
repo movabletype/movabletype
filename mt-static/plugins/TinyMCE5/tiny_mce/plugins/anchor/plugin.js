@@ -4,33 +4,32 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
 
-    var isNamedAnchor = function (editor, node) {
-      return node.tagName === 'A' && editor.dom.getAttrib(node, 'href') === '';
-    };
     var isValidId = function (id) {
       return /^[A-Za-z][A-Za-z0-9\-:._]*$/.test(id);
     };
     var getId = function (editor) {
       var selectedNode = editor.selection.getNode();
-      return isNamedAnchor(editor, selectedNode) ? selectedNode.getAttribute('id') || selectedNode.getAttribute('name') : '';
+      var isAnchor = selectedNode.tagName === 'A' && editor.dom.getAttrib(selectedNode, 'href') === '';
+      return isAnchor ? selectedNode.getAttribute('id') || selectedNode.getAttribute('name') : '';
     };
     var insert = function (editor, id) {
       var selectedNode = editor.selection.getNode();
-      if (isNamedAnchor(editor, selectedNode)) {
+      var isAnchor = selectedNode.tagName === 'A' && editor.dom.getAttrib(selectedNode, 'href') === '';
+      if (isAnchor) {
         selectedNode.removeAttribute('name');
         selectedNode.id = id;
         editor.undoManager.add();
       } else {
         editor.focus();
         editor.selection.collapse(true);
-        editor.insertContent(editor.dom.createHTML('a', { id: id }));
+        editor.execCommand('mceInsertContent', false, editor.dom.createHTML('a', { id: id }));
       }
     };
     var Anchor = {
@@ -42,10 +41,10 @@
     var insertAnchor = function (editor, newId) {
       if (!Anchor.isValidId(newId)) {
         editor.windowManager.alert('Id should start with a letter, followed only by letters, numbers, dashes, dots, colons or underscores.');
-        return false;
+        return true;
       } else {
         Anchor.insert(editor, newId);
-        return true;
+        return false;
       }
     };
     var open = function (editor) {
@@ -77,7 +76,7 @@
         ],
         initialData: { id: currentId },
         onSubmit: function (api) {
-          if (insertAnchor(editor, api.getData().id)) {
+          if (!insertAnchor(editor, api.getData().id)) {
             api.close();
           }
         }
@@ -92,13 +91,13 @@
     };
     var Commands = { register: register };
 
-    var isNamedAnchorNode = function (node) {
+    var isAnchorNode = function (node) {
       return !node.attr('href') && (node.attr('id') || node.attr('name')) && !node.firstChild;
     };
     var setContentEditable = function (state) {
       return function (nodes) {
         for (var i = 0; i < nodes.length; i++) {
-          if (isNamedAnchorNode(nodes[i])) {
+          if (isAnchorNode(nodes[i])) {
             nodes[i].attr('contenteditable', state);
           }
         }

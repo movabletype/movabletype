@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -302,7 +302,8 @@
       return r;
     };
     var bind = function (xs, f) {
-      return flatten(map(xs, f));
+      var output = map(xs, f);
+      return flatten(output);
     };
     var forall = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; ++i) {
@@ -323,15 +324,6 @@
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return nativeSlice.call(x);
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
     };
 
     var keys = Object.keys;
@@ -1561,8 +1553,6 @@
     };
     var CopySelected = { extract: extract };
 
-    var nbsp = '\xA0';
-
     function NodeValue (is, name) {
       var get = function (element) {
         if (!is(element)) {
@@ -1604,9 +1594,10 @@
         return v.length;
       });
     };
+    var NBSP = '\xA0';
     var isTextNodeWithCursorPosition = function (el) {
       return getOption(el).filter(function (text) {
-        return text.trim().length !== 0 || text.indexOf(nbsp) > -1;
+        return text.trim().length !== 0 || text.indexOf(NBSP) > -1;
       }).isSome();
     };
     var elementsWithCursorPosition = [
@@ -1936,9 +1927,6 @@
           'input'
         ], name(element));
       };
-      var isNonEditable = function (element) {
-        return isElement(element) && get$1(element, 'contenteditable') === 'false';
-      };
       var comparePosition = function (element, other) {
         return element.dom().compareDocumentPosition(other.dom());
       };
@@ -2003,8 +1991,7 @@
           getText: get$3,
           setText: set$2,
           isBoundary: isBoundary,
-          isEmptyTag: isEmptyTag,
-          isNonEditable: isNonEditable
+          isEmptyTag: isEmptyTag
         }),
         eq: eq,
         is: is$1
@@ -2945,6 +2932,15 @@
       }
       return r;
     };
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Option.none();
+    };
 
     var setIfNot = function (element, property, value, ignore) {
       if (value === ignore) {
@@ -3225,34 +3221,34 @@
     var Styles = { resolve: styles.resolve };
 
     var col = function (column, x, y, w, h) {
-      var bar = Element.fromTag('div');
-      setAll$1(bar, {
+      var blocker = Element.fromTag('div');
+      setAll$1(blocker, {
         position: 'absolute',
         left: x - w / 2 + 'px',
         top: y + 'px',
         height: h + 'px',
         width: w + 'px'
       });
-      setAll(bar, {
+      setAll(blocker, {
         'data-column': column,
         'role': 'presentation'
       });
-      return bar;
+      return blocker;
     };
     var row$1 = function (r, x, y, w, h) {
-      var bar = Element.fromTag('div');
-      setAll$1(bar, {
+      var blocker = Element.fromTag('div');
+      setAll$1(blocker, {
         position: 'absolute',
         left: x + 'px',
         top: y - h / 2 + 'px',
         height: h + 'px',
         width: w + 'px'
       });
-      setAll(bar, {
+      setAll(blocker, {
         'data-row': r,
         'role': 'presentation'
       });
-      return bar;
+      return blocker;
     };
     var Bar = {
       col: col,
@@ -4991,46 +4987,6 @@
       editor.fire('TableSelectionClear');
     };
 
-    var point = Immutable('element', 'offset');
-    var delta = Immutable('element', 'deltaOffset');
-    var range$1 = Immutable('element', 'start', 'finish');
-    var points = Immutable('begin', 'end');
-    var text = Immutable('element', 'text');
-
-    var scan = function (universe, element, direction) {
-      if (universe.property().isText(element) && universe.property().getText(element).trim().length === 0 || universe.property().isComment(element)) {
-        return direction(element).bind(function (elem) {
-          return scan(universe, elem, direction).orThunk(function () {
-            return Option.some(elem);
-          });
-        });
-      } else {
-        return Option.none();
-      }
-    };
-    var toEnd = function (universe, element) {
-      if (universe.property().isText(element)) {
-        return universe.property().getText(element).length;
-      }
-      var children = universe.property().children(element);
-      return children.length;
-    };
-    var freefallRtl = function (universe, element) {
-      var candidate = scan(universe, element, universe.query().prevSibling).getOr(element);
-      if (universe.property().isText(candidate)) {
-        return point(candidate, toEnd(universe, candidate));
-      }
-      var children = universe.property().children(candidate);
-      return children.length > 0 ? freefallRtl(universe, children[children.length - 1]) : point(candidate, toEnd(universe, candidate));
-    };
-
-    var freefallRtl$1 = freefallRtl;
-
-    var universe$2 = DomUniverse();
-    var freefallRtl$2 = function (element) {
-      return freefallRtl$1(universe$2, element);
-    };
-
     var TableActions = function (editor, lazyWire) {
       var isTableBody = function (editor) {
         return name(getBody$1(editor)) === 'table';
@@ -5059,10 +5015,9 @@
               fireNewCell(editor, cell.dom());
             });
             return result.cursor().map(function (cell) {
-              var des = freefallRtl$2(cell);
               var rng = editor.dom.createRng();
-              rng.setStart(des.element().dom(), des.offset());
-              rng.setEnd(des.element().dom(), des.offset());
+              rng.setStart(cell.dom(), 0);
+              rng.setEnd(cell.dom(), 0);
               return rng;
             });
           }) : Option.none();
@@ -5885,6 +5840,33 @@
     };
     var RowDialog = { open: open$1 };
 
+    var hasOwnProperty$1 = Object.prototype.hasOwnProperty;
+    var shallow$1 = function (old, nu) {
+      return nu;
+    };
+    var baseMerge = function (merger) {
+      return function () {
+        var objects = new Array(arguments.length);
+        for (var i = 0; i < objects.length; i++) {
+          objects[i] = arguments[i];
+        }
+        if (objects.length === 0) {
+          throw new Error('Can\'t merge zero objects');
+        }
+        var ret = {};
+        for (var j = 0; j < objects.length; j++) {
+          var curObject = objects[j];
+          for (var key in curObject) {
+            if (hasOwnProperty$1.call(curObject, key)) {
+              ret[key] = merger(ret[key], curObject[key]);
+            }
+          }
+        }
+        return ret;
+      };
+    };
+    var merge$3 = baseMerge(shallow$1);
+
     var global$2 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var DefaultRenderOptions = {
@@ -6140,8 +6122,8 @@
         styles['border-color'] = data.bordercolor;
         styles['border-style'] = data.borderstyle;
       }
-      attrs.style = dom.serializeStyle(__assign(__assign({}, getDefaultStyles(editor)), styles));
-      dom.setAttribs(tableElm, __assign(__assign({}, getDefaultAttributes(editor)), attrs));
+      attrs.style = dom.serializeStyle(merge$3(getDefaultStyles(editor), styles));
+      dom.setAttribs(tableElm, merge$3(getDefaultAttributes(editor), attrs));
     };
     var onSubmitTableForm = function (editor, tableElm, api) {
       var dom = editor.dom;
@@ -6164,7 +6146,7 @@
         }
         if (!captionElm && data.caption) {
           captionElm = dom.create('caption');
-          captionElm.innerHTML = !global$2.ie ? '<br data-mce-bogus="1"/>' : nbsp;
+          captionElm.innerHTML = !global$2.ie ? '<br data-mce-bogus="1"/>' : '\xA0';
           tableElm.insertBefore(captionElm, tableElm.firstChild);
         }
         if (data.align === '') {
@@ -6529,13 +6511,12 @@
     var bind$2 = function (element, event, handler) {
       return bind$1(element, event, filter$1, handler);
     };
-    var fromRawEvent$1 = fromRawEvent;
 
     var styles$1 = css('ephox-dragster');
     var Styles$2 = { resolve: styles$1.resolve };
 
     var Blocker = function (options) {
-      var settings = __assign({ layerClass: Styles$2.resolve('blocker') }, options);
+      var settings = merge$3({ layerClass: Styles$2.resolve('blocker') }, options);
       var div = Element.fromTag('div');
       set(div, 'role', 'presentation');
       setAll$1(div, {
@@ -7123,7 +7104,7 @@
       });
       editor.on('SwitchMode', function () {
         lazyResize().each(function (resize) {
-          if (editor.mode.isReadOnly()) {
+          if (editor.readonly) {
             resize.hideBars();
           } else {
             resize.showBars();
@@ -7261,14 +7242,14 @@
       var start = getStart$1(selection);
       return defaultView(start);
     };
-    var range$2 = SimRange.create;
+    var range$1 = SimRange.create;
     var Selection = {
       domRange: domRange,
       relative: relative,
       exact: exact,
       exactFromRange: exactFromRange,
       getWin: getWin,
-      range: range$2
+      range: range$1
     };
 
     var selectNodeContents = function (win, element) {
@@ -7412,8 +7393,6 @@
         }
       });
     };
-    var ltr$2 = adt$4.ltr;
-    var rtl$2 = adt$4.rtl;
 
     var searchForPoint = function (rectForOffset, x, y, maxX, length) {
       if (length === 0) {
@@ -7941,23 +7920,29 @@
     var seekLeft = left$1;
     var seekRight = right$1;
 
-    var universe$3 = DomUniverse();
+    var universe$2 = DomUniverse();
     var before$4 = function (element, isRoot) {
-      return before$3(universe$3, element, isRoot);
+      return before$3(universe$2, element, isRoot);
     };
     var after$5 = function (element, isRoot) {
-      return after$4(universe$3, element, isRoot);
+      return after$4(universe$2, element, isRoot);
     };
     var seekLeft$1 = function (element, predicate, isRoot) {
-      return seekLeft(universe$3, element, predicate, isRoot);
+      return seekLeft(universe$2, element, predicate, isRoot);
     };
     var seekRight$1 = function (element, predicate, isRoot) {
-      return seekRight(universe$3, element, predicate, isRoot);
+      return seekRight(universe$2, element, predicate, isRoot);
     };
 
     var ancestor$2 = function (scope, predicate, isRoot) {
       return ancestor(scope, predicate, isRoot).isSome();
     };
+
+    var point = Immutable('element', 'offset');
+    var delta = Immutable('element', 'deltaOffset');
+    var range$2 = Immutable('element', 'start', 'finish');
+    var points = Immutable('begin', 'end');
+    var text = Immutable('element', 'text');
 
     var adt$5 = Adt.generate([
       { none: ['message'] },
@@ -8303,7 +8288,7 @@
         });
       });
     };
-    var scan$1 = function (bridge, isRoot, element, offset, direction, numRetries) {
+    var scan = function (bridge, isRoot, element, offset, direction, numRetries) {
       if (numRetries === 0) {
         return Option.none();
       }
@@ -8318,13 +8303,13 @@
           if (eq(element, cell) && offset === 0) {
             return tryAgain(bridge, element, offset, Carets.moveUp, direction);
           } else {
-            return scan$1(bridge, isRoot, cell, 0, direction, numRetries - 1);
+            return scan(bridge, isRoot, cell, 0, direction, numRetries - 1);
           }
         }, function (cell) {
           if (eq(element, cell) && offset === getEnd(cell)) {
             return tryAgain(bridge, element, offset, Carets.moveDown, direction);
           } else {
-            return scan$1(bridge, isRoot, cell, getEnd(cell), direction, numRetries - 1);
+            return scan(bridge, isRoot, cell, getEnd(cell), direction, numRetries - 1);
           }
         });
       });
@@ -8350,7 +8335,7 @@
     };
     var handle$2 = function (bridge, isRoot, direction) {
       return findSpot(bridge, isRoot, direction).bind(function (spot) {
-        return scan$1(bridge, isRoot, spot.element(), spot.offset(), direction, MAX_RETRIES).map(bridge.fromSitus);
+        return scan(bridge, isRoot, spot.element(), spot.offset(), direction, MAX_RETRIES).map(bridge.fromSitus);
       });
     };
     var TableKeys = { handle: handle$2 };
@@ -8920,7 +8905,7 @@
           });
         };
         var keyup = function (event) {
-          var wrappedEvent = fromRawEvent$1(event);
+          var wrappedEvent = wrapEvent(event);
           if (wrappedEvent.raw().shiftKey && SelectionKeys.isNavigation(wrappedEvent.raw().which)) {
             var rng = editor.selection.getRng();
             var start = Element.fromDom(rng.startContainer);
@@ -8931,7 +8916,7 @@
           }
         };
         var keydown = function (event) {
-          var wrappedEvent = fromRawEvent$1(event);
+          var wrappedEvent = wrapEvent(event);
           lazyResize().each(function (resize) {
             resize.hideBars();
           });
@@ -8947,6 +8932,28 @@
             resize.showBars();
           });
         };
+        var isMouseEvent = function (event) {
+          return event.hasOwnProperty('x') && event.hasOwnProperty('y');
+        };
+        var wrapEvent = function (event) {
+          var target = Element.fromDom(event.target);
+          var stop = function () {
+            event.stopPropagation();
+          };
+          var prevent = function () {
+            event.preventDefault();
+          };
+          var kill = compose(prevent, stop);
+          return {
+            target: constant(target),
+            x: constant(isMouseEvent(event) ? event.x : null),
+            y: constant(isMouseEvent(event) ? event.y : null),
+            stop: stop,
+            prevent: prevent,
+            kill: kill,
+            raw: constant(event)
+          };
+        };
         var isLeftMouse = function (raw) {
           return raw.button === 0;
         };
@@ -8954,24 +8961,21 @@
           if (raw.buttons === undefined) {
             return true;
           }
-          if (global$2.browser.isEdge() && raw.buttons === 0) {
-            return true;
-          }
           return (raw.buttons & 1) !== 0;
         };
         var mouseDown = function (e) {
           if (isLeftMouse(e) && hasInternalTarget(e)) {
-            mouseHandlers.mousedown(fromRawEvent$1(e));
+            mouseHandlers.mousedown(wrapEvent(e));
           }
         };
         var mouseOver = function (e) {
           if (isLeftButtonPressed(e) && hasInternalTarget(e)) {
-            mouseHandlers.mouseover(fromRawEvent$1(e));
+            mouseHandlers.mouseover(wrapEvent(e));
           }
         };
         var mouseUp = function (e) {
           if (isLeftMouse(e) && hasInternalTarget(e)) {
-            mouseHandlers.mouseup(fromRawEvent$1(e));
+            mouseHandlers.mouseup(wrapEvent(e));
           }
         };
         var getDoubleTap = function () {

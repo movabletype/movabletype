@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -28,19 +28,6 @@
     };
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
-
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
-        }
-        return t;
-      };
-      return __assign.apply(this, arguments);
-    };
 
     var global$1 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
@@ -89,7 +76,7 @@
       return global$2({
         validate: false,
         root_name: '#document'
-      }).parse(head, { format: 'xhtml' });
+      }).parse(head);
     };
     var htmlToData = function (editor, head) {
       var headerFragment = parseHeader(head);
@@ -313,6 +300,33 @@
       dataToHtml: dataToHtml
     };
 
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    var shallow = function (old, nu) {
+      return nu;
+    };
+    var baseMerge = function (merger) {
+      return function () {
+        var objects = new Array(arguments.length);
+        for (var i = 0; i < objects.length; i++) {
+          objects[i] = arguments[i];
+        }
+        if (objects.length === 0) {
+          throw new Error('Can\'t merge zero objects');
+        }
+        var ret = {};
+        for (var j = 0; j < objects.length; j++) {
+          var curObject = objects[j];
+          for (var key in curObject) {
+            if (hasOwnProperty.call(curObject, key)) {
+              ret[key] = merger(ret[key], curObject[key]);
+            }
+          }
+        }
+        return ret;
+      };
+    };
+    var merge = baseMerge(shallow);
+
     var open = function (editor, headState) {
       var data = Parser.htmlToData(editor, headState.get());
       var defaultData = {
@@ -323,7 +337,7 @@
         author: '',
         docencoding: ''
       };
-      var initialData = __assign(__assign({}, defaultData), data);
+      var initialData = merge(defaultData, data);
       editor.windowManager.open({
         title: 'Metadata and Document Properties',
         size: 'normal',

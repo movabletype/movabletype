@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -776,30 +776,22 @@
 
     var global$2 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-    var zeroWidth = '\uFEFF';
-    var nbsp = '\xA0';
+    var zeroWidth = function () {
+      return '\uFEFF';
+    };
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
 
-    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var global$5 = tinymce.util.Tools.resolve('tinymce.dom.TextSeeker');
-
-    var point = function (container, offset) {
-      return {
-        container: container,
-        offset: offset
-      };
-    };
+    var global$4 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
 
     var isText = function (node) {
       return node.nodeType === domGlobals.Node.TEXT_NODE;
     };
     var cleanEmptyNodes = function (dom, node, isRoot) {
       if (node && dom.isEmpty(node) && !isRoot(node)) {
-        var parent_1 = node.parentNode;
+        var parent = node.parentNode;
         dom.remove(node);
-        cleanEmptyNodes(dom, parent_1, isRoot);
+        cleanEmptyNodes(dom, parent, isRoot);
       }
     };
     var deleteRng = function (dom, rng, isRoot, clean) {
@@ -842,39 +834,42 @@
       }
     };
 
-    var DOM = global$4.DOM;
-    var alwaysNext = function (startNode) {
-      return function (node) {
-        return startNode === node ? -1 : 0;
+    var point = function (element, offset) {
+      return {
+        element: element,
+        offset: offset
       };
     };
-    var isBoundary = function (dom) {
-      return function (node) {
-        return dom.isBlock(node) || contains([
-          'BR',
-          'IMG',
-          'HR',
-          'INPUT'
-        ], node.nodeName) || dom.getContentEditable(node) === 'false';
+
+    var TextWalker = function (startNode, rootNode) {
+      var walker = new global$4(startNode, rootNode);
+      var walk = function (direction) {
+        var next = walker[direction]();
+        while (next && next.nodeType !== domGlobals.Node.TEXT_NODE) {
+          next = walker[direction]();
+        }
+        return next && next.nodeType === domGlobals.Node.TEXT_NODE ? Option.some(next) : Option.none();
+      };
+      return {
+        next: function () {
+          return walk('next');
+        },
+        prev: function () {
+          return walk('prev');
+        },
+        prev2: function () {
+          return walk('prev2');
+        }
       };
     };
+
     var textBefore = function (node, offset, rootNode) {
       if (isText(node) && offset >= 0) {
         return Option.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
-        return Option.from(textSeeker.backwards(node, offset, alwaysNext(node), rootNode)).map(function (prev) {
-          return point(prev.container, prev.container.data.length);
-        });
-      }
-    };
-    var textAfter = function (node, offset, rootNode) {
-      if (isText(node) && offset >= node.length) {
-        return Option.some(point(node, offset));
-      } else {
-        var textSeeker = global$5(DOM);
-        return Option.from(textSeeker.forwards(node, offset, alwaysNext(node), rootNode)).map(function (prev) {
-          return point(prev.container, 0);
+        var textWalker = TextWalker(node, rootNode);
+        return textWalker.prev().map(function (prev) {
+          return point(prev, prev.data.length);
         });
       }
     };
@@ -886,10 +881,10 @@
       if (offset >= 0 && offset <= text.length) {
         return Option.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
-        return Option.from(textSeeker.backwards(node, offset, alwaysNext(node), rootNode)).bind(function (prev) {
-          var prevText = prev.container.data;
-          return scanLeft(prev.container, offset + prevText.length, rootNode);
+        var textWalker = TextWalker(node, rootNode);
+        return textWalker.prev().bind(function (prev) {
+          var prevText = prev.textContent;
+          return scanLeft(prev, offset + prevText.length, rootNode);
         });
       }
     };
@@ -901,15 +896,56 @@
       if (offset <= text.length) {
         return Option.some(point(node, offset));
       } else {
-        var textSeeker = global$5(DOM);
-        return Option.from(textSeeker.forwards(node, offset, alwaysNext(node), rootNode)).bind(function (next) {
-          return scanRight(next.container, offset - text.length, rootNode);
+        var textWalker = TextWalker(node, rootNode);
+        return textWalker.next().bind(function (next) {
+          return scanRight(next, offset - text.length, rootNode);
         });
       }
     };
+    var isBoundary = function (dom, node) {
+      return dom.isBlock(node) || contains([
+        'BR',
+        'IMG',
+        'HR',
+        'INPUT'
+      ], node.nodeName) || dom.getContentEditable(node) === 'false';
+    };
+    var outcome = Adt.generate([
+      { aborted: [] },
+      { edge: ['element'] },
+      { success: ['info'] }
+    ]);
+    var phase = Adt.generate([
+      { abort: [] },
+      { kontinue: [] },
+      { finish: ['info'] }
+    ]);
+    var repeat = function (dom, node, offset, process, walker, recent) {
+      var terminate = function () {
+        return recent.fold(outcome.aborted, outcome.edge);
+      };
+      var recurse = function () {
+        var next = walker();
+        if (next) {
+          return repeat(dom, next, Option.none(), process, walker, Option.some(node));
+        } else {
+          return terminate();
+        }
+      };
+      if (isBoundary(dom, node)) {
+        return terminate();
+      } else if (!isText(node)) {
+        return recurse();
+      } else {
+        var text = node.textContent;
+        return process(phase, node, text, offset).fold(outcome.aborted, function () {
+          return recurse();
+        }, outcome.success);
+      }
+    };
     var repeatLeft = function (dom, node, offset, process, rootNode) {
-      var search = global$5(dom, isBoundary(dom));
-      return Option.from(search.backwards(node, offset, process, rootNode));
+      var walker = new global$4(node, rootNode);
+      return repeat(dom, node, Option.some(offset), process, walker.prev, Option.none());
     };
 
     var generatePath = function (root, node, offset) {
@@ -919,14 +955,14 @@
       var p = [offset];
       var current = node;
       while (current !== root && current.parentNode) {
-        var parent_1 = current.parentNode;
-        for (var i = 0; i < parent_1.childNodes.length; i++) {
-          if (parent_1.childNodes[i] === current) {
+        var parent = current.parentNode;
+        for (var i = 0; i < parent.childNodes.length; i++) {
+          if (parent.childNodes[i] === current) {
             p.push(i);
             break;
           }
         }
-        current = parent_1;
+        current = parent;
       }
       return current === root ? p.reverse() : [];
     };
@@ -976,13 +1012,12 @@
     };
 
     var stripPattern = function (dom, block, pattern) {
-      var firstTextNode = textAfter(block, 0, block);
-      firstTextNode.each(function (spot) {
-        var node = spot.container;
+      var firstTextNode = TextWalker(block, block).next();
+      firstTextNode.each(function (node) {
         scanRight(node, pattern.start.length, block).each(function (end) {
           var rng = dom.createRng();
           rng.setStart(node, 0);
-          rng.setEnd(end.container, end.offset);
+          rng.setEnd(end.element, end.offset);
           deleteRng(dom, rng, function (e) {
             return e === block;
           });
@@ -1011,7 +1046,7 @@
       return true;
     };
     var findPattern = function (patterns, text) {
-      var nuText = text.replace(nbsp, ' ');
+      var nuText = text.replace('\xA0', ' ');
       return find(patterns, function (pattern) {
         if (text.indexOf(pattern.start) !== 0 && nuText.indexOf(pattern.start) !== 0) {
           return false;
@@ -1103,44 +1138,36 @@
       cleanEmptyNodes(dom, dom.get(marker.prefix + '-start'), isRoot);
     };
 
-    var matchesPattern = function (dom, block, patternContent) {
-      return function (element, offset) {
-        var text = element.data;
-        var searchText = text.substring(0, offset);
-        var startEndIndex = searchText.lastIndexOf(patternContent.charAt(patternContent.length - 1));
-        var startIndex = searchText.lastIndexOf(patternContent);
+    var nodeMatchesPattern = function (dom, block, content) {
+      return function (phase, element, text, optOffset) {
+        if (element === block) {
+          return phase.abort();
+        }
+        var searchText = text.substring(0, optOffset.getOr(text.length));
+        var startEndIndex = searchText.lastIndexOf(content.charAt(content.length - 1));
+        var startIndex = searchText.lastIndexOf(content);
         if (startIndex !== -1) {
-          return startIndex + patternContent.length;
+          var rng = dom.createRng();
+          rng.setStart(element, startIndex);
+          rng.setEnd(element, startIndex + content.length);
+          return phase.finish(rng);
         } else if (startEndIndex !== -1) {
-          return startEndIndex + 1;
+          return scanLeft(element, startEndIndex + 1 - content.length, block).fold(function () {
+            return phase.kontinue();
+          }, function (spot) {
+            var rng = dom.createRng();
+            rng.setStart(spot.element, spot.offset);
+            rng.setEnd(element, startEndIndex + 1);
+            if (rng.toString() === content) {
+              return phase.finish(rng);
+            } else {
+              return phase.kontinue();
+            }
+          });
         } else {
-          return -1;
+          return phase.kontinue();
         }
       };
-    };
-    var findPatternStartFromSpot = function (dom, pattern, block, spot) {
-      var startPattern = pattern.start;
-      var startSpot = repeatLeft(dom, spot.container, spot.offset, matchesPattern(dom, block, startPattern), block);
-      return startSpot.bind(function (spot) {
-        if (spot.offset >= startPattern.length) {
-          var rng = dom.createRng();
-          rng.setStart(spot.container, spot.offset - startPattern.length);
-          rng.setEnd(spot.container, spot.offset);
-          return Option.some(rng);
-        } else {
-          var offset = spot.offset - startPattern.length;
-          return scanLeft(spot.container, offset, block).map(function (nextSpot) {
-            var rng = dom.createRng();
-            rng.setStart(nextSpot.container, nextSpot.offset);
-            rng.setEnd(spot.container, spot.offset);
-            return rng;
-          }).filter(function (rng) {
-            return rng.toString() === startPattern;
-          }).orThunk(function () {
-            return findPatternStartFromSpot(dom, pattern, block, point(spot.container, 0));
-          });
-        }
-      });
     };
     var findPatternStart = function (dom, pattern, node, offset, block, requireGap) {
       if (requireGap === void 0) {
@@ -1153,10 +1180,11 @@
         return Option.some(rng);
       }
       return textBefore(node, offset, block).bind(function (spot) {
-        var start = findPatternStartFromSpot(dom, pattern, block, spot);
+        var outcome = repeatLeft(dom, spot.element, spot.offset, nodeMatchesPattern(dom, block, pattern.start), block);
+        var start = outcome.fold(Option.none, Option.none, Option.some);
         return start.bind(function (startRange) {
           if (requireGap) {
-            if (startRange.endContainer === spot.container && startRange.endOffset === spot.offset) {
+            if (startRange.endContainer === spot.element && startRange.endOffset === spot.offset) {
               return Option.none();
             } else if (spot.offset === 0 && startRange.endContainer.textContent.length === startRange.endOffset) {
               return Option.none();
@@ -1170,10 +1198,10 @@
       var dom = editor.dom;
       var root = dom.getRoot();
       var pattern = details.pattern;
-      var endNode = details.position.container;
+      var endNode = details.position.element;
       var endOffset = details.position.offset;
       return scanLeft(endNode, endOffset - details.pattern.end.length, block).bind(function (spot) {
-        var endPathRng = generatePathRange(root, spot.container, spot.offset, endNode, endOffset);
+        var endPathRng = generatePathRange(root, spot.element, spot.offset, endNode, endOffset);
         if (isReplacementPattern(pattern)) {
           return Option.some({
             matches: [{
@@ -1184,13 +1212,13 @@
             position: spot
           });
         } else {
-          var resultsOpt = findPatternsRec(editor, details.remainingPatterns, spot.container, spot.offset, block);
+          var resultsOpt = findPatternsRec(editor, details.remainingPatterns, spot.element, spot.offset, block);
           var results_1 = resultsOpt.getOr({
             matches: [],
             position: spot
           });
           var pos = results_1.position;
-          var start = findPatternStart(dom, pattern, pos.container, pos.offset, block, resultsOpt.isNone());
+          var start = findPatternStart(dom, pattern, pos.element, pos.offset, block, resultsOpt.isNone());
           return start.map(function (startRng) {
             var startPathRng = generatePathRangeFromRange(root, startRng);
             return {
@@ -1320,17 +1348,16 @@
         editor.undoManager.extra(function () {
           editor.execCommand('mceInsertNewLine');
         }, function () {
-          editor.insertContent(zeroWidth);
+          editor.insertContent(zeroWidth());
           applyMatches$1(editor, inlineMatches);
           applyMatches(editor, blockMatches);
           var range = editor.selection.getRng();
           var spot = textBefore(range.startContainer, range.startOffset, editor.dom.getRoot());
           editor.execCommand('mceInsertNewLine');
           spot.each(function (s) {
-            var node = s.container;
-            if (node.data.charAt(s.offset - 1) === zeroWidth) {
-              node.deleteData(s.offset - 1, 1);
-              cleanEmptyNodes(editor.dom, node.parentNode, function (e) {
+            if (s.element.data.charAt(s.offset - 1) === zeroWidth()) {
+              s.element.deleteData(s.offset - 1, 1);
+              cleanEmptyNodes(editor.dom, s.element.parentNode, function (e) {
                 return e === editor.dom.getRoot();
               });
             }
