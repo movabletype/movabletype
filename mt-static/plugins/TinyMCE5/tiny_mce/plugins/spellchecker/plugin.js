@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -251,10 +251,8 @@
       }
       function unwrapElement(element) {
         var parentNode = element.parentNode;
-        while (element.childNodes.length > 0) {
-          parentNode.insertBefore(element.childNodes[0], element);
-        }
-        parentNode.removeChild(element);
+        parentNode.insertBefore(element.firstChild, element);
+        element.parentNode.removeChild(element);
       }
       function hasClass(elm) {
         return elm.className.indexOf('mce-spellchecker-word') !== -1;
@@ -376,80 +374,18 @@
       };
     };
 
-    var noop = function () {
-    };
-    var constant = function (value) {
-      return function () {
-        return value;
-      };
-    };
-    var never = constant(false);
-    var always = constant(true);
-
-    var none = function () {
-      return NONE;
-    };
-    var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
-      var call = function (thunk) {
-        return thunk();
-      };
-      var id = function (n) {
-        return n;
-      };
-      var me = {
-        fold: function (n, s) {
-          return n();
-        },
-        is: never,
-        isSome: never,
-        isNone: always,
-        getOr: id,
-        getOrThunk: call,
-        getOrDie: function (msg) {
-          throw new Error(msg || 'error: getOrDie called on none.');
-        },
-        getOrNull: constant(null),
-        getOrUndefined: constant(undefined),
-        or: id,
-        orThunk: call,
-        map: none,
-        each: noop,
-        bind: none,
-        exists: never,
-        forall: always,
-        filter: none,
-        equals: eq,
-        equals_: eq,
-        toArray: function () {
-          return [];
-        },
-        toString: constant('none()')
-      };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
-      return me;
-    }();
-
-    var hasOwnProperty = Object.hasOwnProperty;
-    var isEmpty = function (r) {
-      for (var x in r) {
-        if (hasOwnProperty.call(r, x)) {
-          return false;
-        }
-      }
-      return true;
-    };
-
     var getTextMatcher = function (editor, textMatcherState) {
       if (!textMatcherState.get()) {
         var textMatcher = DomTextMatcher(editor.getBody(), editor);
         textMatcherState.set(textMatcher);
       }
       return textMatcherState.get();
+    };
+    var isEmpty = function (obj) {
+      for (var _ in obj) {
+        return false;
+      }
+      return true;
     };
     var defaultSpellcheckCallback = function (editor, pluginUrl, currentLanguageState) {
       return function (method, text, doneCallback, errorCallback) {

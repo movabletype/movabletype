@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -1087,8 +1087,6 @@
       shouldUseDefaultFilters: shouldUseDefaultFilters
     };
 
-    var nbsp = '\xA0';
-
     function filter$1(content, items) {
       global$4.each(items, function (v) {
         if (v.constructor === RegExp) {
@@ -1148,7 +1146,7 @@
         if (!s1 && !s2) {
           return ' ';
         }
-        return nbsp;
+        return '\xA0';
       }
       html = filter$1(html, [
         /^[\s\S]*<body[^>]*>\s*|\s*<\/body[^>]*>[\s\S]*$/ig,
@@ -1401,12 +1399,12 @@
         ],
         [
           /&nbsp;/gi,
-          nbsp
+          '\xA0'
         ],
         [
           /<span\s+style\s*=\s*"\s*mso-spacerun\s*:\s*yes\s*;?\s*"\s*>([\s\u00a0]*)<\/span>/gi,
           function (str, spaces) {
-            return spaces.length > 0 ? spaces.replace(/./, ' ').slice(Math.floor(spaces.length / 2)).split('').join(nbsp) : '';
+            return spaces.length > 0 ? spaces.replace(/./, ' ').slice(Math.floor(spaces.length / 2)).split('').join('\xA0') : '';
           }
         ]
       ]);
@@ -1606,11 +1604,11 @@
     };
     var normalizeWhitespace = function (text) {
       var result = foldl(text, function (acc, c) {
-        if (isCollapsibleWhitespace(c) || c === nbsp) {
+        if (isCollapsibleWhitespace(c) || c === '\xA0') {
           if (acc.pcIsSpace || acc.str === '' || acc.str.length === text.length - 1 || isNewline(text, acc.str.length + 1)) {
             return {
               pcIsSpace: false,
-              str: acc.str + nbsp
+              str: acc.str + '\xA0'
             };
           } else {
             return {

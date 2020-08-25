@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -72,9 +72,6 @@
     var useQuickLink = function (editor) {
       return editor.getParam('link_quicklink', false, 'boolean');
     };
-    var getDefaultLinkProtocol = function (editor) {
-      return editor.getParam('link_default_protocol', 'http', 'string');
-    };
     var Settings = {
       assumeExternalTargets: assumeExternalTargets,
       hasContextToolbar: hasContextToolbar,
@@ -85,8 +82,7 @@
       getLinkClassList: getLinkClassList,
       shouldShowLinkTitle: shouldShowLinkTitle,
       allowUnsafeLinkTarget: allowUnsafeLinkTarget,
-      useQuickLink: useQuickLink,
-      getDefaultLinkProtocol: getDefaultLinkProtocol
+      useQuickLink: useQuickLink
     };
 
     var appendClickRemove = function (link, evt) {
@@ -278,19 +274,11 @@
       return r;
     };
     var bind = function (xs, f) {
-      return flatten(map(xs, f));
+      var output = map(xs, f);
+      return flatten(output);
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return nativeSlice.call(x);
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
     };
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
@@ -336,7 +324,7 @@
       return trimCaretContainers(text);
     };
     var isLink = function (elm) {
-      return elm && elm.nodeName === 'A' && !!getHref(elm);
+      return elm && elm.nodeName === 'A' && !!elm.href;
     };
     var hasLinks = function (elements) {
       return global$3.grep(elements, isLink).length > 0;
@@ -474,6 +462,15 @@
       }
       return r;
     };
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Option.none();
+    };
 
     var getValue = function (item) {
       return isString(item.value) ? item.value : '';
@@ -577,11 +574,7 @@
       var onUrlChange = function (data) {
         if (persistentText.get().length <= 0) {
           var urlText = data.url.meta.text !== undefined ? data.url.meta.text : data.url.value;
-          var urlTitle = data.url.meta.title !== undefined ? data.url.meta.title : '';
-          return Option.some({
-            text: urlText,
-            title: urlTitle
-          });
+          return Option.some({ text: urlText });
         } else {
           return Option.none();
         }
@@ -1248,22 +1241,22 @@
         }
       }) : Option.none();
     };
-    var tryProtocolTransform = function (assumeExternalTargets, defaultLinkProtocol) {
+    var tryProtocolTransform = function (assumeExternalTargets) {
       return function (data) {
         var url = data.href;
         var suggestProtocol = assumeExternalTargets === 1 && !Utils.hasProtocol(url) || assumeExternalTargets === 0 && /^\s*www[\.|\d\.]/i.test(url);
         return suggestProtocol ? Option.some({
-          message: 'The URL you entered seems to be an external link. Do you want to add the required ' + defaultLinkProtocol + ':// prefix?',
+          message: 'The URL you entered seems to be an external link. Do you want to add the required http:// prefix?',
           preprocess: function (oldData) {
-            return __assign(__assign({}, oldData), { href: defaultLinkProtocol + '://' + url });
+            return __assign(__assign({}, oldData), { href: 'http://' + url });
           }
         }) : Option.none();
       };
     };
-    var preprocess = function (editor, data) {
+    var preprocess = function (editor, assumeExternalTargets, data) {
       return findMap([
         tryEmailTransform,
-        tryProtocolTransform(Settings.assumeExternalTargets(editor), Settings.getDefaultLinkProtocol(editor))
+        tryProtocolTransform(assumeExternalTargets)
       ], function (f) {
         return f(data);
       }).fold(function () {
@@ -1429,7 +1422,7 @@
     };
     var DialogInfo = { collect: collect };
 
-    var handleSubmit = function (editor, info) {
+    var handleSubmit = function (editor, info, assumeExternalTargets) {
       return function (api) {
         var data = api.getData();
         if (!data.url.value) {
@@ -1455,7 +1448,7 @@
           attach: data.url.meta !== undefined && data.url.meta.attach ? data.url.meta.attach : function () {
           }
         };
-        DialogConfirms.preprocess(editor, changedData).get(function (pData) {
+        DialogConfirms.preprocess(editor, assumeExternalTargets, changedData).get(function (pData) {
           Utils.link(editor, attachState, pData);
         });
         api.close();
@@ -1557,7 +1550,7 @@
     var open$1 = function (editor) {
       var data = collectData(editor);
       data.map(function (info) {
-        var onSubmit = handleSubmit(editor, info);
+        var onSubmit = handleSubmit(editor, info, Settings.assumeExternalTargets(editor));
         return makeDialog(info, onSubmit, editor);
       }).get(function (spec) {
         editor.windowManager.open(spec);
@@ -1630,7 +1623,7 @@
     var toggleActiveState = function (editor) {
       return function (api) {
         var nodeChangeHandler = function (e) {
-          return api.setActive(!editor.mode.isReadOnly() && !!Utils.getAnchorElement(editor, e.element));
+          return api.setActive(!editor.readonly && !!Utils.getAnchorElement(editor, e.element));
         };
         editor.on('NodeChange', nodeChangeHandler);
         return function () {
@@ -1640,8 +1633,7 @@
     };
     var toggleEnabledState = function (editor) {
       return function (api) {
-        var parents = editor.dom.getParents(editor.selection.getStart());
-        api.setDisabled(!Utils.hasLinks(parents));
+        api.setDisabled(!Utils.hasLinks(editor.dom.getParents(editor.selection.getStart())));
         var nodeChangeHandler = function (e) {
           return api.setDisabled(!Utils.hasLinks(e.parents));
         };
