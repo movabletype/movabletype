@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package TinyMCE::L10N;
+package TinyMCE5::L10N;
 use strict;
 use warnings;
 use base 'MT::Plugin::L10N';

@@ -4,12 +4,12 @@
 #
 # $Id$
 
-package TinyMCE::L10N::en_us;
+package TinyMCE5::L10N::en_us;
 
 use strict;
 use warnings;
 
-use base 'TinyMCE::L10N';
+use base 'TinyMCE5::L10N';
 use vars qw( %Lexicon );
 %Lexicon = ();
 
