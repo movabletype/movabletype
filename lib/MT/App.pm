@@ -3380,7 +3380,7 @@ sub run {
 
             # Some browsers throw you to quirks mode if the doctype isn't
             # up front and leading whitespace makes a feed invalid.
-            $body =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
+            $body =~ s/\A\s*(?:\x{feff}|\xef\xbb\xbf)?\s*(<(?:\?xml|!DOCTYPE))/$1/s if defined $body;
 
             $app->print_encode($body);
         }
