@@ -4,13 +4,9 @@
 #
 # $Id$
 
-package TinyMCE::L10N::en_us;
-
+package TinyMCE5::L10N;
 use strict;
 use warnings;
-
-use base 'TinyMCE::L10N';
-use vars qw( %Lexicon );
-%Lexicon = ();
+use base 'MT::Plugin::L10N';
 
 1;

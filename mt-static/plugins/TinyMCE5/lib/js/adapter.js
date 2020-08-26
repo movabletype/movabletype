@@ -23,8 +23,8 @@
         config: {
             plugins: 'lists,media,paste,hr,link,textpattern,fullscreen,table,quickbars',
             external_plugins: {
-                'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
-                'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+                'mt': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
+                'mt_fullscreen': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
             },
   
             language: $('html').attr('lang'),
@@ -33,7 +33,7 @@
             forced_root_block: 'p',
             resize: true,
             icons: 'mt',
-            icons_url: StaticURI + 'plugins/TinyMCE/lib/js/icons.js',
+            icons_url: StaticURI + 'plugins/TinyMCE5/lib/js/icons.js',
 
             // Buttons using both in source and wysiwyg modes.
             plugin_mt_common_buttons1: 'mt_source_mode',
