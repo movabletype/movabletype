@@ -23,8 +23,8 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
     config: {
         plugins: "lists,media,paste,hr,link,textpattern,table",
         external_plugins: {
-            'mt': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
-            'mt_fullscreen': StaticURI + 'plugins/TinyMCE/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
+            'mt': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin' + suffix + '.js',
+            'mt_fullscreen': StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/plugins/mt_fullscreen/plugin' + suffix + '.js',
         },
 
         language: $('html').attr('lang'),
@@ -32,7 +32,7 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         menubar: false,
         branding: false,
         icons: 'mt',
-        icons_url: StaticURI + 'plugins/TinyMCE/lib/js/tinymce/icons.js',
+        icons_url: StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/icons.js',
 
         indent_before : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
         indent_after : 'p,h1,h2,h3,h4,h5,h6,blockquote,div,title,style,pre,script,td,ul,ol,li,dl,dt,dd,area,table,thead,tfoot,tbody,tr,iframe,section,article,hgroup,aside,figure,option,optgroup,datalist',
