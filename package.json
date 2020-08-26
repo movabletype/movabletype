@@ -54,7 +54,7 @@
     "popper.js": "^1.12.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.2.2",
+    "tinymce": "5.1.6",
     "tinymce-i18n": "20.4.4",
     "codemirror": "5.54"
   }
