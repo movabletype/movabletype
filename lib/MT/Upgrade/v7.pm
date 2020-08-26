@@ -178,11 +178,6 @@ sub upgrade_functions {
             priority      => 3.1,
             code          => \&_v7_remove_sql_set_names,
         },
-        'v7_disable_old_tinymce' => {
-            version_limit => '7.0047',
-            priority      => 3.1,
-            code          => \&_v7_disable_old_tinymce,
-        },
     };
 }
 
@@ -1465,19 +1460,6 @@ sub _v7_remove_sql_set_names {
 
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
-    $cfg->save_config;
-}
-
-sub _v7_disable_old_tinymce {
-    my $self      = shift;
-    my $cfg_class = MT->model('config');
-    my $data = $cfg_class->load(1)->data;
-    return 1 unless $data =~ /PluginSwitch TinyMCE=1/;
-
-    $self->progress( $self->translate_escape('Disable old TinyMCE...') );
-
-    my $cfg = MT->config;
-    $cfg->PluginSwitch( 'TinyMCE=0', 1 );
     $cfg->save_config;
 }
 
