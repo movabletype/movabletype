@@ -128,11 +128,6 @@ __SQL__
             priority      => 3.1,
             code          => \&_v6_update_release_number,
         },
-        'v6_disable_old_tinymce' => {
-            version_limit => '6.0023',
-            priority      => 3.1,
-            code          => \&_v6_disable_old_tinymce,
-        },
     };
 }
 
@@ -307,19 +302,6 @@ sub _v6_update_release_number {
 
     my $cfg = MT->config;
     $cfg->MTReleaseNumber( MT->release_number, 1 );
-    $cfg->save_config;
-}
-
-sub _v6_disable_old_tinymce {
-    my $self      = shift;
-    my $cfg_class = MT->model('config');
-    my $data = $cfg_class->load(1)->data;
-    return 1 unless $data =~ /PluginSwitch TinyMCE=1/;
-
-    $self->progress( $self->translate_escape('Disable old TinyMCE...') );
-
-    my $cfg = MT->config;
-    $cfg->PluginSwitch( 'TinyMCE=0', 1 );
     $cfg->save_config;
 }
 
