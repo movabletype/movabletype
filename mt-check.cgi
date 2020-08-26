@@ -119,7 +119,7 @@ if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4610';
+    $release_version = 'r.4701';
 }
 
 my ( $mt, $LH );
