@@ -13,7 +13,7 @@ editors:
         template: editor.tmpl
 
 callbacks:
-    MT::Upgrade::upgrade_begin: |
+    MT::Upgrade::upgrade_end: |
         sub {
             # explicitly enabled or disabled
             return 1 if do {
