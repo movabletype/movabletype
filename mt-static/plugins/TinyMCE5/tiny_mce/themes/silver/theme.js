@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.2.2 (2020-04-23)
+ * Version: 5.1.6 (2020-01-28)
  */
 (function (domGlobals) {
     'use strict';
@@ -474,7 +474,8 @@
       return r;
     };
     var bind = function (xs, f) {
-      return flatten(map(xs, f));
+      var output = map(xs, f);
+      return flatten(output);
     };
     var forall = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; ++i) {
@@ -495,14 +496,6 @@
         return !contains(a2, x);
       });
     };
-    var mapToObject = function (xs, f) {
-      var r = {};
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        r[String(x)] = f(x, i);
-      }
-      return r;
-    };
     var pure = function (x) {
       return [x];
     };
@@ -519,15 +512,6 @@
     };
     var from$1 = isFunction(Array.from) ? Array.from : function (x) {
       return nativeSlice.call(x);
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
     };
 
     var keys = Object.keys;
@@ -584,9 +568,6 @@
     };
     var has = function (obj, key) {
       return hasOwnProperty.call(obj, key);
-    };
-    var hasNonNullableKey = function (obj, key) {
-      return has(obj, key) && obj[key] !== undefined && obj[key] !== null;
     };
 
     var generate = function (cases) {
@@ -706,6 +687,138 @@
       };
     };
 
+    var adt = Adt.generate([
+      { strict: [] },
+      { defaultedThunk: ['fallbackThunk'] },
+      { asOption: [] },
+      { asDefaultedOptionThunk: ['fallbackThunk'] },
+      { mergeWithThunk: ['baseThunk'] }
+    ]);
+    var defaulted = function (fallback) {
+      return adt.defaultedThunk(constant(fallback));
+    };
+    var mergeWith = function (base) {
+      return adt.mergeWithThunk(constant(base));
+    };
+    var strict = adt.strict;
+    var asOption = adt.asOption;
+    var defaultedThunk = adt.defaultedThunk;
+    var mergeWithThunk = adt.mergeWithThunk;
+
+    var exclude = function (obj, fields) {
+      var r = {};
+      each$1(obj, function (v, k) {
+        if (!contains(fields, k)) {
+          r[k] = v;
+        }
+      });
+      return r;
+    };
+
+    var readOpt = function (key) {
+      return function (obj) {
+        return has(obj, key) ? Option.from(obj[key]) : Option.none();
+      };
+    };
+    var readOr = function (key, fallback) {
+      return function (obj) {
+        return has(obj, key) ? obj[key] : fallback;
+      };
+    };
+    var readOptFrom = function (obj, key) {
+      return readOpt(key)(obj);
+    };
+    var hasKey = function (obj, key) {
+      return has(obj, key) && obj[key] !== undefined && obj[key] !== null;
+    };
+
+    var wrap = function (key, value) {
+      var r = {};
+      r[key] = value;
+      return r;
+    };
+    var wrapAll = function (keyvalues) {
+      var r = {};
+      each(keyvalues, function (kv) {
+        r[kv.key] = kv.value;
+      });
+      return r;
+    };
+
+    var comparison = Adt.generate([
+      {
+        bothErrors: [
+          'error1',
+          'error2'
+        ]
+      },
+      {
+        firstError: [
+          'error1',
+          'value2'
+        ]
+      },
+      {
+        secondError: [
+          'value1',
+          'error2'
+        ]
+      },
+      {
+        bothValues: [
+          'value1',
+          'value2'
+        ]
+      }
+    ]);
+    var partition$1 = function (results) {
+      var errors = [];
+      var values = [];
+      each(results, function (result) {
+        result.fold(function (err) {
+          errors.push(err);
+        }, function (value) {
+          values.push(value);
+        });
+      });
+      return {
+        errors: errors,
+        values: values
+      };
+    };
+
+    var exclude$1 = function (obj, fields) {
+      return exclude(obj, fields);
+    };
+    var readOpt$1 = function (key) {
+      return readOpt(key);
+    };
+    var readOr$1 = function (key, fallback) {
+      return readOr(key, fallback);
+    };
+    var readOptFrom$1 = function (obj, key) {
+      return readOptFrom(obj, key);
+    };
+    var wrap$1 = function (key, value) {
+      return wrap(key, value);
+    };
+    var wrapAll$1 = function (keyvalues) {
+      return wrapAll(keyvalues);
+    };
+    var mergeValues = function (values, base) {
+      return values.length === 0 ? Result.value(base) : Result.value(deepMerge(base, merge.apply(undefined, values)));
+    };
+    var mergeErrors = function (errors) {
+      return Result.error(flatten(errors));
+    };
+    var consolidate = function (objs, base) {
+      var partitions = partition$1(objs);
+      return partitions.errors.length > 0 ? mergeErrors(partitions.errors) : mergeValues(partitions.values, base);
+    };
+    var hasKey$1 = function (obj, key) {
+      return hasKey(obj, key);
+    };
+
     var SimpleResultType;
     (function (SimpleResultType) {
       SimpleResultType[SimpleResultType['Error'] = 0] = 'Error';
@@ -714,7 +827,7 @@
     var fold = function (res, onError, onValue) {
       return res.stype === SimpleResultType.Error ? onError(res.serror) : onValue(res.svalue);
     };
-    var partition$1 = function (results) {
+    var partition$2 = function (results) {
       var values = [];
       var errors = [];
       each(results, function (obj) {
@@ -785,116 +898,13 @@
       fromResult: fromResult,
       toResult: toResult,
       svalue: svalue,
-      partition: partition$1,
+      partition: partition$2,
       serror: serror,
       bind: bind$1,
       bindError: bindError,
       map: map$2,
       mapError: mapError,
       fold: fold
-    };
-
-    var adt = Adt.generate([
-      { strict: [] },
-      { defaultedThunk: ['fallbackThunk'] },
-      { asOption: [] },
-      { asDefaultedOptionThunk: ['fallbackThunk'] },
-      { mergeWithThunk: ['baseThunk'] }
-    ]);
-    var defaulted = function (fallback) {
-      return adt.defaultedThunk(constant(fallback));
-    };
-    var mergeWith = function (base) {
-      return adt.mergeWithThunk(constant(base));
-    };
-    var strict = adt.strict;
-    var asOption = adt.asOption;
-    var defaultedThunk = adt.defaultedThunk;
-    var asDefaultedOptionThunk = adt.asDefaultedOptionThunk;
-    var mergeWithThunk = adt.mergeWithThunk;
-
-    var exclude = function (obj, fields) {
-      var r = {};
-      each$1(obj, function (v, k) {
-        if (!contains(fields, k)) {
-          r[k] = v;
-        }
-      });
-      return r;
-    };
-
-    var wrap = function (key, value) {
-      var _a;
-      return _a = {}, _a[key] = value, _a;
-    };
-    var wrapAll = function (keyvalues) {
-      var r = {};
-      each(keyvalues, function (kv) {
-        r[kv.key] = kv.value;
-      });
-      return r;
-    };
-
-    var comparison = Adt.generate([
-      {
-        bothErrors: [
-          'error1',
-          'error2'
-        ]
-      },
-      {
-        firstError: [
-          'error1',
-          'value2'
-        ]
-      },
-      {
-        secondError: [
-          'value1',
-          'error2'
-        ]
-      },
-      {
-        bothValues: [
-          'value1',
-          'value2'
-        ]
-      }
-    ]);
-    var partition$2 = function (results) {
-      var errors = [];
-      var values = [];
-      each(results, function (result) {
-        result.fold(function (err) {
-          errors.push(err);
-        }, function (value) {
-          values.push(value);
-        });
-      });
-      return {
-        errors: errors,
-        values: values
-      };
-    };
-
-    var exclude$1 = function (obj, fields) {
-      return exclude(obj, fields);
-    };
-    var wrap$1 = function (key, value) {
-      return wrap(key, value);
-    };
-    var wrapAll$1 = function (keyvalues) {
-      return wrapAll(keyvalues);
-    };
-    var mergeValues = function (values, base) {
-      return values.length === 0 ? Result.value(base) : Result.value(deepMerge(base, merge.apply(undefined, values)));
-    };
-    var mergeErrors = function (errors) {
-      return Result.error(flatten(errors));
-    };
-    var consolidate = function (objs, base) {
-      var partitions = partition$2(objs);
-      return partitions.errors.length > 0 ? mergeErrors(partitions.errors) : mergeValues(partitions.values, base);
     };
 
     var mergeValues$1 = function (values, base) {
@@ -915,6 +925,41 @@
       consolidateObj: consolidateObj,
       consolidateArr: consolidateArr
     };
+
+    var typeAdt = Adt.generate([
+      {
+        setOf: [
+          'validator',
+          'valueType'
+        ]
+      },
+      { arrOf: ['valueType'] },
+      { objOf: ['fields'] },
+      { itemOf: ['validator'] },
+      {
+        choiceOf: [
+          'key',
+          'branches'
+        ]
+      },
+      { thunk: ['description'] },
+      {
+        func: [
+          'args',
+          'outputSchema'
+        ]
+      }
+    ]);
+    var fieldAdt = Adt.generate([
+      {
+        field: [
+          'name',
+          'presence',
+          'type'
+        ]
+      },
+      { state: ['name'] }
+    ]);
 
     var formatObj = function (input) {
       return isObject(input) && keys(input).length > 100 ? ' removed due to size' : JSON.stringify(input, null, 2);
@@ -980,21 +1025,21 @@
       }
     ]);
     var strictAccess = function (path, obj, key) {
-      return get(obj, key).fold(function () {
+      return readOptFrom(obj, key).fold(function () {
         return missingStrict(path, key, obj);
       }, SimpleResult.svalue);
     };
     var fallbackAccess = function (obj, key, fallbackThunk) {
-      var v = get(obj, key).fold(function () {
+      var v = readOptFrom(obj, key).fold(function () {
         return fallbackThunk(obj);
       }, identity);
       return SimpleResult.svalue(v);
     };
     var optionAccess = function (obj, key) {
-      return SimpleResult.svalue(get(obj, key));
+      return SimpleResult.svalue(readOptFrom(obj, key));
     };
     var optionDefaultedAccess = function (obj, key, fallback) {
-      var opt = get(obj, key).map(function (val) {
+      var opt = readOptFrom(obj, key).map(function (val) {
         return val === true ? fallback(obj) : val;
       });
       return SimpleResult.svalue(opt);
@@ -1053,9 +1098,13 @@
       var toString = function () {
         return getDelegate().toString();
       };
+      var toDsl = function () {
+        return getDelegate().toDsl();
+      };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
     var value$1 = function (validator) {
@@ -1067,15 +1116,19 @@
       var toString = function () {
         return 'val';
       };
+      var toDsl = function () {
+        return typeAdt.itemOf(validator);
+      };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
     var getSetKeys = function (obj) {
       var keys$1 = keys(obj);
       return filter(keys$1, function (k) {
-        return hasNonNullableKey(obj, k);
+        return hasKey$1(obj, k);
       });
     };
     var objOfOnly = function (fields) {
@@ -1088,13 +1141,14 @@
       var extract = function (path, strength, o) {
         var keys = isBoolean(o) ? [] : getSetKeys(o);
         var extra = filter(keys, function (k) {
-          return !hasNonNullableKey(fieldNames, k);
+          return !hasKey$1(fieldNames, k);
         });
         return extra.length === 0 ? delegate.extract(path, strength, o) : unsupportedFields(path, extra);
       };
       return {
         extract: extract,
-        toString: delegate.toString
+        toString: delegate.toString,
+        toDsl: delegate.toDsl
       };
     };
     var objOf = function (fields) {
@@ -1111,9 +1165,19 @@
         });
         return 'obj{\n' + fieldStrings.join('\n') + '}';
       };
+      var toDsl = function () {
+        return typeAdt.objOf(map(fields, function (f) {
+          return f.fold(function (key, okey, presence, prop) {
+            return fieldAdt.field(key, presence, prop);
+          }, function (okey, instantiator) {
+            return fieldAdt.state(okey);
+          });
+        }));
+      };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
     var arrOf = function (prop) {
@@ -1126,32 +1190,13 @@
       var toString = function () {
         return 'array(' + prop.toString() + ')';
       };
-      return {
-        extract: extract,
-        toString: toString
-      };
-    };
-    var oneOf = function (props) {
-      var extract = function (path, strength, val) {
-        var errors = [];
-        for (var _i = 0, props_1 = props; _i < props_1.length; _i++) {
-          var prop = props_1[_i];
-          var res = prop.extract(path, strength, val);
-          if (res.stype === SimpleResultType.Value) {
-            return res;
-          }
-          errors.push(res);
-        }
-        return ResultCombine.consolidateArr(errors);
-      };
-      var toString = function () {
-        return 'oneOf(' + map(props, function (prop) {
-          return prop.toString();
-        }).join(', ') + ')';
+      var toDsl = function () {
+        return typeAdt.arrOf(prop);
       };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
     var setOf = function (validator, prop) {
@@ -1171,9 +1216,13 @@
       var toString = function () {
         return 'setOf(' + prop.toString() + ')';
       };
+      var toDsl = function () {
+        return typeAdt.setOf(validator, prop);
+      };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
     var anyValue = constant(value$1(SimpleResult.svalue));
@@ -1182,7 +1231,7 @@
     var field = adt$1.field;
 
     var chooseFrom = function (path, strength, input, branches, ch) {
-      var fields = get(branches, ch);
+      var fields = readOptFrom$1(branches, ch);
       return fields.fold(function () {
         return missingBranch(path, branches, ch);
       }, function (vp) {
@@ -1191,7 +1240,7 @@
     };
     var choose = function (key, branches) {
       var extract = function (path, strength, input) {
-        var choice = get(input, key);
+        var choice = readOptFrom$1(input, key);
         return choice.fold(function () {
           return missingKey(path, key);
         }, function (chosen) {
@@ -1201,9 +1250,13 @@
       var toString = function () {
         return 'chooseOn(' + key + '). Possible values: ' + keys(branches);
       };
+      var toDsl = function () {
+        return typeAdt.choiceOf(key, branches);
+      };
       return {
         extract: extract,
-        toString: toString
+        toString: toString,
+        toDsl: toDsl
       };
     };
 
@@ -1246,7 +1299,7 @@
       return getOrDie(asRaw(label, prop, obj));
     };
     var formatError = function (errInfo) {
-      return 'Errors: \n' + formatErrors(errInfo.errors).join('\n') + '\n\nInput object: ' + formatObj(errInfo.input);
+      return 'Errors: \n' + formatErrors(errInfo.errors) + '\n\nInput object: ' + formatObj(errInfo.input);
     };
     var chooseProcessor = function (key, branches) {
       return choose(key, branches);
@@ -1874,34 +1927,92 @@
     var browser = detect$3().browser;
     var contains$2 = browser.isIE() ? ieContains : regularContains;
 
-    var ancestor = function (scope, transform, isRoot) {
+    var isSource = function (component, simulatedEvent) {
+      return eq(component.element(), simulatedEvent.event().target());
+    };
+
+    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
+      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
+    }
+
+    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
+
+    var name = function (element) {
+      var r = element.dom().nodeName;
+      return r.toLowerCase();
+    };
+    var type = function (element) {
+      return element.dom().nodeType;
+    };
+    var isType$1 = function (t) {
+      return function (element) {
+        return type(element) === t;
+      };
+    };
+    var isElement = isType$1(ELEMENT);
+    var isText = isType$1(TEXT);
+
+    var inBody = function (element) {
+      var dom = isText(element) ? element.dom().parentNode : element.dom();
+      return dom !== undefined && dom !== null && dom.ownerDocument.body.contains(dom);
+    };
+    var body = cached(function () {
+      return getBody(Element.fromDom(domGlobals.document));
+    });
+    var getBody = function (doc) {
+      var b = doc.dom().body;
+      if (b === null || b === undefined) {
+        throw new Error('Body is not available yet');
+      }
+      return Element.fromDom(b);
+    };
+
+    var ancestor = function (scope, predicate, isRoot) {
       var element = scope.dom();
       var stop = isFunction(isRoot) ? isRoot : constant(false);
       while (element.parentNode) {
         element = element.parentNode;
         var el = Element.fromDom(element);
-        var transformed = transform(el);
-        if (transformed.isSome()) {
-          return transformed;
+        if (predicate(el)) {
+          return Option.some(el);
         } else if (stop(el)) {
           break;
         }
       }
       return Option.none();
     };
-    var closest = function (scope, transform, isRoot) {
-      var current = transform(scope);
-      return current.orThunk(function () {
-        return isRoot(scope) ? Option.none() : ancestor(scope, transform, isRoot);
-      });
+    var closest = function (scope, predicate, isRoot) {
+      var is = function (s, test) {
+        return test(s);
+      };
+      return ClosestOrAncestor(is, ancestor, scope, predicate, isRoot);
+    };
+    var descendant = function (scope, predicate) {
+      var descend = function (node) {
+        for (var i = 0; i < node.childNodes.length; i++) {
+          var child_1 = Element.fromDom(node.childNodes[i]);
+          if (predicate(child_1)) {
+            return Option.some(child_1);
+          }
+          var res = descend(node.childNodes[i]);
+          if (res.isSome()) {
+            return res;
+          }
+        }
+        return Option.none();
+      };
+      return descend(scope.dom());
     };
 
-    var isSource = function (component, simulatedEvent) {
-      return eq(component.element(), simulatedEvent.event().target());
+    var closest$1 = function (target, transform, isRoot) {
+      var delegate = closest(target, function (elem) {
+        return transform(elem).isSome();
+      }, isRoot);
+      return delegate.bind(transform);
     };
 
     var nu$4 = function (parts) {
-      if (!hasNonNullableKey(parts, 'can') && !hasNonNullableKey(parts, 'abort') && !hasNonNullableKey(parts, 'run')) {
+      if (!hasKey$1(parts, 'can') && !hasKey$1(parts, 'abort') && !hasKey$1(parts, 'run')) {
         throw new Error('EventHandler defined by: ' + JSON.stringify(parts, null, 2) + ' does not have can, abort, or run!');
       }
       return asRawOrDie('Extracting event.handler', objOfOnly([
@@ -2106,10 +2217,10 @@
       return run(name, function (component, simulatedEvent) {
         var ev = simulatedEvent.event();
         var target = component.getSystem().getByDom(ev.target()).fold(function () {
-          var closest$1 = closest(ev.target(), function (el) {
+          var closest = closest$1(ev.target(), function (el) {
             return component.getSystem().getByDom(el).toOption();
           }, constant(false));
-          return closest$1.getOr(component);
+          return closest.getOr(component);
         }, function (c) {
           return c;
         });
@@ -2340,23 +2451,6 @@
       return get$1(container);
     };
 
-    var Global = typeof domGlobals.window !== 'undefined' ? domGlobals.window : Function('return this;')();
-
-    var name = function (element) {
-      var r = element.dom().nodeName;
-      return r.toLowerCase();
-    };
-    var type = function (element) {
-      return element.dom().nodeType;
-    };
-    var isType$1 = function (t) {
-      return function (element) {
-        return type(element) === t;
-      };
-    };
-    var isElement = isType$1(ELEMENT);
-    var isText = isType$1(TEXT);
-
     var rawSet = function (dom, key, value) {
       if (isString(value) || isBoolean(value) || isNumber(value)) {
         dom.setAttribute(key, value + '');
@@ -2377,9 +2471,6 @@
     var get$2 = function (element, key) {
       var v = element.dom().getAttribute(key);
       return v === null ? undefined : v;
-    };
-    var getOpt = function (element, key) {
-      return Option.from(get$2(element, key));
     };
     var has$1 = function (element, key) {
       var dom = element.dom();
@@ -2420,7 +2511,6 @@
       })]);
 
     var DefaultEvents = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events
     });
 
@@ -2462,7 +2552,7 @@
     var NoContextApi = function (getComp) {
       var fail = function (event) {
         return function () {
-          throw new Error('The component must be in a context to send: ' + event + (getComp ? '\n' + element(getComp().element()) + ' is not in context.' : ''));
+          throw new Error('The component must be in a context to send: ' + event + '\n' + element(getComp().element()) + ' is not in context.');
         };
       };
       return {
@@ -2535,7 +2625,7 @@
       return wrap$1(premadeTag, comp);
     };
     var getPremade = function (spec) {
-      return get(spec, premadeTag);
+      return readOptFrom$1(spec, premadeTag);
     };
     var makeApi = function (f) {
       return markAsSketchApi(function (component) {
@@ -2575,7 +2665,8 @@
       return {
         list: all,
         data: map$1(validated, function (optBlobThunk) {
-          var output = optBlobThunk.map(function (blob) {
+          var optBlob = optBlobThunk;
+          var output = optBlob.map(function (blob) {
             return {
               config: blob.config,
               state: blob.state.init(blob.config)
@@ -2598,7 +2689,7 @@
       var r = {};
       each$1(data, function (detail, key) {
         each$1(detail, function (value, indexKey) {
-          var chain = get(r, indexKey).getOr([]);
+          var chain = readOr$1(indexKey, [])(r);
           r[indexKey] = chain.concat([tuple(key, value)]);
         });
       });
@@ -2625,12 +2716,13 @@
       each(behaviours, function (behaviour) {
         modsByBehaviour[behaviour.name()] = behaviour.exhibit(info, base);
       });
-      var byAspect = byInnerKey(modsByBehaviour, function (name, modification) {
+      var nameAndMod = function (name, modification) {
         return {
           name: name,
           modification: modification
         };
-      });
+      };
+      var byAspect = byInnerKey(modsByBehaviour, nameAndMod);
       var combineObjects = function (objects) {
         return foldr(objects, function (b, a) {
           return __assign(__assign({}, a.modification), b);
@@ -2649,8 +2741,9 @@
     };
 
     var sortKeys = function (label, keyName, array, order) {
+      var sliced = array.slice(0);
       try {
-        var sorted = sort(array, function (a, b) {
+        var sorted = sliced.sort(function (a, b) {
           var aKey = a[keyName]();
           var bKey = b[keyName]();
           var aIndex = order.indexOf(aKey);
@@ -2922,21 +3015,6 @@
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
     };
 
-    var inBody = function (element) {
-      var dom = isText(element) ? element.dom().parentNode : element.dom();
-      return dom !== undefined && dom !== null && dom.ownerDocument.body.contains(dom);
-    };
-    var body = cached(function () {
-      return getBody(Element.fromDom(domGlobals.document));
-    });
-    var getBody = function (doc) {
-      var b = doc.dom().body;
-      if (b === null || b === undefined) {
-        throw new Error('Body is not available yet');
-      }
-      return Element.fromDom(b);
-    };
-
     var internalSet = function (dom, property, value) {
       if (!isString(value)) {
         domGlobals.console.error('Invalid call to CSS.set. Property ', property, ':: Value ', value, ':: Element ', dom);
@@ -2988,17 +3066,6 @@
         return r.length > 0;
       });
     };
-    var getAllRaw = function (element) {
-      var css = {};
-      var dom = element.dom();
-      if (isSupported(dom)) {
-        for (var i = 0; i < dom.style.length; i++) {
-          var ruleName = dom.style.item(i);
-          css[ruleName] = dom.style[ruleName];
-        }
-      }
-      return css;
-    };
     var isValidValue = function (tag, property, value) {
       var element = Element.fromTag(tag);
       set$2(element, property, value);
@@ -3047,7 +3114,7 @@
     };
 
     var getBehaviours$1 = function (spec) {
-      var behaviours = get(spec, 'behaviours').getOr({});
+      var behaviours = readOr$1('behaviours', {})(spec);
       var keys$1 = filter(keys(behaviours), function (k) {
         return behaviours[k] !== undefined;
       });
@@ -3140,7 +3207,7 @@
     };
 
     var buildSubcomponents = function (spec) {
-      var components = get(spec, 'components').getOr([]);
+      var components = readOr$1('components', [])(spec);
       return map(components, build$1);
     };
     var buildFromSpec = function (userSpec) {
@@ -3336,51 +3403,6 @@
       set$2(element, 'max-width', absMax + 'px');
     };
 
-    var mkEvent = function (target, x, y, stop, prevent, kill, raw) {
-      return {
-        target: constant(target),
-        x: constant(x),
-        y: constant(y),
-        stop: stop,
-        prevent: prevent,
-        kill: kill,
-        raw: constant(raw)
-      };
-    };
-    var fromRawEvent = function (rawEvent) {
-      var target = Element.fromDom(rawEvent.target);
-      var stop = function () {
-        rawEvent.stopPropagation();
-      };
-      var prevent = function () {
-        rawEvent.preventDefault();
-      };
-      var kill = compose(prevent, stop);
-      return mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
-    };
-    var handle = function (filter, handler) {
-      return function (rawEvent) {
-        if (!filter(rawEvent)) {
-          return;
-        }
-        handler(fromRawEvent(rawEvent));
-      };
-    };
-    var binder = function (element, event, filter, handler, useCapture) {
-      var wrapped = handle(filter, handler);
-      element.dom().addEventListener(event, wrapped, useCapture);
-      return { unbind: curry(unbind, element, event, wrapped, useCapture) };
-    };
-    var bind$2 = function (element, event, filter, handler) {
-      return binder(element, event, filter, handler, false);
-    };
-    var capture = function (element, event, filter, handler) {
-      return binder(element, event, filter, handler, true);
-    };
-    var unbind = function (element, event, handler, useCapture) {
-      element.dom().removeEventListener(event, handler, useCapture);
-    };
-
     var isSafari = detect$3().browser.isSafari();
     var get$8 = function (_DOC) {
       var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
@@ -3388,16 +3410,7 @@
       var y = doc.body.scrollTop || doc.documentElement.scrollTop;
       return Position(x, y);
     };
-    var to = function (x, y, _DOC) {
-      var doc = _DOC !== undefined ? _DOC.dom() : domGlobals.document;
-      var win = doc.defaultView;
-      win.scrollTo(x, y);
-    };
 
-    var get$9 = function (_win) {
-      var win = _win === undefined ? domGlobals.window : _win;
-      return Option.from(win['visualViewport']);
-    };
     var bounds = function (x, y, width, height) {
       return {
         x: constant(x),
@@ -3412,14 +3425,15 @@
       var win = _win === undefined ? domGlobals.window : _win;
       var doc = win.document;
       var scroll = get$8(Element.fromDom(doc));
-      return get$9(win).fold(function () {
-        var html = win.document.documentElement;
+      var visualViewport = win['visualViewport'];
+      if (visualViewport !== undefined) {
+        return bounds(Math.max(visualViewport.pageLeft, scroll.left()), Math.max(visualViewport.pageTop, scroll.top()), visualViewport.width, visualViewport.height);
+      } else {
+        var html = doc.documentElement;
         var width = html.clientWidth;
         var height = html.clientHeight;
         return bounds(scroll.left(), scroll.top(), width, height);
-      }, function (visualViewport) {
-        return bounds(Math.max(visualViewport.pageLeft, scroll.left()), Math.max(visualViewport.pageTop, scroll.top()), visualViewport.width, visualViewport.height);
-      });
+      }
     };
 
     var walkUp = function (navigation, doc) {
@@ -3445,7 +3459,6 @@
     };
 
     var Navigation = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         view: view,
         owner: owner$1
     });
@@ -3498,53 +3511,12 @@
       return getBounds(domGlobals.window);
     };
 
-    function ClosestOrAncestor (is, ancestor, scope, a, isRoot) {
-      return is(scope, a) ? Option.some(scope) : isFunction(isRoot) && isRoot(scope) ? Option.none() : ancestor(scope, a, isRoot);
-    }
-
-    var ancestor$1 = function (scope, predicate, isRoot) {
-      var element = scope.dom();
-      var stop = isFunction(isRoot) ? isRoot : constant(false);
-      while (element.parentNode) {
-        element = element.parentNode;
-        var el = Element.fromDom(element);
-        if (predicate(el)) {
-          return Option.some(el);
-        } else if (stop(el)) {
-          break;
-        }
-      }
-      return Option.none();
-    };
-    var closest$1 = function (scope, predicate, isRoot) {
-      var is = function (s, test) {
-        return test(s);
-      };
-      return ClosestOrAncestor(is, ancestor$1, scope, predicate, isRoot);
-    };
-    var descendant = function (scope, predicate) {
-      var descend = function (node) {
-        for (var i = 0; i < node.childNodes.length; i++) {
-          var child_1 = Element.fromDom(node.childNodes[i]);
-          if (predicate(child_1)) {
-            return Option.some(child_1);
-          }
-          var res = descend(node.childNodes[i]);
-          if (res.isSome()) {
-            return res;
-          }
-        }
-        return Option.none();
-      };
-      return descend(scope.dom());
-    };
-
     var closest$2 = function (scope, predicate, isRoot) {
-      return closest$1(scope, predicate, isRoot).isSome();
+      return closest(scope, predicate, isRoot).isSome();
     };
 
-    var ancestor$2 = function (scope, selector, isRoot) {
-      return ancestor$1(scope, function (e) {
+    var ancestor$1 = function (scope, selector, isRoot) {
+      return ancestor(scope, function (e) {
         return is(e, selector);
       }, isRoot);
     };
@@ -3552,11 +3524,11 @@
       return one(selector, scope);
     };
     var closest$3 = function (scope, selector, isRoot) {
-      return ClosestOrAncestor(is, ancestor$2, scope, selector, isRoot);
+      return ClosestOrAncestor(is, ancestor$1, scope, selector, isRoot);
     };
 
     var find$4 = function (queryElem) {
-      var dependent = closest$1(queryElem, function (elem) {
+      var dependent = closest(queryElem, function (elem) {
         if (!isElement(elem)) {
           return false;
         }
@@ -3593,6 +3565,44 @@
       return closest$2(queryElem, function (el) {
         return eq(el, component.element());
       }, constant(false)) || isAriaPartOf(component, queryElem);
+    };
+
+    var cat = function (arr) {
+      var r = [];
+      var push = function (x) {
+        r.push(x);
+      };
+      for (var i = 0; i < arr.length; i++) {
+        arr[i].each(push);
+      }
+      return r;
+    };
+    var sequence = function (arr) {
+      var r = [];
+      for (var i = 0; i < arr.length; i++) {
+        var x = arr[i];
+        if (x.isSome()) {
+          r.push(x.getOrDie());
+        } else {
+          return Option.none();
+        }
+      }
+      return Option.some(r);
+    };
+    var findMap = function (arr, f) {
+      for (var i = 0; i < arr.length; i++) {
+        var r = f(arr[i], i);
+        if (r.isSome()) {
+          return r;
+        }
+      }
+      return Option.none();
+    };
+    var lift2 = function (oa, ob, f) {
+      return oa.isSome() && ob.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie())) : Option.none();
+    };
+    var lift3 = function (oa, ob, oc, f) {
+      return oa.isSome() && ob.isSome() && oc.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie(), oc.getOrDie())) : Option.none();
     };
 
     var unknown$3 = 'unknown';
@@ -3671,7 +3681,7 @@
       };
     };
     var processEvent = function (eventName, initialTarget, f) {
-      var status = get(eventConfig.get(), eventName).orThunk(function () {
+      var status = readOptFrom$1(eventConfig.get(), eventName).orThunk(function () {
         var patterns = keys(eventConfig.get());
         return findMap(patterns, function (p) {
           return eventName.indexOf(p) > -1 ? Option.some(eventConfig.get()[p]) : Option.none();
@@ -3776,7 +3786,7 @@
     };
     var initSize = constant(_initSize);
 
-    var nu$7 = Immutable('x', 'y', 'bubble', 'direction', 'boundsRestriction', 'label');
+    var nu$7 = Immutable('x', 'y', 'bubble', 'direction', 'label');
 
     var adt$2 = Adt.generate([
       { southeast: [] },
@@ -3806,50 +3816,6 @@
     var east = adt$2.east;
     var west = adt$2.west;
 
-    var getRestriction = function (anchor, restriction) {
-      switch (restriction) {
-      case 1:
-        return anchor.x();
-      case 0:
-        return anchor.x() + anchor.width();
-      case 2:
-        return anchor.y();
-      case 3:
-        return anchor.y() + anchor.height();
-      }
-    };
-    var boundsRestriction = function (anchor, restrictions) {
-      return mapToObject([
-        'left',
-        'right',
-        'top',
-        'bottom'
-      ], function (dir) {
-        return get(restrictions, dir).map(function (restriction) {
-          return getRestriction(anchor, restriction);
-        });
-      });
-    };
-    var adjustBounds = function (bounds, boundsRestrictions, bubbleOffsets) {
-      var applyRestriction = function (dir, current) {
-        var bubbleOffset = dir === 'top' || dir === 'bottom' ? bubbleOffsets.top() : bubbleOffsets.left();
-        return get(boundsRestrictions, dir).bind(identity).bind(function (restriction) {
-          if (dir === 'left' || dir === 'top') {
-            return restriction >= current ? Option.some(restriction) : Option.none();
-          } else {
-            return restriction <= current ? Option.some(restriction) : Option.none();
-          }
-        }).map(function (restriction) {
-          return restriction + bubbleOffset;
-        }).getOr(current);
-      };
-      var adjustedLeft = applyRestriction('left', bounds.x());
-      var adjustedTop = applyRestriction('top', bounds.y());
-      var adjustedRight = applyRestriction('right', bounds.right());
-      var adjustedBottom = applyRestriction('bottom', bounds.bottom());
-      return bounds$1(adjustedLeft, adjustedTop, adjustedRight - adjustedLeft, adjustedBottom - adjustedTop);
-    };
-
     var eastX = function (anchor) {
       return anchor.x();
     };
@@ -3875,40 +3841,28 @@
       return anchor.x() - element.width();
     };
     var southeast$1 = function (anchor, element, bubbles) {
-      return nu$7(eastX(anchor), southY(anchor), bubbles.southeast(), southeast(), boundsRestriction(anchor, {
-        left: 1,
-        top: 3
-      }), 'layout-se');
+      return nu$7(eastX(anchor), southY(anchor), bubbles.southeast(), southeast(), 'layout-se');
     };
     var southwest$1 = function (anchor, element, bubbles) {
-      return nu$7(westX(anchor, element), southY(anchor), bubbles.southwest(), southwest(), boundsRestriction(anchor, {
-        right: 0,
-        top: 3
-      }), 'layout-sw');
+      return nu$7(westX(anchor, element), southY(anchor), bubbles.southwest(), southwest(), 'layout-sw');
     };
     var northeast$1 = function (anchor, element, bubbles) {
-      return nu$7(eastX(anchor), northY(anchor, element), bubbles.northeast(), northeast(), boundsRestriction(anchor, {
-        left: 1,
-        bottom: 2
-      }), 'layout-ne');
+      return nu$7(eastX(anchor), northY(anchor, element), bubbles.northeast(), northeast(), 'layout-ne');
     };
     var northwest$1 = function (anchor, element, bubbles) {
-      return nu$7(westX(anchor, element), northY(anchor, element), bubbles.northwest(), northwest(), boundsRestriction(anchor, {
-        right: 0,
-        bottom: 2
-      }), 'layout-nw');
+      return nu$7(westX(anchor, element), northY(anchor, element), bubbles.northwest(), northwest(), 'layout-nw');
     };
     var north$1 = function (anchor, element, bubbles) {
-      return nu$7(middleX(anchor, element), northY(anchor, element), bubbles.north(), north(), boundsRestriction(anchor, { bottom: 2 }), 'layout-n');
+      return nu$7(middleX(anchor, element), northY(anchor, element), bubbles.north(), north(), 'layout-n');
     };
     var south$1 = function (anchor, element, bubbles) {
-      return nu$7(middleX(anchor, element), southY(anchor), bubbles.south(), south(), boundsRestriction(anchor, { top: 3 }), 'layout-s');
+      return nu$7(middleX(anchor, element), southY(anchor), bubbles.south(), south(), 'layout-s');
     };
     var east$1 = function (anchor, element, bubbles) {
-      return nu$7(eastEdgeX(anchor), centreY(anchor, element), bubbles.east(), east(), boundsRestriction(anchor, { left: 0 }), 'layout-e');
+      return nu$7(eastEdgeX(anchor), centreY(anchor, element), bubbles.east(), east(), 'layout-e');
     };
     var west$1 = function (anchor, element, bubbles) {
-      return nu$7(westEdgeX(anchor, element), centreY(anchor, element), bubbles.west(), west(), boundsRestriction(anchor, { right: 1 }), 'layout-w');
+      return nu$7(westEdgeX(anchor, element), centreY(anchor, element), bubbles.west(), west(), 'layout-w');
     };
     var all$2 = function () {
       return [
@@ -3932,26 +3886,6 @@
         north$1,
         east$1,
         west$1
-      ];
-    };
-    var aboveOrBelow = function () {
-      return [
-        northeast$1,
-        northwest$1,
-        southeast$1,
-        southwest$1,
-        north$1,
-        south$1
-      ];
-    };
-    var aboveOrBelowRtl = function () {
-      return [
-        northwest$1,
-        northeast$1,
-        southwest$1,
-        southeast$1,
-        north$1,
-        south$1
       ];
     };
     var belowOrAbove = function () {
@@ -4023,7 +3957,7 @@
     };
     var doCreate = function (configSchema, schemaSchema, name, active, apis, extra, state) {
       var getConfig = function (info) {
-        return hasNonNullableKey(info, name) ? info[name]() : Option.none();
+        return hasKey$1(info, name) ? info[name]() : Option.none();
       };
       var wrappedApis = map$1(apis, function (apiF, apiName) {
         return wrapApi(name, apiF, apiName);
@@ -4053,7 +3987,7 @@
         },
         exhibit: function (info, base) {
           return getConfig(info).bind(function (behaviourInfo) {
-            return get(active, 'exhibit').map(function (exhibitor) {
+            return readOptFrom$1(active, 'exhibit').map(function (exhibitor) {
               return exhibitor(base, behaviourInfo.config, behaviourInfo.state);
             });
           }).getOr(nu$6({}));
@@ -4063,9 +3997,9 @@
         },
         handlers: function (info) {
           return getConfig(info).map(function (behaviourInfo) {
-            var getEvents = get(active, 'events').getOr(function () {
+            var getEvents = readOr$1('events', function (a, b) {
               return {};
-            });
+            })(active);
             return getEvents(behaviourInfo.config, behaviourInfo.state);
           }).getOr({});
         }
@@ -4112,19 +4046,17 @@
       return derive([run(receive(), function (component, message) {
           var channelMap = receiveConfig.channels;
           var channels = keys(channelMap);
-          var receivingData = message;
-          var targetChannels = chooseChannels(channels, receivingData);
+          var targetChannels = chooseChannels(channels, message);
           each(targetChannels, function (ch) {
             var channelInfo = channelMap[ch];
             var channelSchema = channelInfo.schema;
-            var data = asRawOrDie('channel[' + ch + '] data\nReceiver: ' + element(component.element()), channelSchema, receivingData.data());
+            var data = asRawOrDie('channel[' + ch + '] data\nReceiver: ' + element(component.element()), channelSchema, message.data());
             channelInfo.onReceive(component, data);
           });
         })]);
     };
 
     var ActiveReceiving = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$1
     });
 
@@ -4147,7 +4079,6 @@
     };
 
     var ActivePosition = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit
     });
 
@@ -4190,320 +4121,6 @@
       return result;
     };
 
-    var NuPositionCss = Immutable('position', 'left', 'top', 'right', 'bottom');
-    var applyPositionCss = function (element, position) {
-      var addPx = function (num) {
-        return num + 'px';
-      };
-      setOptions(element, {
-        position: Option.some(position.position()),
-        left: position.left().map(addPx),
-        top: position.top().map(addPx),
-        right: position.right().map(addPx),
-        bottom: position.bottom().map(addPx)
-      });
-    };
-
-    var adt$3 = Adt.generate([
-      { none: [] },
-      {
-        relative: [
-          'x',
-          'y',
-          'width',
-          'height'
-        ]
-      },
-      {
-        fixed: [
-          'x',
-          'y',
-          'width',
-          'height'
-        ]
-      }
-    ]);
-    var positionWithDirection = function (posName, decision, x, y, width, height) {
-      var decisionX = decision.x() - x;
-      var decisionY = decision.y() - y;
-      var decisionWidth = decision.width();
-      var decisionHeight = decision.height();
-      var decisionRight = width - (decisionX + decisionWidth);
-      var decisionBottom = height - (decisionY + decisionHeight);
-      var left = Option.some(decisionX);
-      var top = Option.some(decisionY);
-      var right = Option.some(decisionRight);
-      var bottom = Option.some(decisionBottom);
-      var none = Option.none();
-      return cata(decision.direction(), function () {
-        return NuPositionCss(posName, left, top, none, none);
-      }, function () {
-        return NuPositionCss(posName, none, top, right, none);
-      }, function () {
-        return NuPositionCss(posName, left, none, none, bottom);
-      }, function () {
-        return NuPositionCss(posName, none, none, right, bottom);
-      }, function () {
-        return NuPositionCss(posName, left, top, none, none);
-      }, function () {
-        return NuPositionCss(posName, left, none, none, bottom);
-      }, function () {
-        return NuPositionCss(posName, left, top, none, none);
-      }, function () {
-        return NuPositionCss(posName, none, top, right, none);
-      });
-    };
-    var reposition = function (origin, decision) {
-      return origin.fold(function () {
-        return NuPositionCss('absolute', Option.some(decision.x()), Option.some(decision.y()), Option.none(), Option.none());
-      }, function (x, y, width, height) {
-        return positionWithDirection('absolute', decision, x, y, width, height);
-      }, function (x, y, width, height) {
-        return positionWithDirection('fixed', decision, x, y, width, height);
-      });
-    };
-    var toBox = function (origin, element) {
-      var rel = curry(find$3, element);
-      var position = origin.fold(rel, rel, function () {
-        var scroll = get$8();
-        return find$3(element).translate(-scroll.left(), -scroll.top());
-      });
-      var width = getOuter$2(element);
-      var height = getOuter$1(element);
-      return bounds$1(position.left(), position.top(), width, height);
-    };
-    var viewport$1 = function (origin, getBounds) {
-      return getBounds.fold(function () {
-        return origin.fold(win, win, bounds$1);
-      }, function (b) {
-        return origin.fold(b, b, function () {
-          var bounds = b();
-          var pos = translate(origin, bounds.x(), bounds.y());
-          return bounds$1(pos.left(), pos.top(), bounds.width(), bounds.height());
-        });
-      });
-    };
-    var translate = function (origin, x, y) {
-      var pos = Position(x, y);
-      var removeScroll = function () {
-        var outerScroll = get$8();
-        return pos.translate(-outerScroll.left(), -outerScroll.top());
-      };
-      return origin.fold(constant(pos), constant(pos), removeScroll);
-    };
-    var cata$1 = function (subject, onNone, onRelative, onFixed) {
-      return subject.fold(onNone, onRelative, onFixed);
-    };
-    var none$1 = adt$3.none;
-    var relative = adt$3.relative;
-    var fixed = adt$3.fixed;
-
-    var anchor = Immutable('anchorBox', 'origin');
-    var box$1 = function (anchorBox, origin) {
-      return anchor(anchorBox, origin);
-    };
-
-    var cycleBy = function (value, delta, min, max) {
-      var r = value + delta;
-      return r > max ? min : r < min ? max : r;
-    };
-    var clamp = function (value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    };
-
-    var decision = MixedBag([
-      'x',
-      'y',
-      'width',
-      'height',
-      'maxHeight',
-      'maxWidth',
-      'direction',
-      'classes',
-      'label',
-      'candidateYforTest'
-    ], []);
-
-    var adt$4 = Adt.generate([
-      { fit: ['reposition'] },
-      {
-        nofit: [
-          'reposition',
-          'deltaW',
-          'deltaH'
-        ]
-      }
-    ]);
-    var calcReposition = function (newX, newY, width, height, bounds) {
-      var boundsX = bounds.x();
-      var boundsY = bounds.y();
-      var boundsWidth = bounds.width();
-      var boundsHeight = bounds.height();
-      var xInBounds = newX >= boundsX;
-      var yInBounds = newY >= boundsY;
-      var originInBounds = xInBounds && yInBounds;
-      var xFit = newX + width <= boundsX + boundsWidth;
-      var yFit = newY + height <= boundsY + boundsHeight;
-      var sizeInBounds = xFit && yFit;
-      var deltaW = Math.abs(Math.min(width, xInBounds ? boundsX + boundsWidth - newX : boundsX - (newX + width)));
-      var deltaH = Math.abs(Math.min(height, yInBounds ? boundsY + boundsHeight - newY : boundsY - (newY + height)));
-      var maxX = Math.max(bounds.x(), bounds.right() - width);
-      var maxY = Math.max(bounds.y(), bounds.bottom() - height);
-      var limitX = clamp(newX, bounds.x(), maxX);
-      var limitY = clamp(newY, bounds.y(), maxY);
-      return {
-        originInBounds: originInBounds,
-        sizeInBounds: sizeInBounds,
-        limitX: limitX,
-        limitY: limitY,
-        deltaW: deltaW,
-        deltaH: deltaH
-      };
-    };
-    var attempt = function (candidate, width, height, bounds) {
-      var candidateX = candidate.x();
-      var candidateY = candidate.y();
-      var bubbleOffsets = candidate.bubble().offset();
-      var bubbleLeft = bubbleOffsets.left();
-      var bubbleTop = bubbleOffsets.top();
-      var adjustedBounds = adjustBounds(bounds, candidate.boundsRestriction(), bubbleOffsets);
-      var boundsY = adjustedBounds.y();
-      var boundsBottom = adjustedBounds.bottom();
-      var boundsX = adjustedBounds.x();
-      var boundsRight = adjustedBounds.right();
-      var newX = candidateX + bubbleLeft;
-      var newY = candidateY + bubbleTop;
-      var _a = calcReposition(newX, newY, width, height, adjustedBounds), originInBounds = _a.originInBounds, sizeInBounds = _a.sizeInBounds, limitX = _a.limitX, limitY = _a.limitY, deltaW = _a.deltaW, deltaH = _a.deltaH;
-      var upAvailable = constant(limitY + deltaH - boundsY);
-      var downAvailable = constant(boundsBottom - limitY);
-      var maxHeight = cataVertical(candidate.direction(), downAvailable, downAvailable, upAvailable);
-      var westAvailable = constant(limitX + deltaW - boundsX);
-      var eastAvailable = constant(boundsRight - limitX);
-      var maxWidth = cataHorizontal(candidate.direction(), eastAvailable, eastAvailable, westAvailable);
-      var reposition = decision({
-        x: limitX,
-        y: limitY,
-        width: deltaW,
-        height: deltaH,
-        maxHeight: maxHeight,
-        maxWidth: maxWidth,
-        direction: candidate.direction(),
-        classes: {
-          on: candidate.bubble().classesOn(),
-          off: candidate.bubble().classesOff()
-        },
-        label: candidate.label(),
-        candidateYforTest: newY
-      });
-      return originInBounds && sizeInBounds ? adt$4.fit(reposition) : adt$4.nofit(reposition, deltaW, deltaH);
-    };
-    var attempts = function (candidates, anchorBox, elementBox, bubbles, bounds) {
-      var panelWidth = elementBox.width();
-      var panelHeight = elementBox.height();
-      var attemptBestFit = function (layout, reposition, deltaW, deltaH) {
-        var next = layout(anchorBox, elementBox, bubbles);
-        var attemptLayout = attempt(next, panelWidth, panelHeight, bounds);
-        return attemptLayout.fold(adt$4.fit, function (newReposition, newDeltaW, newDeltaH) {
-          var improved = newDeltaH > deltaH || newDeltaW > deltaW;
-          return improved ? adt$4.nofit(newReposition, newDeltaW, newDeltaH) : adt$4.nofit(reposition, deltaW, deltaH);
-        });
-      };
-      var abc = foldl(candidates, function (b, a) {
-        var bestNext = curry(attemptBestFit, a);
-        return b.fold(adt$4.fit, bestNext);
-      }, adt$4.nofit(decision({
-        x: anchorBox.x(),
-        y: anchorBox.y(),
-        width: elementBox.width(),
-        height: elementBox.height(),
-        maxHeight: elementBox.height(),
-        maxWidth: elementBox.width(),
-        direction: southeast(),
-        classes: {
-          on: [],
-          off: []
-        },
-        label: 'none',
-        candidateYforTest: anchorBox.y()
-      }), -1, -1));
-      return abc.fold(identity, identity);
-    };
-
-    var elementSize = function (p) {
-      return {
-        width: constant(getOuter$2(p)),
-        height: constant(getOuter$1(p))
-      };
-    };
-    var layout = function (anchorBox, element, bubbles, options) {
-      remove$6(element, 'max-height');
-      remove$6(element, 'max-width');
-      var elementBox = elementSize(element);
-      return attempts(options.preference(), anchorBox, elementBox, bubbles, options.bounds());
-    };
-    var setClasses = function (element, decision) {
-      var classInfo = decision.classes();
-      remove$5(element, classInfo.off);
-      add$3(element, classInfo.on);
-    };
-    var setHeight = function (element, decision, options) {
-      var maxHeightFunction = options.maxHeightFunction();
-      maxHeightFunction(element, decision.maxHeight());
-    };
-    var setWidth = function (element, decision, options) {
-      var maxWidthFunction = options.maxWidthFunction();
-      maxWidthFunction(element, decision.maxWidth());
-    };
-    var position = function (element, decision, options) {
-      applyPositionCss(element, reposition(options.origin(), decision));
-    };
-
-    var setMaxHeight = function (element, maxHeight) {
-      setMax(element, Math.floor(maxHeight));
-    };
-    var anchored = constant(function (element, available) {
-      setMaxHeight(element, available);
-      setAll$1(element, {
-        'overflow-x': 'hidden',
-        'overflow-y': 'auto'
-      });
-    });
-    var expandable = constant(function (element, available) {
-      setMaxHeight(element, available);
-    });
-
-    var reparteeOptions = MixedBag([
-      'bounds',
-      'origin',
-      'preference',
-      'maxHeightFunction',
-      'maxWidthFunction'
-    ], []);
-    var defaultOr = function (options, key, dephault) {
-      return options[key] === undefined ? dephault : options[key];
-    };
-    var simple = function (anchor, element, bubble, layouts, getBounds, overrideOptions) {
-      var maxHeightFunction = defaultOr(overrideOptions, 'maxHeightFunction', anchored());
-      var maxWidthFunction = defaultOr(overrideOptions, 'maxWidthFunction', noop);
-      var anchorBox = anchor.anchorBox();
-      var origin = anchor.origin();
-      var options = reparteeOptions({
-        bounds: viewport$1(origin, getBounds),
-        origin: origin,
-        preference: layouts,
-        maxHeightFunction: maxHeightFunction,
-        maxWidthFunction: maxWidthFunction
-      });
-      go(anchorBox, element, bubble, options);
-    };
-    var go = function (anchorBox, element, bubble, options) {
-      var decision = layout(anchorBox, element, bubble, options);
-      position(element, decision, options);
-      setClasses(element, decision);
-      setHeight(element, decision, options);
-      setWidth(element, decision, options);
-    };
-
     var allAlignments = [
       'valignCentre',
       'alignLeft',
@@ -4516,7 +4133,7 @@
     ];
     var nu$8 = function (width, yoffset, classes) {
       var getClasses = function (prop) {
-        return get(classes, prop).getOr([]);
+        return readOptFrom$1(classes, prop).getOr([]);
       };
       var make = function (xDelta, yDelta, alignmentsOn) {
         var alignmentsOff = difference(allAlignments, alignmentsOn);
@@ -4635,6 +4252,113 @@
       return nu$8(0, 0, {});
     };
 
+    var decision = MixedBag([
+      'x',
+      'y',
+      'width',
+      'height',
+      'maxHeight',
+      'maxWidth',
+      'direction',
+      'classes',
+      'label',
+      'candidateYforTest'
+    ], []);
+    var css = Immutable('position', 'left', 'top', 'right', 'bottom');
+
+    var adt$3 = Adt.generate([
+      { none: [] },
+      {
+        relative: [
+          'x',
+          'y',
+          'width',
+          'height'
+        ]
+      },
+      {
+        fixed: [
+          'x',
+          'y',
+          'width',
+          'height'
+        ]
+      }
+    ]);
+    var positionWithDirection = function (posName, decision, x, y, width, height) {
+      var decisionX = decision.x() - x;
+      var decisionY = decision.y() - y;
+      var decisionWidth = decision.width();
+      var decisionHeight = decision.height();
+      var decisionRight = width - (decisionX + decisionWidth);
+      var decisionBottom = height - (decisionY + decisionHeight);
+      var left = Option.some(decisionX);
+      var top = Option.some(decisionY);
+      var right = Option.some(decisionRight);
+      var bottom = Option.some(decisionBottom);
+      var none = Option.none();
+      return cata(decision.direction(), function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, none, top, right, none);
+      }, function () {
+        return css(posName, left, none, none, bottom);
+      }, function () {
+        return css(posName, none, none, right, bottom);
+      }, function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, left, none, none, bottom);
+      }, function () {
+        return css(posName, left, top, none, none);
+      }, function () {
+        return css(posName, none, top, right, none);
+      });
+    };
+    var reposition = function (origin, decision) {
+      return origin.fold(function () {
+        return css('absolute', Option.some(decision.x()), Option.some(decision.y()), Option.none(), Option.none());
+      }, function (x, y, width, height) {
+        return positionWithDirection('absolute', decision, x, y, width, height);
+      }, function (x, y, width, height) {
+        return positionWithDirection('fixed', decision, x, y, width, height);
+      });
+    };
+    var toBox = function (origin, element) {
+      var rel = curry(find$3, element);
+      var position = origin.fold(rel, rel, function () {
+        var scroll = get$8();
+        return find$3(element).translate(-scroll.left(), -scroll.top());
+      });
+      var width = getOuter$2(element);
+      var height = getOuter$1(element);
+      return bounds$1(position.left(), position.top(), width, height);
+    };
+    var viewport$1 = function (origin, getBounds) {
+      return getBounds.fold(function () {
+        return origin.fold(win, win, bounds$1);
+      }, function (b) {
+        return origin.fold(b, b, function () {
+          var bounds = b();
+          var pos = translate(origin, bounds.x(), bounds.y());
+          return bounds$1(pos.left(), pos.top(), bounds.width(), bounds.height());
+        });
+      });
+    };
+    var translate = function (origin, x, y) {
+      var pos = Position(x, y);
+      var removeScroll = function () {
+        var outerScroll = get$8();
+        return pos.translate(-outerScroll.left(), -outerScroll.top());
+      };
+      return origin.fold(constant(pos), constant(pos), removeScroll);
+    };
+    var cata$1 = function (subject, onNone, onRelative, onFixed) {
+      return subject.fold(onNone, onRelative, onFixed);
+    };
+    var relative = adt$3.relative;
+    var fixed = adt$3.fixed;
+
     var nu$9 = function (x) {
       return x;
     };
@@ -4648,44 +4372,19 @@
       return get$4(element, 'direction') === 'rtl' ? 'rtl' : 'ltr';
     };
 
-    var AttributeValue;
-    (function (AttributeValue) {
-      AttributeValue['TopToBottom'] = 'toptobottom';
-      AttributeValue['BottomToTop'] = 'bottomtotop';
-    }(AttributeValue || (AttributeValue = {})));
-    var Attribute = 'data-alloy-vertical-dir';
-    var isBottomToTopDir = function (el) {
-      return closest$2(el, function (current) {
-        return isElement(current) && get$2(current, Attribute) === AttributeValue.BottomToTop;
-      });
-    };
-
     var schema$1 = function () {
       return optionObjOf('layouts', [
         strict$1('onLtr'),
-        strict$1('onRtl'),
-        option('onBottomLtr'),
-        option('onBottomRtl')
+        strict$1('onRtl')
       ]);
     };
-    var get$a = function (elem, info, defaultLtr, defaultRtl, defaultBottomLtr, defaultBottomRtl, dirElement) {
-      var isBottomToTop = dirElement.map(isBottomToTopDir).getOr(false);
-      var customLtr = info.layouts.map(function (ls) {
+    var get$9 = function (elem, info, defaultLtr, defaultRtl) {
+      var ltr = info.layouts.map(function (ls) {
         return ls.onLtr(elem);
-      });
-      var customRtl = info.layouts.map(function (ls) {
+      }).getOr(defaultLtr);
+      var rtl = info.layouts.map(function (ls) {
         return ls.onRtl(elem);
-      });
-      var ltr = isBottomToTop ? info.layouts.bind(function (ls) {
-        return ls.onBottomLtr.map(function (f) {
-          return f(elem);
-        });
-      }).or(customLtr).getOr(defaultBottomLtr) : customLtr.getOr(defaultLtr);
-      var rtl = isBottomToTop ? info.layouts.bind(function (ls) {
-        return ls.onBottomRtl.map(function (f) {
-          return f(elem);
-        });
-      }).or(customRtl).getOr(defaultBottomRtl) : customRtl.getOr(defaultRtl);
+      }).getOr(defaultRtl);
       var f = onDirection(ltr, rtl);
       return f(elem);
     };
@@ -4693,7 +4392,7 @@
     var placement = function (component, anchorInfo, origin) {
       var hotspot = anchorInfo.hotspot;
       var anchorBox = toBox(origin, hotspot.element());
-      var layouts = get$a(component.element(), anchorInfo, belowOrAbove(), belowOrAboveRtl(), aboveOrBelow(), aboveOrBelowRtl(), Option.some(anchorInfo.hotspot.element()));
+      var layouts = get$9(component.element(), anchorInfo, belowOrAbove(), belowOrAboveRtl());
       return Option.some(nu$9({
         anchorBox: anchorBox,
         bubble: anchorInfo.bubble.getOr(fallback()),
@@ -4713,7 +4412,7 @@
     var placement$1 = function (component, anchorInfo, origin) {
       var pos = translate(origin, anchorInfo.x, anchorInfo.y);
       var anchorBox = bounds$1(pos.left(), pos.top(), anchorInfo.width, anchorInfo.height);
-      var layouts = get$a(component.element(), anchorInfo, all$2(), allRtl(), all$2(), allRtl(), Option.none());
+      var layouts = get$9(component.element(), anchorInfo, all$2(), allRtl());
       return Option.some(nu$9({
         anchorBox: anchorBox,
         bubble: anchorInfo.bubble,
@@ -4733,13 +4432,14 @@
       output('placement', placement$1)
     ];
 
-    var zeroWidth = '\uFEFF';
-    var nbsp = '\xA0';
+    var zeroWidth = function () {
+      return '\uFEFF';
+    };
 
     var create$2 = Immutable('start', 'soffset', 'finish', 'foffset');
     var SimRange = { create: create$2 };
 
-    var adt$5 = Adt.generate([
+    var adt$4 = Adt.generate([
       { before: ['element'] },
       {
         on: [
@@ -4755,9 +4455,9 @@
     var getStart = function (situ) {
       return situ.fold(identity, identity, identity);
     };
-    var before$2 = adt$5.before;
-    var on = adt$5.on;
-    var after$1 = adt$5.after;
+    var before$2 = adt$4.before;
+    var on = adt$4.on;
+    var after$1 = adt$4.after;
     var Situ = {
       before: before$2,
       on: on,
@@ -4766,7 +4466,7 @@
       getStart: getStart
     };
 
-    var adt$6 = Adt.generate([
+    var adt$5 = Adt.generate([
       { domRange: ['rng'] },
       {
         relative: [
@@ -4784,7 +4484,7 @@
       }
     ]);
     var exactFromRange = function (simRange) {
-      return adt$6.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
+      return adt$5.exact(simRange.start(), simRange.soffset(), simRange.finish(), simRange.foffset());
     };
     var getStart$1 = function (selection) {
       return selection.match({
@@ -4799,9 +4499,9 @@
         }
       });
     };
-    var domRange = adt$6.domRange;
-    var relative$1 = adt$6.relative;
-    var exact = adt$6.exact;
+    var domRange = adt$5.domRange;
+    var relative$1 = adt$5.relative;
+    var exact = adt$5.exact;
     var getWin = function (selection) {
       var start = getStart$1(selection);
       return defaultView(start);
@@ -4862,7 +4562,7 @@
       return rect.width > 0 || rect.height > 0 ? Option.some(rect).map(toRect) : Option.none();
     };
 
-    var adt$7 = Adt.generate([
+    var adt$6 = Adt.generate([
       {
         ltr: [
           'start',
@@ -4920,12 +4620,12 @@
           return rev.collapsed === false;
         });
         return reversed.map(function (rev) {
-          return adt$7.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
+          return adt$6.rtl(Element.fromDom(rev.endContainer), rev.endOffset, Element.fromDom(rev.startContainer), rev.startOffset);
         }).getOrThunk(function () {
-          return fromRange(win, adt$7.ltr, rng);
+          return fromRange(win, adt$6.ltr, rng);
         });
       } else {
-        return fromRange(win, adt$7.ltr, rng);
+        return fromRange(win, adt$6.ltr, rng);
       }
     };
     var diagnose = function (win, selection) {
@@ -4949,8 +4649,30 @@
         }
       });
     };
-    var ltr = adt$7.ltr;
-    var rtl = adt$7.rtl;
+
+    var searchForPoint = function (rectForOffset, x, y, maxX, length) {
+      if (length === 0) {
+        return 0;
+      } else if (x === maxX) {
+        return length - 1;
+      }
+      var xDelta = maxX;
+      for (var i = 1; i < length; i++) {
+        var rect = rectForOffset(i);
+        var curDeltaX = Math.abs(x - rect.left);
+        if (y <= rect.bottom) {
+          if (y < rect.top || curDeltaX > xDelta) {
+            return i - 1;
+          } else {
+            xDelta = curDeltaX;
+          }
+        }
+      }
+      return 0;
+    };
+    var inRect = function (rect, x, y) {
+      return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+    };
 
     function NodeValue (is, name) {
       var get = function (element) {
@@ -4976,11 +4698,58 @@
     }
 
     var api$2 = NodeValue(isText, 'text');
-    var get$b = function (element) {
+    var get$a = function (element) {
       return api$2.get(element);
     };
     var getOption = function (element) {
       return api$2.getOption(element);
+    };
+
+    var locateOffset = function (doc, textnode, x, y, rect) {
+      var rangeForOffset = function (o) {
+        var r = doc.dom().createRange();
+        r.setStart(textnode.dom(), o);
+        r.collapse(true);
+        return r;
+      };
+      var rectForOffset = function (o) {
+        var r = rangeForOffset(o);
+        return r.getBoundingClientRect();
+      };
+      var length = get$a(textnode).length;
+      var offset = searchForPoint(rectForOffset, x, y, rect.right, length);
+      return rangeForOffset(offset);
+    };
+    var locate = function (doc, node, x, y) {
+      var r = doc.dom().createRange();
+      r.selectNode(node.dom());
+      var rects = r.getClientRects();
+      var foundRect = findMap(rects, function (rect) {
+        return inRect(rect, x, y) ? Option.some(rect) : Option.none();
+      });
+      return foundRect.map(function (rect) {
+        return locateOffset(doc, node, x, y, rect);
+      });
+    };
+
+    var searchInChildren = function (doc, node, x, y) {
+      var r = doc.dom().createRange();
+      var nodes = children(node);
+      return findMap(nodes, function (n) {
+        r.selectNode(n.dom());
+        return inRect(r.getBoundingClientRect(), x, y) ? locateNode(doc, n, x, y) : Option.none();
+      });
+    };
+    var locateNode = function (doc, node, x, y) {
+      return isText(node) ? locate(doc, node, x, y) : searchInChildren(doc, node, x, y);
+    };
+    var locate$1 = function (doc, node, x, y) {
+      var r = doc.dom().createRange();
+      r.selectNode(node.dom());
+      var rect = r.getBoundingClientRect();
+      var boundedX = Math.max(rect.left, Math.min(rect.right, x));
+      var boundedY = Math.max(rect.top, Math.min(rect.bottom, y));
+      return locateNode(doc, node, boundedX, boundedY);
     };
 
     var getEnd = function (element) {
@@ -4990,9 +4759,10 @@
         return v.length;
       });
     };
+    var NBSP = '\xA0';
     var isTextNodeWithCursorPosition = function (el) {
       return getOption(el).filter(function (text) {
-        return text.trim().length !== 0 || text.indexOf(nbsp) > -1;
+        return text.trim().length !== 0 || text.indexOf(NBSP) > -1;
       }).isSome();
     };
     var elementsWithCursorPosition = [
@@ -5004,6 +4774,9 @@
       return hasCursorPosition || contains(elementsWithCursorPosition, name(elem));
     };
 
+    var first = function (element) {
+      return descendant(element, isCursorPosition);
+    };
     var last$1 = function (element) {
       return descendantRtl(element, isCursorPosition);
     };
@@ -5024,6 +4797,69 @@
       };
       return descend(scope);
     };
+
+    var COLLAPSE_TO_LEFT = true;
+    var COLLAPSE_TO_RIGHT = false;
+    var getCollapseDirection = function (rect, x) {
+      return x - rect.left < rect.right - x ? COLLAPSE_TO_LEFT : COLLAPSE_TO_RIGHT;
+    };
+    var createCollapsedNode = function (doc, target, collapseDirection) {
+      var r = doc.dom().createRange();
+      r.selectNode(target.dom());
+      r.collapse(collapseDirection);
+      return r;
+    };
+    var locateInElement = function (doc, node, x) {
+      var cursorRange = doc.dom().createRange();
+      cursorRange.selectNode(node.dom());
+      var rect = cursorRange.getBoundingClientRect();
+      var collapseDirection = getCollapseDirection(rect, x);
+      var f = collapseDirection === COLLAPSE_TO_LEFT ? first : last$1;
+      return f(node).map(function (target) {
+        return createCollapsedNode(doc, target, collapseDirection);
+      });
+    };
+    var locateInEmpty = function (doc, node, x) {
+      var rect = node.dom().getBoundingClientRect();
+      var collapseDirection = getCollapseDirection(rect, x);
+      return Option.some(createCollapsedNode(doc, node, collapseDirection));
+    };
+    var search$1 = function (doc, node, x) {
+      var f = children(node).length === 0 ? locateInEmpty : locateInElement;
+      return f(doc, node, x);
+    };
+
+    var caretPositionFromPoint = function (doc, x, y) {
+      return Option.from(doc.dom().caretPositionFromPoint(x, y)).bind(function (pos) {
+        if (pos.offsetNode === null) {
+          return Option.none();
+        }
+        var r = doc.dom().createRange();
+        r.setStart(pos.offsetNode, pos.offset);
+        r.collapse();
+        return Option.some(r);
+      });
+    };
+    var caretRangeFromPoint = function (doc, x, y) {
+      return Option.from(doc.dom().caretRangeFromPoint(x, y));
+    };
+    var searchTextNodes = function (doc, node, x, y) {
+      var r = doc.dom().createRange();
+      r.selectNode(node.dom());
+      var rect = r.getBoundingClientRect();
+      var boundedX = Math.max(rect.left, Math.min(rect.right, x));
+      var boundedY = Math.max(rect.top, Math.min(rect.bottom, y));
+      return locate$1(doc, node, boundedX, boundedY);
+    };
+    var searchFromPoint = function (doc, x, y) {
+      return Element.fromPoint(doc, x, y).bind(function (elem) {
+        var fallback = function () {
+          return search$1(doc, elem, x);
+        };
+        return children(elem).length === 0 ? fallback() : searchTextNodes(doc, elem, x, y).orThunk(fallback);
+      });
+    };
+    var availableSearch = document.caretPositionFromPoint ? caretPositionFromPoint : document.caretRangeFromPoint ? caretRangeFromPoint : searchFromPoint;
 
     var descendants = function (scope, selector) {
       return all(selector, scope);
@@ -5075,12 +4911,12 @@
         return point(children$1[offset], 0);
       } else {
         var last = children$1[children$1.length - 1];
-        var len = isText(last) ? get$b(last).length : children(last).length;
+        var len = isText(last) ? get$a(last).length : children(last).length;
         return point(last, len);
       }
     };
 
-    var adt$8 = Adt.generate([
+    var adt$7 = Adt.generate([
       { screen: ['point'] },
       {
         absolute: [
@@ -5091,12 +4927,18 @@
       }
     ]);
     var toFixed = function (pos) {
-      return pos.fold(identity, function (point, scrollLeft, scrollTop) {
+      return pos.fold(function (point) {
+        return point;
+      }, function (point, scrollLeft, scrollTop) {
         return point.translate(-scrollLeft, -scrollTop);
       });
     };
     var toAbsolute = function (pos) {
-      return pos.fold(identity, identity);
+      return pos.fold(function (point) {
+        return point;
+      }, function (point, scrollLeft, scrollTop) {
+        return point;
+      });
     };
     var sum = function (points) {
       return foldl(points, function (b, a) {
@@ -5111,8 +4953,8 @@
       var points = map(positions, toAbsolute);
       return sum(points);
     };
-    var screen = adt$8.screen;
-    var absolute$2 = adt$8.absolute;
+    var screen = adt$7.screen;
+    var absolute$2 = adt$7.absolute;
 
     var getOffset = function (component, origin, anchorInfo) {
       var win = defaultView(anchorInfo.root).dom();
@@ -5157,9 +4999,41 @@
           return sumAsFixed(points);
         });
         var anchorBox = rect(topLeft.left(), topLeft.top(), box.width(), box.height());
-        var layoutsLtr = anchorInfo.showAbove ? aboveOrBelow() : belowOrAbove();
-        var layoutsRtl = anchorInfo.showAbove ? belowOrAboveRtl() : belowOrAboveRtl();
-        var layouts = get$a(elem, anchorInfo, layoutsLtr, layoutsRtl, layoutsLtr, layoutsRtl, Option.none());
+        var layoutsLtr = function () {
+          return anchorInfo.showAbove ? [
+            northeast$1,
+            northwest$1,
+            southeast$1,
+            southwest$1,
+            north$1,
+            south$1
+          ] : [
+            southeast$1,
+            southwest$1,
+            northeast$1,
+            northwest$1,
+            south$1,
+            south$1
+          ];
+        };
+        var layoutsRtl = function () {
+          return anchorInfo.showAbove ? [
+            northwest$1,
+            northeast$1,
+            southwest$1,
+            southeast$1,
+            north$1,
+            south$1
+          ] : [
+            southwest$1,
+            southeast$1,
+            northwest$1,
+            northeast$1,
+            south$1,
+            north$1
+          ];
+        };
+        var layouts = get$9(elem, anchorInfo, layoutsLtr(), layoutsRtl());
         return nu$9({
           anchorBox: anchorBox,
           bubble: anchorInfo.bubble.getOr(fallback()),
@@ -5195,7 +5069,7 @@
       var rootPoint = getRootPoint(component, origin, anchorInfo);
       var selectionBox = getAnchorSelection(win, anchorInfo).bind(function (sel) {
         var optRect = getFirstRect$1(win, Selection.exactFromRange(sel)).orThunk(function () {
-          var x = Element.fromText(zeroWidth);
+          var x = Element.fromText(zeroWidth());
           before(sel.start(), x);
           return getFirstRect$1(win, Selection.exact(x, 0, x, 1)).map(function (rect) {
             remove(x);
@@ -5254,28 +5128,16 @@
       return anchor.y();
     };
     var southeast$2 = function (anchor, element, bubbles) {
-      return nu$7(eastX$1(anchor), southY$1(anchor), bubbles.southeast(), southeast(), boundsRestriction(anchor, {
-        left: 0,
-        top: 2
-      }), 'link-layout-se');
+      return nu$7(eastX$1(anchor), southY$1(anchor), bubbles.southeast(), southeast(), 'link-layout-se');
     };
     var southwest$2 = function (anchor, element, bubbles) {
-      return nu$7(westX$1(anchor, element), southY$1(anchor), bubbles.southwest(), southwest(), boundsRestriction(anchor, {
-        right: 1,
-        top: 2
-      }), 'link-layout-sw');
+      return nu$7(westX$1(anchor, element), southY$1(anchor), bubbles.southwest(), southwest(), 'link-layout-sw');
     };
     var northeast$2 = function (anchor, element, bubbles) {
-      return nu$7(eastX$1(anchor), northY$1(anchor, element), bubbles.northeast(), northeast(), boundsRestriction(anchor, {
-        left: 0,
-        bottom: 3
-      }), 'link-layout-ne');
+      return nu$7(eastX$1(anchor), northY$1(anchor, element), bubbles.northeast(), northeast(), 'link-layout-ne');
     };
     var northwest$2 = function (anchor, element, bubbles) {
-      return nu$7(westX$1(anchor, element), northY$1(anchor, element), bubbles.northwest(), northwest(), boundsRestriction(anchor, {
-        right: 1,
-        bottom: 3
-      }), 'link-layout-nw');
+      return nu$7(westX$1(anchor, element), northY$1(anchor, element), bubbles.northwest(), northwest(), 'link-layout-nw');
     };
     var all$3 = function () {
       return [
@@ -5296,7 +5158,7 @@
 
     var placement$4 = function (component, submenuInfo, origin) {
       var anchorBox = toBox(origin, submenuInfo.item.element());
-      var layouts = get$a(component.element(), submenuInfo, all$3(), allRtl$1(), all$3(), allRtl$1(), Option.none());
+      var layouts = get$9(component.element(), submenuInfo, all$3(), allRtl$1());
       return Option.some(nu$9({
         anchorBox: anchorBox,
         bubble: fallback(),
@@ -5319,6 +5181,213 @@
       submenu: SubmenuAnchor,
       makeshift: MakeshiftAnchor
     });
+
+    var anchor = Immutable('anchorBox', 'origin');
+    var box$1 = function (anchorBox, origin) {
+      return anchor(anchorBox, origin);
+    };
+
+    var cycleBy = function (value, delta, min, max) {
+      var r = value + delta;
+      if (r > max) {
+        return min;
+      } else {
+        return r < min ? max : r;
+      }
+    };
+    var cap = function (value, min, max) {
+      if (value <= min) {
+        return min;
+      } else {
+        return value >= max ? max : value;
+      }
+    };
+
+    var adt$8 = Adt.generate([
+      { fit: ['reposition'] },
+      {
+        nofit: [
+          'reposition',
+          'deltaW',
+          'deltaH'
+        ]
+      }
+    ]);
+    var calcReposition = function (newX, newY, width, height, bounds) {
+      var boundsX = bounds.x();
+      var boundsY = bounds.y();
+      var boundsWidth = bounds.width();
+      var boundsHeight = bounds.height();
+      var xInBounds = newX >= boundsX;
+      var yInBounds = newY >= boundsY;
+      var originInBounds = xInBounds && yInBounds;
+      var xFit = newX + width <= boundsX + boundsWidth;
+      var yFit = newY + height <= boundsY + boundsHeight;
+      var sizeInBounds = xFit && yFit;
+      var deltaW = Math.abs(Math.min(width, xInBounds ? boundsX + boundsWidth - newX : boundsX - (newX + width)));
+      var deltaH = Math.abs(Math.min(height, yInBounds ? boundsY + boundsHeight - newY : boundsY - (newY + height)));
+      var limitX = cap(newX, bounds.x(), bounds.right());
+      var limitY = cap(newY, bounds.y(), bounds.bottom());
+      return {
+        originInBounds: originInBounds,
+        sizeInBounds: sizeInBounds,
+        limitX: limitX,
+        limitY: limitY,
+        deltaW: deltaW,
+        deltaH: deltaH
+      };
+    };
+    var attempt = function (candidate, width, height, bounds) {
+      var candidateX = candidate.x();
+      var candidateY = candidate.y();
+      var bubbleLeft = candidate.bubble().offset().left();
+      var bubbleTop = candidate.bubble().offset().top();
+      var boundsY = bounds.y();
+      var boundsBottom = bounds.bottom();
+      var boundsX = bounds.x();
+      var boundsRight = bounds.right();
+      var newX = candidateX + bubbleLeft;
+      var newY = candidateY + bubbleTop;
+      var _a = calcReposition(newX, newY, width, height, bounds), originInBounds = _a.originInBounds, sizeInBounds = _a.sizeInBounds, limitX = _a.limitX, limitY = _a.limitY, deltaW = _a.deltaW, deltaH = _a.deltaH;
+      var upAvailable = constant(limitY + deltaH - boundsY);
+      var downAvailable = constant(boundsBottom - limitY);
+      var maxHeight = cataVertical(candidate.direction(), downAvailable, downAvailable, upAvailable);
+      var westAvailable = constant(limitX + deltaW - boundsX);
+      var eastAvailable = constant(boundsRight - limitX);
+      var maxWidth = cataHorizontal(candidate.direction(), eastAvailable, eastAvailable, westAvailable);
+      var reposition = decision({
+        x: limitX,
+        y: limitY,
+        width: deltaW,
+        height: deltaH,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth,
+        direction: candidate.direction(),
+        classes: {
+          on: candidate.bubble().classesOn(),
+          off: candidate.bubble().classesOff()
+        },
+        label: candidate.label(),
+        candidateYforTest: newY
+      });
+      return originInBounds && sizeInBounds ? adt$8.fit(reposition) : adt$8.nofit(reposition, deltaW, deltaH);
+    };
+    var attempts = function (candidates, anchorBox, elementBox, bubbles, bounds) {
+      var panelWidth = elementBox.width();
+      var panelHeight = elementBox.height();
+      var attemptBestFit = function (layout, reposition, deltaW, deltaH) {
+        var next = layout(anchorBox, elementBox, bubbles);
+        var attemptLayout = attempt(next, panelWidth, panelHeight, bounds);
+        return attemptLayout.fold(adt$8.fit, function (newReposition, newDeltaW, newDeltaH) {
+          var improved = newDeltaH > deltaH || newDeltaW > deltaW;
+          return improved ? adt$8.nofit(newReposition, newDeltaW, newDeltaH) : adt$8.nofit(reposition, deltaW, deltaH);
+        });
+      };
+      var abc = foldl(candidates, function (b, a) {
+        var bestNext = curry(attemptBestFit, a);
+        return b.fold(adt$8.fit, bestNext);
+      }, adt$8.nofit(decision({
+        x: anchorBox.x(),
+        y: anchorBox.y(),
+        width: elementBox.width(),
+        height: elementBox.height(),
+        maxHeight: elementBox.height(),
+        maxWidth: elementBox.width(),
+        direction: southeast(),
+        classes: {
+          on: [],
+          off: []
+        },
+        label: 'none',
+        candidateYforTest: anchorBox.y()
+      }), -1, -1));
+      return abc.fold(identity, identity);
+    };
+
+    var elementSize = function (p) {
+      return {
+        width: constant(getOuter$2(p)),
+        height: constant(getOuter$1(p))
+      };
+    };
+    var layout = function (anchorBox, element, bubbles, options) {
+      remove$6(element, 'max-height');
+      remove$6(element, 'max-width');
+      var elementBox = elementSize(element);
+      return attempts(options.preference(), anchorBox, elementBox, bubbles, options.bounds());
+    };
+    var setClasses = function (element, decision) {
+      var classInfo = decision.classes();
+      remove$5(element, classInfo.off);
+      add$3(element, classInfo.on);
+    };
+    var setHeight = function (element, decision, options) {
+      var maxHeightFunction = options.maxHeightFunction();
+      maxHeightFunction(element, decision.maxHeight());
+    };
+    var setWidth = function (element, decision, options) {
+      var maxWidthFunction = options.maxWidthFunction();
+      maxWidthFunction(element, decision.maxWidth());
+    };
+    var position = function (element, decision, options) {
+      var addPx = function (num) {
+        return num + 'px';
+      };
+      var newPosition = reposition(options.origin(), decision);
+      setOptions(element, {
+        position: Option.some(newPosition.position()),
+        left: newPosition.left().map(addPx),
+        top: newPosition.top().map(addPx),
+        right: newPosition.right().map(addPx),
+        bottom: newPosition.bottom().map(addPx)
+      });
+    };
+
+    var setMaxHeight = function (element, maxHeight) {
+      setMax(element, Math.floor(maxHeight));
+    };
+    var anchored = constant(function (element, available) {
+      setMaxHeight(element, available);
+      setAll$1(element, {
+        'overflow-x': 'hidden',
+        'overflow-y': 'auto'
+      });
+    });
+    var expandable = constant(function (element, available) {
+      setMaxHeight(element, available);
+    });
+
+    var reparteeOptions = MixedBag([
+      'bounds',
+      'origin',
+      'preference',
+      'maxHeightFunction',
+      'maxWidthFunction'
+    ], []);
+    var defaultOr = function (options, key, dephault) {
+      return options[key] === undefined ? dephault : options[key];
+    };
+    var simple = function (anchor, element, bubble, layouts, getBounds, overrideOptions) {
+      var maxHeightFunction = defaultOr(overrideOptions, 'maxHeightFunction', anchored());
+      var maxWidthFunction = defaultOr(overrideOptions, 'maxWidthFunction', noop);
+      var anchorBox = anchor.anchorBox();
+      var origin = anchor.origin();
+      var options = reparteeOptions({
+        bounds: viewport$1(origin, getBounds),
+        origin: origin,
+        preference: layouts,
+        maxHeightFunction: maxHeightFunction,
+        maxWidthFunction: maxWidthFunction
+      });
+      go(anchorBox, element, bubble, options);
+    };
+    var go = function (anchorBox, element, bubble, options) {
+      var decision = layout(anchorBox, element, bubble, options);
+      position(element, decision, options);
+      setClasses(element, decision);
+      setHeight(element, decision, options);
+      setWidth(element, decision, options);
+    };
 
     var getFixedOrigin = function () {
       var html = domGlobals.document.documentElement;
@@ -5368,7 +5437,6 @@
     };
 
     var PositionApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         position: position$1,
         positionWithin: positionWithin,
         positionWithinBounds: positionWithinBounds,
@@ -5566,7 +5634,6 @@
     };
 
     var SandboxApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         cloak: cloak,
         decloak: decloak,
         open: open,
@@ -5585,7 +5652,6 @@
     };
 
     var ActiveSandbox = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$2
     });
 
@@ -5603,10 +5669,10 @@
       var isOpen = function () {
         return contents.get().isSome();
       };
-      var set = function (comp) {
-        contents.set(Option.some(comp));
+      var set = function (c) {
+        contents.set(Option.some(c));
       };
-      var get = function () {
+      var get = function (c) {
         return contents.get();
       };
       var clear = function () {
@@ -5622,7 +5688,6 @@
     };
 
     var SandboxState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init
     });
 
@@ -5663,6 +5728,7 @@
     };
 
     var schema$3 = objOfOnly([
+      defaulted$1('isExtraPart', constant(false)),
       optionObjOf('fireEventInstead', [defaulted$1('event', repositionRequested())]),
       strictFunction('doReposition')
     ]);
@@ -5699,7 +5765,6 @@
     };
 
     var RepresentApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         onLoad: onLoad,
         onUnload: onUnload,
         setValue: setValue,
@@ -5720,7 +5785,6 @@
     };
 
     var ActiveRepresenting = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$3
     });
 
@@ -5766,8 +5830,8 @@
         dataByText.set({});
       };
       var lookup = function (itemString) {
-        return get(dataByValue.get(), itemString).orThunk(function () {
-          return get(dataByText.get(), itemString);
+        return readOptFrom$1(dataByValue.get(), itemString).orThunk(function () {
+          return readOptFrom$1(dataByText.get(), itemString);
         });
       };
       var update = function (items) {
@@ -5777,8 +5841,8 @@
         var newDataByText = {};
         each(items, function (item) {
           newDataByValue[item.value] = item;
-          get(item, 'meta').each(function (meta) {
-            get(meta, 'text').each(function (text) {
+          readOptFrom$1(item, 'meta').each(function (meta) {
+            readOptFrom$1(meta, 'text').each(function (text) {
               newDataByText[text] = item;
             });
           });
@@ -5798,7 +5862,6 @@
     };
 
     var RepresentState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         memory: memory,
         dataset: dataset,
         manual: manual,
@@ -5925,7 +5988,7 @@
         return forbid(f.name(), 'Cannot configure ' + f.name() + ' for ' + name);
       }).concat([state$1('dump', identity)]));
     };
-    var get$c = function (data) {
+    var get$b = function (data) {
       return data.dump;
     };
     var augment = function (data, original) {
@@ -5934,7 +5997,7 @@
     var SketchBehaviours = {
       field: field$1,
       augment: augment,
-      get: get$c
+      get: get$b
     };
 
     var _placeholder = 'placeholder';
@@ -5952,23 +6015,20 @@
         ]
       }
     ]);
-    var isSubstituted = function (spec) {
-      return has(spec, 'uiType');
-    };
     var subPlaceholder = function (owner, detail, compSpec, placeholders) {
       if (owner.exists(function (o) {
           return o !== compSpec.owner;
         })) {
         return adt$9.single(true, constant(compSpec));
       }
-      return get(placeholders, compSpec.name).fold(function () {
+      return readOptFrom$1(placeholders, compSpec.name).fold(function () {
         throw new Error('Unknown placeholder component: ' + compSpec.name + '\nKnown: [' + keys(placeholders) + ']\nNamespace: ' + owner.getOr('none') + '\nSpec: ' + JSON.stringify(compSpec, null, 2));
       }, function (newSpec) {
         return newSpec.replace();
       });
     };
     var scan = function (owner, detail, compSpec, placeholders) {
-      if (isSubstituted(compSpec) && compSpec.uiType === _placeholder) {
+      if (compSpec.uiType === _placeholder) {
         return subPlaceholder(owner, detail, compSpec, placeholders);
       } else {
         return adt$9.single(false, constant(compSpec));
@@ -5977,20 +6037,16 @@
     var substitute = function (owner, detail, compSpec, placeholders) {
       var base = scan(owner, detail, compSpec, placeholders);
       return base.fold(function (req, valueThunk) {
-        var value = isSubstituted(compSpec) ? valueThunk(detail, compSpec.config, compSpec.validated) : valueThunk(detail);
-        var childSpecs = get(value, 'components').getOr([]);
+        var value = valueThunk(detail, compSpec.config, compSpec.validated);
+        var childSpecs = readOptFrom$1(value, 'components').getOr([]);
         var substituted = bind(childSpecs, function (c) {
           return substitute(owner, detail, c, placeholders);
         });
         return [__assign(__assign({}, value), { components: substituted })];
       }, function (req, valuesThunk) {
-        if (isSubstituted(compSpec)) {
-          var values = valuesThunk(detail, compSpec.config, compSpec.validated);
-          var preprocessor = compSpec.validated.preprocess.getOr(identity);
-          return preprocessor(values);
-        } else {
-          return valuesThunk(detail);
-        }
+        var values = valuesThunk(detail, compSpec.config, compSpec.validated);
+        var preprocessor = compSpec.validated.preprocess.getOr(identity);
+        return preprocessor(values);
       });
     };
     var substituteAll = function (owner, detail, components, placeholders) {
@@ -6004,7 +6060,7 @@
         return called;
       };
       var replace = function () {
-        if (called) {
+        if (called === true) {
           throw new Error('Trying to use the same placeholder more than once: ' + label);
         }
         called = true;
@@ -6114,7 +6170,6 @@
     var original = constant('entirety');
 
     var PartType = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         required: required,
         external: external$1,
         optional: optional,
@@ -6256,7 +6311,6 @@
     };
 
     var AlloyParts = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         generate: generate$4,
         generateOne: generateOne,
         schemas: schemas,
@@ -6302,11 +6356,8 @@
       var components$1 = components(owner, detail, subs.internals());
       return factory(detail, components$1, specWithUid, subs.externals());
     };
-    var hasUid = function (spec) {
-      return has(spec, 'uid');
-    };
     var supplyUid = function (spec) {
-      return hasUid(spec) ? spec : __assign(__assign({}, spec), { uid: generate$2('uid') });
+      return spec.hasOwnProperty('uid') ? spec : __assign(__assign({}, spec), { uid: generate$2('uid') });
     };
 
     function isSketchSpec(spec) {
@@ -6338,6 +6389,7 @@
       });
       return __assign(__assign({
         name: constant(config.name),
+        partFields: constant([]),
         configFields: constant(config.configFields),
         sketch: sketch
       }, apis), extraApis);
@@ -6361,35 +6413,6 @@
       }, apis), extraApis);
     };
 
-    var cat = function (arr) {
-      var r = [];
-      var push = function (x) {
-        r.push(x);
-      };
-      for (var i = 0; i < arr.length; i++) {
-        arr[i].each(push);
-      }
-      return r;
-    };
-    var sequence = function (arr) {
-      var r = [];
-      for (var i = 0; i < arr.length; i++) {
-        var x = arr[i];
-        if (x.isSome()) {
-          r.push(x.getOrDie());
-        } else {
-          return Option.none();
-        }
-      }
-      return Option.some(r);
-    };
-    var lift2 = function (oa, ob, f) {
-      return oa.isSome() && ob.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie())) : Option.none();
-    };
-    var lift3 = function (oa, ob, oc, f) {
-      return oa.isSome() && ob.isSome() && oc.isSome() ? Option.some(f(oa.getOrDie(), ob.getOrDie(), oc.getOrDie())) : Option.none();
-    };
-
     var inside = function (target) {
       return name(target) === 'input' && get$2(target, 'type') !== 'radio' || name(target) === 'textarea';
     };
@@ -6399,7 +6422,6 @@
     };
 
     var ComposeApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         getCurrent: getCurrent
     });
 
@@ -6517,7 +6539,6 @@
     };
 
     var HighlightApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         dehighlightAll: dehighlightAll,
         dehighlight: dehighlight$1,
         highlight: highlight$1,
@@ -6778,7 +6799,7 @@
       var isTabstop = function (tabbingConfig, element) {
         return isVisible(tabbingConfig, element) && tabbingConfig.useTabstopAt(element);
       };
-      var focusIn = function (component, tabbingConfig, tabbingState) {
+      var focusIn = function (component, tabbingConfig) {
         findInitial(component, tabbingConfig).each(function (target) {
           tabbingConfig.focusManager.set(component, target);
         });
@@ -6802,20 +6823,20 @@
           });
         });
       };
-      var goBackwards = function (component, simulatedEvent, tabbingConfig) {
+      var goBackwards = function (component, simulatedEvent, tabbingConfig, tabbingState) {
         var navigate = tabbingConfig.cyclic ? cyclePrev : tryPrev;
         return go(component, simulatedEvent, tabbingConfig, navigate);
       };
-      var goForwards = function (component, simulatedEvent, tabbingConfig) {
+      var goForwards = function (component, simulatedEvent, tabbingConfig, tabbingState) {
         var navigate = tabbingConfig.cyclic ? cycleNext : tryNext;
         return go(component, simulatedEvent, tabbingConfig, navigate);
       };
-      var execute = function (component, simulatedEvent, tabbingConfig) {
+      var execute = function (component, simulatedEvent, tabbingConfig, tabbingState) {
         return tabbingConfig.onEnter.bind(function (f) {
           return f(component, simulatedEvent);
         });
       };
-      var exit = function (component, simulatedEvent, tabbingConfig) {
+      var exit = function (component, simulatedEvent, tabbingConfig, tabbingState) {
         return tabbingConfig.onEscape.bind(function (f) {
           return f(component, simulatedEvent);
         });
@@ -6880,7 +6901,7 @@
       return Option.none();
     });
 
-    var flatgrid = function () {
+    var flatgrid = function (spec) {
       var dimensions = Cell(Option.none());
       var setGridSize = function (numRows, numColumns) {
         dimensions.set(Option.some({
@@ -6902,8 +6923,8 @@
         readState: function () {
           return dimensions.get().map(function (d) {
             return {
-              numRows: String(d.numRows()),
-              numColumns: String(d.numColumns())
+              numRows: d.numRows(),
+              numColumns: d.numColumns()
             };
           }).getOr({
             numRows: '?',
@@ -6920,7 +6941,6 @@
     };
 
     var KeyingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         flatgrid: flatgrid,
         init: init$2
     });
@@ -6965,22 +6985,24 @@
       return !isHidden(dom);
     };
 
-    var locate = function (candidates, predicate) {
+    var indexInfo = MixedBag([
+      'index',
+      'candidates'
+    ], []);
+    var locate$2 = function (candidates, predicate) {
       return findIndex(candidates, predicate).map(function (index) {
-        return {
-          index: constant(index),
-          candidates: constant(candidates)
-        };
+        return indexInfo({
+          index: index,
+          candidates: candidates
+        });
       });
     };
 
     var locateVisible = function (container, current, selector) {
-      var predicate = function (x) {
-        return eq(x, current);
-      };
+      var predicate = curry(eq, current);
       var candidates = descendants(container, selector);
       var visible = filter(candidates, isVisible);
-      return locate(visible, predicate);
+      return locate$2(visible, predicate);
     };
     var findIndex$1 = function (elements, target) {
       return findIndex(elements, function (elem) {
@@ -7012,7 +7034,7 @@
         var newRow = cycleBy(oldRow, delta, 0, numRows - 1);
         var onLastRow = newRow === numRows - 1;
         var colsInRow = onLastRow ? values.length - newRow * numCols : numCols;
-        var newCol = clamp(oldColumn, 0, colsInRow - 1);
+        var newCol = cap(oldColumn, 0, colsInRow - 1);
         return Option.some({
           row: constant(newRow),
           column: constant(newCol)
@@ -7061,10 +7083,10 @@
         });
       };
     };
-    var handleTab = function (component, simulatedEvent, gridConfig) {
+    var handleTab = function (component, simulatedEvent, gridConfig, gridState) {
       return gridConfig.captureTab ? Option.some(true) : Option.none();
     };
-    var doEscape = function (component, simulatedEvent, gridConfig) {
+    var doEscape = function (component, simulatedEvent, gridConfig, gridState) {
       return gridConfig.onEscape(component, simulatedEvent);
     };
     var moveLeft = doMove(cycleLeft);
@@ -7129,7 +7151,7 @@
         return flowConfig.execute(component, simulatedEvent, focused);
       });
     };
-    var focusIn$1 = function (component, flowConfig, state) {
+    var focusIn$1 = function (component, flowConfig) {
       flowConfig.getInitial(component).orThunk(function () {
         return descendant$1(component.element(), flowConfig.selector);
       }).each(function (first) {
@@ -7143,13 +7165,13 @@
       return horizontal(element, info.selector, focused, +1);
     };
     var doMove$1 = function (movement) {
-      return function (component, simulatedEvent, flowConfig, flowState) {
-        return movement(component, simulatedEvent, flowConfig, flowState).bind(function () {
+      return function (component, simulatedEvent, flowConfig) {
+        return movement(component, simulatedEvent, flowConfig).bind(function () {
           return flowConfig.executeOnMove ? execute$3(component, simulatedEvent, flowConfig) : Option.some(true);
         });
       };
     };
-    var doEscape$1 = function (component, simulatedEvent, flowConfig) {
+    var doEscape$1 = function (component, simulatedEvent, flowConfig, _flowState) {
       return flowConfig.onEscape(component, simulatedEvent);
     };
     var getKeydownRules$2 = function (_component, _se, flowConfig, _flowState) {
@@ -7193,19 +7215,19 @@
     var cycleVertical$1 = function (matrix, colIndex, startRow, deltaRow) {
       var nextRowIndex = cycleBy(startRow, deltaRow, 0, matrix.length - 1);
       var colsInNextRow = matrix[nextRowIndex].length;
-      var nextColIndex = clamp(colIndex, 0, colsInNextRow - 1);
+      var nextColIndex = cap(colIndex, 0, colsInNextRow - 1);
       return toCell(matrix, nextRowIndex, nextColIndex);
     };
     var moveHorizontal = function (matrix, rowIndex, startCol, deltaCol) {
       var row = matrix[rowIndex];
       var colsInRow = row.length;
-      var newColIndex = clamp(startCol + deltaCol, 0, colsInRow - 1);
+      var newColIndex = cap(startCol + deltaCol, 0, colsInRow - 1);
       return toCell(matrix, rowIndex, newColIndex);
     };
     var moveVertical = function (matrix, colIndex, startRow, deltaRow) {
-      var nextRowIndex = clamp(startRow + deltaRow, 0, matrix.length - 1);
+      var nextRowIndex = cap(startRow + deltaRow, 0, matrix.length - 1);
       var colsInNextRow = matrix[nextRowIndex].length;
-      var nextColIndex = clamp(colIndex, 0, colsInNextRow - 1);
+      var nextColIndex = cap(colIndex, 0, colsInNextRow - 1);
       return toCell(matrix, nextRowIndex, nextColIndex);
     };
     var cycleRight$1 = function (matrix, startRow, startCol) {
@@ -7242,7 +7264,7 @@
       defaulted$1('previousSelector', Option.none),
       defaulted$1('execute', defaultExecute)
     ];
-    var focusIn$2 = function (component, matrixConfig, state) {
+    var focusIn$2 = function (component, matrixConfig) {
       var focused = matrixConfig.previousSelector(component).orThunk(function () {
         var selectors = matrixConfig.selectors;
         return descendant$1(component.element(), selectors.cell);
@@ -7304,7 +7326,7 @@
         return menuConfig.execute(component, simulatedEvent, focused);
       });
     };
-    var focusIn$3 = function (component, menuConfig, state) {
+    var focusIn$3 = function (component, menuConfig) {
       descendant$1(component.element(), menuConfig.selector).each(function (first) {
         menuConfig.focusManager.set(component, first);
       });
@@ -7315,11 +7337,11 @@
     var moveDown$1 = function (element, focused, info) {
       return horizontal(element, info.selector, focused, +1);
     };
-    var fireShiftTab = function (component, simulatedEvent, menuConfig, menuState) {
-      return menuConfig.moveOnTab ? move(moveUp$1)(component, simulatedEvent, menuConfig, menuState) : Option.none();
+    var fireShiftTab = function (component, simulatedEvent, menuConfig) {
+      return menuConfig.moveOnTab ? move(moveUp$1)(component, simulatedEvent, menuConfig) : Option.none();
     };
-    var fireTab = function (component, simulatedEvent, menuConfig, menuState) {
-      return menuConfig.moveOnTab ? move(moveDown$1)(component, simulatedEvent, menuConfig, menuState) : Option.none();
+    var fireTab = function (component, simulatedEvent, menuConfig) {
+      return menuConfig.moveOnTab ? move(moveDown$1)(component, simulatedEvent, menuConfig) : Option.none();
     };
     var getKeydownRules$4 = constant([
       rule(inSet(UP()), move(moveUp$1)),
@@ -7398,7 +7420,6 @@
     var special = SpecialType.schema();
 
     var KeyboardBranches = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         acyclic: acyclic,
         cyclic: cyclic,
         flow: flow,
@@ -7409,9 +7430,6 @@
         special: special
     });
 
-    var isFlatgridState = function (keyState) {
-      return hasNonNullableKey(keyState, 'setGridSize');
-    };
     var Keying = createModes$1({
       branchKey: 'mode',
       branches: KeyboardBranches,
@@ -7431,7 +7449,7 @@
           });
         },
         setGridSize: function (component, keyConfig, keyState, numRows, numColumns) {
-          if (!isFlatgridState(keyState)) {
+          if (!hasKey$1(keyState, 'setGridSize')) {
             domGlobals.console.error('Layout does not support setGridSize');
           } else {
             keyState.setGridSize(numRows, numColumns);
@@ -7487,7 +7505,6 @@
     };
 
     var ReplaceApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         append: append$2,
         prepend: prepend$1,
         remove: remove$7,
@@ -7541,7 +7558,6 @@
     };
 
     var FocusApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         focus: focus$2,
         blur: blur$1,
         isFocused: isFocused
@@ -7561,7 +7577,6 @@
     };
 
     var ActiveFocus = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit$1,
         events: events$5
     });
@@ -7617,7 +7632,6 @@
     };
 
     var ToggleApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         onLoad: onLoad$4,
         toggle: toggle,
         isOn: isOn,
@@ -7626,7 +7640,7 @@
         set: set$6
     });
 
-    var exhibit$2 = function () {
+    var exhibit$2 = function (base, toggleConfig, toggleState) {
       return nu$6({});
     };
     var events$6 = function (toggleConfig, toggleState) {
@@ -7639,7 +7653,6 @@
     };
 
     var ActiveToggle = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit$2,
         events: events$6
     });
@@ -8073,8 +8086,8 @@
       });
     };
     var trace = function (items, byItem, byMenu, finish) {
-      return get(byMenu, finish).bind(function (triggerItem) {
-        return get(items, triggerItem).bind(function (triggerMenu) {
+      return readOptFrom$1(byMenu, finish).bind(function (triggerItem) {
+        return readOptFrom$1(items, triggerItem).bind(function (triggerMenu) {
           var rest = trace(items, byItem, byMenu, triggerMenu);
           return Option.some([triggerMenu].concat(rest));
         });
@@ -8093,7 +8106,7 @@
         return [submenu].concat(trace(items, byItem, byMenu, submenu));
       });
       return map$1(items, function (menu) {
-        return get(menuPaths, menu).getOr([menu]);
+        return readOptFrom$1(menuPaths, menu).getOr([menu]);
       });
     };
 
@@ -8149,7 +8162,7 @@
         var extraPath = filter(lookupItem(itemValue).toArray(), function (menuValue) {
           return getPreparedMenu(menuValue).isSome();
         });
-        return get(paths.get(), itemValue).bind(function (path) {
+        return readOptFrom$1(paths.get(), itemValue).bind(function (path) {
           var revPath = reverse(extraPath.concat(path));
           var triggers = bind(revPath, function (menuValue, menuIndex) {
             return getTriggerData(menuValue, getItemByValue, revPath.slice(0, menuIndex + 1)).fold(function () {
@@ -8162,27 +8175,27 @@
         });
       };
       var expand = function (itemValue) {
-        return get(expansions.get(), itemValue).map(function (menu) {
-          var current = get(paths.get(), itemValue).getOr([]);
+        return readOptFrom$1(expansions.get(), itemValue).map(function (menu) {
+          var current = readOptFrom$1(paths.get(), itemValue).getOr([]);
           return [menu].concat(current);
         });
       };
       var collapse = function (itemValue) {
-        return get(paths.get(), itemValue).bind(function (path) {
+        return readOptFrom$1(paths.get(), itemValue).bind(function (path) {
           return path.length > 1 ? Option.some(path.slice(1)) : Option.none();
         });
       };
       var refresh = function (itemValue) {
-        return get(paths.get(), itemValue);
+        return readOptFrom$1(paths.get(), itemValue);
       };
       var getPreparedMenu = function (menuValue) {
         return lookupMenu(menuValue).bind(extractPreparedMenu);
       };
       var lookupMenu = function (menuValue) {
-        return get(menus.get(), menuValue);
+        return readOptFrom$1(menus.get(), menuValue);
       };
       var lookupItem = function (itemValue) {
-        return get(expansions.get(), itemValue);
+        return readOptFrom$1(expansions.get(), itemValue);
       };
       var otherMenus = function (path) {
         var menuValues = directory.get();
@@ -8568,7 +8581,7 @@
         onStrictKeyboardHandler('onEscape'),
         onStrictHandler('onOpenMenu'),
         onStrictHandler('onOpenSubmenu'),
-        onHandler('onRepositionMenu'),
+        onStrictHandler('onRepositionMenu'),
         onHandler('onCollapseMenu'),
         defaulted$1('highlightImmediately', true),
         strictObjOf('data', [
@@ -8634,7 +8647,6 @@
         dom: { tag: 'div' },
         data: menuSpec.data,
         markers: menuSpec.menu.markers,
-        highlightImmediately: menuSpec.menu.highlightImmediately,
         onEscape: function () {
           Sandboxing.close(menuSandbox);
           detail.onEscape.map(function (handler) {
@@ -8713,10 +8725,8 @@
         }));
       };
       var hide = function (sandbox) {
-        if (Sandboxing.isOpen(sandbox)) {
-          Representing.setValue(sandbox, Option.none());
-          Sandboxing.close(sandbox);
-        }
+        Representing.setValue(sandbox, Option.none());
+        Sandboxing.close(sandbox);
       };
       var getContent = function (sandbox) {
         return Sandboxing.getState(sandbox);
@@ -8775,9 +8785,9 @@
             }
           }),
           Receiving.config({
-            channels: __assign(__assign({}, receivingChannel(__assign({ isExtraPart: spec.isExtraPart }, detail.fireDismissalEventInstead.map(function (fe) {
+            channels: __assign(__assign({}, receivingChannel(__assign({ isExtraPart: constant(false) }, detail.fireDismissalEventInstead.map(function (fe) {
               return { fireEventInstead: { event: fe.event } };
-            }).getOr({})))), receivingChannel$1(__assign(__assign({}, detail.fireRepositionEventInstead.map(function (fe) {
+            }).getOr({})))), receivingChannel$1(__assign(__assign({ isExtraPart: constant(false) }, detail.fireRepositionEventInstead.map(function (fe) {
               return { fireEventInstead: { event: fe.event } };
             }).getOr({})), { doReposition: reposition })))
           })
@@ -8801,7 +8811,6 @@
         optionObjOf('fireDismissalEventInstead', [defaulted$1('event', dismissRequested())]),
         optionObjOf('fireRepositionEventInstead', [defaulted$1('event', repositionRequested())]),
         defaulted$1('getRelated', Option.none),
-        defaulted$1('isExtraPart', never),
         defaulted$1('eventOrder', Option.none)
       ],
       factory: factory,
@@ -8855,172 +8864,30 @@
       return anchor.y() + anchor.height() - element.height();
     };
     var southeast$3 = function (anchor, element, bubbles) {
-      return nu$7(eastEdgeX$1(anchor, element), southY$2(anchor, element), bubbles.innerSoutheast(), northwest(), boundsRestriction(anchor, {
-        right: 0,
-        bottom: 3
-      }), 'layout-inner-se');
+      return nu$7(westEdgeX$1(anchor), southY$2(anchor, element), bubbles.innerSoutheast(), southeast(), 'layout-se');
     };
     var southwest$3 = function (anchor, element, bubbles) {
-      return nu$7(westEdgeX$1(anchor), southY$2(anchor, element), bubbles.innerSouthwest(), northeast(), boundsRestriction(anchor, {
-        left: 1,
-        bottom: 3
-      }), 'layout-inner-sw');
+      return nu$7(eastEdgeX$1(anchor, element), southY$2(anchor, element), bubbles.innerSouthwest(), southwest(), 'layout-sw');
     };
     var northeast$3 = function (anchor, element, bubbles) {
-      return nu$7(eastEdgeX$1(anchor, element), northY$2(anchor), bubbles.innerNortheast(), southwest(), boundsRestriction(anchor, {
-        right: 0,
-        top: 2
-      }), 'layout-inner-ne');
+      return nu$7(westEdgeX$1(anchor), northY$2(anchor), bubbles.innerNortheast(), northeast(), 'layout-ne');
     };
     var northwest$3 = function (anchor, element, bubbles) {
-      return nu$7(westEdgeX$1(anchor), northY$2(anchor), bubbles.innerNorthwest(), southeast(), boundsRestriction(anchor, {
-        left: 1,
-        top: 2
-      }), 'layout-inner-nw');
+      return nu$7(eastEdgeX$1(anchor, element), northY$2(anchor), bubbles.innerNorthwest(), northwest(), 'layout-nw');
     };
     var north$3 = function (anchor, element, bubbles) {
-      return nu$7(middleX$1(anchor, element), northY$2(anchor), bubbles.innerNorth(), south(), boundsRestriction(anchor, { top: 2 }), 'layout-inner-n');
+      return nu$7(middleX$1(anchor, element), northY$2(anchor), bubbles.innerNorth(), north(), 'layout-n');
     };
     var south$3 = function (anchor, element, bubbles) {
-      return nu$7(middleX$1(anchor, element), southY$2(anchor, element), bubbles.innerSouth(), north(), boundsRestriction(anchor, { bottom: 3 }), 'layout-inner-s');
-    };
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
-
-    var global$4 = tinymce.util.Tools.resolve('tinymce.EditorManager');
-
-    var getSkinUrl = function (editor) {
-      var settings = editor.settings;
-      var skin = settings.skin;
-      var skinUrl = settings.skin_url;
-      if (skin !== false) {
-        var skinName = skin ? skin : 'oxide';
-        if (skinUrl) {
-          skinUrl = editor.documentBaseURI.toAbsolute(skinUrl);
-        } else {
-          skinUrl = global$4.baseURL + '/skins/ui/' + skinName;
-        }
-      }
-      return skinUrl;
-    };
-    var isReadOnly = function (editor) {
-      return editor.getParam('readonly', false, 'boolean');
-    };
-    var isSkinDisabled = function (editor) {
-      return editor.getParam('skin') === false;
-    };
-    var getHeightSetting = function (editor) {
-      return editor.getParam('height', Math.max(editor.getElement().offsetHeight, 200));
-    };
-    var getWidthSetting = function (editor) {
-      return editor.getParam('width', global$3.DOM.getStyle(editor.getElement(), 'width'));
-    };
-    var getMinWidthSetting = function (editor) {
-      return Option.from(editor.settings.min_width).filter(isNumber);
-    };
-    var getMinHeightSetting = function (editor) {
-      return Option.from(editor.settings.min_height).filter(isNumber);
-    };
-    var getMaxWidthSetting = function (editor) {
-      return Option.from(editor.getParam('max_width')).filter(isNumber);
-    };
-    var getMaxHeightSetting = function (editor) {
-      return Option.from(editor.getParam('max_height')).filter(isNumber);
-    };
-    var getUserStyleFormats = function (editor) {
-      return Option.from(editor.getParam('style_formats')).filter(isArray);
-    };
-    var isMergeStyleFormats = function (editor) {
-      return editor.getParam('style_formats_merge', false, 'boolean');
-    };
-    var getRemovedMenuItems = function (editor) {
-      return editor.getParam('removed_menuitems', '');
-    };
-    var isMenubarEnabled = function (editor) {
-      return editor.getParam('menubar', true, 'boolean') !== false;
-    };
-    var isToolbarEnabled = function (editor) {
-      var toolbar = editor.getParam('toolbar', true);
-      var isToolbarTrue = toolbar === true;
-      var isToolbarString = isString(toolbar);
-      var isToolbarObjectArray = isArray(toolbar) && toolbar.length > 0;
-      return !isMultipleToolbars(editor) && (isToolbarObjectArray || isToolbarString || isToolbarTrue);
-    };
-    var getMultipleToolbarsSetting = function (editor) {
-      var keys$1 = keys(editor.settings);
-      var toolbarKeys = filter(keys$1, function (key) {
-        return /^toolbar([1-9])$/.test(key);
-      });
-      var toolbars = map(toolbarKeys, function (key) {
-        return editor.getParam(key, false, 'string');
-      });
-      var toolbarArray = filter(toolbars, function (toolbar) {
-        return typeof toolbar === 'string';
-      });
-      return toolbarArray.length > 0 ? Option.some(toolbarArray) : Option.none();
-    };
-    var isMultipleToolbars = function (editor) {
-      return getMultipleToolbarsSetting(editor).fold(function () {
-        var toolbar = editor.getParam('toolbar', [], 'string[]');
-        return toolbar.length > 0;
-      }, function () {
-        return true;
-      });
-    };
-    var ToolbarMode;
-    (function (ToolbarMode) {
-      ToolbarMode['default'] = 'wrap';
-      ToolbarMode['floating'] = 'floating';
-      ToolbarMode['sliding'] = 'sliding';
-      ToolbarMode['scrolling'] = 'scrolling';
-    }(ToolbarMode || (ToolbarMode = {})));
-    var getToolbarMode = function (editor) {
-      return editor.getParam('toolbar_mode', '', 'string');
-    };
-    var ToolbarLocation;
-    (function (ToolbarLocation) {
-      ToolbarLocation['top'] = 'top';
-      ToolbarLocation['bottom'] = 'bottom';
-    }(ToolbarLocation || (ToolbarLocation = {})));
-    var getToolbarGroups = function (editor) {
-      return editor.getParam('toolbar_groups', {}, 'object');
-    };
-    var isToolbarLocationTop = function (editor) {
-      return editor.getParam('toolbar_location', ToolbarLocation.top, 'string') !== ToolbarLocation.bottom;
-    };
-    var fixedContainerSelector = function (editor) {
-      return editor.getParam('fixed_toolbar_container', '', 'string');
-    };
-    var fixedContainerElement = function (editor) {
-      var selector = fixedContainerSelector(editor);
-      return selector.length > 0 && editor.inline ? descendant$1(body(), selector) : Option.none();
-    };
-    var useFixedContainer = function (editor) {
-      return editor.inline && fixedContainerElement(editor).isSome();
-    };
-    var getUiContainer = function (editor) {
-      var fixedContainer = fixedContainerElement(editor);
-      return fixedContainer.getOr(body());
-    };
-    var isDistractionFree = function (editor) {
-      return editor.inline && !isMenubarEnabled(editor) && !isToolbarEnabled(editor) && !isMultipleToolbars(editor);
-    };
-    var isStickyToolbar = function (editor) {
-      var isStickyToolbar = editor.getParam('toolbar_sticky', false, 'boolean');
-      return (isStickyToolbar || editor.inline) && !useFixedContainer(editor) && !isDistractionFree(editor);
-    };
-    var isDraggableModal = function (editor) {
-      return editor.getParam('draggable_modal', false, 'boolean');
+      return nu$7(middleX$1(anchor, element), southY$2(anchor, element), bubbles.innerSouth(), south(), 'layout-s');
     };
 
     var factory$1 = function (detail) {
       var events = events$7(detail.action);
       var tag = detail.dom.tag;
       var lookupAttr = function (attr) {
-        return get(detail.dom, 'attributes').bind(function (attrs) {
-          return get(attrs, attr);
+        return readOptFrom$1(detail.dom, 'attributes').bind(function (attrs) {
+          return readOptFrom$1(attrs, attr);
         });
       };
       var getModAttributes = function () {
@@ -9070,7 +8937,7 @@
     });
 
     var record = function (spec) {
-      var uid = isSketchSpec(spec) && hasNonNullableKey(spec, 'uid') ? spec.uid : generate$2('memento');
+      var uid = isSketchSpec(spec) && hasKey$1(spec, 'uid') ? spec.uid : generate$2('memento');
       var get = function (anyInSystem) {
         return anyInSystem.getSystem().getByUid(uid).getOrDie();
       };
@@ -9090,7 +8957,7 @@
     var defaultIcon = function (icons) {
       return Option.from(icons()['temporary-placeholder']).getOr('!not found!');
     };
-    var get$d = function (name, icons) {
+    var get$c = function (name, icons) {
       return Option.from(icons()[name]).getOrThunk(function () {
         return defaultIcon(icons);
       });
@@ -9227,28 +9094,28 @@
             components: [memBannerText.asSpec()],
             behaviours: derive$1([Replacing.config({})])
           }
-        ].concat(detail.progress ? [memBannerProgress.asSpec()] : []).concat(!detail.closeButton ? [] : [Button.sketch({
-            dom: {
-              tag: 'button',
-              classes: [
-                'tox-notification__dismiss',
-                'tox-button',
-                'tox-button--naked',
-                'tox-button--icon'
-              ]
-            },
-            components: [{
-                dom: {
-                  tag: 'div',
-                  classes: ['tox-icon'],
-                  innerHtml: get$d('close', detail.iconProvider),
-                  attributes: { 'aria-label': detail.translationProvider('Close') }
-                }
-              }],
-            action: function (comp) {
-              detail.onAction(comp);
-            }
-          })]),
+        ].concat(detail.progress ? [memBannerProgress.asSpec()] : []).concat(Button.sketch({
+          dom: {
+            tag: 'button',
+            classes: [
+              'tox-notification__dismiss',
+              'tox-button',
+              'tox-button--naked',
+              'tox-button--icon'
+            ]
+          },
+          components: [{
+              dom: {
+                tag: 'div',
+                classes: ['tox-icon'],
+                innerHtml: get$c('close', detail.iconProvider),
+                attributes: { 'aria-label': detail.translationProvider('Close') }
+              }
+            }],
+          action: function (comp) {
+            detail.onAction(comp);
+          }
+        })),
         apis: apis
       };
     };
@@ -9262,8 +9129,7 @@
         strict$1('onAction'),
         strict$1('text'),
         strict$1('iconProvider'),
-        strict$1('translationProvider'),
-        defaultedBoolean('closeButton', true)
+        strict$1('translationProvider')
       ],
       apis: {
         updateProgress: function (apis, comp, percent) {
@@ -9275,9 +9141,10 @@
       }
     });
 
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+
     function NotificationManagerImpl (editor, extras, uiMothership) {
       var backstage = extras.backstage;
-      var isToolbarLocationTop$1 = isToolbarLocationTop(editor);
       var getLayoutDirection = function (rel) {
         switch (rel) {
         case 'bc-bc':
@@ -9313,7 +9180,6 @@
         positionNotifications(notifications);
       };
       var open = function (settings, closeCallback) {
-        var hideCloseButton = !settings.closeButton && settings.timeout && (settings.timeout > 0 || settings.timeout < 0);
         var close = function () {
           closeCallback();
           InlineView.hide(notificationWrapper);
@@ -9329,19 +9195,18 @@
           ], settings.type) ? settings.type : undefined,
           progress: settings.progressBar === true,
           icon: Option.from(settings.icon),
-          closeButton: !hideCloseButton,
           onAction: close,
           iconProvider: backstage.shared.providers.icons,
           translationProvider: backstage.shared.providers.translate
         }));
-        var notificationWrapper = build$1(InlineView.sketch(__assign({
+        var notificationWrapper = build$1(InlineView.sketch({
           dom: {
             tag: 'div',
             classes: ['tox-notifications-container']
           },
           lazySink: extras.backstage.shared.getSink,
           fireDismissalEventInstead: {}
-        }, isToolbarLocationTop$1 ? {} : { fireRepositionEventInstead: {} })));
+        }));
         uiMothership.add(notificationWrapper);
         if (settings.timeout > 0) {
           global$2.setTimeout(function () {
@@ -9406,7 +9271,7 @@
       };
     }
 
-    var first = function (fn, rate) {
+    var first$1 = function (fn, rate) {
       var timer = null;
       var cancel = function () {
         if (timer !== null) {
@@ -9458,8 +9323,11 @@
       };
     };
 
-    var global$5 = tinymce.util.Tools.resolve('tinymce.dom.TextSeeker');
+    var global$3 = tinymce.util.Tools.resolve('tinymce.dom.TreeWalker');
 
+    var isText$1 = function (node) {
+      return node.nodeType === domGlobals.Node.TEXT_NODE;
+    };
     var isBoundary = function (dom, node) {
       return dom.isBlock(node) || contains([
         'BR',
@@ -9468,11 +9336,42 @@
         'INPUT'
       ], node.nodeName) || dom.getContentEditable(node) === 'false';
     };
+    var outcome$1 = Adt.generate([
+      { aborted: [] },
+      { edge: ['element'] },
+      { success: ['info'] }
+    ]);
+    var phase = Adt.generate([
+      { abort: [] },
+      { kontinue: [] },
+      { finish: ['info'] }
+    ]);
+    var repeat = function (dom, node, offset, process, walker, recent) {
+      var terminate = function () {
+        return recent.fold(outcome$1.aborted, outcome$1.edge);
+      };
+      var recurse = function () {
+        var next = walker();
+        if (next) {
+          return repeat(dom, next, Option.none(), process, walker, Option.some(node));
+        } else {
+          return terminate();
+        }
+      };
+      if (isBoundary(dom, node)) {
+        return terminate();
+      } else if (!isText$1(node)) {
+        return recurse();
+      } else {
+        var text = node.textContent;
+        return process(phase, node, text, offset).fold(outcome$1.aborted, function () {
+          return recurse();
+        }, outcome$1.success);
+      }
+    };
     var repeatLeft = function (dom, node, offset, process, rootNode) {
-      var search = global$5(dom, function (node) {
-        return isBoundary(dom, node);
-      });
-      return Option.from(search.backwards(node, offset, process, rootNode));
+      var walker = new global$3(node, rootNode || dom.getRoot());
+      return repeat(dom, node, Option.some(offset), process, walker.prev, Option.none());
     };
 
     var autocompleteSelector = '[data-mce-autocompleter]';
@@ -9497,28 +9396,26 @@
     var isValidTextRange = function (rng) {
       return rng.collapsed && rng.startContainer.nodeType === 3;
     };
-    var getText = function (rng) {
-      return rng.toString().replace(/\u00A0/g, ' ').replace(/\uFEFF/g, '');
-    };
-    var isWhitespace = function (chr) {
-      return chr !== '' && ' \xA0\f\n\r\t\x0B'.indexOf(chr) !== -1;
-    };
-
-    var stripTriggerChar = function (text, triggerCh) {
-      return text.substring(triggerCh.length);
-    };
-    var findChar = function (text, index, ch) {
+    var whiteSpace = /[\u00a0 \t\r\n]/;
+    var parse = function (text, index, ch, minChars) {
       var i;
       for (i = index - 1; i >= 0; i--) {
         var char = text.charAt(i);
-        if (isWhitespace(char)) {
+        if (whiteSpace.test(char)) {
           return Option.none();
         }
         if (char === ch) {
           break;
         }
       }
-      return Option.some(i);
+      if (i === -1 || index - i < minChars) {
+        return Option.none();
+      }
+      return Option.some(text.substring(i + 1, index));
+    };
+    var getText = function (rng, ch) {
+      var text = rng.toString().substring(ch.length);
+      return text.replace(/\u00A0/g, ' ').replace(/\uFEFF/g, '');
     };
     var findStart = function (dom, initRange, ch, minChars) {
       if (minChars === void 0) {
@@ -9527,29 +9424,22 @@
       if (!isValidTextRange(initRange)) {
         return Option.none();
       }
-      var findTriggerChIndex = function (element, offset, text) {
-        return findChar(text, offset, ch).getOr(offset);
-      };
-      var root = dom.getParent(initRange.startContainer, dom.isBlock) || dom.getRoot();
-      return repeatLeft(dom, initRange.startContainer, initRange.startOffset, findTriggerChIndex, root).bind(function (spot) {
-        var range = initRange.cloneRange();
-        range.setStart(spot.container, spot.offset);
-        range.setEnd(initRange.endContainer, initRange.endOffset);
-        if (range.collapsed) {
-          return Option.none();
-        }
-        var text = getText(range);
-        var triggerCharIndex = text.lastIndexOf(ch);
-        if (triggerCharIndex !== 0 || stripTriggerChar(text, ch).length < minChars) {
-          return Option.none();
-        } else {
-          return Option.some({
-            text: stripTriggerChar(text, ch),
+      var findTriggerCh = function (phase, element, text, optOffset) {
+        var index = optOffset.getOr(text.length);
+        return parse(text, index, ch, 1).fold(function () {
+          return text.match(whiteSpace) ? phase.abort() : phase.kontinue();
+        }, function (newText) {
+          var range = initRange.cloneRange();
+          range.setStart(element, index - newText.length - 1);
+          range.setEnd(initRange.endContainer, initRange.endOffset);
+          return text.length < minChars ? phase.abort() : phase.finish({
+            text: getText(range, ch),
             range: range,
             triggerChar: ch
           });
-        }
-      });
+        });
+      };
+      return repeatLeft(dom, initRange.startContainer, initRange.startOffset, findTriggerCh).fold(Option.none, Option.none, Option.some);
     };
     var getContext = function (dom, initRange, ch, minChars) {
       if (minChars === void 0) {
@@ -9560,10 +9450,9 @@
       }, function (elm) {
         var range = dom.createRng();
         range.selectNode(elm.dom());
-        var text = getText(range);
         return Option.some({
           range: range,
-          text: stripTriggerChar(text, ch),
+          text: getText(range, ch),
           triggerChar: ch
         });
       });
@@ -9620,23 +9509,23 @@
     };
     var AutocompleterEditorEvents = { setup: setup };
 
-    var global$6 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Promise');
 
-    var point$2 = function (container, offset) {
+    var point$2 = function (element, offset) {
       return {
-        container: container,
+        element: element,
         offset: offset
       };
     };
 
-    var isText$1 = function (node) {
+    var isText$2 = function (node) {
       return node.nodeType === domGlobals.Node.TEXT_NODE;
     };
     var isElement$1 = function (node) {
       return node.nodeType === domGlobals.Node.ELEMENT_NODE;
     };
     var toLast = function (node) {
-      if (isText$1(node)) {
+      if (isText$2(node)) {
         return point$2(node, node.data.length);
       } else {
         var children = node.childNodes;
@@ -9654,18 +9543,14 @@
       }
     };
 
-    var isPreviousCharContent = function (dom, leaf) {
-      return repeatLeft(dom, leaf.container, leaf.offset, function (element, offset) {
-        return offset === 0 ? -1 : offset;
-      }, dom.getRoot()).filter(function (spot) {
-        var char = spot.container.data.charAt(spot.offset - 1);
-        return !isWhitespace(char);
-      }).isSome();
-    };
     var isStartOfWord = function (dom) {
+      var process = function (phase, element, text, optOffset) {
+        var index = optOffset.getOr(text.length);
+        return index === 0 ? phase.kontinue() : phase.finish(/\s/.test(text.charAt(index - 1)));
+      };
       return function (rng) {
         var leaf = toLeaf(rng.startContainer, rng.startOffset);
-        return !isPreviousCharContent(dom, leaf);
+        return repeatLeft(dom, leaf.element, leaf.offset, process).fold(constant(true), constant(true), identity);
       };
     };
     var getTriggerContext = function (dom, initRange, database) {
@@ -9695,7 +9580,7 @@
       if (autocompleters.length === 0) {
         return Option.none();
       }
-      var lookupData = global$6.all(map(autocompleters, function (ac) {
+      var lookupData = global$4.all(map(autocompleters, function (ac) {
         var fetchResult = ac.fetch(context.text, ac.maxResults, fetchOptions);
         return fetchResult.then(function (results) {
           return {
@@ -9928,8 +9813,8 @@
       var getTooltip = function () {
         return popup.get();
       };
-      var setTooltip = function (comp) {
-        popup.set(Option.some(comp));
+      var setTooltip = function (s) {
+        popup.set(Option.some(s));
       };
       var clearTooltip = function () {
         popup.set(Option.none());
@@ -9961,7 +9846,6 @@
     };
 
     var TooltippingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$4
     });
 
@@ -9981,7 +9865,6 @@
     };
 
     var TooltippingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         hideAllExclusive: hideAllExclusive,
         setComponents: setComponents
     });
@@ -10065,7 +9948,6 @@
     };
 
     var ActiveTooltipping = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$8
     });
 
@@ -10077,7 +9959,34 @@
       apis: TooltippingApis
     });
 
-    var global$7 = tinymce.util.Tools.resolve('tinymce.util.I18n');
+    var getAttrs = function (elem) {
+      var attributes = elem.dom().attributes !== undefined ? elem.dom().attributes : [];
+      return foldl(attributes, function (b, attr) {
+        var _a;
+        if (attr.name === 'class') {
+          return b;
+        } else {
+          return __assign(__assign({}, b), (_a = {}, _a[attr.name] = attr.value, _a));
+        }
+      }, {});
+    };
+    var getClasses = function (elem) {
+      return Array.prototype.slice.call(elem.dom().classList, 0);
+    };
+    var fromHtml$2 = function (html) {
+      var elem = Element.fromHtml(html);
+      var children$1 = children(elem);
+      var attrs = getAttrs(elem);
+      var classes = getClasses(elem);
+      var contents = children$1.length === 0 ? {} : { innerHtml: get$1(elem) };
+      return __assign({
+        tag: name(elem),
+        classes: classes,
+        attributes: attrs
+      }, contents);
+    };
+
+    var global$5 = tinymce.util.Tools.resolve('tinymce.util.I18n');
 
     var navClass = 'tox-menu-nav__js';
     var selectableClass = 'tox-collection__item';
@@ -10096,10 +10005,10 @@
     var activeClass = 'tox-collection__item--active';
     var iconClassRtl = 'tox-collection__item-icon-rtl';
     var classForPreset = function (presets) {
-      return get(presetClasses, presets).getOr(navClass);
+      return readOptFrom$1(presetClasses, presets).getOr(navClass);
     };
 
-    var global$8 = tinymce.util.Tools.resolve('tinymce.Env');
+    var global$6 = tinymce.util.Tools.resolve('tinymce.Env');
 
     var convertText = function (source) {
       var mac = {
@@ -10113,13 +10022,13 @@
         meta: 'Ctrl',
         access: 'Shift+Alt'
       };
-      var replace = global$8.mac ? mac : other;
+      var replace = global$6.mac ? mac : other;
       var shortcut = source.split('+');
       var updated = map(shortcut, function (segment) {
         var search = segment.toLowerCase().trim();
         return has(replace, search) ? replace[search] : segment;
       });
-      return global$8.mac ? updated.join('') : updated.join('+');
+      return global$6.mac ? updated.join('') : updated.join('+');
     };
     var ConvertShortcut = { convertText: convertText };
 
@@ -10138,7 +10047,7 @@
           tag: 'div',
           classes: [textClass]
         },
-        components: [text(global$7.translate(text$1))]
+        components: [text(global$5.translate(text$1))]
       };
     };
     var renderHtml = function (html) {
@@ -10159,9 +10068,9 @@
         components: [{
             dom: {
               tag: style.tag,
-              styles: style.styles
+              attributes: { style: style.styleAttr }
             },
-            components: [text(global$7.translate(text$1))]
+            components: [text(global$5.translate(text$1))]
           }]
       };
     };
@@ -10182,7 +10091,7 @@
             iconClass,
             checkmarkClass
           ],
-          innerHtml: get$d('checkmark', icons)
+          innerHtml: get$c('checkmark', icons)
         }
       };
     };
@@ -10191,7 +10100,7 @@
         dom: {
           tag: 'div',
           classes: [caretClass],
-          innerHtml: get$d('chevron-right', icons)
+          innerHtml: get$c('chevron-right', icons)
         }
       };
     };
@@ -10200,7 +10109,7 @@
         dom: {
           tag: 'div',
           classes: [caretClass],
-          innerHtml: get$d('chevron-down', icons)
+          innerHtml: get$c('chevron-down', icons)
         }
       };
     };
@@ -10211,30 +10120,15 @@
       var getDom = function () {
         var common = colorClass;
         var icon = iconSvg.getOr('');
-        var attributes = itemText.map(function (text) {
-          return { title: providerBackstage.translate(text) };
-        }).getOr({});
-        var baseDom = {
-          tag: 'div',
-          attributes: attributes,
-          classes: [common]
-        };
+        var title = itemText.map(function (text) {
+          return ' title="' + providerBackstage.translate(text) + '"';
+        }).getOr('');
         if (itemValue === colorPickerCommand) {
-          return __assign(__assign({}, baseDom), {
-            tag: 'button',
-            classes: __spreadArrays(baseDom.classes, ['tox-swatches__picker-btn']),
-            innerHtml: icon
-          });
+          return fromHtml$2('<button class="' + common + ' tox-swatches__picker-btn"' + title + '>' + icon + '</button>');
         } else if (itemValue === removeColorCommand) {
-          return __assign(__assign({}, baseDom), {
-            classes: __spreadArrays(baseDom.classes, ['tox-swatch--remove']),
-            innerHtml: icon
-          });
+          return fromHtml$2('<div class="' + common + ' tox-swatch--remove"' + title + '>' + icon + '</div>');
         } else {
-          return __assign(__assign({}, baseDom), {
-            attributes: __assign(__assign({}, baseDom.attributes), { 'data-mce-color': itemValue }),
-            styles: { 'background-color': itemValue }
-          });
+          return fromHtml$2('<div class="' + common + '" style="background-color: ' + itemValue + '" data-mce-color="' + itemValue + '"' + title + '></div>');
         }
       };
       return {
@@ -10247,9 +10141,9 @@
         return icon.or(Option.some('')).map(renderIcon);
       }) : Option.none();
       var domTitle = info.ariaLabel.map(function (label) {
-        return { attributes: { title: global$7.translate(label) } };
+        return { attributes: { title: global$5.translate(label) } };
       }).getOr({});
-      var dom = __assign({
+      var dom = merge({
         tag: 'div',
         classes: [
           navClass,
@@ -10291,10 +10185,10 @@
       }
       var getIconName = function (iconName) {
         return iconName.map(function (name) {
-          return global$7.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
+          return global$5.isRtl() && contains(rtlIcon, name) ? name + '-rtl' : name;
         });
       };
-      var needRtlClass = global$7.isRtl() && info.iconContent.exists(function (name) {
+      var needRtlClass = global$5.isRtl() && info.iconContent.exists(function (name) {
         return contains(rtlTransform, name);
       });
       var icon = getIconName(info.iconContent).map(function (iconName) {
@@ -10369,7 +10263,6 @@
     };
 
     var DisableApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         enable: enable,
         disable: disable,
         isDisabled: isDisabled,
@@ -10377,7 +10270,7 @@
         set: set$7
     });
 
-    var exhibit$3 = function (base, disableConfig) {
+    var exhibit$3 = function (base, disableConfig, disableState) {
       return nu$6({ classes: disableConfig.disabled ? disableConfig.disableClass.map(pure).getOr([]) : [] });
     };
     var events$9 = function (disableConfig, disableState) {
@@ -10390,7 +10283,6 @@
     };
 
     var ActiveDisable = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit$3,
         events: events$9
     });
@@ -10515,9 +10407,11 @@
     var buildData = function (source) {
       return {
         value: source.value,
-        meta: __assign({ text: source.text.getOr('') }, source.meta)
+        meta: merge({ text: source.text.getOr('') }, source.meta)
       };
     };
+
+    var global$7 = tinymce.util.Tools.resolve('tinymce.dom.DOMUtils');
 
     var tooltipBehaviour = function (meta, sharedBackstage) {
       return get(meta, 'tooltipWorker').map(function (tooltipWorker) {
@@ -10548,10 +10442,10 @@
       return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     };
     var encodeText = function (text) {
-      return global$3.DOM.encode(text);
+      return global$7.DOM.encode(text);
     };
     var replaceText = function (text, matchText) {
-      var translated = global$7.translate(text);
+      var translated = global$5.translate(text);
       var encoded = encodeText(translated);
       if (matchText.length > 0) {
         var escapedMatchRegex = new RegExp(escapeRegExp(matchText), 'gi');
@@ -10912,14 +10806,14 @@
     };
     var redColour = constant(rgbaColour(255, 0, 0, 1));
 
-    var global$9 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
+    var global$8 = tinymce.util.Tools.resolve('tinymce.util.LocalStorage');
 
     var storageName = 'tinymce-custom-colors';
     function ColorCache (max) {
       if (max === void 0) {
         max = 10;
       }
-      var storageString = global$9.getItem(storageName);
+      var storageString = global$8.getItem(storageName);
       var localstorage = isString(storageString) ? JSON.parse(storageString) : [];
       var prune = function (list) {
         var diff = max - list.length;
@@ -10932,7 +10826,7 @@
         if (cache.length > max) {
           cache.pop();
         }
-        global$9.setItem(storageName, JSON.stringify(cache));
+        global$8.setItem(storageName, JSON.stringify(cache));
       };
       var remove = function (idx) {
         cache.splice(idx, 1);
@@ -11131,9 +11025,6 @@
     var fireSkinLoaded = function (editor) {
       return editor.fire('SkinLoaded');
     };
-    var fireSkinLoadError = function (editor, error) {
-      return editor.fire('SkinLoadError', error);
-    };
     var fireResizeEditor = function (editor) {
       return editor.fire('ResizeEditor');
     };
@@ -11151,7 +11042,6 @@
     };
     var Events = {
       fireSkinLoaded: fireSkinLoaded,
-      fireSkinLoadError: fireSkinLoadError,
       fireResizeEditor: fireResizeEditor,
       fireScrollContent: fireScrollContent,
       fireBeforeRenderUI: fireBeforeRenderUI,
@@ -11388,60 +11278,6 @@
       calcCols: calcCols
     };
 
-    var forMenu = function (presets) {
-      if (presets === 'color') {
-        return 'tox-swatches';
-      } else {
-        return 'tox-menu';
-      }
-    };
-    var classes = function (presets) {
-      return {
-        backgroundMenu: 'tox-background-menu',
-        selectedMenu: 'tox-selected-menu',
-        selectedItem: 'tox-collection__item--active',
-        hasIcons: 'tox-menu--has-icons',
-        menu: forMenu(presets),
-        tieredMenu: 'tox-tiered-menu'
-      };
-    };
-
-    var markers$1 = function (presets) {
-      var menuClasses = classes(presets);
-      return {
-        backgroundMenu: menuClasses.backgroundMenu,
-        selectedMenu: menuClasses.selectedMenu,
-        menu: menuClasses.menu,
-        selectedItem: menuClasses.selectedItem,
-        item: classForPreset(presets)
-      };
-    };
-    var dom$1 = function (hasIcons, columns, presets) {
-      var menuClasses = classes(presets);
-      return {
-        tag: 'div',
-        classes: flatten([
-          [
-            menuClasses.menu,
-            'tox-menu-' + columns + '-column'
-          ],
-          hasIcons ? [menuClasses.hasIcons] : []
-        ])
-      };
-    };
-    var components$1 = [Menu.parts().items({})];
-    var part = function (hasIcons, columns, presets) {
-      var menuClasses = classes(presets);
-      var d = {
-        tag: 'div',
-        classes: flatten([[menuClasses.tieredMenu]])
-      };
-      return {
-        dom: d,
-        markers: markers$1(presets)
-      };
-    };
-
     var chunk$1 = function (rowDom, numColumns) {
       return function (items) {
         var chunks = chunk(items, numColumns);
@@ -11565,6 +11401,60 @@
               });
             }
           })]
+      };
+    };
+
+    var forMenu = function (presets) {
+      if (presets === 'color') {
+        return 'tox-swatches';
+      } else {
+        return 'tox-menu';
+      }
+    };
+    var classes = function (presets) {
+      return {
+        backgroundMenu: 'tox-background-menu',
+        selectedMenu: 'tox-selected-menu',
+        selectedItem: 'tox-collection__item--active',
+        hasIcons: 'tox-menu--has-icons',
+        menu: forMenu(presets),
+        tieredMenu: 'tox-tiered-menu'
+      };
+    };
+
+    var markers$1 = function (presets) {
+      var menuClasses = classes(presets);
+      return {
+        backgroundMenu: menuClasses.backgroundMenu,
+        selectedMenu: menuClasses.selectedMenu,
+        menu: menuClasses.menu,
+        selectedItem: menuClasses.selectedItem,
+        item: classForPreset(presets)
+      };
+    };
+    var dom$1 = function (hasIcons, columns, presets) {
+      var menuClasses = classes(presets);
+      return {
+        tag: 'div',
+        classes: flatten([
+          [
+            menuClasses.menu,
+            'tox-menu-' + columns + '-column'
+          ],
+          hasIcons ? [menuClasses.hasIcons] : []
+        ])
+      };
+    };
+    var components$1 = [Menu.parts().items({})];
+    var part = function (hasIcons, columns, presets) {
+      var menuClasses = classes(presets);
+      var d = {
+        tag: 'div',
+        classes: flatten([[menuClasses.tieredMenu]])
+      };
+      return {
+        dom: d,
+        markers: markers$1(presets)
       };
     };
 
@@ -11720,10 +11610,10 @@
       }, columns, presets, ItemResponse$1.CLOSE_ON_EXECUTE, function () {
         return false;
       }, backstage.shared.providers);
-      var widgetSpec = __assign(__assign({}, menuSpec), {
+      var widgetSpec = deepMerge(__assign(__assign({}, menuSpec), {
         markers: markers$1(presets),
         movement: deriveMenuMovement(columns, presets)
-      });
+      }));
       return {
         type: 'widget',
         data: { value: generate$1('widget-id') },
@@ -11965,7 +11855,7 @@
           return createMenuItemFromBridge(i, itemResponse, backstage, itemHasIcon(i), isHorizontalMenu);
         };
         if (item.type === 'nestedmenuitem' && item.getSubmenuItems().length <= 0) {
-          return createItem(__assign(__assign({}, item), { disabled: true }));
+          return createItem(merge(item, { disabled: true }));
         } else {
           return createItem(item);
         }
@@ -12141,6 +12031,51 @@
     };
     var Autocompleter = { register: register$2 };
 
+    var mkEvent = function (target, x, y, stop, prevent, kill, raw) {
+      return {
+        target: constant(target),
+        x: constant(x),
+        y: constant(y),
+        stop: stop,
+        prevent: prevent,
+        kill: kill,
+        raw: constant(raw)
+      };
+    };
+    var fromRawEvent = function (rawEvent) {
+      var target = Element.fromDom(rawEvent.target);
+      var stop = function () {
+        rawEvent.stopPropagation();
+      };
+      var prevent = function () {
+        rawEvent.preventDefault();
+      };
+      var kill = compose(prevent, stop);
+      return mkEvent(target, rawEvent.clientX, rawEvent.clientY, stop, prevent, kill, rawEvent);
+    };
+    var handle = function (filter, handler) {
+      return function (rawEvent) {
+        if (!filter(rawEvent)) {
+          return;
+        }
+        handler(fromRawEvent(rawEvent));
+      };
+    };
+    var binder = function (element, event, filter, handler, useCapture) {
+      var wrapped = handle(filter, handler);
+      element.dom().addEventListener(event, wrapped, useCapture);
+      return { unbind: curry(unbind, element, event, wrapped, useCapture) };
+    };
+    var bind$2 = function (element, event, filter, handler) {
+      return binder(element, event, filter, handler, false);
+    };
+    var capture = function (element, event, filter, handler) {
+      return binder(element, event, filter, handler, true);
+    };
+    var unbind = function (element, event, handler, useCapture) {
+      element.dom().removeEventListener(event, handler, useCapture);
+    };
+
     var filter$1 = constant(true);
     var bind$3 = function (element, event, handler) {
       return bind$2(element, event, filter$1, handler);
@@ -12253,7 +12188,7 @@
         }
       ]);
       var fireIfReady = function (event, type) {
-        return get(handlers, type).bind(function (handler) {
+        return readOptFrom$1(handlers, type).bind(function (handler) {
           return handler(event);
         });
       };
@@ -12383,7 +12318,7 @@
     };
 
     var derive$2 = function (rawEvent, rawTarget) {
-      var source = get(rawEvent, 'target').map(function (getTarget) {
+      var source = readOptFrom$1(rawEvent, 'target').map(function (getTarget) {
         return getTarget();
       }).getOr(rawTarget);
       return Cell(source);
@@ -12507,23 +12442,23 @@
         return read$1(elem).fold(function () {
           return Option.none();
         }, function (id) {
-          return handlers.bind(function (h) {
-            return get(h, id);
-          }).map(function (descHandler) {
+          var reader = readOpt$1(id);
+          return handlers.bind(reader).map(function (descHandler) {
             return eventHandler(elem, descHandler);
           });
         });
       };
       var filterByType = function (type) {
-        return get(registry, type).map(function (handlers) {
+        return readOptFrom$1(registry, type).map(function (handlers) {
           return mapToArray(handlers, function (f, id) {
             return broadcastHandler(id, f);
           });
         }).getOr([]);
       };
       var find = function (isAboveRoot, type, target) {
-        var handlers = get(registry, type);
-        return closest(target, function (elem) {
+        var readType = readOpt$1(type);
+        var handlers = readType(registry);
+        return closest$1(target, function (elem) {
           return findHandler(handlers, elem);
         }, isAboveRoot);
       };
@@ -12563,7 +12498,7 @@
       };
       var register = function (component) {
         var tagId = readOrTag(component);
-        if (hasNonNullableKey(components, tagId)) {
+        if (hasKey$1(components, tagId)) {
           failOnDuplicate(component, tagId);
         }
         var extraArgs = [component];
@@ -12583,7 +12518,7 @@
         return events.find(isAboveRoot, type, target);
       };
       var getById = function (id) {
-        return get(components, id);
+        return readOpt$1(id)(components);
       };
       return {
         find: find,
@@ -12603,7 +12538,7 @@
           attributes: __assign({ role: 'presentation' }, attributes)
         }, domWithoutAttributes),
         components: detail.components,
-        behaviours: get$c(detail.containerBehaviours),
+        behaviours: get$b(detail.containerBehaviours),
         events: detail.events,
         domModification: detail.domModification,
         eventOrder: detail.eventOrder
@@ -12644,7 +12579,7 @@
         debugInfo: constant('real'),
         triggerEvent: function (eventName, target, data) {
           monitorEvent(eventName, target, function (logger) {
-            return triggerOnUntilStopped(lookup, eventName, data, target, logger);
+            triggerOnUntilStopped(lookup, eventName, data, target, logger);
           });
         },
         triggerFocus: function (target, originator) {
@@ -12658,7 +12593,6 @@
                 prevent: noop,
                 target: constant(target)
               }, target, logger);
-              return false;
             });
           });
         },
@@ -12771,6 +12705,187 @@
       };
     };
 
+    var global$9 = tinymce.util.Tools.resolve('tinymce.EditorManager');
+
+    var getSkinUrl = function (editor) {
+      var settings = editor.settings;
+      var skin = settings.skin;
+      var skinUrl = settings.skin_url;
+      if (skin !== false) {
+        var skinName = skin ? skin : 'oxide';
+        if (skinUrl) {
+          skinUrl = editor.documentBaseURI.toAbsolute(skinUrl);
+        } else {
+          skinUrl = global$9.baseURL + '/skins/ui/' + skinName;
+        }
+      }
+      return skinUrl;
+    };
+    var isReadOnly = function (editor) {
+      return editor.getParam('readonly', false, 'boolean');
+    };
+    var isSkinDisabled = function (editor) {
+      return editor.getParam('skin') === false;
+    };
+    var getHeightSetting = function (editor) {
+      return editor.getParam('height', Math.max(editor.getElement().offsetHeight, 200));
+    };
+    var getWidthSetting = function (editor) {
+      return editor.getParam('width', global$7.DOM.getStyle(editor.getElement(), 'width'));
+    };
+    var getMinWidthSetting = function (editor) {
+      return Option.from(editor.settings.min_width).filter(isNumber);
+    };
+    var getMinHeightSetting = function (editor) {
+      return Option.from(editor.settings.min_height).filter(isNumber);
+    };
+    var getMaxWidthSetting = function (editor) {
+      return Option.from(editor.getParam('max_width')).filter(isNumber);
+    };
+    var getMaxHeightSetting = function (editor) {
+      return Option.from(editor.getParam('max_height')).filter(isNumber);
+    };
+    var getUserStyleFormats = function (editor) {
+      return Option.from(editor.getParam('style_formats')).filter(isArray);
+    };
+    var isMergeStyleFormats = function (editor) {
+      return editor.getParam('style_formats_merge', false, 'boolean');
+    };
+    var getRemovedMenuItems = function (editor) {
+      return editor.getParam('removed_menuitems', '');
+    };
+    var isMenubarEnabled = function (editor) {
+      return editor.getParam('menubar', true, 'boolean') !== false;
+    };
+    var isToolbarEnabled = function (editor) {
+      var toolbar = editor.getParam('toolbar', true);
+      var isToolbarTrue = toolbar === true;
+      var isToolbarString = isString(toolbar);
+      var isToolbarObjectArray = isArray(toolbar) && toolbar.length > 0;
+      return !isMultipleToolbars(editor) && (isToolbarObjectArray || isToolbarString || isToolbarTrue);
+    };
+    var getMultipleToolbarsSetting = function (editor) {
+      var keys$1 = keys(editor.settings);
+      var toolbarKeys = filter(keys$1, function (key) {
+        return /^toolbar([1-9])$/.test(key);
+      });
+      var toolbars = map(toolbarKeys, function (key) {
+        return editor.getParam(key, false, 'string');
+      });
+      var toolbarArray = filter(toolbars, function (toolbar) {
+        return typeof toolbar === 'string';
+      });
+      return toolbarArray.length > 0 ? Option.some(toolbarArray) : Option.none();
+    };
+    var isMultipleToolbars = function (editor) {
+      return getMultipleToolbarsSetting(editor).fold(function () {
+        var toolbar = editor.getParam('toolbar', [], 'string[]');
+        return toolbar.length > 0;
+      }, function () {
+        return true;
+      });
+    };
+    var ToolbarDrawer;
+    (function (ToolbarDrawer) {
+      ToolbarDrawer['default'] = '';
+      ToolbarDrawer['floating'] = 'floating';
+      ToolbarDrawer['sliding'] = 'sliding';
+      ToolbarDrawer['scrolling'] = 'scrolling';
+    }(ToolbarDrawer || (ToolbarDrawer = {})));
+    var getToolbarDrawer = function (editor) {
+      return editor.getParam('toolbar_drawer', '', 'string');
+    };
+    var fixedContainerSelector = function (editor) {
+      return editor.getParam('fixed_toolbar_container', '', 'string');
+    };
+    var fixedContainerElement = function (editor) {
+      var selector = fixedContainerSelector(editor);
+      return selector.length > 0 && editor.inline ? descendant$1(body(), selector) : Option.none();
+    };
+    var useFixedContainer = function (editor) {
+      return editor.inline && fixedContainerElement(editor).isSome();
+    };
+    var getUiContainer = function (editor) {
+      var fixedContainer = fixedContainerElement(editor);
+      return fixedContainer.getOr(body());
+    };
+    var isDistractionFree = function (editor) {
+      return editor.inline && !isMenubarEnabled(editor) && !isToolbarEnabled(editor) && !isMultipleToolbars(editor);
+    };
+    var isStickyToolbar = function (editor) {
+      var isStickyToolbar = editor.getParam('toolbar_sticky', false, 'boolean');
+      return (isStickyToolbar || editor.inline) && !useFixedContainer(editor) && !isDistractionFree(editor);
+    };
+    var isDraggableModal = function (editor) {
+      return editor.getParam('draggable_modal', false, 'boolean');
+    };
+
+    var SIGNIFICANT_MOVE$1 = 5;
+    var LONGPRESS_DELAY$1 = 400;
+    var getTouch$1 = function (event) {
+      if (event.touches === undefined || event.touches.length !== 1) {
+        return Option.none();
+      }
+      return Option.some(event.touches[0]);
+    };
+    var isFarEnough$1 = function (touch, data) {
+      var distX = Math.abs(touch.clientX - data.x());
+      var distY = Math.abs(touch.clientY - data.y());
+      return distX > SIGNIFICANT_MOVE$1 || distY > SIGNIFICANT_MOVE$1;
+    };
+    var setup$2 = function (editor) {
+      var startData = Cell(Option.none());
+      var longpressFired = Cell(false);
+      var debounceLongpress = last$2(function (e) {
+        editor.fire('longpress', __assign(__assign({}, e), { type: 'longpress' }));
+        longpressFired.set(true);
+      }, LONGPRESS_DELAY$1);
+      editor.on('touchstart', function (e) {
+        getTouch$1(e).each(function (touch) {
+          debounceLongpress.cancel();
+          var data = {
+            x: constant(touch.clientX),
+            y: constant(touch.clientY),
+            target: constant(e.target)
+          };
+          debounceLongpress.throttle(e);
+          longpressFired.set(false);
+          startData.set(Option.some(data));
+        });
+      }, true);
+      editor.on('touchmove', function (e) {
+        debounceLongpress.cancel();
+        getTouch$1(e).each(function (touch) {
+          startData.get().each(function (data) {
+            if (isFarEnough$1(touch, data)) {
+              startData.set(Option.none());
+              longpressFired.set(false);
+              editor.fire('longpresscancel');
+            }
+          });
+        });
+      }, true);
+      editor.on('touchend touchcancel', function (e) {
+        debounceLongpress.cancel();
+        if (e.type === 'touchcancel') {
+          return;
+        }
+        startData.get().filter(function (data) {
+          return data.target().isEqualNode(e.target);
+        }).each(function () {
+          if (longpressFired.get()) {
+            e.preventDefault();
+          } else {
+            var result = editor.fire('tap', { touches: e.touches });
+            if (result.isDefaultPrevented()) {
+              e.preventDefault();
+            }
+          }
+        });
+      }, true);
+    };
+    var TouchEvents = { setup: setup$2 };
+
     var formChangeEvent = generate$1('form-component-change');
     var formCloseEvent = generate$1('form-close');
     var formCancelEvent = generate$1('form-cancel');
@@ -12806,7 +12921,7 @@
                     'tox-button--naked',
                     'tox-button--icon'
                   ],
-                  innerHtml: get$d(spec.icon, providersBackstage.icons),
+                  innerHtml: get$c(spec.icon, providersBackstage.icons),
                   attributes: { title: providersBackstage.translate(spec.iconTooltip) }
                 },
                 action: function (comp) {
@@ -12971,7 +13086,7 @@
     ]);
     var focusBehaviours = function (detail) {
       return derive$1([Focusing.config({
-          onFocus: !detail.selectOnFocus ? noop : function (component) {
+          onFocus: detail.selectOnFocus === false ? noop : function (component) {
             var input = component.element();
             var value = get$5(input);
             input.dom().setSelectionRange(0, value.length);
@@ -12980,9 +13095,9 @@
     };
     var behaviours = function (detail) {
       return __assign(__assign({}, focusBehaviours(detail)), augment(detail.inputBehaviours, [Representing.config({
-          store: __assign(__assign({ mode: 'manual' }, detail.data.map(function (data) {
-            return { initialValue: data };
-          }).getOr({})), {
+          store: {
+            mode: 'manual',
+            initialValue: detail.data.getOr(undefined),
             getValue: function (input) {
               return get$5(input.element());
             },
@@ -12992,7 +13107,7 @@
                 set$3(input.element(), data);
               }
             }
-          }),
+          },
           onSetValue: detail.onSetValue
         })]));
     };
@@ -13700,7 +13815,6 @@
     };
 
     var InvalidateApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         markValid: markValid,
         markInvalid: markInvalid,
         query: query,
@@ -13719,7 +13833,6 @@
     };
 
     var ActiveInvalidate = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$a
     });
 
@@ -13766,7 +13879,6 @@
     };
 
     var ActiveTabstopping = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit$4
     });
 
@@ -13816,21 +13928,20 @@
     };
 
     var CouplingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         getCoupled: getCoupled
     });
 
     var CouplingSchema = [strictOf('others', setOf$1(Result.value, anyValue$1()))];
 
-    var init$5 = function () {
+    var init$5 = function (spec) {
       var coupled = {};
       var getOrCreate = function (component, coupleConfig, name) {
         var available = keys(coupleConfig.others);
         if (!available) {
           throw new Error('Cannot find coupled component: ' + name + '. Known coupled components: ' + JSON.stringify(available, null, 2));
         } else {
-          return get(coupled, name).getOrThunk(function () {
-            var builder = get(coupleConfig.others, name).getOrDie('No information found for coupled component: ' + name);
+          return readOptFrom$1(coupled, name).getOrThunk(function () {
+            var builder = readOptFrom$1(coupleConfig.others, name).getOrDie('No information found for coupled component: ' + name);
             var spec = builder(component);
             var built = component.getSystem().build(spec);
             coupled[name] = built;
@@ -13846,7 +13957,6 @@
     };
 
     var CouplingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$5
     });
 
@@ -14050,7 +14160,12 @@
               });
             }
           }),
-          Receiving.config({ channels: __assign(__assign({}, receivingChannel({ isExtraPart: never })), receivingChannel$1({ doReposition: doRepositionMenus })) })
+          Receiving.config({
+            channels: __assign(__assign({}, receivingChannel({ isExtraPart: constant(false) })), receivingChannel$1({
+              isExtraPart: constant(false),
+              doReposition: doRepositionMenus
+            }))
+          })
         ])
       };
     };
@@ -14078,7 +14193,7 @@
       onKeyboardHandler('onExecute'),
       defaulted$1('getHotspot', Option.some),
       defaulted$1('getAnchorOverrides', constant({})),
-      schema$1(),
+      defaulted$1('layouts', Option.none()),
       field$1('dropdownBehaviours', [
         Toggling,
         Coupling,
@@ -14106,8 +14221,8 @@
     var factory$6 = function (detail, components, _spec, externals) {
       var _a;
       var lookupAttr = function (attr) {
-        return get(detail.dom, 'attributes').bind(function (attrs) {
-          return get(attrs, attr);
+        return readOptFrom$1(detail.dom, 'attributes').bind(function (attrs) {
+          return readOptFrom$1(attrs, attr);
         });
       };
       var switchToMenu = function (sandbox) {
@@ -14241,7 +14356,7 @@
       }
     });
 
-    var exhibit$5 = function () {
+    var exhibit$5 = function (base, unselectConfig) {
       return nu$6({
         styles: {
           '-webkit-user-select': 'none',
@@ -14252,12 +14367,11 @@
         attributes: { unselectable: 'on' }
       });
     };
-    var events$b = function () {
+    var events$b = function (unselectConfig) {
       return derive([abort(selectstart(), constant(true))]);
     };
 
     var ActiveUnselecting = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$b,
         exhibit: exhibit$5
     });
@@ -14370,22 +14484,14 @@
           tag: 'span',
           attributes: { 'aria-label': sharedBackstage.providers.translate('Color swatch') }
         },
-        layouts: {
+        layouts: Option.some({
           onRtl: function () {
-            return [
-              southwest$1,
-              southeast$1,
-              south$1
-            ];
+            return [southeast$1];
           },
           onLtr: function () {
-            return [
-              southeast$1,
-              southwest$1,
-              south$1
-            ];
+            return [southwest$1];
           }
-        },
+        }),
         components: [],
         fetch: ColorSwatch.getFetch(colorInputBackstage.getColors(), colorInputBackstage.hasCustomColors()),
         columns: colorInputBackstage.getColorCols(),
@@ -14482,15 +14588,11 @@
           }, function (a) {
             return {
               events: derive([
-                runActionExtra(touchstart(), function (comp, se, d) {
-                  return a(comp, d);
-                }, [detail]),
-                runActionExtra(mousedown(), function (comp, se, d) {
-                  return a(comp, d);
-                }, [detail]),
-                runActionExtra(mousemove(), function (comp, se, det) {
+                runActionExtra(touchstart(), a, [detail]),
+                runActionExtra(mousedown(), a, [detail]),
+                runActionExtra(mousemove(), function (l, se, det) {
                   if (det.mouseIsDown.get()) {
-                    a(comp, det);
+                    a(l, det);
                   }
                 }, [detail])
               ])
@@ -14958,7 +15060,6 @@
     };
 
     var HorizontalModel = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         setValueFrom: setValueFrom,
         setToMin: setToMin,
         setToMax: setToMax,
@@ -15081,7 +15182,6 @@
     };
 
     var VerticalModel = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         setValueFrom: setValueFrom$1,
         setToMin: setToMin$1,
         setToMax: setToMax$1,
@@ -15164,7 +15264,6 @@
     };
 
     var TwoDModel = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         setValueFrom: setValueFrom$2,
         setToMin: setToMin$2,
         setToMax: setToMax$2,
@@ -15399,6 +15498,7 @@
         }
       });
     };
+    var HueSlider = { sliderFactory: sliderFactory };
 
     var owner$3 = 'form';
     var schema$h = [field$1('formBehaviours', [Representing])];
@@ -15434,7 +15534,7 @@
         return Result.error(e);
       }, Result.value);
     };
-    var make$4 = function (detail, components) {
+    var make$4 = function (detail, components, spec) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -15447,7 +15547,7 @@
                 return map$1(resPs, function (resPThunk, pName) {
                   return resPThunk().bind(function (v) {
                     var opt = Composing.getCurrent(v);
-                    return toResult$1(opt, new Error('Cannot find a current component to extract the value from for form part \'' + pName + '\': ' + element(v.element())));
+                    return toResult$1(opt, 'missing current');
                   }).map(Representing.getValue);
                 });
               },
@@ -15710,6 +15810,7 @@
       });
       return rgbFormSketcher;
     };
+    var RgbForm = { rgbFormFactory: rgbFormFactory };
 
     var paletteFactory = function (_translate, getClass) {
       var spectrumPart = Slider.parts().spectrum({
@@ -15798,11 +15899,12 @@
       });
       return saturationBrightnessPaletteSketcher;
     };
+    var SaturationBrightnessPalette = { paletteFactory: paletteFactory };
 
     var makeFactory = function (translate, getClass) {
       var factory = function (detail) {
-        var rgbForm = rgbFormFactory(translate, getClass, detail.onValidHex, detail.onInvalidHex);
-        var sbPalette = paletteFactory(translate, getClass);
+        var rgbForm = RgbForm.rgbFormFactory(translate, getClass, detail.onValidHex, detail.onInvalidHex);
+        var sbPalette = SaturationBrightnessPalette.paletteFactory(translate, getClass);
         var state = { paletteRgba: constant(Cell(redColour())) };
         var memPalette = record(sbPalette.sketch({}));
         var memRgb = record(rgbForm.sketch({}));
@@ -15851,7 +15953,7 @@
           dom: detail.dom,
           components: [
             memPalette.asSpec(),
-            sliderFactory(translate, getClass),
+            HueSlider.sliderFactory(translate, getClass),
             memRgb.asSpec()
           ],
           behaviours: derive$1([
@@ -15879,6 +15981,7 @@
       });
       return colourPickerSketcher;
     };
+    var ColourPicker = { makeFactory: makeFactory };
 
     var self$1 = function () {
       return Composing.config({ find: Option.some });
@@ -15933,7 +16036,7 @@
       var getClass = function (key) {
         return 'tox-' + key;
       };
-      var colourPickerFactory = makeFactory(translate$1, getClass);
+      var colourPickerFactory = ColourPicker.makeFactory(translate$1, getClass);
       var onValidHex = function (form) {
         emitWith(form, formActionEvent, {
           name: 'hex-valid',
@@ -16706,7 +16809,7 @@
       return fromBlob(blob);
     };
 
-    function clamp$1(value, min, max) {
+    function clamp(value, min, max) {
       var parsedValue = typeof value === 'string' ? parseFloat(value) : value;
       if (parsedValue > max) {
         parsedValue = max;
@@ -16867,7 +16970,7 @@
     }
     function adjustContrast(matrix, value) {
       var x;
-      value = clamp$1(value, -1, 1);
+      value = clamp(value, -1, 1);
       value *= 100;
       if (value < 0) {
         x = 127 + value / 100 * 127;
@@ -16909,7 +17012,7 @@
       ]);
     }
     function adjustBrightness(matrix, value) {
-      value = clamp$1(255 * value, -255, 255);
+      value = clamp(255 * value, -255, 255);
       return multiply(matrix, [
         1,
         0,
@@ -16939,9 +17042,9 @@
       ]);
     }
     function adjustColors(matrix, adjustR, adjustG, adjustB) {
-      adjustR = clamp$1(adjustR, 0, 2);
-      adjustG = clamp$1(adjustG, 0, 2);
-      adjustB = clamp$1(adjustB, 0, 2);
+      adjustR = clamp(adjustR, 0, 2);
+      adjustG = clamp(adjustG, 0, 2);
+      adjustB = clamp(adjustB, 0, 2);
       return multiply(matrix, [
         adjustR,
         0,
@@ -17274,10 +17377,10 @@
       }, behaviours);
     };
     var renderIconFromPack = function (iconName, iconsProvider) {
-      return renderIcon$1(get$d(iconName, iconsProvider), {});
+      return renderIcon$1(get$c(iconName, iconsProvider), {});
     };
     var renderReplacableIconFromPack = function (iconName, iconsProvider) {
-      return renderIcon$1(get$d(iconName, iconsProvider), { behaviours: derive$1([Replacing.config({})]) });
+      return renderIcon$1(get$c(iconName, iconsProvider), { behaviours: derive$1([Replacing.config({})]) });
     };
     var renderLabel$1 = function (text, prefix, providersBackstage) {
       return {
@@ -17361,7 +17464,7 @@
             dom: {
               tag: 'div',
               classes: [prefix + '__select-chevron'],
-              innerHtml: get$d('chevron-down', sharedBackstage.providers.icons)
+              innerHtml: get$c('chevron-down', sharedBackstage.providers.icons)
             }
           })
         ]),
@@ -17468,7 +17571,7 @@
       if (isSeparator(item)) {
         return item;
       } else {
-        var itemValue = get(item, 'value').getOrThunk(function () {
+        var itemValue = readOptFrom$1(item, 'value').getOrThunk(function () {
           return generate$1('generated-menu-item');
         });
         return deepMerge({ value: itemValue }, item);
@@ -17576,10 +17679,7 @@
           }, function (text) {
             return { text: text };
           });
-          return __assign(__assign({
-            type: item.type,
-            active: false
-          }, text), {
+          return __assign(__assign({ type: item.type }, text), {
             onAction: getMenuItemAction(item),
             onSetup: getMenuItemSetup(item)
           });
@@ -17708,13 +17808,7 @@
           return memButton_1;
         };
         var menuButtonSpec = spec;
-        var fixedSpec = __assign(__assign({}, spec), {
-          onSetup: function (api) {
-            api.setDisabled(spec.disabled);
-            return noop;
-          },
-          fetch: getFetch$1(menuButtonSpec.items, getButton, backstage)
-        });
+        var fixedSpec = __assign(__assign({}, spec), { fetch: getFetch$1(menuButtonSpec.items, getButton, backstage) });
         var memButton_1 = record(renderMenuButton(fixedSpec, 'tox-tbtn', backstage, Option.none()));
         return memButton_1.asSpec();
       } else if (isNormalFooterButtonSpec(spec, buttonType)) {
@@ -17808,10 +17902,10 @@
                   'field1',
                   'field2'
                 ]);
-                if (hasNonNullableKey(value, detail.field1Name)) {
+                if (hasKey$1(value, detail.field1Name)) {
                   Representing.setValue(parts.field1(), value[detail.field1Name]);
                 }
-                if (hasNonNullableKey(value, detail.field2Name)) {
+                if (hasKey$1(value, detail.field2Name)) {
                   Representing.setValue(parts.field2(), value[detail.field2Name]);
                 }
               }
@@ -17959,7 +18053,7 @@
                 'tox-icon',
                 'tox-lock-icon__lock'
               ],
-              innerHtml: get$d('lock', providersBackstage.icons)
+              innerHtml: get$c('lock', providersBackstage.icons)
             }
           },
           {
@@ -17969,7 +18063,7 @@
                 'tox-icon',
                 'tox-lock-icon__unlock'
               ],
-              innerHtml: get$d('unlock', providersBackstage.icons)
+              innerHtml: get$c('unlock', providersBackstage.icons)
             }
           }
         ],
@@ -18873,7 +18967,7 @@
     var CropRect = { create: create$7 };
 
     var loadImage = function (image) {
-      return new global$6(function (resolve) {
+      return new global$4(function (resolve) {
         var loaded = function () {
           image.removeEventListener('load', loaded);
           resolve(image);
@@ -19534,7 +19628,7 @@
         dom: {
           tag: 'div',
           classes: ['tox-selectfield__icon-js'],
-          innerHtml: get$d('chevron-down', providersBackstage.icons)
+          innerHtml: get$c('chevron-down', providersBackstage.icons)
         }
       });
       var selectWrap = {
@@ -19685,7 +19779,6 @@
     };
 
     var ActiveStreaming = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$c
     });
 
@@ -19714,12 +19807,11 @@
     };
 
     var StreamingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         throttle: throttle,
         init: init$6
     });
 
-    var setup$2 = function (streamInfo, streamState) {
+    var setup$3 = function (streamInfo, streamState) {
       var sInfo = streamInfo.stream;
       var throttler = last$2(streamInfo.onStream, sInfo.delay);
       streamState.setTimer(throttler);
@@ -19736,7 +19828,7 @@
           strict$1('delay'),
           defaulted$1('stopEvent', true),
           output('streams', {
-            setup: setup$2,
+            setup: setup$3,
             state: throttle
           })
         ]
@@ -20378,7 +20470,7 @@
               'tox-icon',
               'tox-control-wrap__status-icon-' + name
             ],
-            innerHtml: get$d(icon, providersBackstage.icons),
+            innerHtml: get$c(icon, providersBackstage.icons),
             attributes: __assign({
               'title': providersBackstage.translate(label),
               'aria-live': 'polite'
@@ -20437,8 +20529,7 @@
       };
       var openUrlPicker = function (comp) {
         Composing.getCurrent(comp).each(function (field) {
-          var componentData = Representing.getValue(field);
-          var urlData = __assign({ fieldname: spec.name }, componentData);
+          var urlData = Representing.getValue(field);
           optUrlPicker.each(function (picker) {
             picker(urlData).get(function (chosenData) {
               Representing.setValue(field, chosenData);
@@ -20526,7 +20617,7 @@
               'tox-icon',
               'tox-checkbox-icon__' + className
             ],
-            innerHtml: get$d(iconName, providerBackstage.icons)
+            innerHtml: get$c(iconName, providerBackstage.icons)
           }
         };
       };
@@ -20631,7 +20722,7 @@
       };
       var setContents = function (comp, items) {
         var htmlLines = map(items, function (item) {
-          var itemText = global$7.translate(item.text);
+          var itemText = global$5.translate(item.text);
           var textContent = spec.columns === 1 ? '<div class="tox-collection__item-label">' + itemText + '</div>' : '';
           var iconContent = '<div class="tox-collection__item-icon">' + item.icon + '</div>';
           var mapItemName = {
@@ -20781,7 +20872,7 @@
 
     var make$6 = function (render) {
       return function (parts, spec, backstage) {
-        return get(spec, 'name').fold(function () {
+        return readOptFrom$1(spec, 'name').fold(function () {
           return render(spec, backstage);
         }, function (fieldName) {
           return parts.field(fieldName, render(spec, backstage));
@@ -20869,7 +20960,7 @@
       return interpretParts(parts, spec, newBackstage);
     };
     var interpretParts = function (parts, spec, backstage) {
-      return get(factories, spec.type).fold(function () {
+      return readOptFrom$1(factories, spec.type).fold(function () {
         domGlobals.console.error('Unknown factory type "' + spec.type + '", defaulting to container: ', spec);
         return spec;
       }, function (factory) {
@@ -20881,6 +20972,10 @@
       return interpretParts(parts, spec, backstage);
     };
 
+    var expandable$1 = constant(function (element, available) {
+      setMax$1(element, Math.floor(available));
+    });
+
     var bubbleAlignments = {
       valignCentre: [],
       alignCentre: [],
@@ -20891,31 +20986,29 @@
       bottom: [],
       top: []
     };
-    var getInlineDialogAnchor = function (contentAreaElement, lazyAnchorbar, useEditableAreaAnchor) {
-      var bubble = nu$8(-12, 12, bubbleAlignments);
-      var overrides = { maxHeightFunction: expandable() };
-      var editableAreaAnchor = function () {
+    var getToolbarAnchor = function (bodyElement, lazyAnchorbar, useFixedToolbarContainer) {
+      var fixedToolbarAnchor = function () {
         return {
           anchor: 'node',
-          root: getBody(owner(contentAreaElement())),
-          node: Option.from(contentAreaElement()),
-          bubble: bubble,
+          root: bodyElement(),
+          node: Option.from(bodyElement()),
+          bubble: nu$8(-12, -12, bubbleAlignments),
           layouts: {
             onRtl: function () {
-              return [northwest$3];
+              return [northeast$3];
             },
             onLtr: function () {
-              return [northeast$3];
+              return [northwest$3];
             }
           },
-          overrides: overrides
+          overrides: { maxHeightFunction: expandable() }
         };
       };
       var standardAnchor = function () {
         return {
           anchor: 'hotspot',
           hotspot: lazyAnchorbar(),
-          bubble: bubble,
+          bubble: nu$8(-12, 12, bubbleAlignments),
           layouts: {
             onRtl: function () {
               return [southeast$1];
@@ -20924,17 +21017,17 @@
               return [southwest$1];
             }
           },
-          overrides: overrides
+          overrides: { maxHeightFunction: expandable() }
         };
       };
-      return useEditableAreaAnchor ? editableAreaAnchor : standardAnchor;
+      return useFixedToolbarContainer ? fixedToolbarAnchor : standardAnchor;
     };
-    var getBannerAnchor = function (contentAreaElement, lazyAnchorbar, useEditableAreaAnchor) {
-      var editableAreaAnchor = function () {
+    var getBannerAnchor = function (bodyElement, lazyAnchorbar, useFixedToolbarContainer) {
+      var fixedToolbarAnchor = function () {
         return {
           anchor: 'node',
-          root: getBody(owner(contentAreaElement())),
-          node: Option.from(contentAreaElement()),
+          root: bodyElement(),
+          node: Option.from(bodyElement()),
           layouts: {
             onRtl: function () {
               return [north$3];
@@ -20959,7 +21052,30 @@
           }
         };
       };
-      return useEditableAreaAnchor ? editableAreaAnchor : standardAnchor;
+      return useFixedToolbarContainer ? fixedToolbarAnchor : standardAnchor;
+    };
+    var getToolbarOverflowAnchor = function (lazyMoreButton) {
+      return function () {
+        return {
+          anchor: 'hotspot',
+          hotspot: lazyMoreButton(),
+          overrides: { maxWidthFunction: expandable$1() },
+          layouts: {
+            onRtl: function () {
+              return [
+                southeast$1,
+                southwest$1
+              ];
+            },
+            onLtr: function () {
+              return [
+                southwest$1,
+                southeast$1
+              ];
+            }
+          }
+        };
+      };
     };
     var getCursorAnchor = function (editor, bodyElement) {
       return function () {
@@ -20982,18 +21098,15 @@
         };
       };
     };
-    var getAnchors = function (editor, lazyAnchorbar) {
+    var getAnchors = function (editor, lazyAnchorbar, lazyMoreButton) {
       var useFixedToolbarContainer = useFixedContainer(editor);
       var bodyElement = function () {
         return Element.fromDom(editor.getBody());
       };
-      var contentAreaElement = function () {
-        return Element.fromDom(editor.getContentAreaContainer());
-      };
-      var useEditableAreaAnchor = useFixedToolbarContainer || !isToolbarLocationTop(editor);
       return {
-        inlineDialog: getInlineDialogAnchor(contentAreaElement, lazyAnchorbar, useEditableAreaAnchor),
-        banner: getBannerAnchor(contentAreaElement, lazyAnchorbar, useEditableAreaAnchor),
+        toolbar: getToolbarAnchor(bodyElement, lazyAnchorbar, useFixedToolbarContainer),
+        toolbarOverflow: getToolbarOverflowAnchor(lazyMoreButton),
+        banner: getBannerAnchor(bodyElement, lazyAnchorbar, useFixedToolbarContainer),
         cursor: getCursorAnchor(editor, bodyElement),
         node: getNodeAnchor(bodyElement)
       };
@@ -21238,7 +21351,13 @@
         return processBasic(item, isSelectedFor, getPreviewFor);
       };
       var enrichMenu = function (item) {
-        var submenuSpec = { type: 'submenu' };
+        var submenuSpec = {
+          type: 'submenu',
+          isSelected: constant(false),
+          getStylePreview: function () {
+            return Option.none();
+          }
+        };
         return deepMerge(item, submenuSpec);
       };
       var enrichCustom = function (item) {
@@ -21256,14 +21375,14 @@
       var doEnrich = function (items) {
         return map(items, function (item) {
           var keys$1 = keys(item);
-          if (hasNonNullableKey(item, 'items')) {
+          if (hasKey$1(item, 'items')) {
             var newItems_1 = doEnrich(item.items);
             return deepMerge(enrichMenu(item), {
               getStyleItems: function () {
                 return newItems_1;
               }
             });
-          } else if (hasNonNullableKey(item, 'format')) {
+          } else if (hasKey$1(item, 'format')) {
             return enrichSupported(item);
           } else if (keys$1.length === 1 && contains(keys$1, 'title')) {
             return deepMerge(item, { type: 'separator' });
@@ -21286,7 +21405,7 @@
           var fmt = editor.formatter.get(format);
           return fmt !== undefined ? Option.some({
             tag: fmt.length > 0 ? fmt[0].inline || fmt[0].block || 'div' : 'div',
-            styles: editor.dom.parseStyle(editor.formatter.getCssText(format))
+            styleAttr: editor.formatter.getCssText(format)
           }) : Option.none();
         };
       };
@@ -21299,7 +21418,7 @@
       var eventsFormats = Cell([]);
       var eventsFlattenedFormats = Cell([]);
       var replaceSettings = Cell(false);
-      editor.on('PreInit', function (e) {
+      editor.on('init', function () {
         var formats = getStyleFormats(editor);
         var enriched = register$3(editor, formats, isSelectedFor, getPreviewFor);
         settingsFormats.set(enriched);
@@ -21485,11 +21604,11 @@
     var makeMap = function (value) {
       return map$1(global$e.makeMap(value, /[, ]/), isTruthy);
     };
-    var getOpt$1 = function (obj, key) {
+    var getOpt = function (obj, key) {
       return hasOwnProperty$2.call(obj, key) ? Option.some(obj[key]) : Option.none();
     };
     var getTextSetting = function (settings, name, defaultValue) {
-      var value = getOpt$1(settings, name).getOr(defaultValue);
+      var value = getOpt(settings, name).getOr(defaultValue);
       return isString(value) ? Option.some(value) : Option.none();
     };
     var getPicker = function (settings) {
@@ -21534,10 +21653,7 @@
               };
               completer(r);
             };
-            var meta = __assign({
-              filetype: filetype,
-              fieldname: entry.fieldname
-            }, Option.from(entry.meta).getOr({}));
+            var meta = global$e.extend({ filetype: filetype }, Option.from(entry.meta).getOr({}));
             picker.call(editor, handler, entry.value, meta);
           });
         };
@@ -21575,7 +21691,7 @@
       };
     };
 
-    var init$8 = function (sink, editor, lazyAnchorbar) {
+    var init$8 = function (sink, editor, lazyAnchorbar, lazyMoreButton) {
       var contextMenuState = Cell(false);
       var backstage = {
         shared: {
@@ -21586,12 +21702,12 @@
             menuItems: function () {
               return editor.ui.registry.getAll().menuItems;
             },
-            translate: global$7.translate
+            translate: global$5.translate
           },
           interpreter: function (s) {
             return interpretWithoutForm(s, backstage);
           },
-          anchors: Anchors.getAnchors(editor, lazyAnchorbar),
+          anchors: Anchors.getAnchors(editor, lazyAnchorbar, lazyMoreButton),
           getSink: function () {
             return Result.value(sink);
           }
@@ -21610,56 +21726,23 @@
       return backstage;
     };
 
-    var expandable$1 = constant(function (element, available) {
-      setMax$1(element, Math.floor(available));
-    });
-
     var showContextToolbarEvent = 'contexttoolbar-show';
     var hideContextToolbarEvent = 'contexttoolbar-hide';
 
     var schema$k = constant([
-      strict$1('items'),
-      markers(['itemSelector']),
-      field$1('tgroupBehaviours', [Keying])
-    ]);
-    var parts$7 = constant([group({
-        name: 'items',
-        unit: 'item'
-      })]);
-
-    var factory$9 = function (detail, components, spec, _externals) {
-      return {
-        uid: detail.uid,
-        dom: detail.dom,
-        components: components,
-        behaviours: augment(detail.tgroupBehaviours, [Keying.config({
-            mode: 'flow',
-            selector: detail.markers.itemSelector
-          })]),
-        domModification: { attributes: { role: 'toolbar' } }
-      };
-    };
-    var ToolbarGroup = composite$1({
-      name: 'ToolbarGroup',
-      configFields: schema$k(),
-      partFields: parts$7(),
-      factory: factory$9
-    });
-
-    var schema$l = constant([
       strict$1('dom'),
       defaulted$1('shell', true),
       field$1('toolbarBehaviours', [Replacing])
     ]);
-    var enhanceGroups = function () {
+    var enhanceGroups = function (detail) {
       return { behaviours: derive$1([Replacing.config({})]) };
     };
-    var parts$8 = constant([optional({
+    var parts$7 = constant([optional({
         name: 'groups',
         overrides: enhanceGroups
       })]);
 
-    var factory$a = function (detail, components, spec, _externals) {
+    var factory$9 = function (detail, components, spec, _externals) {
       var setGroups = function (toolbar, groups) {
         getGroupContainer(toolbar).fold(function () {
           domGlobals.console.error('Toolbar was defined to not be a shell, but no groups container was specified in components');
@@ -21689,9 +21772,9 @@
     };
     var Toolbar = composite$1({
       name: 'Toolbar',
-      configFields: schema$l(),
-      partFields: parts$8(),
-      factory: factory$a,
+      configFields: schema$k(),
+      partFields: parts$7(),
+      factory: factory$9,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
@@ -21776,42 +21859,85 @@
       }
     };
 
-    var setGroups = function (toolbar, storedGroups) {
+    var setStoredGroups = function (toolbar, storedGroups) {
       var bGroups = map(storedGroups, function (g) {
         return premade$1(g);
       });
       Toolbar.setGroups(toolbar, bGroups);
     };
-    var findFocusedComp = function (comps) {
-      return findMap(comps, function (comp) {
-        return search(comp.element()).bind(function (focusedElm) {
-          return comp.getSystem().getByDom(focusedElm).toOption();
+    var findFocusedComp = function (overflow, overflowButton) {
+      return overflow.bind(function (overf) {
+        return search(overf.element()).bind(function (focusedElm) {
+          return overf.getSystem().getByDom(focusedElm).toOption();
         });
+      }).orThunk(function () {
+        return overflowButton.filter(Focusing.isFocused);
       });
     };
-    var refresh = function (toolbar, detail, setOverflow) {
+    var refresh = function (toolbar, detail, overflow, isOpen) {
       var primary = getPartOrDie(toolbar, detail, 'primary');
+      var overflowButton = getPart(toolbar, detail, 'overflow-button');
       var overflowGroup = Coupling.getCoupled(toolbar, 'overflowGroup');
       set$2(primary.element(), 'visibility', 'hidden');
-      var groups = detail.builtGroups.get().concat([overflowGroup]);
-      var focusedComp = findFocusedComp(groups);
-      setOverflow([]);
-      setGroups(primary, groups);
-      var availableWidth = get$7(primary.element());
-      var overflows = partition$3(availableWidth, detail.builtGroups.get(), function (comp) {
+      var focusedComp = findFocusedComp(overflow, overflowButton);
+      overflow.each(function (overf) {
+        Toolbar.setGroups(overf, []);
+      });
+      var groups = detail.builtGroups.get();
+      setStoredGroups(primary, groups.concat([overflowGroup]));
+      var total = get$7(primary.element());
+      var overflows = partition$3(total, groups, function (comp) {
         return get$7(comp.element());
       }, overflowGroup);
       if (overflows.extra().length === 0) {
         Replacing.remove(primary, overflowGroup);
-        setOverflow([]);
+        overflow.each(function (overf) {
+          Toolbar.setGroups(overf, []);
+        });
       } else {
-        setGroups(primary, overflows.within());
-        setOverflow(overflows.extra());
+        setStoredGroups(primary, overflows.within());
+        overflow.each(function (overf) {
+          setStoredGroups(overf, overflows.extra());
+        });
       }
       remove$6(primary.element(), 'visibility');
       reflow(primary.element());
-      focusedComp.each(Focusing.focus);
+      overflow.each(function (overf) {
+        overflowButton.each(function (button) {
+          return Toggling.set(button, isOpen(overf));
+        });
+        focusedComp.each(Focusing.focus);
+      });
     };
+
+    var schema$l = constant([
+      strict$1('items'),
+      markers(['itemSelector']),
+      field$1('tgroupBehaviours', [Keying])
+    ]);
+    var parts$8 = constant([group({
+        name: 'items',
+        unit: 'item'
+      })]);
+
+    var factory$a = function (detail, components, spec, _externals) {
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.tgroupBehaviours, [Keying.config({
+            mode: 'flow',
+            selector: detail.markers.itemSelector
+          })]),
+        domModification: { attributes: { role: 'toolbar' } }
+      };
+    };
+    var ToolbarGroup = composite$1({
+      name: 'ToolbarGroup',
+      configFields: schema$l(),
+      partFields: parts$8(),
+      factory: factory$a
+    });
 
     var schema$m = constant([
       field$1('splitToolbarBehaviours', [Coupling]),
@@ -21819,107 +21945,143 @@
         return Cell([]);
       })
     ]);
+    var spec = function (detail, components, spec, externals, extras) {
+      var toolbarToggleEvent = 'alloy.toolbar.toggle';
+      var doSetGroups = function (toolbar, groups) {
+        var built = map(groups, toolbar.getSystem().build);
+        detail.builtGroups.set(built);
+      };
+      var setGroups = function (toolbar, groups) {
+        doSetGroups(toolbar, groups);
+        extras.apis.refresh(toolbar);
+      };
+      var getMoreButton = function (toolbar) {
+        return getPart(toolbar, detail, 'overflow-button');
+      };
+      return {
+        uid: detail.uid,
+        dom: detail.dom,
+        components: components,
+        behaviours: augment(detail.splitToolbarBehaviours, [
+          Coupling.config({
+            others: __assign(__assign({}, extras.coupling), {
+              overflowGroup: function (toolbar) {
+                return ToolbarGroup.sketch(__assign(__assign({}, externals['overflow-group']()), {
+                  items: [Button.sketch(__assign(__assign({}, externals['overflow-button']()), {
+                      action: function (_button) {
+                        emit(toolbar, toolbarToggleEvent);
+                      }
+                    }))]
+                }));
+              }
+            })
+          }),
+          config('toolbar-toggle-events', [run(toolbarToggleEvent, function (toolbar) {
+              extras.apis.toggle(toolbar);
+            })])
+        ]),
+        apis: __assign({
+          setGroups: setGroups,
+          getMoreButton: function (toolbar) {
+            return getMoreButton(toolbar);
+          }
+        }, extras.apis),
+        domModification: { attributes: { role: 'group' } }
+      };
+    };
 
     var schema$n = constant([
       markers(['overflowToggledClass']),
+      strict$1('getAnchor'),
       optionFunction('getOverflowBounds'),
-      strict$1('lazySink'),
-      state$1('overflowGroups', function () {
-        return Cell([]);
-      })
+      strict$1('lazySink')
     ].concat(schema$m()));
     var parts$9 = constant([
       required({
         factory: Toolbar,
-        schema: schema$l(),
+        schema: schema$k(),
         name: 'primary'
       }),
       external$1({
-        schema: schema$l(),
-        name: 'overflow'
+        factory: Toolbar,
+        schema: schema$k(),
+        name: 'overflow',
+        overrides: function (detail) {
+          return {
+            toolbarBehaviours: derive$1([Keying.config({
+                mode: 'cyclic',
+                onEscape: function (comp) {
+                  getPart(comp, detail, 'overflow-button').each(Focusing.focus);
+                  return Option.none();
+                }
+              })])
+          };
+        }
       }),
-      external$1({ name: 'overflow-button' }),
-      external$1({ name: 'overflow-group' })
-    ]);
-
-    var schema$o = constant([
-      markers(['toggledClass']),
-      strict$1('lazySink'),
-      strictFunction('fetch'),
-      optionFunction('getBounds'),
-      optionObjOf('fireDismissalEventInstead', [defaulted$1('event', dismissRequested())]),
-      schema$1()
-    ]);
-    var parts$a = constant([
       external$1({
-        name: 'button',
+        name: 'overflow-button',
         overrides: function (detail) {
           return {
             dom: { attributes: { 'aria-haspopup': 'true' } },
             buttonBehaviours: derive$1([Toggling.config({
-                toggleClass: detail.markers.toggledClass,
+                toggleClass: detail.markers.overflowToggledClass,
                 aria: { mode: 'expanded' },
                 toggleOnExecute: false
               })])
           };
         }
       }),
-      external$1({
-        factory: Toolbar,
-        schema: schema$l(),
-        name: 'toolbar',
-        overrides: function (detail) {
-          return {
-            toolbarBehaviours: derive$1([Keying.config({
-                mode: 'cyclic',
-                onEscape: function (comp) {
-                  getPart(comp, detail, 'button').each(Focusing.focus);
-                  return Option.none();
-                }
-              })])
-          };
-        }
-      })
+      external$1({ name: 'overflow-group' })
     ]);
 
-    var toggle$2 = function (button, externals) {
-      var toolbarSandbox = Coupling.getCoupled(button, 'toolbarSandbox');
-      if (Sandboxing.isOpen(toolbarSandbox)) {
-        Sandboxing.close(toolbarSandbox);
+    var toggleToolbar = function (toolbar, detail, externals) {
+      var sandbox = Coupling.getCoupled(toolbar, 'sandbox');
+      if (Sandboxing.isOpen(sandbox)) {
+        Sandboxing.close(sandbox);
       } else {
-        Sandboxing.open(toolbarSandbox, externals.toolbar());
+        Sandboxing.open(sandbox, externals.overflow());
       }
     };
-    var position$2 = function (button, toolbar, detail, layouts) {
-      var bounds = detail.getBounds.map(function (bounder) {
+    var isOpen$1 = function (over) {
+      return over.getSystem().isConnected();
+    };
+    var position$2 = function (toolbar, detail, overf) {
+      var sink = detail.lazySink(toolbar).getOrDie();
+      var anchor = detail.getAnchor(toolbar);
+      var bounds = detail.getOverflowBounds.map(function (bounder) {
         return bounder();
       });
-      var sink = detail.lazySink(button).getOrDie();
-      Positioning.positionWithinBounds(sink, {
-        anchor: 'hotspot',
-        hotspot: button,
-        layouts: layouts,
-        overrides: { maxWidthFunction: expandable$1() }
-      }, toolbar, bounds);
+      Positioning.positionWithinBounds(sink, anchor, overf, bounds);
     };
-    var setGroups$1 = function (button, toolbar, detail, layouts, groups) {
-      Toolbar.setGroups(toolbar, groups);
-      position$2(button, toolbar, detail, layouts);
-      Toggling.on(button);
+    var refresh$1 = function (toolbar, detail) {
+      var overflow = Sandboxing.getState(Coupling.getCoupled(toolbar, 'sandbox'));
+      refresh(toolbar, detail, overflow, isOpen$1);
+      overflow.each(function (overf) {
+        return position$2(toolbar, detail, overf);
+      });
     };
-    var makeSandbox$1 = function (button, spec, detail) {
+    var reposition$1 = function (toolbar, detail) {
+      var overflow = Sandboxing.getState(Coupling.getCoupled(toolbar, 'sandbox'));
+      overflow.each(function (overf) {
+        return position$2(toolbar, detail, overf);
+      });
+    };
+    var makeSandbox$1 = function (toolbar, detail) {
       var ariaOwner = manager();
-      var onOpen = function (sandbox, toolbar) {
-        detail.fetch().get(function (groups) {
-          setGroups$1(button, toolbar, detail, spec.layouts, groups);
+      var onOpen = function (sandbox, overf) {
+        refresh$1(toolbar, detail);
+        getPart(toolbar, detail, 'overflow-button').each(function (button) {
+          Toggling.on(button);
           ariaOwner.link(button.element());
-          Keying.focusIn(toolbar);
         });
+        Keying.focusIn(overf);
       };
       var onClose = function () {
-        Toggling.off(button);
-        Focusing.focus(button);
-        ariaOwner.unlink(button.element());
+        getPart(toolbar, detail, 'overflow-button').each(function (button) {
+          Toggling.off(button);
+          Focusing.focus(button);
+          ariaOwner.unlink(button.element());
+        });
       };
       return {
         dom: {
@@ -21938,178 +22100,51 @@
             onOpen: onOpen,
             onClose: onClose,
             isPartOf: function (container, data, queryElem) {
-              return isPartOf(data, queryElem) || isPartOf(button, queryElem);
+              return isPartOf(data, queryElem) || isPartOf(toolbar, queryElem);
             },
             getAttachPoint: function () {
-              return detail.lazySink(button).getOrDie();
+              return detail.lazySink(toolbar).getOrDie();
             }
           }),
           Receiving.config({
-            channels: __assign(__assign({}, receivingChannel(__assign({ isExtraPart: never }, detail.fireDismissalEventInstead.map(function (fe) {
-              return { fireEventInstead: { event: fe.event } };
-            }).getOr({})))), receivingChannel$1({
+            channels: __assign({}, receivingChannel$1({
+              isExtraPart: constant(false),
               doReposition: function () {
-                Sandboxing.getState(Coupling.getCoupled(button, 'toolbarSandbox')).each(function (toolbar) {
-                  position$2(button, toolbar, detail, spec.layouts);
-                });
+                return reposition$1(toolbar, detail);
               }
             }))
           })
         ])
       };
     };
-    var factory$b = function (detail, components, spec, externals) {
-      return __assign(__assign({}, Button.sketch(__assign(__assign({}, externals.button()), {
-        action: function (button) {
-          toggle$2(button, externals);
-        },
-        buttonBehaviours: SketchBehaviours.augment({ dump: externals.button().buttonBehaviours }, [Coupling.config({
-            others: {
-              toolbarSandbox: function (button) {
-                return makeSandbox$1(button, spec, detail);
-              }
-            }
-          })])
-      }))), {
-        apis: {
-          setGroups: function (button, groups) {
-            Sandboxing.getState(Coupling.getCoupled(button, 'toolbarSandbox')).each(function (toolbar) {
-              setGroups$1(button, toolbar, detail, spec.layouts, groups);
-            });
-          },
-          reposition: function (button) {
-            Sandboxing.getState(Coupling.getCoupled(button, 'toolbarSandbox')).each(function (toolbar) {
-              position$2(button, toolbar, detail, spec.layouts);
-            });
-          },
-          toggle: function (button) {
-            toggle$2(button, externals);
-          },
-          getToolbar: function (button) {
-            return Sandboxing.getState(Coupling.getCoupled(button, 'toolbarSandbox'));
-          }
-        }
-      });
-    };
-    var FloatingToolbarButton = composite$1({
-      name: 'FloatingToolbarButton',
-      factory: factory$b,
-      configFields: schema$o(),
-      partFields: parts$a(),
-      apis: {
-        setGroups: function (apis, button, groups) {
-          apis.setGroups(button, groups);
-        },
-        reposition: function (apis, button) {
-          apis.reposition(button);
-        },
-        toggle: function (apis, button) {
-          apis.toggle(button);
-        },
-        getToolbar: function (apis, button) {
-          return apis.getToolbar(button);
-        }
-      }
-    });
-
-    var buildGroups = function (comps) {
-      return map(comps, function (g) {
-        return premade$1(g);
-      });
-    };
-    var refresh$1 = function (toolbar, memFloatingToolbarButton, detail) {
-      refresh(toolbar, detail, function (overflowGroups) {
-        detail.overflowGroups.set(overflowGroups);
-        memFloatingToolbarButton.getOpt(toolbar).each(function (floatingToolbarButton) {
-          FloatingToolbarButton.setGroups(floatingToolbarButton, buildGroups(overflowGroups));
-        });
-      });
-    };
-    var factory$c = function (detail, components, spec, externals) {
-      var memFloatingToolbarButton = record(FloatingToolbarButton.sketch({
-        fetch: function () {
-          return Future.nu(function (resolve) {
-            resolve(buildGroups(detail.overflowGroups.get()));
-          });
-        },
-        layouts: {
-          onLtr: function () {
-            return [
-              southwest$1,
-              southeast$1
-            ];
-          },
-          onRtl: function () {
-            return [
-              southeast$1,
-              southwest$1
-            ];
-          },
-          onBottomLtr: function () {
-            return [
-              northwest$1,
-              northeast$1
-            ];
-          },
-          onBottomRtl: function () {
-            return [
-              northeast$1,
-              northwest$1
-            ];
+    var factory$b = function (detail, components, spec$1, externals) {
+      return spec(detail, components, spec$1, externals, {
+        coupling: {
+          sandbox: function (toolbar) {
+            return makeSandbox$1(toolbar, detail);
           }
         },
-        getBounds: spec.getOverflowBounds,
-        lazySink: detail.lazySink,
-        fireDismissalEventInstead: {},
-        markers: { toggledClass: detail.markers.overflowToggledClass },
-        parts: {
-          button: externals['overflow-button'](),
-          toolbar: externals.overflow()
-        }
-      }));
-      return {
-        uid: detail.uid,
-        dom: detail.dom,
-        components: components,
-        behaviours: augment(detail.splitToolbarBehaviours, [Coupling.config({
-            others: {
-              overflowGroup: function () {
-                return ToolbarGroup.sketch(__assign(__assign({}, externals['overflow-group']()), { items: [memFloatingToolbarButton.asSpec()] }));
-              }
-            }
-          })]),
         apis: {
-          setGroups: function (toolbar, groups) {
-            detail.builtGroups.set(map(groups, toolbar.getSystem().build));
-            refresh$1(toolbar, memFloatingToolbarButton, detail);
-          },
           refresh: function (toolbar) {
-            return refresh$1(toolbar, memFloatingToolbarButton, detail);
+            return refresh$1(toolbar, detail);
           },
           toggle: function (toolbar) {
-            memFloatingToolbarButton.getOpt(toolbar).each(function (floatingToolbarButton) {
-              FloatingToolbarButton.toggle(floatingToolbarButton);
-            });
-          },
-          reposition: function (toolbar) {
-            memFloatingToolbarButton.getOpt(toolbar).each(function (floatingToolbarButton) {
-              FloatingToolbarButton.reposition(floatingToolbarButton);
-            });
+            return toggleToolbar(toolbar, detail, externals);
           },
           getOverflow: function (toolbar) {
-            return memFloatingToolbarButton.getOpt(toolbar).bind(function (floatingToolbarButton) {
-              return FloatingToolbarButton.getToolbar(floatingToolbarButton);
-            });
+            return Sandboxing.getState(Coupling.getCoupled(toolbar, 'sandbox'));
+          },
+          reposition: function (toolbar) {
+            return reposition$1(toolbar, detail);
           }
-        },
-        domModification: { attributes: { role: 'group' } }
-      };
+        }
+      });
     };
     var SplitFloatingToolbar = composite$1({
       name: 'SplitFloatingToolbar',
       configFields: schema$n(),
       partFields: parts$9(),
-      factory: factory$c,
+      factory: factory$b,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
@@ -22120,11 +22155,14 @@
         reposition: function (apis, toolbar) {
           apis.reposition(toolbar);
         },
-        toggle: function (apis, toolbar) {
-          apis.toggle(toolbar);
+        getMoreButton: function (apis, toolbar) {
+          return apis.getMoreButton(toolbar);
         },
         getOverflow: function (apis, toolbar) {
           return apis.getOverflow(toolbar);
+        },
+        toggle: function (apis, toolbar) {
+          apis.toggle(toolbar);
         }
       }
     });
@@ -22229,7 +22267,7 @@
     };
     var immediateShrink = function (component, slideConfig, slideState) {
       if (slideState.isExpanded()) {
-        doImmediateShrink(component, slideConfig, slideState, Option.none());
+        doImmediateShrink(component, slideConfig, slideState);
       }
     };
     var hasGrown = function (component, slideConfig, slideState) {
@@ -22255,7 +22293,6 @@
     };
 
     var SlidingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         refresh: refresh$2,
         grow: grow,
         shrink: shrink,
@@ -22294,7 +22331,6 @@
     };
 
     var ActiveSliding = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         exhibit: exhibit$6,
         events: events$d
     });
@@ -22345,7 +22381,6 @@
     };
 
     var SlidingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$9
     });
 
@@ -22357,7 +22392,7 @@
       state: SlidingState
     });
 
-    var schema$p = constant([
+    var schema$o = constant([
       markers([
         'closedClass',
         'openClass',
@@ -22368,15 +22403,15 @@
       onHandler('onOpened'),
       onHandler('onClosed')
     ].concat(schema$m()));
-    var parts$b = constant([
+    var parts$a = constant([
       required({
         factory: Toolbar,
-        schema: schema$l(),
+        schema: schema$k(),
         name: 'primary'
       }),
       required({
         factory: Toolbar,
-        schema: schema$l(),
+        schema: schema$k(),
         name: 'overflow',
         overrides: function (detail) {
           return {
@@ -22428,85 +22463,53 @@
       external$1({ name: 'overflow-group' })
     ]);
 
-    var toggleToolbar = function (toolbar, detail) {
+    var toggleToolbar$1 = function (toolbar, detail) {
       getPart(toolbar, detail, 'overflow').each(function (overf) {
         refresh$3(toolbar, detail);
         Sliding.toggleGrow(overf);
       });
     };
-    var refresh$3 = function (toolbar, detail) {
-      getPart(toolbar, detail, 'overflow').each(function (overflow) {
-        refresh(toolbar, detail, function (groups) {
-          var builtGroups = map(groups, function (g) {
-            return premade$1(g);
-          });
-          Toolbar.setGroups(overflow, builtGroups);
-        });
-        getPart(toolbar, detail, 'overflow-button').each(function (button) {
-          if (Sliding.hasGrown(overflow)) {
-            Toggling.on(button);
-          }
-        });
-        Sliding.refresh(overflow);
-      });
+    var isOpen$2 = function (overf) {
+      return Sliding.hasGrown(overf);
     };
-    var factory$d = function (detail, components, spec, externals) {
-      var toolbarToggleEvent = 'alloy.toolbar.toggle';
-      var doSetGroups = function (toolbar, groups) {
-        var built = map(groups, toolbar.getSystem().build);
-        detail.builtGroups.set(built);
-      };
-      return {
-        uid: detail.uid,
-        dom: detail.dom,
-        components: components,
-        behaviours: augment(detail.splitToolbarBehaviours, [
-          Coupling.config({
-            others: {
-              overflowGroup: function (toolbar) {
-                return ToolbarGroup.sketch(__assign(__assign({}, externals['overflow-group']()), {
-                  items: [Button.sketch(__assign(__assign({}, externals['overflow-button']()), {
-                      action: function (_button) {
-                        emit(toolbar, toolbarToggleEvent);
-                      }
-                    }))]
-                }));
-              }
-            }
-          }),
-          config('toolbar-toggle-events', [run(toolbarToggleEvent, function (toolbar) {
-              getPart(toolbar, detail, 'overflow').each(function (overf) {
-                refresh$3(toolbar, detail);
-                Sliding.toggleGrow(overf);
-              });
-            })])
-        ]),
+    var refresh$3 = function (toolbar, detail) {
+      var overflow = getPart(toolbar, detail, 'overflow');
+      refresh(toolbar, detail, overflow, isOpen$2);
+      overflow.each(Sliding.refresh);
+    };
+    var factory$c = function (detail, components, spec$1, externals) {
+      return spec(detail, components, spec$1, externals, {
+        coupling: {},
         apis: {
-          setGroups: function (toolbar, groups) {
-            doSetGroups(toolbar, groups);
-            refresh$3(toolbar, detail);
-          },
           refresh: function (toolbar) {
             return refresh$3(toolbar, detail);
           },
           toggle: function (toolbar) {
-            return toggleToolbar(toolbar, detail);
+            return toggleToolbar$1(toolbar, detail);
+          },
+          getOverflow: function (toolbar) {
+            return getPart(toolbar, detail, 'overflow');
           }
-        },
-        domModification: { attributes: { role: 'group' } }
-      };
+        }
+      });
     };
     var SplitSlidingToolbar = composite$1({
       name: 'SplitSlidingToolbar',
-      configFields: schema$p(),
-      partFields: parts$b(),
-      factory: factory$d,
+      configFields: schema$o(),
+      partFields: parts$a(),
+      factory: factory$c,
       apis: {
         setGroups: function (apis, toolbar, groups) {
           apis.setGroups(toolbar, groups);
         },
         refresh: function (apis, toolbar) {
           apis.refresh(toolbar);
+        },
+        getMoreButton: function (apis, toolbar) {
+          return apis.getMoreButton(toolbar);
+        },
+        getOverflow: function (apis, toolbar) {
+          return apis.getOverflow(toolbar);
         },
         toggle: function (apis, toolbar) {
           apis.toggle(toolbar);
@@ -22550,12 +22553,12 @@
     };
     var setupReadonlyModeSwitch = function (editor, uiComponents) {
       editor.on('init', function () {
-        if (editor.mode.isReadOnly()) {
+        if (editor.readonly) {
           toggleToReadOnly(uiComponents, true);
         }
       });
       editor.on('SwitchMode', function () {
-        return toggleToReadOnly(uiComponents, editor.mode.isReadOnly());
+        return toggleToReadOnly(uiComponents, editor.readonly);
       });
       if (isReadOnly(editor)) {
         editor.setMode('readonly');
@@ -22649,20 +22652,21 @@
       });
       return SplitFloatingToolbar.sketch(__assign(__assign({}, baseSpec), {
         lazySink: toolbarSpec.getSink,
+        getAnchor: function () {
+          return toolbarSpec.backstage.shared.anchors.toolbarOverflow();
+        },
         getOverflowBounds: function () {
           var headerElem = toolbarSpec.moreDrawerData.lazyHeader().element();
           var headerBounds = absolute$1(headerElem);
           var docElem = documentElement(headerElem);
           var docBounds = absolute$1(docElem);
-          var height = Math.max(docElem.dom().scrollHeight, docBounds.height());
-          return bounds$1(headerBounds.x() + overflowXOffset, docBounds.y(), headerBounds.width() - overflowXOffset * 2, height);
+          return bounds$1(headerBounds.x() + overflowXOffset, docBounds.y(), headerBounds.width() - overflowXOffset * 2, docBounds.height());
         },
         parts: __assign(__assign({}, baseSpec.parts), {
           overflow: {
             dom: {
               tag: 'div',
-              classes: ['tox-toolbar__overflow'],
-              attributes: toolbarSpec.attributes
+              classes: ['tox-toolbar__overflow']
             }
           }
         }),
@@ -22683,7 +22687,7 @@
           classes: ['tox-toolbar__overflow']
         }
       });
-      var baseSpec = renderMoreToolbarCommon(toolbarSpec, Option.none);
+      var baseSpec = renderMoreToolbarCommon(toolbarSpec, SplitSlidingToolbar.getOverflow);
       return SplitSlidingToolbar.sketch(__assign(__assign({}, baseSpec), {
         components: [
           primary,
@@ -22710,7 +22714,7 @@
         uid: toolbarSpec.uid,
         dom: {
           tag: 'div',
-          classes: ['tox-toolbar'].concat(toolbarSpec.type === ToolbarMode.scrolling ? ['tox-toolbar--scrolling'] : [])
+          classes: ['tox-toolbar'].concat(toolbarSpec.type === ToolbarDrawer.scrolling ? ['tox-toolbar--scrolling'] : [])
         },
         components: [Toolbar.parts().groups({})],
         toolbarBehaviours: getToolbarbehaviours(toolbarSpec, modeName, constant(Option.none()))
@@ -22781,20 +22785,6 @@
       return asRaw('ToggleButton', toggleButtonSchema, spec);
     };
 
-    var groupToolbarButtonSchema = objOf([
-      strictString('type'),
-      strictOf('items', oneOf([
-        arrOfObj$1([
-          strictString('name'),
-          strictArrayOf('items', string)
-        ]),
-        string
-      ]))
-    ].concat(baseToolbarButtonFields));
-    var createGroupToolbarButton = function (spec) {
-      return asRaw('GroupToolbarButton', groupToolbarButtonSchema, spec);
-    };
-
     var contextBarFields = [
       defaultedFunction('predicate', function () {
         return false;
@@ -22855,7 +22845,6 @@
     };
 
     var ReflectingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         getState: getState$2
     });
 
@@ -22873,10 +22862,9 @@
       };
       return derive([
         run(receive(), function (component, message) {
-          var receivingData = message;
           var channel = reflectingConfig.channel;
-          if (contains(receivingData.channels(), channel)) {
-            update(component, receivingData.data());
+          if (contains(message.channels(), channel)) {
+            update(component, message.data());
           }
         }),
         runOnAttached(function (comp, se) {
@@ -22888,11 +22876,10 @@
     };
 
     var ActiveReflecting = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$e
     });
 
-    var init$a = function () {
+    var init$a = function (spec) {
       var cell = Cell(Option.none());
       var set = function (optS) {
         return cell.set(optS);
@@ -22919,7 +22906,6 @@
     };
 
     var ReflectingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$a
     });
 
@@ -22938,13 +22924,13 @@
       state: ReflectingState
     });
 
-    var schema$q = constant([
+    var schema$p = constant([
       strict$1('toggleClass'),
       strict$1('fetch'),
       onStrictHandler('onExecute'),
       defaulted$1('getHotspot', Option.some),
       defaulted$1('getAnchorOverrides', constant({})),
-      schema$1(),
+      defaulted$1('layouts', Option.none()),
       onStrictHandler('onItemExecute'),
       option('lazySink'),
       strict$1('dom'),
@@ -22963,7 +22949,7 @@
       factory: Button,
       schema: [strict$1('dom')],
       name: 'arrow',
-      defaults: function () {
+      defaults: function (detail) {
         return { buttonBehaviours: derive$1([Focusing.revoke()]) };
       },
       overrides: function (detail) {
@@ -22986,7 +22972,7 @@
       factory: Button,
       schema: [strict$1('dom')],
       name: 'button',
-      defaults: function () {
+      defaults: function (detail) {
         return { buttonBehaviours: derive$1([Focusing.revoke()]) };
       },
       overrides: function (detail) {
@@ -23003,7 +22989,7 @@
         };
       }
     });
-    var parts$c = constant([
+    var parts$b = constant([
       arrowPart,
       buttonPart,
       optional({
@@ -23039,7 +23025,7 @@
       partType()
     ]);
 
-    var factory$e = function (detail, components, spec, externals) {
+    var factory$d = function (detail, components, spec, externals) {
       var switchToMenu = function (sandbox) {
         Composing.getCurrent(sandbox).each(function (current) {
           Highlighting.highlightFirst(current);
@@ -23061,14 +23047,14 @@
         emitExecute(button);
         return Option.some(true);
       };
-      var buttonEvents = __assign(__assign({}, derive([runOnAttached(function (component, simulatedEvent) {
+      var buttonEvents = merge(derive([runOnAttached(function (component, simulatedEvent) {
           var ariaDescriptor = getPart(component, detail, 'aria-descriptor');
           ariaDescriptor.each(function (descriptor) {
             var descriptorId = generate$1('aria');
             set$1(descriptor.element(), 'id', descriptorId);
             set$1(component.element(), 'aria-describedby', descriptorId);
           });
-        })])), events$7(Option.some(action)));
+        })]), events$7(Option.some(action)));
       var apis = {
         repositionMenus: function (comp) {
           if (Toggling.isOn(comp)) {
@@ -23130,9 +23116,9 @@
     };
     var SplitDropdown = composite$1({
       name: 'SplitDropdown',
-      configFields: schema$q(),
-      partFields: parts$c(),
-      factory: factory$e,
+      configFields: schema$p(),
+      partFields: parts$b(),
+      factory: factory$d,
       apis: {
         repositionMenus: function (apis, comp) {
           return apis.repositionMenus(comp);
@@ -23189,9 +23175,9 @@
     var renderCommonStructure = function (icon, text, tooltip, receiver, behaviours, providersBackstage) {
       var _a;
       var getIconName = function (iconName) {
-        return global$7.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
+        return global$5.isRtl() && contains(rtlIcon$1, iconName) ? iconName + '-rtl' : iconName;
       };
-      var needsRtlClass = global$7.isRtl() && icon.exists(function (name) {
+      var needsRtlClass = global$5.isRtl() && icon.exists(function (name) {
         return contains(rtlTransform$1, name);
       });
       return {
@@ -23236,28 +23222,6 @@
           });
         }).toArray()).concat(behaviours.getOr([])))
       };
-    };
-    var renderFloatingToolbarButton = function (spec, backstage, identifyButtons, attributes) {
-      var sharedBackstage = backstage.shared;
-      return FloatingToolbarButton.sketch({
-        lazySink: sharedBackstage.getSink,
-        fetch: function () {
-          return Future.nu(function (resolve) {
-            resolve(map(identifyButtons(spec.items), renderToolbarGroup));
-          });
-        },
-        markers: { toggledClass: 'tox-tbtn--enabled' },
-        parts: {
-          button: renderCommonStructure(spec.icon, spec.text, spec.tooltip, Option.none(), Option.none(), sharedBackstage.providers),
-          toolbar: {
-            dom: {
-              tag: 'div',
-              classes: ['tox-toolbar__overflow'],
-              attributes: attributes
-            }
-          }
-        }
-      });
     };
     var renderCommonToolbarButton = function (spec, specialisation, providersBackstage) {
       var editorOffCell = Cell(noop);
@@ -23372,7 +23336,7 @@
         dom: {
           tag: 'div',
           classes: ['tox-split-button'],
-          attributes: __assign({ 'aria-pressed': false }, getTooltipAttributes(spec.tooltip, sharedBackstage.providers))
+          attributes: merge({ 'aria-pressed': false }, getTooltipAttributes(spec.tooltip, sharedBackstage.providers))
         },
         onExecute: function (button) {
           spec.onAction(getApi(button));
@@ -23408,7 +23372,7 @@
                 'tox-tbtn',
                 'tox-split-button__chevron'
               ],
-              innerHtml: get$d('chevron-down', sharedBackstage.providers.icons)
+              innerHtml: get$c('chevron-down', sharedBackstage.providers.icons)
             }
           }),
           SplitDropdown.parts()['aria-descriptor']({ text: sharedBackstage.providers.translate('To open the popup, press Shift+Enter') })
@@ -23532,7 +23496,11 @@
           }
         ],
         onEscape: Option.none,
-        cyclicKeying: true
+        cyclicKeying: true,
+        backstage: backstage,
+        getSink: function () {
+          return Result.error('');
+        }
       });
     };
     var ContextForm = { renderContextForm: renderContextForm };
@@ -23547,48 +23515,66 @@
         width: width
       };
     };
-    var getVerticalBounds = function (editor, contentAreaBox, viewportBounds) {
+    var getIframeBounds = function (editor, contentAreaBox, viewportBounds) {
+      var _a = getHorizontalBounds(contentAreaBox, viewportBounds), x = _a.x, width = _a.width;
+      var container = Element.fromDom(editor.getContainer());
+      var header = descendant$1(container, '.tox-editor-header').getOr(container);
+      var containerBox = box(container);
+      var headerBox = box(header);
+      var y = Math.max(viewportBounds.y(), contentAreaBox.y(), headerBox.bottom());
+      var contentBoxHeight = containerBox.bottom() - y;
+      var maxViewportHeight = viewportBounds.height() - (y - viewportBounds.y());
+      var height = Math.min(contentBoxHeight, maxViewportHeight);
+      return bounds$1(x, y, width, height);
+    };
+    var getInlineBounds = function (editor, contentAreaBox, viewportBounds) {
+      var _a = getHorizontalBounds(contentAreaBox, viewportBounds), x = _a.x, width = _a.width;
       var container = Element.fromDom(editor.getContainer());
       var header = descendant$1(container, '.tox-editor-header').getOr(container);
       var headerBox = box(header);
-      var isToolbarBelowContentArea = headerBox.y() >= contentAreaBox.bottom();
-      var isToolbarLocationTop$1 = isToolbarLocationTop(editor);
-      var isToolbarAbove = isToolbarLocationTop$1 && !isToolbarBelowContentArea;
-      if (editor.inline && isToolbarAbove) {
-        return {
-          y: Math.max(headerBox.bottom(), viewportBounds.y()),
-          bottom: viewportBounds.bottom()
-        };
+      var vpHeight = viewportBounds.height();
+      var vpTop = viewportBounds.y();
+      if (headerBox.y() >= contentAreaBox.bottom()) {
+        var bottom = Math.min(vpHeight + vpTop, headerBox.y());
+        var height = bottom - vpTop;
+        return bounds$1(x, vpTop, width, height);
+      } else {
+        var y = Math.max(vpTop, headerBox.bottom());
+        var height = vpHeight - (y - vpTop);
+        return bounds$1(x, y, width, height);
       }
-      if (editor.inline && !isToolbarAbove) {
-        return {
-          y: viewportBounds.y(),
-          bottom: Math.min(headerBox.y(), viewportBounds.bottom())
-        };
-      }
-      var containerBounds = box(container);
-      if (isToolbarAbove) {
-        return {
-          y: Math.max(headerBox.bottom(), viewportBounds.y()),
-          bottom: Math.min(containerBounds.bottom(), viewportBounds.bottom())
-        };
-      }
-      return {
-        y: Math.max(containerBounds.y(), viewportBounds.y()),
-        bottom: Math.min(headerBox.y(), viewportBounds.bottom())
-      };
+    };
+    var getDistractionFreeBounds = function (_editor, contentAreaBox, viewportBounds) {
+      var _a = getHorizontalBounds(contentAreaBox, viewportBounds), x = _a.x, width = _a.width;
+      return bounds$1(x, viewportBounds.y(), width, viewportBounds.height());
     };
     var getContextToolbarBounds = function (editor) {
+      var toolbarOrMenubarEnabled = isMenubarEnabled(editor) || isToolbarEnabled(editor) || isMultipleToolbars(editor);
       var viewportBounds = getBounds(domGlobals.window);
       var contentAreaBox = box(Element.fromDom(editor.getContentAreaContainer()));
-      var toolbarOrMenubarEnabled = isMenubarEnabled(editor) || isToolbarEnabled(editor) || isMultipleToolbars(editor);
-      var _a = getHorizontalBounds(contentAreaBox, viewportBounds), x = _a.x, width = _a.width;
       if (editor.inline && !toolbarOrMenubarEnabled) {
-        return bounds$1(x, viewportBounds.y(), width, viewportBounds.height());
+        return getDistractionFreeBounds(editor, contentAreaBox, viewportBounds);
+      } else if (editor.inline) {
+        return getInlineBounds(editor, contentAreaBox, viewportBounds);
       } else {
-        var _b = getVerticalBounds(editor, contentAreaBox, viewportBounds), y = _b.y, bottom = _b.bottom;
-        return bounds$1(x, y, width, bottom - y);
+        return getIframeBounds(editor, contentAreaBox, viewportBounds);
       }
+    };
+
+    var ancestor$2 = function (scope, transform, isRoot) {
+      var element = scope.dom();
+      var stop = isFunction(isRoot) ? isRoot : constant(false);
+      while (element.parentNode) {
+        element = element.parentNode;
+        var el = Element.fromDom(element);
+        var transformed = transform(el);
+        if (transformed.isSome()) {
+          return transformed;
+        } else if (stop(el)) {
+          break;
+        }
+      }
+      return Option.none();
     };
 
     var matchTargetWith = function (elem, toolbars) {
@@ -23600,26 +23586,15 @@
       });
     };
     var lookup$1 = function (scopes, editor) {
-      var rootElem = Element.fromDom(editor.getBody());
       var isRoot = function (elem) {
-        return eq(elem, rootElem);
-      };
-      var isOutsideRoot = function (startNode) {
-        return !isRoot(startNode) && !contains$2(rootElem, startNode);
+        return elem.dom() === editor.getBody();
       };
       var startNode = Element.fromDom(editor.selection.getNode());
-      if (isOutsideRoot(startNode)) {
-        return Option.none();
-      }
       return matchTargetWith(startNode, scopes.inNodeScope).orThunk(function () {
         return matchTargetWith(startNode, scopes.inEditorScope).orThunk(function () {
-          if (isRoot(startNode)) {
-            return Option.none();
-          } else {
-            return ancestor(startNode, function (elem) {
-              return matchTargetWith(elem, scopes.inNodeScope);
-            }, isRoot);
-          }
+          return ancestor$2(startNode, function (elem) {
+            return matchTargetWith(elem, scopes.inNodeScope);
+          }, isRoot);
         });
       });
     };
@@ -23764,6 +23739,33 @@
           return Result.value(spec.sink);
         }
       });
+    };
+
+    var onSetupFormatToggle = function (editor, name) {
+      return function (api) {
+        var unbindCell = Cell(Option.none());
+        var init = function () {
+          api.setActive(editor.formatter.match(name));
+          var unbind = editor.formatter.formatChanged(name, api.setActive).unbind;
+          unbindCell.set(Option.some(unbind));
+        };
+        editor.initialized ? init() : editor.on('init', init);
+        return function () {
+          return unbindCell.get().each(function (unbind) {
+            return unbind();
+          });
+        };
+      };
+    };
+    var onActionToggleFormat = function (editor) {
+      return function (rawItem) {
+        return function () {
+          editor.undoManager.transact(function () {
+            editor.focus();
+            editor.execCommand('mceToggleFormat', false, rawItem.format);
+          });
+        };
+      };
     };
 
     var generateSelectItems = function (_editor, backstage, spec) {
@@ -23915,7 +23917,7 @@
       }
     };
     var buildBasicSettingsDataset = function (editor, settingName, defaults, delimiter) {
-      var rawFormats = get(editor.settings, settingName).getOr(defaults);
+      var rawFormats = readOptFrom$1(editor.settings, settingName).getOr(defaults);
       var data = process(split(rawFormats, delimiter));
       return {
         type: 'basic',
@@ -23927,26 +23929,22 @@
       {
         title: 'Left',
         icon: 'align-left',
-        format: 'alignleft',
-        command: 'JustifyLeft'
+        format: 'alignleft'
       },
       {
         title: 'Center',
         icon: 'align-center',
-        format: 'aligncenter',
-        command: 'JustifyCenter'
+        format: 'aligncenter'
       },
       {
         title: 'Right',
         icon: 'align-right',
-        format: 'alignright',
-        command: 'JustifyRight'
+        format: 'alignright'
       },
       {
         title: 'Justify',
         icon: 'align-justify',
-        format: 'alignjustify',
-        command: 'JustifyFull'
+        format: 'alignjustify'
       }
     ];
     var getSpec = function (editor) {
@@ -23983,22 +23981,13 @@
         return updateSelectMenuIcon(comp);
       });
       var dataset = buildBasicStaticDataset(alignMenuItems);
-      var onAction = function (rawItem) {
-        return function () {
-          return find(alignMenuItems, function (item) {
-            return item.format === rawItem.format;
-          }).each(function (item) {
-            return editor.execCommand(item.command);
-          });
-        };
-      };
       return {
         tooltip: 'Align',
         icon: Option.some('align-left'),
         isSelectedFor: isSelectedFor,
         getCurrentValue: constant(Option.none()),
         getPreviewFor: getPreviewFor,
-        onAction: onAction,
+        onAction: onActionToggleFormat(editor),
         setInitialValue: setInitialValue,
         nodeChangeHandler: nodeChangeHandler,
         dataset: dataset,
@@ -24085,7 +24074,7 @@
         return function () {
           return Option.some({
             tag: 'div',
-            styles: item.indexOf('dings') === -1 ? { 'font-family': item } : {}
+            styleAttr: item.indexOf('dings') === -1 ? 'font-family:' + item : ''
           });
         };
       };
@@ -24279,33 +24268,6 @@
       }, editor.getBody());
     };
 
-    var onSetupFormatToggle = function (editor, name) {
-      return function (api) {
-        var unbindCell = Cell(Option.none());
-        var init = function () {
-          api.setActive(editor.formatter.match(name));
-          var unbind = editor.formatter.formatChanged(name, api.setActive).unbind;
-          unbindCell.set(Option.some(unbind));
-        };
-        editor.initialized ? init() : editor.on('init', init);
-        return function () {
-          return unbindCell.get().each(function (unbind) {
-            return unbind();
-          });
-        };
-      };
-    };
-    var onActionToggleFormat = function (editor) {
-      return function (rawItem) {
-        return function () {
-          editor.undoManager.transact(function () {
-            editor.focus();
-            editor.execCommand('mceToggleFormat', false, rawItem.format);
-          });
-        };
-      };
-    };
-
     var defaultBlocks = 'Paragraph=p;' + 'Heading 1=h1;' + 'Heading 2=h2;' + 'Heading 3=h3;' + 'Heading 4=h4;' + 'Heading 5=h5;' + 'Heading 6=h6;' + 'Preformatted=pre';
     var getSpec$3 = function (editor) {
       var getMatchingValue = function (nodeChangeEvent) {
@@ -24323,7 +24285,7 @@
           var fmt = editor.formatter.get(format);
           return Option.some({
             tag: fmt.length > 0 ? fmt[0].inline || fmt[0].block || 'div' : 'div',
-            styles: editor.dom.parseStyle(editor.formatter.getCssText(format))
+            styleAttr: editor.formatter.getCssText(format)
           });
         };
       };
@@ -24386,7 +24348,7 @@
           var fmt = editor.formatter.get(format);
           return fmt !== undefined ? Option.some({
             tag: fmt.length > 0 ? fmt[0].inline || fmt[0].block || 'div' : 'div',
-            styles: editor.dom.parseStyle(editor.formatter.getCssText(format))
+            styleAttr: editor.formatter.getCssText(format)
           }) : Option.none();
         };
       };
@@ -24494,11 +24456,11 @@
       }
     ];
     var renderFromBridge = function (bridgeBuilder, render) {
-      return function (spec, extras, editor) {
+      return function (spec, extras) {
         var internal = bridgeBuilder(spec).mapError(function (errInfo) {
           return formatError(errInfo);
         }).getOrDie();
-        return render(internal, extras, editor);
+        return render(internal, extras);
       };
     };
     var types = {
@@ -24513,24 +24475,6 @@
       }),
       splitbutton: renderFromBridge(createSplitButton, function (s, extras) {
         return renderSplitButton(s, extras.backstage.shared);
-      }),
-      grouptoolbarbutton: renderFromBridge(createGroupToolbarButton, function (s, extras, editor) {
-        var _a;
-        var buttons = editor.ui.registry.getAll().buttons;
-        var identify = function (toolbar) {
-          return identifyButtons(editor, {
-            buttons: buttons,
-            toolbar: toolbar,
-            allowToolbarGroups: false
-          }, extras, Option.none());
-        };
-        var attributes = (_a = {}, _a[Attribute] = isToolbarLocationTop(editor) ? AttributeValue.TopToBottom : AttributeValue.BottomToTop, _a);
-        switch (getToolbarMode(editor)) {
-        case ToolbarMode.floating:
-          return renderFloatingToolbarButton(s, extras.backstage, identify, attributes);
-        default:
-          throw new Error('Toolbar groups are only supported when using floating toolbar mode');
-        }
       }),
       styleSelectButton: function (editor, extras) {
         return createStyleSelect(editor, extras.backstage);
@@ -24548,12 +24492,12 @@
         return createAlignSelect(editor, extras.backstage);
       }
     };
-    var extractFrom = function (spec, extras, editor) {
+    var extractFrom = function (spec, extras) {
       return get(types, spec.type).fold(function () {
         domGlobals.console.error('skipping button defined by', spec);
         return Option.none();
       }, function (render) {
-        return Option.some(render(spec, extras, editor));
+        return Option.some(render(spec, extras));
       });
     };
     var bespokeButtons = {
@@ -24604,7 +24548,7 @@
         return [];
       }
     };
-    var lookupButton = function (editor, buttons, toolbarItem, allowToolbarGroups, extras, prefixes) {
+    var lookupButton = function (editor, buttons, toolbarItem, extras, prefixes) {
       return get(buttons, toolbarItem.toLowerCase()).orThunk(function () {
         return prefixes.bind(function (ps) {
           return findMap(ps, function (prefix) {
@@ -24618,19 +24562,14 @@
           return Option.none();
         });
       }, function (spec) {
-        if (spec.type === 'grouptoolbarbutton' && !allowToolbarGroups) {
-          domGlobals.console.warn('Ignoring the \'' + toolbarItem + '\' toolbar button. Group toolbar buttons are only supported when using floating toolbar mode and cannot be nested.');
-          return Option.none();
-        } else {
-          return extractFrom(spec, extras, editor);
-        }
+        return extractFrom(spec, extras);
       });
     };
     var identifyButtons = function (editor, toolbarConfig, extras, prefixes) {
       var toolbarGroups = createToolbar(toolbarConfig);
       var groups = map(toolbarGroups, function (group) {
         var items = bind(group.items, function (toolbarItem) {
-          return toolbarItem.trim().length === 0 ? [] : lookupButton(editor, toolbarConfig.buttons, toolbarItem, toolbarConfig.allowToolbarGroups, extras, prefixes).toArray();
+          return toolbarItem.trim().length === 0 ? [] : lookupButton(editor, toolbarConfig.buttons, toolbarItem, extras, prefixes).toArray();
         });
         return {
           title: Option.from(editor.translate(group.name)),
@@ -24829,21 +24768,24 @@
       });
       var buildToolbar = function (ctx) {
         var buttons = editor.ui.registry.getAll().buttons;
-        var toolbarType = getToolbarMode(editor) === ToolbarMode.scrolling ? ToolbarMode.scrolling : ToolbarMode.default;
+        var toolbarType = getToolbarDrawer(editor) === ToolbarDrawer.scrolling ? ToolbarDrawer.scrolling : ToolbarDrawer.default;
         var scopes = getScopes();
         return ctx.type === 'contexttoolbar' ? function () {
-          var allButtons = __assign(__assign({}, buttons), scopes.formNavigators);
+          var allButtons = merge(buttons, scopes.formNavigators);
           var initGroups = identifyButtons(editor, {
             buttons: allButtons,
-            toolbar: ctx.items,
-            allowToolbarGroups: false
+            toolbar: ctx.items
           }, extras, Option.some(['form:']));
           return renderToolbar({
             type: toolbarType,
             uid: generate$1('context-toolbar'),
             initGroups: initGroups,
             onEscape: Option.none,
-            cyclicKeying: true
+            cyclicKeying: true,
+            backstage: extras.backstage,
+            getSink: function () {
+              return Result.error('');
+            }
           });
         }() : function () {
           return ContextForm.renderContextForm(toolbarType, ctx, extras.backstage);
@@ -24851,7 +24793,7 @@
       };
       editor.on(showContextToolbarEvent, function (e) {
         var scopes = getScopes();
-        get(scopes.lookupTable, e.toolbarKey).each(function (ctx) {
+        readOptFrom$1(scopes.lookupTable, e.toolbarKey).each(function (ctx) {
           launchContext(ctx, e.target === editor ? Option.none() : Option.some(e));
           InlineView.getContent(contextbar).each(Keying.focusIn);
         });
@@ -24880,9 +24822,6 @@
         }
       };
       var launchContextToolbar = function () {
-        if (!editor.hasFocus()) {
-          return;
-        }
         var scopes = getScopes();
         ToolbarLookup.lookup(scopes, editor).fold(function () {
           lastAnchor.set(Option.none());
@@ -24905,7 +24844,7 @@
       editor.on('init', function () {
         editor.on(hideContextToolbarEvent, forceHide);
         editor.on('ScrollContent ScrollWindow longpress', hideOrRepositionIfNecessary);
-        editor.on('click keyup focus SetContent ObjectResized ResizeEditor', function () {
+        editor.on('click keyup SetContent ObjectResized ResizeEditor', function (e) {
           resetTimer(global$2.setEditorTimeout(editor, launchContextToolbar, 0));
         });
         editor.on('focusout', function (e) {
@@ -24917,7 +24856,7 @@
           }, 0);
         });
         editor.on('SwitchMode', function () {
-          if (editor.mode.isReadOnly()) {
+          if (editor.readonly) {
             lastAnchor.set(Option.none());
             InlineView.hide(contextbar);
           }
@@ -24932,7 +24871,7 @@
     };
     var ContextToolbar = { register: register$4 };
 
-    var setup$3 = function (editor, mothership, uiMothership) {
+    var setup$4 = function (editor, mothership, uiMothership) {
       var broadcastEvent = function (name, evt) {
         each([
           mothership,
@@ -25011,28 +24950,28 @@
         uiMothership.destroy();
       });
     };
-    var Events$1 = { setup: setup$3 };
+    var Events$1 = { setup: setup$4 };
 
-    var parts$d = AlloyParts;
+    var parts$c = AlloyParts;
     var partType$1 = PartType;
 
-    var schema$r = constant([
+    var schema$q = constant([
       defaulted$1('shell', false),
       strict$1('makeItem'),
       defaulted$1('setupItem', noop),
       SketchBehaviours.field('listBehaviours', [Replacing])
     ]);
-    var customListDetail = function () {
+    var customListDetail = function (detail) {
       return { behaviours: derive$1([Replacing.config({})]) };
     };
     var itemsPart = optional({
       name: 'items',
       overrides: customListDetail
     });
-    var parts$e = constant([itemsPart]);
+    var parts$d = constant([itemsPart]);
     var name$2 = constant('CustomList');
 
-    var factory$f = function (detail, components, spec, external) {
+    var factory$e = function (detail, components, spec, external) {
       var setItems = function (list, items) {
         getListContainer(list).fold(function () {
           domGlobals.console.error('Custom List was defined to not be a shell, but no item container was specified in components');
@@ -25077,9 +25016,9 @@
     };
     var CustomList = composite$1({
       name: name$2(),
-      configFields: schema$r(),
-      partFields: parts$e(),
-      factory: factory$f,
+      configFields: schema$q(),
+      partFields: parts$d(),
+      factory: factory$e,
       apis: {
         setItems: function (apis, list, items) {
           apis.setItems(list, items);
@@ -25087,29 +25026,141 @@
       }
     });
 
-    var getOffsetParent = function (element) {
+    var getOrigin = function (element) {
       var isFixed = getRaw(element, 'position').is('fixed');
       var offsetParent$1 = isFixed ? Option.none() : offsetParent(element);
       return offsetParent$1.orThunk(function () {
         var marker = Element.fromTag('span');
-        return parent(element).bind(function (parent) {
-          append(parent, marker);
-          var offsetParent$1 = offsetParent(marker);
-          remove(marker);
-          return offsetParent$1;
-        });
-      });
-    };
-    var getOrigin = function (element) {
-      return getOffsetParent(element).map(absolute).getOrThunk(function () {
+        before(element, marker);
+        var offsetParent$1 = offsetParent(marker);
+        remove(marker);
+        return offsetParent$1;
+      }).map(absolute).getOrThunk(function () {
         return Position(0, 0);
       });
     };
 
+    var adt$c = Adt.generate([
+      {
+        offset: [
+          'x',
+          'y'
+        ]
+      },
+      {
+        absolute: [
+          'x',
+          'y'
+        ]
+      },
+      {
+        fixed: [
+          'x',
+          'y'
+        ]
+      }
+    ]);
+    var subtract = function (change) {
+      return function (point) {
+        return point.translate(-change.left(), -change.top());
+      };
+    };
+    var add$4 = function (change) {
+      return function (point) {
+        return point.translate(change.left(), change.top());
+      };
+    };
+    var transform$1 = function (changes) {
+      return function (x, y) {
+        return foldl(changes, function (rest, f) {
+          return f(rest);
+        }, Position(x, y));
+      };
+    };
+    var asFixed = function (coord, scroll, origin) {
+      return coord.fold(transform$1([
+        add$4(origin),
+        subtract(scroll)
+      ]), transform$1([subtract(scroll)]), transform$1([]));
+    };
+    var asAbsolute = function (coord, scroll, origin) {
+      return coord.fold(transform$1([add$4(origin)]), transform$1([]), transform$1([add$4(scroll)]));
+    };
+    var asOffset = function (coord, scroll, origin) {
+      return coord.fold(transform$1([]), transform$1([subtract(origin)]), transform$1([
+        add$4(scroll),
+        subtract(origin)
+      ]));
+    };
+    var withinRange = function (coord1, coord2, xRange, yRange, scroll, origin) {
+      var a1 = asAbsolute(coord1, scroll, origin);
+      var a2 = asAbsolute(coord2, scroll, origin);
+      return Math.abs(a1.left() - a2.left()) <= xRange && Math.abs(a1.top() - a2.top()) <= yRange;
+    };
+    var getDeltas = function (coord1, coord2, xRange, yRange, scroll, origin) {
+      var a1 = asAbsolute(coord1, scroll, origin);
+      var a2 = asAbsolute(coord2, scroll, origin);
+      var left = Math.abs(a1.left() - a2.left());
+      var top = Math.abs(a1.top() - a2.top());
+      return Position(left, top);
+    };
+    var toStyles = function (coord, scroll, origin) {
+      return coord.fold(function (x, y) {
+        return {
+          position: 'absolute',
+          left: x + 'px',
+          top: y + 'px'
+        };
+      }, function (x, y) {
+        return {
+          position: 'absolute',
+          left: x - origin.left() + 'px',
+          top: y - origin.top() + 'px'
+        };
+      }, function (x, y) {
+        return {
+          position: 'fixed',
+          left: x + 'px',
+          top: y + 'px'
+        };
+      });
+    };
+    var translate$2 = function (coord, deltaX, deltaY) {
+      return coord.fold(function (x, y) {
+        return adt$c.offset(x + deltaX, y + deltaY);
+      }, function (x, y) {
+        return adt$c.absolute(x + deltaX, y + deltaY);
+      }, function (x, y) {
+        return adt$c.fixed(x + deltaX, y + deltaY);
+      });
+    };
+    var absorb = function (partialCoord, originalCoord, scroll, origin) {
+      var absorbOne = function (stencil, nu) {
+        return function (optX, optY) {
+          var original = stencil(originalCoord, scroll, origin);
+          return nu(optX.getOr(original.left()), optY.getOr(original.top()));
+        };
+      };
+      return partialCoord.fold(absorbOne(asOffset, adt$c.offset), absorbOne(asAbsolute, adt$c.absolute), absorbOne(asFixed, adt$c.fixed));
+    };
+    var offset = adt$c.offset;
+    var absolute$3 = adt$c.absolute;
+    var fixed$1 = adt$c.fixed;
+
     var morphAdt = Adt.generate([
       { static: [] },
-      { absolute: ['positionCss'] },
-      { fixed: ['positionCss'] }
+      {
+        absolute: [
+          'x',
+          'y'
+        ]
+      },
+      {
+        fixed: [
+          'x',
+          'y'
+        ]
+      }
     ]);
     var appear = function (component, contextualInfo) {
       var elem = component.element();
@@ -25144,90 +25195,89 @@
         }
       });
     };
-    var getPrior = function (elem, state) {
-      return state.getInitialPosition().map(function (pos) {
-        return bounds$1(pos.bounds.x(), pos.bounds.y(), get$7(elem), get$6(elem));
+    var getAttr = function (elem, attr) {
+      return has$1(elem, attr) ? Option.some(parseInt(get$2(elem, attr), 10)) : Option.none();
+    };
+    var getPrior = function (elem, dockInfo) {
+      return getAttr(elem, dockInfo.leftAttr).bind(function (left) {
+        return getAttr(elem, dockInfo.topAttr).map(function (top) {
+          var w = get$7(elem);
+          var h = get$6(elem);
+          return bounds$1(left, top, w, h);
+        });
       });
     };
-    var storePrior = function (elem, box, state) {
-      state.setInitialPosition(Option.some({
-        style: getAllRaw(elem),
-        position: get$4(elem, 'position') || 'static',
-        bounds: box
-      }));
+    var setPrior = function (elem, dockInfo, absLeft, absTop, position) {
+      set$1(elem, dockInfo.leftAttr, absLeft);
+      set$1(elem, dockInfo.topAttr, absTop);
+      set$1(elem, dockInfo.positionAttr, position);
     };
-    var revertToOriginal = function (elem, box$1, state) {
-      return state.getInitialPosition().bind(function (position) {
-        state.setInitialPosition(Option.none());
-        switch (position.position) {
-        case 'static':
-          return Option.some(morphAdt.static());
-        case 'absolute':
-          var offsetBox_1 = getOffsetParent(elem).map(box).getOrThunk(function () {
-            return box(body());
-          });
-          return Option.some(morphAdt.absolute(NuPositionCss('absolute', get(position.style, 'left').map(function (_) {
-            return box$1.x() - offsetBox_1.x();
-          }), get(position.style, 'top').map(function (_) {
-            return box$1.y() - offsetBox_1.y();
-          }), get(position.style, 'right').map(function (_) {
-            return offsetBox_1.right() - box$1.right();
-          }), get(position.style, 'bottom').map(function (_) {
-            return offsetBox_1.bottom() - box$1.bottom();
-          }))));
-        default:
-          return Option.none();
-        }
-      });
+    var clearPrior = function (elem, dockInfo) {
+      remove$1(elem, dockInfo.leftAttr);
+      remove$1(elem, dockInfo.topAttr);
+      remove$1(elem, dockInfo.positionAttr);
     };
-    var morphToOriginal = function (elem, dockInfo, viewport, state) {
-      return getPrior(elem, state).filter(function (box) {
+    var revertToOriginal = function (elem, dockInfo, box) {
+      var position = get$2(elem, dockInfo.positionAttr);
+      clearPrior(elem, dockInfo);
+      switch (position) {
+      case 'static':
+        return Option.some(morphAdt.static());
+      case 'absolute':
+        return Option.some(morphAdt.absolute(box.x(), box.y()));
+      default:
+        return Option.none();
+      }
+    };
+    var morphToOriginal = function (elem, dockInfo, viewport) {
+      return getPrior(elem, dockInfo).filter(function (box) {
         return isVisibleForModes(dockInfo.modes, box, viewport);
       }).bind(function (box) {
-        return revertToOriginal(elem, box, state);
+        return revertToOriginal(elem, dockInfo, box);
       });
     };
-    var morphToFixed = function (elem, dockInfo, viewport, state) {
+    var morphToFixed = function (elem, dockInfo, viewport, scroll, lazyOrigin) {
       var box$1 = box(elem);
       if (!isVisibleForModes(dockInfo.modes, box$1, viewport)) {
-        storePrior(elem, box$1, state);
-        var winBox = win();
-        var left = box$1.x() - winBox.x();
-        var top = viewport.y() - winBox.y();
-        var bottom = winBox.bottom() - viewport.bottom();
-        var isTop = box$1.y() <= viewport.y();
-        return Option.some(morphAdt.fixed(NuPositionCss('fixed', Option.some(left), isTop ? Option.some(top) : Option.none(), Option.none(), !isTop ? Option.some(bottom) : Option.none())));
+        var origin = lazyOrigin();
+        var position = get$4(elem, 'position');
+        setPrior(elem, dockInfo, box$1.x(), box$1.y(), position);
+        var coord = absolute$3(box$1.x(), box$1.y());
+        var asFixed$1 = asFixed(coord, scroll, origin);
+        var viewportPt = absolute$3(viewport.x(), viewport.y());
+        var fixedViewport = asFixed(viewportPt, scroll, origin);
+        var fixedY = box$1.y() <= viewport.y() ? fixedViewport.top() : fixedViewport.top() + viewport.height() - box$1.height();
+        return Option.some(morphAdt.fixed(asFixed$1.left(), fixedY));
       } else {
         return Option.none();
       }
     };
-    var getMorph = function (component, dockInfo, viewport, state) {
+    var getMorph = function (component, dockInfo, viewport, scroll, lazyOrigin) {
       var elem = component.element();
       var isDocked = getRaw(elem, 'position').is('fixed');
-      return isDocked ? morphToOriginal(elem, dockInfo, viewport, state) : morphToFixed(elem, dockInfo, viewport, state);
+      return isDocked ? morphToOriginal(elem, dockInfo, viewport) : morphToFixed(elem, dockInfo, viewport, scroll, lazyOrigin);
     };
-    var getMorphToOriginal = function (component, state) {
+    var getMorphToOriginal = function (component, dockInfo) {
       var elem = component.element();
-      return getPrior(elem, state).bind(function (box) {
-        return revertToOriginal(elem, box, state);
+      return getPrior(elem, dockInfo).bind(function (box) {
+        return revertToOriginal(elem, dockInfo, box);
       });
     };
 
     var morphToStatic = function (component, config) {
       each([
         'left',
-        'right',
         'top',
-        'bottom',
         'position'
       ], function (prop) {
         return remove$6(component.element(), prop);
       });
       config.onUndocked(component);
     };
-    var morphToCoord = function (component, config, position) {
-      applyPositionCss(component.element(), position);
-      var method = position.position() === 'fixed' ? config.onDocked : config.onUndocked;
+    var morphToCoord = function (component, config, scroll, origin, morph) {
+      var styles = toStyles(morph, scroll, origin);
+      setAll$1(component.element(), styles);
+      var method = styles.position === 'fixed' ? config.onDocked : config.onUndocked;
       method(component);
     };
     var updateVisibility = function (component, config, state, viewport, morphToDocked) {
@@ -25252,30 +25302,39 @@
     };
     var refreshInternal = function (component, config, state) {
       var viewport = config.lazyViewport(component);
+      var elem = component.element();
+      var doc = owner(elem);
+      var scroll = get$8(doc);
+      var lazyOrigin = cached(function () {
+        return getOrigin(elem);
+      });
       var isDocked = state.isDocked();
       if (isDocked) {
         updateVisibility(component, config, state, viewport);
       }
-      getMorph(component, config, viewport, state).each(function (morph) {
+      getMorph(component, config, viewport, scroll, lazyOrigin).each(function (morph) {
         state.setDocked(!isDocked);
         morph.fold(function () {
           return morphToStatic(component, config);
-        }, function (position) {
-          return morphToCoord(component, config, position);
-        }, function (position) {
+        }, function (x, y) {
+          return morphToCoord(component, config, scroll, lazyOrigin(), absolute$3(x, y));
+        }, function (x, y) {
           updateVisibility(component, config, state, viewport, true);
-          morphToCoord(component, config, position);
+          morphToCoord(component, config, scroll, lazyOrigin(), fixed$1(x, y));
         });
       });
     };
     var resetInternal = function (component, config, state) {
       var elem = component.element();
       state.setDocked(false);
-      getMorphToOriginal(component, state).each(function (morph) {
+      getMorphToOriginal(component, config).each(function (morph) {
         morph.fold(function () {
           return morphToStatic(component, config);
-        }, function (position) {
-          return morphToCoord(component, config, position);
+        }, function (x, y) {
+          var doc = owner(elem);
+          var scroll = get$8(doc);
+          var origin = getOrigin(elem);
+          morphToCoord(component, config, scroll, origin, absolute$3(x, y));
         }, noop);
       });
       state.setVisible(true);
@@ -25304,7 +25363,6 @@
     };
 
     var DockingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         refresh: refresh$4,
         reset: reset,
         isDocked: isDocked
@@ -25335,7 +25393,6 @@
     };
 
     var ActiveDocking = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         events: events$f
     });
 
@@ -25351,6 +25408,9 @@
         onHandler('onHidden')
       ]),
       defaultedFunction('lazyViewport', win),
+      strictString('leftAttr'),
+      strictString('topAttr'),
+      strictString('positionAttr'),
       defaultedArrayOf('modes', [
         'top',
         'bottom'
@@ -25362,7 +25422,6 @@
     var init$b = function () {
       var docked = Cell(false);
       var visible = Cell(true);
-      var initialBounds = Cell(Option.none());
       var readState = function () {
         return 'docked:  ' + docked.get() + ', visible: ' + visible.get();
       };
@@ -25372,12 +25431,6 @@
         },
         setDocked: function (state) {
           return docked.set(state);
-        },
-        getInitialPosition: function () {
-          return initialBounds.get();
-        },
-        setInitialPosition: function (pos) {
-          return initialBounds.set(pos);
         },
         isVisible: function () {
           return visible.get();
@@ -25390,7 +25443,6 @@
     };
 
     var DockingState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$b
     });
 
@@ -25409,42 +25461,17 @@
     };
     var editorStickyOnClass = 'tox-tinymce--toolbar-sticky-on';
     var editorStickyOffClass = 'tox-tinymce--toolbar-sticky-off';
-    var scrollFromBehindHeader = function (e, containerHeader) {
-      var doc = owner(containerHeader);
-      var viewHeight = doc.dom().defaultView.innerHeight;
-      var scrollPos = get$8(doc);
-      var markerElement = Element.fromDom(e.elm);
-      var markerPos = absolute$1(markerElement);
-      var markerHeight = get$6(markerElement);
-      var markerTop = markerPos.y();
-      var markerBottom = markerTop + markerHeight;
-      var editorHeaderPos = absolute(containerHeader);
-      var editorHeaderHeight = get$6(containerHeader);
-      var editorHeaderTop = editorHeaderPos.top();
-      var editorHeaderBottom = editorHeaderTop + editorHeaderHeight;
-      var editorHeaderDockedAtTop = Math.abs(editorHeaderTop - scrollPos.top()) < 2;
-      var editorHeaderDockedAtBottom = Math.abs(editorHeaderBottom - (scrollPos.top() + viewHeight)) < 2;
-      if (editorHeaderDockedAtTop && markerTop < editorHeaderBottom) {
-        to(scrollPos.left(), markerTop - editorHeaderHeight, doc);
-      } else if (editorHeaderDockedAtBottom && markerBottom > editorHeaderTop) {
-        var y = markerTop - viewHeight + markerHeight + editorHeaderHeight;
-        to(scrollPos.left(), y, doc);
-      }
-    };
-    var updateIframeContentFlow = function (header, isToolbarTop) {
-      var getOccupiedHeight = function (elm) {
-        return getOuter$1(elm) + (parseInt(get$4(elm, 'margin-top'), 10) || 0) + (parseInt(get$4(elm, 'margin-bottom'), 10) || 0);
-      };
+    var updateIframeContentFlow = function (header) {
       var elm = header.element();
       parent(elm).each(function (parentElem) {
-        var padding = 'padding-' + (isToolbarTop ? 'top' : 'bottom');
         if (Docking.isDocked(header)) {
           var parentWidth = get$7(parentElem);
           set$2(elm, 'width', parentWidth + 'px');
-          set$2(parentElem, padding, getOccupiedHeight(elm) + 'px');
+          var headerHeight = getOuter$1(elm);
+          set$2(parentElem, 'padding-top', headerHeight + 'px');
         } else {
           remove$6(elm, 'width');
-          remove$6(parentElem, padding);
+          remove$6(parentElem, 'padding-top');
         }
       });
     };
@@ -25490,36 +25517,18 @@
         });
       });
     };
-    var setup$4 = function (editor, lazyHeader) {
+    var setup$5 = function (editor, lazyHeader) {
       if (!editor.inline) {
-        if (!isToolbarLocationTop(editor)) {
-          editor.on('ResizeEditor', function () {
-            lazyHeader().each(Docking.reset);
-          });
-        }
-        editor.on('ResizeWindow ResizeEditor', function () {
-          lazyHeader().each(function (header) {
-            return updateIframeContentFlow(header, isToolbarLocationTop(editor));
-          });
+        editor.on('ResizeWindow ResizeEditor ResizeContent', function () {
+          lazyHeader().each(updateIframeContentFlow);
         });
         editor.on('SkinLoaded', function () {
-          lazyHeader().each(function (comp) {
-            Docking.isDocked(comp) ? Docking.reset(comp) : Docking.refresh(comp);
-          });
-        });
-        editor.on('FullscreenStateChanged', function () {
           lazyHeader().each(Docking.reset);
         });
-      }
-      editor.on('AfterScrollIntoView', function (e) {
-        lazyHeader().each(function (header) {
-          Docking.refresh(header);
-          var headerElem = header.element();
-          if (isVisible(headerElem)) {
-            scrollFromBehindHeader(e, headerElem);
-          }
+        editor.on('FullscreenStateChanged', function () {
+          lazyHeader().each(Docking.refresh);
         });
-      });
+      }
       editor.on('PostRender', function () {
         updateEditorClasses(editor, false);
       });
@@ -25527,19 +25536,12 @@
     var isDocked$1 = function (lazyHeader) {
       return lazyHeader().map(Docking.isDocked).getOr(false);
     };
-    var getIframeBehaviours = function (isToolbarTop) {
+    var getIframeBehaviours = function () {
       var _a;
-      return [Receiving.config({
-          channels: (_a = {}, _a[toolbarHeightChange()] = {
-            onReceive: function (comp) {
-              updateIframeContentFlow(comp, isToolbarTop);
-            }
-          }, _a)
-        })];
+      return [Receiving.config({ channels: (_a = {}, _a[toolbarHeightChange()] = { onReceive: updateIframeContentFlow }, _a) })];
     };
     var getBehaviours$2 = function (editor, lazySink) {
       var focusedElm = Cell(Option.none());
-      var isToolbarTop = isToolbarLocationTop(editor);
       var runOnSinkElement = function (f) {
         lazySink().each(function (sink) {
           return f(sink.element());
@@ -25547,7 +25549,7 @@
       };
       var onDockingSwitch = function (comp) {
         if (!editor.inline) {
-          updateIframeContentFlow(comp, isToolbarTop);
+          updateIframeContentFlow(comp);
         }
         updateEditorClasses(editor, Docking.isDocked(comp));
         comp.getSystem().broadcastOn([repositionPopups()], {});
@@ -25555,18 +25557,20 @@
           return sink.getSystem().broadcastOn([repositionPopups()], {});
         });
       };
-      var additionalBehaviours = editor.inline ? [] : getIframeBehaviours(isToolbarTop);
+      var additionalBehaviours = editor.inline ? [] : getIframeBehaviours();
       return __spreadArrays([
         Focusing.config({}),
         Docking.config({
+          leftAttr: 'data-dock-left',
+          topAttr: 'data-dock-top',
+          positionAttr: 'data-dock-pos',
           contextual: __assign({
             lazyContext: function (comp) {
               var headerHeight = getOuter$1(comp.element());
               var container = editor.inline ? editor.getContentAreaContainer() : editor.getContainer();
               var box$1 = box(Element.fromDom(container));
               var boxHeight = box$1.height() - headerHeight;
-              var topBound = box$1.y() + (isToolbarTop ? 0 : headerHeight);
-              return Option.some(bounds$1(box$1.x(), topBound, box$1.width(), boxHeight));
+              return Option.some(bounds$1(box$1.x(), box$1.y(), box$1.width(), boxHeight));
             },
             onShow: function () {
               runOnSinkElement(function (elem) {
@@ -25597,7 +25601,7 @@
               });
             }
           }, visibility),
-          modes: [isToolbarTop ? 'top' : 'bottom'],
+          modes: ['top'],
           onDocked: onDockingSwitch,
           onUndocked: onDockingSwitch
         })
@@ -25605,19 +25609,17 @@
     };
 
     var StickyHeader = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        setup: setup$4,
+        setup: setup$5,
         isDocked: isDocked$1,
         getBehaviours: getBehaviours$2
     });
 
-    var setup$5 = noop;
+    var setup$6 = noop;
     var isDocked$2 = never;
     var getBehaviours$3 = constant([]);
 
     var StaticHeader = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        setup: setup$5,
+        setup: setup$6,
         isDocked: isDocked$2,
         getBehaviours: getBehaviours$3
     });
@@ -25633,7 +25635,7 @@
       };
     };
 
-    var factory$g = function (detail, spec) {
+    var factory$f = function (detail, spec) {
       var setMenus = function (comp, menus) {
         var newMenus = map(menus, function (m) {
           var buttonSpec = {
@@ -25709,7 +25711,7 @@
       };
     };
     var SilverMenubar = single$2({
-      factory: factory$g,
+      factory: factory$f,
       name: 'silver.Menubar',
       configFields: [
         strict$1('dom'),
@@ -25729,7 +25731,7 @@
     });
 
     var owner$4 = 'container';
-    var schema$s = [field$1('slotBehaviours', [])];
+    var schema$r = [field$1('slotBehaviours', [])];
     var getPartName$1 = function (name) {
       return '<alloy.field.' + name + '>';
     };
@@ -25755,9 +25757,9 @@
           pname: getPartName$1(n)
         });
       });
-      return composite(owner$4, schema$s, fieldParts, make$7, spec);
+      return composite(owner$4, schema$r, fieldParts, make$7, spec);
     };
-    var make$7 = function (detail, components) {
+    var make$7 = function (detail, components, spec) {
       var getSlotNames = function (_) {
         return getAllPartNames(detail);
       };
@@ -25765,6 +25767,9 @@
         return getPart(container, detail, key);
       };
       var onSlot = function (f, def) {
+        if (def === void 0) {
+          def = undefined;
+        }
         return function (container, key) {
           return getPart(container, detail, key).map(function (slot) {
             return f(slot, key);
@@ -25822,7 +25827,7 @@
         uid: detail.uid,
         dom: detail.dom,
         components: components,
-        behaviours: get$c(detail.slotBehaviours),
+        behaviours: get$b(detail.slotBehaviours),
         apis: apis
       };
     };
@@ -25845,9 +25850,7 @@
       showSlot: function (apis, c, key) {
         return apis.showSlot(c, key);
       }
-    }, function (value) {
-      return makeApi(value);
-    });
+    }, makeApi);
     var SlotContainer = __assign(__assign({}, slotApis), { sketch: sketch$2 });
 
     var sidebarSchema = objOf([
@@ -25863,7 +25866,7 @@
       return asRaw('sidebar', sidebarSchema, spec);
     };
 
-    var setup$6 = function (editor) {
+    var setup$7 = function (editor) {
       var sidebars = editor.ui.registry.getAll().sidebars;
       each(keys(sidebars), function (name) {
         var spec = sidebars[name];
@@ -26051,33 +26054,6 @@
       };
     };
 
-    var getAttrs = function (elem) {
-      var attributes = elem.dom().attributes !== undefined ? elem.dom().attributes : [];
-      return foldl(attributes, function (b, attr) {
-        var _a;
-        if (attr.name === 'class') {
-          return b;
-        } else {
-          return __assign(__assign({}, b), (_a = {}, _a[attr.name] = attr.value, _a));
-        }
-      }, {});
-    };
-    var getClasses = function (elem) {
-      return Array.prototype.slice.call(elem.dom().classList, 0);
-    };
-    var fromHtml$2 = function (html) {
-      var elem = Element.fromHtml(html);
-      var children$1 = children(elem);
-      var attrs = getAttrs(elem);
-      var classes = getClasses(elem);
-      var contents = children$1.length === 0 ? {} : { innerHtml: get$1(elem) };
-      return __assign({
-        tag: name(elem),
-        classes: classes,
-        attributes: attrs
-      }, contents);
-    };
-
     var renderSpinner = function (providerBackstage) {
       return {
         dom: {
@@ -26125,7 +26101,7 @@
         components: []
       };
     };
-    var setup$7 = function (editor, lazyThrobber, sharedBackstage) {
+    var setup$8 = function (editor, lazyThrobber, sharedBackstage) {
       var throbberState = Cell(false);
       var timer = Cell(Option.none());
       var toggle = function (state) {
@@ -26148,64 +26124,70 @@
       });
     };
 
-    var factory$h = function (detail, components, spec) {
+    var factory$g = function (detail, components, spec) {
       var apis = {
         getSocket: function (comp) {
-          return parts$d.getPart(comp, detail, 'socket');
+          return parts$c.getPart(comp, detail, 'socket');
         },
         setSidebar: function (comp, panelConfigs) {
-          parts$d.getPart(comp, detail, 'sidebar').each(function (sidebar) {
+          parts$c.getPart(comp, detail, 'sidebar').each(function (sidebar) {
             return setSidebar(sidebar, panelConfigs);
           });
         },
         toggleSidebar: function (comp, name) {
-          parts$d.getPart(comp, detail, 'sidebar').each(function (sidebar) {
+          parts$c.getPart(comp, detail, 'sidebar').each(function (sidebar) {
             return toggleSidebar(sidebar, name);
           });
         },
         whichSidebar: function (comp) {
-          return parts$d.getPart(comp, detail, 'sidebar').bind(whichSidebar).getOrNull();
+          return parts$c.getPart(comp, detail, 'sidebar').bind(whichSidebar).getOrNull();
         },
         getHeader: function (comp) {
-          return parts$d.getPart(comp, detail, 'header');
+          return parts$c.getPart(comp, detail, 'header');
         },
         getToolbar: function (comp) {
-          return parts$d.getPart(comp, detail, 'toolbar');
+          return parts$c.getPart(comp, detail, 'toolbar');
         },
         setToolbar: function (comp, groups) {
-          parts$d.getPart(comp, detail, 'toolbar').each(function (toolbar) {
+          parts$c.getPart(comp, detail, 'toolbar').each(function (toolbar) {
             toolbar.getApis().setGroups(toolbar, groups);
           });
         },
         setToolbars: function (comp, toolbars) {
-          parts$d.getPart(comp, detail, 'multiple-toolbar').each(function (mToolbar) {
+          parts$c.getPart(comp, detail, 'multiple-toolbar').each(function (mToolbar) {
             CustomList.setItems(mToolbar, toolbars);
           });
         },
         refreshToolbar: function (comp) {
-          var toolbar = parts$d.getPart(comp, detail, 'toolbar');
+          var toolbar = parts$c.getPart(comp, detail, 'toolbar');
           toolbar.each(function (toolbar) {
             return toolbar.getApis().refresh(toolbar);
           });
         },
+        getMoreButton: function (comp) {
+          var toolbar = parts$c.getPart(comp, detail, 'toolbar');
+          return toolbar.bind(function (toolbar) {
+            return toolbar.getApis().getMoreButton(toolbar);
+          });
+        },
         getThrobber: function (comp) {
-          return parts$d.getPart(comp, detail, 'throbber');
+          return parts$c.getPart(comp, detail, 'throbber');
         },
         focusToolbar: function (comp) {
-          var optToolbar = parts$d.getPart(comp, detail, 'toolbar').orThunk(function () {
-            return parts$d.getPart(comp, detail, 'multiple-toolbar');
+          var optToolbar = parts$c.getPart(comp, detail, 'toolbar').orThunk(function () {
+            return parts$c.getPart(comp, detail, 'multiple-toolbar');
           });
           optToolbar.each(function (toolbar) {
             Keying.focusIn(toolbar);
           });
         },
         setMenubar: function (comp, menus) {
-          parts$d.getPart(comp, detail, 'menubar').each(function (menubar) {
+          parts$c.getPart(comp, detail, 'menubar').each(function (menubar) {
             SilverMenubar.setMenus(menubar, menus);
           });
         },
         focusMenubar: function (comp) {
-          parts$d.getPart(comp, detail, 'menubar').each(function (menubar) {
+          parts$c.getPart(comp, detail, 'menubar').each(function (menubar) {
             SilverMenubar.focus(menubar);
           });
         }
@@ -26224,9 +26206,9 @@
       schema: [strict$1('backstage')]
     });
     var toolbarFactory = function (spec) {
-      if (spec.type === ToolbarMode.sliding) {
+      if (spec.split === ToolbarDrawer.sliding) {
         return renderSlidingMoreToolbar;
-      } else if (spec.type === ToolbarMode.floating) {
+      } else if (spec.split === ToolbarDrawer.floating) {
         return renderFloatingMoreToolbar;
       } else {
         return renderToolbar;
@@ -26244,9 +26226,11 @@
               })]),
             makeItem: function () {
               return renderToolbar({
-                type: spec.type,
+                type: spec.split,
                 uid: generate$1('multiple-toolbar-item'),
+                backstage: spec.backstage,
                 cyclicKeying: false,
+                getSink: spec.getSink,
                 initGroups: [],
                 onEscape: function () {
                   return Option.none();
@@ -26271,7 +26255,7 @@
         sketch: function (spec) {
           var renderer = toolbarFactory(spec);
           var toolbarSpec = {
-            type: spec.type,
+            type: spec.split,
             uid: spec.uid,
             onEscape: function () {
               spec.onEscape();
@@ -26285,8 +26269,7 @@
               lazyToolbar: spec.lazyToolbar,
               lazyMoreButton: spec.lazyMoreButton,
               lazyHeader: spec.lazyHeader
-            },
-            attributes: spec.attributes
+            }
           };
           return renderer(toolbarSpec);
         }
@@ -26319,7 +26302,7 @@
     });
     var OuterContainer = composite$1({
       name: 'OuterContainer',
-      factory: factory$h,
+      factory: factory$g,
       configFields: [
         strict$1('dom'),
         strict$1('behaviours')
@@ -26363,6 +26346,9 @@
             return map(g, renderToolbarGroup);
           });
           apis.setToolbars(comp, renderedToolbars);
+        },
+        getMoreButton: function (apis, comp) {
+          return apis.getMoreButton(comp);
         },
         refreshToolbar: function (apis, comp) {
           return apis.refreshToolbar(comp);
@@ -26448,7 +26434,7 @@
       return items;
     };
     var identifyMenus = function (editor, registry) {
-      var rawMenuData = __assign(__assign({}, defaultMenus), registry.menus);
+      var rawMenuData = merge(defaultMenus, registry.menus);
       var userDefinedMenus = keys(registry.menus).length > 0;
       var menubar = registry.menubar === undefined || registry.menubar === true ? parseItemsString(defaultMenubar) : parseItemsString(registry.menubar === false ? '' : registry.menubar);
       var validMenus = filter(menubar, function (menuName) {
@@ -26482,15 +26468,7 @@
         }
       };
     };
-    var fireSkinLoadError$1 = function (editor, err) {
-      return function () {
-        return Events.fireSkinLoadError(editor, { message: err });
-      };
-    };
-    var SkinLoaded = {
-      fireSkinLoaded: fireSkinLoaded$1,
-      fireSkinLoadError: fireSkinLoadError$1
-    };
+    var SkinLoaded = { fireSkinLoaded: fireSkinLoaded$1 };
 
     var loadSkin = function (isInline, editor) {
       var skinUrl = getSkinUrl(editor);
@@ -26500,7 +26478,7 @@
         editor.contentCSS.push(skinUrl + (isInline ? '/content.inline' : '/content') + '.min.css');
       }
       if (isSkinDisabled(editor) === false && skinUiCss) {
-        global$3.DOM.styleSheetLoader.load(skinUiCss, SkinLoaded.fireSkinLoaded(editor), SkinLoaded.fireSkinLoadError(editor, 'Skin could not be loaded'));
+        global$7.DOM.styleSheetLoader.load(skinUiCss, SkinLoaded.fireSkinLoaded(editor));
       } else {
         SkinLoaded.fireSkinLoaded(editor)();
       }
@@ -26516,8 +26494,7 @@
         var toolbars = toolbarConfig.map(function (t) {
           var config = {
             toolbar: t,
-            buttons: toolbarButtonsConfig,
-            allowToolbarGroups: rawUiConfig.allowToolbarGroups
+            buttons: toolbarButtonsConfig
           };
           return identifyButtons(editor, config, { backstage: backstage }, Option.none());
         });
@@ -26527,7 +26504,7 @@
       }
     };
 
-    var DOM = global$3.DOM;
+    var DOM = global$7.DOM;
     var detection = detect$3();
     var isiOS12 = detection.os.isiOS() && detection.os.version.major <= 12;
     var setupEvents = function (editor) {
@@ -26577,7 +26554,7 @@
           'overflow': 'scroll',
           '-webkit-overflow-scrolling': 'touch'
         });
-        var limit = first(function () {
+        var limit = first$1(function () {
           editor.fire('ScrollContent');
         }, 20);
         bind$3(socket.element(), 'scroll', limit.throttle);
@@ -26590,11 +26567,11 @@
       editor.addQueryValueHandler('ToggleSidebar', function () {
         return OuterContainer.whichSidebar(uiComponents.outerContainer);
       });
-      var toolbarMode = getToolbarMode(editor);
+      var drawer = getToolbarDrawer(editor);
       var refreshDrawer = function () {
         OuterContainer.refreshToolbar(uiComponents.outerContainer);
       };
-      if (toolbarMode === ToolbarMode.sliding || toolbarMode === ToolbarMode.floating) {
+      if (drawer === ToolbarDrawer.sliding || drawer === ToolbarDrawer.floating) {
         editor.on('ResizeWindow ResizeEditor ResizeContent', function () {
           var width = editor.getWin().innerWidth;
           if (width !== lastToolbarWidth.get()) {
@@ -26660,113 +26637,81 @@
       return width.getOr(getWidthSetting(editor));
     };
 
-    var getTargetPosAndHeight = function (targetElm, isToolbarTop) {
-      var pos = box(targetElm);
-      return {
-        pos: isToolbarTop ? pos.y() : pos.bottom(),
-        height: pos.height()
-      };
-    };
     var render$1 = function (editor, uiComponents, rawUiConfig, backstage, args) {
-      var mothership = uiComponents.mothership, uiMothership = uiComponents.uiMothership, outerContainer = uiComponents.outerContainer;
       var floatContainer;
-      var DOM = global$3.DOM;
+      var DOM = global$7.DOM;
       var useFixedToolbarContainer = useFixedContainer(editor);
       var isSticky = isStickyToolbar(editor);
       var targetElm = Element.fromDom(args.targetNode);
       var editorMaxWidthOpt = getMaxWidthSetting(editor).or(getWidth$1(editor));
-      var toolbarMode = getToolbarMode(editor);
-      var isSplitToolbar = toolbarMode === ToolbarMode.sliding || toolbarMode === ToolbarMode.floating;
-      var isToolbarTop = isToolbarLocationTop(editor);
-      var prevPosAndHeight = Cell(getTargetPosAndHeight(targetElm, isToolbarTop));
-      var visible = Cell(false);
+      var splitSetting = getToolbarDrawer(editor);
+      var split = splitSetting === ToolbarDrawer.sliding || splitSetting === ToolbarDrawer.floating;
       inline(editor);
       var updateChromePosition = function (toolbar) {
-        var offset = isSplitToolbar ? toolbar.fold(function () {
+        var offset = split ? toolbar.fold(function () {
           return 0;
         }, function (tbar) {
           return tbar.components().length > 1 ? get$6(tbar.components()[1].element()) : 0;
         }) : 0;
-        var targetBounds = box(targetElm);
-        var top = isToolbarTop ? targetBounds.y() - get$6(floatContainer.element()) + offset : targetBounds.bottom();
-        setAll$1(outerContainer.element(), {
+        var location = absolute(targetElm);
+        var top = location.top() - get$6(floatContainer.element()) + offset;
+        setAll$1(uiComponents.outerContainer.element(), {
           position: 'absolute',
           top: Math.round(top) + 'px',
-          left: Math.round(targetBounds.x()) + 'px'
+          left: Math.round(location.left()) + 'px'
         });
         var maxWidth = editorMaxWidthOpt.getOrThunk(function () {
           var bodyMargin = Utils.parseToInt(get$4(body(), 'margin-left')).getOr(0);
-          return get$7(body()) - targetBounds.x() + bodyMargin;
+          return get$7(body()) - location.left() + bodyMargin;
         });
         set$2(floatContainer.element(), 'max-width', maxWidth + 'px');
-      };
-      var repositionFloatingUiComponents = function () {
-        uiMothership.broadcastOn([repositionPopups()], {});
       };
       var updateChromeUi = function (resetDocking) {
         if (resetDocking === void 0) {
           resetDocking = false;
         }
-        if (isSplitToolbar) {
-          OuterContainer.refreshToolbar(outerContainer);
+        if (split) {
+          OuterContainer.refreshToolbar(uiComponents.outerContainer);
         }
         if (!useFixedToolbarContainer) {
-          var toolbar_1 = OuterContainer.getToolbar(outerContainer);
-          updateChromePosition(toolbar_1);
+          var toolbar = OuterContainer.getToolbar(uiComponents.outerContainer);
+          updateChromePosition(toolbar);
         }
         if (isSticky) {
           resetDocking ? Docking.reset(floatContainer) : Docking.refresh(floatContainer);
         }
-        repositionFloatingUiComponents();
       };
       var show = function () {
-        visible.set(true);
-        set$2(outerContainer.element(), 'display', 'flex');
+        set$2(uiComponents.outerContainer.element(), 'display', 'flex');
         DOM.addClass(editor.getBody(), 'mce-edit-focus');
-        remove$6(uiMothership.element(), 'display');
+        remove$6(uiComponents.uiMothership.element(), 'display');
         updateChromeUi();
       };
       var hide = function () {
-        visible.set(false);
         if (uiComponents.outerContainer) {
-          set$2(outerContainer.element(), 'display', 'none');
+          set$2(uiComponents.outerContainer.element(), 'display', 'none');
           DOM.removeClass(editor.getBody(), 'mce-edit-focus');
         }
-        set$2(uiMothership.element(), 'display', 'none');
+        set$2(uiComponents.uiMothership.element(), 'display', 'none');
       };
       var render = function () {
         if (floatContainer) {
           show();
           return;
         }
-        floatContainer = OuterContainer.getHeader(outerContainer).getOrDie();
+        floatContainer = OuterContainer.getHeader(uiComponents.outerContainer).getOrDie();
         var uiContainer = getUiContainer(editor);
-        attachSystem(uiContainer, mothership);
-        attachSystem(uiContainer, uiMothership);
+        attachSystem(uiContainer, uiComponents.mothership);
+        attachSystem(uiContainer, uiComponents.uiMothership);
         setToolbar(editor, uiComponents, rawUiConfig, backstage);
-        OuterContainer.setMenubar(outerContainer, identifyMenus(editor, rawUiConfig));
+        OuterContainer.setMenubar(uiComponents.outerContainer, identifyMenus(editor, rawUiConfig));
         show();
         editor.on('activate', show);
         editor.on('deactivate', hide);
-        editor.on('SkinLoaded ResizeWindow', function () {
-          if (visible.get()) {
+        editor.on('NodeChange SkinLoaded ResizeWindow', function () {
+          if (!editor.hidden) {
             updateChromeUi(true);
           }
-        });
-        editor.on('NodeChange keydown', function () {
-          global$2.requestAnimationFrame(function () {
-            var posAndHeight = getTargetPosAndHeight(targetElm, isToolbarTop);
-            var prev = prevPosAndHeight.get();
-            if (visible.get()) {
-              if (posAndHeight.pos !== prev.pos) {
-                updateChromeUi(true);
-                prevPosAndHeight.set(posAndHeight);
-              } else if (posAndHeight.height !== prev.height) {
-                repositionFloatingUiComponents();
-                prevPosAndHeight.set(posAndHeight);
-              }
-            }
-          });
         });
         editor.nodeChanged();
       };
@@ -26778,7 +26723,7 @@
         }
       });
       setupReadonlyModeSwitch(editor, uiComponents);
-      return { editorContainer: outerContainer.element().dom() };
+      return { editorContainer: uiComponents.outerContainer.element().dom() };
     };
     var Inline = { render: render$1 };
 
@@ -26881,12 +26826,12 @@
         });
       });
       for (var i = 1; i <= 6; i++) {
-        var name_1 = 'h' + i;
-        editor.ui.registry.addToggleButton(name_1, {
-          text: name_1.toUpperCase(),
+        var name = 'h' + i;
+        editor.ui.registry.addToggleButton(name, {
+          text: name.toUpperCase(),
           tooltip: 'Heading ' + i,
-          onSetup: onSetupFormatToggle(editor, name_1),
-          onAction: toggleFormat(editor, name_1)
+          onSetup: onSetupFormatToggle(editor, name),
+          onAction: toggleFormat(editor, name)
         });
       }
     };
@@ -27085,7 +27030,7 @@
         return editor.undoManager ? editor.undoManager[type]() : false;
       };
       var onUndoStateChange = function () {
-        api.setDisabled(editor.mode.isReadOnly() || !checkState());
+        api.setDisabled(editor.readonly || !checkState());
       };
       api.setDisabled(!checkState());
       editor.on('Undo Redo AddUndo TypingUndo ClearUndos SwitchMode', onUndoStateChange);
@@ -27224,7 +27169,7 @@
     };
     var ComplexControls = { register: register$a };
 
-    var setup$8 = function (editor, backstage) {
+    var setup$9 = function (editor, backstage) {
       AlignmentButtons.register(editor);
       SimpleControls.register(editor);
       ComplexControls.register(editor, backstage);
@@ -27233,7 +27178,7 @@
       VisualAid.register(editor);
       IndentOutdent.register(editor);
     };
-    var FormatControls = { setup: setup$8 };
+    var FormatControls = { setup: setup$9 };
 
     var nu$d = function (x, y) {
       return {
@@ -27265,11 +27210,11 @@
       }
     };
     var transposeContentAreaContainer = function (element, pos) {
-      var containerPos = global$3.DOM.getPos(element);
+      var containerPos = global$7.DOM.getPos(element);
       return transpose$1(pos, containerPos.x, containerPos.y);
     };
     var getPointAnchor = function (editor, e) {
-      if (e.type === 'contextmenu' || e.type === 'longpress') {
+      if (e.type === 'contextmenu') {
         if (editor.inline) {
           return fromPageXY(e);
         } else {
@@ -27366,8 +27311,8 @@
         });
       }
     };
-    var getAnchorSpec$1 = function (editor, isTriggeredByKeyboardEvent, e) {
-      var anchorSpec = isTriggeredByKeyboardEvent ? getNodeAnchor$1(editor) : getPointAnchor(editor, e);
+    var getAnchorSpec$1 = function (editor, isTriggeredByKeyboardEvent) {
+      var anchorSpec = isTriggeredByKeyboardEvent ? getNodeAnchor$1(editor) : getSelectionAnchor(editor);
       return __assign({
         bubble: nu$8(0, bubbleSize$1, bubbleAlignments$2),
         layouts: layouts,
@@ -27401,15 +27346,12 @@
         editor.off('mousedown', preventMousedown);
       };
     };
-    var show = function (editor, e, items, backstage, contextmenu, isTriggeredByKeyboardEvent, highlightImmediately) {
-      var anchorSpec = getAnchorSpec$1(editor, isTriggeredByKeyboardEvent, e);
+    var show = function (editor, e, items, backstage, contextmenu, isTriggeredByKeyboardEvent) {
+      var anchorSpec = getAnchorSpec$1(editor, isTriggeredByKeyboardEvent);
       build$2(items, ItemResponse$1.CLOSE_ON_EXECUTE, backstage, true).map(function (menuData) {
         e.preventDefault();
         InlineView.showMenuWithinBounds(contextmenu, anchorSpec, {
-          menu: {
-            markers: markers$1('normal'),
-            highlightImmediately: highlightImmediately
-          },
+          menu: { markers: markers$1('normal') },
           data: menuData,
           type: 'horizontal'
         }, function () {
@@ -27423,13 +27365,9 @@
       var isiOS = detection.os.isiOS();
       var isOSX = detection.os.isOSX();
       var isAndroid = detection.os.isAndroid();
-      var isTouch = detection.deviceType.isTouch();
-      var shouldHighlightImmediately = function () {
-        return !(isAndroid || isiOS || isOSX && isTouch);
-      };
       var open = function () {
         var items = buildMenu();
-        show(editor, e, items, backstage, contextmenu, isTriggeredByKeyboardEvent, shouldHighlightImmediately());
+        show(editor, e, items, backstage, contextmenu, isTriggeredByKeyboardEvent);
       };
       if ((isOSX || isiOS) && !isTriggeredByKeyboardEvent) {
         var openiOS_1 = function () {
@@ -27554,7 +27492,7 @@
     var isTriggeredByKeyboard = function (editor, e) {
       return e.type !== 'longpress' && (e.button !== 2 || e.target === editor.getBody() && e.pointerType === '');
     };
-    var setup$9 = function (editor, lazySink, backstage) {
+    var setup$a = function (editor, lazySink, backstage) {
       var detection = detect$3();
       var isTouch = detection.deviceType.isTouch;
       var contextmenu = build$1(InlineView.sketch({
@@ -27602,118 +27540,72 @@
       });
     };
 
-    var adt$c = Adt.generate([
-      {
-        offset: [
-          'x',
-          'y'
-        ]
-      },
-      {
-        absolute: [
-          'x',
-          'y'
-        ]
-      },
-      {
-        fixed: [
-          'x',
-          'y'
-        ]
-      }
-    ]);
-    var subtract = function (change) {
-      return function (point) {
-        return point.translate(-change.left(), -change.top());
-      };
-    };
-    var add$4 = function (change) {
-      return function (point) {
-        return point.translate(change.left(), change.top());
-      };
-    };
-    var transform$1 = function (changes) {
-      return function (x, y) {
-        return foldl(changes, function (rest, f) {
-          return f(rest);
-        }, Position(x, y));
-      };
-    };
-    var asFixed = function (coord, scroll, origin) {
-      return coord.fold(transform$1([
-        add$4(origin),
-        subtract(scroll)
-      ]), transform$1([subtract(scroll)]), transform$1([]));
-    };
-    var asAbsolute = function (coord, scroll, origin) {
-      return coord.fold(transform$1([add$4(origin)]), transform$1([]), transform$1([add$4(scroll)]));
-    };
-    var asOffset = function (coord, scroll, origin) {
-      return coord.fold(transform$1([]), transform$1([subtract(origin)]), transform$1([
-        add$4(scroll),
-        subtract(origin)
-      ]));
-    };
-    var withinRange = function (coord1, coord2, xRange, yRange, scroll, origin) {
-      var a1 = asAbsolute(coord1, scroll, origin);
-      var a2 = asAbsolute(coord2, scroll, origin);
-      return Math.abs(a1.left() - a2.left()) <= xRange && Math.abs(a1.top() - a2.top()) <= yRange;
-    };
-    var getDeltas = function (coord1, coord2, xRange, yRange, scroll, origin) {
-      var a1 = asAbsolute(coord1, scroll, origin);
-      var a2 = asAbsolute(coord2, scroll, origin);
-      var left = Math.abs(a1.left() - a2.left());
-      var top = Math.abs(a1.top() - a2.top());
-      return Position(left, top);
-    };
-    var toStyles = function (coord, scroll, origin) {
-      var stylesOpt = coord.fold(function (x, y) {
-        return {
-          position: Option.some('absolute'),
-          left: Option.some(x + 'px'),
-          top: Option.some(y + 'px')
-        };
-      }, function (x, y) {
-        return {
-          position: Option.some('absolute'),
-          left: Option.some(x - origin.left() + 'px'),
-          top: Option.some(y - origin.top() + 'px')
-        };
-      }, function (x, y) {
-        return {
-          position: Option.some('fixed'),
-          left: Option.some(x + 'px'),
-          top: Option.some(y + 'px')
-        };
-      });
-      return __assign({
-        right: Option.none(),
-        bottom: Option.none()
-      }, stylesOpt);
-    };
-    var translate$2 = function (coord, deltaX, deltaY) {
-      return coord.fold(function (x, y) {
-        return offset(x + deltaX, y + deltaY);
-      }, function (x, y) {
-        return absolute$3(x + deltaX, y + deltaY);
-      }, function (x, y) {
-        return fixed$1(x + deltaX, y + deltaY);
+    var initialAttribute = 'data-initial-z-index';
+    var resetZIndex = function (blocker) {
+      parent(blocker.element()).filter(isElement).each(function (root) {
+        var initZIndex = get$2(root, initialAttribute);
+        if (has$1(root, initialAttribute)) {
+          set$2(root, 'z-index', initZIndex);
+        } else {
+          remove$6(root, 'z-index');
+        }
+        remove$1(root, initialAttribute);
       });
     };
-    var absorb = function (partialCoord, originalCoord, scroll, origin) {
-      var absorbOne = function (stencil, nu) {
-        return function (optX, optY) {
-          var original = stencil(originalCoord, scroll, origin);
-          return nu(optX.getOr(original.left()), optY.getOr(original.top()));
-        };
-      };
-      return partialCoord.fold(absorbOne(asOffset, offset), absorbOne(asAbsolute, absolute$3), absorbOne(asFixed, fixed$1));
+    var changeZIndex = function (blocker) {
+      parent(blocker.element()).filter(isElement).each(function (root) {
+        getRaw(root, 'z-index').each(function (zindex) {
+          set$1(root, initialAttribute, zindex);
+        });
+        set$2(root, 'z-index', get$4(blocker.element(), 'z-index'));
+      });
     };
-    var offset = adt$c.offset;
-    var absolute$3 = adt$c.absolute;
-    var fixed$1 = adt$c.fixed;
+    var instigate = function (anyComponent, blocker) {
+      anyComponent.getSystem().addToGui(blocker);
+      changeZIndex(blocker);
+    };
+    var discard = function (blocker) {
+      resetZIndex(blocker);
+      blocker.getSystem().removeFromGui(blocker);
+    };
+    var createComponent = function (component, blockerClass, blockerEvents) {
+      return component.getSystem().build(Container.sketch({
+        dom: {
+          styles: {
+            'left': '0px',
+            'top': '0px',
+            'width': '100%',
+            'height': '100%',
+            'position': 'fixed',
+            'z-index': '1000000000000000'
+          },
+          classes: [blockerClass]
+        },
+        events: blockerEvents
+      }));
+    };
 
-    var get$e = function (component, snapsInfo) {
+    var SnapSchema = optionObjOf('snaps', [
+      strict$1('getSnapPoints'),
+      onHandler('onSensor'),
+      strict$1('leftAttr'),
+      strict$1('topAttr'),
+      defaulted$1('lazyViewport', win),
+      defaulted$1('mustSnap', false)
+    ]);
+
+    var schema$s = [
+      defaulted$1('useFixed', never),
+      strict$1('blockerClass'),
+      defaulted$1('getTarget', identity),
+      defaulted$1('onDrag', noop),
+      defaulted$1('repositionTarget', true),
+      defaulted$1('onDrop', noop),
+      defaultedFunction('getBounds', win),
+      SnapSchema
+    ];
+
+    var get$d = function (component, snapsInfo) {
       var element = component.element();
       var x = parseInt(get$2(element, snapsInfo.leftAttr), 10);
       var y = parseInt(get$2(element, snapsInfo.topAttr), 10);
@@ -27731,7 +27623,7 @@
     };
 
     var getCoords = function (component, snapInfo, coord, delta) {
-      return get$e(component, snapInfo).fold(function () {
+      return get$d(component, snapInfo).fold(function () {
         return coord;
       }, function (fixed) {
         return fixed$1(fixed.left() + delta.left(), fixed.top() + delta.top());
@@ -27814,88 +27706,6 @@
       };
     };
 
-    var snapTo$1 = function (component, dragConfig, _state, snap) {
-      var target = dragConfig.getTarget(component.element());
-      if (dragConfig.repositionTarget) {
-        var doc = owner(component.element());
-        var scroll = get$8(doc);
-        var origin = getOrigin(target);
-        var snapPin = snapTo(snap, scroll, origin);
-        var styles = toStyles(snapPin.coord, scroll, origin);
-        setOptions(target, styles);
-      }
-    };
-
-    var DraggingApis = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        snapTo: snapTo$1
-    });
-
-    var initialAttribute = 'data-initial-z-index';
-    var resetZIndex = function (blocker) {
-      parent(blocker.element()).filter(isElement).each(function (root) {
-        var initZIndex = get$2(root, initialAttribute);
-        if (has$1(root, initialAttribute)) {
-          set$2(root, 'z-index', initZIndex);
-        } else {
-          remove$6(root, 'z-index');
-        }
-        remove$1(root, initialAttribute);
-      });
-    };
-    var changeZIndex = function (blocker) {
-      parent(blocker.element()).filter(isElement).each(function (root) {
-        getRaw(root, 'z-index').each(function (zindex) {
-          set$1(root, initialAttribute, zindex);
-        });
-        set$2(root, 'z-index', get$4(blocker.element(), 'z-index'));
-      });
-    };
-    var instigate = function (anyComponent, blocker) {
-      anyComponent.getSystem().addToGui(blocker);
-      changeZIndex(blocker);
-    };
-    var discard = function (blocker) {
-      resetZIndex(blocker);
-      blocker.getSystem().removeFromGui(blocker);
-    };
-    var createComponent = function (component, blockerClass, blockerEvents) {
-      return component.getSystem().build(Container.sketch({
-        dom: {
-          styles: {
-            'left': '0px',
-            'top': '0px',
-            'width': '100%',
-            'height': '100%',
-            'position': 'fixed',
-            'z-index': '1000000000000000'
-          },
-          classes: [blockerClass]
-        },
-        events: blockerEvents
-      }));
-    };
-
-    var SnapSchema = optionObjOf('snaps', [
-      strict$1('getSnapPoints'),
-      onHandler('onSensor'),
-      strict$1('leftAttr'),
-      strict$1('topAttr'),
-      defaulted$1('lazyViewport', win),
-      defaulted$1('mustSnap', false)
-    ]);
-
-    var schema$t = [
-      defaulted$1('useFixed', never),
-      strict$1('blockerClass'),
-      defaulted$1('getTarget', identity),
-      defaulted$1('onDrag', noop),
-      defaulted$1('repositionTarget', true),
-      defaulted$1('onDrop', noop),
-      defaultedFunction('getBounds', win),
-      SnapSchema
-    ];
-
     var getCurrentCoord = function (target) {
       return lift3(getRaw(target, 'left'), getRaw(target, 'top'), getRaw(target, 'position'), function (left, top, position) {
         var nu = position === 'fixed' ? fixed$1 : offset;
@@ -27908,8 +27718,8 @@
     var clampCoords = function (component, coords, scroll, origin, startData) {
       var bounds = startData.bounds;
       var absoluteCoord = asAbsolute(coords, scroll, origin);
-      var newX = clamp(absoluteCoord.left(), bounds.x(), bounds.x() + bounds.width() - startData.width);
-      var newY = clamp(absoluteCoord.top(), bounds.y(), bounds.y() + bounds.height() - startData.height);
+      var newX = cap(absoluteCoord.left(), bounds.x(), bounds.x() + bounds.width() - startData.width);
+      var newY = cap(absoluteCoord.top(), bounds.y(), bounds.y() + bounds.height() - startData.height);
       var newCoords = absolute$3(newX, newY);
       return coords.fold(function () {
         var offset$1 = asOffset(newCoords, scroll, origin);
@@ -27944,7 +27754,7 @@
         var currentCoord = getCurrentCoord(target);
         var newCoord = calcNewCoord(component, dragConfig.snaps, currentCoord, scroll, origin, delta, startData);
         var styles = toStyles(newCoord, scroll, origin);
-        setOptions(target, styles);
+        setAll$1(target, styles);
       }
       dragConfig.onDrag(component, target, delta);
     };
@@ -28006,7 +27816,6 @@
     };
 
     var MouseData = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         getData: getData$1,
         getDelta: getDelta$1
     });
@@ -28039,7 +27848,7 @@
           start();
         })];
     };
-    var schema$u = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$g) })]);
+    var schema$t = __spreadArrays(schema$s, [output('dragger', { handlers: handlers(events$g) })]);
 
     var init$d = function (dragApi) {
       return derive([
@@ -28066,7 +27875,6 @@
     };
 
     var TouchData = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         getData: getData$2,
         getDelta: getDelta$2
     });
@@ -28112,19 +27920,18 @@
         })
       ];
     };
-    var schema$v = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$h) })]);
+    var schema$u = __spreadArrays(schema$s, [output('dragger', { handlers: handlers(events$h) })]);
 
     var events$i = function (dragConfig, dragState, updateStartState) {
       return __spreadArrays(events$g(dragConfig, dragState, updateStartState), events$h(dragConfig, dragState, updateStartState));
     };
-    var schema$w = __spreadArrays(schema$t, [output('dragger', { handlers: handlers(events$i) })]);
+    var schema$v = __spreadArrays(schema$s, [output('dragger', { handlers: handlers(events$i) })]);
 
-    var mouse = schema$u;
-    var touch = schema$v;
-    var mouseOrTouch = schema$w;
+    var mouse = schema$t;
+    var touch = schema$u;
+    var mouseOrTouch = schema$v;
 
     var DraggingBranches = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         mouse: mouse,
         touch: touch,
         mouseOrTouch: mouseOrTouch
@@ -28166,8 +27973,23 @@
     };
 
     var DragState = /*#__PURE__*/Object.freeze({
-        __proto__: null,
         init: init$e
+    });
+
+    var snapTo$1 = function (component, dragConfig, _state, snap) {
+      var target = dragConfig.getTarget(component.element());
+      if (dragConfig.repositionTarget) {
+        var doc = owner(component.element());
+        var scroll = get$8(doc);
+        var origin = getOrigin(target);
+        var snapPin = snapTo(snap, scroll, origin);
+        var styles = toStyles(snapPin.coord, scroll, origin);
+        setAll$1(target, styles);
+      }
+    };
+
+    var DraggingApis = /*#__PURE__*/Object.freeze({
+        snapTo: snapTo$1
     });
 
     var Dragging = createModes$1({
@@ -28262,7 +28084,7 @@
         }
       }));
     };
-    var setup$a = function (editor, sink) {
+    var setup$b = function (editor, sink) {
       var tlTds = Cell([]);
       var brTds = Cell([]);
       var isVisible = Cell(false);
@@ -28370,7 +28192,7 @@
         });
       }
     };
-    var TableSelectorHandles = { setup: setup$a };
+    var TableSelectorHandles = { setup: setup$b };
 
     var ResizeTypes;
     (function (ResizeTypes) {
@@ -28451,16 +28273,16 @@
         var newPath = [];
         var i = parents.length;
         while (i-- > 0) {
-          var parent_1 = parents[i];
-          if (parent_1.nodeType === 1 && !isHidden$1(parent_1)) {
+          var parent = parents[i];
+          if (parent.nodeType === 1 && !isHidden$1(parent)) {
             var args = editor.fire('ResolveName', {
-              name: parent_1.nodeName.toLowerCase(),
-              target: parent_1
+              name: parent.nodeName.toLowerCase(),
+              target: parent
             });
             if (!args.isDefaultPrevented()) {
               newPath.push({
                 name: args.name,
-                element: parent_1
+                element: parent
               });
             }
             if (args.isPropagationStopped()) {
@@ -28491,8 +28313,6 @@
                 var newPath = updatePath(e.parents);
                 if (newPath.length > 0) {
                   Replacing.set(comp, getDataPath(newPath));
-                } else {
-                  Replacing.set(comp, []);
                 }
               });
             })])
@@ -28561,11 +28381,8 @@
           dom: {
             tag: 'div',
             classes: ['tox-statusbar__resize-handle'],
-            attributes: {
-              'title': providersBackstage.translate('Resize'),
-              'aria-hidden': 'true'
-            },
-            innerHtml: get$d('resize-handle', providersBackstage.icons)
+            attributes: { title: providersBackstage.translate('Resize') },
+            innerHtml: get$c('resize-handle', providersBackstage.icons)
           },
           behaviours: derive$1([Dragging.config({
               mode: 'mouse',
@@ -28578,7 +28395,7 @@
         };
       };
       var renderBranding = function () {
-        var label = global$7.translate([
+        var label = global$5.translate([
           'Powered by {0}',
           'Tiny'
         ]);
@@ -28641,8 +28458,7 @@
       };
     };
 
-    var setup$b = function (editor) {
-      var _a;
+    var setup$c = function (editor) {
       var isInline = editor.inline;
       var mode = isInline ? Inline : Iframe;
       var header = isStickyToolbar(editor) ? StickyHeader : StaticHeader;
@@ -28653,14 +28469,9 @@
       var isTouch = platform.deviceType.isTouch();
       var touchPlatformClass = 'tox-platform-touch';
       var deviceClasses = isTouch ? [touchPlatformClass] : [];
-      var isToolbarTop = isToolbarLocationTop(editor);
-      var dirAttributes = global$7.isRtl() ? { attributes: { dir: 'rtl' } } : {};
-      var verticalDirAttributes = { attributes: (_a = {}, _a[Attribute] = isToolbarTop ? AttributeValue.TopToBottom : AttributeValue.BottomToTop, _a) };
+      var dirAttributes = global$5.isRtl() ? { attributes: { dir: 'rtl' } } : {};
       var lazyHeader = function () {
         return lazyOuterContainer.bind(OuterContainer.getHeader);
-      };
-      var isHeaderDocked = function () {
-        return header.isDocked(lazyHeader);
       };
       var sink = build$1({
         dom: __assign({
@@ -28673,7 +28484,7 @@
         }, dirAttributes),
         behaviours: derive$1([Positioning.config({
             useFixed: function () {
-              return isHeaderDocked();
+              return header.isDocked(lazyHeader);
             }
           })])
       });
@@ -28691,6 +28502,11 @@
           return memAnchorBar.getOpt(container);
         }).getOrDie('Could not find a anchor bar element');
       };
+      var lazyMoreButton = function () {
+        return lazyOuterContainer.bind(function (container) {
+          return OuterContainer.getMoreButton(container);
+        }).getOrDie('Could not find more button element');
+      };
       var lazyToolbar = function () {
         return lazyOuterContainer.bind(function (container) {
           return OuterContainer.getToolbar(container);
@@ -28701,7 +28517,7 @@
           return OuterContainer.getThrobber(container);
         }).getOrDie('Could not find throbber element');
       };
-      var backstage = init$8(sink, editor, lazyAnchorBar);
+      var backstage = init$8(sink, editor, lazyAnchorBar, lazyMoreButton);
       var partMenubar = OuterContainer.parts().menubar({
         dom: {
           tag: 'div',
@@ -28712,8 +28528,8 @@
           editor.focus();
         }
       });
-      var toolbarMode = getToolbarMode(editor);
-      var partToolbar = OuterContainer.parts().toolbar(__assign({
+      var toolbarDrawer = getToolbarDrawer(editor);
+      var partToolbar = OuterContainer.parts().toolbar({
         dom: {
           tag: 'div',
           classes: ['tox-toolbar']
@@ -28723,12 +28539,13 @@
         onEscape: function () {
           editor.focus();
         },
-        type: toolbarMode,
+        split: toolbarDrawer,
         lazyToolbar: lazyToolbar,
+        lazyMoreButton: lazyMoreButton,
         lazyHeader: function () {
           return lazyHeader().getOrDie('Could not find header element');
         }
-      }, verticalDirAttributes));
+      });
       var partMultipleToolbar = OuterContainer.parts()['multiple-toolbar']({
         dom: {
           tag: 'div',
@@ -28736,7 +28553,7 @@
         },
         onEscape: function () {
         },
-        type: toolbarMode
+        split: toolbarDrawer
       });
       var partSocket = OuterContainer.parts().socket({
         dom: {
@@ -28782,10 +28599,10 @@
         }
       };
       var partHeader = OuterContainer.parts().header({
-        dom: __assign({
+        dom: {
           tag: 'div',
           classes: ['tox-editor-header']
-        }, verticalDirAttributes),
+        },
         components: flatten([
           hasMenubar ? [partMenubar] : [],
           getPartToolbar(),
@@ -28796,9 +28613,8 @@
         getSink: lazySink
       });
       var editorComponents = flatten([
-        isToolbarTop ? [partHeader] : [],
-        isInline ? [] : [socketSidebarContainer],
-        isToolbarTop ? [] : [partHeader]
+        [partHeader],
+        isInline ? [] : [socketSidebarContainer]
       ]);
       var editorContainer = {
         dom: {
@@ -28813,14 +28629,14 @@
         [partThrobber]
       ]);
       var isHidden = isDistractionFree(editor);
-      var attributes = __assign(__assign({ role: 'application' }, global$7.isRtl() ? { dir: 'rtl' } : {}), isHidden ? { 'aria-hidden': 'true' } : {});
+      var attributes = __assign(__assign({ role: 'application' }, global$5.isRtl() ? { dir: 'rtl' } : {}), isHidden ? { 'aria-hidden': 'true' } : {});
       var outerContainer = build$1(OuterContainer.sketch({
         dom: {
           tag: 'div',
           classes: [
             'tox',
             'tox-tinymce'
-          ].concat(isInline ? ['tox-tinymce-inline'] : []).concat(isToolbarTop ? [] : ['tox-tinymce--toolbar-bottom']).concat(deviceClasses).concat(platformClasses),
+          ].concat(isInline ? ['tox-tinymce-inline'] : []).concat(deviceClasses).concat(platformClasses),
           styles: __assign({ visibility: 'hidden' }, isHidden ? {
             opacity: '0',
             border: '0'
@@ -28843,6 +28659,7 @@
       var mothership = takeover(outerContainer);
       var uiMothership = takeover(sink);
       Events$1.setup(editor, mothership, uiMothership);
+      TouchEvents.setup(editor);
       var getUi = function () {
         var channels = {
           broadcastAll: uiMothership.broadcast,
@@ -28870,24 +28687,20 @@
       var renderUI = function () {
         header.setup(editor, lazyHeader);
         FormatControls.setup(editor, backstage);
-        setup$9(editor, lazySink, backstage);
-        setup$6(editor);
-        setup$7(editor, lazyThrobber, backstage.shared);
-        map$1(getToolbarGroups(editor), function (toolbarGroupButtonConfig, name) {
-          editor.ui.registry.addGroupToolbarButton(name, toolbarGroupButtonConfig);
-        });
+        setup$a(editor, lazySink, backstage);
+        setup$7(editor);
+        setup$8(editor, lazyThrobber, backstage.shared);
         var _a = editor.ui.registry.getAll(), buttons = _a.buttons, menuItems = _a.menuItems, contextToolbars = _a.contextToolbars, sidebars = _a.sidebars;
         var toolbarOpt = getMultipleToolbarsSetting(editor);
         var rawUiConfig = {
           menuItems: menuItems,
           menus: !editor.settings.menu ? {} : map$1(editor.settings.menu, function (menu) {
-            return __assign(__assign({}, menu), { items: menu.items });
+            return merge(menu, { items: menu.items });
           }),
           menubar: editor.settings.menubar,
           toolbar: toolbarOpt.getOrThunk(function () {
             return editor.getParam('toolbar', true);
           }),
-          allowToolbarGroups: toolbarMode === ToolbarMode.floating,
           buttons: buttons,
           sidebar: sidebars
         };
@@ -28914,7 +28727,7 @@
         getUi: getUi
       };
     };
-    var Render = { setup: setup$b };
+    var Render = { setup: setup$c };
 
     var describedBy = function (describedElement, describeElement) {
       var describeId = Option.from(get$2(describedElement, 'id')).fold(function () {
@@ -28936,7 +28749,7 @@
       }
     };
 
-    var schema$x = constant([
+    var schema$w = constant([
       strict$1('lazySink'),
       option('dragBlockClass'),
       defaultedFunction('getBounds', win),
@@ -28947,7 +28760,7 @@
       onStrictKeyboardHandler('onEscape')
     ]);
     var basic = { sketch: identity };
-    var parts$f = constant([
+    var parts$e = constant([
       optional({
         name: 'draghandle',
         overrides: function (detail, spec) {
@@ -28955,7 +28768,7 @@
             behaviours: derive$1([Dragging.config({
                 mode: 'mouse',
                 getTarget: function (handle) {
-                  return ancestor$2(handle, '[role="dialog"]').getOr(handle);
+                  return ancestor$1(handle, '[role="dialog"]').getOr(handle);
                 },
                 blockerClass: detail.dragBlockClass.getOrDie(new Error('The drag blocker class was not specified for a dialog with a drag handle: \n' + JSON.stringify(spec, null, 2)).message),
                 getBounds: detail.getDragBounds
@@ -29008,7 +28821,7 @@
       })
     ]);
 
-    var factory$i = function (detail, components, spec, externals) {
+    var factory$h = function (detail, components, spec, externals) {
       var dialogBusyEvent = generate$1('alloy.dialog.busy');
       var dialogIdleEvent = generate$1('alloy.dialog.idle');
       var busyBehaviours = derive$1([
@@ -29120,9 +28933,9 @@
     };
     var ModalDialog = composite$1({
       name: 'ModalDialog',
-      configFields: schema$x(),
-      partFields: parts$f(),
-      factory: factory$i,
+      configFields: schema$w(),
+      partFields: parts$e(),
+      factory: factory$h,
       apis: {
         show: function (apis, dialog) {
           apis.show(dialog);
@@ -29382,7 +29195,8 @@
 
     var dialogToggleMenuItemSchema = objOf([
       strictString('type'),
-      strictString('name')
+      strictString('name'),
+      defaultedBoolean('active', false)
     ].concat(commonMenuItemFields));
     var dialogToggleMenuItemDataProcessor = boolean;
 
@@ -29409,7 +29223,10 @@
       optionString('text'),
       optionString('tooltip'),
       optionString('icon'),
-      strictArrayOf('items', dialogToggleMenuItemSchema)
+      strictArrayOf('items', dialogToggleMenuItemSchema),
+      defaultedFunction('onSetup', function () {
+        return noop;
+      })
     ], baseButtonFields);
     var dialogButtonSchema = choose$1('type', {
       submit: normalButtonFields,
@@ -29610,7 +29427,7 @@
       };
     };
 
-    var factory$j = function (detail, spec) {
+    var factory$i = function (detail, spec) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -29638,7 +29455,7 @@
       configFields: [
         defaulted$1('uid', undefined),
         strict$1('value'),
-        field('dom', 'dom', mergeWithThunk(function () {
+        field('dom', 'dom', mergeWithThunk(function (spec) {
           return {
             attributes: {
               'role': 'tab',
@@ -29656,10 +29473,10 @@
         ]),
         strict$1('view')
       ],
-      factory: factory$j
+      factory: factory$i
     });
 
-    var schema$y = constant([
+    var schema$x = constant([
       strict$1('tabs'),
       strict$1('dom'),
       defaulted$1('clickToDismiss', false),
@@ -29676,7 +29493,7 @@
       factory: TabButton,
       name: 'tabs',
       unit: 'tab',
-      overrides: function (barDetail) {
+      overrides: function (barDetail, tabSpec) {
         var dismissTab$1 = function (tabbar, button) {
           Highlighting.dehighlight(tabbar, button);
           emitWith(tabbar, dismissTab(), {
@@ -29710,9 +29527,9 @@
         };
       }
     });
-    var parts$g = constant([tabsPart]);
+    var parts$f = constant([tabsPart]);
 
-    var factory$k = function (detail, components, spec, externals) {
+    var factory$j = function (detail, components, spec, externals) {
       return {
         'uid': detail.uid,
         'dom': detail.dom,
@@ -29745,12 +29562,12 @@
     };
     var Tabbar = composite$1({
       name: 'Tabbar',
-      configFields: schema$y(),
-      partFields: parts$g(),
-      factory: factory$k
+      configFields: schema$x(),
+      partFields: parts$f(),
+      factory: factory$j
     });
 
-    var factory$l = function (detail, spec) {
+    var factory$k = function (detail, spec) {
       return {
         uid: detail.uid,
         dom: detail.dom,
@@ -29761,10 +29578,10 @@
     var Tabview = single$2({
       name: 'Tabview',
       configFields: [field$1('tabviewBehaviours', [Replacing])],
-      factory: factory$l
+      factory: factory$k
     });
 
-    var schema$z = constant([
+    var schema$y = constant([
       defaulted$1('selectFirst', true),
       onHandler('onChangeTab'),
       onHandler('onDismissTab'),
@@ -29789,12 +29606,12 @@
       factory: Tabview,
       name: 'tabview'
     });
-    var parts$h = constant([
+    var parts$g = constant([
       barPart,
       viewPart
     ]);
 
-    var factory$m = function (detail, components, spec, externals) {
+    var factory$l = function (detail, components, spec, externals) {
       var changeTab$1 = function (button) {
         var tabValue = Representing.getValue(button);
         getPart(button, detail, 'tabview').each(function (tabview) {
@@ -29803,9 +29620,7 @@
           });
           tabWithValue.each(function (tabData) {
             var panel = tabData.view();
-            getOpt(button.element(), 'id').each(function (id) {
-              set$1(tabview.element(), 'aria-labelledby', id);
-            });
+            set$1(tabview.element(), 'aria-labelledby', get$2(button.element(), 'id'));
             Replacing.set(tabview, panel);
             detail.onChangeTab(tabview, button, panel);
           });
@@ -29820,7 +29635,7 @@
         uid: detail.uid,
         dom: detail.dom,
         components: components,
-        behaviours: get$c(detail.tabSectionBehaviours),
+        behaviours: get$b(detail.tabSectionBehaviours),
         events: derive(flatten([
           detail.selectFirst ? [runOnAttached(function (section, simulatedEvent) {
               changeTabBy(section, Highlighting.getFirst);
@@ -29859,9 +29674,9 @@
     };
     var TabSection = composite$1({
       name: 'TabSection',
-      configFields: schema$z(),
-      partFields: parts$h(),
-      factory: factory$m,
+      configFields: schema$y(),
+      partFields: parts$g(),
+      factory: factory$l,
       apis: {
         getViewItems: function (apis, component) {
           return apis.getViewItems(component);
@@ -29893,7 +29708,7 @@
     };
     var getMaxTabviewHeight = function (dialog, tabview, tablist) {
       var documentElement$1 = documentElement(dialog).dom();
-      var rootElm = ancestor$2(dialog, '.tox-dialog-wrap').getOr(dialog);
+      var rootElm = ancestor$1(dialog, '.tox-dialog-wrap').getOr(dialog);
       var isFixed = get$4(rootElm, 'position') === 'fixed';
       var maxHeight;
       if (isFixed) {
@@ -29924,7 +29739,7 @@
       }
     };
     var updateTabviewHeight = function (dialogBody, tabview, maxTabHeight) {
-      ancestor$2(dialogBody, '[role="dialog"]').each(function (dialog) {
+      ancestor$1(dialogBody, '[role="dialog"]').each(function (dialog) {
         descendant$1(dialog, '[role="tablist"]').each(function (tablist) {
           maxTabHeight.get().map(function (height) {
             set$2(tabview, 'height', '0');
@@ -30217,7 +30032,288 @@
       return ModalDialog.parts().body(bodySpec);
     };
 
-    var isTouch = global$8.deviceType.isTouch();
+    var initCommonEvents = function (fireApiEvent, extras) {
+      return [
+        runWithTarget(focusin(), NavigableObject.onFocus),
+        fireApiEvent(formCloseEvent, function (api, spec) {
+          extras.onClose();
+          spec.onClose();
+        }),
+        fireApiEvent(formCancelEvent, function (api, spec, _event, self) {
+          spec.onCancel(api);
+          emit(self, formCloseEvent);
+        }),
+        run(formUnblockEvent, function (c, se) {
+          return extras.onUnblock();
+        }),
+        run(formBlockEvent, function (c, se) {
+          return extras.onBlock(se.event());
+        })
+      ];
+    };
+    var initUrlDialog = function (getInstanceApi, extras) {
+      var fireApiEvent = function (eventName, f) {
+        return run(eventName, function (c, se) {
+          withSpec(c, function (spec, _c) {
+            f(getInstanceApi(), spec, se.event(), c);
+          });
+        });
+      };
+      var withSpec = function (c, f) {
+        Reflecting.getState(c).get().each(function (currentDialog) {
+          f(currentDialog, c);
+        });
+      };
+      return __spreadArrays(initCommonEvents(fireApiEvent, extras), [fireApiEvent(formActionEvent, function (api, spec, event) {
+          spec.onAction(api, { name: event.name() });
+        })]);
+    };
+    var initDialog = function (getInstanceApi, extras) {
+      var fireApiEvent = function (eventName, f) {
+        return run(eventName, function (c, se) {
+          withSpec(c, function (spec, _c) {
+            f(getInstanceApi(), spec, se.event(), c);
+          });
+        });
+      };
+      var withSpec = function (c, f) {
+        Reflecting.getState(c).get().each(function (currentDialogInit) {
+          f(currentDialogInit.internalDialog, c);
+        });
+      };
+      return __spreadArrays(initCommonEvents(fireApiEvent, extras), [
+        fireApiEvent(formSubmitEvent, function (api, spec) {
+          return spec.onSubmit(api);
+        }),
+        fireApiEvent(formChangeEvent, function (api, spec, event) {
+          spec.onChange(api, { name: event.name() });
+        }),
+        fireApiEvent(formActionEvent, function (api, spec, event, component) {
+          var focusIn = function () {
+            return Keying.focusIn(component);
+          };
+          var current = active();
+          spec.onAction(api, {
+            name: event.name(),
+            value: event.value()
+          });
+          active().fold(function () {
+            focusIn();
+          }, function (focused) {
+            if (!contains$2(component.element(), focused) || has$1(focused, 'disabled')) {
+              focusIn();
+            } else if (contains$2(focused, current.getOrNull()) && has$1(current.getOrDie(), 'disabled')) {
+              focusIn();
+            }
+          });
+        }),
+        fireApiEvent(formTabChangeEvent, function (api, spec, event) {
+          spec.onTabChange(api, {
+            newTabName: event.name(),
+            oldTabName: event.oldName()
+          });
+        }),
+        runOnDetached(function (component) {
+          var api = getInstanceApi();
+          Representing.setValue(component, api.getData());
+        })
+      ]);
+    };
+    var SilverDialogEvents = {
+      initUrlDialog: initUrlDialog,
+      initDialog: initDialog
+    };
+
+    var makeButton = function (button, backstage) {
+      return renderFooterButton(button, button.type, backstage);
+    };
+    var lookup$2 = function (compInSystem, footerButtons, buttonName) {
+      return find(footerButtons, function (button) {
+        return button.name === buttonName;
+      }).bind(function (memButton) {
+        return memButton.memento.getOpt(compInSystem);
+      });
+    };
+    var renderComponents = function (_data, state) {
+      var footerButtons = state.map(function (s) {
+        return s.footerButtons;
+      }).getOr([]);
+      var buttonGroups = partition(footerButtons, function (button) {
+        return button.align === 'start';
+      });
+      var makeGroup = function (edge, buttons) {
+        return Container.sketch({
+          dom: {
+            tag: 'div',
+            classes: ['tox-dialog__footer-' + edge]
+          },
+          components: map(buttons, function (button) {
+            return button.memento.asSpec();
+          })
+        });
+      };
+      var startButtons = makeGroup('start', buttonGroups.pass);
+      var endButtons = makeGroup('end', buttonGroups.fail);
+      return [
+        startButtons,
+        endButtons
+      ];
+    };
+    var renderFooter = function (initSpec, backstage) {
+      var updateState = function (_comp, data) {
+        var footerButtons = map(data.buttons, function (button) {
+          var memButton = record(makeButton(button, backstage));
+          return {
+            name: button.name,
+            align: button.align,
+            memento: memButton
+          };
+        });
+        var lookupByName = function (compInSystem, buttonName) {
+          return lookup$2(compInSystem, footerButtons, buttonName);
+        };
+        return Option.some({
+          lookupByName: lookupByName,
+          footerButtons: footerButtons
+        });
+      };
+      return {
+        dom: fromHtml$2('<div class="tox-dialog__footer"></div>'),
+        components: [],
+        behaviours: derive$1([Reflecting.config({
+            channel: footerChannel,
+            initialData: initSpec,
+            updateState: updateState,
+            renderComponents: renderComponents
+          })])
+      };
+    };
+    var renderInlineFooter = function (initSpec, backstage) {
+      return renderFooter(initSpec, backstage);
+    };
+    var renderModalFooter = function (initSpec, backstage) {
+      return ModalDialog.parts().footer(renderFooter(initSpec, backstage));
+    };
+
+    var getCompByName = function (access, name) {
+      var root = access.getRoot();
+      if (root.getSystem().isConnected()) {
+        var form_1 = Composing.getCurrent(access.getFormWrapper()).getOr(access.getFormWrapper());
+        return Form.getField(form_1, name).fold(function () {
+          var footer = access.getFooter();
+          var footerState = Reflecting.getState(footer);
+          return footerState.get().bind(function (f) {
+            return f.lookupByName(form_1, name);
+          });
+        }, function (comp) {
+          return Option.some(comp);
+        });
+      } else {
+        return Option.none();
+      }
+    };
+    var validateData = function (access, data) {
+      var root = access.getRoot();
+      return Reflecting.getState(root).get().map(function (dialogState) {
+        return getOrDie(asRaw('data', dialogState.dataValidator, data));
+      }).getOr(data);
+    };
+    var getDialogApi = function (access, doRedial, menuItemStates) {
+      var withRoot = function (f) {
+        var root = access.getRoot();
+        if (root.getSystem().isConnected()) {
+          f(root);
+        }
+      };
+      var getData = function () {
+        var root = access.getRoot();
+        var valueComp = root.getSystem().isConnected() ? access.getFormWrapper() : root;
+        var representedValues = Representing.getValue(valueComp);
+        var menuItemCurrentState = map$1(menuItemStates, function (cell) {
+          return cell.get();
+        });
+        return __assign(__assign({}, representedValues), menuItemCurrentState);
+      };
+      var setData = function (newData) {
+        withRoot(function (_) {
+          var prevData = instanceApi.getData();
+          var mergedData = merge(prevData, newData);
+          var newInternalData = validateData(access, mergedData);
+          var form = access.getFormWrapper();
+          Representing.setValue(form, newInternalData);
+          each$1(menuItemStates, function (v, k) {
+            if (has(mergedData, k)) {
+              v.set(mergedData[k]);
+            }
+          });
+        });
+      };
+      var disable = function (name) {
+        getCompByName(access, name).each(Disabling.disable);
+      };
+      var enable = function (name) {
+        getCompByName(access, name).each(Disabling.enable);
+      };
+      var focus = function (name) {
+        getCompByName(access, name).each(Focusing.focus);
+      };
+      var block = function (message) {
+        if (!isString(message)) {
+          throw new Error('The dialogInstanceAPI.block function should be passed a blocking message of type string as an argument');
+        }
+        withRoot(function (root) {
+          emitWith(root, formBlockEvent, { message: message });
+        });
+      };
+      var unblock = function () {
+        withRoot(function (root) {
+          emit(root, formUnblockEvent);
+        });
+      };
+      var showTab = function (name) {
+        withRoot(function (_) {
+          var body = access.getBody();
+          var bodyState = Reflecting.getState(body);
+          if (bodyState.get().exists(function (b) {
+              return b.isTabPanel();
+            })) {
+            Composing.getCurrent(body).each(function (tabSection) {
+              TabSection.showTab(tabSection, name);
+            });
+          }
+        });
+      };
+      var redial = function (d) {
+        withRoot(function (root) {
+          var dialogInit = doRedial(d);
+          root.getSystem().broadcastOn([dialogChannel], dialogInit);
+          root.getSystem().broadcastOn([titleChannel], dialogInit.internalDialog);
+          root.getSystem().broadcastOn([bodyChannel], dialogInit.internalDialog);
+          root.getSystem().broadcastOn([footerChannel], dialogInit.internalDialog);
+          instanceApi.setData(dialogInit.initialData);
+        });
+      };
+      var close = function () {
+        withRoot(function (root) {
+          emit(root, formCloseEvent);
+        });
+      };
+      var instanceApi = {
+        getData: getData,
+        setData: setData,
+        disable: disable,
+        enable: enable,
+        focus: focus,
+        block: block,
+        unblock: unblock,
+        showTab: showTab,
+        redial: redial,
+        close: close
+      };
+      return instanceApi;
+    };
+
+    var isTouch = global$6.deviceType.isTouch();
     var hiddenHeader = function (title, close) {
       return {
         dom: {
@@ -30551,296 +30647,6 @@
       }, {});
     };
 
-    var initCommonEvents = function (fireApiEvent, extras) {
-      return [
-        runWithTarget(focusin(), NavigableObject.onFocus),
-        fireApiEvent(formCloseEvent, function (api, spec) {
-          extras.onClose();
-          spec.onClose();
-        }),
-        fireApiEvent(formCancelEvent, function (api, spec, _event, self) {
-          spec.onCancel(api);
-          emit(self, formCloseEvent);
-        }),
-        run(formUnblockEvent, function (c, se) {
-          return extras.onUnblock();
-        }),
-        run(formBlockEvent, function (c, se) {
-          return extras.onBlock(se.event());
-        })
-      ];
-    };
-    var initUrlDialog = function (getInstanceApi, extras) {
-      var fireApiEvent = function (eventName, f) {
-        return run(eventName, function (c, se) {
-          withSpec(c, function (spec, _c) {
-            f(getInstanceApi(), spec, se.event(), c);
-          });
-        });
-      };
-      var withSpec = function (c, f) {
-        Reflecting.getState(c).get().each(function (currentDialog) {
-          f(currentDialog, c);
-        });
-      };
-      return __spreadArrays(initCommonEvents(fireApiEvent, extras), [fireApiEvent(formActionEvent, function (api, spec, event) {
-          spec.onAction(api, { name: event.name() });
-        })]);
-    };
-    var initDialog = function (getInstanceApi, extras, getSink) {
-      var fireApiEvent = function (eventName, f) {
-        return run(eventName, function (c, se) {
-          withSpec(c, function (spec, _c) {
-            f(getInstanceApi(), spec, se.event(), c);
-          });
-        });
-      };
-      var withSpec = function (c, f) {
-        Reflecting.getState(c).get().each(function (currentDialogInit) {
-          f(currentDialogInit.internalDialog, c);
-        });
-      };
-      return __spreadArrays(initCommonEvents(fireApiEvent, extras), [
-        fireApiEvent(formSubmitEvent, function (api, spec) {
-          return spec.onSubmit(api);
-        }),
-        fireApiEvent(formChangeEvent, function (api, spec, event) {
-          spec.onChange(api, { name: event.name() });
-        }),
-        fireApiEvent(formActionEvent, function (api, spec, event, component) {
-          var focusIn = function () {
-            return Keying.focusIn(component);
-          };
-          var isDisabled = function (focused) {
-            return has$1(focused, 'disabled') || getOpt(focused, 'aria-disabled').exists(function (val) {
-              return val === 'true';
-            });
-          };
-          var current = active();
-          spec.onAction(api, {
-            name: event.name(),
-            value: event.value()
-          });
-          active().fold(focusIn, function (focused) {
-            if (isDisabled(focused)) {
-              focusIn();
-            } else if (current.exists(function (cur) {
-                return contains$2(focused, cur) && isDisabled(cur);
-              })) {
-              focusIn();
-            } else {
-              getSink().toOption().filter(function (sink) {
-                return !contains$2(sink.element(), focused);
-              }).each(focusIn);
-            }
-          });
-        }),
-        fireApiEvent(formTabChangeEvent, function (api, spec, event) {
-          spec.onTabChange(api, {
-            newTabName: event.name(),
-            oldTabName: event.oldName()
-          });
-        }),
-        runOnDetached(function (component) {
-          var api = getInstanceApi();
-          Representing.setValue(component, api.getData());
-        })
-      ]);
-    };
-    var SilverDialogEvents = {
-      initUrlDialog: initUrlDialog,
-      initDialog: initDialog
-    };
-
-    var makeButton = function (button, backstage) {
-      return renderFooterButton(button, button.type, backstage);
-    };
-    var lookup$2 = function (compInSystem, footerButtons, buttonName) {
-      return find(footerButtons, function (button) {
-        return button.name === buttonName;
-      }).bind(function (memButton) {
-        return memButton.memento.getOpt(compInSystem);
-      });
-    };
-    var renderComponents = function (_data, state) {
-      var footerButtons = state.map(function (s) {
-        return s.footerButtons;
-      }).getOr([]);
-      var buttonGroups = partition(footerButtons, function (button) {
-        return button.align === 'start';
-      });
-      var makeGroup = function (edge, buttons) {
-        return Container.sketch({
-          dom: {
-            tag: 'div',
-            classes: ['tox-dialog__footer-' + edge]
-          },
-          components: map(buttons, function (button) {
-            return button.memento.asSpec();
-          })
-        });
-      };
-      var startButtons = makeGroup('start', buttonGroups.pass);
-      var endButtons = makeGroup('end', buttonGroups.fail);
-      return [
-        startButtons,
-        endButtons
-      ];
-    };
-    var renderFooter = function (initSpec, backstage) {
-      var updateState = function (_comp, data) {
-        var footerButtons = map(data.buttons, function (button) {
-          var memButton = record(makeButton(button, backstage));
-          return {
-            name: button.name,
-            align: button.align,
-            memento: memButton
-          };
-        });
-        var lookupByName = function (compInSystem, buttonName) {
-          return lookup$2(compInSystem, footerButtons, buttonName);
-        };
-        return Option.some({
-          lookupByName: lookupByName,
-          footerButtons: footerButtons
-        });
-      };
-      return {
-        dom: fromHtml$2('<div class="tox-dialog__footer"></div>'),
-        components: [],
-        behaviours: derive$1([Reflecting.config({
-            channel: footerChannel,
-            initialData: initSpec,
-            updateState: updateState,
-            renderComponents: renderComponents
-          })])
-      };
-    };
-    var renderInlineFooter = function (initSpec, backstage) {
-      return renderFooter(initSpec, backstage);
-    };
-    var renderModalFooter = function (initSpec, backstage) {
-      return ModalDialog.parts().footer(renderFooter(initSpec, backstage));
-    };
-
-    var getCompByName = function (access, name) {
-      var root = access.getRoot();
-      if (root.getSystem().isConnected()) {
-        var form_1 = Composing.getCurrent(access.getFormWrapper()).getOr(access.getFormWrapper());
-        return Form.getField(form_1, name).fold(function () {
-          var footer = access.getFooter();
-          var footerState = Reflecting.getState(footer);
-          return footerState.get().bind(function (f) {
-            return f.lookupByName(form_1, name);
-          });
-        }, function (comp) {
-          return Option.some(comp);
-        });
-      } else {
-        return Option.none();
-      }
-    };
-    var validateData = function (access, data) {
-      var root = access.getRoot();
-      return Reflecting.getState(root).get().map(function (dialogState) {
-        return getOrDie(asRaw('data', dialogState.dataValidator, data));
-      }).getOr(data);
-    };
-    var getDialogApi = function (access, doRedial, menuItemStates) {
-      var withRoot = function (f) {
-        var root = access.getRoot();
-        if (root.getSystem().isConnected()) {
-          f(root);
-        }
-      };
-      var getData = function () {
-        var root = access.getRoot();
-        var valueComp = root.getSystem().isConnected() ? access.getFormWrapper() : root;
-        var representedValues = Representing.getValue(valueComp);
-        var menuItemCurrentState = map$1(menuItemStates, function (cell) {
-          return cell.get();
-        });
-        return __assign(__assign({}, representedValues), menuItemCurrentState);
-      };
-      var setData = function (newData) {
-        withRoot(function (_) {
-          var prevData = instanceApi.getData();
-          var mergedData = __assign(__assign({}, prevData), newData);
-          var newInternalData = validateData(access, mergedData);
-          var form = access.getFormWrapper();
-          Representing.setValue(form, newInternalData);
-          each$1(menuItemStates, function (v, k) {
-            if (has(mergedData, k)) {
-              v.set(mergedData[k]);
-            }
-          });
-        });
-      };
-      var disable = function (name) {
-        getCompByName(access, name).each(Disabling.disable);
-      };
-      var enable = function (name) {
-        getCompByName(access, name).each(Disabling.enable);
-      };
-      var focus = function (name) {
-        getCompByName(access, name).each(Focusing.focus);
-      };
-      var block = function (message) {
-        if (!isString(message)) {
-          throw new Error('The dialogInstanceAPI.block function should be passed a blocking message of type string as an argument');
-        }
-        withRoot(function (root) {
-          emitWith(root, formBlockEvent, { message: message });
-        });
-      };
-      var unblock = function () {
-        withRoot(function (root) {
-          emit(root, formUnblockEvent);
-        });
-      };
-      var showTab = function (name) {
-        withRoot(function (_) {
-          var body = access.getBody();
-          var bodyState = Reflecting.getState(body);
-          if (bodyState.get().exists(function (b) {
-              return b.isTabPanel();
-            })) {
-            Composing.getCurrent(body).each(function (tabSection) {
-              TabSection.showTab(tabSection, name);
-            });
-          }
-        });
-      };
-      var redial = function (d) {
-        withRoot(function (root) {
-          var dialogInit = doRedial(d);
-          root.getSystem().broadcastOn([dialogChannel], dialogInit);
-          root.getSystem().broadcastOn([titleChannel], dialogInit.internalDialog);
-          root.getSystem().broadcastOn([bodyChannel], dialogInit.internalDialog);
-          root.getSystem().broadcastOn([footerChannel], dialogInit.internalDialog);
-          instanceApi.setData(dialogInit.initialData);
-        });
-      };
-      var close = function () {
-        withRoot(function (root) {
-          emit(root, formCloseEvent);
-        });
-      };
-      var instanceApi = {
-        getData: getData,
-        setData: setData,
-        disable: disable,
-        enable: enable,
-        focus: focus,
-        block: block,
-        unblock: unblock,
-        showTab: showTab,
-        redial: redial,
-        close: close
-      };
-      return instanceApi;
-    };
-
     var renderDialog$1 = function (dialogInit, extra, backstage) {
       var header = getHeader(dialogInit.internalDialog.title, backstage);
       var body = renderModalBody({ body: dialogInit.internalDialog.body }, backstage);
@@ -30851,7 +30657,7 @@
         return instanceApi;
       }, getEventExtras(function () {
         return dialog;
-      }, extra), backstage.shared.getSink);
+      }, extra));
       var dialogSize = dialogInit.internalDialog.size !== 'normal' ? dialogInit.internalDialog.size === 'large' ? ['tox-dialog--width-lg'] : ['tox-dialog--width-md'] : [];
       var spec = {
         header: header,
@@ -30912,7 +30718,7 @@
         onClose: function () {
           return extra.closeWindow();
         }
-      }, backstage.shared.getSink);
+      });
       var dialog = build$1({
         dom: {
           tag: 'div',
@@ -31137,7 +30943,7 @@
       };
     };
 
-    var setup$c = function (extras) {
+    var setup$d = function (extras) {
       var sharedBackstage = extras.backstage.shared;
       var open = function (message, callback) {
         var closeDialog = function () {
@@ -31175,7 +30981,7 @@
       return { open: open };
     };
 
-    var setup$d = function (extras) {
+    var setup$e = function (extras) {
       var sharedBackstage = extras.backstage.shared;
       var open = function (message, callback) {
         var closeDialog = function (state) {
@@ -31193,7 +30999,7 @@
         var footerNo = renderFooterButton({
           name: 'no',
           text: 'No',
-          primary: false,
+          primary: true,
           align: 'end',
           disabled: false,
           icon: Option.none()
@@ -31238,11 +31044,8 @@
     var validateData$1 = function (data, validator) {
       return getOrDie(asRaw('data', validator, data));
     };
-    var isAlertOrConfirmDialog = function (target) {
-      return closest$4(target, '.tox-alert-dialog') || closest$4(target, '.tox-confirm-dialog');
-    };
-    var inlineAdditionalBehaviours = function (editor, isStickyToolbar, isToolbarLocationTop) {
-      if (isStickyToolbar && isToolbarLocationTop) {
+    var inlineAdditionalBehaviours = function (editor, isStickyToolbar) {
+      if (isStickyToolbar) {
         return [];
       } else {
         return [Docking.config({
@@ -31254,20 +31057,22 @@
               fadeOutClass: 'tox-dialog-dock-fadeout',
               transitionClass: 'tox-dialog-dock-transition'
             },
+            leftAttr: 'data-dock-left',
+            topAttr: 'data-dock-top',
+            positionAttr: 'data-dock-pos',
             modes: ['top']
           })];
       }
     };
-    var setup$e = function (extras) {
+    var setup$f = function (extras) {
       var backstage = extras.backstage;
       var editor = extras.editor;
       var isStickyToolbar$1 = isStickyToolbar(editor);
-      var isToolbarLocationTop$1 = isToolbarLocationTop(editor);
-      var alertDialog = setup$c(extras);
-      var confirmDialog = setup$d(extras);
+      var alertDialog = setup$d(extras);
+      var confirmDialog = setup$e(extras);
       var open = function (config, params, closeWindow) {
         if (params !== undefined && params.inline === 'toolbar') {
-          return openInlineDialog(config, backstage.shared.anchors.inlineDialog(), closeWindow, params.ariaAttrs);
+          return openInlineDialog(config, backstage.shared.anchors.toolbar(), closeWindow, params.ariaAttrs);
         } else if (params !== undefined && params.inline === 'cursor') {
           return openInlineDialog(config, backstage.shared.anchors.cursor(), closeWindow, params.ariaAttrs);
         } else {
@@ -31322,7 +31127,6 @@
           };
           var refreshDocking = function () {
             return inlineDialog.on(function (dialog) {
-              InlineView.reposition(dialog);
               Docking.refresh(dialog);
             });
           };
@@ -31335,24 +31139,20 @@
               closeWindow(dialogUi.instanceApi);
             }
           }, backstage, ariaAttrs);
-          var inlineDialogComp = build$1(InlineView.sketch(__assign(__assign({
+          var inlineDialogComp = build$1(InlineView.sketch({
             lazySink: backstage.shared.getSink,
             dom: {
               tag: 'div',
               classes: []
             },
-            fireDismissalEventInstead: {}
-          }, isToolbarLocationTop$1 ? {} : { fireRepositionEventInstead: {} }), {
+            fireDismissalEventInstead: {},
             inlineBehaviours: derive$1(__spreadArrays([config('window-manager-inline-events', [run(dismissRequested(), function (comp, se) {
                   emit(dialogUi.dialog, formCancelEvent);
-                })])], inlineAdditionalBehaviours(editor, isStickyToolbar$1, isToolbarLocationTop$1))),
-            isExtraPart: function (comp, target) {
-              return isAlertOrConfirmDialog(target);
-            }
-          })));
+                })])], inlineAdditionalBehaviours(editor, isStickyToolbar$1)))
+          }));
           inlineDialog.set(inlineDialogComp);
           InlineView.showWithin(inlineDialogComp, anchor, premade$1(dialogUi.dialog), Option.some(body()));
-          if (!isStickyToolbar$1 || !isToolbarLocationTop$1) {
+          if (!isStickyToolbar$1) {
             Docking.refresh(inlineDialogComp);
             editor.on('ResizeEditor', refreshDocking);
           }
@@ -31383,7 +31183,7 @@
         confirm: confirm
       };
     };
-    var WindowManager = { setup: setup$e };
+    var WindowManager = { setup: setup$f };
 
     function Theme () {
       global$1.add('silver', function (editor) {
