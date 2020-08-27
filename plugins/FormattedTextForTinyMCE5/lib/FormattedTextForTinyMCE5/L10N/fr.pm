@@ -4,12 +4,12 @@
 #
 # $Id$
 
-package FormattedTextForTinyMCE::L10N::fr;
+package FormattedTextForTinyMCE5::L10N::fr;
 
 use strict;
 use warnings;
 
-use base 'FormattedTextForTinyMCE::L10N::en_us';
+use base 'FormattedTextForTinyMCE5::L10N::en_us';
 use vars qw( %Lexicon );
 
 %Lexicon = (
