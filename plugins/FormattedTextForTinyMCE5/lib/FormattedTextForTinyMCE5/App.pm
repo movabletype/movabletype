@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package FormattedTextForTinyMCE::App;
+package FormattedTextForTinyMCE5::App;
 
 use strict;
 use warnings;
