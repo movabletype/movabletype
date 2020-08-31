@@ -27,7 +27,7 @@ my @suite = (
         param => {
             text => 'TinyMCE is used',
         },
-        like => qr{TinyMCE/lib/js/adapter\.js},
+        like => qr{TinyMCE5/lib/js/adapter\.js},
     },
     {
         param => {

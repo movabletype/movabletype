@@ -7,7 +7,7 @@
     "lib": "lib"
   },
   "dependencies": {
-    "tinymce": "5.2.2",
+    "tinymce": "5.1.6",
     "tinymce-i18n": "20.4.4",
     "svg4everybody": "^2.1.9",
     "codemirror": "5.54"
@@ -15,8 +15,8 @@
   "devDependencies": {},
   "scripts": {
     "copy": "npm run copy-tinymce; npm run copy-tinymce-language; npm run copy-svg4everybody;",
-    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/license.txt mt-static/plugins/TinyMCE/tiny_mce/",
-    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE/tiny_mce/langs/",
+    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
+    "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
     "test": "echo \"Error: no test specified\" && exit 1",
     "copy-svg4everybody": "cd node_modules/svg4everybody/dist && cp -f svg4everybody.js svg4everybody.min.js ../../../mt-static/svg4everybody/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/"
