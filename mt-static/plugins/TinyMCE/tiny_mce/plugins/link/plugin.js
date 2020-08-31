@@ -1,1582 +1,954 @@
+(function () {
+
+var defs = {}; // id -> {dependencies, definition, instance (possibly undefined)}
+
+// Used when there is no 'main' module.
+// The name is probably (hopefully) unique so minification removes for releases.
+var register_3795 = function (id) {
+  var module = dem(id);
+  var fragments = id.split('.');
+  var target = Function('return this;')();
+  for (var i = 0; i < fragments.length - 1; ++i) {
+    if (target[fragments[i]] === undefined)
+      target[fragments[i]] = {};
+    target = target[fragments[i]];
+  }
+  target[fragments[fragments.length - 1]] = module;
+};
+
+var instantiate = function (id) {
+  var actual = defs[id];
+  var dependencies = actual.deps;
+  var definition = actual.defn;
+  var len = dependencies.length;
+  var instances = new Array(len);
+  for (var i = 0; i < len; ++i)
+    instances[i] = dem(dependencies[i]);
+  var defResult = definition.apply(null, instances);
+  if (defResult === undefined)
+     throw 'module [' + id + '] returned undefined';
+  actual.instance = defResult;
+};
+
+var def = function (id, dependencies, definition) {
+  if (typeof id !== 'string')
+    throw 'module id must be a string';
+  else if (dependencies === undefined)
+    throw 'no dependencies for ' + id;
+  else if (definition === undefined)
+    throw 'no definition function for ' + id;
+  defs[id] = {
+    deps: dependencies,
+    defn: definition,
+    instance: undefined
+  };
+};
+
+var dem = function (id) {
+  var actual = defs[id];
+  if (actual === undefined)
+    throw 'module [' + id + '] was undefined';
+  else if (actual.instance === undefined)
+    instantiate(id);
+  return actual.instance;
+};
+
+var req = function (ids, callback) {
+  var len = ids.length;
+  var instances = new Array(len);
+  for (var i = 0; i < len; ++i)
+    instances.push(dem(ids[i]));
+  callback.apply(null, callback);
+};
+
+var ephox = {};
+
+ephox.bolt = {
+  module: {
+    api: {
+      define: def,
+      require: req,
+      demand: dem
+    }
+  }
+};
+
+var define = def;
+var require = req;
+var demand = dem;
+// this helps with minificiation when using a lot of global references
+var defineGlobal = function (id, ref) {
+  define(id, [], function () { return ref; });
+};
+/*jsc
+["tinymce.plugins.link.Plugin","tinymce.core.PluginManager","tinymce.plugins.link.core.Actions","tinymce.plugins.link.ui.Controls","global!tinymce.util.Tools.resolve","tinymce.core.util.VK","tinymce.plugins.link.ui.Dialog","tinymce.plugins.link.core.OpenUrl","tinymce.plugins.link.core.Utils","tinymce.plugins.link.core.Settings","tinymce.core.util.Delay","tinymce.core.util.Tools","tinymce.core.util.XHR","global!RegExp","tinymce.core.dom.DOMUtils","tinymce.core.Env"]
+jsc*/
+defineGlobal("global!tinymce.util.Tools.resolve", tinymce.util.Tools.resolve);
 /**
- * Copyright (c) Tiny Technologies, Inc. All rights reserved.
- * Licensed under the LGPL or a commercial license.
- * For LGPL see License.txt in the project root for license information.
- * For commercial licenses see https://www.tiny.cloud/
+ * ResolveGlobal.js
  *
- * Version: 5.2.2 (2020-04-23)
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
  */
-(function (domGlobals) {
-    'use strict';
 
-    var global$1 = tinymce.util.Tools.resolve('tinymce.PluginManager');
+define(
+  'tinymce.core.PluginManager',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.PluginManager');
+  }
+);
 
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.VK');
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
-    var typeOf = function (x) {
-      if (x === null) {
-        return 'null';
-      }
-      var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      }
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      }
-      return t;
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isArray = isType('array');
-    var isBoolean = isType('boolean');
-    var isFunction = isType('function');
+define(
+  'tinymce.core.util.VK',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.util.VK');
+  }
+);
 
-    var assumeExternalTargets = function (editor) {
-      var externalTargets = editor.getParam('link_assume_external_targets', false);
-      if (isBoolean(externalTargets) && externalTargets) {
-        return 1;
-      } else if (isString(externalTargets) && (externalTargets === 'http' || externalTargets === 'https')) {
-        return externalTargets;
-      }
-      return 0;
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.core.util.Delay',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.util.Delay');
+  }
+);
+
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.core.util.Tools',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.util.Tools');
+  }
+);
+
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.core.util.XHR',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.util.XHR');
+  }
+);
+
+define(
+  'tinymce.plugins.link.core.Settings',
+  [
+
+  ],
+  function () {
+    var assumeExternalTargets = function (editorSettings) {
+      return typeof editorSettings.link_assume_external_targets === 'boolean' ? editorSettings.link_assume_external_targets : false;
     };
-    var hasContextToolbar = function (editor) {
-      return editor.getParam('link_context_toolbar', false, 'boolean');
+
+    var hasContextToolbar = function (editorSettings) {
+      return typeof editorSettings.link_context_toolbar === 'boolean' ? editorSettings.link_context_toolbar : false;
     };
-    var getLinkList = function (editor) {
-      return editor.getParam('link_list');
+
+    var getLinkList = function (editorSettings) {
+      return editorSettings.link_list;
     };
-    var getDefaultLinkTarget = function (editor) {
-      return editor.getParam('default_link_target');
+
+    var hasDefaultLinkTarget = function (editorSettings) {
+      return typeof editorSettings.default_link_target === 'string';
     };
-    var getTargetList = function (editor) {
-      return editor.getParam('target_list', true);
+
+    var getDefaultLinkTarget = function (editorSettings) {
+      return editorSettings.default_link_target;
     };
-    var getRelList = function (editor) {
-      return editor.getParam('rel_list', [], 'array');
+
+    var getTargetList = function (editorSettings) {
+      return editorSettings.target_list;
     };
-    var getLinkClassList = function (editor) {
-      return editor.getParam('link_class_list', [], 'array');
+
+    var setTargetList = function (editor, list) {
+      editor.settings.target_list = list;
     };
-    var shouldShowLinkTitle = function (editor) {
-      return editor.getParam('link_title', true, 'boolean');
+
+    var shouldShowTargetList = function (editorSettings) {
+      return getTargetList(editorSettings) !== false;
     };
-    var allowUnsafeLinkTarget = function (editor) {
-      return editor.getParam('allow_unsafe_link_target', false, 'boolean');
+
+    var getRelList = function (editorSettings) {
+      return editorSettings.rel_list;
     };
-    var useQuickLink = function (editor) {
-      return editor.getParam('link_quicklink', false, 'boolean');
+
+    var hasRelList = function (editorSettings) {
+      return getRelList(editorSettings) !== undefined;
     };
-    var getDefaultLinkProtocol = function (editor) {
-      return editor.getParam('link_default_protocol', 'http', 'string');
+
+    var getLinkClassList = function (editorSettings) {
+      return editorSettings.link_class_list;
     };
-    var Settings = {
+
+    var hasLinkClassList = function (editorSettings) {
+      return getLinkClassList(editorSettings) !== undefined;
+    };
+
+    var shouldShowLinkTitle = function (editorSettings) {
+      return editorSettings.link_title !== false;
+    };
+
+    var allowUnsafeLinkTarget = function (editorSettings) {
+      return typeof editorSettings.allow_unsafe_link_target === 'boolean' ? editorSettings.allow_unsafe_link_target : false;
+    };
+
+    return {
       assumeExternalTargets: assumeExternalTargets,
       hasContextToolbar: hasContextToolbar,
       getLinkList: getLinkList,
+      hasDefaultLinkTarget: hasDefaultLinkTarget,
       getDefaultLinkTarget: getDefaultLinkTarget,
       getTargetList: getTargetList,
+      setTargetList: setTargetList,
+      shouldShowTargetList: shouldShowTargetList,
       getRelList: getRelList,
+      hasRelList: hasRelList,
       getLinkClassList: getLinkClassList,
+      hasLinkClassList: hasLinkClassList,
       shouldShowLinkTitle: shouldShowLinkTitle,
-      allowUnsafeLinkTarget: allowUnsafeLinkTarget,
-      useQuickLink: useQuickLink,
-      getDefaultLinkProtocol: getDefaultLinkProtocol
+      allowUnsafeLinkTarget: allowUnsafeLinkTarget
     };
+  }
+);
 
-    var appendClickRemove = function (link, evt) {
-      domGlobals.document.body.appendChild(link);
-      link.dispatchEvent(evt);
-      domGlobals.document.body.removeChild(link);
-    };
-    var open = function (url) {
-      var link = domGlobals.document.createElement('a');
-      link.target = '_blank';
-      link.href = url;
-      link.rel = 'noreferrer noopener';
-      var evt = domGlobals.document.createEvent('MouseEvents');
-      evt.initMouseEvent('click', true, true, domGlobals.window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-      appendClickRemove(link, evt);
-    };
-    var OpenUrl = { open: open };
+defineGlobal("global!RegExp", RegExp);
+/**
+ * Utils.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
-    var __assign = function () {
-      __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-          s = arguments[i];
-          for (var p in s)
-            if (Object.prototype.hasOwnProperty.call(s, p))
-              t[p] = s[p];
+define(
+  'tinymce.plugins.link.core.Utils',
+  [
+    'tinymce.core.util.Tools',
+    'tinymce.plugins.link.core.Settings',
+    'global!RegExp'
+  ],
+  function (Tools, Settings, RegExp) {
+
+    var toggleTargetRules = function (rel, isUnsafe) {
+      var rules = 'noopener noreferrer';
+
+      var addTargetRules = function (rel) {
+        rel = removeTargetRules(rel);
+        return rel ? [rel, rules].join(' ') : rules;
+      };
+
+      var removeTargetRules = function (rel) {
+        var regExp = new RegExp('(' + rules.replace(' ', '|') + ')', 'g');
+        if (rel) {
+          rel = Tools.trim(rel.replace(regExp, ''));
         }
-        return t;
+        return rel ? rel : null;
       };
-      return __assign.apply(this, arguments);
+
+      return isUnsafe ? addTargetRules(rel) : removeTargetRules(rel);
     };
 
-    var noop = function () {
-    };
-    var constant = function (value) {
-      return function () {
-        return value;
-      };
-    };
-    var never = constant(false);
-    var always = constant(true);
 
-    var none = function () {
-      return NONE;
-    };
-    var NONE = function () {
-      var eq = function (o) {
-        return o.isNone();
-      };
-      var call = function (thunk) {
-        return thunk();
-      };
-      var id = function (n) {
-        return n;
-      };
-      var me = {
-        fold: function (n, s) {
-          return n();
-        },
-        is: never,
-        isSome: never,
-        isNone: always,
-        getOr: id,
-        getOrThunk: call,
-        getOrDie: function (msg) {
-          throw new Error(msg || 'error: getOrDie called on none.');
-        },
-        getOrNull: constant(null),
-        getOrUndefined: constant(undefined),
-        or: id,
-        orThunk: call,
-        map: none,
-        each: noop,
-        bind: none,
-        exists: never,
-        forall: always,
-        filter: none,
-        equals: eq,
-        equals_: eq,
-        toArray: function () {
-          return [];
-        },
-        toString: constant('none()')
-      };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
-      return me;
-    }();
-    var some = function (a) {
-      var constant_a = constant(a);
-      var self = function () {
-        return me;
-      };
-      var bind = function (f) {
-        return f(a);
-      };
-      var me = {
-        fold: function (n, s) {
-          return s(a);
-        },
-        is: function (v) {
-          return a === v;
-        },
-        isSome: always,
-        isNone: never,
-        getOr: constant_a,
-        getOrThunk: constant_a,
-        getOrDie: constant_a,
-        getOrNull: constant_a,
-        getOrUndefined: constant_a,
-        or: self,
-        orThunk: self,
-        map: function (f) {
-          return some(f(a));
-        },
-        each: function (f) {
-          f(a);
-        },
-        bind: bind,
-        exists: bind,
-        forall: bind,
-        filter: function (f) {
-          return f(a) ? me : NONE;
-        },
-        toArray: function () {
-          return [a];
-        },
-        toString: function () {
-          return 'some(' + a + ')';
-        },
-        equals: function (o) {
-          return o.is(a);
-        },
-        equals_: function (o, elementEq) {
-          return o.fold(never, function (b) {
-            return elementEq(a, b);
-          });
-        }
-      };
-      return me;
-    };
-    var from = function (value) {
-      return value === null || value === undefined ? NONE : some(value);
-    };
-    var Option = {
-      some: some,
-      none: none,
-      from: from
-    };
-
-    var nativeSlice = Array.prototype.slice;
-    var nativeIndexOf = Array.prototype.indexOf;
-    var nativePush = Array.prototype.push;
-    var rawIndexOf = function (ts, t) {
-      return nativeIndexOf.call(ts, t);
-    };
-    var contains = function (xs, x) {
-      return rawIndexOf(xs, x) > -1;
-    };
-    var map = function (xs, f) {
-      var len = xs.length;
-      var r = new Array(len);
-      for (var i = 0; i < len; i++) {
-        var x = xs[i];
-        r[i] = f(x, i);
-      }
-      return r;
-    };
-    var each = function (xs, f) {
-      for (var i = 0, len = xs.length; i < len; i++) {
-        var x = xs[i];
-        f(x, i);
-      }
-    };
-    var foldl = function (xs, f, acc) {
-      each(xs, function (x) {
-        acc = f(acc, x);
-      });
-      return acc;
-    };
-    var flatten = function (xs) {
-      var r = [];
-      for (var i = 0, len = xs.length; i < len; ++i) {
-        if (!isArray(xs[i])) {
-          throw new Error('Arr.flatten item ' + i + ' was not an array, input: ' + xs);
-        }
-        nativePush.apply(r, xs[i]);
-      }
-      return r;
-    };
-    var bind = function (xs, f) {
-      return flatten(map(xs, f));
-    };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return nativeSlice.call(x);
-    };
-    var findMap = function (arr, f) {
-      for (var i = 0; i < arr.length; i++) {
-        var r = f(arr[i], i);
-        if (r.isSome()) {
-          return r;
-        }
-      }
-      return Option.none();
-    };
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Tools');
-
-    var hasProtocol = function (url) {
-      return /^\w+:/i.test(url);
-    };
-    var getHref = function (elm) {
-      var href = elm.getAttribute('data-mce-href');
-      return href ? href : elm.getAttribute('href');
-    };
-    var applyRelTargetRules = function (rel, isUnsafe) {
-      var rules = ['noopener'];
-      var rels = rel ? rel.split(/\s+/) : [];
-      var toString = function (rels) {
-        return global$3.trim(rels.sort().join(' '));
-      };
-      var addTargetRules = function (rels) {
-        rels = removeTargetRules(rels);
-        return rels.length > 0 ? rels.concat(rules) : rules;
-      };
-      var removeTargetRules = function (rels) {
-        return rels.filter(function (val) {
-          return global$3.inArray(rules, val) === -1;
-        });
-      };
-      var newRels = isUnsafe ? addTargetRules(rels) : removeTargetRules(rels);
-      return newRels.length > 0 ? toString(newRels) : '';
-    };
     var trimCaretContainers = function (text) {
       return text.replace(/\uFEFF/g, '');
     };
+
+
     var getAnchorElement = function (editor, selectedElm) {
-      selectedElm = selectedElm || editor.selection.getNode();
+      selectedElm = selectedElm || editor.selection.getStart();
       if (isImageFigure(selectedElm)) {
+        // for an image conained in a figure we look for a link inside the selected element
         return editor.dom.select('a[href]', selectedElm)[0];
       } else {
         return editor.dom.getParent(selectedElm, 'a[href]');
       }
     };
+
+
     var getAnchorText = function (selection, anchorElm) {
-      var text = anchorElm ? anchorElm.innerText || anchorElm.textContent : selection.getContent({ format: 'text' });
+      var text = anchorElm ? (anchorElm.innerText || anchorElm.textContent) : selection.getContent({ format: 'text' });
       return trimCaretContainers(text);
     };
+
+
     var isLink = function (elm) {
-      return elm && elm.nodeName === 'A' && !!getHref(elm);
+      return elm && elm.nodeName === 'A' && elm.href;
     };
+
     var hasLinks = function (elements) {
-      return global$3.grep(elements, isLink).length > 0;
+      return Tools.grep(elements, isLink).length > 0;
     };
+
+
     var isOnlyTextSelected = function (html) {
-      if (/</.test(html) && (!/^<a [^>]+>[^<]+<\/a>$/.test(html) || html.indexOf('href=') === -1)) {
+      // Partial html and not a fully selected anchor element
+      if (/</.test(html) && (!/^<a [^>]+>[^<]+<\/a>$/.test(html) || html.indexOf('href=') == -1)) {
         return false;
       }
+
       return true;
     };
-    var isImageFigure = function (elm) {
-      return elm && elm.nodeName === 'FIGURE' && /\bimage\b/i.test(elm.className);
+
+
+    var isImageFigure = function (node) {
+      return node && node.nodeName === 'FIGURE' && /\bimage\b/i.test(node.className);
     };
-    var getLinkAttrs = function (data) {
-      return foldl([
-        'title',
-        'rel',
-        'class',
-        'target'
-      ], function (acc, key) {
-        data[key].each(function (value) {
-          acc[key] = value.length > 0 ? value : null;
-        });
-        return acc;
-      }, { href: data.href });
-    };
-    var handleExternalTargets = function (href, assumeExternalTargets) {
-      if ((assumeExternalTargets === 'http' || assumeExternalTargets === 'https') && !hasProtocol(href)) {
-        return assumeExternalTargets + '://' + href;
-      }
-      return href;
-    };
-    var applyLinkOverrides = function (editor, linkAttrs) {
-      var newLinkAttrs = __assign({}, linkAttrs);
-      if (!(Settings.getRelList(editor).length > 0) && Settings.allowUnsafeLinkTarget(editor) === false) {
-        var newRel = applyRelTargetRules(newLinkAttrs.rel, newLinkAttrs.target === '_blank');
-        newLinkAttrs.rel = newRel ? newRel : null;
-      }
-      if (Option.from(newLinkAttrs.target).isNone() && Settings.getTargetList(editor) === false) {
-        newLinkAttrs.target = Settings.getDefaultLinkTarget(editor);
-      }
-      newLinkAttrs.href = handleExternalTargets(newLinkAttrs.href, Settings.assumeExternalTargets(editor));
-      return newLinkAttrs;
-    };
-    var updateLink = function (editor, anchorElm, text, linkAttrs) {
-      text.each(function (text) {
-        if (anchorElm.hasOwnProperty('innerText')) {
-          anchorElm.innerText = text;
-        } else {
-          anchorElm.textContent = text;
-        }
-      });
-      editor.dom.setAttribs(anchorElm, linkAttrs);
-      editor.selection.select(anchorElm);
-    };
-    var createLink = function (editor, selectedElm, text, linkAttrs) {
-      if (isImageFigure(selectedElm)) {
-        linkImageFigure(editor, selectedElm, linkAttrs);
-      } else {
-        text.fold(function () {
-          editor.execCommand('mceInsertLink', false, linkAttrs);
-        }, function (text) {
-          editor.insertContent(editor.dom.createHTML('a', linkAttrs, editor.dom.encode(text)));
-        });
-      }
-    };
-    var link = function (editor, attachState, data) {
-      var selectedElm = editor.selection.getNode();
-      var anchorElm = getAnchorElement(editor, selectedElm);
-      var linkAttrs = applyLinkOverrides(editor, getLinkAttrs(data));
-      editor.undoManager.transact(function () {
-        if (data.href === attachState.href) {
-          attachState.attach();
-        }
-        if (anchorElm) {
-          editor.focus();
-          updateLink(editor, anchorElm, data.text, linkAttrs);
-        } else {
-          createLink(editor, selectedElm, data.text, linkAttrs);
-        }
-      });
-    };
-    var unlink = function (editor) {
-      editor.undoManager.transact(function () {
-        var node = editor.selection.getNode();
-        if (isImageFigure(node)) {
-          unlinkImageFigure(editor, node);
-        } else {
-          var anchorElm = editor.dom.getParent(node, 'a[href]', editor.getBody());
-          if (anchorElm) {
-            editor.dom.remove(anchorElm, true);
+
+
+    var link = function (editor, attachState) {
+      return function (data) {
+        editor.undoManager.transact(function () {
+          var selectedElm = editor.selection.getNode();
+          var anchorElm = getAnchorElement(editor, selectedElm);
+
+          var linkAttrs = {
+            href: data.href,
+            target: data.target ? data.target : null,
+            rel: data.rel ? data.rel : null,
+            "class": data["class"] ? data["class"] : null,
+            title: data.title ? data.title : null
+          };
+
+          if (Settings.allowUnsafeLinkTarget(editor.settings) === false) {
+            linkAttrs.rel = toggleTargetRules(linkAttrs.rel, linkAttrs.target == '_blank');
           }
-        }
-        editor.focus();
-      });
+
+          if (data.href === attachState.href) {
+            attachState.attach();
+            attachState = {};
+          }
+
+          if (anchorElm) {
+            editor.focus();
+
+            if (data.hasOwnProperty('text')) {
+              if ("innerText" in anchorElm) {
+                anchorElm.innerText = data.text;
+              } else {
+                anchorElm.textContent = data.text;
+              }
+            }
+
+            editor.dom.setAttribs(anchorElm, linkAttrs);
+
+            editor.selection.select(anchorElm);
+            editor.undoManager.add();
+          } else {
+            if (isImageFigure(selectedElm)) {
+              linkImageFigure(editor, selectedElm, linkAttrs);
+            } else if (data.hasOwnProperty('text')) {
+              editor.insertContent(editor.dom.createHTML('a', linkAttrs, editor.dom.encode(data.text)));
+            } else {
+              editor.execCommand('mceInsertLink', false, linkAttrs);
+            }
+          }
+        });
+      };
     };
+
+
+    var unlink = function (editor) {
+      return function () {
+        editor.undoManager.transact(function () {
+          var node = editor.selection.getNode();
+          if (isImageFigure(node)) {
+            unlinkImageFigure(editor, node);
+          } else {
+            editor.execCommand('unlink');
+          }
+        });
+      };
+    };
+
+
     var unlinkImageFigure = function (editor, fig) {
-      var img = editor.dom.select('img', fig)[0];
+      var a, img;
+      img = editor.dom.select('img', fig)[0];
       if (img) {
-        var a = editor.dom.getParents(img, 'a[href]', fig)[0];
+        a = editor.dom.getParents(img, 'a[href]', fig)[0];
         if (a) {
           a.parentNode.insertBefore(img, a);
           editor.dom.remove(a);
         }
       }
     };
+
+
     var linkImageFigure = function (editor, fig, attrs) {
-      var img = editor.dom.select('img', fig)[0];
+      var a, img;
+      img = editor.dom.select('img', fig)[0];
       if (img) {
-        var a = editor.dom.create('a', attrs);
+        a = editor.dom.create('a', attrs);
         img.parentNode.insertBefore(a, img);
         a.appendChild(img);
       }
     };
-    var Utils = {
+
+    return {
       link: link,
       unlink: unlink,
       isLink: isLink,
       hasLinks: hasLinks,
-      getHref: getHref,
       isOnlyTextSelected: isOnlyTextSelected,
       getAnchorElement: getAnchorElement,
-      getAnchorText: getAnchorText,
-      applyRelTargetRules: applyRelTargetRules,
-      hasProtocol: hasProtocol
+      getAnchorText: getAnchorText
     };
+  }
+);
+/**
+ * Dialog.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
-    var cat = function (arr) {
-      var r = [];
-      var push = function (x) {
-        r.push(x);
-      };
-      for (var i = 0; i < arr.length; i++) {
-        arr[i].each(push);
-      }
-      return r;
-    };
+define(
+  'tinymce.plugins.link.ui.Dialog',
+  [
+    'tinymce.core.util.Delay',
+    'tinymce.core.util.Tools',
+    'tinymce.core.util.XHR',
+    'tinymce.plugins.link.core.Utils',
+    'tinymce.plugins.link.core.Settings'
+  ],
+  function (Delay, Tools, XHR, Utils, Settings) {
+    var attachState = {};
 
-    var getValue = function (item) {
-      return isString(item.value) ? item.value : '';
-    };
-    var sanitizeList = function (list, extractValue) {
-      var out = [];
-      global$3.each(list, function (item) {
-        var text = isString(item.text) ? item.text : isString(item.title) ? item.title : '';
-        if (item.menu !== undefined) ; else {
-          var value = extractValue(item);
-          out.push({
-            text: text,
-            value: value
-          });
-        }
-      });
-      return out;
-    };
-    var sanitizeWith = function (extracter) {
-      if (extracter === void 0) {
-        extracter = getValue;
-      }
-      return function (list) {
-        return Option.from(list).map(function (list) {
-          return sanitizeList(list, extracter);
+    var createLinkList = function (editor, callback) {
+      var linkList = Settings.getLinkList(editor.settings);
+
+      if (typeof linkList == "string") {
+        XHR.send({
+          url: linkList,
+          success: function (text) {
+            callback(editor, JSON.parse(text));
+          }
         });
-      };
-    };
-    var sanitize = function (list) {
-      return sanitizeWith(getValue)(list);
-    };
-    var createUi = function (name, label) {
-      return function (items) {
-        return {
-          name: name,
-          type: 'selectbox',
-          label: label,
-          items: items
-        };
-      };
-    };
-    var ListOptions = {
-      sanitize: sanitize,
-      sanitizeWith: sanitizeWith,
-      createUi: createUi,
-      getValue: getValue
-    };
-
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
-    };
-
-    var findTextByValue = function (value, catalog) {
-      return findMap(catalog, function (item) {
-        return Option.some(item).filter(function (i) {
-          return i.value === value;
+      } else if (typeof linkList == "function") {
+        linkList(function (list) {
+          callback(editor, list);
         });
-      });
-    };
-    var getDelta = function (persistentText, fieldName, catalog, data) {
-      var value = data[fieldName];
-      var hasPersistentText = persistentText.length > 0;
-      return value !== undefined ? findTextByValue(value, catalog).map(function (i) {
-        return {
-          url: {
-            value: i.value,
-            meta: {
-              text: hasPersistentText ? persistentText : i.text,
-              attach: noop
-            }
-          },
-          text: hasPersistentText ? persistentText : i.text
-        };
-      }) : Option.none();
-    };
-    var findCatalog = function (settings, fieldName) {
-      if (fieldName === 'link') {
-        return settings.catalogs.link;
-      } else if (fieldName === 'anchor') {
-        return settings.catalogs.anchor;
       } else {
-        return Option.none();
+        callback(editor, linkList);
       }
     };
-    var init = function (initialData, linkSettings) {
-      var persistentText = Cell(initialData.text);
-      var onUrlChange = function (data) {
-        if (persistentText.get().length <= 0) {
-          var urlText = data.url.meta.text !== undefined ? data.url.meta.text : data.url.value;
-          var urlTitle = data.url.meta.title !== undefined ? data.url.meta.title : '';
-          return Option.some({
-            text: urlText,
-            title: urlTitle
-          });
-        } else {
-          return Option.none();
-        }
-      };
-      var onCatalogChange = function (data, change) {
-        var catalog = findCatalog(linkSettings, change.name).getOr([]);
-        return getDelta(persistentText.get(), change.name, catalog, data);
-      };
-      var onChange = function (getData, change) {
-        if (change.name === 'url') {
-          return onUrlChange(getData());
-        } else if (contains([
-            'anchor',
-            'link'
-          ], change.name)) {
-          return onCatalogChange(getData(), change);
-        } else if (change.name === 'text') {
-          persistentText.set(getData().text);
-          return Option.none();
-        } else {
-          return Option.none();
-        }
-      };
-      return { onChange: onChange };
-    };
-    var DialogChanges = {
-      init: init,
-      getDelta: getDelta
-    };
 
-    var exports$1 = {}, module = { exports: exports$1 };
-    (function (define, exports, module, require) {
-      (function (f) {
-        if (typeof exports === 'object' && typeof module !== 'undefined') {
-          module.exports = f();
-        } else if (typeof define === 'function' && define.amd) {
-          define([], f);
-        } else {
-          var g;
-          if (typeof window !== 'undefined') {
-            g = window;
-          } else if (typeof global !== 'undefined') {
-            g = global;
-          } else if (typeof self !== 'undefined') {
-            g = self;
+    var buildListItems = function (inputList, itemCallback, startItems) {
+      var appendItems = function (values, output) {
+        output = output || [];
+
+        Tools.each(values, function (item) {
+          var menuItem = { text: item.text || item.title };
+
+          if (item.menu) {
+            menuItem.menu = appendItems(item.menu);
           } else {
-            g = this;
-          }
-          g.EphoxContactWrapper = f();
-        }
-      }(function () {
-        return function () {
-          function r(e, n, t) {
-            function o(i, f) {
-              if (!n[i]) {
-                if (!e[i]) {
-                  var c = 'function' == typeof require && require;
-                  if (!f && c)
-                    return c(i, !0);
-                  if (u)
-                    return u(i, !0);
-                  var a = new Error('Cannot find module \'' + i + '\'');
-                  throw a.code = 'MODULE_NOT_FOUND', a;
-                }
-                var p = n[i] = { exports: {} };
-                e[i][0].call(p.exports, function (r) {
-                  var n = e[i][1][r];
-                  return o(n || r);
-                }, p, p.exports, r, e, n, t);
-              }
-              return n[i].exports;
+            menuItem.value = item.value;
+
+            if (itemCallback) {
+              itemCallback(menuItem);
             }
-            for (var u = 'function' == typeof require && require, i = 0; i < t.length; i++)
-              o(t[i]);
-            return o;
           }
-          return r;
-        }()({
-          1: [
-            function (require, module, exports) {
-              var process = module.exports = {};
-              var cachedSetTimeout;
-              var cachedClearTimeout;
-              function defaultSetTimout() {
-                throw new Error('setTimeout has not been defined');
-              }
-              function defaultClearTimeout() {
-                throw new Error('clearTimeout has not been defined');
-              }
-              (function () {
-                try {
-                  if (typeof setTimeout === 'function') {
-                    cachedSetTimeout = setTimeout;
-                  } else {
-                    cachedSetTimeout = defaultSetTimout;
-                  }
-                } catch (e) {
-                  cachedSetTimeout = defaultSetTimout;
-                }
-                try {
-                  if (typeof clearTimeout === 'function') {
-                    cachedClearTimeout = clearTimeout;
-                  } else {
-                    cachedClearTimeout = defaultClearTimeout;
-                  }
-                } catch (e) {
-                  cachedClearTimeout = defaultClearTimeout;
-                }
-              }());
-              function runTimeout(fun) {
-                if (cachedSetTimeout === setTimeout) {
-                  return setTimeout(fun, 0);
-                }
-                if ((cachedSetTimeout === defaultSetTimout || !cachedSetTimeout) && setTimeout) {
-                  cachedSetTimeout = setTimeout;
-                  return setTimeout(fun, 0);
-                }
-                try {
-                  return cachedSetTimeout(fun, 0);
-                } catch (e) {
-                  try {
-                    return cachedSetTimeout.call(null, fun, 0);
-                  } catch (e) {
-                    return cachedSetTimeout.call(this, fun, 0);
-                  }
-                }
-              }
-              function runClearTimeout(marker) {
-                if (cachedClearTimeout === clearTimeout) {
-                  return clearTimeout(marker);
-                }
-                if ((cachedClearTimeout === defaultClearTimeout || !cachedClearTimeout) && clearTimeout) {
-                  cachedClearTimeout = clearTimeout;
-                  return clearTimeout(marker);
-                }
-                try {
-                  return cachedClearTimeout(marker);
-                } catch (e) {
-                  try {
-                    return cachedClearTimeout.call(null, marker);
-                  } catch (e) {
-                    return cachedClearTimeout.call(this, marker);
-                  }
-                }
-              }
-              var queue = [];
-              var draining = false;
-              var currentQueue;
-              var queueIndex = -1;
-              function cleanUpNextTick() {
-                if (!draining || !currentQueue) {
-                  return;
-                }
-                draining = false;
-                if (currentQueue.length) {
-                  queue = currentQueue.concat(queue);
-                } else {
-                  queueIndex = -1;
-                }
-                if (queue.length) {
-                  drainQueue();
-                }
-              }
-              function drainQueue() {
-                if (draining) {
-                  return;
-                }
-                var timeout = runTimeout(cleanUpNextTick);
-                draining = true;
-                var len = queue.length;
-                while (len) {
-                  currentQueue = queue;
-                  queue = [];
-                  while (++queueIndex < len) {
-                    if (currentQueue) {
-                      currentQueue[queueIndex].run();
-                    }
-                  }
-                  queueIndex = -1;
-                  len = queue.length;
-                }
-                currentQueue = null;
-                draining = false;
-                runClearTimeout(timeout);
-              }
-              process.nextTick = function (fun) {
-                var args = new Array(arguments.length - 1);
-                if (arguments.length > 1) {
-                  for (var i = 1; i < arguments.length; i++) {
-                    args[i - 1] = arguments[i];
-                  }
-                }
-                queue.push(new Item(fun, args));
-                if (queue.length === 1 && !draining) {
-                  runTimeout(drainQueue);
-                }
-              };
-              function Item(fun, array) {
-                this.fun = fun;
-                this.array = array;
-              }
-              Item.prototype.run = function () {
-                this.fun.apply(null, this.array);
-              };
-              process.title = 'browser';
-              process.browser = true;
-              process.env = {};
-              process.argv = [];
-              process.version = '';
-              process.versions = {};
-              function noop() {
-              }
-              process.on = noop;
-              process.addListener = noop;
-              process.once = noop;
-              process.off = noop;
-              process.removeListener = noop;
-              process.removeAllListeners = noop;
-              process.emit = noop;
-              process.prependListener = noop;
-              process.prependOnceListener = noop;
-              process.listeners = function (name) {
-                return [];
-              };
-              process.binding = function (name) {
-                throw new Error('process.binding is not supported');
-              };
-              process.cwd = function () {
-                return '/';
-              };
-              process.chdir = function (dir) {
-                throw new Error('process.chdir is not supported');
-              };
-              process.umask = function () {
-                return 0;
-              };
-            },
-            {}
-          ],
-          2: [
-            function (require, module, exports) {
-              (function (setImmediate) {
-                (function (root) {
-                  var setTimeoutFunc = setTimeout;
-                  function noop() {
-                  }
-                  function bind(fn, thisArg) {
-                    return function () {
-                      fn.apply(thisArg, arguments);
-                    };
-                  }
-                  function Promise(fn) {
-                    if (typeof this !== 'object')
-                      throw new TypeError('Promises must be constructed via new');
-                    if (typeof fn !== 'function')
-                      throw new TypeError('not a function');
-                    this._state = 0;
-                    this._handled = false;
-                    this._value = undefined;
-                    this._deferreds = [];
-                    doResolve(fn, this);
-                  }
-                  function handle(self, deferred) {
-                    while (self._state === 3) {
-                      self = self._value;
-                    }
-                    if (self._state === 0) {
-                      self._deferreds.push(deferred);
-                      return;
-                    }
-                    self._handled = true;
-                    Promise._immediateFn(function () {
-                      var cb = self._state === 1 ? deferred.onFulfilled : deferred.onRejected;
-                      if (cb === null) {
-                        (self._state === 1 ? resolve : reject)(deferred.promise, self._value);
-                        return;
-                      }
-                      var ret;
-                      try {
-                        ret = cb(self._value);
-                      } catch (e) {
-                        reject(deferred.promise, e);
-                        return;
-                      }
-                      resolve(deferred.promise, ret);
-                    });
-                  }
-                  function resolve(self, newValue) {
-                    try {
-                      if (newValue === self)
-                        throw new TypeError('A promise cannot be resolved with itself.');
-                      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-                        var then = newValue.then;
-                        if (newValue instanceof Promise) {
-                          self._state = 3;
-                          self._value = newValue;
-                          finale(self);
-                          return;
-                        } else if (typeof then === 'function') {
-                          doResolve(bind(then, newValue), self);
-                          return;
-                        }
-                      }
-                      self._state = 1;
-                      self._value = newValue;
-                      finale(self);
-                    } catch (e) {
-                      reject(self, e);
-                    }
-                  }
-                  function reject(self, newValue) {
-                    self._state = 2;
-                    self._value = newValue;
-                    finale(self);
-                  }
-                  function finale(self) {
-                    if (self._state === 2 && self._deferreds.length === 0) {
-                      Promise._immediateFn(function () {
-                        if (!self._handled) {
-                          Promise._unhandledRejectionFn(self._value);
-                        }
-                      });
-                    }
-                    for (var i = 0, len = self._deferreds.length; i < len; i++) {
-                      handle(self, self._deferreds[i]);
-                    }
-                    self._deferreds = null;
-                  }
-                  function Handler(onFulfilled, onRejected, promise) {
-                    this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-                    this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-                    this.promise = promise;
-                  }
-                  function doResolve(fn, self) {
-                    var done = false;
-                    try {
-                      fn(function (value) {
-                        if (done)
-                          return;
-                        done = true;
-                        resolve(self, value);
-                      }, function (reason) {
-                        if (done)
-                          return;
-                        done = true;
-                        reject(self, reason);
-                      });
-                    } catch (ex) {
-                      if (done)
-                        return;
-                      done = true;
-                      reject(self, ex);
-                    }
-                  }
-                  Promise.prototype['catch'] = function (onRejected) {
-                    return this.then(null, onRejected);
-                  };
-                  Promise.prototype.then = function (onFulfilled, onRejected) {
-                    var prom = new this.constructor(noop);
-                    handle(this, new Handler(onFulfilled, onRejected, prom));
-                    return prom;
-                  };
-                  Promise.all = function (arr) {
-                    var args = Array.prototype.slice.call(arr);
-                    return new Promise(function (resolve, reject) {
-                      if (args.length === 0)
-                        return resolve([]);
-                      var remaining = args.length;
-                      function res(i, val) {
-                        try {
-                          if (val && (typeof val === 'object' || typeof val === 'function')) {
-                            var then = val.then;
-                            if (typeof then === 'function') {
-                              then.call(val, function (val) {
-                                res(i, val);
-                              }, reject);
-                              return;
-                            }
-                          }
-                          args[i] = val;
-                          if (--remaining === 0) {
-                            resolve(args);
-                          }
-                        } catch (ex) {
-                          reject(ex);
-                        }
-                      }
-                      for (var i = 0; i < args.length; i++) {
-                        res(i, args[i]);
-                      }
-                    });
-                  };
-                  Promise.resolve = function (value) {
-                    if (value && typeof value === 'object' && value.constructor === Promise) {
-                      return value;
-                    }
-                    return new Promise(function (resolve) {
-                      resolve(value);
-                    });
-                  };
-                  Promise.reject = function (value) {
-                    return new Promise(function (resolve, reject) {
-                      reject(value);
-                    });
-                  };
-                  Promise.race = function (values) {
-                    return new Promise(function (resolve, reject) {
-                      for (var i = 0, len = values.length; i < len; i++) {
-                        values[i].then(resolve, reject);
-                      }
-                    });
-                  };
-                  Promise._immediateFn = typeof setImmediate === 'function' ? function (fn) {
-                    setImmediate(fn);
-                  } : function (fn) {
-                    setTimeoutFunc(fn, 0);
-                  };
-                  Promise._unhandledRejectionFn = function _unhandledRejectionFn(err) {
-                    if (typeof console !== 'undefined' && console) {
-                      console.warn('Possible Unhandled Promise Rejection:', err);
-                    }
-                  };
-                  Promise._setImmediateFn = function _setImmediateFn(fn) {
-                    Promise._immediateFn = fn;
-                  };
-                  Promise._setUnhandledRejectionFn = function _setUnhandledRejectionFn(fn) {
-                    Promise._unhandledRejectionFn = fn;
-                  };
-                  if (typeof module !== 'undefined' && module.exports) {
-                    module.exports = Promise;
-                  } else if (!root.Promise) {
-                    root.Promise = Promise;
-                  }
-                }(this));
-              }.call(this, require('timers').setImmediate));
-            },
-            { 'timers': 3 }
-          ],
-          3: [
-            function (require, module, exports) {
-              (function (setImmediate, clearImmediate) {
-                var nextTick = require('process/browser.js').nextTick;
-                var apply = Function.prototype.apply;
-                var slice = Array.prototype.slice;
-                var immediateIds = {};
-                var nextImmediateId = 0;
-                exports.setTimeout = function () {
-                  return new Timeout(apply.call(setTimeout, window, arguments), clearTimeout);
-                };
-                exports.setInterval = function () {
-                  return new Timeout(apply.call(setInterval, window, arguments), clearInterval);
-                };
-                exports.clearTimeout = exports.clearInterval = function (timeout) {
-                  timeout.close();
-                };
-                function Timeout(id, clearFn) {
-                  this._id = id;
-                  this._clearFn = clearFn;
-                }
-                Timeout.prototype.unref = Timeout.prototype.ref = function () {
-                };
-                Timeout.prototype.close = function () {
-                  this._clearFn.call(window, this._id);
-                };
-                exports.enroll = function (item, msecs) {
-                  clearTimeout(item._idleTimeoutId);
-                  item._idleTimeout = msecs;
-                };
-                exports.unenroll = function (item) {
-                  clearTimeout(item._idleTimeoutId);
-                  item._idleTimeout = -1;
-                };
-                exports._unrefActive = exports.active = function (item) {
-                  clearTimeout(item._idleTimeoutId);
-                  var msecs = item._idleTimeout;
-                  if (msecs >= 0) {
-                    item._idleTimeoutId = setTimeout(function onTimeout() {
-                      if (item._onTimeout)
-                        item._onTimeout();
-                    }, msecs);
-                  }
-                };
-                exports.setImmediate = typeof setImmediate === 'function' ? setImmediate : function (fn) {
-                  var id = nextImmediateId++;
-                  var args = arguments.length < 2 ? false : slice.call(arguments, 1);
-                  immediateIds[id] = true;
-                  nextTick(function onNextTick() {
-                    if (immediateIds[id]) {
-                      if (args) {
-                        fn.apply(null, args);
-                      } else {
-                        fn.call(null);
-                      }
-                      exports.clearImmediate(id);
-                    }
-                  });
-                  return id;
-                };
-                exports.clearImmediate = typeof clearImmediate === 'function' ? clearImmediate : function (id) {
-                  delete immediateIds[id];
-                };
-              }.call(this, require('timers').setImmediate, require('timers').clearImmediate));
-            },
-            {
-              'process/browser.js': 1,
-              'timers': 3
-            }
-          ],
-          4: [
-            function (require, module, exports) {
-              var promisePolyfill = require('promise-polyfill');
-              var Global = function () {
-                if (typeof window !== 'undefined') {
-                  return window;
-                } else {
-                  return Function('return this;')();
-                }
-              }();
-              module.exports = { boltExport: Global.Promise || promisePolyfill };
-            },
-            { 'promise-polyfill': 2 }
-          ]
-        }, {}, [4])(4);
-      }));
-    }(undefined, exports$1, module, undefined));
-    var Promise = module.exports.boltExport;
 
-    var nu = function (baseFn) {
-      var data = Option.none();
-      var callbacks = [];
-      var map = function (f) {
-        return nu(function (nCallback) {
-          get(function (data) {
-            nCallback(f(data));
-          });
+          output.push(menuItem);
         });
+
+        return output;
       };
-      var get = function (nCallback) {
-        if (isReady()) {
-          call(nCallback);
-        } else {
-          callbacks.push(nCallback);
-        }
-      };
-      var set = function (x) {
-        data = Option.some(x);
-        run(callbacks);
-        callbacks = [];
-      };
-      var isReady = function () {
-        return data.isSome();
-      };
-      var run = function (cbs) {
-        each(cbs, call);
-      };
-      var call = function (cb) {
-        data.each(function (x) {
-          domGlobals.setTimeout(function () {
-            cb(x);
-          }, 0);
-        });
-      };
-      baseFn(set);
-      return {
-        get: get,
-        map: map,
-        isReady: isReady
-      };
-    };
-    var pure = function (a) {
-      return nu(function (callback) {
-        callback(a);
-      });
-    };
-    var LazyValue = {
-      nu: nu,
-      pure: pure
+
+      return appendItems(inputList, startItems || []);
     };
 
-    var errorReporter = function (err) {
-      domGlobals.setTimeout(function () {
-        throw err;
-      }, 0);
-    };
-    var make = function (run) {
-      var get = function (callback) {
-        run().then(callback, errorReporter);
-      };
-      var map = function (fab) {
-        return make(function () {
-          return run().then(fab);
-        });
-      };
-      var bind = function (aFutureB) {
-        return make(function () {
-          return run().then(function (v) {
-            return aFutureB(v).toPromise();
-          });
-        });
-      };
-      var anonBind = function (futureB) {
-        return make(function () {
-          return run().then(function () {
-            return futureB.toPromise();
-          });
-        });
-      };
-      var toLazy = function () {
-        return LazyValue.nu(get);
-      };
-      var toCached = function () {
-        var cache = null;
-        return make(function () {
-          if (cache === null) {
-            cache = run();
-          }
-          return cache;
-        });
-      };
-      var toPromise = run;
-      return {
-        map: map,
-        bind: bind,
-        anonBind: anonBind,
-        toLazy: toLazy,
-        toCached: toCached,
-        toPromise: toPromise,
-        get: get
-      };
-    };
-    var nu$1 = function (baseFn) {
-      return make(function () {
-        return new Promise(baseFn);
-      });
-    };
-    var pure$1 = function (a) {
-      return make(function () {
-        return Promise.resolve(a);
-      });
-    };
-    var Future = {
-      nu: nu$1,
-      pure: pure$1
-    };
-
-    var global$4 = tinymce.util.Tools.resolve('tinymce.util.Delay');
-
+    // Delay confirm since onSubmit will move focus
     var delayedConfirm = function (editor, message, callback) {
       var rng = editor.selection.getRng();
-      global$4.setEditorTimeout(editor, function () {
+
+      Delay.setEditorTimeout(editor, function () {
         editor.windowManager.confirm(message, function (state) {
           editor.selection.setRng(rng);
           callback(state);
         });
       });
     };
-    var tryEmailTransform = function (data) {
-      var url = data.href;
-      var suggestMailTo = url.indexOf('@') > 0 && url.indexOf('//') === -1 && url.indexOf('mailto:') === -1;
-      return suggestMailTo ? Option.some({
-        message: 'The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?',
-        preprocess: function (oldData) {
-          return __assign(__assign({}, oldData), { href: 'mailto:' + url });
+
+    var showDialog = function (editor, linkList) {
+      var data = {}, selection = editor.selection, dom = editor.dom, anchorElm, initialText;
+      var win, onlyText, textListCtrl, linkListCtrl, relListCtrl, targetListCtrl, classListCtrl, linkTitleCtrl, value;
+
+      var linkListChangeHandler = function (e) {
+        var textCtrl = win.find('#text');
+
+        if (!textCtrl.value() || (e.lastControl && textCtrl.value() == e.lastControl.text())) {
+          textCtrl.value(e.control.text());
         }
-      }) : Option.none();
-    };
-    var tryProtocolTransform = function (assumeExternalTargets, defaultLinkProtocol) {
-      return function (data) {
-        var url = data.href;
-        var suggestProtocol = assumeExternalTargets === 1 && !Utils.hasProtocol(url) || assumeExternalTargets === 0 && /^\s*www[\.|\d\.]/i.test(url);
-        return suggestProtocol ? Option.some({
-          message: 'The URL you entered seems to be an external link. Do you want to add the required ' + defaultLinkProtocol + ':// prefix?',
-          preprocess: function (oldData) {
-            return __assign(__assign({}, oldData), { href: defaultLinkProtocol + '://' + url });
+
+        win.find('#href').value(e.control.value());
+      };
+
+      var buildAnchorListControl = function (url) {
+        var anchorList = [];
+
+        Tools.each(editor.dom.select('a:not([href])'), function (anchor) {
+          var id = anchor.name || anchor.id;
+
+          if (id) {
+            anchorList.push({
+              text: id,
+              value: '#' + id,
+              selected: url.indexOf('#' + id) != -1
+            });
           }
-        }) : Option.none();
-      };
-    };
-    var preprocess = function (editor, data) {
-      return findMap([
-        tryEmailTransform,
-        tryProtocolTransform(Settings.assumeExternalTargets(editor), Settings.getDefaultLinkProtocol(editor))
-      ], function (f) {
-        return f(data);
-      }).fold(function () {
-        return Future.pure(data);
-      }, function (transform) {
-        return Future.nu(function (callback) {
-          delayedConfirm(editor, transform.message, function (state) {
-            callback(state ? transform.preprocess(data) : data);
-          });
         });
-      });
-    };
-    var DialogConfirms = { preprocess: preprocess };
 
-    var getAnchors = function (editor) {
-      var anchorNodes = editor.dom.select('a:not([href])');
-      var anchors = bind(anchorNodes, function (anchor) {
-        var id = anchor.name || anchor.id;
-        return id ? [{
-            text: id,
-            value: '#' + id
-          }] : [];
-      });
-      return anchors.length > 0 ? Option.some([{
-          text: 'None',
-          value: ''
-        }].concat(anchors)) : Option.none();
-    };
-    var AnchorListOptions = { getAnchors: getAnchors };
+        if (anchorList.length) {
+          anchorList.unshift({ text: 'None', value: '' });
 
-    var getClasses = function (editor) {
-      var list = Settings.getLinkClassList(editor);
-      if (list.length > 0) {
-        return ListOptions.sanitize(list);
-      }
-      return Option.none();
-    };
-    var ClassListOptions = { getClasses: getClasses };
-
-    var global$5 = tinymce.util.Tools.resolve('tinymce.util.XHR');
-
-    var parseJson = function (text) {
-      try {
-        return Option.some(JSON.parse(text));
-      } catch (err) {
-        return Option.none();
-      }
-    };
-    var getLinks = function (editor) {
-      var extractor = function (item) {
-        return editor.convertURL(item.value || item.url, 'href');
+          return {
+            name: 'anchor',
+            type: 'listbox',
+            label: 'Anchors',
+            values: anchorList,
+            onselect: linkListChangeHandler
+          };
+        }
       };
-      var linkList = Settings.getLinkList(editor);
-      return Future.nu(function (callback) {
-        if (isString(linkList)) {
-          global$5.send({
-            url: linkList,
-            success: function (text) {
-              return callback(parseJson(text));
-            },
-            error: function (_) {
-              return callback(Option.none());
+
+      var updateText = function () {
+        if (!initialText && onlyText && !data.text) {
+          this.parent().parent().find('#text')[0].value(this.value());
+        }
+      };
+
+      var urlChange = function (e) {
+        var meta = e.meta || {};
+
+        if (linkListCtrl) {
+          linkListCtrl.value(editor.convertURL(this.value(), 'href'));
+        }
+
+        Tools.each(e.meta, function (value, key) {
+          var inp = win.find('#' + key);
+
+          if (key === 'text') {
+            if (initialText.length === 0) {
+              inp.value(value);
+              data.text = value;
             }
-          });
-        } else if (isFunction(linkList)) {
-          linkList(function (output) {
-            return callback(Option.some(output));
-          });
-        } else {
-          callback(Option.from(linkList));
-        }
-      }).map(function (optItems) {
-        return optItems.bind(ListOptions.sanitizeWith(extractor)).map(function (items) {
-          if (items.length > 0) {
-            return [{
-                text: 'None',
-                value: ''
-              }].concat(items);
           } else {
-            return items;
+            inp.value(value);
           }
         });
-      });
-    };
-    var LinkListOptions = { getLinks: getLinks };
 
-    var getRels = function (editor, initialTarget) {
-      var list = Settings.getRelList(editor);
-      if (list.length > 0) {
-        var isTargetBlank_1 = initialTarget.is('_blank');
-        var enforceSafe = Settings.allowUnsafeLinkTarget(editor) === false;
-        var safeRelExtractor = function (item) {
-          return Utils.applyRelTargetRules(ListOptions.getValue(item), isTargetBlank_1);
-        };
-        var sanitizer = enforceSafe ? ListOptions.sanitizeWith(safeRelExtractor) : ListOptions.sanitize;
-        return sanitizer(list);
-      }
-      return Option.none();
-    };
-    var RelOptions = { getRels: getRels };
-
-    var fallbacks = [
-      {
-        text: 'Current window',
-        value: ''
-      },
-      {
-        text: 'New window',
-        value: '_blank'
-      }
-    ];
-    var getTargets = function (editor) {
-      var list = Settings.getTargetList(editor);
-      if (isArray(list)) {
-        return ListOptions.sanitize(list).orThunk(function () {
-          return Option.some(fallbacks);
-        });
-      } else if (list === false) {
-        return Option.none();
-      }
-      return Option.some(fallbacks);
-    };
-    var TargetOptions = { getTargets: getTargets };
-
-    var nonEmptyAttr = function (dom, elem, name) {
-      var val = dom.getAttrib(elem, name);
-      return val !== null && val.length > 0 ? Option.some(val) : Option.none();
-    };
-    var extractFromAnchor = function (editor, anchor) {
-      var dom = editor.dom;
-      var onlyText = Utils.isOnlyTextSelected(editor.selection.getContent());
-      var text = onlyText ? Option.some(Utils.getAnchorText(editor.selection, anchor)) : Option.none();
-      var url = anchor ? Option.some(dom.getAttrib(anchor, 'href')) : Option.none();
-      var target = anchor ? Option.from(dom.getAttrib(anchor, 'target')) : Option.none();
-      var rel = nonEmptyAttr(dom, anchor, 'rel');
-      var linkClass = nonEmptyAttr(dom, anchor, 'class');
-      var title = nonEmptyAttr(dom, anchor, 'title');
-      return {
-        url: url,
-        text: text,
-        title: title,
-        target: target,
-        rel: rel,
-        linkClass: linkClass
-      };
-    };
-    var collect = function (editor, linkNode) {
-      return LinkListOptions.getLinks(editor).map(function (links) {
-        var anchor = extractFromAnchor(editor, linkNode);
-        return {
-          anchor: anchor,
-          catalogs: {
-            targets: TargetOptions.getTargets(editor),
-            rels: RelOptions.getRels(editor, anchor.target),
-            classes: ClassListOptions.getClasses(editor),
-            anchor: AnchorListOptions.getAnchors(editor),
-            link: links
-          },
-          optNode: Option.from(linkNode),
-          flags: { titleEnabled: Settings.shouldShowLinkTitle(editor) }
-        };
-      });
-    };
-    var DialogInfo = { collect: collect };
-
-    var handleSubmit = function (editor, info) {
-      return function (api) {
-        var data = api.getData();
-        if (!data.url.value) {
-          Utils.unlink(editor);
-          api.close();
-          return;
+        if (meta.attach) {
+          attachState = {
+            href: this.value(),
+            attach: meta.attach
+          };
         }
-        var getChangedValue = function (key) {
-          return Option.from(data[key]).filter(function (value) {
-            return !info.anchor[key].is(value);
-          });
-        };
-        var changedData = {
-          href: data.url.value,
-          text: getChangedValue('text'),
-          target: getChangedValue('target'),
-          rel: getChangedValue('rel'),
-          class: getChangedValue('linkClass'),
-          title: getChangedValue('title')
-        };
-        var attachState = {
-          href: data.url.value,
-          attach: data.url.meta !== undefined && data.url.meta.attach ? data.url.meta.attach : function () {
-          }
-        };
-        DialogConfirms.preprocess(editor, changedData).get(function (pData) {
-          Utils.link(editor, attachState, pData);
-        });
-        api.close();
+
+        if (!meta.text) {
+          updateText.call(this);
+        }
       };
-    };
-    var collectData = function (editor) {
-      var anchorNode = Utils.getAnchorElement(editor);
-      return DialogInfo.collect(editor, anchorNode);
-    };
-    var getInitialData = function (info, defaultTarget) {
-      return {
-        url: {
-          value: info.anchor.url.getOr(''),
-          meta: {
-            attach: function () {
-            },
-            text: info.anchor.url.fold(function () {
-              return '';
-            }, function () {
-              return info.anchor.text.getOr('');
-            }),
-            original: { value: info.anchor.url.getOr('') }
-          }
-        },
-        text: info.anchor.text.getOr(''),
-        title: info.anchor.title.getOr(''),
-        anchor: info.anchor.url.getOr(''),
-        link: info.anchor.url.getOr(''),
-        rel: info.anchor.rel.getOr(''),
-        target: info.anchor.target.or(defaultTarget).getOr(''),
-        linkClass: info.anchor.linkClass.getOr('')
+
+      var onBeforeCall = function (e) {
+        e.meta = win.toJSON();
       };
-    };
-    var makeDialog = function (settings, onSubmit, editor) {
-      var urlInput = [{
-          name: 'url',
-          type: 'urlinput',
-          filetype: 'file',
-          label: 'URL'
-        }];
-      var displayText = settings.anchor.text.map(function () {
-        return {
+
+      onlyText = Utils.isOnlyTextSelected(selection.getContent());
+      anchorElm = Utils.getAnchorElement(editor);
+
+      data.text = initialText = Utils.getAnchorText(editor.selection, anchorElm);
+      data.href = anchorElm ? dom.getAttrib(anchorElm, 'href') : '';
+
+      if (anchorElm) {
+        data.target = dom.getAttrib(anchorElm, 'target');
+      } else if (Settings.hasDefaultLinkTarget(editor.settings)) {
+        data.target = Settings.getDefaultLinkTarget(editor.settings);
+      }
+
+      if ((value = dom.getAttrib(anchorElm, 'rel'))) {
+        data.rel = value;
+      }
+
+      if ((value = dom.getAttrib(anchorElm, 'class'))) {
+        data['class'] = value;
+      }
+
+      if ((value = dom.getAttrib(anchorElm, 'title'))) {
+        data.title = value;
+      }
+
+      if (onlyText) {
+        textListCtrl = {
           name: 'text',
-          type: 'input',
-          label: 'Text to display'
-        };
-      }).toArray();
-      var titleText = settings.flags.titleEnabled ? [{
-          name: 'title',
-          type: 'input',
-          label: 'Title'
-        }] : [];
-      var defaultTarget = Option.from(Settings.getDefaultLinkTarget(editor));
-      var initialData = getInitialData(settings, defaultTarget);
-      var dialogDelta = DialogChanges.init(initialData, settings);
-      var catalogs = settings.catalogs;
-      var body = {
-        type: 'panel',
-        items: flatten([
-          urlInput,
-          displayText,
-          titleText,
-          cat([
-            catalogs.anchor.map(ListOptions.createUi('anchor', 'Anchors')),
-            catalogs.rels.map(ListOptions.createUi('rel', 'Rel')),
-            catalogs.targets.map(ListOptions.createUi('target', 'Open link in...')),
-            catalogs.link.map(ListOptions.createUi('link', 'Link list')),
-            catalogs.classes.map(ListOptions.createUi('linkClass', 'Class'))
-          ])
-        ])
-      };
-      return {
-        title: 'Insert/Edit Link',
-        size: 'normal',
-        body: body,
-        buttons: [
-          {
-            type: 'cancel',
-            name: 'cancel',
-            text: 'Cancel'
-          },
-          {
-            type: 'submit',
-            name: 'save',
-            text: 'Save',
-            primary: true
+          type: 'textbox',
+          size: 40,
+          label: 'Text to display',
+          onchange: function () {
+            data.text = this.value();
           }
+        };
+      }
+
+      if (linkList) {
+        linkListCtrl = {
+          type: 'listbox',
+          label: 'Link list',
+          values: buildListItems(
+            linkList,
+            function (item) {
+              item.value = editor.convertURL(item.value || item.url, 'href');
+            },
+            [{ text: 'None', value: '' }]
+          ),
+          onselect: linkListChangeHandler,
+          value: editor.convertURL(data.href, 'href'),
+          onPostRender: function () {
+            /*eslint consistent-this:0*/
+            linkListCtrl = this;
+          }
+        };
+      }
+
+      if (Settings.shouldShowTargetList(editor.settings)) {
+        if (Settings.getTargetList(editor.settings) === undefined) {
+          Settings.setTargetList(editor, [
+            { text: 'None', value: '' },
+            { text: 'New window', value: '_blank' }
+          ]);
+        }
+
+        targetListCtrl = {
+          name: 'target',
+          type: 'listbox',
+          label: 'Target',
+          values: buildListItems(Settings.getTargetList(editor.settings))
+        };
+      }
+
+      if (Settings.hasRelList(editor.settings)) {
+        relListCtrl = {
+          name: 'rel',
+          type: 'listbox',
+          label: 'Rel',
+          values: buildListItems(Settings.getRelList(editor.settings))
+        };
+      }
+
+      if (Settings.hasLinkClassList(editor.settings)) {
+        classListCtrl = {
+          name: 'class',
+          type: 'listbox',
+          label: 'Class',
+          values: buildListItems(
+            Settings.getLinkClassList(editor.settings),
+            function (item) {
+              if (item.value) {
+                item.textStyle = function () {
+                  return editor.formatter.getCssText({ inline: 'a', classes: [item.value] });
+                };
+              }
+            }
+          )
+        };
+      }
+
+      if (Settings.shouldShowLinkTitle(editor.settings)) {
+        linkTitleCtrl = {
+          name: 'title',
+          type: 'textbox',
+          label: 'Title',
+          value: data.title
+        };
+      }
+
+      win = editor.windowManager.open({
+        title: 'Insert link',
+        data: data,
+        body: [
+          {
+            name: 'href',
+            type: 'filepicker',
+            filetype: 'file',
+            size: 40,
+            autofocus: true,
+            label: 'Url',
+            onchange: urlChange,
+            onkeyup: updateText,
+            onbeforecall: onBeforeCall
+          },
+          textListCtrl,
+          linkTitleCtrl,
+          buildAnchorListControl(data.href),
+          linkListCtrl,
+          relListCtrl,
+          targetListCtrl,
+          classListCtrl
         ],
-        initialData: initialData,
-        onChange: function (api, _a) {
-          var name = _a.name;
-          dialogDelta.onChange(api.getData, { name: name }).each(function (newData) {
-            api.setData(newData);
-          });
-        },
-        onSubmit: onSubmit
-      };
-    };
-    var open$1 = function (editor) {
-      var data = collectData(editor);
-      data.map(function (info) {
-        var onSubmit = handleSubmit(editor, info);
-        return makeDialog(info, onSubmit, editor);
-      }).get(function (spec) {
-        editor.windowManager.open(spec);
+        onSubmit: function (e) {
+          var assumeExternalTargets = Settings.assumeExternalTargets(editor.settings);
+          var insertLink = Utils.link(editor, attachState);
+          var removeLink = Utils.unlink(editor);
+
+          var resultData = Tools.extend({}, data, e.data);
+          /*eslint dot-notation: 0*/
+          var href = resultData.href;
+
+          if (!href) {
+            removeLink();
+            return;
+          }
+
+          if (!onlyText || resultData.text === initialText) {
+            delete resultData.text;
+          }
+
+          // Is email and not //user@domain.com
+          if (href.indexOf('@') > 0 && href.indexOf('//') == -1 && href.indexOf('mailto:') == -1) {
+            delayedConfirm(
+              editor,
+              'The URL you entered seems to be an email address. Do you want to add the required mailto: prefix?',
+              function (state) {
+                if (state) {
+                  resultData.href = 'mailto:' + href;
+                }
+                insertLink(resultData);
+              }
+            );
+            return;
+          }
+
+          // Is not protocol prefixed
+          if ((assumeExternalTargets === true && !/^\w+:/i.test(href)) ||
+            (assumeExternalTargets === false && /^\s*www[\.|\d\.]/i.test(href))) {
+            delayedConfirm(
+              editor,
+              'The URL you entered seems to be an external link. Do you want to add the required http:// prefix?',
+              function (state) {
+                if (state) {
+                  resultData.href = 'http://' + href;
+                }
+                insertLink(resultData);
+              }
+            );
+            return;
+          }
+
+          insertLink(resultData);
+        }
       });
     };
-    var Dialog = { open: open$1 };
 
+    var open = function (editor) {
+      createLinkList(editor, showDialog);
+    };
+
+    return {
+      open: open
+    };
+  }
+);
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.core.dom.DOMUtils',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.dom.DOMUtils');
+  }
+);
+
+/**
+ * ResolveGlobal.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.core.Env',
+  [
+    'global!tinymce.util.Tools.resolve'
+  ],
+  function (resolve) {
+    return resolve('tinymce.Env');
+  }
+);
+
+/**
+ * OpenUrl.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.plugins.link.core.OpenUrl',
+  [
+    'tinymce.core.dom.DOMUtils',
+    'tinymce.core.Env'
+  ],
+  function (DOMUtils, Env) {
+    var appendClickRemove = function (link, evt) {
+      document.body.appendChild(link);
+      link.dispatchEvent(evt);
+      document.body.removeChild(link);
+    };
+
+    var open = function (url) {
+      // Chrome and Webkit has implemented noopener and works correctly with/without popup blocker
+      // Firefox has it implemented noopener but when the popup blocker is activated it doesn't work
+      // Edge has only implemented noreferrer and it seems to remove opener as well
+      // Older IE versions pre IE 11 falls back to a window.open approach
+      if (!Env.ie || Env.ie > 10) {
+        var link = document.createElement('a');
+        link.target = '_blank';
+        link.href = url;
+        link.rel = 'noreferrer noopener';
+
+        var evt = document.createEvent('MouseEvents');
+        evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
+        appendClickRemove(link, evt);
+      } else {
+        var win = window.open('', '_blank');
+        if (win) {
+          win.opener = null;
+          var doc = win.document;
+          doc.open();
+          doc.write('<meta http-equiv="refresh" content="0; url=' + DOMUtils.DOM.encode(url) + '">');
+          doc.close();
+        }
+      }
+    };
+
+    return {
+      open: open
+    };
+  }
+);
+/**
+ * Actions.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
+
+define(
+  'tinymce.plugins.link.core.Actions',
+  [
+    'tinymce.core.util.VK',
+    'tinymce.plugins.link.ui.Dialog',
+    'tinymce.plugins.link.core.OpenUrl',
+    'tinymce.plugins.link.core.Utils',
+    'tinymce.plugins.link.core.Settings'
+  ],
+  function (VK, Dialog, OpenUrl, Utils, Settings) {
     var getLink = function (editor, elm) {
       return editor.dom.getParent(elm, 'a[href]');
     };
+
     var getSelectedLink = function (editor) {
       return getLink(editor, editor.selection.getStart());
     };
+
+    var getHref = function (elm) {
+      // Returns the real href value not the resolved a.href value
+      var href = elm.getAttribute('data-mce-href');
+      return href ? href : elm.getAttribute('href');
+    };
+
+    var isContextMenuVisible = function (editor) {
+      var contextmenu = editor.plugins.contextmenu;
+      return contextmenu ? contextmenu.isContextMenuVisible() : false;
+    };
+
     var hasOnlyAltModifier = function (e) {
       return e.altKey === true && e.shiftKey === false && e.ctrlKey === false && e.metaKey === false;
     };
+
     var gotoLink = function (editor, a) {
       if (a) {
-        var href = Utils.getHref(a);
+        var href = getHref(a);
         if (/^#/.test(href)) {
           var targetEl = editor.$(href);
           if (targetEl.length) {
@@ -1587,38 +959,44 @@
         }
       }
     };
+
     var openDialog = function (editor) {
       return function () {
         Dialog.open(editor);
       };
     };
+
     var gotoSelectedLink = function (editor) {
       return function () {
         gotoLink(editor, getSelectedLink(editor));
       };
     };
+
     var leftClickedOnAHref = function (editor) {
       return function (elm) {
         var sel, rng, node;
-        if (Settings.hasContextToolbar(editor) && Utils.isLink(elm)) {
+        if (Settings.hasContextToolbar(editor.settings) && !isContextMenuVisible(editor) && Utils.isLink(elm)) {
           sel = editor.selection;
           rng = sel.getRng();
           node = rng.startContainer;
-          if (node.nodeType === 3 && sel.isCollapsed() && rng.startOffset > 0 && rng.startOffset < node.data.length) {
+          // ignore cursor positions at the beginning/end (to make context toolbar less noisy)
+          if (node.nodeType == 3 && sel.isCollapsed() && rng.startOffset > 0 && rng.startOffset < node.data.length) {
             return true;
           }
         }
         return false;
       };
     };
+
     var setupGotoLinks = function (editor) {
       editor.on('click', function (e) {
         var link = getLink(editor, e.target);
-        if (link && global$2.metaKeyPressed(e)) {
+        if (link && VK.metaKeyPressed(e)) {
           e.preventDefault();
           gotoLink(editor, link);
         }
       });
+
       editor.on('keydown', function (e) {
         var link = getSelectedLink(editor);
         if (link && e.keyCode === 13 && hasOnlyAltModifier(e)) {
@@ -1627,217 +1005,158 @@
         }
       });
     };
+
     var toggleActiveState = function (editor) {
-      return function (api) {
-        var nodeChangeHandler = function (e) {
-          return api.setActive(!editor.mode.isReadOnly() && !!Utils.getAnchorElement(editor, e.element));
-        };
-        editor.on('NodeChange', nodeChangeHandler);
-        return function () {
-          return editor.off('NodeChange', nodeChangeHandler);
-        };
+      return function () {
+        var self = this;
+        editor.on('nodechange', function (e) {
+          self.active(!editor.readonly && !!Utils.getAnchorElement(editor, e.element));
+        });
       };
     };
-    var toggleEnabledState = function (editor) {
-      return function (api) {
-        var parents = editor.dom.getParents(editor.selection.getStart());
-        api.setDisabled(!Utils.hasLinks(parents));
-        var nodeChangeHandler = function (e) {
-          return api.setDisabled(!Utils.hasLinks(e.parents));
+
+    var toggleViewLinkState = function (editor) {
+      return function () {
+        var self = this;
+
+        var toggleVisibility = function (e) {
+          if (Utils.hasLinks(e.parents)) {
+            self.show();
+          } else {
+            self.hide();
+          }
         };
-        editor.on('NodeChange', nodeChangeHandler);
-        return function () {
-          return editor.off('NodeChange', nodeChangeHandler);
-        };
+
+        if (!Utils.hasLinks(editor.dom.getParents(editor.selection.getStart()))) {
+          self.hide();
+        }
+
+        editor.on('nodechange', toggleVisibility);
+
+        self.on('remove', function () {
+          editor.off('nodechange', toggleVisibility);
+        });
       };
     };
-    var Actions = {
+
+    return {
       openDialog: openDialog,
       gotoSelectedLink: gotoSelectedLink,
       leftClickedOnAHref: leftClickedOnAHref,
       setupGotoLinks: setupGotoLinks,
       toggleActiveState: toggleActiveState,
-      toggleEnabledState: toggleEnabledState
+      toggleViewLinkState: toggleViewLinkState
     };
+  }
+);
+/**
+ * Controls.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
-    var register = function (editor) {
-      editor.addCommand('mceLink', function () {
-        if (Settings.useQuickLink(editor)) {
-          editor.fire('contexttoolbar-show', { toolbarKey: 'quicklink' });
-        } else {
-          Actions.openDialog(editor)();
-        }
-      });
-    };
-    var Commands = { register: register };
-
-    var setup = function (editor) {
-      editor.addShortcut('Meta+K', '', function () {
-        editor.execCommand('mceLink');
-      });
-    };
-    var Keyboard = { setup: setup };
+define(
+  'tinymce.plugins.link.ui.Controls',
+  [
+    'tinymce.plugins.link.core.Actions',
+    'tinymce.plugins.link.core.Utils'
+  ],
+  function (Actions, Utils) {
 
     var setupButtons = function (editor) {
-      editor.ui.registry.addToggleButton('link', {
+      editor.addButton('link', {
         icon: 'link',
         tooltip: 'Insert/edit link',
-        onAction: Actions.openDialog(editor),
-        onSetup: Actions.toggleActiveState(editor)
+        shortcut: 'Meta+K',
+        onclick: Actions.openDialog(editor),
+        onpostrender: Actions.toggleActiveState(editor)
       });
-      editor.ui.registry.addButton('openlink', {
-        icon: 'new-tab',
-        tooltip: 'Open link',
-        onAction: Actions.gotoSelectedLink(editor),
-        onSetup: Actions.toggleEnabledState(editor)
-      });
-      editor.ui.registry.addButton('unlink', {
+
+      editor.addButton('unlink', {
         icon: 'unlink',
         tooltip: 'Remove link',
-        onAction: function () {
-          return Utils.unlink(editor);
-        },
-        onSetup: Actions.toggleEnabledState(editor)
+        onclick: Utils.unlink(editor),
+        onpostrender: Actions.toggleActiveState(editor)
       });
+
+      if (editor.addContextToolbar) {
+        editor.addButton('openlink', {
+          icon: 'newtab',
+          tooltip: 'Open link',
+          onclick: Actions.gotoSelectedLink(editor)
+        });
+      }
     };
+
     var setupMenuItems = function (editor) {
-      editor.ui.registry.addMenuItem('openlink', {
+      editor.addMenuItem('openlink', {
         text: 'Open link',
-        icon: 'new-tab',
-        onAction: Actions.gotoSelectedLink(editor),
-        onSetup: Actions.toggleEnabledState(editor)
+        icon: 'newtab',
+        onclick: Actions.gotoSelectedLink(editor),
+        onPostRender: Actions.toggleViewLinkState(editor),
+        prependToContext: true
       });
-      editor.ui.registry.addMenuItem('link', {
+
+      editor.addMenuItem('link', {
         icon: 'link',
-        text: 'Link...',
+        text: 'Link',
         shortcut: 'Meta+K',
-        onAction: Actions.openDialog(editor)
-      });
-      editor.ui.registry.addMenuItem('unlink', {
-        icon: 'unlink',
-        text: 'Remove link',
-        onAction: function () {
-          return Utils.unlink(editor);
-        },
-        onSetup: Actions.toggleEnabledState(editor)
+        onclick: Actions.openDialog(editor),
+        stateSelector: 'a[href]',
+        context: 'insert',
+        prependToContext: true
       });
     };
-    var setupContextMenu = function (editor) {
-      var inLink = 'link unlink openlink';
-      var noLink = 'link';
-      editor.ui.registry.addContextMenu('link', {
-        update: function (element) {
-          return Utils.hasLinks(editor.dom.getParents(element, 'a')) ? inLink : noLink;
-        }
-      });
-    };
+
     var setupContextToolbars = function (editor) {
-      var collapseSelectionToEnd = function (editor) {
-        editor.selection.collapse(false);
-      };
-      var onSetupLink = function (buttonApi) {
-        var node = editor.selection.getNode();
-        buttonApi.setDisabled(!Utils.getAnchorElement(editor, node));
-        return function () {
-        };
-      };
-      editor.ui.registry.addContextForm('quicklink', {
-        launch: {
-          type: 'contextformtogglebutton',
-          icon: 'link',
-          tooltip: 'Link',
-          onSetup: Actions.toggleActiveState(editor)
-        },
-        label: 'Link',
-        predicate: function (node) {
-          return !!Utils.getAnchorElement(editor, node) && Settings.hasContextToolbar(editor);
-        },
-        initValue: function () {
-          var elm = Utils.getAnchorElement(editor);
-          return !!elm ? Utils.getHref(elm) : '';
-        },
-        commands: [
-          {
-            type: 'contextformtogglebutton',
-            icon: 'link',
-            tooltip: 'Link',
-            primary: true,
-            onSetup: function (buttonApi) {
-              var node = editor.selection.getNode();
-              buttonApi.setActive(!!Utils.getAnchorElement(editor, node));
-              return Actions.toggleActiveState(editor)(buttonApi);
-            },
-            onAction: function (formApi) {
-              var anchor = Utils.getAnchorElement(editor);
-              var value = formApi.getValue();
-              if (!anchor) {
-                var attachState = {
-                  href: value,
-                  attach: function () {
-                  }
-                };
-                var onlyText = Utils.isOnlyTextSelected(editor.selection.getContent());
-                var text = onlyText ? Option.some(Utils.getAnchorText(editor.selection, anchor)).filter(function (t) {
-                  return t.length > 0;
-                }).or(Option.from(value)) : Option.none();
-                Utils.link(editor, attachState, {
-                  href: value,
-                  text: text,
-                  title: Option.none(),
-                  rel: Option.none(),
-                  target: Option.none(),
-                  class: Option.none()
-                });
-                formApi.hide();
-              } else {
-                editor.dom.setAttrib(anchor, 'href', value);
-                collapseSelectionToEnd(editor);
-                formApi.hide();
-              }
-            }
-          },
-          {
-            type: 'contextformbutton',
-            icon: 'unlink',
-            tooltip: 'Remove link',
-            onSetup: onSetupLink,
-            onAction: function (formApi) {
-              Utils.unlink(editor);
-              formApi.hide();
-            }
-          },
-          {
-            type: 'contextformbutton',
-            icon: 'new-tab',
-            tooltip: 'Open link',
-            onSetup: onSetupLink,
-            onAction: function (formApi) {
-              Actions.gotoSelectedLink(editor)();
-              formApi.hide();
-            }
-          }
-        ]
-      });
+      if (editor.addContextToolbar) {
+        editor.addContextToolbar(
+          Actions.leftClickedOnAHref(editor),
+          'openlink | link unlink'
+        );
+      }
     };
-    var Controls = {
+
+    return {
       setupButtons: setupButtons,
       setupMenuItems: setupMenuItems,
-      setupContextMenu: setupContextMenu,
       setupContextToolbars: setupContextToolbars
     };
+  }
+);
+/**
+ * Plugin.js
+ *
+ * Released under LGPL License.
+ * Copyright (c) 1999-2017 Ephox Corp. All rights reserved
+ *
+ * License: http://www.tinymce.com/license
+ * Contributing: http://www.tinymce.com/contributing
+ */
 
-    function Plugin () {
-      global$1.add('link', function (editor) {
-        Controls.setupButtons(editor);
-        Controls.setupMenuItems(editor);
-        Controls.setupContextMenu(editor);
-        Controls.setupContextToolbars(editor);
-        Actions.setupGotoLinks(editor);
-        Commands.register(editor);
-        Keyboard.setup(editor);
-      });
-    }
+define(
+  'tinymce.plugins.link.Plugin',
+  [
+    'tinymce.core.PluginManager',
+    'tinymce.plugins.link.core.Actions',
+    'tinymce.plugins.link.ui.Controls'
+  ],
+  function (PluginManager, Actions, Controls) {
+    PluginManager.add('link', function (editor) {
+      Controls.setupButtons(editor);
+      Controls.setupMenuItems(editor);
+      Controls.setupContextToolbars(editor);
+      Actions.setupGotoLinks(editor);
+      editor.addShortcut('Meta+K', '', Actions.openDialog(editor));
+      editor.addCommand('mceLink', Actions.openDialog(editor));
+    });
 
-    Plugin();
-
-}(window));
+    return function () { };
+  }
+);
+dem('tinymce.plugins.link.Plugin')();
+})();

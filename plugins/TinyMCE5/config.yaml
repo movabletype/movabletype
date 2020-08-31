@@ -1,0 +1,12 @@
+id: TinyMCE5
+name: TinyMCE5
+version: 5.1.6
+author_link: http://www.movabletype.org/
+author_name: Six Apart Ltd.
+description: <MT_TRANS phrase="Default WYSIWYG editor.">
+l10n_class: TinyMCE5::L10N
+
+editors:
+    tinymce:
+        label: TinyMCE
+        template: editor.tmpl
