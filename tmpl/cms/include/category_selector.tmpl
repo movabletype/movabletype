@@ -5,13 +5,13 @@
         MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\$2"$><mt:else>[]</mt:if>;
         Template.templates.categorySelectorList = '<mt:section encode_js="1">
                 [# if ( item.path == null ) item.path = [] #]
-                <div class="row" style="text-align:left; margin-left:[#= item.path.length * 10 #]px">
-                    <div class="custom-control <mt:if name="object_type" eq="page">custom-radio<mt:else>custom-checkbox</mt:if>" style="width: [#= 165 - (item.path.length * 10) #]px;">
+                <div class="row" style="text-align:left; margin-left:[#= item.path.length * 10 #]px; margin-right: 0;">
+                    <div class="col custom-control <mt:if name="object_type" eq="page">custom-radio<mt:else>custom-checkbox</mt:if>" style="">
                         <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" id="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="custom-control-input add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> />
                         <label class="custom-control-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
                     </div>
                 <mt:if name="can_edit_categories">
-                    <div class="col d-none d-md-block">
+                    <div class="col-auto d-none d-md-block">
                         <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
                             <mtapp:svgicon id="ic_add" size="sm" color="success" title="Add">
                         </a>
