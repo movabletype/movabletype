@@ -1,11 +1,13 @@
 plugins/FormattedText
 plugins/FormattedTextForTinyMCE
+plugins/FormattedTextForTinyMCE5
 plugins/GoogleAnalytics
 plugins/Markdown
 plugins/MultiBlog
 plugins/StyleCatcher
 plugins/Textile
 plugins/TinyMCE
+plugins/TinyMCE5
 plugins/WXRImporter
 plugins/WidgetManager
 plugins/spamlookup
