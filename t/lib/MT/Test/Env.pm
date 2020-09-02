@@ -640,6 +640,7 @@ sub prepare_fixture {
         $self->save_fixture($id);
 
         if ( $self->{fixture_dirs}[-1] ) {
+            mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
             open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
             close $fh;
