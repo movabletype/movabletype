@@ -5160,6 +5160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub folder' => 'サブフォルダを追加',
+	'Selected Categories' => '選択されたカテゴリ',
 
 ## tmpl/cms/include/comment_detail.tmpl
 
