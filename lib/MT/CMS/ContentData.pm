@@ -509,6 +509,8 @@ sub save {
       ? MT::ContentData->load($content_data_id)
       : MT::ContentData->new();
 
+    my $org_data = $content_data->data;
+    my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
     foreach my $f (@$field_data) {
         my $e_unique_id = $f->{unique_id};
         my $can_edit_field =
@@ -521,21 +523,16 @@ sub save {
             && !$app->permissions->can_do('edit_all_content_data') )
         {
             if ( !$app->param('from_preview') ) {
-                $data->{ $f->{id} } = $content_data->data->{ $f->{id} };
+                $data->{ $f->{id} } = $org_data->{ $f->{id} };
             }
             if ( $f->{type} eq 'multi_line_text' ) {
-                my $data_convert_breaks =
-                  $content_data
-                  ? MT::Serialize->unserialize( $content_data->convert_breaks )
-                  : undef;
-
                 my $key = $f->{id} . '_convert_breaks';
-                if ( $data_convert_breaks
-                    && exists $$data_convert_breaks->{ $f->{id} } )
+                if ( $org_convert_breaks
+                    && exists $$org_convert_breaks->{ $f->{id} } )
                 {
                     $convert_breaks->{ $f->{id} } =
-                      $$data_convert_breaks->{ $f->{id} };
-                    $data->{$key} = $$data_convert_breaks->{ $f->{id} };
+                      $$org_convert_breaks->{ $f->{id} };
+                    $data->{$key} = $$org_convert_breaks->{ $f->{id} };
                 }
             }
         }
