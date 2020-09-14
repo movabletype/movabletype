@@ -17,7 +17,12 @@ sub config {
     return $app->permission_denied()
         unless $app->can_do('edit_config');
 
-    $param->{default_access_allowed} = $app->config('DefaultAccessAllowed');
+    unless ($param->{default_access_allowed} = $app->config('DefaultAccessAllowed')) {
+        $param->{config_warning_default_access_allowed} = $app->translate(
+            "These setting(s) are overridden by a value in the Movable Type configuration file: [_1]. Remove the value from the configuration file in order to control the value on this page.",
+            'DefaultAccessAllowed',
+        );
+    }
 
     if ( my $blog = $app->blog ) {
         $param->{blog_content_accessible}
