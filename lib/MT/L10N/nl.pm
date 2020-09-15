@@ -3860,7 +3860,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => 'Afbeeldingskwaliteit aan het aanpassen',
 	'Enable image quality changing.' => 'Aanpassen afbeeldingskwaliteit inschakelen.',
 	'Image quality(JPEG)' => 'Afbeeldingskwaliteit (JPEG)',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 75.',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 85.',
 	'Image quality(PNG)' => 'Afbeeldingskwaliteit (PNG)',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Afbeeldingskwaliteit van geuploade PNG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 9.  Standaardwaarde is 7.',
 	'Send Mail To' => 'Mail verzenden naar',
