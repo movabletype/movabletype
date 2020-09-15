@@ -159,7 +159,7 @@ jQuery(window).on('load resize', function () {
                           [# if ( i == 0 ) { #]
                           <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
                             <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary" ></div>
-                            <strong class="col text-break">[#= label #]</strong>
+                            <strong class="col text-break px-0">[#= label #]</strong>
                             <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_caution" color="danger" title="Remove" >
@@ -175,7 +175,7 @@ jQuery(window).on('load resize', function () {
                               <span class="col-auto">
                                 <mtapp:svgicon id="ic_fav" title="Primary" color="secondary">
                               </span>
-                              <div class="col text-break">[#= label #]</div>
+                              <div class="col text-break px-0">[#= label #]</div>
                             </a>
                             <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-3 delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
