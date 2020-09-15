@@ -846,6 +846,8 @@ sub save {
         }
         MT::Util::Log::init();
         for my $param (@old_archive_params) {
+            my $orig = $param->{ContentData};
+            next if $orig->status != MT::ContentStatus::RELEASE();
             $app->publisher->_delete_archive_file(%$param);
             if ( my $fi = $param->{FileInfo} ) {
                 $fi->remove;
