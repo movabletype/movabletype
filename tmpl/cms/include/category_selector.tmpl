@@ -36,7 +36,20 @@
             </div>
           </div>
 <mt:else>
-        [# div.className="add-category-form m-3"; div.style.display = "none" #]<div class="form-group"><input id="add-category-input-movable" class="form-control fadd-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" /></div><div class="form-group row text-center"><div class="col"><a href="javascript:void(0);" mt:command="add" class="btn btn-default btn-sm add-category-save-link"><mtapp:svgicon id="ic_add" color="success" title="Add">[#|h trans( "Add" ) #]</a></div><div class="col"><a href="javascript:void(0);" mt:command="cancel" class="btn btn-default btn-sm add-category-cancel-link"><mtapp:svgicon id="ic_remove" color="danger" title="Cancel">[#|h trans( "Cancel" ) #]</a></div></div>
+        [# div.className="add-category-form m-3"; div.style.display = "none" #]
+          <div class="form-group row">
+            <div class="col-auto pl-0 pr-0">
+              <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
+            </div>
+            <div class="col pl-0">
+              <div class="input-group">
+                <input id="add-category-input-movable" class="form-control fadd-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" />
+                <div class="input-group-append">
+                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link btn btn-default">[#|h trans( "Add" ) #]</a>
+                </div>
+              </div>
+            </div>
+          </div>
 </mt:if>
         </mt:section>';
     <mt:ignore>
