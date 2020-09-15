@@ -323,27 +323,27 @@
               } #]
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
-                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" color="success" title="Primary">
-                    <strong>[#= label #]</strong>
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block  px-3" title="[#|h trans("Remove") #]">
+                  <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary"></div>
+                    <strong class="col text-break">[#= label #]</strong>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                       <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                     </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="row">
                   <mt:if name="object_type" eq="entry">
-                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
-                      <span>
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
+                      <span class="col-auto">
                         <mtapp:svgicon id="ic_fav" title="Primary" color="success">
                       </span>
-                      <span>
+                      <span class="col-auto">
                         <mtapp:svgicon id="ic_fav" title="Primary" color="secondary">
                       </span>
-                      [#= label #]
+                      <div class="col text-break">[#= label #]</div>
                     </a>
                   </mt:if>
-                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block  px-3" title="[#|h trans("Remove") #]">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                       <span>
                         <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                       </span>

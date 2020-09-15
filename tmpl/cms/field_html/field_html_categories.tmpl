@@ -157,27 +157,27 @@ jQuery(window).on('load resize', function () {
                       } #]
                       [# if ( multiple ) { #]
                           [# if ( i == 0 ) { #]
-                          <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                            <mtapp:svgicon id="ic_fav" color="success" title="Primary" >
-                            <strong class="">[#= label #]</strong>
-                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-md-inline-block category-selected-delete px-3" title="[#|h trans("Remove") #]">
+                          <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                            <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary" ></div>
+                            <strong class="col text-break">[#= label #]</strong>
+                            <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_caution" color="danger" title="Remove" >
                               </span>
                             </a>
                           </li>
                           [# } else { #]
-                          <li mt:focus-hover="1" mt:id="[#= cat.id #]">
-                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
-                              <span>
+                          <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="row">
+                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
+                              <span class="col-auto">
                                 <mtapp:svgicon id="ic_fav" title="Primary" color="success">
                               </span>
-                              <span>
+                              <span class="col-auto">
                                 <mtapp:svgicon id="ic_fav" title="Primary" color="secondary">
                               </span>
-                              [#= label #]
+                              <div class="col text-break">[#= label #]</div>
                             </a>
-                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-3 delete d-md-inline-block px-3" title="[#|h trans("Remove") #]">
+                            <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="ml-3 delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                               <span>
                                 <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                               </span>
@@ -185,9 +185,9 @@ jQuery(window).on('load resize', function () {
                           </li>
                           [# } #]
                       [# } else { #]
-                      <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="focus">
-                        [#= label #]
-                        <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-md-inline-block category-selected-delete px-3" title="[#|h trans("Remove") #]">
+                      <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="focus row">
+                        <span class="col text-break">[#= label #]</span>
+                        <a href="javascript:void(0);" mt:command="remove" class="ml-1 delete d-md-inline-block category-selected-delete px-3 col-auto" title="[#|h trans("Remove") #]">
                           <span>
                             <mtapp:svgicon id="ic_caution" color="danger" title="Remove" >
                           </span>
@@ -300,7 +300,7 @@ jQuery(window).on('load resize', function () {
         </div>
       </div>
     </div>
-    <div class="mt-collapse__container">
+    <div class="mt-collapse__container p-4">
       <div class="col">
         <div mt:delegate="category-list" id="category-list-<mt:var name="content_field_id" escape="html">" class="category-list-container" mt:content-field-id="<mt:var name="content_field_id" escape="html">"></div>
         <input id="category-ids-<mt:var name="content_field_id" escape="js">" type="hidden" style="display: none;" name="category-<mt:var name="content_field_id" escape="html">" value="<$mt:var name="selected_category_loop" glue=","$>" <mt:var name="required"> <mt:var name="multiple"> />
