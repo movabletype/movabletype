@@ -965,7 +965,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel Width' => 'Breedte in pixels',
 	'Pixel Height' => 'Hoogte in pixels',
 	'Except Userpic' => 'Uitgezonderd gebruikersafbeelding',
-	'Author Status' => 'Status auteur',
+	'Created by Status' => 'Status auteur',
 	'Missing File' => 'Ontbrekend bestand',
 	'Content Field' => 'Inhoudsveld',
 	'Assets of this website' => 'Mediabestanden van deze website',

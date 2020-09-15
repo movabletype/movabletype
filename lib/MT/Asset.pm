@@ -441,7 +441,7 @@ sub list_props {
             },
         },
         author_status => {
-            label   => 'Author Status',
+            label   => 'Created by Status',
             display => 'none',
             base    => '__virtual.single_select',
             terms   => sub {
