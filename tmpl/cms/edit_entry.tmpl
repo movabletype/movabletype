@@ -296,6 +296,7 @@
               <span class="text-muted disabled">[#|h trans("None selected") #]</span>
               [#* return #]
           [# } #]
+          <p class="h5 py-3">[#|h trans("Selected Categories") #]</p>
           <ul class="list-unstyled <$mt:var name="container_type" lower_case="1"$>-list">
           [# var map = {}; #]
           [# for ( var i = 0; i < items.length; i++ ) { #]
@@ -322,39 +323,29 @@
               } #]
               <mt:if name="object_type" ne="page">
               [# if ( i == 0 ) { #]
-                  <li class="primary" mt:focus-hover="1" mt:id="[#= cat.id #]">
-                    <mtapp:svgicon id="ic_fav" size="sm" color="success" title="Primary">
-                    <strong>[#= label #]</strong>
-                    &nbsp;
-                    <a href="javascript:void(0);" mt:command="remove" class="delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
-                      <span>
-                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
-                      </span>
-                      <span>
-                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
-                      </span>
+                  <li class="primary row" mt:focus-hover="1" mt:id="[#= cat.id #]">
+                    <div class="col-auto"><mtapp:svgicon id="ic_fav" color="success" title="Primary"></div>
+                    <strong class="col text-break px-0">[#= label #]</strong>
+                    <a href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
+                      <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                     </a>
                   </li>
               [# } else { #]
-                  <li mt:focus-hover="1" mt:id="[#= cat.id #]">
+                  <li mt:focus-hover="1" mt:id="[#= cat.id #]" class="row">
                   <mt:if name="object_type" eq="entry">
-                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary" title="[#|h trans("Make primary") #]">
-                      <span>
-                        <mtapp:svgicon id="ic_fav" size="sm" title="Primary">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="primary" class="primary col row" title="[#|h trans("Make primary") #]">
+                      <span class="col-auto">
+                        <mtapp:svgicon id="ic_fav" title="Primary" color="success">
                       </span>
-                      <span>
-                        <mtapp:svgicon id="ic_blank" size="sm" title="Blank">
+                      <span class="col-auto">
+                        <mtapp:svgicon id="ic_fav" title="Primary" color="secondary">
                       </span>
-                      [#= label #]
+                      <div class="col text-break px-0">[#= label #]</div>
                     </a>
                   </mt:if>
-                    &nbsp;
-                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-none d-md-inline-block" title="[#|h trans("Remove") #]">
+                    <a mt:focus-hover="1" href="javascript:void(0);" mt:command="remove" class="delete d-md-inline-block px-3 col-auto" title="[#|h trans("Remove") #]">
                       <span>
-                        <mtapp:svgicon id="ic_remove" size="sm" title="Remove">
-                      </span>
-                      <span>
-                        <mtapp:svgicon id="ic_remove" size="sm" color="danger" title="Remove">
+                        <mtapp:svgicon id="ic_caution" color="danger" title="Remove">
                       </span>
                     </a>
                   </li>
@@ -984,6 +975,15 @@ div.mce-notification-error {
     }
 }
 
+.mt-categorylist {
+  padding: 0;
+}
+
+#category-selector-list .list-item,
+#folder-selector-list .list-item {
+    padding: 0.5rem 0 0.5rem 1rem;
+}
+
 #category-selector-list .list-item.odd,
 #folder-selector-list .list-item.odd {
     background-color: #f4f4f4;
@@ -991,30 +991,23 @@ div.mce-notification-error {
 
 #category-selector-list .list-item:hover,
 #folder-selector-list .list-item:hover {
-    background-color: #cacaca;
+    background-color: none;
 }
 
-#category-selector-list .list-item.selected,
-#folder-selector-list .list-item.selected {
-    background-color: #e0e0e0;
+@media (min-width: 768px) {
+  #category-selector-list .list-item:hover,
+  #folder-selector-list .list-item:hover {
+      background-color: #cacaca;
+  }
 }
 
-#category-selector-list .list-item .add-category-new-link {
-    display: none;
-}
-
-#category-selector-list .list-item:hover .add-category-new-link {
-    display: block;
-}
-
-#category-list li:not(:hover) a.delete {
-    display: none !important;
+.mt-categorylist {
+  max-height: 20rem;
 }
 
 #category-list li:not(:first-child) > a.primary > span:first-child {
     display: none;
 }
-
 #category-list li:not(:first-child) > a.primary > span:not(:first-child) {
     display: inline-block;
 }
@@ -1024,14 +1017,6 @@ div.mce-notification-error {
 }
 
 #category-list li:not(:first-child):hover > a.primary > span:not(:first-child) {
-    display: none;
-}
-
-#category-list li:hover a.delete:not(:hover) span:not(:first-child) {
-    display: none;
-}
-
-#category-list li a.delete:hover span:first-child {
     display: none;
 }
 
