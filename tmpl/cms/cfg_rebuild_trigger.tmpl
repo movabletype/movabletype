@@ -172,6 +172,7 @@ rebuildMultiBlogTriggerTable();
 <mt:setvarblock name="action_buttons" id="action-buttons">
     <button
         type="submit"
+        <mt:unless name="blog_id"><mt:if name="config_warning_default_access_allowed">disabled="disabled"</mt:if></mt:unless>
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
         class="save action primary button btn btn-primary">
