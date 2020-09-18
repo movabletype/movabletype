@@ -18,6 +18,16 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
+  <mt:unless name="blog_id">
+    <mt:if name="config_warning_default_access_allowed">
+      <mtapp:statusmsg
+         id="info"
+         class="info"
+         can_close="0">
+        <mt:var name="config_warning_default_access_allowed">
+      </mtapp:statusmsg>
+    </mt:if>
+  </mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
@@ -141,13 +151,13 @@ rebuildMultiBlogTriggerTable();
   <ul class="list-unstyled">
     <li>
       <div class="custom-control custom-radio">
-        <input type="radio" value="1" name="default_access_allowed" id="default_access_allowed_1" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
+        <input type="radio"<mt:if name="config_warning_default_access_allowed"> disabled="disabled"</mt:if> value="1" name="default_access_allowed" id="default_access_allowed_1" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
         <label class="custom-control-label" for="default_access_allowed_1"><__trans phrase="Allow"></label>
       </div>
     </li>
     <li>
       <div class="custom-control custom-radio">
-        <input type="radio" value="0" name="default_access_allowed" id="default_access_allowed_0" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
+        <input type="radio"<mt:if name="config_warning_default_access_allowed"> disabled="disabled"</mt:if> value="0" name="default_access_allowed" id="default_access_allowed_0" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
         <label class="custom-control-label" for="default_access_allowed_0"><__trans phrase="Disallow"></label>
       </div>
     </li>
@@ -164,6 +174,7 @@ rebuildMultiBlogTriggerTable();
 <mt:setvarblock name="action_buttons" id="action-buttons">
     <button
         type="submit"
+        <mt:unless name="blog_id"><mt:if name="config_warning_default_access_allowed">disabled="disabled"</mt:if></mt:unless>
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
         class="save action primary button btn btn-primary">
