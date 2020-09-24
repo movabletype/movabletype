@@ -4151,7 +4151,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => '画像品質の自動変換',
 	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 75 です。',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 85 です。',
 	'Image quality(PNG)' => 'PNG 画像の品質',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の品質を 0 から 9 の数値で設定します。初期値は 7 です。',
 	'Send Mail To' => 'メール送信先',

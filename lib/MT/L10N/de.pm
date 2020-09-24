@@ -4330,7 +4330,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => 'Bildqualität anpassen',
 	'Enable image quality changing.' => 'Anpassung der Bildqualität aktivieren',
 	'Image quality(JPEG)' => 'Bildqualität (JPG)',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Qualitätsstufe, in der hochgeladene JPG-Bilder und die zugehörigen Vorschaubilder gespeichert werden sollen. Die Skala reicht von 0 bis 100. Die Standardstufe ist 75.',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'Qualitätsstufe, in der hochgeladene JPG-Bilder und die zugehörigen Vorschaubilder gespeichert werden sollen. Die Skala reicht von 0 bis 100. Die Standardstufe ist 85.',
 	'Image quality(PNG)' => 'Bildqualität (PNG)',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Qualitätsstufe, in der hochgeladene PNF-Bilder und die zugehörigen Vorschaubilder gespeichert werden sollen. . Die Skala reicht von 0 bis 9. Die Standardstufe ist 7.',
 	'Send Mail To' => 'Mail senden an',
