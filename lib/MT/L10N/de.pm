@@ -962,7 +962,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel Width' => 'Breite in Pixel',
 	'Pixel Height' => 'Höhe in Pixel',
 	'Except Userpic' => 'Benutzerbild ausnehmen',
-	'Created by Status' => 'Status des Autors',
+	'Author Status' => 'Status des Autors',
 	'Missing File' => 'Datei fehlt',
 	'Content Field' => 'Inhaltsfeld',
 	'Assets of this website' => 'Assets dieser Website',

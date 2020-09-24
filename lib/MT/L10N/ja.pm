@@ -993,7 +993,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel Width' => '幅 (px)',
 	'Pixel Height' => '高さ (px)',
 	'Except Userpic' => 'プロフィール画像を除外する',
-	'Created by Status' => '作成者の状態',
+	'Author Status' => 'ユーザーの状態',
 	'Missing File' => 'ファイルの存在有無',
 	'Content Field' => 'コンテンツフィールド',
 	'Assets of this website' => 'ウェブサイトのアセット',

@@ -776,8 +776,8 @@ BEGIN {
                     display => 'optional',
                 },
                 author_name => {
-                    label        => 'Created by',
-                    filter_label => 'Created by',
+                    label        => 'Author',
+                    filter_label => 'Author Name',
                     display      => 'default',
                     base         => '__virtual.string',
                     raw          => sub {

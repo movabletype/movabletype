@@ -696,7 +696,7 @@ sub list_props {
         author_status => {
             base                  => '__virtual.single_select',
             display               => 'none',
-            label                 => 'Created by Status',
+            label                 => 'Author Status',
             single_select_options => [
                 { label => MT->translate('Deleted'),  value => 'deleted', },
                 { label => MT->translate('Enabled'),  value => 'enabled', },
