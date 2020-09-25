@@ -163,6 +163,16 @@
       self.recalcHeight(target);
     })
 
+    // Cannot drag while focusing on input / textarea
+    jQuery(document).on('focus', '.mt-draggable__area input, .mt-draggable__area textarea', function(e) {
+      jQuery(this).closest('.mt-contentfield').attr('draggable', false);
+    })
+
+    // Set draggable back to true while not focusing on input / textarea
+    jQuery(document).on('blur', '.mt-draggable__area input, .mt-draggable__area textarea', function(e) {
+      jQuery(this).closest('.mt-contentfield').attr('draggable', true);
+    })
+
     onDragOver(e) {
 
       // Allowed only for Content Field and Content Field Type.
