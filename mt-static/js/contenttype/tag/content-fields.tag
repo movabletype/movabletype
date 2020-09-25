@@ -234,6 +234,11 @@
         if (self.placeholder.parentNode) {
           children = self.placeholder.parentNode.children
         }
+        if(!children) {
+          e.target.classList.remove('mt-draggable__area--dragover')
+          e.preventDefault()
+          return;
+        }
         for(var i = 0; i < children.length; i++){
           if(children[i] == self.placeholder) break;
           if(children[i] != self.dragged && children[i].classList.contains("mt-contentfield")) {
