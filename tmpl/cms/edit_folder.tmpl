@@ -39,11 +39,18 @@ jQuery('input.mt-edit-field').mtEditInput({
 });
 
 function validate(form) {
-    if (form.label.value.match(/\S/,''))
-        return true;
-    alert('<__trans phrase="You must specify a label for the folder." escape="singlequotes">');
-    form.label.focus();
-    return false;
+    if ( !form.label.value.match(/\S/,'') ) {
+        alert('<__trans phrase="You must specify a label for the folder." escape="singlequotes">');
+        form.label.focus();
+        return false;
+    }
+    if ( form.basename.value.match(/[^\w\-]/) ) {
+        alert('<__trans phrase="Please enter a valid basename." escape="singlequotes">');
+        form.basename.focus();
+        return false;
+    }
+
+    return true;
 }
 
 function toggleFile() {
@@ -95,7 +102,7 @@ function toggleFile() {
               <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
               <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
 
-              <$mt:var name="path_prefix" escape="html"$><input type="text" name="basename" id="basename" class="form-control mt-edit-field text path" maxlength="250" value="<mt:var name="basename" escape="html">" onchange="setElementValue('basename', dirify(this.value))" />
+              <$mt:var name="path_prefix" escape="html"$><input type="text" name="basename" id="basename" class="form-control mt-edit-field text path" maxlength="250" value="<mt:var name="basename" escape="html">" />
             </div>
         </mtapp:setting>
 
