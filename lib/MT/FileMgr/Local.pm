@@ -167,6 +167,9 @@ sub rename {
     # If same file provided, do nothing
     return if $from eq $to;
 
+    $from = _local($from);
+    $to   = _local($to);
+
     #First, remove existing file
     if ( $fmgr->exists($to) ) {
         $fmgr->delete($to) or return;
