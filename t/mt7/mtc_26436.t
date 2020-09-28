@@ -13,8 +13,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-#plan tests => 2 * blocks;
-plan tests => 1 * blocks;
+plan tests => 2 * blocks;
 
 use MT;
 use MT::Test;
@@ -191,7 +190,7 @@ MT::Test::Tag->run_perl_tests($blog->id, sub {
     $ctx->stash(template_map => $map);
     $ctx->stash(content => $cd);
 });
-#MT::Test::Tag->run_php_tests($blog->id);
+MT::Test::Tag->run_php_tests($blog->id);
 
 __END__
 
