@@ -35,10 +35,6 @@ sub init {
     if ( my $type = $param{Type} ) {
         %arg = ( magick => lc($type) );
     }
-    elsif ( my $file = $param{Filename} ) {
-        ( my $ext = $file ) =~ s/.*\.//;
-        %arg = ( magick => lc($ext) );
-    }
     my $magick = $image->{magick} = $image->MagickClass->new(%arg);
     if ( my $file = $param{Filename} ) {
         my $x;
@@ -61,10 +57,10 @@ sub init {
 
     # Set quality.
     my $quality;
-    if ( $arg{magick} eq 'jpg' || $arg{magick} eq 'jpeg' ) {
+    if ( lc( $magick->Get('magick') ) eq 'jpeg' ) {
         $quality = $image->jpeg_quality;
     }
-    elsif ( $arg{magick} eq 'png' ) {
+    elsif ( lc( $magick->Get('magick') ) eq 'png' ) {
         $quality = $image->png_quality;
     }
     if ( defined $quality ) {
