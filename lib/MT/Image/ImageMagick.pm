@@ -57,7 +57,7 @@ sub init {
 
     # Set quality.
     my $quality;
-    if ( lc( $magic->Get('magick') ) eq 'jpeg' ) {
+    if ( lc( $magick->Get('magick') ) eq 'jpeg' ) {
         $quality = $image->jpeg_quality;
     }
     elsif ( lc( $magick->Get('magick') ) eq 'png' ) {
