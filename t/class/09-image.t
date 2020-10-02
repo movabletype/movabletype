@@ -20,8 +20,9 @@ use MT::Image;
 use MT::ConfigMgr;
 use MT;
 use MT::Test::Image;
+use File::Copy;
 
-my $TESTS_FOR_EACH = 29;
+my $TESTS_FOR_EACH = 30;
 
 my @Img = (
     [ 'test.gif', 400, 300 ],
@@ -46,6 +47,9 @@ for my $rec (@Img) {
     close $guard;
 
     ok( -B $img_file, "$img_file looks like a binary file" );
+
+    ( my $img_file_with_unrecognized_ext = $img_file ) =~ s/\.//;
+    File::Copy::copy $img_file => $img_file_with_unrecognized_ext;
 
     for my $driver (@drivers) {
         note("----Test $driver for file $img_file");
@@ -171,6 +175,11 @@ for my $rec (@Img) {
             is( $h, $img_height,
                 "${driver}'s get_dimensions says $img_filename from blob is $img_height px high"
             );
+
+            SKIP: {
+                skip "$driver does not support unrecognized_extension", 1 unless $driver =~ /Magick/;
+                ok eval { my $img = MT::Image->new( Filename => $img_file_with_unrecognized_ext ) };
+            }    # END SKIP
         }    # END SKIP
     }
 }
