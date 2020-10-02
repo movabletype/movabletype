@@ -35,10 +35,6 @@ sub init {
     if ( my $type = $param{Type} ) {
         %arg = ( magick => lc($type) );
     }
-    elsif ( my $file = $param{Filename} ) {
-        ( my $ext = $file ) =~ s/.*\.//;
-        %arg = ( magick => lc($ext) );
-    }
     my $magick = $image->{magick} = $image->MagickClass->new(%arg);
     if ( my $file = $param{Filename} ) {
         my $x;
