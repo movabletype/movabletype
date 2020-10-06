@@ -170,7 +170,11 @@ sub edit {
         $param->{has_any_pinged_urls} = ( $obj->pinged_urls || '' ) =~ m/\S/;
         $param->{ping_errors}         = $app->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
-        $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
+
+        if ( $obj->status == MT::Entry::RELEASE() ){
+            my $at = $type eq 'page' ? 'page' : $blog->archive_type_preferred ? $blog->archive_type_preferred : 'Individual';
+            $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink($at) ) if $obj->status == MT::Entry::RELEASE();
+        }
         $param->{'mode_view_entry'} = 1;
         $param->{'basename'}        = $obj->basename;
 
@@ -890,7 +894,7 @@ sub _build_entry_preview {
 
     require MT::TemplateMap;
     require MT::Template;
-    my $at = $type eq 'page' ? 'Page' : 'Individual';
+    my $at = $type eq 'page' ? 'Page' : $blog->archive_type_preferred ? $blog->archive_type_preferred : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {   archive_type => $at,
             is_preferred => 1,
@@ -907,7 +911,7 @@ sub _build_entry_preview {
         $tmpl = MT::Template->load( $tmpl_map->template_id );
         MT::Request->instance->cache( 'build_template', $tmpl );
         $file_ext = $blog->file_extension || '';
-        $archive_file = $entry->archive_file;
+        $archive_file = $entry->archive_file($at);
 
         my $blog_path
             = $type eq 'page'
@@ -986,7 +990,8 @@ sub _build_entry_preview {
         if ( $fmgr->exists($path) && $fmgr->can_write($path) ) {
             $fmgr->put_data( $html, $archive_file );
             $param{preview_file} = $preview_basename;
-            my $preview_url = $entry->archive_url;
+            my $preview_url = $entry->archive_url($at);
+
             $preview_url
                 =~ s! / \Q$orig_file\E ( /? ) $!/$preview_basename$file_ext$1!x;
 
