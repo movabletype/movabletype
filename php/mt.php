@@ -650,7 +650,23 @@ class MT {
             }
 
             if ($cat) {
-                $archive_category = $mtdb->fetch_category($cat);
+                $sql = "select
+                            category_category_set_id
+                        from mt_category
+                        where
+                            category_id = $cat";
+                $result = $this->db()->SelectLimit($sql);
+                $set_id = $result->Fields('category_category_set_id');
+                $sql = "select
+                            templatemap_cat_field_id
+                        from mt_templatemap
+                        where
+                            templatemap_template_id = ".$tmpl->id;
+                $result = $this->db()->SelectLimit($sql);
+                if (!$result->EOF) {
+                    $cf_id = $result->Fields('templatemap_cat_field_id');
+                }
+                $archive_category = $mtdb->fetch_category($cat, $set_id, $cf_id);
                 $ctx->stash('category', $archive_category);
                 $ctx->stash('archive_category', $archive_category);
             }

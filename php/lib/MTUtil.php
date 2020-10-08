@@ -1029,7 +1029,10 @@ function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) 
             if (!isset($objectcategory)) {
                 return null;
             }
-            $cat = $ctx->mt->db()->fetch_category($objectcategory->objectcategory_category_id);
+            if ($ctx->stash('category_set')) {
+                $set_id = $ctx->stash('category_set')->id;
+            }
+            $cat = $ctx->mt->db()->fetch_category($objectcategory->objectcategory_category_id, $set_id, $objectcategory->objectcategory_cf_id);
         } else {
             if($error_avoid)
                 return null;
