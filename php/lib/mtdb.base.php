@@ -1891,6 +1891,9 @@ abstract class MTDatabase {
         else {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_objectcategory on objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if ($args['cf_id']) {
+                    $join_clause .= ' and objectcategory_cf_id = '.intval($args['cf_id']);
+                }
                 if (isset($args['content_id'])) {
                     $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.intval($args['content_id']);
                 } else {
