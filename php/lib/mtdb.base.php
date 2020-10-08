@@ -1975,11 +1975,9 @@ abstract class MTDatabase {
             $parent_cat['_children'] =& $categories;
         } else {
             $ids = array();
+            $counts = array();
             while (!$categories->EOF) {
-                $category_count = $categories->Fields('category_count');
-                if ($category_count > 0) {
-                    $ids[] = $categories->Fields('category_id');
-                }
+                $ids[] = $categories->Fields('category_id');
                 $categories->MoveNext();
             }
             $list = implode(",", $ids);
@@ -1987,12 +1985,8 @@ abstract class MTDatabase {
             require_once('class.mt_category.php');
             $category = new Category;
             $base_sort = 'user_custom' == $sort_by ? 'category_label' : $sort_by;
-            if ($list) {
-                $where = "category_id in ($list)
-                          order by $base_sort $sort_order";
-            } else {
-                $where = "1 = 1 order by $base_sort $sort_order";
-            }
+            $where = "category_id in ($list)
+                      order by $base_sort $sort_order";
             $categories = $category->Find($where);
             if (!$categories) $categories = array();
             if ( count($categories) > 1 && 'user_custom' == $sort_by ) {
