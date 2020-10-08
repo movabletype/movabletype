@@ -15,6 +15,8 @@ function smarty_function_mtcategorylabel($args, &$ctx) {
 
         if($ctx->stash('entry')){
             return '';
+        } elseif ($ctx->stash('content')) {
+            return '';
         } else {
             $tag = $ctx->this_tag();
             return $ctx->error("$tag must be used in a category context");
