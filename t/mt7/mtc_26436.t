@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
+
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
@@ -40,11 +41,12 @@ $test_env->prepare_fixture(
 
         my @categories;
         for my $name (qw/Alice Bob Carol Dan/) {
-            push @categories, MT::Test::Permission->make_category(
+            push @categories,
+                MT::Test::Permission->make_category(
                 blog_id         => $blog->id,
                 category_set_id => $category_set->id,
                 label           => $name,
-            );
+                );
         }
 
         my $content_type_01 = MT::Test::Permission->make_content_type(
@@ -115,7 +117,7 @@ $test_env->prepare_fixture(
             identifier      => 'mtcontent_type-context-test-data-01',
             data            => { $cf_category_01->id => [ $categories[0]->id ], }
         );
-        
+
         my $content_data_02 = MT::Test::Permission->make_content_data(
             blog_id         => $blog->id,
             content_type_id => $content_type_01->id,
@@ -176,21 +178,108 @@ $test_env->prepare_fixture(
             is_preferred  => 1,
             cat_field_id  => $cf_category_02->id,
         );
+
+        my $fi_01 = MT::Test::Permission->make_fileinfo(
+            blog_id        => $blog->id,
+            templatemap_id => $map_01->id,
+            archive_type   => $map_01->archive_type,
+            category_id    => $categories[0]->id,
+            url            => lc( $categories[0]->label ) . '/',
+        );
+
+        my $fi_02 = MT::Test::Permission->make_fileinfo(
+            blog_id        => $blog->id,
+            templatemap_id => $map_01->id,
+            archive_type   => $map_01->archive_type,
+            category_id    => $categories[1]->id,
+            url            => lc( $categories[1]->label ) . '/',
+        );
+
+        my $fi_03 = MT::Test::Permission->make_fileinfo(
+            blog_id        => $blog->id,
+            templatemap_id => $map_02->id,
+            archive_type   => $map_02->archive_type,
+            category_id    => $categories[2]->id,
+            url            => lc( $categories[2]->label ) . '/',
+        );
+
+        my $fi_04 = MT::Test::Permission->make_fileinfo(
+            blog_id        => $blog->id,
+            templatemap_id => $map_02->id,
+            archive_type   => $map_02->archive_type,
+            category_id    => $categories[3]->id,
+            url            => lc( $categories[3]->label ) . '/',
+        );
     }
 );
 
 my $blog = MT::Blog->load( { name => 'test blog' } );
 
-MT::Test::Tag->run_perl_tests($blog->id, sub {
-    my ($ctx, $block) = @_;
+sub _load_objects {
+    my ($block)    = @_;
     my $identifier = 'mtcontent_type-context-test-data-0' . $block->cd;
-    my ($cd) = MT->model('cd')->load( { identifier => $identifier });
-    my ($tmpl) = MT->model('template')->load( { content_type_id => $cd->content_type_id } );
-    my ($map) = MT->model('templatemap')->load( { blog_id => $blog->id, archive_type => 'ContentType-Category', template_id => $tmpl->id });
-    $ctx->stash(template_map => $map);
-    $ctx->stash(content => $cd);
-});
-MT::Test::Tag->run_php_tests($blog->id);
+    my ($cd)       = MT->model('cd')->load( { identifier => $identifier } );
+    my ($tmpl)
+        = MT->model('template')
+        ->load( { blog_id => $blog->id, content_type_id => $cd->content_type_id } );
+    my ($map)
+        = MT->model('templatemap')
+        ->load(
+        { blog_id => $blog->id, archive_type => 'ContentType-Category', template_id => $tmpl->id }
+        );
+    my $cf = MT->model('cf')->load( { id => $map->cat_field_id, } );
+    return ( $map, $cd, $cf );
+}
+
+sub _callback_perl {
+    my ( $ctx, $block ) = @_;
+    my ( $map, $cd, $cf ) = _load_objects($block);
+    my $content_type = MT->model('content_type')->load( { id => $cd->content_type_id } );
+    my $category_set = MT->model('category_set')->load( { id => $cf->related_cat_set_id } );
+    $ctx->stash( category_set => $category_set );
+    $ctx->stash( content      => $cd );
+    $ctx->stash( content_type => $content_type );
+    $ctx->stash( template_map => $map );
+    $ctx->{current_archive_type} = $map->archive_type;
+}
+
+sub _callback_php {
+    my ($block) = @_;
+    my ( $map, $cd, $cf ) = _load_objects($block);
+    my ($finfo) = MT::FileInfo->load(
+        {   blog_id        => $blog->id,
+            templatemap_id => $map->id,
+        }
+    );
+    my $objectcategory  = MT->model('objectcategory')->load( { object_id => $cd->id, } );
+    my $category_set_id = $cf->related_cat_set_id;
+    return <<"PHP";
+require_once('class.mt_fileinfo.php');
+\$fileinfo = new FileInfo;
+\$fileinfo->Load(@{[$finfo->id]});
+\$cd = \$ctx->mt->db()->fetch_content(@{[$cd->id]});
+\$category = \$ctx->mt->db()->fetch_category(@{[$objectcategory->category_id]}, $category_set_id, @{[$cf->id]});
+\$templates = \$ctx->mt->db()->fetch_templates(
+    array(
+        'type'            => 'ct_archive',
+        'blog_id'         => @{[$blog->id]},
+        'content_type_id' => @{[$cd->content_type_id]},
+    )
+);
+\$ctx->stash('template', \$templates[0]);
+\$content_type = \$ctx->mt->db()->fetch_content_type(@{[$cd->content_type_id]});
+\$category_set = \$ctx->mt->db()->fetch_category_set($category_set_id);
+\$ctx->stash('_fileinfo', \$fileinfo);
+\$ctx->stash('current_archive_type', \$fileinfo->archive_type);
+\$ctx->stash('content', \$cd);
+\$ctx->stash('category', \$category);
+\$ctx->stash('content_type', \$content_type);
+\$ctx->stash('category_set', \$category_set);
+PHP
+}
+
+MT::Test::Tag->run_perl_tests( $blog->id, \&_callback_perl, 'ContentType-Category' );
+MT::Test::Tag->run_php_tests( $blog->id, \&_callback_php, 'ContentType-Category' );
 
 __END__
 
@@ -198,39 +287,86 @@ __END__
 --- cd chomp
 1
 --- template
-<mt:CategoryPrevious><mt:CategoryLabel></mt:CategoryPrevious><br>
-<mt:CategoryNext><mt:CategoryLabel></mt:CategoryNext><br>
+<mt:CategoryPrevious><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryPrevious><br>
+<mt:CategoryNext><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryNext><br>
 --- expected
 <br>
-Bob<br>
+Bob|/::/nana/nana/archives/bob/<br>
 
 === CategoryPrevious and CategoryNext
 --- cd chomp
 2
 --- template
-<mt:CategoryPrevious><mt:CategoryLabel></mt:CategoryPrevious><br>
-<mt:CategoryNext><mt:CategoryLabel></mt:CategoryNext><br>
+<mt:CategoryPrevious><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryPrevious><br>
+<mt:CategoryNext><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryNext><br>
 --- expected
-Alice<br>
+Alice|/::/nana/nana/archives/alice/<br>
 <br>
 
 === CategoryPrevious and CategoryNext
 --- cd chomp
 3
 --- template
-<mt:CategoryPrevious><mt:CategoryLabel></mt:CategoryPrevious><br>
-<mt:CategoryNext><mt:CategoryLabel></mt:CategoryNext><br>
+<mt:CategoryPrevious><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryPrevious><br>
+<mt:CategoryNext><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryNext><br>
 --- expected
 <br>
-Dan<br>
+Dan|/::/nana/nana/archives/dan/<br>
 
 === CategoryPrevious and CategoryNext
 --- cd chomp
 4
 --- template
-<mt:CategoryPrevious><mt:CategoryLabel></mt:CategoryPrevious><br>
-<mt:CategoryNext><mt:CategoryLabel></mt:CategoryNext><br>
+<mt:CategoryPrevious><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryPrevious><br>
+<mt:CategoryNext><mt:CategoryLabel>|<mt:CategoryArchiveLink></mt:CategoryNext><br>
 --- expected
-Carol<br>
+Carol|/::/nana/nana/archives/carol/<br>
 <br>
 
+=== ArchivePrevious and ArchiveNext
+--- cd chomp
+1
+--- template
+<mt:ArchivePrevious><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchivePrevious><br>
+<mt:ArchiveNext><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchiveNext><br>
+--- expected
+<br>
+Bob|/::/nana/nana/archives/bob/<br>
+
+=== ArchivePrevious and ArchiveNext
+--- cd chomp
+2
+--- template
+<mt:ArchivePrevious><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchivePrevious><br>
+<mt:ArchiveNext><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchiveNext><br>
+--- expected
+Alice|/::/nana/nana/archives/alice/<br>
+<br>
+
+=== ArchivePrevious and ArchiveNext
+--- cd chomp
+3
+--- template
+<mt:ArchivePrevious><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchivePrevious><br>
+<mt:ArchiveNext><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchiveNext><br>
+--- expected
+<br>
+Dan|/::/nana/nana/archives/dan/<br>
+
+=== ArchivePrevious and ArchiveNext
+--- cd chomp
+4
+--- template
+<mt:ArchivePrevious><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchivePrevious><br>
+<mt:ArchiveNext><mt:ArchiveTitle>|<mt:ArchiveLink></mt:ArchiveNext><br>
+--- expected
+Carol|/::/nana/nana/archives/carol/<br>
+<br>
+
+=== ContentTypeName (related to MTC-26426)
+--- cd chomp
+1
+--- template
+<mt:ContentTypeName>
+--- expected
+test content type 01
