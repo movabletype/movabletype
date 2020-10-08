@@ -453,6 +453,9 @@ abstract class MTDatabase {
         if (isset($args['blog_id'])) {
             $blog_filter = 'and template_blog_id = ' . intval($args['blog_id']);
         }
+        if (isset($args['content_type_id'])) {
+            $blog_filter = 'and template_content_type_id= ' . intval($args['content_type_id']);
+        }
 
         $where = "1 = 1
                   $blog_filter
