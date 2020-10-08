@@ -116,10 +116,23 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $tag = $ctx->this_tag();
         if (preg_match('!^mtcontent!i', $tag)) {
         }
+        $tmpl = $ctx->stash('template');
+        if ($tmpl) {
+            $sql = "select
+                        templatemap_cat_field_id
+                    from mt_templatemap
+                    where
+                        templatemap_template_id = ".$tmpl->id;
+            $result = $ctx->mt->db()->SelectLimit($sql);
+            if (!$result->EOF) {
+                $cf_id = $result->Fields('templatemap_cat_field_id');
+            }
+        }
         $cats = $ctx->mt->db()->fetch_categories(array(
             'blog_id' => $blog_id,
             'parent' => $parent,
-            'category_set_id' => $cat->category_category_set_id,
+            'category_set_id' => intval($cat->category_category_set_id),
+            'cf_id' => $cf_id,
             'show_empty' => 1,
             'class' => $class,
             'sort_order' => $sort_order,
