@@ -233,6 +233,13 @@
             }
             adapter.$editorTextarea = $('#' + adapter.id);
 
+            // default height
+            config["height"] = 350;
+            var text_height = parseInt(adapter.$editorTextarea.css('height').replace('px', ''));
+            if( config["height"] < text_height ){
+                config["height"] = text_height;
+            }
+
             tinyMCE.init(config);
 
             adapter.setFormat(format, true);
