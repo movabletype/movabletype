@@ -1973,7 +1973,7 @@ sub _hdlr_entry_permalink {
             )
         ) unless $blog->has_archive_type($at);
     }
-    my $link = $e->permalink( $at ? $at : $blog->archive_type_preferred ? $blog->archive_type_preferred : undef,
+    my $link = $e->permalink( $at ? $at : undef,
         { valid_html => $args->{valid_html} } )
         or return $ctx->error( $e->errstr );
     $link = MT::Util::strip_index( $link, $blog ) unless $args->{with_index};

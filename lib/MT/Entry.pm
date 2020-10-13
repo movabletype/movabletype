@@ -249,9 +249,8 @@ sub list_props {
                     $excerpt .= '...';
                 }
                 my $id        = $obj->id;
-                my $blog = MT->model('blog')->load($obj->blog_id);
-                my $at = $blog->archive_type_preferred ? $blog->archive_type_preferred : 'Individual';
-                my $permalink = MT::Util::encode_html( $obj->permalink($at) );
+                my $at = $class eq 'page' ? 'page' : 'Individual';
+                my $permalink = MT::Util::encode_html( $obj->permalink( $at ) );
                 my $edit_url  = MT->app->uri(
                     mode => 'view',
                     args => {

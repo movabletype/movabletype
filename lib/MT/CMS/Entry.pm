@@ -172,7 +172,7 @@ sub edit {
         $param->{can_view_log}        = $app->can_do('view_log');
 
         if ( $obj->status == MT::Entry::RELEASE() ){
-            my $at = $type eq 'page' ? 'page' : $blog->archive_type_preferred ? $blog->archive_type_preferred : 'Individual';
+            my $at = $type eq 'page' ? 'page' : 'Individual';
             $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink($at) ) if $obj->status == MT::Entry::RELEASE();
         }
         $param->{'mode_view_entry'} = 1;
@@ -894,7 +894,7 @@ sub _build_entry_preview {
 
     require MT::TemplateMap;
     require MT::Template;
-    my $at = $type eq 'page' ? 'Page' : $blog->archive_type_preferred ? $blog->archive_type_preferred : 'Individual';
+    my $at = $type eq 'page' ? 'Page' : 'Individual';
     my $tmpl_map = MT::TemplateMap->load(
         {   archive_type => $at,
             is_preferred => 1,
