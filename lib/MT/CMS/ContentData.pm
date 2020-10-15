@@ -512,6 +512,7 @@ sub save {
     my $org_data = $content_data->data;
     my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
     foreach my $f (@$field_data) {
+        my $content_field_type = $content_field_types->{ $f->{type} };
         my $e_unique_id = $f->{unique_id};
         my $can_edit_field =
           $app->permissions->can_do( 'content_type:'
@@ -523,7 +524,16 @@ sub save {
             && !$app->permissions->can_do('edit_all_content_data') )
         {
             if ( !$app->param('from_preview') ) {
-                $data->{ $f->{id} } = $org_data->{ $f->{id} };
+                if ( $f->{type} eq 'tags' ) {
+                    $f->{value} = $org_data->{ $f->{id} };
+                    my $field_html_params = $content_field_type->{field_html_params};
+                    $field_html_params = MT->handler_to_coderef($field_html_params);
+                    $field_html_params = $field_html_params->( $app, $f );
+                    $app->param('content-field-' . $f->{id}, $field_html_params->{tags});
+                    $data->{ $f->{id} } = _get_form_data( $app, $content_field_type, $f );
+                } else {
+                    $data->{ $f->{id} } = $org_data->{ $f->{id} };
+                }
             }
             if ( $f->{type} eq 'multi_line_text' ) {
                 my $key = $f->{id} . '_convert_breaks';
@@ -538,7 +548,6 @@ sub save {
         }
         else {
             if ( !$app->param('from_preview') ) {
-                my $content_field_type = $content_field_types->{ $f->{type} };
                 $data->{ $f->{id} } =
                   _get_form_data( $app, $content_field_type, $f );
             }
