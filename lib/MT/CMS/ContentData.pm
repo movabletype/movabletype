@@ -511,6 +511,7 @@ sub save {
 
     my $org_data = $content_data->data;
     my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
+    my $data_is_updated;
     foreach my $f (@$field_data) {
         my $e_unique_id = $f->{unique_id};
         my $can_edit_field =
@@ -537,6 +538,7 @@ sub save {
             }
         }
         else {
+            $data_is_updated->{ $f->{id} } = 1;
             if ( !$app->param('from_preview') ) {
                 my $content_field_type = $content_field_types->{ $f->{type} };
                 $data->{ $f->{id} } =
@@ -556,7 +558,7 @@ sub save {
         return MT::CMS::ContentType::_autosave_content_data( $app, $data );
     }
 
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $app->param( '_type',           'content_data' );
         $app->param( 'reedit',          1 );
@@ -1315,12 +1317,13 @@ sub make_menus {
 
 sub _validate_content_fields {
     my $app = shift;
-    my ( $content_type, $data ) = @_;
+    my ( $content_type, $data, $data_is_updated ) = @_;
     my $content_field_types = $app->registry('content_field_types');
 
     my @errors;
 
     foreach my $f ( @{ $content_type->fields } ) {
+        next unless $data_is_updated->{ $f->{id} };
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
         my $d                  = $data->{ $f->{id} };
@@ -1380,15 +1383,17 @@ sub validate_content_fields {
 
     my $content_field_types = $app->registry('content_field_types');
     my $data                = {};
+    my $data_is_updated;
     foreach my $f ( @{ $content_type->fields } ) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
+        $data_is_updated->{ $f->{id} } = 1;
     }
 
     my $invalid_count = 0;
     my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $invalid_count  = scalar @{$errors};
         %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};
