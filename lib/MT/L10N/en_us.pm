@@ -292,7 +292,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '__LIST_FIELD_LABEL' => 'List',
 
-    '__UNPUBLISHED' => 'Unpublished',
+    '__UNPUBLISHED' => 'Unpublish',
 );
 
 1;
