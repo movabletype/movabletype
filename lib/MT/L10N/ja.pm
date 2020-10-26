@@ -1862,6 +1862,8 @@ use vars qw( @ISA %Lexicon );
 	'Embedded Text' => '埋め込みテキスト',
 	'__LIST_FIELD_LABEL' => 'リスト',
 	'Table' => 'テーブル',
+	'Text Display Area' => 'テキスト表示エリア',
+	'__TEXT_LABEL_TEXT' => 'テキスト',
 
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => '[_1]件のアセットをすべて見る',
@@ -1976,6 +1978,7 @@ use vars qw( @ISA %Lexicon );
 	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" ([_2] ID: [_3])',
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Tags with [_1]' => '[_1]のタグ',
+	'The text display area is only displayed on the administration screen.' => 'テキスト表示エリアは管理画面のみ表示されます。',
 
 ## lib/MT/ContentType/UniqueID.pm
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',

@@ -32,5 +32,18 @@
     <mt:var name="form_footer">
   </mt:if>
 
+  <script>
+    jQuery(function(){
+      const btn = jQuery('<button class="btn">click me!!!</button>');
+      jQuery('.mt-breadcrumb').append(btn);
+      btn.on('click', function(){
+        jQuery('.mt-primaryNavigation').toggle('slide', {direction: "left"});
+        jQuery('[class^="mt-secondaryPanel"]').toggle('slide', {direction: "right"});
+        return false;
+      });
+    });
+  </script>
+
+
   <mt:include name="layout/common/footer.tmpl">
 </mt:setvartemplate>

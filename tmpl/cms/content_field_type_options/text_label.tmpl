@@ -1,0 +1,25 @@
+<mt:app:ContentFieldOptionGroup type="text_label">
+
+  <mtapp:ContentFieldOption
+     id="text_label-text"
+     label="<__trans phrase="__TEXT_LABEL_TEXT">">
+    <textarea ref="text" name="text" id="text_label-text" class="form-control" >{ options.text }</textarea>
+  </mtapp:ContentFieldOption>
+  
+
+  <mt:app:ContentFieldOptionScript>
+  this.on('mount', function() {
+    // description is hidden.
+    // text_label-description-field-field-options-rp6h5zgo
+    // text-label-description-field-field-options-jk1oxxzh
+    document.getElementById('text-label-description-field-' + this.id).style.display ="none";
+    document.getElementById('text-label-required-field-' + this.id).style.display ="none";
+    document.getElementById('text-label-display-field-' + this.id).style.display ="none";
+    var target = document.getElementById('text-label-label-' + this.id);
+    var insert_dom = document.createElement('small');
+    insert_dom.setAttribute('class', 'form-text text-muted');
+    insert_dom.innerHTML = '※<__trans phrase="The text display area is only displayed on the administration screen.">';
+    target.parentNode.insertBefore(insert_dom,target.nextSibling);
+  });
+  </mt:app:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>
