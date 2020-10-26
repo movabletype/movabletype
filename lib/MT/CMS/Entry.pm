@@ -169,8 +169,6 @@ sub edit {
         $param->{ping_errors}         = $q->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
         $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
-        $param->{has_archive_tmpl} = $obj->has_archive_tmpl;
-
         $param->{'mode_view_entry'} = 1;
         $param->{'basename'}        = $obj->basename;
 

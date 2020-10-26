@@ -1284,23 +1284,6 @@ sub all_permalinks {
     @urls;
 }
 
-sub has_archive_tmpl {
-    my $entry = shift;
-    my $blog  = $entry->blog || return;
-    my $at    = $blog->archive_type_preferred
-      || 'Individual';
-    $at = 'Page' if $entry->class eq 'page';
-    require MT::TemplateMap;
-    my $tmpl_map_count = MT::TemplateMap->count(
-        {
-            archive_type => $at,
-            is_preferred => 1,
-            blog_id      => $entry->blog_id,
-        }
-    );
-    return $tmpl_map_count ? 1 : 0;
-}
-
 sub text_filters {
     my $entry   = shift;
     my $filters = $entry->convert_breaks;
