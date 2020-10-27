@@ -380,6 +380,9 @@ build-language-stamp
 ^mt-static/a-table.js/test/
 ^mt-static/a-table.js/yarn.lock
 
+# GitHub
+\.github
+
 # Travis
 \.travis.yml
 
