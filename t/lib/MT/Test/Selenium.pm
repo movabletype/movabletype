@@ -62,6 +62,8 @@ sub new {
         || ( $ENV{TRAVIS} ? 'Selenium::Remote::Driver' : 'Selenium::Chrome' );
     eval "require $driver_class" or plan skip_all => "No $driver_class";
 
+    $Selenium::Remote::Driver::FORCE_WD2 = 1;
+
     my $extra = $EXTRA{$driver_class} || {};
 
     my %driver_opts = (
@@ -88,7 +90,7 @@ sub new {
     }
 
     my $driver = eval { $driver_class->new(%driver_opts) }
-        or plan skip_all => "Failed to instantiate $driver_class";
+        or plan skip_all => "Failed to instantiate $driver_class: $@";
 
     $driver->debug_on if DEBUG;
 
