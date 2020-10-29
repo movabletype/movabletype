@@ -172,10 +172,15 @@ sub edit {
         $param->{status} = $status;
         $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
-        $param->{content_data_permalink}
-            = MT::Util::encode_html( $content_data->permalink );
-        $param->{has_archive_tmpl} = $content_data->has_archive_tmpl;
-
+        $param->{content_data_permalink} =
+          MT::Util::encode_html( $content_data->permalink );
+        $param->{has_archive_tmpl} = MT::TemplateMap->exist(
+            {
+                blog_id      => $content_type->blog_id,
+                archive_type => 'ContentType',
+                is_preferred => 1,
+            }
+        );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
             || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,

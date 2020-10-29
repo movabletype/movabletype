@@ -171,7 +171,17 @@ sub edit {
         $param->{ping_errors}         = $app->param('ping_errors');
         $param->{can_view_log}        = $app->can_do('view_log');
         $param->{entry_permalink} = MT::Util::encode_html( $obj->permalink );
-        $param->{has_archive_tmpl} = $obj->has_archive_tmpl;
+
+        my $at = $blog->archive_type_preferred
+          || 'Individual';
+        $at = 'Page' if $type eq 'page';
+        $param->{has_archive_tmpl} = MT::TemplateMap->exist(
+            {
+                archive_type => $at,
+                is_preferred => 1,
+                blog_id      => $blog_id,
+            }
+        );
 
         $param->{'mode_view_entry'} = 1;
         $param->{'basename'}        = $obj->basename;

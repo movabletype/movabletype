@@ -1560,19 +1560,6 @@ sub permalink {
     $url;
 }
 
-sub has_archive_tmpl {
-    my $self           = shift;
-    my $tmpl_map_count = MT::TemplateMap->count(
-        {
-            blog_id      => $self->blog_id,
-            archive_type => 'ContentType',
-            is_preferred => 1,
-        }
-    );
-    return $tmpl_map_count ? 1 : 0;
-}
-
-
 sub field_categories {
     my $self = shift;
     my ($content_field_id) = @_ or return;
