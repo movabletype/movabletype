@@ -11,7 +11,7 @@ use Data::ObjectDriver::Iterator;
 
 __PACKAGE__->mk_accessors(qw( pk_generator txn_active ));
 
-our $VERSION = '0.18';
+our $VERSION = '0.21';
 our $DEBUG = $ENV{DOD_DEBUG} || 0;
 our $PROFILE = $ENV{DOD_PROFILE} || 0;
 our $PROFILER;
@@ -757,6 +757,12 @@ has been added specifically for this purpose: C<reuse_dbh>.
     }
 
     1;
+
+=head1 FORK SAFETY
+
+As of version 0.21, I<Data::ObjectDriver> resets internal database handles
+after I<fork(2)> is called, but only if L<POSIX::AtFork> module is installed.
+Otherwise, I<Data::ObjectDriver> is not fork-safe.
 
 =head1 SUPPORTED DATABASES
 
