@@ -104,6 +104,7 @@ on 'test' => sub {
     requires 'Perl::Critic::Pulp';
     requires 'Perl::Critic::TooMuchCode';
     requires 'PHP::Serialization';
+    requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'pQuery';
     requires 'Role::Tiny';
