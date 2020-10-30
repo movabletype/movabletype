@@ -660,7 +660,7 @@ Template.templates.autoSave = '<mt:section encode_js="1">
   <mt:loop name="fields">
     <mt:if name="can_edit">
 <div class="form-group">
-      <mt:if name="type" ne="multi_line_text">
+      <mt:if name="type" like="^(?!(multi_line_text|text_label))">
   <label><mt:var name="options{label}" escape="html"><mt:if name=options{required}> <span class="badge badge-danger"><__trans phrase="Required"></span></mt:if></label>
       </mt:if>
 

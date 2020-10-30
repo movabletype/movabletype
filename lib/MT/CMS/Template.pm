@@ -1010,7 +1010,8 @@ sub edit {
 
         # Content Field
         my $fields = $ct->fields;
-        my @cfs = MT::ContentField->load( { content_type_id => $ct->id } );
+        my @cfs = MT::ContentField->load(
+            { content_type_id => $ct->id, type => { not => 'text_label' } } );
         foreach my $cf (@cfs) {
             my ($field) = grep { $_->{id} == $cf->id } @{$fields};
             my $label = $field->{options}{label};
