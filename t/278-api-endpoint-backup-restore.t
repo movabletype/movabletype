@@ -15,6 +15,7 @@ BEGIN {
 use Data::Dumper;
 use File::Spec;
 use File::Temp qw( tempdir );
+use File::Path;
 use MT::Test::DataAPI;
 
 $test_env->prepare_fixture('db_data');
@@ -24,6 +25,11 @@ my $app = MT::App::DataAPI->new;
 
 $Data::Dumper::Sortkeys = 1;
 $Data::Dumper::Indent = 0;
+
+my $readonly_dir = $test_env->path('tmp');
+File::Path::mkpath($readonly_dir);
+chmod 0444, $readonly_dir;
+$readonly_dir = undef if -w $readonly_dir;
 
 my $suite = suite();
 test_data_api( $suite, { author_id => 1, is_superuser => 1 } );
@@ -50,12 +56,9 @@ sub suite {
         {    # Invalid TmpDir.
             path   => '/v2/sites/1/backup',
             method => 'GET',
+            skip   => !$readonly_dir ? 1 : 0,
             setup  => sub {
-            setup  => sub {
-                my $tmp = $test_env->path('tmp');
-                mkdir $tmp;
-                chmod 0444, $tmp;
-                $app->config->ExportTempDir($tmp);
+                $app->config->ExportTempDir($readonly_dir);
             },
             code   => 409,
             result => sub {
