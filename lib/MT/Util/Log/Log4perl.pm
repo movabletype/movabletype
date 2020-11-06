@@ -25,6 +25,7 @@ sub new {
             {   file   => ">>$log_file",
                 layout => "%m%n",
                 level  => $numval,
+                utf8   => 1,
             }
         );
     };
