@@ -283,6 +283,7 @@
 </mt:if>
 
 <mt:if name="blog_id">
+<mt:if name="type_is_ct_or_ct_archive">
 <mt:if name="ct_selects">
 <mtapp:widget
    id="content-type-info"
@@ -372,6 +373,7 @@
 <__trans phrase="No Content Type could be found.">
 <mt:if name="can_create_new_content_type"><a href="<mt:var name="script_url">?__mode=view&_type=content_type&blog_id=<mt:var name="blog_id">"><__trans phrase="Create a new Content Type?"></a></mt:if>
 </mtapp:widget>
+</mt:if>
 </mt:if>
 </mt:if>
 
