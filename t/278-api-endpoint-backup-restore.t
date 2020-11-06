@@ -50,23 +50,23 @@ sub suite {
         {    # Invalid TmpDir.
             path   => '/v2/sites/1/backup',
             method => 'GET',
-            setup  => sub { $app->config->TempDir('NON_EXISTENT_DIR') },
+            setup  => sub { $app->config->ExportTempDir('NON_EXISTENT_DIR') },
             code   => 409,
             result => sub {
                 return +{
                     error => {
                         code => 409,
                         message =>
-                            'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.',
+                            'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.',
                     },
                 };
             },
             complete => sub {
                 if ( $^O eq 'MSWin32' ) {
-                    $app->config->TempDir('C:\Windows\Temp');
+                    $app->config->ExportTempDir('C:\Windows\Temp');
                 }
                 else {
-                    $app->config->TempDir( $app->config->default('TempDir') );
+                    $app->config->ExportTempDir( $app->config->default('TempDir') );
                 }
             },
         },
@@ -141,7 +141,7 @@ sub suite {
             path   => '/v2/sites/1/backup',
             method => 'GET',
             setup  => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $body ) = @_;
@@ -157,7 +157,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
                         $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
@@ -167,7 +167,7 @@ sub suite {
             path   => '/v2/sites/2/backup',
             method => 'GET',
             setup  => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $body ) = @_;
@@ -183,7 +183,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
                         $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
@@ -193,7 +193,7 @@ sub suite {
             path   => '/v2/sites/0/backup',
             method => 'GET',
             setup  => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $body ) = @_;
@@ -209,7 +209,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->TempDir,
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
                         $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
@@ -220,7 +220,7 @@ sub suite {
             method => 'GET',
             params => { backup_archive_format => 'zip', },
             setup  => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $out, $headers ) = @_;
@@ -239,7 +239,7 @@ sub suite {
             method => 'GET',
             params => { backup_archive_format => 'tgz', },
             setup  => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $out, $headers ) = @_;
@@ -259,7 +259,7 @@ sub suite {
             params       => { backup_archive_format => 'zip' },
             restrictions => { 0 => [qw/ backup_download /], },
             setup        => sub {
-                MT->config->TempDir( tempdir( CLEANUP => 1 ) );
+                MT->config->ExportTempDir( tempdir( CLEANUP => 1 ) );
             },
             complete => sub {
                 my ( $data, $out, $headers ) = @_;

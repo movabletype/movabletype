@@ -1526,7 +1526,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Versuch zur Passwortanforderung ungültig: Passwörter können in dieser Konfiguration nicht angefordert werden.',
 	'Invalid author_id' => 'Ungültige Autoren-ID',
 	'Backup & Restore' => 'Sichern & Wiederherstellen',
-	'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Wiederherstellung beschreibbar sein. Bitte überprüfen Sie Ihre TempDir-Einstellung.',
+	'Temporary directory needs to be writable for restore to work correctly.  Please check (Export)TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Wiederherstellung beschreibbar sein. Bitte überprüfen Sie Ihre (Export)TempDir-Einstellung.',
 	'[_1] is not a number.' => '[_1] ist keine Zahl.',
 	'Copying file [_1] to [_2] failed: [_3]' => 'Die Datei [_1] konnte nicht nach [_2] kopiert werden: [_3]',
 	'Specified file was not found.' => 'Angegebene Datei nicht gefunden.',
@@ -1857,7 +1857,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup_archive_format: [_1]' => 'backup_archive_format-Parameter ungültig: [_1]',
 	'Invalid limit_size: [_1]' => 'limit_size-Parameter ungültig: [_1]',
 	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Bei der Wiederherstellung ist ein Fehler aufgetreten: [_1]. Bitte überprüfen Sie das Aktivitätsprotokoll.',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre TempDir-Einstellung.',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre (Export)TempDir-Einstellung.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Blog.pm
 	'Cannot create a blog under blog (ID:[_1]).' => 'Unter Blog ID:[_1] konnte kein Blog angelegt werden.',

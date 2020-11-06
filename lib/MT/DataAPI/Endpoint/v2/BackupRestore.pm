@@ -83,11 +83,11 @@ sub backup {
 sub _check_tmp_dir {
     my ($app) = @_;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         return $app->error(
             $app->translate(
-                'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
+                'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.'
             ),
             409
         );

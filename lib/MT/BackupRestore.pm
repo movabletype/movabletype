@@ -358,10 +358,10 @@ sub _loop_through_objects {
         $can_read_disk_usage = 1;
     }
 
+    my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
     for my $class_hash (@$obj_to_backup) {
         if ($can_read_disk_usage) {
-            my $ref = Filesys::DfPortable::dfportable(
-                MT->instance->config('TempDir') );
+            my $ref = Filesys::DfPortable::dfportable($temp_dir);
             if ( $ref->{per} == 100 ) {
                 die MT->translate("\nCannot write file. Disk full.");
             }

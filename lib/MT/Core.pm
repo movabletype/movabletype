@@ -1822,6 +1822,7 @@ BEGIN {
             'UploadPerms'            => { default => '0666', },
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
+            'ExportTempDir'          => undef,
             'RichTextEditor'         => { default => 'archetype', },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
