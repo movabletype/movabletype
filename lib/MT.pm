@@ -2902,6 +2902,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/favicon_yahoo.png',
             login_form        => 'comment/auth_yahoo.tmpl',
             order             => 14,
+            disable           => 1,
         },
         AIM => {
             class             => 'MT::Auth::AIM',
