@@ -52,7 +52,12 @@ sub suite {
         {    # Invalid TmpDir.
             path   => '/v2/sites/1/backup',
             method => 'GET',
-            setup  => sub { $app->config->ExportTempDir('NON_EXISTENT_DIR') },
+            setup  => sub {
+                my $tmp = $test_env->path('tmp');
+                mkdir $tmp;
+                chmod 0444, $tmp;
+                $app->config->ExportTempDir($tmp);
+            },
             code   => 409,
             result => sub {
                 return +{
