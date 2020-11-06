@@ -458,7 +458,7 @@ sub test_system_mail {
 
     my $cfg = $app->config;
     return $app->json_error(
-        $app->errtrans(
+        $app->translate(
             "You do not have a system email address configured.  Please set this first, save it, then try the test email again."
         )
     ) unless ( $cfg->EmailAddressMain );
