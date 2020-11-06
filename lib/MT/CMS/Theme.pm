@@ -540,7 +540,7 @@ sub do_export {
     $theme_hash->{elements} = $elements;
     require File::Temp;
     my $tmproot = File::Temp::tempdir(
-        DIR     => MT->config('TempDir'),
+        DIR     => MT->config('ExportTempDir') || MT->config('TempDir'),
         CLEANUP => 1
     );
     my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );
