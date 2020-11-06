@@ -84,6 +84,9 @@ sub _check_tmp_dir {
     my ($app) = @_;
 
     my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         return $app->error(
             $app->translate(

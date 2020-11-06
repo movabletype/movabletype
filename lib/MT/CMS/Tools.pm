@@ -1094,6 +1094,9 @@ sub start_backup {
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
     my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
@@ -1130,6 +1133,9 @@ sub start_restore {
     $param{missing_sax} = 1 if $@;
 
     my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         $param{error}
             = $app->translate(
@@ -1219,6 +1225,9 @@ sub backup {
     require File::Spec;
     use File::Copy;
     my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($temp_dir) unless -d $temp_dir;
 
     require MT::BackupRestore;
     my $count_term
