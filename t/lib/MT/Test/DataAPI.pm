@@ -165,6 +165,10 @@ sub test_data_api {
         $note .= ' ' . $data->{method};
         $note .= ' ' . $data->{note} if $data->{note};
         note($note);
+        if ( $data->{skip} ) {
+            note "SKIP";
+            next;
+        }
 
         if ( $data->{config} ) {
             for my $k ( keys %{ $data->{config} } ) {

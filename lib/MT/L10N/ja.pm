@@ -1685,8 +1685,8 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
-	'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
-	'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'[_1] is not a number.' => '[_1]は数値ではありません。',
 	'Copying file [_1] to [_2] failed: [_3]' => 'ファイル: [_1]を[_2]にコピーできませんでした: [_3]',
 	'Specified file was not found.' => '指定されたファイルが見つかりませんでした。',
@@ -2182,7 +2182,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
 	'An error occurred during the backup process: [_1]' => 'バックアップの途中でエラーが発生しました: [_1]',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'Invalid backup_what: [_1]' => '不正なIDが指定されました: [_1]',
 	'Invalid backup_archive_format: [_1]' => '不正なアーカイブ形式が指定されました: [_1]',
 	'Invalid limit_size: [_1]' => '不正なファイルリミットが指定されました: [_1]',
