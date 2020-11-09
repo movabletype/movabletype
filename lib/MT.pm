@@ -984,7 +984,7 @@ sub init_config_from_db {
         MT::ObjectDriverFactory->configure();
     }
 
-    $cfg->read_config_db();
+    $cfg->read_config_db() or return $mt->error( $cfg->errstr );
 
     1;
 }
