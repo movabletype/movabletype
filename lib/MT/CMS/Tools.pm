@@ -1093,11 +1093,14 @@ sub start_backup {
     $param{over_1024} = 1 if $limit >= 1024 * 1024;
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
     $app->load_tmpl( 'backup.tmpl', \%param );
@@ -1129,11 +1132,14 @@ sub start_restore {
     eval "require XML::SAX";
     $param{missing_sax} = 1 if $@;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for restore to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
 
@@ -1218,7 +1224,10 @@ sub backup {
     require File::Temp;
     require File::Spec;
     use File::Copy;
-    my $temp_dir = $app->config('TempDir');
+    my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($temp_dir) unless -d $temp_dir;
 
     require MT::BackupRestore;
     my $count_term
@@ -1477,7 +1486,7 @@ sub backup_download {
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
     my $assetname = $app->param('assetname');
-    my $temp_dir  = $app->config('TempDir');
+    my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
     my $newfilename;
 
     $app->{hide_goback_button} = 1;
@@ -1718,7 +1727,7 @@ sub restore {
                 $app->request( '__restore_in_progress', undef );
                 return 1;
             }
-            my $temp_dir = $app->config('TempDir');
+            my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
