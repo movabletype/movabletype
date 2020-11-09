@@ -125,7 +125,7 @@ sub import {
 
                     local $SIG{__WARN__} = sub { $app->trace( $_[0] ) };
                     MT->set_instance($app);
-                    $app->config->read_config_db();
+                    $app->config->read_config_db() or die $app->config->errstr;
                     $app->init_request( CGIObject => $cgi );
                     $app->run;
 

@@ -367,6 +367,7 @@ sub read_config_db {
     $driver->clear_cache if $driver && $driver->can('clear_cache');
 
     my ($config) = eval { $cfg_class->search };
+    return $mgr->error($@) if $@;
     if ($config) {
         my $was_dirty = $mgr->is_dirty;
         my $data      = $config->data;
