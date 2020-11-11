@@ -168,9 +168,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
         config['selector'] = '#' + adapter.id;
 
         if (adapter.commonOptions['content_css_list'].length > 0){
-          config['content_css'] =
-              (config['content_css'] + ',' + adapter.commonOptions['content_css_list'].join(','))
-              .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
+            config['content_css'] =
+            ((config['content_css'] ? config['content_css'] + ',' : '') + adapter.commonOptions['content_css_list'].join(','))
+            .replace(/^,+|,+$/g, '').replace(/"/g, '&qquot;');
         }
 
         config['body_class'] =
