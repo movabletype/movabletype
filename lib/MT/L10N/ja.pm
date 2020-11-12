@@ -5062,7 +5062,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Collapse' => '開く',
-
+    'Preferred' => '優先',
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{同名のアセット'[_1]'がすでに存在します。上書きしますか?},
 	'Yes (s)' => 'はい (s)',
