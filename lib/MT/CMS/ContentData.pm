@@ -174,7 +174,7 @@ sub edit {
 
         $param->{content_data_permalink} =
           MT::Util::encode_html( $content_data->permalink );
-        $param->{has_archive_tmpl} = MT::TemplateMap->exist(
+        $param->{has_archive_mapping} = MT::TemplateMap->exist(
             {
                 blog_id      => $content_type->blog_id,
                 archive_type => 'ContentType',

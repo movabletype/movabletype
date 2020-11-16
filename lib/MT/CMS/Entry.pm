@@ -175,7 +175,7 @@ sub edit {
         my $at = $blog->archive_type_preferred
           || 'Individual';
         $at = 'Page' if $type eq 'page';
-        $param->{has_archive_tmpl} = MT::TemplateMap->exist(
+        $param->{has_archive_mapping} = MT::TemplateMap->exist(
             {
                 archive_type => $at,
                 is_preferred => 1,
