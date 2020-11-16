@@ -1182,24 +1182,24 @@
      help_section="entry_title">
     <input type="text" name="title" id="title" class="title text full" value="<$mt:var name="title" escape="html"$>" placeholder="<__trans phrase="Title">" maxlength="255" mt:watch-change="1" />
   </mtapp:setting>
-    <mt:unless name="new_object">
-  <mtapp:setting
-     id="permalink"
-     label="Permalink"
-     label_class="no-header"
-     help_page="entries"
-     help_section="permalink">
-    <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
-      <mt:if name="status_publish">
-        <mt:if name="entry_permalink">
-      <a class="button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
-        </mt:if>
-        <mt:if name="can_send_notifications">
-      <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="button<mt:unless name="from_email"> disabled<mt:else> mt-open-dialog</mt:unless>"<mt:unless name="from_email"> onclick="return false;"</mt:unless>><__trans phrase="Share"></a>
-        </mt:if>
-      </mt:if>
-  </mtapp:setting>
-    </mt:unless>
+    <mt:if name="has_archive_mapping">
+      <mtapp:setting
+        id="permalink"
+        label="Permalink"
+        label_class="no-header"
+        help_page="entries"
+        help_section="permalink">
+        <strong><__trans phrase="Permalink:"></strong> <mt:var name="entry_permalink">
+          <mt:if name="status_publish">
+            <mt:if name="entry_permalink">
+          <a class="button" href="<$mt:var name="entry_permalink"$>" target="<__trans phrase="_external_link_target">"><__trans phrase="View"></a>
+            </mt:if>
+            <mt:if name="can_send_notifications">
+          <a href="<mt:var name="script_url">?__mode=entry_notify&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;entry_id=<mt:var name="id" escape="url">" class="button<mt:unless name="from_email"> disabled<mt:else> mt-open-dialog</mt:unless>"<mt:unless name="from_email"> onclick="return false;"</mt:unless>><__trans phrase="Share"></a>
+            </mt:if>
+          </mt:if>
+      </mtapp:setting>
+    </mt:if>
 
   <mt:else eq="text">
     <mt:section id="text">
