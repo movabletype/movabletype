@@ -12,13 +12,13 @@ use HTTP::Request::Common;
 sub authorize_url {
     my ( $app, $client_id, $redirect_uri ) = @_;
 
-    my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
+    my $uri = URI->new('https://accounts.google.com/o/oauth2/v2/auth');
     $uri->query_form(
-        response_type => 'code',
-        client_id     => $client_id,
-        redirect_uri  => $redirect_uri,
-        scope         => 'https://www.googleapis.com/auth/analytics.readonly',
-        access_type   => 'offline',
+        response_type   => 'code',
+        client_id       => $client_id,
+        redirect_uri    => $redirect_uri,
+        scope           => 'https://www.googleapis.com/auth/analytics.readonly',
+        access_type     => 'offline',
         approval_prompt => 'force',
     );
 
@@ -30,7 +30,7 @@ sub get_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   code          => $code,
                 client_id     => $client_id,
                 client_secret => $client_secret,
@@ -39,7 +39,8 @@ sub get_token {
             }
         )
     );
-
+use Data::Dumper;
+MT->log(Dumper $res->content);
     return $app->error(
         translate(
             'An error occurred when getting token: [_1]: [_2]',
@@ -68,7 +69,7 @@ sub refresh_access_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   refresh_token => $refresh_token,
                 client_id     => $client_id,
                 client_secret => $client_secret,
@@ -76,7 +77,8 @@ sub refresh_access_token {
             }
         )
     );
-
+    use Data::Dumper;
+    MT->log(Dumper $res);
     return $app->error(
         translate(
             'An error occurred when refreshing access token: [_1]: [_2]',
@@ -185,6 +187,9 @@ sub effective_token {
         && ( time() - $token_data->{start} + 10 )
         > $token_data->{data}{expires_in} )
     {
+        use Data::Dumper;
+        MT->log(Dumper $token_data);
+        MT->log(Dumper $data);
         my $new_token_data = refresh_access_token(
             $app, new_ua(),
             $token_data->{data}{refresh_token},
