@@ -331,6 +331,14 @@ number: 12345
 
 Footer
 
+=== mt:ContentField text label value
+--- template
+<mt:Contents content_type="test content data"><mt:ContentField content_field="text label"><mt:ContentFieldHeader>Header</mt:ContentFieldHeader>
+<mt:ContentFieldValue>
+<mt:ContentFieldFooter>Footer</mt:ContentFieldFooter></mt:ContentField></mt:Contents>
+--- expected
+
+
 === mt:ContentFieldLabel
 --- template
 <mt:Contents content_type="test content data"><mt:ContentFields><mt:ContentField><mt:ContentFieldHeader><mt:ContentFieldLabel></mt:ContentFieldHeader></mt:ContentField>
