@@ -237,7 +237,7 @@ themes/broken_blog_theme
 #?package=MTPCLOUD ^addons/Enterprise.pack
 #?package=MTPCLOUD ^mt-static/addons/Enterprise.pack
 #?package=MTPCLOUD ^tools/migrate-mssql
-#?package=MTPCLOUD ^addons/Sync.pack
+#?package=MTPCLOUD ^addons/Sync.pack/lib/MT/FileSynchronizer/Rsync.pm
 #?package=MTPCLOUD ^addons/AWS.pack
 #?package=MTPCLOUD ^mt-cp.cgi
 #?package=MTPCLOUD ^addons/Community.pack
@@ -379,6 +379,9 @@ build-language-stamp
 ^mt-static/a-table.js/src/
 ^mt-static/a-table.js/test/
 ^mt-static/a-table.js/yarn.lock
+
+# GitHub
+\.github
 
 # Travis
 \.travis.yml
