@@ -85,7 +85,7 @@ function validate(form) {
         return false;
     }
 
-    if ( !(dirify(form.basename.value).match(/\S/,'')) ) {
+    if ( form.basename.value.match(/[^\w\-]/) ) {
         alert('<__trans phrase="Please enter a valid basename." escape="singlequotes">');
         form.basename.focus();
         return false;

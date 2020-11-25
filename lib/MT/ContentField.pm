@@ -200,9 +200,7 @@ sub permission {
     return +{
         $name => {
             group => $content_type->permission_group,
-            label => sub {
-                return MT->translate( 'Edit [_1] field', $obj->name );
-            },
+            label => $obj->name,
             permitted_action => { $permitted_action => 1 },
             $order ? ( order => $order ) : (),
             content_type_unique_id => $content_type->unique_id,
@@ -311,7 +309,13 @@ sub is_parent_content_type_id {
 sub type_registry {
     my $self = shift;
     return unless defined $self->type && $self->type ne '';
-    MT->registry( 'content_field_types', $self->type );
+    MT->registry( 'content_field_types', $self->type )
+      or $self->error(
+        MT->translate(
+            "Cannot load content field data_type [_1]", $self->type
+        )
+      );
+
 }
 
 sub data_type {

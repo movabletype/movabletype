@@ -993,7 +993,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel Width' => '幅 (px)',
 	'Pixel Height' => '高さ (px)',
 	'Except Userpic' => 'プロフィール画像を除外する',
-	'Author Status' => 'ユーザーの状態',
+	'Author Status' => '作成者の状態',
 	'Missing File' => 'ファイルの存在有無',
 	'Content Field' => 'コンテンツフィールド',
 	'Assets of this website' => 'ウェブサイトのアセット',
@@ -1836,6 +1836,7 @@ use vars qw( @ISA %Lexicon );
 	'(No label)' => '(ラベルなし)',
 	'Identifier' => '識別子',
 	'Link' => 'リンク',
+	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'コンテンツフィールド',
@@ -3849,11 +3850,13 @@ use vars qw( @ISA %Lexicon );
 	'Left' => '左',
 	'Center' => '中央',
 	'Right' => '右',
-	'Link to popup window' => 'ポップアップウィンドウへのリンク',
-	'Link image to full-size version in a popup window.' => 'ポップアップウィンドウで元の大きさの画像にリンクします。',
+	'Link from image' => '画像からのリンク',
+	'Link to original image' => 'オリジナル画像にリンクする',
 	'Save changes to these settings (s)' => '設定を保存 (s)',
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
+    'Display on the same screen' => '同じ画面に表示する',
+    'Display in popup' => 'ポップアップで表示する',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Spam Settings' => 'スパム設定',
@@ -4148,7 +4151,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => '画像品質の自動変換',
 	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 75 です。',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 85 です。',
 	'Image quality(PNG)' => 'PNG 画像の品質',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の品質を 0 から 9 の数値で設定します。初期値は 7 です。',
 	'Send Mail To' => 'メール送信先',
@@ -4851,6 +4854,9 @@ use vars qw( @ISA %Lexicon );
 	'Content Type Privileges' => 'コンテンツタイプごとの権限',
 	'Duplicate Roles' => '同じ権限のロール',
 	'Save changes to this role (s)' => 'ロールへの変更を保存 (s)',
+	'Content Field Privileges' => 'フィールドごとの編集権限',
+	'Check All' => 'すべてチェック',
+	'Uncheck All' => 'チェックを外す',
 
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'ウィジェットの編集',
@@ -5154,6 +5160,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub folder' => 'サブフォルダを追加',
+	'Selected Categories' => '選択されたカテゴリ',
 
 ## tmpl/cms/include/comment_detail.tmpl
 

@@ -166,6 +166,24 @@
             adapter.$editorElement = adapter.$editorTextarea;
 
             var config = $.extend({}, this.constructor.config);
+
+            // ignore errors in the setup function added by the thrid-party plugin.
+            ['init_instance_callback', 'setup'].forEach(function(key) {
+                var orig = config[key];
+                if (! orig) {
+                   return;
+                }
+
+                config[key] = function(ed) {
+                    try {
+                        orig.apply(this, arguments);
+                    }
+                    catch (e) {
+                        console.error(e);
+                    }
+                }
+            });
+
             var init_instance_callback = config['init_instance_callback'];
             config['init_instance_callback'] = function(ed) {
                 init_instance_callback.apply(this, arguments);
@@ -243,6 +261,13 @@
                 }
             }
             adapter.$editorTextarea = $('#' + adapter.id);
+
+            // default height
+            config["height"] = 350;
+            var text_height = parseInt(adapter.$editorTextarea.css('height').replace('px', ''));
+            if( config["height"] < text_height ){
+                config["height"] = text_height;
+            }
 
             tinyMCE.init(config);
 

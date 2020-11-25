@@ -18,6 +18,16 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
+  <mt:unless name="blog_id">
+    <mt:if name="config_warning_default_access_allowed">
+      <mtapp:statusmsg
+         id="info"
+         class="info"
+         can_close="0">
+        <mt:var name="config_warning_default_access_allowed">
+      </mtapp:statusmsg>
+    </mt:if>
+  </mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
@@ -101,7 +111,7 @@ rebuildMultiBlogTriggerTable();
                   + multiBlogRebuilds[i][9]
                   + "</td>";
               str += "<td scope=\"col\">" + multiBlogRebuilds[i][0] + "</td>";
-              str += "<td scope=\"col\" class=\"si\"><a href=\"javascript:void(0)\" class=\"d-inline-block\" onclick=\"removeMultiBlogTrigger(" + i + ")\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></a></td>";
+              str += "<td scope=\"col\" class=\"si\"><a href=\"javascript:void(0)\" class=\"d-inline-block\" onclick=\"removeMultiBlogTrigger(" + i + ")\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\"></use></svg></a></td>";
               str += "</tr>\n";
               values[i] = multiBlogRebuilds[i][1];
               values[i] += ":";
@@ -111,7 +121,7 @@ rebuildMultiBlogTriggerTable();
               values[i] += ":";
               values[i] += multiBlogRebuilds[i][7];
           }
-          str = "<div class=\"mt-table--outline\"><table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Data" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\" /></svg></th></tr></thead>\n" + str + "</table></div>";
+          str = "<div class=\"mt-table--outline\"><table class=\"table mt-table\"><thead><tr><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Site/Child Site" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Data" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Trigger" escape="js"></span></th><th class=\"head primary\" scope=\"col\"><span class=\"col-label\"><__trans phrase="Action" escape="js"></span></th><th class=\"head si\" scope=\"col\"><svg title=\"<__trans phrase="Remove">\" role=\"img\" class=\"mt-icon mt-icon--sm\"><use xlink:href=\"<mt:var name="static_uri">images/sprite.svg#ic_trash\"></use></svg></th></tr></thead>\n" + str + "</table></div>";
           getByID('multiblog_blog_list').innerHTML = str;
           getByID('rebuild_triggers').value = values.join('|');
           jQuery('#info-no-trigger').css('display', 'none');
@@ -141,13 +151,13 @@ rebuildMultiBlogTriggerTable();
   <ul class="list-unstyled">
     <li>
       <div class="custom-control custom-radio">
-        <input type="radio" value="1" name="default_access_allowed" id="default_access_allowed_1" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
+        <input type="radio"<mt:if name="config_warning_default_access_allowed"> disabled="disabled"</mt:if> value="1" name="default_access_allowed" id="default_access_allowed_1" class="custom-control-input rb"<mt:if name="default_access_allowed"> checked="checked"</mt:if> onclick="hide('mb-disallow');show('mb-allow');" />
         <label class="custom-control-label" for="default_access_allowed_1"><__trans phrase="Allow"></label>
       </div>
     </li>
     <li>
       <div class="custom-control custom-radio">
-        <input type="radio" value="0" name="default_access_allowed" id="default_access_allowed_0" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
+        <input type="radio"<mt:if name="config_warning_default_access_allowed"> disabled="disabled"</mt:if> value="0" name="default_access_allowed" id="default_access_allowed_0" class="custom-control-input rb"<mt:unless name="default_access_allowed"> checked="checked"</mt:unless> onclick="hide('mb-allow');show('mb-disallow');" />
         <label class="custom-control-label" for="default_access_allowed_0"><__trans phrase="Disallow"></label>
       </div>
     </li>
@@ -164,6 +174,7 @@ rebuildMultiBlogTriggerTable();
 <mt:setvarblock name="action_buttons" id="action-buttons">
     <button
         type="submit"
+        <mt:unless name="blog_id"><mt:if name="config_warning_default_access_allowed">disabled="disabled"</mt:if></mt:unless>
         accesskey="s"
         title="<__trans phrase="Save changes to these settings (s)">"
         class="save action primary button btn btn-primary">
