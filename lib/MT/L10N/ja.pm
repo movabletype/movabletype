@@ -993,7 +993,7 @@ use vars qw( @ISA %Lexicon );
 	'Pixel Width' => '幅 (px)',
 	'Pixel Height' => '高さ (px)',
 	'Except Userpic' => 'プロフィール画像を除外する',
-	'Author Status' => 'ユーザーの状態',
+	'Author Status' => '作成者の状態',
 	'Missing File' => 'ファイルの存在有無',
 	'Content Field' => 'コンテンツフィールド',
 	'Assets of this website' => 'ウェブサイトのアセット',
@@ -1354,7 +1354,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid date \'[_1]\'; \'Unpublished on\' dates should be later than the corresponding \'Published on\' date.' => '公開終了日は、公開日より未来の日時を指定してください。',
 	'Cannot load content_type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'New [_1] \'[_4]\' (ID:[_2]) added by user \'[_3]\'' => '[_3]が新しい[_1] \'[_4]\' (ID[_2])を追加しました',
-	'[_1] \'[_5]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_5]が[_1] \'[_5]\' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました',
+	'[_1] \'[_6]\' (ID:[_2]) edited and its status changed from [_3] to [_4] by user \'[_5]\'' => '[_5]が[_1] \'[_6]\' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) edited by user \'[_3]\'' => '[_3]が[_1] \'[_4]\' (ID:[_2])を変更しました',
 	'[_1] \'[_4]\' (ID:[_2]) deleted by \'[_3]\'' => '[_3]が[_1] \'[_1]\' (ID:[_2])を削除しました',
 	'Create new [_1]' => '[_1]を作成',
@@ -1685,8 +1685,8 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
-	'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
-	'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'[_1] is not a number.' => '[_1]は数値ではありません。',
 	'Copying file [_1] to [_2] failed: [_3]' => 'ファイル: [_1]を[_2]にコピーできませんでした: [_3]',
 	'Specified file was not found.' => '指定されたファイルが見つかりませんでした。',
@@ -1836,6 +1836,7 @@ use vars qw( @ISA %Lexicon );
 	'(No label)' => '(ラベルなし)',
 	'Identifier' => '識別子',
 	'Link' => 'リンク',
+	'Cannot load content field data_type [_1]' => 'コンテンツフィールドのdata_typeが見つかりません ([_1])',
 
 ## lib/MT/ContentField.pm
 	'Content Fields' => 'コンテンツフィールド',
@@ -1861,6 +1862,8 @@ use vars qw( @ISA %Lexicon );
 	'Embedded Text' => '埋め込みテキスト',
 	'__LIST_FIELD_LABEL' => 'リスト',
 	'Table' => 'テーブル',
+	'Text Display Area' => 'テキスト表示エリア',
+	'__TEXT_LABEL_TEXT' => 'テキスト',
 
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => '[_1]件のアセットをすべて見る',
@@ -1975,6 +1978,7 @@ use vars qw( @ISA %Lexicon );
 	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" ([_2] ID: [_3])',
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Tags with [_1]' => '[_1]のタグ',
+	'The text display area is only displayed on the administration screen.' => 'テキスト表示エリアは管理画面のみ表示されます。',
 
 ## lib/MT/ContentType/UniqueID.pm
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',
@@ -2178,7 +2182,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
 	'An error occurred during the backup process: [_1]' => 'バックアップの途中でエラーが発生しました: [_1]',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'Invalid backup_what: [_1]' => '不正なIDが指定されました: [_1]',
 	'Invalid backup_archive_format: [_1]' => '不正なアーカイブ形式が指定されました: [_1]',
 	'Invalid limit_size: [_1]' => '不正なファイルリミットが指定されました: [_1]',
@@ -3849,11 +3853,13 @@ use vars qw( @ISA %Lexicon );
 	'Left' => '左',
 	'Center' => '中央',
 	'Right' => '右',
-	'Link to popup window' => 'ポップアップウィンドウへのリンク',
-	'Link image to full-size version in a popup window.' => 'ポップアップウィンドウで元の大きさの画像にリンクします。',
+	'Link from image' => '画像からのリンク',
+	'Link to original image' => 'オリジナル画像にリンクする',
 	'Save changes to these settings (s)' => '設定を保存 (s)',
 	'The range for Basename Length is 15 to 250.' => 'ファイル名の文字数は、15から250の範囲で設定してください。',
 	'You must set valid default thumbnail width.' => '有効なサムネイル画像の幅を指定してください。',
+    'Display on the same screen' => '同じ画面に表示する',
+    'Display in popup' => 'ポップアップで表示する',
 
 ## tmpl/cms/cfg_feedback.tmpl
 	'Spam Settings' => 'スパム設定',
@@ -4148,7 +4154,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => '画像品質の自動変換',
 	'Enable image quality changing.' => '画像品質の自動変換を有効にする。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 75 です。',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 85 です。',
 	'Image quality(PNG)' => 'PNG 画像の品質',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の品質を 0 から 9 の数値で設定します。初期値は 7 です。',
 	'Send Mail To' => 'メール送信先',
@@ -4851,6 +4857,9 @@ use vars qw( @ISA %Lexicon );
 	'Content Type Privileges' => 'コンテンツタイプごとの権限',
 	'Duplicate Roles' => '同じ権限のロール',
 	'Save changes to this role (s)' => 'ロールへの変更を保存 (s)',
+	'Content Field Privileges' => 'フィールドごとの編集権限',
+	'Check All' => 'すべてチェック',
+	'Uncheck All' => 'チェックを外す',
 
 ## tmpl/cms/edit_template.tmpl
 	'Edit Widget' => 'ウィジェットの編集',
@@ -5053,7 +5062,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Collapse' => '開く',
-
+    'Preferred' => '優先',
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{同名のアセット'[_1]'がすでに存在します。上書きしますか?},
 	'Yes (s)' => 'はい (s)',
@@ -5154,6 +5163,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/category_selector.tmpl
 	'Add sub folder' => 'サブフォルダを追加',
+	'Selected Categories' => '選択されたカテゴリ',
 
 ## tmpl/cms/include/comment_detail.tmpl
 

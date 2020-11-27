@@ -23,7 +23,7 @@ use MT::FileMgr;
 use MT::Test;
 use MT::Util qw( start_end_day start_end_week start_end_month start_end_year
     start_end_period week2ymd
-    rich_text_transform html_text_transform encode_html decode_html
+    rich_text_transform html_text_transform_traditional encode_html decode_html
     iso2ts ts2iso offset_time offset_time_list first_n_words
     format_ts dirify remove_html
     days_in wday_from_ts encode_js decode_js spam_protect
@@ -267,7 +267,7 @@ my $content_html_text_transformed = <<__HTML__;
 </p>
 __HTML__
 chomp($content_html_text_transformed);
-is( html_text_transform($content),
+is( html_text_transform_traditional($content),
     $content_html_text_transformed,
     'html_text_transform()'
 );

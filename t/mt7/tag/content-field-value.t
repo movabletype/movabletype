@@ -302,7 +302,7 @@ $test_env->prepare_fixture(
                 type    => $cf_table->type,
                 options => {
                     label        => $cf_table->name,
-                    initial_row  => 3,
+                    initial_rows => 3,
                     initial_cols => 3,
                 },
             },

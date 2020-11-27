@@ -57,7 +57,9 @@ script:
 
   - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ "$TRAVIS_BRANCH" = "master" ] || [ "$TRAVIS_BRANCH" = "develop" ] || [[ "$TRAVIS_BRANCH" =~ ^support- ]] || [[ "$TRAVIS_BRANCH" =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:centos6 bash -c "$TEST_COMMAND"; fi
 
-  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.30" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -e MT_TEST_MYSQL_CHARSET=utf8mb4 -t -v $PWD:/mt -w /mt movabletype/test:fedora bash -c "$TEST_COMMAND" ; fi
+  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.30" ] && ([ "$TRAVIS_BRANCH" = "master" ] || [ "$TRAVIS_BRANCH" = "develop" ] || [[ "$TRAVIS_BRANCH" =~ ^support- ]] || [[ "$TRAVIS_BRANCH" =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:fedora bash -c "$TEST_COMMAND"; fi
+
+  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.30" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -e MT_TEST_MYSQL_CHARSET=utf8mb4 -t -v $PWD:/mt -w /mt movabletype/test:archlinux bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:

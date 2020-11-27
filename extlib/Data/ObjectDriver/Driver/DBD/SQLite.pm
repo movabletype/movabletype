@@ -21,7 +21,7 @@ sub bind_param_attributes {
         if ($data_type eq 'blob') {
             return DBI::SQL_BLOB;
         } elsif ($data_type eq 'binchar') {
-            return DBI::SQL_BINARY;
+            return DBI::SQL_VARCHAR;
         }
     }
     return;

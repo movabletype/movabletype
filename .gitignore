@@ -68,6 +68,8 @@ cover_db/
 .vstags
 .vscode/
 .envrc
+.mt_test_env
 
 /vendor/
 
+.mt_test_env

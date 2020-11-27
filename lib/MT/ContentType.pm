@@ -86,7 +86,7 @@ sub list_props {
         current_context => { filter_editable => 0 },
         content_count   => {
             label        => 'Content Data',
-            filter_label => 'Content Data',
+            filter_label => 'Content Data Count',
             display      => 'default',
             order        => 500,
             base         => '__virtual.object_count',

@@ -389,14 +389,23 @@ sub as_html {
                 MT::Util::encode_html( $asset->label ), $wrap_style
                 )
                 : MT->translate('View image');
-            $text = sprintf(
-                q|<a href="%s" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
-                MT::Util::encode_html( $popup->url ),
-                MT::Util::encode_html( $popup->url ),
-                $asset->image_width,
-                $asset->image_height + 1,
-                $link,
-            );
+
+            if ($param->{image_default_link} == 1) {
+                $text = sprintf(
+                    q|<a href="%s" data-test="popup-now" onclick="window.open('%s','popup','width=%d,height=%d,scrollbars=yes,resizable=no,toolbar=no,directories=no,location=no,menubar=no,status=no,left=0,top=0'); return false">%s</a>|,
+                    MT::Util::encode_html( $popup->url ),
+                    MT::Util::encode_html( $popup->url ),
+                    $asset->image_width,
+                    $asset->image_height + 1,
+                    $link,
+                );
+            } else {
+                $text = sprintf(
+                    q|<a href="%s">%s</a>|,
+                    MT::Util::encode_html( $popup->url ),
+                    $link,
+                );
+            }
         }
         else {
             if ( $param->{thumb} ) {
@@ -447,6 +456,7 @@ sub insert_options {
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
     $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
+    $param->{popup_link} = $blog->image_default_link;
     $param->{ 'align_' . $_ }
         = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
         for qw(none left center right);
@@ -1125,13 +1135,9 @@ sub remove_all_metadata {
 sub is_metadata_broken {
     my ($asset) = @_;
     if ( my $exif = $asset->exif ) {
-        return ( $exif->GetValue('Error') || $exif->GetValue('Warning') )
-            ? 1
-            : 0;
+        return 1 if $exif->GetValue('Error');
     }
-    else {
-        return 0;
-    }
+    return 0;
 }
 
 1;

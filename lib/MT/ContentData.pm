@@ -1027,13 +1027,26 @@ sub make_list_props {
                     my $prop = shift;
                     my ( $args, $db_terms, $db_args ) = @_;
 
-                    my $ct
-                        = MT->model('content_type')
-                        ->load( $db_terms->{content_type_id} )
-                        or die MT->translate(
-                        'Cannot load content type #[_1]',
-                        $db_terms->{content_type_id}
-                        );
+                    my $content_type_id;
+                    if ( ref $db_terms eq 'ARRAY' ) {
+                        for my $t (@$db_terms) {
+                            if ( ref $t eq 'HASH'
+                                && exists $t->{content_type_id} )
+                            {
+                                $content_type_id = $t->{content_type_id};
+                                last;
+                            }
+                        }
+                    }
+                    else {
+                        $content_type_id = $db_terms->{content_type_id};
+                    }
+                    die MT->translate('No Content Type could be found.')
+                      unless $content_type_id;
+                    my $ct = MT->model('content_type')->load($content_type_id)
+                      or die MT->translate( 'Cannot load content type #[_1]',
+                        $content_type_id );
+
                     if ( !$ct->data_label ) {
 
                         # Use __virtual.string based filtering
@@ -1073,16 +1086,16 @@ sub make_list_props {
                             or die MT->translate(
                             'Cannot load content field #[_1]',
                             $ct->data_label );
+                        
+                        my $data_type = $cf->data_type;
 
                         $db_args->{joins} ||= [];
                         push @{ $db_args->{joins} },
                             MT->model('content_field_index')->join_on(
                             undef,
-                            [   { content_data_id => \'= cd_id' },
-                                [   { value_varchar => $query },
-                                    '-or',
-                                    { value_text => $query },
-                                ],
+                            [   
+                                { content_data_id => \'= cd_id' },
+                                { "value_$data_type" => $query },
                             ],
                             {   join => MT->model('content_field')->join_on(
                                     undef,
@@ -1528,15 +1541,15 @@ sub archive_file {
 sub archive_url {
     my $self = shift;
     my $blog = $self->blog or return;
-    my $file = $self->archive_file(@_) or return;
     my $url  = $blog->archive_url || '';
-    MT::Util::caturl( $url, $file );
+    $url .= '/' unless $url =~ m!/$!;
+    $url . $self->archive_file(@_);
 }
 
 sub permalink {
     my $self                   = shift;
     my $blog                   = $self->blog or return;
-    my $url                    = $self->archive_url( $_[0] ) or return;
+    my $url                    = $self->archive_url( $_[0] );
     my $effective_archive_type = ( $_[0] || 'ContentType' );
     $url
         .= '#'

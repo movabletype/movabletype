@@ -1304,7 +1304,7 @@ sub rebuild_file {
 
         # Some browsers throw you to quirks mode if the doctype isn't
         # up front and leading whitespace makes a feed invalid.
-        $html =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s;
+        $html =~ s/\A(?:\s|\x{feff}|\xef\xbb\xbf)+(<(?:\?xml|!DOCTYPE))/$1/s;
 
         my $orig_html = $html;
         MT->run_callbacks(
@@ -1871,10 +1871,6 @@ sub _rebuild_content_archive_type {
                 $cache_map->{$cache_map_key} = $map if $map;
             }
         }
-
-        # No archive mappings cloud be found, then return.
-        return '' unless $map;
-
         my $file_tmpl;
         $file_tmpl = $map->file_template if $map;
         unless ($file_tmpl) {

@@ -172,8 +172,15 @@ sub edit {
         $param->{status} = $status;
         $param->{ 'status_' . MT::ContentStatus::status_text($status) } = 1;
 
-        $param->{content_data_permalink}
-            = MT::Util::encode_html( $content_data->permalink );
+        $param->{content_data_permalink} =
+          MT::Util::encode_html( $content_data->permalink );
+        $param->{has_archive_mapping} = MT::TemplateMap->exist(
+            {
+                blog_id      => $content_type->blog_id,
+                archive_type => 'ContentType',
+                is_preferred => 1,
+            }
+        );
 
         $param->{authored_on_date} = $app->param('authored_on_date')
             || MT::Util::format_ts( '%Y-%m-%d', $content_data->authored_on,
@@ -504,19 +511,53 @@ sub save {
         $data ||= {};
     }
 
+    my $content_data =
+      $content_data_id
+      ? MT::ContentData->load($content_data_id)
+      : MT::ContentData->new();
+
+    my $org_data = $content_data->data;
+    my $org_convert_breaks = MT::Serialize->unserialize( $content_data->convert_breaks );
+    my $data_is_updated;
     foreach my $f (@$field_data) {
-        if ( !$app->param('from_preview') ) {
-            my $content_field_type = $content_field_types->{ $f->{type} };
-            $data->{ $f->{id} }
-                = _get_form_data( $app, $content_field_type, $f );
+        my $e_unique_id = $f->{unique_id};
+        my $can_edit_field =
+          $app->permissions->can_do( 'content_type:'
+              . $content_type->unique_id
+              . '-content_field:'
+              . $e_unique_id );
+        if (   $content_data_id
+            && !$can_edit_field
+            && !$app->permissions->can_do('edit_all_content_data') )
+        {
+            if ( !$app->param('from_preview') ) {
+                $data->{ $f->{id} } = $org_data->{ $f->{id} };
+            }
+            if ( $f->{type} eq 'multi_line_text' ) {
+                my $key = $f->{id} . '_convert_breaks';
+                if ( $org_convert_breaks
+                    && exists $$org_convert_breaks->{ $f->{id} } )
+                {
+                    $convert_breaks->{ $f->{id} } =
+                      $$org_convert_breaks->{ $f->{id} };
+                    $data->{$key} = $$org_convert_breaks->{ $f->{id} };
+                }
+            }
         }
-        if ( $f->{type} eq 'multi_line_text' ) {
-            $convert_breaks->{ $f->{id} } = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
-            my $key = $f->{id} . '_convert_breaks';
-            $data->{$key}
-                = $app->param(
-                'content-field-' . $f->{id} . '_convert_breaks' );
+        else {
+            $data_is_updated->{ $f->{id} } = 1;
+            if ( !$app->param('from_preview') ) {
+                my $content_field_type = $content_field_types->{ $f->{type} };
+                $data->{ $f->{id} } =
+                  _get_form_data( $app, $content_field_type, $f );
+            }
+            if ( $f->{type} eq 'multi_line_text' ) {
+                $convert_breaks->{ $f->{id} } = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+                my $key = $f->{id} . '_convert_breaks';
+                $data->{$key} = $app->param(
+                    'content-field-' . $f->{id} . '_convert_breaks' );
+            }
         }
     }
 
@@ -524,7 +565,7 @@ sub save {
         return MT::CMS::ContentType::_autosave_content_data( $app, $data );
     }
 
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $app->param( '_type',           'content_data' );
         $app->param( 'reedit',          1 );
@@ -533,11 +574,6 @@ sub save {
         $param{err_msg} = $errors->[0]{error};
         return $app->forward( 'view_content_data', \%param );
     }
-
-    my $content_data
-        = $content_data_id
-        ? MT::ContentData->load($content_data_id)
-        : MT::ContentData->new();
 
     my $archive_type = '';
 
@@ -819,6 +855,8 @@ sub save {
         }
         MT::Util::Log::init();
         for my $param (@old_archive_params) {
+            my $orig = $param->{ContentData};
+            next if $orig->status != MT::ContentStatus::RELEASE();
             $app->publisher->_delete_archive_file(%$param);
             if ( my $fi = $param->{FileInfo} ) {
                 $fi->remove;
@@ -1035,7 +1073,7 @@ sub post_save {
     }
     elsif ( $orig_obj->status ne $obj->status ) {
         $message = $app->translate(
-            "[_1] '[_5]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
+            "[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'",
             $ct->name,
             $obj->id,
             $app->translate(
@@ -1286,12 +1324,13 @@ sub make_menus {
 
 sub _validate_content_fields {
     my $app = shift;
-    my ( $content_type, $data ) = @_;
+    my ( $content_type, $data, $data_is_updated ) = @_;
     my $content_field_types = $app->registry('content_field_types');
 
     my @errors;
 
     foreach my $f ( @{ $content_type->fields } ) {
+        next unless $data_is_updated->{ $f->{id} };
         my $content_field_type = $content_field_types->{ $f->{type} };
         my $param_name         = 'content-field-' . $f->{id};
         my $d                  = $data->{ $f->{id} };
@@ -1351,15 +1390,17 @@ sub validate_content_fields {
 
     my $content_field_types = $app->registry('content_field_types');
     my $data                = {};
+    my $data_is_updated;
     foreach my $f ( @{ $content_type->fields } ) {
         my $content_field_type = $content_field_types->{ $f->{type} };
         $data->{ $f->{id} }
             = _get_form_data( $app, $content_field_type, $f );
+        $data_is_updated->{ $f->{id} } = 1;
     }
 
     my $invalid_count = 0;
     my %invalid_fields;
-    if ( my $errors = _validate_content_fields( $app, $content_type, $data ) )
+    if ( my $errors = _validate_content_fields( $app, $content_type, $data, $data_is_updated ) )
     {
         $invalid_count  = scalar @{$errors};
         %invalid_fields = map { $_->{field_id} => $_->{error} } @{$errors};

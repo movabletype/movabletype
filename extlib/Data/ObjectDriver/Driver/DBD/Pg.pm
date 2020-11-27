@@ -57,9 +57,20 @@ sub bulk_insert {
     $dbh->do($sql);
     foreach my $row (@{$rows_ref}) {
         my $line = join("\t", map {$_ || '\N'} @{$row});
-        $dbh->pg_putline($line);
+        $dbh->pg_putline("$line\n");
     }
     return $dbh->pg_endcopy();
+}
+
+sub map_error_code {
+    my $dbd = shift;
+    my($code, $msg) = @_;
+
+    if ($msg && $msg =~ /(?:violates unique constraint)/) {
+        return Data::ObjectDriver::Errors->UNIQUE_CONSTRAINT;
+    } else {
+        return;
+    }
 }
 
 1;

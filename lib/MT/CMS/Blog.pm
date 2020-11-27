@@ -239,6 +239,7 @@ sub edit {
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
 
             $param->{popup}      = $blog->image_default_popup ? 1 : 0;
+            $param->{popup_link}      = $blog->image_default_link;
             $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
             $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
                 = 1;
@@ -1775,10 +1776,12 @@ sub pre_save {
             my $image_default_width = $app->param('image_default_width');
             my $image_default_align = $app->param('image_default_align');
             my $image_default_popup = $app->param('image_default_popup');
+            my $image_default_link = $app->param('image_default_link');
             $obj->image_default_thumb( $image_default_thumb ? 1 : 0 );
             $obj->image_default_width($image_default_width);
             $obj->image_default_align($image_default_align);
             $obj->image_default_popup( $image_default_popup ? 1 : 0 );
+            $obj->image_default_link( $image_default_popup ? $image_default_link : 0);
         }
         if ( $screen eq 'cfg_prefs' ) {
             my $include_system = $app->param('include_system') || '';
