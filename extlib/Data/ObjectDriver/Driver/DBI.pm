@@ -13,6 +13,16 @@ use Data::ObjectDriver::SQL;
 use Data::ObjectDriver::Driver::DBD;
 use Data::ObjectDriver::Iterator;
 
+my $ForkSafe = _is_fork_safe();
+my %Handles;
+
+sub _is_fork_safe {
+    return if exists $ENV{DOD_FORK_SAFE} and !$ENV{DOD_FORK_SAFE};
+    eval { require POSIX::AtFork; 1 } or return;
+    eval { require Scalar::Util; Scalar::Util->import('weaken'); 1 } or return;
+    return 1;
+}
+
 __PACKAGE__->mk_accessors(qw( dsn username password connect_options dbh get_dbh dbd prefix reuse_dbh force_no_prepared_cache));
 
 
@@ -36,6 +46,17 @@ sub init {
         }
         $driver->dbd(Data::ObjectDriver::Driver::DBD->new($type));
     }
+
+    if ($ForkSafe) {
+        # Purge cached handles
+        weaken(my $driver_weaken = $driver);
+        POSIX::AtFork->add_to_child(sub {
+            return unless $driver_weaken;
+            $driver_weaken->dbh(undef);
+            %Handles = ();
+        });
+    }
+
     $driver;
 }
 
@@ -61,7 +82,6 @@ sub _prepare_cached {
     return ($driver->dbd->can_prepare_cached_statements)? $dbh->prepare_cached($sql) : $dbh->prepare($sql);
 }
 
-my %Handles;
 sub init_db {
     my $driver = shift;
     my $dbh;
@@ -72,6 +92,7 @@ sub init_db {
         eval {
             $dbh = DBI->connect($driver->dsn, $driver->username, $driver->password,
                 { RaiseError => 1, PrintError => 0, AutoCommit => 1,
+                ( $ForkSafe ? ( AutoInactiveDestroy => 1 ) : () ),
                 %{$driver->connect_options || {}} })
                 or Carp::croak("Connection error: " . $DBI::errstr);
         };
@@ -669,7 +690,7 @@ sub DESTROY {
     ## if we haven't created it ourself.
     return unless $driver->{__dbh_init_by_driver};
     if (my $dbh = $driver->dbh) {
-        $dbh->disconnect if $dbh;
+        $dbh->disconnect;
     }
 }
 

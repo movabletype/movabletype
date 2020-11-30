@@ -10,7 +10,9 @@ BEGIN {
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        CaptchaSourceImageBase => '__MT_HOME__',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
@@ -56,6 +58,17 @@ sub _login_as_commenter {
         }
     );
     $mock;
+}
+
+sub _tweak_blog {
+    my ( $blog, $setting ) = @_;
+    my %old;
+    for my $key ( keys %$setting ) {
+        $old{$key} = $blog->$key;
+        $blog->$key( $setting->{$key} );
+    }
+    $blog->save;
+    \%old;
 }
 
 subtest 'valid post' => sub {
@@ -116,6 +129,127 @@ subtest 'invalid post' => sub {
     ## restore configuration
     $blog->use_comment_confirmation(1);
     $blog->save;
+};
+
+subtest 'handle_error: empty post' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    my $guard = _login_as_commenter( $app, $melody );
+
+    ## to force redirection
+    my $blog = MT::Blog->load(1);
+    $blog->use_comment_confirmation(0);
+    $blog->save;
+
+    my $res = $app->post(
+        {   __mode   => 'post',
+            blog_id  => 1,
+            static   => $BAD_URL,
+            entry_id => 1,
+            __lang   => 'en-us',
+            sid      => $app->{session},
+            text     => '',
+        }
+    );
+    is $res->code                          => 200;
+    isnt $res->headers->header('Location') => $BAD_URL;
+    $app->content_like('Your comment submission failed');
+    $app->content_like('Comment text is required');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
+
+    ## restore configuration
+    $blog->use_comment_confirmation(1);
+    $blog->save;
+};
+
+subtest 'handle_error: empty user email' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    ## to force redirection
+    my $blog        = MT::Blog->load(1);
+    my $old_setting = _tweak_blog(
+        $blog,
+        {   use_comment_confirmation => 0,
+            allow_unreg_comments     => 1,
+            require_comment_emails   => 1,
+        }
+    );
+
+    my $res = $app->post(
+        {   __mode   => 'post',
+            blog_id  => 1,
+            static   => $BAD_URL,
+            entry_id => 1,
+            __lang   => 'en-us',
+            sid      => '',
+            text     => 'text',
+            author   => 'Anomynous',
+            email    => '',
+            url      => '',
+        }
+    );
+    is $res->code                          => 200;
+    isnt $res->headers->header('Location') => $BAD_URL;
+    $app->content_like('Your comment submission failed');
+    $app->content_like('Name and E-mail address are required');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
+
+    ## restore configuration
+    _tweak_blog( $blog, $old_setting );
+};
+
+subtest 'handle_error: captcha' => sub {
+    my $app = MT::Test::App->new(
+        app_class   => 'MT::App::Comments',
+        no_redirect => 1,
+    );
+
+    ## to force redirection
+    my $blog        = MT::Blog->load(1);
+    my $old_setting = _tweak_blog(
+        $blog,
+        {   use_comment_confirmation => 0,
+            allow_anon_comments      => 1,
+            allow_unreg_comments     => 1,
+            require_comment_emails   => 1,
+            captcha_provider         => 'mt_default',
+        }
+    );
+
+    my $res = $app->post(
+        {   __mode       => 'post',
+            blog_id      => 1,
+            static       => $BAD_URL,
+            entry_id     => 1,
+            __lang       => 'en-us',
+            sid          => '',
+            text         => 'text',
+            author       => 'Anonymous',
+            email        => 'test@localhost.localdomain',
+            url          => '',
+            captcha_code => '',
+        }
+    );
+    is $res->code                          => 200;
+    isnt $res->headers->header('Location') => $BAD_URL;
+    $app->content_like('Your comment submission failed');
+    $app->content_like('Text entered was wrong');
+    $app->content_unlike('An error occurred');
+    $app->content_unlike('Invalid request');
+    $app->content_doesnt_expose($BAD_URL);
+
+    ## restore configuration
+    _tweak_blog( $blog, $old_setting );
 };
 
 subtest 'valid login_form (get)' => sub {

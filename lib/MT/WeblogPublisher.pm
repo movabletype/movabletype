@@ -1501,7 +1501,7 @@ sub rebuild_file {
 
         # Some browsers throw you to quirks mode if the doctype isn't
         # up front and leading whitespace makes a feed invalid.
-        $html =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s;
+        $html =~ s/\A(?:\s|\x{feff}|\xef\xbb\xbf)+(<(?:\?xml|!DOCTYPE))/$1/s;
 
         my $orig_html = $html;
         MT->run_callbacks(
@@ -1816,7 +1816,7 @@ sub rebuild_indexes {
 
         # Some browsers throw you to quirks mode if the doctype isn't
         # up front and leading whitespace makes a feed invalid.
-        $html =~ s/\A\s+(<(?:\?xml|!DOCTYPE))/$1/s;
+        $html =~ s/\A(?:\s|\x{feff}|\xef\xbb\xbf)+(<(?:\?xml|!DOCTYPE))/$1/s;
 
         my $orig_html = $html;
         MT->run_callbacks(

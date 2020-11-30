@@ -1525,7 +1525,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Ongeldige poging om wachtwoord opnieuw in te stellen; Kan het wachtwoord niet terughalen in deze configuratie',
 	'Invalid author_id' => 'Ongeldig author_id',
 	'Backup & Restore' => 'Backup & Restore',
-	'Temporary directory needs to be writable for restore to work correctly.  Please check TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om restore-operaties te kunnen doen.  Gelieve de TempDir configuratiedirectief na te kijken',
+	'Temporary directory needs to be writable for restore to work correctly.  Please check (Export)TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om restore-operaties te kunnen doen.  Gelieve de (Export)TempDir configuratiedirectief na te kijken',
 	'[_1] is not a number.' => '[_1] is geen getal.',
 	'Copying file [_1] to [_2] failed: [_3]' => 'Bestand [_1] copiëren naar [_2] mislukt: [_3]',
 	'Specified file was not found.' => 'Het opgegeven bestand werd niet gevonden.',
@@ -1855,7 +1855,7 @@ use vars qw( @ISA %Lexicon );
 	'Invalid backup_archive_format: [_1]' => 'Ongeldige backup_archive_format: [_1]',
 	'Invalid limit_size: [_1]' => 'Ongeldige limit_size: [_1]',
 	'An error occurred during the restore process: [_1] Please check activity log for more details.' => 'Er deed zich een fout voor tijdens het restore-proces: [_1].  Kijk het activiteitenlog na voor meer details.',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de TempDir configuratiedirectief na te kijken.',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de (Export)TempDir configuratiedirectief na te kijken.',
 
 ## lib/MT/DataAPI/Endpoint/v2/Blog.pm
 	'Cannot create a blog under blog (ID:[_1]).' => 'Kan geen blog aanmaken onder blog (ID: [_1])',
@@ -3860,7 +3860,7 @@ use vars qw( @ISA %Lexicon );
 	'Changing image quality' => 'Afbeeldingskwaliteit aan het aanpassen',
 	'Enable image quality changing.' => 'Aanpassen afbeeldingskwaliteit inschakelen.',
 	'Image quality(JPEG)' => 'Afbeeldingskwaliteit (JPEG)',
-	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 75.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 75.',
+	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'Afbeeldingskwaliteit van geuploade JPEG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 100.  Standaardwaarde is 85.',
 	'Image quality(PNG)' => 'Afbeeldingskwaliteit (PNG)',
 	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'Afbeeldingskwaliteit van geuploade PNG afbeelding en thumbnail versie.  Deze waarde kan ingesteld worden als een geheel getal tussen 0 en 9.  Standaardwaarde is 7.',
 	'Send Mail To' => 'Mail verzenden naar',

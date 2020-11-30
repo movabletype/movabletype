@@ -85,6 +85,7 @@ requires 'Net::IP';
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
     requires 'App::Prove::Plugin::MySQLPool';
+    requires 'Class::Unload';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
@@ -103,10 +104,13 @@ on 'test' => sub {
     requires 'Perl::Critic::Pulp';
     requires 'Perl::Critic::TooMuchCode';
     requires 'PHP::Serialization';
+    requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
     requires 'pQuery';
+    requires 'Role::Tiny';
+    requires 'Selenium::Remote::Driver', '1.36';
     requires 'SQL::Maker';
-    requires 'SQL::Translator';
+    requires 'SQL::Translator', '1.61';   # changed comment generation
     requires 'String::CamelCase';
     requires 'Term::Encoding';
     requires 'Test::Base';
@@ -127,4 +131,5 @@ on 'test' => sub {
     requires 'Time::Piece';
     requires 'URI::Escape';
     requires 'Web::Query';
+    requires 'Web::Scraper';
 };

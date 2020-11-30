@@ -33,13 +33,13 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '6.6', '6.0022' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '6.7', '6.0023' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.6.2',              '__PRODUCT_VERSION_ID__',
+        '6.7.4',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 4;
     }
 
     $DebugMode = 0;
@@ -2902,6 +2902,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/favicon_yahoo.png',
             login_form        => 'comment/auth_yahoo.tmpl',
             order             => 14,
+            disable           => 1,
         },
         AIM => {
             class             => 'MT::Auth::AIM',

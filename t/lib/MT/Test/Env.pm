@@ -36,8 +36,23 @@ binmode $builder->output,         ":encoding($enc)";
 binmode $builder->failure_output, ":encoding($enc)";
 binmode $builder->todo_output,    ":encoding($enc)";
 
+my $envfile = "$MT_HOME/.mt_test_env";
+if (-f $envfile) {
+    open my $fh, '<', $envfile;
+    while(<$fh>) {
+        chomp;
+        next if /^#/;
+        s/(?:^\s*|\s*$)//g;
+        my ($key, $value) = split /\s*=\s*/;
+        $ENV{uc $key} = $value;
+    }
+}
+
 sub new {
     my ( $class, %extra_config ) = @_;
+
+    $class->load_envfile;
+
     my $template = "MT_TEST_" . $$ . "_XXXX";
     my $root     = tempdir( $template, CLEANUP => 1, TMPDIR => 1 );
     $root = Cwd::realpath($root);
@@ -53,6 +68,21 @@ sub new {
     $self->write_config( \%extra_config );
 
     $self;
+}
+
+sub load_envfile {
+    my $class = shift;
+    my $envfile = "$MT_HOME/.mt_test_env";
+    if ( -f $envfile ) {
+        open my $fh, '<', $envfile or die $!;
+        while(<$fh>) {
+            chomp;
+            next if /^#/;
+            s/(?:^\s*|\s*$)//g;
+            my ($key, $value) = split /\s*=\s*/, 2;
+            $ENV{uc $key} = $value;
+        }
+    }
 }
 
 sub config_file {
@@ -134,6 +164,11 @@ sub write_config {
             elsif ( ref $value eq 'ARRAY' ) {
                 push @{ $config{$key} }, @$value;
             }
+            elsif ( ref $value eq 'HASH' ) {
+                for my $k (sort keys %$value) {
+                    push @{ $config{$key} }, "$k=$value->{$k}";
+                }
+            }
             else {
                 $config{$key} = $extra->{$key};
             }
@@ -145,6 +180,15 @@ sub write_config {
     $self->{_config} = \%config;
 
     $self->_write_config;
+}
+
+sub config {
+    my $self = shift;
+    if (@_ == 1) {
+        my $key = shift;
+        return $self->{_config}{$key};
+    }
+    $self->{_config};
 }
 
 sub _write_config {
@@ -367,15 +411,8 @@ sub prepare {
     $class->_prepare_mysql_database($dbh);
 }
 
-sub my_cnf {
-    my $class = shift;
-
-    my %cnf = (
-        'skip-networking' => '',
-        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
-    );
-
-    my $mysqld = _mysqld() or return \%cnf;
+sub _mysql_version {
+    my $mysqld = _mysqld() or return;
 
     my $verbose_help = `$mysqld --verbose --help 2>/dev/null`;
 
@@ -387,8 +424,8 @@ sub my_cnf {
     # Convert MariaDB version into MySQL version for simplicity
     # See https://mariadb.com/kb/en/mariadb-vs-mysql-compatibility/ for details
     if ($is_maria) {
-        $major_version = 5;
         if ( $major_version == 10 ) {
+            $major_version = 5;
             if ( $minor_version < 2 ) {
                 $minor_version = 6;
             } elsif ( $minor_version < 5 ) {
@@ -400,6 +437,37 @@ sub my_cnf {
             }
         }
     }
+    return ( $major_version, $minor_version, $is_maria );
+}
+
+sub skip_unless_mysql_version_is_greater_than {
+    my ( $self, $version ) = @_;
+
+    plan skip_all => "requires MySQL $version" unless $self->_check_mysql_version($version);
+}
+
+sub _check_mysql_version {
+    my ( $self, $version ) = @_;
+
+    return if lc $self->driver ne 'mysql';
+
+    $version =~ s/^([0-9]+\.[0-9]+).*/$1/;
+
+    my ( $major_version, $minor_version ) = _mysql_version();
+    return unless $major_version;
+    return ( $version <= "$major_version.$minor_version" ) ? 1 : 0;
+}
+
+sub my_cnf {
+    my $class = shift;
+
+    my %cnf = (
+        'skip-networking' => '',
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
+    );
+
+    my ( $major_version, $minor_version, $is_maria ) = _mysql_version();
+    return \%cnf unless $major_version;
 
     # MySQL 8.0+
     if ( !$is_maria && $major_version >= 8 ) {
@@ -572,6 +640,7 @@ sub prepare_fixture {
         $self->save_fixture($id);
 
         if ( $self->{fixture_dirs}[-1] ) {
+            mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
             open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
             close $fh;
