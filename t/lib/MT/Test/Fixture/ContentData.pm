@@ -139,6 +139,10 @@ our %FixtureSpec = (
                     name   => 'content type',
                     source => 'ct2',
                 },
+                cf_text_label => {
+                    type => 'text_label',
+                    name => 'text label',
+                },
             ],
         },
         ct2 => {
@@ -398,6 +402,7 @@ our %FixtureSpec = (
                 cf_categories   => [ 'category2', 'category1', \$invalid_id ],
                 cf_image        => [ 'test2.jpg', 'test.jpg',  \$invalid_id ],
                 cf_content_type => [ 'cd2',       \$invalid_id ],
+                cf_text_label => '',
             },
         },
         cd2 => {
