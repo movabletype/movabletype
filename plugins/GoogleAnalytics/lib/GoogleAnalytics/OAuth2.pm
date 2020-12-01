@@ -39,8 +39,7 @@ sub get_token {
             }
         )
     );
-use Data::Dumper;
-MT->log(Dumper $res->content);
+
     return $app->error(
         translate(
             'An error occurred when getting token: [_1]: [_2]',
@@ -77,8 +76,7 @@ sub refresh_access_token {
             }
         )
     );
-    use Data::Dumper;
-    MT->log(Dumper $res);
+
     return $app->error(
         translate(
             'An error occurred when refreshing access token: [_1]: [_2]',
@@ -187,9 +185,6 @@ sub effective_token {
         && ( time() - $token_data->{start} + 10 )
         > $token_data->{data}{expires_in} )
     {
-        use Data::Dumper;
-        MT->log(Dumper $token_data);
-        MT->log(Dumper $data);
         my $new_token_data = refresh_access_token(
             $app, new_ua(),
             $token_data->{data}{refresh_token},
