@@ -168,6 +168,7 @@ use_ok('MT::ContentFieldType::Table');
 use_ok('MT::ContentFieldType::Tags');
 use_ok('MT::ContentFieldType::Time');
 use_ok('MT::ContentFieldType::URL');
+use_ok('MT::ContentFieldType::TextLabel');
 use_ok('MT::ContentPublisher');
 use_ok('MT::ContentStatus');
 use_ok('MT::ContentType');
