@@ -28,7 +28,7 @@ sub snipet {
     my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog )
         or return q();
 
-    if($args->{gtag} eq "1"){
+    if($args->{gtag}){
         return <<__HTML__;
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=@{[ $plugindata->data->{profile_web_property_id} ]}"></script>
