@@ -762,7 +762,7 @@ class MT {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
         if (isset($data)) {
             $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
+            if (isset($tmpl_map) && strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
                 if ( isset($data->fileinfo_cd_id)
                     && is_numeric($data->fileinfo_cd_id)
                 ) {
