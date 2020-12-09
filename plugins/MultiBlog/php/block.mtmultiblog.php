@@ -5,7 +5,6 @@
 #
 # $Id$
 
-if (MULTIBLOG_ENABLED) {
 function smarty_block_mtmultiblog($args, $content, &$ctx, &$repeat) {
 
     if (!isset($content)) {
@@ -141,6 +140,5 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
         $repeat = false;
     }
     return $content;
-}
 }
 ?>
