@@ -245,7 +245,7 @@ abstract class BaseObject extends ADOdb_Active_Record
     }
 
     public function object_type() {
-        if (isset($this->{$this->_prefix . 'class'})) {
+        if (property_exists($this, $this->_prefix . 'class')) {
             return $this->{$this->_prefix . 'class'};
         }
         else {
