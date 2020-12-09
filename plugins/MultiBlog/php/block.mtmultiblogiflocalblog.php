@@ -5,7 +5,6 @@
 #
 # $Id$
 
-if (MULTIBLOG_ENABLED) {
 function smarty_block_mtmultiblogiflocalblog($args, $content, &$ctx, &$repeat) {
     if (!isset($content)) {
         $blog_id = $ctx->stash('blog_id');
@@ -16,6 +15,5 @@ function smarty_block_mtmultiblogiflocalblog($args, $content, &$ctx, &$repeat) {
     } else {
         return $ctx->_hdlr_if($args, $content, $ctx, $repeat);
     }
-}
 }
 ?>

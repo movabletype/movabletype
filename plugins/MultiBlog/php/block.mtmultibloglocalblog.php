@@ -5,7 +5,6 @@
 #
 # $Id$
 
-if (MULTIBLOG_ENABLED) {
 function smarty_block_mtmultibloglocalblog($args, $content, &$ctx, &$repeat) {
     $localvars = array('local_blog_id', 'blog_id', 'blog');
     if (!isset($content)) {
@@ -25,6 +24,5 @@ function smarty_block_mtmultibloglocalblog($args, $content, &$ctx, &$repeat) {
     if (!$repeat)
         $ctx->restore($localvars);
     return $content;
-}
 }
 ?>
