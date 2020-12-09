@@ -273,7 +273,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 
             }
 
-            if (! self::$_meta_info[$obj_type][$meta_name]) {
+            if (empty(self::$_meta_info[$obj_type][$meta_name])) {
                 self::$_meta_info[$obj_type][$meta_name] = $col_name;
             }
 
