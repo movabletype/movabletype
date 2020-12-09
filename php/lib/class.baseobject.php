@@ -156,7 +156,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                                           $bindarr,
                                           $pkeysArr,
                                           $extra);
-        $ret_objs;
+        $ret_objs = array();
         $unique_arr = array();
         if ($objs) {
             if ( $unique_myself ) {
@@ -183,7 +183,10 @@ abstract class BaseObject extends ADOdb_Active_Record
             }
         }
 
-        return $ret_objs;
+        // XXX:
+        // We want to return an empty list if it is empty, but return null
+        // for backwards compatibility.
+        return $ret_objs ? $ret_objs : null;
     }
 
     // Member functions
