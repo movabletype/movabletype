@@ -1923,6 +1923,9 @@ sub adjust_sitepath {
             || q();
         my $use_absolute = $app->param("use_absolute_$id") || q();
 
+        my $site_name = $app->param("site_name_$id");
+        $blog->name($site_name) if defined $site_name && $site_name ne '';
+
         if ($use_absolute) {
             $site_path = $app->param("site_path_absolute_$id") || q();
             if ( $path_limit and ( $site_path !~ m/^$path_limit_quote/i ) ) {
