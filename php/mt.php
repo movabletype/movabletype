@@ -848,7 +848,20 @@ class MT {
         $this->_dump($this->log);
     }
 
+    function _write_error_log($errno, $errstr, $errfile, $errline) {
+        $log_file = $this->config('PHPErrorLogFilePath');
+        if (!$log_file) {
+            return;
+        }
+
+        $ts = date('Y-m-d H:i:s');
+        $errstr = preg_replace('/\t/', '\\t', $errstr);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+    }
+
     function error_handler($errno, $errstr, $errfile, $errline) {
+        $this->_write_error_log($errno, $errstr, $errfile, $errline);
+
         if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED)) {
             if ( !empty( $this->db ) ) {
                 $errstr = encode_html_entities($errstr, ENT_QUOTES);
