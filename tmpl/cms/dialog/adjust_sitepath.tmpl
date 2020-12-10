@@ -106,6 +106,14 @@ function init() {
       <fieldset>
         <h3><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</h3>
         <mtapp:setting
+           id="site_name"
+           label="<__trans phrase="Site Name">"
+           label_for="site_name_<mt:var name="id" escape="html">"
+           label_class="top-label">
+          <input type="text" name="site_name_<mt:var name="id" escape="html">" id="site_name_<mt:var name="id" escape="html">" class="text" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
            id="site_url"
            label="<__trans phrase="Site URL">"
            label_class="top-label">
