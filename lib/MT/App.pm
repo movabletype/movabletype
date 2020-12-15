@@ -1495,27 +1495,26 @@ sub session_user {
     my $app = shift;
     my ( $author, $session_id, %opt ) = @_;
     return undef unless $author && $session_id;
-    if ( $app->{session} ) {
-        if ( $app->{session}->get('author_id') == $author->id ) {
-            return $author;
-        }
+    if ( !$app->{session} ) {
+        require MT::Session;
+        my $timeout
+            = $opt{permanent}
+            ? ( 360 * 24 * 365 * 10 )
+            : $app->config->UserSessionTimeout;
+        $app->{session} = MT::Session::get_unexpired_value(
+            $timeout,
+            {   id   => $session_id,
+                kind => 'US'
+            }
+        );
     }
+    my $sess = $app->{session} or return undef;
 
-    require MT::Session;
-    my $timeout
-        = $opt{permanent}
-        ? ( 360 * 24 * 365 * 10 )
-        : $app->config->UserSessionTimeout;
-    my $sess = MT::Session::get_unexpired_value(
-        $timeout,
-        {   id   => $session_id,
-            kind => 'US'
-        }
-    );
-    $app->{session} = $sess;
-
-    return undef if !$sess;
-    if ( $sess && ( $sess->get('author_id') == $author->id ) ) {
+    if ( $sess->get('author_id') == $author->id ) {
+        my $start = time;
+        $sess->start($start);
+        $sess->set(start => $start) unless $sess->get('start');
+        $sess->save;
         return $author;
     }
     else {

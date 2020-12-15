@@ -981,6 +981,38 @@ sub edit {
  #);
     }
 
+    if ( $param->{type} =~ /\Act(?:_archive)?\z/ ) {
+        $param->{type_is_ct_or_ct_archive}    = 1;
+        $param->{can_create_new_content_type} = 1
+            if $perms->can_do('create_new_content_type');
+        _prepare_content_type_selector( $app, $blog_id, $obj, $param );
+    }
+
+    $app->add_breadcrumb(
+        $app->translate('Templates'),
+        $app->uri(
+            mode => 'list_template',
+            args => { blog_id => $blog_id },
+        ),
+    );
+    if ( $param->{id} ) {
+        $app->add_breadcrumb( $param->{name} );
+    }
+    else {
+        if ( $param->{type} && $param->{type} eq 'widget' ) {
+            $app->add_breadcrumb( $app->translate('Create Widget') );
+        }
+        else {
+            $app->add_breadcrumb( $app->translate('Create Template') );
+        }
+    }
+
+    1;
+}
+
+sub _prepare_content_type_selector {
+    my ( $app, $blog_id, $obj, $param ) = @_;
+
     # Content Type Selector
     my @content_types
         = MT->model('content_type')->load( { blog_id => $blog_id } );
@@ -1033,29 +1065,6 @@ sub edit {
     $param->{ct_data}                     = MT::Util::to_json($ct_data);
     $param->{cf_selects}                  = MT::Util::to_json($cf_selects);
     $param->{cf_data}                     = MT::Util::to_json($cf_data);
-    $param->{can_create_new_content_type} = 1
-        if $perms->can_do('create_new_content_type');
-
-    $app->add_breadcrumb(
-        $app->translate('Templates'),
-        $app->uri(
-            mode => 'list_template',
-            args => { blog_id => $blog_id },
-        ),
-    );
-    if ( $param->{id} ) {
-        $app->add_breadcrumb( $param->{name} );
-    }
-    else {
-        if ( $param->{type} && $param->{type} eq 'widget' ) {
-            $app->add_breadcrumb( $app->translate('Create Widget') );
-        }
-        else {
-            $app->add_breadcrumb( $app->translate('Create Template') );
-        }
-    }
-
-    1;
 }
 
 sub list {
