@@ -243,8 +243,11 @@ function init() {
         callback.apply(this,[-1]);
         prev_event.apply(this,arguments);
     };
-    dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
-
+<mt:if name="role_selection">
+    dialog.open({}, returnRoleSelection);
+<mt:else>
+    dialog.open({}, dialog_closed);
+</mt:if>
 
 <mt:if name="has_group">
     var panel = panels[dialog.currentPanel];

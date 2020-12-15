@@ -188,11 +188,6 @@ sub dialog_select_group_user {
         # save the arguments from whence we came...
         $params->{return_args} = $app->return_args;
 
-        if ( $app->param('confirm_js') ) {
-            $params->{confirm_js} = $app->param('confirm_js');
-            $params->{confirm_js} =~ s/\W//g;
-        }
-
         $app->load_tmpl( 'dialog/dialog_select_group_user.tmpl', $params );
     }
 }

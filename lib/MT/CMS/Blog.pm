@@ -1493,7 +1493,7 @@ sub dialog_select_weblog {
     my $app = shift;
 
     my $favorites = $app->param('select_favorites');
-    my $confirm_js;
+    my $save_favorite;
     my $terms = {};
     my $args  = {};
     my $auth  = $app->user or return;
@@ -1502,7 +1502,7 @@ sub dialog_select_weblog {
 
         # Do not exclude top 5 favorite blogs from
         #   select blog dialog list. bugid:112372
-        $confirm_js = 'saveFavorite';
+        $save_favorite = 1;
     }
     if (   !$auth->is_superuser
         && !$auth->permissions(0)->can_do('access_to_blog_list')
@@ -1548,7 +1548,7 @@ sub dialog_select_weblog {
                 return_url       => $app->base
                     . $app->uri . '?'
                     . '__mode=dashboard',
-                confirm_js  => $confirm_js,
+                save_favorite => $save_favorite,
                 idfield     => ( $app->param('idfield') || '' ),
                 namefield   => ( $app->param('namefield') || '' ),
                 search_type => 'blog',
