@@ -508,8 +508,10 @@ sub export {
     }
     $theme_hash->{elements} = $elements;
     require File::Temp;
+    my $parent = MT->config('ExportTempDir') || MT->config('TempDir');
+    $fmgr->mkpath($parent) unless -d $parent;
     my $tmproot = File::Temp::tempdir(
-        DIR     => MT->config('ExportTempDir') || MT->config('TempDir'),
+        DIR     => $parent,
         CLEANUP => 1
     );
     my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );
