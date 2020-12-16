@@ -37,7 +37,7 @@ function init() {
     panel.pager.setState(<mt:var name="pager_json">);
     panels[panels.length] = panel;</mt:loop>
     dialog.setPanels(panels);
-    dialog.open({}, <mt:var name="confirm_js" default="dialog_closed">);
+    dialog.open({}, dialog_closed);
 }
 
 TC.attachLoadEvent(init);
