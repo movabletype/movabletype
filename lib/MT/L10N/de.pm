@@ -1473,6 +1473,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => 'ein Eintrag/eine Seite veröffentlicht wird',
 	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird',
 	'Unpublish' => 'Nicht mehr veröffentlichen',
+    '__UNPUBLISHED' => 'Nicht mehr veröffentlichen',
 	'saves a content' => 'speichert einen Inhalt',
 	'publishes a content' => 'veröffentlicht einen Inhalt',
 	'unpublishes a content' => 'veröffentlicht einen Inhalt nicht mehr',

@@ -1476,6 +1476,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => 'een bericht/pagina publiceert',
 	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
 	'Unpublish' => 'Publicatie ongedaan maken',
+    '__UNPUBLISHED' => 'Publicatie ongedaan maken',
 	'saves a content' => 'inhoud opslaat',
 	'publishes a content' => 'inhoud publiceert',
 	'unpublishes a content' => 'publicatie inhoud ongedaan maakt',

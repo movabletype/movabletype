@@ -1520,6 +1520,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => '記事とウェブページの公開時',
 	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
 	'Unpublish' => '公開取り消し',
+    '__UNPUBLISHED' => '公開終了',
 	'saves a content' => 'コンテンツデータの保存時',
 	'publishes a content' => 'コンテンツデータの公開時',
 	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
