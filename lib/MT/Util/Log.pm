@@ -102,6 +102,38 @@ sub _find_module {
 
     return if $logger_module eq 'MT::Util::Log::Stderr';
 
+    my $config = MT->config('LoggerConfig');
+    if ( $config && $logger_module->can('use_config') ) {
+        if ( !-f $config ) {
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message  => MT->translate( 'File not found: [_1]', $config ),
+                }
+            );
+            return;
+        }
+
+        $Logger = eval { $logger_module->new($logger_level) };
+        if ($@) {
+            warn $@;
+            MT->log(
+                {   class    => 'system',
+                    category => 'logs',
+                    level    => MT::Log::WARNING(),
+                    message =>
+                        MT->translate(
+                            'Logger configuration for Log module [_1] seems problematic',
+                            MT->config->LoggerModule ),
+                    metadata => $@,
+                }
+            );
+            return;
+        }
+        return 1;
+    }
+
     my $logfile_path = _get_logfile_path() or return;
 
     $Logger = eval { $logger_module->new( $logger_level, $logfile_path ) };

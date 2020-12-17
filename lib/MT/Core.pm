@@ -2225,6 +2225,7 @@ BEGIN {
             'LoggerPath'     => undef,
             'LoggerModule'   => undef,
             'LoggerFileName' => undef,
+            'LoggerConfig'   => undef,
 
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },
