@@ -236,7 +236,7 @@ sub _get_logfile_path {
 
     unless ($file) {
         my @time = localtime(time);
-        my $file = sprintf(
+        $file = sprintf(
             "al-%04d%02d%02d.log",
             $time[5] + 1900,
             $time[4] + 1,
