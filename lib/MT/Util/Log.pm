@@ -193,18 +193,24 @@ sub _get_memory {
 }
 
 sub _get_logfile_path {
+    require File::Spec;
+    my $file = MT->config('LoggerFileName');
+    if ( $file and File::Spec->file_name_is_absolute($file) ) {
+        return $file;
+    }
     my $dir = MT->config('LoggerPath') or return;
 
-    my @time = localtime(time);
-    my $file = sprintf(
-        "al-%04d%02d%02d.log",
-        $time[5] + 1900,
-        $time[4] + 1,
-        $time[3]
-    );
-    $LoggerPathDate = $time[3];
+    unless ($file) {
+        my @time = localtime(time);
+        $file = sprintf(
+            "al-%04d%02d%02d.log",
+            $time[5] + 1900,
+            $time[4] + 1,
+            $time[3]
+        );
+        $LoggerPathDate = $time[3];
+    }
 
-    require File::Spec;
     return File::Spec->catfile( $dir, $file );
 }
 
