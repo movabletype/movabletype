@@ -14,21 +14,26 @@ BEGIN {
     use Log::Log4perl::Level;
 }
 
+sub use_config { 1 }
+
 sub new {
     my ( $self, $logger_level, $log_file ) = @_;
+
+    if ( my $config = MT->config('LoggerConfig') ) {
+        Log::Log4perl::Config->allow_code(0);
+        Log::Log4perl::init($config);
+        return $self;
+    }
 
     my $level = $logger_level || MT->config->Loggerlevel;
     my $numval = Log::Log4perl::Level::to_priority( uc $level );
 
-    eval {
-        Log::Log4perl->easy_init(
-            {   file   => ">>$log_file",
-                layout => "%m%n",
-                level  => $numval,
-            }
-        );
-    };
-    die $@ if $@;
+    Log::Log4perl->easy_init(
+        {   file   => ">>$log_file",
+            layout => "%m%n",
+            level  => $numval,
+        }
+    );
 
     return $self;
 }

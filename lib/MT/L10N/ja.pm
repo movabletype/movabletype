@@ -2774,6 +2774,7 @@ _4]\'から削除しました。',
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
+	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
