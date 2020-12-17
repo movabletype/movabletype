@@ -177,6 +177,8 @@ sub error {
     _write_log( 'error', $msg );
 }
 
+sub none { return }
+
 sub _write_log {
     my ( $level, $msg ) = @_;
     return unless $Logger;
