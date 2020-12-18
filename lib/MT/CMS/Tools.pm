@@ -1593,6 +1593,18 @@ sub restore {
         return restore_upload_manifest( $app, $fh );
     }
 
+    $app->log(
+        {   message  => (
+                $uploaded_filename
+                ? MT->translate( 'Started importing sites: [_1]', $uploaded_filename )
+                : MT->translate('Started importing sites')
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            category => 'restore',
+        }
+    );
+
     my $param = { return_args => '__mode=dashboard' };
 
     $app->add_breadcrumb(
@@ -2926,7 +2938,6 @@ sub restore_directory {
             }
         );
     }
-    return ( $blogs, $assets ) unless ( defined($deferred) && %$deferred );
 
     if ( scalar( keys %error_assets ) ) {
         my $data;
