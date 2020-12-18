@@ -531,8 +531,8 @@ sub log {
         unless defined $log->level;
     $log->class('system')
         unless defined $log->class;
-    $log->save();
 
+    # log to a file/handle before saving to the database
     require MT::Util::Log;
     MT::Util::Log::init();
     my $method
@@ -542,7 +542,12 @@ sub log {
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
-    MT::Util::Log->$method( $log->message );
+    my $message  = $log->message;
+    my $metadata = $log->metadata;
+    $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    MT::Util::Log->$method($message);
+
+    $log->save();
 }
 
 sub run_tasks {
