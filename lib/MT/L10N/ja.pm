@@ -1732,6 +1732,8 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Started importing sites: [_1]' => 'サイトのインポートを開始します: [_1]',
+	'Started importing sites' => 'サイトのインポートを開始します',
 
 ## lib/MT/CMS/User.pm
 	'For improved security, please change your password' => 'セキュリティ向上の為パスワードを更新してください',
