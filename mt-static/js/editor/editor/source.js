@@ -139,7 +139,7 @@ $.extend(MT.Editor.Source.prototype, MT.Editor.prototype, {
         if ( !select_inserted_content ) {
             this.saveSelection();
         }
-        this.focus();
+        el.focus();
     },
 
     saveSelection: function() {
