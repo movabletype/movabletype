@@ -1,7 +1,7 @@
 dist: xenial
 os:
   - linux
-language: perl
+language: ruby
 services:
   - docker
 
