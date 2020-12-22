@@ -117,6 +117,8 @@
                     enabled = false;
                     fitToWindow = function(){};
                     $window.off('resize.mt_fullscreen');
+                    // scroll for editor.
+                    $window.scrollTop($parent.find('.tox-tinymce').offset().top);
                 }
                 ed.fire('mtFullscreenStateChanged', {state: enabled});
 

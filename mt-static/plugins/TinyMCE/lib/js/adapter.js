@@ -11,7 +11,7 @@
 
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
-            return false;
+            return true;
         },
         config: {
             mode: "exact",
@@ -272,6 +272,15 @@
             tinyMCE.init(config);
 
             adapter.setFormat(format, true);
+
+            if (MT.Util.isMobileView()) {
+                window.oncontextmenu = function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                };
+            }
+
         },
 
         setFormat: function(format, calledInInit) {
