@@ -123,7 +123,7 @@ sub save_revision {
         }
     );
     $revision->rev_number( ++$current_revision );
-    $revision->description($description)
+    $revision->description( substr $description, 0, 255 )
         if defined($description);
     $revision->save or return;
 
