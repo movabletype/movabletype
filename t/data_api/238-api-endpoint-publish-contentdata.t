@@ -55,6 +55,7 @@ sub suite {
                 },
             ],
             next_phase_url => qr{/publish/contentData\?.*ids=1},
+            complete => sub { sleep 1 },
         },
         {   path   => '/v4/publish/contentData',
             method => 'GET',
@@ -93,6 +94,7 @@ sub suite {
                 is( $data->{rebuild_these_content_data},
                     1, 'MT::App::CMS::rebuild_these_content_data is called once' );
                 delete $data->{mock};
+                sleep 1;
             },
         },
         {   path   => '/v4/publish/contentData',
@@ -132,6 +134,7 @@ sub suite {
                 is( $data->{rebuild_indexes},
                     1, 'MT::App::rebuild_indexes is called once' );
                 delete $data->{mock};
+                sleep 1;
             },
         },
         {   path => "/v4/sites/$blog_id/templates/$tmpl_id/publish",
