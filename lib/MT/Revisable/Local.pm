@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -123,7 +123,7 @@ sub save_revision {
         }
     );
     $revision->rev_number( ++$current_revision );
-    $revision->description($description)
+    $revision->description( substr $description, 0, 255 )
         if defined($description);
     $revision->save or return;
 

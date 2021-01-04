@@ -12,13 +12,13 @@ use HTTP::Request::Common;
 sub authorize_url {
     my ( $app, $client_id, $redirect_uri ) = @_;
 
-    my $uri = URI->new('https://accounts.google.com/o/oauth2/auth');
+    my $uri = URI->new('https://accounts.google.com/o/oauth2/v2/auth');
     $uri->query_form(
-        response_type => 'code',
-        client_id     => $client_id,
-        redirect_uri  => $redirect_uri,
-        scope         => 'https://www.googleapis.com/auth/analytics.readonly',
-        access_type   => 'offline',
+        response_type   => 'code',
+        client_id       => $client_id,
+        redirect_uri    => $redirect_uri,
+        scope           => 'https://www.googleapis.com/auth/analytics.readonly',
+        access_type     => 'offline',
         approval_prompt => 'force',
     );
 
@@ -30,7 +30,7 @@ sub get_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   code          => $code,
                 client_id     => $client_id,
                 client_secret => $client_secret,
@@ -68,7 +68,7 @@ sub refresh_access_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   refresh_token => $refresh_token,
                 client_id     => $client_id,
                 client_secret => $client_secret,

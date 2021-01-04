@@ -1,11 +1,19 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
  * $Id$
  */
 ;(function($) {
+
+// XXX: Remove localStrage items for TinyMCE 5.x.
+// The silver theme use some JSON strigified storage items.
+// But MT has a probrem with JSON.strigify in mt-static/js/common/JSON.js.
+// So we remove storage items to avoid this problem.
+["tinymce-url-history", "tinymce-custom-colors"].forEach(function(k) {
+    tinymce.util.Tools.resolve('tinymce.util.LocalStorage').removeItem(k);
+});
 
 MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 

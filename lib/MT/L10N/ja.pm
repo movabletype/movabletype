@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2018 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1655,6 +1655,8 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Started restoring: [_1]' => '復元を開始します: [_1]',
+	'Started restoring' => '復元を開始します',
 
 ## lib/MT/CMS/TrackBack.pm
 	'(Unlabeled category)' => '(無名カテゴリ)',
@@ -2774,6 +2776,7 @@ _4]\'から削除しました。',
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
+	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',

@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -531,8 +531,8 @@ sub log {
         unless defined $log->level;
     $log->class('system')
         unless defined $log->class;
-    $log->save();
 
+    # log to a file/handle before saving to the database
     require MT::Util::Log;
     MT::Util::Log::init();
     my $method
@@ -542,7 +542,12 @@ sub log {
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
         :                                      'none';
-    MT::Util::Log->$method( $log->message );
+    my $message  = $log->message;
+    my $metadata = $log->metadata;
+    $message .= " ($metadata)" if defined $metadata && $metadata ne '';
+    MT::Util::Log->$method($message);
+
+    $log->save();
 }
 
 sub run_tasks {
@@ -4335,7 +4340,7 @@ Movable Type.
 
 =head1 AUTHOR & COPYRIGHT
 
-Except where otherwise noted, MT is Copyright 2001-2020 Six Apart.
+Except where otherwise noted, MT is Copyright Six Apart.
 All rights reserved.
 
 =cut
