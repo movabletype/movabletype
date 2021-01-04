@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -117,6 +117,8 @@
                     enabled = false;
                     fitToWindow = function(){};
                     $window.off('resize.mt_fullscreen');
+                    // scroll for editor.
+                    $window.scrollTop($parent.find('.tox-tinymce').offset().top);
                 }
                 ed.fire('mtFullscreenStateChanged', {state: enabled});
 

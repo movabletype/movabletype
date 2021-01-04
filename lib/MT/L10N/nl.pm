@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1476,6 +1476,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => 'een bericht/pagina publiceert',
 	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
 	'Unpublish' => 'Publicatie ongedaan maken',
+    '__UNPUBLISHED' => 'Publicatie ongedaan maken',
 	'saves a content' => 'inhoud opslaat',
 	'publishes a content' => 'inhoud publiceert',
 	'unpublishes a content' => 'publicatie inhoud ongedaan maakt',

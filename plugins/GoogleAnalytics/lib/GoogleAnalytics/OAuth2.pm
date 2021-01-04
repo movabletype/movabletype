@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -36,7 +36,7 @@ sub get_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   code          => $code,
                 client_id     => $client_id,
                 client_secret => $client_secret,
@@ -74,7 +74,7 @@ sub refresh_access_token {
 
     my $res = $ua->request(
         POST(
-            'https://accounts.google.com/o/oauth2/token',
+            'https://www.googleapis.com/oauth2/v4/token',
             {   refresh_token => $refresh_token,
                 client_id     => $client_id,
                 client_secret => $client_secret,

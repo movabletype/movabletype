@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -27,7 +27,22 @@ sub snipet {
     my $app = MT->instance;
     my $plugindata = GoogleAnalytics::current_plugindata( $app, $self->blog )
         or return q();
-    <<__HTML__;
+
+    if($args->{gtag}){
+        return <<__HTML__;
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=@{[ $plugindata->data->{profile_web_property_id} ]}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '@{[ $plugindata->data->{profile_web_property_id} ]}');
+</script>
+__HTML__
+    }
+
+    return <<__HTML__;
 <script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', '@{[ $plugindata->data->{profile_web_property_id} ]}']);

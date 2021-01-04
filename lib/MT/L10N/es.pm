@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1474,6 +1474,7 @@ No se pudo escribir el fichero. Disco lleno.",
 	'publishes an entry/page' => 'publica una entrada/página',
 	'unpublishes an entry/page' => 'despublica una entrada/página',
 	'Unpublish' => 'Despublicar',
+    '__UNPUBLISHED' => 'Despublicar',
 	'saves a content' => 'guardar un contenido',
 	'publishes a content' => 'publicar un contenido',
 	'unpublishes a content' => 'despublicar un contenido',

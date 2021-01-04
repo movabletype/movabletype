@@ -1,5 +1,5 @@
 /*
- * Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+ * Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
  * This code cannot be redistributed without permission from www.sixapart.com.
  * For more information, consult your Movable Type license.
  *
@@ -11,7 +11,7 @@
 
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
-            return false;
+            return true;
         },
         config: {
             mode: "exact",
@@ -272,6 +272,15 @@
             tinyMCE.init(config);
 
             adapter.setFormat(format, true);
+
+            if (MT.Util.isMobileView()) {
+                window.oncontextmenu = function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                };
+            }
+
         },
 
         setFormat: function(format, calledInInit) {

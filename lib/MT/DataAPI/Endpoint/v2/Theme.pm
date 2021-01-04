@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -508,8 +508,10 @@ sub export {
     }
     $theme_hash->{elements} = $elements;
     require File::Temp;
+    my $parent = MT->config('ExportTempDir') || MT->config('TempDir');
+    $fmgr->mkpath($parent) unless -d $parent;
     my $tmproot = File::Temp::tempdir(
-        DIR     => MT->config('ExportTempDir') || MT->config('TempDir'),
+        DIR     => $parent,
         CLEANUP => 1
     );
     my $tmpdir = File::Spec->catdir( $tmproot, $theme_id );

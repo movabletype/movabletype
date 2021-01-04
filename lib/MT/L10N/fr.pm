@@ -1,4 +1,4 @@
-# Movable Type (r) (C) 2001-2020 Six Apart Ltd. All Rights Reserved.
+# Movable Type (r) (C) Six Apart Ltd. All Rights Reserved.
 # This code cannot be redistributed without permission from www.sixapart.com.
 # For more information, consult your Movable Type license.
 #
@@ -1463,6 +1463,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 	'publishes an entry/page' => 'une note/page est publiée',
 	'unpublishes an entry/page' => 'une note/page est dépubliée',
 	'Unpublish' => 'Dé-publier',
+    '__UNPUBLISHED' => 'Dé-publier',
 	'saves a content' => 'Sauve le contenu',
 	'publishes a content' => 'Publie le contenu',
 	'unpublishes a content' => 'Dé-publie le contenu',
