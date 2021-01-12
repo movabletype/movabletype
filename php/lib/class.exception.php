@@ -66,7 +66,7 @@ class MTInitException extends MTException {
 
     public function __construct ( $e, $debug = false ) {
         $this->is_debug = $debug;
-        parent::__construct( $e->getMessage(), $e->getCode());
+        parent::__construct( $e->getMessage(), intval($e->getCode()));
     }
 
     public function is_debug () {
