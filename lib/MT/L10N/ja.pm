@@ -5248,6 +5248,7 @@ use vars qw( @ISA %Lexicon );
 	'Send Us Feedback' => 'フィードバックはこちらへ',
 	'<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]' => '<a href="[_1]"><mt:var name="mt_product_name"></a> [_2]',
 	'with' => 'with',
+	'Mobile View' => 'モバイル表示',
 
 ## tmpl/cms/include/group_table.tmpl
 	'Enable selected group (e)' => '選択されたグループを有効にする (e)',

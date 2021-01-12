@@ -159,10 +159,13 @@ jQuery(window).on('load resize', function () {
         __mode: 'change_to_pc_view'
       }
     }).done(function () {
-      updateViewport();
-      closeMobileGlobalMenu();
+      jQuery(window).trigger('change_to_pc_view');
     });
   }
+  jQuery(window).on('change_to_pc_view', function () {
+      updateViewport();
+      closeMobileGlobalMenu();
+  });
 
   var pcView = <mt:var name="pc_view" escape="js"> ? true : false;
   if (pcView) {
