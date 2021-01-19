@@ -5331,6 +5331,9 @@ use vars qw( @ISA %Lexicon );
 	'Open Panel' => 'パネルを開く',
 	'Open Site Menu' => 'サイトメニューを開く',
 	'Close Site Menu' => 'サイトメニューを閉じる',
+	'Open Menu' => 'メニューを開く',
+	'Close Menu' => 'メニューを閉じる',
+
 
 ## tmpl/cms/include/revision_table.tmpl
 	'No revisions could be found.' => '変更履歴がありません。',

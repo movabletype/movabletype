@@ -21,7 +21,7 @@
   <mt:else>
       <img src="<mt:var name="static_uri">images/user-default.svg" alt="" width="32" height="32" class="mr-1">
   </mt:if>
-      <mt:var name="user_screen_name">
+      <span class="user_screen_name"><mt:var name="user_screen_name"></span>
       <svg role="img" class="mt-icon mt-user-control">
         <title><__trans phrase="Open Panel"></title>
         <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_user-open"></use>
@@ -106,7 +106,7 @@ function stopPropagation(e) {
 
       <a id="menu-<mt:var name="id" escape="html">" href="<mt:var name="menu_action_href">" class="btn btn-default <mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
         <mtapp:svgicon id="$icon" title="$escaped_menu_action_label">
-        <mt:var name="escaped_menu_action_label">
+        <span class="menu_label"><mt:var name="escaped_menu_action_label"></span>
       </a>
     </mt:loop>
     </div>
@@ -124,7 +124,7 @@ function stopPropagation(e) {
     <mt:else>
             <mtapp:svgicon id="ic_box" title="$escaped_label" size="sm">
     </mt:if>
-            <mt:var name="escaped_label">
+            <span class="menu_label"><mt:var name="escaped_label"></span>
           </a>
           <div id="primayNavigation-item<mt:var name="__counter__">" class="collapse<mt:if name="screen_group" eq="$id"> show</mt:if>" data-role="tabpanel">
             <ul class="mt-primaryNavigation__child">
@@ -145,6 +145,16 @@ function stopPropagation(e) {
     </div>
 
     <mt:var name="primary_navigation_info">
+
+    <div class="sidebar_hide_block">
+      <a href="#" class="sideber_hide">
+        <mtapp:svgicon id="ic_tri-left" title="<__trans phrase="Close Menu">">
+        <mtapp:svgicon id="ic_tri-right" title="<__trans phrase="Open Side Menu">">
+        <span class="menu_label"><__trans phrase="Close Menu"></span>
+      </a>
+    </div>
+
+
   </div>
 </mt:if>
 
@@ -250,3 +260,23 @@ function stopPropagation(e) {
   </div>
 </div>
 
+<mt:setvarblock name="jq_js_include" append="1">
+const sideber_hide = jQuery('.sideber_hide');
+sideber_hide.on('click', function(){
+  if( jQuery('.mt-primaryNavigation').hasClass('minimal') ){
+    jQuery('.mt-primaryNavigation').removeClass('minimal');
+    sideber_hide.find('svg:eq(0)').show();
+    sideber_hide.find('svg:eq(1)').hide();
+    jQuery('.mt-primaryNavigation').off('click');
+  } else {
+    jQuery('.mt-primaryNavigation').addClass('minimal');
+    jQuery('.mt-primaryNavigation .mt-primaryNavigation__item .collapse').removeClass('show');
+    sideber_hide.find('svg:eq(1)').show();
+    sideber_hide.find('svg:eq(0)').hide();
+    jQuery('.mt-primaryNavigation').on('click', function(event){
+      sideber_hide.trigger('click');
+    });
+  }
+  return false;
+}); 
+</mt:setvarblock>

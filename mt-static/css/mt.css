@@ -12823,4 +12823,71 @@ a:hover .mt-icon--secondary {
 .nav-tabs .nav-link.active {
   border-color: #ddd #ddd #FFFFFF;
 }
+/* primaryNavigation minimal */
+.mt-primaryNavigation.minimal {
+  flex: none;
+  width: 50px;
+  min-width: auto;
+}
+.mt-primaryNavigation.minimal .menu_label,
+.mt-primaryNavigation.minimal .user_screen_name {
+  display: none;
+}
+.mt-primaryNavigation.minimal > a:after {
+  display: none;
+}
+.mt-primaryNavigation.minimal .mt-productHeader__name {
+  display: none;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__header {
+  padding: 1rem 0.5rem 0.5rem;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__header > div:nth-child(2) {
+  display: none;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__control, .mt-primaryNavigation.minimal .mt-primaryNavigation__control--invert {
+  padding: 1rem .3rem;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__control > a {
+  width: 40px;
+  text-align: center;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__item > a {
+  width: 50px;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__item > a:after {
+  display: none;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__item .mt-icon {
+  margin-right: 0;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__footer > .mt-icon,
+.mt-primaryNavigation.minimal .mt-primaryNavigation__footer .author_name {
+  display: none;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__footer {
+  padding: 1rem 0.5rem 0.5rem;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__header--invert {
+  padding: 1rem 0.5rem 0.5rem;
+}
+.mt-primaryNavigation.minimal .mt-primaryNavigation__header--invert div:nth-child(2) {
+  display: none;
+}
+.mt-primaryNavigation .sidebar_hide_block {
+  border-top: 1px solid #a5a5a5;
+  padding: 1rem;
+  text-align: right;
+}
+.mt-primaryNavigation .sidebar_hide_block a {
+  display: block;
+  text-decoration: none;
+  color: #212529;
+}
+.mt-primaryNavigation.minimal .sidebar_hide_block {
+  text-align: center;
+}
+.mt-primaryNavigation .sideber_hide svg:nth-child(2) {
+  display: none;
+}
 /*# sourceMappingURL=mt.css.map */
