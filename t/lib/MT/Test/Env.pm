@@ -921,7 +921,7 @@ sub save_fixture {
     my $dbh    = $self->dbh;
     my @tables;
     if ( $driver eq 'mysql' ) {
-        @tables = map { $_->[0] } $dbh->selectall_array('SHOW TABLES');
+        @tables = map { $_->[0] } @{$dbh->selectall_arrayref('SHOW TABLES')};
     }
     my $root = $self->{root};
     my %data;
