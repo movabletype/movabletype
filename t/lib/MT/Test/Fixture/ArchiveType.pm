@@ -8,8 +8,10 @@ use MT::Test::Fixture;
 our %FixtureSpec = (
     author  => [qw/author1 author2/],
     website => [
-        {   name     => 'site_for_archive_test',
-            theme_id => 'mont-blanc',
+        {   name         => 'site_for_archive_test',
+            theme_id     => 'mont-blanc',
+            site_path    => 'TEST_ROOT/site',
+            archive_path => 'TEST_ROOT/site/archive',
         }
     ],
     folder => [
