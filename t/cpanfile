@@ -86,6 +86,7 @@ on 'test' => sub {
     requires 'Acme::RandomEmoji';
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Class::Unload';
+    requires 'Data::Visitor::Tiny';
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
