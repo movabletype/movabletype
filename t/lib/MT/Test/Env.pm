@@ -3,6 +3,7 @@ package MT::Test::Env;
 use strict;
 use warnings;
 use Carp;
+use Carp::Always;
 use Test::More;
 use File::Spec;
 use Cwd ();
@@ -743,6 +744,12 @@ sub load_schema_and_fixture {
         or $fixture_schema_version ne $self->schema_version )
     {
         diag "FIXTURE IS IGNORED: please update fixture";
+        if ( $fixture_schema_version && eval { require Text::Diff } ) {
+            $fixture_schema_version .= "\n";
+            my $self_schema_version = $self->schema_version . "\n";
+            diag Text::Diff::diff( \$fixture_schema_version, \$self_schema_version,
+                { STYLE => 'Unified' } );
+        }
         return;
     }
 
