@@ -566,7 +566,7 @@ sub prepare_content_data {
                 $arg{author_id} ||= $objs->{author_id};
                 $arg{blog_id}   ||= $objs->{blog_id}
                     or croak "blog_id is required: content_data: $name";
-                $arg{label} = $name;
+                $arg{label} = $name unless defined $arg{label};
 
                 my %data;
                 for my $cf_name ( keys %{ $arg{data} } ) {
