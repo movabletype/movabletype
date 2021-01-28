@@ -60,6 +60,7 @@ jobs:
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
 
 before_script:
+  - docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
   - rm t/34-sqlite.t
   - rm plugins/MultiBlog/t/02.tags.t
 
