@@ -66,7 +66,6 @@ sub post_form_ok {
             $input->readonly(0);
             note "Set value to readonly field: $name";
         }
-        $input->value( $params->{$name} );
     }
     for my $name (keys %$params) {
         $form->param( $name => $params->{$name} );
