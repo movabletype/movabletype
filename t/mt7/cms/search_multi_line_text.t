@@ -75,14 +75,12 @@ $app->get_ok(
     }
 );
 
-my $form = $app->form;
-$form->param( search          => "unknown" );
-$form->param( content_type_id => $ct_id );
-my $do_search = $form->find_input('do_search');
-$do_search->readonly(0);
-$do_search->value(1);
-
-$app->post_ok( $form->click );
+$app->post_form_ok(
+    {   content_type_id => $ct_id,
+        search          => "unknown",
+        do_search       => 1,
+    }
+);
 ok !$app->generic_error, "no error";
 note $app->generic_error if $app->generic_error;
 

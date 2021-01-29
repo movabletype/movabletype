@@ -286,18 +286,17 @@ subtest 'MTC-27376' => sub {
     );
     my $form = $app->form;
 
-    my ($content_field_id) = grep /^content-field/, $form->param;
-    my ($category_field_id) = grep /^category/, $form->param;
+    my ($content_field_id)  = grep /^content-field/, $form->param;
+    my ($category_field_id) = grep /^category/,      $form->param;
 
     # new draft
-    $form->param( data_label => 'New draft' );
-    $form->param( $content_field_id => 'new draft' );
-    my $radio = $form->find_input( $category_field_id );
-    $radio->readonly(0);
-    $radio->value( $cat_cat->id );
-    $form->param( status => MT::ContentStatus::HOLD() );
-
-    $res = $app->post_ok( $form->click );
+    $res = $app->post_form_ok(
+        {   data_label         => 'New draft',
+            $content_field_id  => 'new draft',
+            $category_field_id => $cat_cat->id,
+            status             => MT::ContentStatus::HOLD(),
+        }
+    );
     ok my $new_draft_cd_id = $app->{locations}[-1]->query_param('id');
 
     if ( ok my $log = $test_env->slurp_logfile ) {
