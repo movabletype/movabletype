@@ -906,6 +906,15 @@ sub send_http_header {
     }
 }
 
+sub response_fh {
+    my ( $app, $fh ) = @_;
+    my $chunk;
+    while ( read $fh, $chunk, 8192 ) {
+        $app->print($chunk);
+    }
+    close $fh;
+}
+
 sub print {
     my $app = shift;
     if ( MT::Util::is_mod_perl1() ) {

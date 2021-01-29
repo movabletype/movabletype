@@ -1547,10 +1547,7 @@ sub backup_download {
                 . $newfilename
                 . '"' );
         $app->send_http_header($contenttype);
-        while ( read $fh, my ($chunk), 8192 ) {
-            $app->print($chunk);
-        }
-        close $fh;
+        $app->response_fh($fh);
         $app->log(
             {   message => $app->translate(
                     '[_1] successfully downloaded export file ([_2])',
@@ -1561,7 +1558,7 @@ sub backup_download {
                 category => 'restore'
             }
         );
-        MT::FileMgr::Local->delete($fname);
+        # MT::FileMgr::Local->delete($fname);
     }
     else {
         $app->errtrans('Specified file was not found.');

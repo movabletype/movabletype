@@ -42,7 +42,7 @@ my $mt_app = sub {
         MT->set_instance($app);
 
         # Cheap hack to get the output
-        my ( $header_sent, $body );
+        my ( $header_sent, $body, $body_fh );
         no warnings qw(redefine);
         local *MT::App::send_http_header = sub {
             my $self = shift;
@@ -51,6 +51,7 @@ my $mt_app = sub {
         };
         local *MT::App::print
             = sub { my $self = shift; $body .= "@_" if $header_sent };
+        local *MT::App::response_fh = sub { my $self = shift; $body_fh = shift };
 
         $app->init_request( CGIObject => $cgi );
         $app->{cookies} = do { $cgi->cookie; $cgi->{'.cookies'} };    # wtf
@@ -80,7 +81,11 @@ my $mt_app = sub {
         $app->{cgi_headers}{-type} = $type;
         my ( $status, $headers )
             = $app->{query}->psgi_header( %{ $app->{cgi_headers} } );
-        return [ $status, $headers, [$body] ];
+        if ($body_fh) {
+            return [ $status, $headers, $body_fh ];
+        } else {
+            return [ $status, $headers, [$body] ];
+        }
     };
 };
 
