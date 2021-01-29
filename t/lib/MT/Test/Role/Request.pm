@@ -58,7 +58,18 @@ sub post_form_ok {
     my $form = $self->form($form_id);
     ok $form, "found form" or return;
 
-    $form->param( $_ => $params->{$_} ) for keys %$params;
+    for my $input ( $form->inputs ) {
+        my $name = $input->name;
+        next unless defined $name;
+        next unless exists $params->{$name};
+        if ( $input->readonly ) {
+            $input->readonly(0);
+            note "Set value to readonly field: $name";
+        }
+    }
+    for my $name (keys %$params) {
+        $form->param( $name => $params->{$name} );
+    }
 
     my $res = $self->post( $form->click );
     ok $res->is_success, "post succeeded";
