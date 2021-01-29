@@ -699,7 +699,7 @@ sub do_search_replace {
     $replace && ( $app->validate_magic() or return );
     $search = $orig_search if $do_replace;    # for safety's sake
     my $list_pref = $app->list_pref($type);
-    my $search_api = $app->registry( "search_apis", $type );
+    my $search_api = $app->registry("search_apis")->{$type};
 
     $app->assert( $search_api, "Invalid request." ) or return;
 
