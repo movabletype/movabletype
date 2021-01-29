@@ -26,6 +26,9 @@ my $fmgr = MT::FileMgr->new('Local');
 my $blog = $app->model('blog')->load( { name => 'My Site' } );
 my $blog_id = $blog->id;
 
+sleep 1;
+$test_env->clear_mt_cache;
+
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
 
