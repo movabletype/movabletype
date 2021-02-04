@@ -2984,6 +2984,7 @@ sub core_commenter_authenticators {
             logo_small        => 'images/comment/livedoor_logo.png',
             login_form        => 'comment/auth_livedoor.tmpl',
             order             => 20,
+            disable           => 1,
         },
         'Hatena' => {
             class             => 'MT::Auth::Hatena',
