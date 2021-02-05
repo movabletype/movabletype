@@ -347,11 +347,13 @@ sub pre_save {
     if ( !$obj->id ) {
         my $site_path = $obj->site_path;
         my $fmgr      = $obj->file_mgr;
-        while ( !$fmgr->exists($site_path) ) {
-            my @dirs = File::Spec->splitdir($site_path);
-            pop @dirs;
-            $site_path = File::Spec->catdir(@dirs);
-            last unless MT::CMS::Common::is_within_base_sitepath( $app, $site_path );
+        if ($site_path) {
+            while ( !$fmgr->exists($site_path) ) {
+                my @dirs = File::Spec->splitdir($site_path);
+                pop @dirs;
+                $site_path = File::Spec->catdir(@dirs);
+                last unless MT::CMS::Common::is_within_base_sitepath( $app, $site_path );
+            }
         }
         return $app->errtrans(
             "The '[_1]' provided below is not writable by the web server. Change the directory ownership or permissions and try again.",
