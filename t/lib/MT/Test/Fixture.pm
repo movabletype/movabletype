@@ -510,6 +510,7 @@ sub prepare_content_type {
                     next unless defined $cf_arg{$key};
                     $options{$key} = delete $cf_arg{$key};
                 }
+                $options{display} ||= 'default' if $known_options{display};
                 for my $key ( sort keys %options ) {
                     croak "unknown option: $key for $cf_name" unless $known_options{$key};
                 }
