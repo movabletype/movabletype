@@ -38,14 +38,14 @@ binmode $builder->failure_output, ":encoding($enc)";
 binmode $builder->todo_output,    ":encoding($enc)";
 
 my $envfile = "$MT_HOME/.mt_test_env";
-if (-f $envfile) {
+if ( -f $envfile ) {
     open my $fh, '<', $envfile;
-    while(<$fh>) {
+    while (<$fh>) {
         chomp;
         next if /^#/;
         s/(?:^\s*|\s*$)//g;
-        my ($key, $value) = split /\s*=\s*/;
-        $ENV{uc $key} = $value;
+        my ( $key, $value ) = split /\s*=\s*/;
+        $ENV{ uc $key } = $value;
     }
 }
 
@@ -72,16 +72,16 @@ sub new {
 }
 
 sub load_envfile {
-    my $class = shift;
+    my $class   = shift;
     my $envfile = "$MT_HOME/.mt_test_env";
     if ( -f $envfile ) {
         open my $fh, '<', $envfile or die $!;
-        while(<$fh>) {
+        while (<$fh>) {
             chomp;
             next if /^#/;
             s/(?:^\s*|\s*$)//g;
-            my ($key, $value) = split /\s*=\s*/, 2;
-            $ENV{uc $key} = $value;
+            my ( $key, $value ) = split /\s*=\s*/, 2;
+            $ENV{ uc $key } = $value;
         }
     }
 }
@@ -98,7 +98,7 @@ sub driver {
 
 sub _driver { $ENV{MT_TEST_BACKEND} || 'mysql' }
 
-sub mt_home { $MT_HOME }
+sub mt_home {$MT_HOME}
 
 sub root {
     my $self = shift;
@@ -139,21 +139,21 @@ sub write_config {
                 MT_HOME/themes/
                 )
         ],
-        TempDir             => File::Spec->tmpdir,
-        DefaultLanguage     => $default_language,
-        StaticWebPath       => '/mt-static/',
-        StaticFilePath      => 'TEST_ROOT/mt-static',
-        EmailAddressMain    => 'mt@localhost.localdomain',
-        WeblogTemplatesPath => 'MT_HOME/default_templates',
-        ImageDriver         => $image_driver,
-        MTVersion           => MT->version_number,
-        MTReleaseNumber     => MT->release_number,
-        LoggerModule        => 'Test',
-        LoggerPath          => 'TEST_ROOT/log',
-        LoggerLevel         => 'DEBUG',
-        MailTransfer        => 'debug',
-        DBIRaiseError       => 1,
-        ProcessMemoryCommand => 0,    ## disable process check
+        TempDir              => File::Spec->tmpdir,
+        DefaultLanguage      => $default_language,
+        StaticWebPath        => '/mt-static/',
+        StaticFilePath       => 'TEST_ROOT/mt-static',
+        EmailAddressMain     => 'mt@localhost.localdomain',
+        WeblogTemplatesPath  => 'MT_HOME/default_templates',
+        ImageDriver          => $image_driver,
+        MTVersion            => MT->version_number,
+        MTReleaseNumber      => MT->release_number,
+        LoggerModule         => 'Test',
+        LoggerPath           => 'TEST_ROOT/log',
+        LoggerLevel          => 'DEBUG',
+        MailTransfer         => 'debug',
+        DBIRaiseError        => 1,
+        ProcessMemoryCommand => 0,                             ## disable process check
     );
 
     if ($extra) {
@@ -166,7 +166,7 @@ sub write_config {
                 push @{ $config{$key} }, @$value;
             }
             elsif ( ref $value eq 'HASH' ) {
-                for my $k (sort keys %$value) {
+                for my $k ( sort keys %$value ) {
                     push @{ $config{$key} }, "$k=$value->{$k}";
                 }
             }
@@ -185,7 +185,7 @@ sub write_config {
 
 sub config {
     my $self = shift;
-    if (@_ == 1) {
+    if ( @_ == 1 ) {
         my $key = shift;
         return $self->{_config}{$key};
     }
@@ -307,8 +307,7 @@ sub _connect_info_mysql {
         }
     }
     else {
-        $self->{dsn}
-            = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
+        $self->{dsn} = "dbi:mysql:host=$info{DBHost};dbname=$info{Database};user=$info{DBUser}";
         my $dbh = DBI->connect( $self->{dsn} );
         if ( !$dbh ) {
             die $DBI::errstr unless $DBI::errstr =~ /Unknown database/;
@@ -333,7 +332,7 @@ sub _connect_info_sqlite {
 }
 
 sub skip_unless_mysql_supports_utf8mb4 {
-    my $self = shift;
+    my $self       = shift;
     my $db_charset = $self->mysql_db_charset;
     if ( $db_charset ne 'utf8mb4' ) {
         plan skip_all => "Requires utf8mb4 database: $db_charset";
@@ -433,10 +432,12 @@ sub _mysql_version {
             $major_version = 5;
             if ( $minor_version < 2 ) {
                 $minor_version = 6;
-            } elsif ( $minor_version < 5 ) {
+            }
+            elsif ( $minor_version < 5 ) {
                 $minor_version = 7;
             }
-        } elsif ( $major_version == 5 ) {  ## just in case
+        }
+        elsif ( $major_version == 5 ) {    ## just in case
             if ( $minor_version < 5 ) {
                 $minor_version = 1;
             }
@@ -468,7 +469,7 @@ sub my_cnf {
 
     my %cnf = (
         'skip-networking' => '',
-        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO', ## ONLY_FULL_GROUP_BY
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO',    ## ONLY_FULL_GROUP_BY
     );
 
     my ( $major_version, $minor_version, $is_maria ) = _mysql_version();
@@ -482,9 +483,9 @@ sub my_cnf {
     my $charset = $class->mysql_charset;
     if ( $charset eq 'utf8mb4' ) {
         if ( $major_version < 7 and $minor_version < 7 ) {
-            $cnf{innodb_file_format}     = 'Barracuda';
-            $cnf{innodb_file_per_table}  = 1;
-            $cnf{innodb_large_prefix}    = 1;
+            $cnf{innodb_file_format}    = 'Barracuda';
+            $cnf{innodb_file_per_table} = 1;
+            $cnf{innodb_large_prefix}   = 1;
         }
         $cnf{character_set_server} = $charset;
         $cnf{collation_server}     = $class->mysql_collation;
@@ -555,8 +556,7 @@ sub _set_fixture_dirs {
     my @fixture_dirs = ("$MT_HOME/t/fixture/$uid");
 
     if ( $self->{extra_plugin_path} ) {
-        push @fixture_dirs,
-            "$MT_HOME/$self->{extra_plugin_path}/t/fixture/$uid";
+        push @fixture_dirs, "$MT_HOME/$self->{extra_plugin_path}/t/fixture/$uid";
     }
     $self->{fixture_dirs} = \@fixture_dirs;
 }
@@ -693,7 +693,7 @@ sub _find_addons_and_plugins {
     $self->{addons_and_plugins} = [
         sort
         grep { !$seen{$_}++ }
-        map { $_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1 } @files
+        map  { $_ =~ m!/((?:addons|plugins)/[^/]+)/!; $1 } @files
     ];
 }
 
@@ -711,21 +711,18 @@ sub load_schema_and_fixture {
     my $fixture_file = $self->_find_file( $self->_fixture_file($fixture_id) )
         or return;
     return
-        unless
-        eval { require SQL::Maker; SQL::Maker->load_plugin('InsertMulti'); 1 };
+        unless eval { require SQL::Maker; SQL::Maker->load_plugin('InsertMulti'); 1 };
     my $root = $self->{root};
     my ( $s, $m, $h, $d, $mo, $y ) = gmtime;
-    my $now = sprintf( "%04d%02d%02d%02d%02d%02d",
-        $y + 1900, $mo + 1, $d, $h, $m, $s );
+    my $now      = sprintf( "%04d%02d%02d%02d%02d%02d", $y + 1900, $mo + 1, $d, $h, $m, $s );
     my @pool     = ( 'a' .. 'z', 0 .. 9 );
     my $api_pass = join '', map { $pool[ rand @pool ] } 1 .. 8;
     my $salt     = join '', map { $pool[ rand @pool ] } 1 .. 16;
 
     # Tentative password; update it later when necessary
-    my $author_pass
-        = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
-    my $schema  = $self->slurp($schema_file)  or return;
-    my $fixture = $self->slurp($fixture_file) or return;
+    my $author_pass = '$6$' . $salt . '$' . Digest::SHA::sha512_base64( $salt . 'pass' );
+    my $schema      = $self->slurp($schema_file) or return;
+    my $fixture     = $self->slurp($fixture_file) or return;
     $fixture =~ s/\b__MT_HOME__\b/$MT_HOME/g;
     $fixture =~ s/\b__TEST_ROOT__\b/$root/g;
     $fixture =~ s/\b__NOW__\b/$now/g;
@@ -755,7 +752,7 @@ sub load_schema_and_fixture {
 
     my $dbh = $self->dbh;
     if ( $self->mysql_charset eq 'utf8mb4' ) {
-        my $sql = "SHOW VARIABLES LIKE 'innodb_large_prefix'";
+        my $sql    = "SHOW VARIABLES LIKE 'innodb_large_prefix'";
         my $prefix = $dbh->selectrow_hashref($sql);
         if ( !$prefix or uc $prefix->{Value} ne 'ON' ) {
             plan skip_all => "Use MySQLPool or set 'innodb_large_prefix'";
@@ -928,7 +925,7 @@ sub save_fixture {
     my $dbh    = $self->dbh;
     my @tables;
     if ( $driver eq 'mysql' ) {
-        @tables = map { $_->[0] } @{$dbh->selectall_arrayref('SHOW TABLES')};
+        @tables = map { $_->[0] } @{ $dbh->selectall_arrayref('SHOW TABLES') };
     }
     my $root = $self->{root};
     my %data;
@@ -940,8 +937,7 @@ sub save_fixture {
                 $order_by = ' ORDER BY ' . $indices->[0]{Column_name};
             }
         }
-        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table$order_by",
-            { Slice => +{} } );
+        my $rows = $dbh->selectall_arrayref( "SELECT * FROM $table$order_by", { Slice => +{} } );
         next unless @{ $rows || [] };
         my @keys = sort keys %{ $rows->[0] };
         my @rows_modified;
@@ -951,8 +947,7 @@ sub save_fixture {
                 my $value = $row->{$key};
                 if ( defined $value ) {
                     if ( $key =~ /(?:created|modified)_on$/ ) {
-                        my $t = Time::Piece->strptime( $value,
-                            '%Y-%m-%d %H:%M:%S' );
+                        my $t   = Time::Piece->strptime( $value, '%Y-%m-%d %H:%M:%S' );
                         my $now = Time::Piece->new;
                         if ( $now - $t < Time::Seconds::ONE_DAY() ) {
                             $value = '__NOW__';
@@ -1030,8 +1025,7 @@ sub test_schema {
     else {
         fail "schema is out-of-date";
         if ( eval { require Text::Diff } ) {
-            diag Text::Diff::diff( \$generated_schema, \$saved_schema,
-                { STYLE => 'Unified' } );
+            diag Text::Diff::diff( \$generated_schema, \$saved_schema, { STYLE => 'Unified' } );
         }
     }
 }
@@ -1041,8 +1035,7 @@ sub dump_table {
     my $dbh = $self->dbh;
     my $sql = "SELECT * FROM $table";
     $sql .= " $extra" if $extra;
-    my $rows = $dbh->selectall_arrayref( $sql,
-        { Slice => +{} }, @{ $bind || [] } );
+    my $rows = $dbh->selectall_arrayref( $sql, { Slice => +{} }, @{ $bind || [] } );
     note explain($rows);
 }
 
@@ -1118,8 +1111,7 @@ sub schema_version {
 sub plugin_schema_version {
     my $self = shift;
     return map { $_->id => $_->schema_version }
-        grep   { defined $_->schema_version && $_->schema_version ne '' }
-        @MT::Plugins;
+        grep { defined $_->schema_version && $_->schema_version ne '' } @MT::Plugins;
 }
 
 sub utime_r {
@@ -1160,6 +1152,21 @@ sub ls {
         },
         $root || $self->root
     );
+}
+
+sub files {
+    my ( $self, $root, $callback ) = @_;
+    my @files;
+    $self->ls(
+        $root,
+        sub {
+            my $file = shift;
+            return unless -f $file;
+            return if $callback && !$callback->($file);
+            push @files, $file;
+        }
+    );
+    return @files;
 }
 
 sub remove_logfile {

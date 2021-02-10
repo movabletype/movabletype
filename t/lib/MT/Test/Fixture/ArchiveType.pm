@@ -302,7 +302,6 @@ sub prepare_fixture {
     for my $archive_type ( MT->publisher->archive_types ) {
         my $archiver      = MT->publisher->archiver($archive_type);
         my $tmpl_type     = _template_type($archive_type);
-        my $file_template = _file_template($archiver);
         ( my $archive_type_name = $archive_type ) =~ tr/A-Z-/a-z_/;
         if ( $archive_type =~ /^ContentType/ ) {
             for my $ct_item ( values %{ $objs->{content_type} } ) {
@@ -320,7 +319,7 @@ sub prepare_fixture {
                     template_id   => $tmpl->id,
                     blog_id       => $blog_id,
                     archive_type  => $archive_type,
-                    file_template => $file_template,
+                    file_template => $class->_file_template( $archiver, $ct->name ),
                     is_preferred  => 1,
                     build_type    => 1,
                     cat_field_id  => $cat_fields[0]{id},
@@ -337,7 +336,7 @@ sub prepare_fixture {
                 template_id   => $tmpl->id,
                 blog_id       => $blog_id,
                 archive_type  => $archive_type,
-                file_template => $file_template,
+                file_template => $class->_file_template($archiver),
                 is_preferred  => 1,
                 build_type    => 1,
             );
@@ -357,7 +356,7 @@ sub _template_type {
 }
 
 sub _file_template {
-    my $archiver = shift;
+    my ( $class, $archiver ) = @_;
     my $prefix = $archiver->name =~ /^ContentType/ ? "ct/" : "";
     for my $archive_template ( @{ $archiver->default_archive_templates } ) {
         next unless $archive_template->{default};
