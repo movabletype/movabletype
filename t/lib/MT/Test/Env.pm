@@ -1162,6 +1162,21 @@ sub ls {
     );
 }
 
+sub files {
+    my ( $self, $root, $callback ) = @_;
+    my @files;
+    $self->ls(
+        $root,
+        sub {
+            my $file = shift;
+            return unless -f $file;
+            return if $callback && !$callback->($file);
+            push @files, $file;
+        }
+    );
+    return @files;
+}
+
 sub remove_logfile {
     my $self    = shift;
     my $logfile = MT::Util::Log->_get_logfile_path;
