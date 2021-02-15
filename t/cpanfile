@@ -97,6 +97,7 @@ on 'test' => sub {
     requires 'IO::String';
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
+    requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
