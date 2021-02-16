@@ -58,7 +58,7 @@
     "jquery-validation": "^1.19.1",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
     "popper.js": "^1.12.1",
-    "riot": "3.7.4",
+    "riot": "5.3.0",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.1.6",
     "tinymce-i18n": "20.4.4",
