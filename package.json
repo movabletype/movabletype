@@ -63,6 +63,6 @@
     "tinymce": "5.1.6",
     "tinymce-i18n": "20.4.4",
     "codemirror": "5.54",
-    "xpath": "0.0.24"
+    "xpath": "0.0.32"
   }
 }
