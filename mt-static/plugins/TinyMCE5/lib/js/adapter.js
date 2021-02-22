@@ -375,6 +375,8 @@
 
         setHeight: function(height) {
             this.$editorElement.height(height);
+            let parent = this.$editorElement.parents('.tox-tinymce');
+            parent.height(parseInt(height) + parent.find('.tox-editor-header').height() + parent.find('.tox-statusbar').height());
         },
 
         resetUndo: function() {
@@ -419,8 +421,9 @@
                     adapter.$editorTextarea.height('auto');
                 }
                 else {
-                    adapter.$editorIframe.parents('.tox-tinymce').height(height);
-                    adapter.$editorIframe.height(size['iframeHeight']);
+                    adapter.$editorIframe.height(height);
+                    var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
+                    wrapper.height(parseInt(height) + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
                 }
             };
             var Cookie = tinymce.plugins.MovableType.Cookie;
@@ -487,7 +490,8 @@
                 adapter.$editorTextarea.height('auto');
                 adapter.$editorIframe.css({'width': '100%'});
                 adapter.$editorTextarea.css({'width': '100%'});
-                adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight'] + jQuery('.tox-editor-header').height() + jQuery('.tox-statusbar').height());
+                var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
+                wrapper.height(size['iframeHeight'] + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
             });
             var last_updated;
             ed.on('ResizeEditor', function(e){
@@ -496,8 +500,9 @@
                     return;
                 }
                 last_updated = now;
-                var height = adapter.$editorIframe.parents('.tox-tinymce').height();
-                adapter.$editorIframe.height(height - (jQuery('.tox-editor-header').height() + jQuery('.tox-statusbar').height()));
+                var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
+                var height = wrapper.height();
+                adapter.$editorIframe.height( parseInt(height) - parseInt(wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height()) );
                 adapter.$editorTextarea.height('auto');
                 var width = '100%';
                 var Cookie = tinymce.plugins.MovableType.Cookie;
