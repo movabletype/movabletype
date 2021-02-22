@@ -320,6 +320,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
 
     setHeight: function(height) {
         this.$editorElement.height(height);
+        var wrapper = this.$editorElement.parents('.tox-tinymce');
+        wrapper.height(parseInt(height) + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
     },
 
     resetUndo: function() {
@@ -364,8 +366,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 adapter.$editorTextarea.height('auto');
             }
             else {
-                adapter.$editorIframe.parents('.tox-tinymce').height(height);
-                adapter.$editorIframe.height(size['iframeHeight']);
+                adapter.$editorIframe.height(height);
+                var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
+                wrapper.height(parseInt(height) + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
             }
         };
         var Cookie = tinymce.plugins.MovableType.Cookie;
@@ -424,7 +427,8 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
             adapter.$editorTextarea.height('auto');
             adapter.$editorIframe.css({'width': '100%'});
             adapter.$editorTextarea.css({'width': '100%'});
-            adapter.$editorIframe.parents('.tox-tinymce').height(size['iframeHeight'] + jQuery('.tox-editor-header').height() + jQuery('.tox-statusbar').height());
+            var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
+            wrapper.height(size['iframeHeight'] + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
         });
         var last_updated;
         ed.on('ResizeEditor', function(e){
