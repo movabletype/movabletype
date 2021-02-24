@@ -1553,7 +1553,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        [ abs_path( $app->config->SeachTemplatePath ) ] );
+        [ abs_path( $app->config->SearchTemplatePath ) ] );
     $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
