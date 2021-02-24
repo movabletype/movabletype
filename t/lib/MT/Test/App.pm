@@ -50,6 +50,10 @@ sub new {
 
     $args{app_class} ||= $ENV{MT_APP} || 'MT::App::CMS';
 
+    if ( $args{app_class} !~ /^MT::App::/ ) {
+        $args{app_class} = "MT::App::$args{app_class}";
+    }
+
     $class->init( $args{app_class} );
 
     bless \%args, $class;
