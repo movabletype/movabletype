@@ -155,7 +155,6 @@ sub write_config {
         LoggerLevel          => 'DEBUG',
         MailTransfer         => 'debug',
         DBIRaiseError        => 1,
-        ProcessMemoryCommand => 0,                             ## disable process check
     );
 
     if ($extra) {
@@ -177,6 +176,8 @@ sub write_config {
             }
         }
     }
+    # disable process check
+    $config{ProcessMemoryCommand} = 0 unless $config{PerformanceLogging};
 
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
