@@ -1389,8 +1389,9 @@ PERMCHECK: {
         # save the arguments from whence we came...
         $params->{return_args} = $app->return_args;
 
-        $params->{confirm_js} = $app->param('confirm_js')
-            if $app->param('confirm_js');
+        if ( $app->param('role_selection') ) {
+            $params->{role_selection} = 1;
+        }
 
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;

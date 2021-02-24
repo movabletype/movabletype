@@ -460,14 +460,14 @@ sub dialog_select_website {
 
     my $favorites = $app->param('select_favorites');
     my %favorite;
-    my $confirm_js;
+    my $save_favorite;
     my $terms = {};
     my $args  = {};
     if ($favorites) {
 
         # Do not exclude top 5 favorite websites from
         #   select website dialog list. bugid:112372
-        $confirm_js = 'saveFavorite';
+        $save_favorite = 1;
     }
     if (   !$user->is_superuser
         && !$user->permissions(0)->can_do('edit_templates') )
@@ -508,7 +508,7 @@ sub dialog_select_website {
                 return_url       => $app->base
                     . $app->uri . '?'
                     . ( $app->param('return_args') || '' ),
-                confirm_js  => $confirm_js,
+                save_favorite => $save_favorite,
                 idfield     => ( $app->param('idfield') || '' ),
                 namefield   => ( $app->param('namefield') || '' ),
                 search_type => "website",
