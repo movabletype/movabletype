@@ -33,7 +33,6 @@ use MT::App::DataAPI;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Format;
 use Test::Deep qw/cmp_deeply/;
-use JSON;
 
 sub test_data_api {
     my ( $suite, $args ) = @_;
