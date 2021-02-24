@@ -772,6 +772,7 @@ sub activity_log_widget {
                 ;    # from GMT to Blog( or system ) Timezone
             $ts = epoch2ts( ( $blog || undef ), $epoch, 1 )
                 ;    # back to timestamp
+            $row->{created_on_timestamp} = MT::Util::format_ts( '%Y-%m-%d %H:%M:%S', $ts );
             if ($site_view) {
                 $row->{created_on_formatted}
                     = $is_relative
@@ -789,7 +790,7 @@ sub activity_log_widget {
                     ? MT::Util::relative_date( $ts, time, undef )
                     : format_ts(
                     MT::App::CMS::LISTING_DATETIME_FORMAT(),
-                    epoch2ts( undef, offset_time( ts2epoch( undef, $ts ) ) ),
+                    $ts,
                     undef,
                     $user ? $user->preferred_language : undef
                     );

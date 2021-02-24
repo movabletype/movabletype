@@ -1,65 +1,124 @@
-sudo: required
-
+dist: bionic
+os:
+  - linux
+language: ruby
 services:
   - docker
 
-env:
-  matrix:
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
-    - PERL_VERSION="5.28" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.28" TEST_COMMAND="phpunit && make test-php-lint"
+jobs:
+  include:
+    - # Perl 5.28 / PHP 7.3 / MariaDB 10.3
+      if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - if: type != cron
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
-    - PERL_VERSION="5.20" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.20" TEST_COMMAND="phpunit && make test-php-lint"
+    - # Perl 5.30 / PHP 7.4 / MySQL 8.0
+      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - TEST_COMMAND="travis_retry npm run test-riot"
+    - # Perl 5.20 / PHP 5.6 / MySQL 5.5
+      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
-    - PERL_VERSION="5.10" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.10" TEST_COMMAND="phpunit && make test-php-lint"
+    - # 5.10 / PHP 5.3 / MySQL 5.1
+      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - PERL_VERSION="5.30" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
-    - PERL_VERSION="5.30" TEST_COMMAND="phpunit && make test-php-lint"
+    - # Perl 5.32 / PHP 7.4 / MariaDB 10.5
+      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/*.t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/[^t]*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/mt7/t*"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/app/ t/class/ t/cms/ t/model/ t/mt_object/ t/object_driver/ t/task/ t/template/ t/tools t/util/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms_permission/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/data_api/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="archlinux" TEST_COMMAND="phpunit && make test-php-lint"
+
+#    - if: type = cron
+#      env: TEST_COMMAND="travis_retry npm run test-riot"
 
 script:
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.28" ] && [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "$TEST_COMMAND" ; fi
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.28" ] && [ -n "$USE_SELENIUM" ]; then TEST_IMAGE=movabletype/test:buster docker-compose -f t/selenium/docker-compose.yml run test ; fi
-
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.20" ] && ([ "$TRAVIS_BRANCH" = "master" ] || [ "$TRAVIS_BRANCH" = "develop" ] || [[ "$TRAVIS_BRANCH" =~ ^support- ]] || [[ "$TRAVIS_BRANCH" =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:jessie bash -c "$TEST_COMMAND" ; fi
-
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.10" ] && ([ "$TRAVIS_BRANCH" = "master" ] || [ "$TRAVIS_BRANCH" = "develop" ] || [[ "$TRAVIS_BRANCH" =~ ^support- ]] || [[ "$TRAVIS_BRANCH" =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:centos6 bash -c "$TEST_COMMAND"; fi
-
-  - if [ "$TRAVIS_EVENT_TYPE" != "cron" ] && [ "$PERL_VERSION" = "5.30" ] && ([ "$TRAVIS_BRANCH" = "master" ] || [ "$TRAVIS_BRANCH" = "develop" ] || [[ "$TRAVIS_BRANCH" =~ ^support- ]] || [[ "$TRAVIS_BRANCH" =~ ^release- ]]); then docker run -t -v $PWD:/mt -w /mt movabletype/test:focal bash -c "$TEST_COMMAND"; fi
-
-  - if [ "$TRAVIS_EVENT_TYPE" = "cron" ] && [ "$PERL_VERSION" = "5.30" ]; then docker run -e MT_TEST_IGNORE_FIXTURE=1 -e MT_TEST_MYSQL_CHARSET=utf8mb4 -t -v $PWD:/mt -w /mt movabletype/test:focal bash -c "$TEST_COMMAND" ; fi
+  - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi
+  - if [ -n "$USE_SELENIUM" ]; then TEST_IMAGE=movabletype/test:$TEST_IMAGE_NAME docker-compose -f t/selenium/docker-compose.yml run test ; fi
 
 notifications:
   slack:

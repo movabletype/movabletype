@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.5');
-define('PRODUCT_VERSION', '7.5.2');
+define('VERSION', '7.6');
+define('PRODUCT_VERSION', '7.6.0');
 define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 2;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -873,7 +873,20 @@ class MT {
         $this->_dump($this->log);
     }
 
+    function _write_error_log($errno, $errstr, $errfile, $errline) {
+        $log_file = $this->config('PHPErrorLogFilePath');
+        if (!$log_file) {
+            return;
+        }
+
+        $ts = date('Y-m-d H:i:s');
+        $errstr = preg_replace('/\t/', '\\t', $errstr);
+        error_log("timestamp:$ts\tno:$errno\tstr:$errstr\tfile:$errfile\tline:$errline\turi:${_SERVER['REQUEST_URI']}\n", 3, $log_file);
+    }
+
     function error_handler($errno, $errstr, $errfile, $errline) {
+        $this->_write_error_log($errno, $errstr, $errfile, $errline);
+
         if ($errno & (E_ALL ^ E_NOTICE ^ E_WARNING ^ E_DEPRECATED)) {
             if ( !empty( $this->db ) ) {
                 $errstr = encode_html_entities($errstr, ENT_QUOTES);

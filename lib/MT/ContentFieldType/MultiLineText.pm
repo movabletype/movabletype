@@ -50,7 +50,6 @@ sub data_load_handler {
     else {
         return scalar $app->param("content-field-multi-$field_id");
     }
-
 }
 
 sub options_html_params {

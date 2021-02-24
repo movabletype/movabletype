@@ -344,7 +344,7 @@ function init() {
     function searchContentType(datasource, str) {
     }
 
-    dialog.open({}, <mt:var name="confirm_js" default="returnTrigger">);
+    dialog.open({}, returnTrigger);
 }
 
 TC.attachLoadEvent( init );
@@ -509,7 +509,7 @@ TC.attachLoadEvent( init );
                 </div>
               </td>
               <td class="panel-label">
-                <__trans phrase="Unpublish">
+                <__trans phrase="__UNPUBLISHED">
               </td>
             </tr>
           </tbody>

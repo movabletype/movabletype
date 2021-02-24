@@ -1476,6 +1476,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => 'een bericht/pagina publiceert',
 	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
 	'Unpublish' => 'Publicatie ongedaan maken',
+    '__UNPUBLISHED' => 'Publicatie ongedaan maken',
 	'saves a content' => 'inhoud opslaat',
 	'publishes a content' => 'inhoud publiceert',
 	'unpublishes a content' => 'publicatie inhoud ongedaan maakt',
@@ -1640,8 +1641,8 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'Wijzigingen werden aangebracht aan de systeeminstellingen',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Ongeldige poging om wachtwoord opnieuw in te stellen; Kan het wachtwoord niet terughalen in deze configuratie',
 	'Invalid author_id' => 'Ongeldig author_id',
-	'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.' => 'Tijdelijke map moet beschrijfbaar zijn om export correct te laten werken.  Kijk de TempDir configuratiedirectief na.',
-	'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.' => 'Tijdelijke map moet beschrijfbaar zijn om import correct te laten werken.  Kijk de TempDir configuratiedirectief na.',
+	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'Tijdelijke map moet beschrijfbaar zijn om export correct te laten werken.  Kijk de (Export)TempDir configuratiedirectief na.',
+	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'Tijdelijke map moet beschrijfbaar zijn om import correct te laten werken.  Kijk de (Export)TempDir configuratiedirectief na.',
 	'[_1] is not a number.' => '[_1] is geen getal.',
 	'Copying file [_1] to [_2] failed: [_3]' => 'Bestand [_1] copiëren naar [_2] mislukt: [_3]',
 	'Specified file was not found.' => 'Het opgegeven bestand werd niet gevonden.',
@@ -2117,7 +2118,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
 	'An error occurred during the backup process: [_1]' => 'Er deed zich een fout voor tijdens het backup-proces: [_1]',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de TempDir configuratiedirectief na te kijken.',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'De tijdelijke map moet beschrijfbaar zijn om backups te kunnen doen.  Gelieve de (Export)TempDir configuratiedirectief na te kijken.',
 	'Invalid backup_what: [_1]' => 'Ongeldige backup_what: [_1]',
 	'Invalid backup_archive_format: [_1]' => 'Ongeldige backup_archive_format: [_1]',
 	'Invalid limit_size: [_1]' => 'Ongeldige limit_size: [_1]',

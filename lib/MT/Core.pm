@@ -662,7 +662,7 @@ BEGIN {
                         my $is_relative
                             = ( $app->user->date_format || 'relative' ) eq
                             'relative' ? 1 : 0;
-                        return $is_relative
+                        my $date = $is_relative
                             ? MT::Util::relative_date( $ts, time, $blog )
                             : MT::Util::format_ts(
                             $date_format,
@@ -671,6 +671,12 @@ BEGIN {
                             $app->user ? $app->user->preferred_language
                             : undef
                             );
+                        my $timestamp = MT::Util::format_ts(
+                            '%Y-%m-%d %H:%M:%S',
+                            $ts,
+                            $blog,
+                            );
+                        return qq{<span title="$timestamp">$date</span>};
                     },
                     priority           => 5,
                     default_sort_order => 'descend',
@@ -1884,6 +1890,7 @@ BEGIN {
             'UploadPerms'            => { default => '0666', },
             'NoTempFiles'            => { default => 0, },
             'TempDir'                => { default => '/tmp', },
+            'ExportTempDir'          => { default => undef },
             'RichTextEditor'         => { default => 'archetype', },
             'WYSIWYGEditor'          => undef,
             'SourceEditor'           => undef,
@@ -2214,9 +2221,11 @@ BEGIN {
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
-            'LoggerLevel'  => { default => 'info' },
-            'LoggerPath'   => undef,
-            'LoggerModule' => undef,
+            'LoggerLevel'    => { default => 'info' },
+            'LoggerPath'     => undef,
+            'LoggerModule'   => undef,
+            'LoggerFileName' => undef,
+            'LoggerConfig'   => undef,
 
             # Notification Center
             'NotificationCacheTTL' => { default => 3600 },

@@ -83,6 +83,21 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
         if (empty($config)) {
             return '';
         }
+
+        if($args['gtag']){
+            return <<<__HTML__
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={$config['profile_web_property_id']}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', '{$config['profile_web_property_id']}');
+</script>
+__HTML__;
+        }
+
         return <<<__HTML__
 <script type="text/javascript">
   var _gaq = _gaq || [];

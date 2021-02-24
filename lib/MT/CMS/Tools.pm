@@ -458,7 +458,7 @@ sub test_system_mail {
 
     my $cfg = $app->config;
     return $app->json_error(
-        $app->errtrans(
+        $app->translate(
             "You do not have a system email address configured.  Please set this first, save it, then try the test email again."
         )
     ) unless ( $cfg->EmailAddressMain );
@@ -1090,11 +1090,14 @@ sub start_backup {
     $param{over_1024} = 1 if $limit >= 1024 * 1024;
     $param{over_2048} = 1 if $limit >= 2048 * 1024;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) && _can_write_temp_dir($tmp) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
     $app->load_tmpl( 'backup.tmpl', \%param );
@@ -1124,11 +1127,14 @@ sub start_restore {
     eval "require XML::SAX";
     $param{missing_sax} = 1 if $@;
 
-    my $tmp = $app->config('TempDir');
+    my $tmp = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($tmp) unless -d $tmp;
     unless ( ( -d $tmp ) && ( -w $tmp ) ) {
         $param{error}
             = $app->translate(
-            'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.'
+            'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.'
             );
     }
 
@@ -1215,7 +1221,10 @@ sub backup {
     require File::Temp;
     require File::Spec;
     use File::Copy;
-    my $temp_dir = $app->config('TempDir');
+    my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    $fmgr->mkpath($temp_dir) unless -d $temp_dir;
 
     require MT::BackupRestore;
     my $count_term
@@ -1475,7 +1484,7 @@ sub backup_download {
     $app->validate_magic() or return;
     my $filename  = $app->param('filename');
     my $assetname = $app->param('assetname');
-    my $temp_dir  = $app->config('TempDir');
+    my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
     my $newfilename;
 
     $app->{hide_goback_button} = 1;
@@ -1583,6 +1592,18 @@ sub restore {
     {
         return restore_upload_manifest( $app, $fh );
     }
+
+    $app->log(
+        {   message  => (
+                $uploaded_filename
+                ? MT->translate( 'Started importing sites: [_1]', $uploaded_filename )
+                : MT->translate('Started importing sites')
+            ),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            category => 'restore',
+        }
+    );
 
     my $param = { return_args => '__mode=dashboard' };
 
@@ -1714,7 +1735,7 @@ sub restore {
                 $app->request( '__restore_in_progress', undef );
                 return 1;
             }
-            my $temp_dir = $app->config('TempDir');
+            my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
             require File::Temp;
             my $tmp = File::Temp::tempdir( $uploaded_filename . 'XXXX',
                 DIR => $temp_dir );
@@ -1913,6 +1934,9 @@ sub adjust_sitepath {
         my $site_path_absolute = $app->param("site_path_absolute_$id")
             || q();
         my $use_absolute = $app->param("use_absolute_$id") || q();
+
+        my $site_name = $app->param("site_name_$id");
+        $blog->name($site_name) if defined $site_name && $site_name ne '';
 
         if ($use_absolute) {
             $site_path = $app->param("site_path_absolute_$id") || q();
@@ -2914,7 +2938,6 @@ sub restore_directory {
             }
         );
     }
-    return ( $blogs, $assets ) unless ( defined($deferred) && %$deferred );
 
     if ( scalar( keys %error_assets ) ) {
         my $data;

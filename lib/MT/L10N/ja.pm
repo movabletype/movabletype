@@ -1520,6 +1520,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => '記事とウェブページの公開時',
 	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
 	'Unpublish' => '公開取り消し',
+    '__UNPUBLISHED' => '公開終了',
 	'saves a content' => 'コンテンツデータの保存時',
 	'publishes a content' => 'コンテンツデータの公開時',
 	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
@@ -1685,8 +1686,8 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'システム設定が変更されました',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'パスワードの再設定に失敗しました。この構成では再設定はできません。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
-	'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
-	'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'エクスポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'インポートするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'[_1] is not a number.' => '[_1]は数値ではありません。',
 	'Copying file [_1] to [_2] failed: [_3]' => 'ファイル: [_1]を[_2]にコピーできませんでした: [_3]',
 	'Specified file was not found.' => '指定されたファイルが見つかりませんでした。',
@@ -1731,6 +1732,8 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'Lockout IP address whitelist' => 'ロックアウトの除外IPアドレス',
+	'Started importing sites: [_1]' => 'サイトのインポートを開始します: [_1]',
+	'Started importing sites' => 'サイトのインポートを開始します',
 
 ## lib/MT/CMS/User.pm
 	'For improved security, please change your password' => 'セキュリティ向上の為パスワードを更新してください',
@@ -1862,6 +1865,8 @@ use vars qw( @ISA %Lexicon );
 	'Embedded Text' => '埋め込みテキスト',
 	'__LIST_FIELD_LABEL' => 'リスト',
 	'Table' => 'テーブル',
+	'Text Display Area' => 'テキスト表示エリア',
+	'__TEXT_LABEL_TEXT' => 'テキスト',
 
 ## lib/MT/ContentFieldType/Asset.pm
 	'Show all [_1] assets' => '[_1]件のアセットをすべて見る',
@@ -1976,6 +1981,7 @@ use vars qw( @ISA %Lexicon );
 	'"[_1]" (Site: "[_2]" ID: [_3])' => '"[_1]" ([_2] ID: [_3])',
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Tags with [_1]' => '[_1]のタグ',
+	'This block is only visible in the administration screen for comments.' => 'このブロックはコメントのため、管理画面でのみ表示されます。',
 
 ## lib/MT/ContentType/UniqueID.pm
 	'Cannot generate unique unique_id' => 'ユニークIDの生成に失敗しました',
@@ -2179,7 +2185,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
 	'An error occurred during the backup process: [_1]' => 'バックアップの途中でエラーが発生しました: [_1]',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。TempDirの設定を確認してください。',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'バックアップするにはテンポラリディレクトリに書き込みできなければなりません。(Export)TempDirの設定を確認してください。',
 	'Invalid backup_what: [_1]' => '不正なIDが指定されました: [_1]',
 	'Invalid backup_archive_format: [_1]' => '不正なアーカイブ形式が指定されました: [_1]',
 	'Invalid limit_size: [_1]' => '不正なファイルリミットが指定されました: [_1]',
@@ -3094,6 +3100,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown Logger Level: [_1]' => '不正なログレベルです: [_1]',
 	'Invalid Log module' => '不正なログモジュールが指定されています',
 	'Cannot load Log module: [_1]' => 'ログモジュールをロードできません: [_1]',
+	'Logger configuration for Log module [_1] seems problematic' => 'ログモジュール [_1] の設定に問題がありそうです',
 
 ## lib/MT/Util/YAML.pm
 	'Invalid YAML module' => '不正なYAMLモジュールが指定されています',
@@ -5059,7 +5066,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/include/archive_maps.tmpl
 	'Collapse' => '開く',
-
+    'Preferred' => '優先',
 ## tmpl/cms/include/asset_replace.tmpl
 	q{A file named '[_1]' already exists. Do you want to overwrite this file?} => q{同名のアセット'[_1]'がすでに存在します。上書きしますか?},
 	'Yes (s)' => 'はい (s)',

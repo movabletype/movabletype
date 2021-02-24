@@ -33,7 +33,8 @@ class ContentFieldTypeFactory {
         'categories'       => 'CategoriesRegistry',
         'tags'             => 'TagsRegistry',
         'list'             => 'ListRegistry',
-        'tables'           => 'TablesRegistry'
+        'tables'           => 'TablesRegistry',
+        'text_label'       => 'TextLabelRegistry'
     );
     private static $_types = array();
 
@@ -746,6 +747,21 @@ class TablesRegistry implements ContentFieldType {
         $ctx->__stash['vars']['__value__'] = $table;
         $ctx->stash('ContentFieldHeader', 1);
         $ctx->stash('ContentFieldFooter', 1);
+    }
+}
+
+class TextLabelRegistry implements ContentFieldType {
+    public function get_label($args = null) {
+        return 'Text Display Area';
+    }
+    public function get_data_type($args = null) {
+        return 'varchar';
+    }
+    public function get_field_value($value, &$ctx, &$args) {
+        return '';
+    }
+    public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
+        ContentFieldTypeTagHandler::_default($value, $args, $res, $ctx, $repeat);
     }
 }
 

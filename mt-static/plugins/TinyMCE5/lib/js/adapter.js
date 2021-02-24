@@ -7,6 +7,14 @@
  */
 ;(function($) {
 
+    // XXX: Remove localStrage items for TinyMCE 5.x.
+    // The silver theme use some JSON strigified storage items.
+    // But MT has a probrem with JSON.strigify in mt-static/js/common/JSON.js.
+    // So we remove storage items to avoid this problem.
+    ["tinymce-url-history", "tinymce-custom-colors"].forEach(function(k) {
+        tinymce.util.Tools.resolve('tinymce.util.LocalStorage').removeItem(k);
+    });
+
     MT.Editor.TinyMCE = function() { MT.Editor.apply(this, arguments) };
 
     var suffix = '';
@@ -18,7 +26,7 @@
 
     $.extend(MT.Editor.TinyMCE, MT.Editor, {
         isMobileOSWYSIWYGSupported: function() {
-            return false;
+            return true;
         },
         config: {
             plugins: 'lists,media,paste,hr,link,textpattern,fullscreen,table,quickbars',
@@ -243,6 +251,14 @@
             tinyMCE.init(config);
 
             adapter.setFormat(format, true);
+
+            if (MT.Util.isMobileView()) {
+                window.oncontextmenu = function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                };
+            }
         },
 
         setFormat: function(format, calledInInit) {

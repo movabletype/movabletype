@@ -1473,6 +1473,7 @@ use vars qw( @ISA %Lexicon );
 	'publishes an entry/page' => 'ein Eintrag/eine Seite veröffentlicht wird',
 	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird',
 	'Unpublish' => 'Nicht mehr veröffentlichen',
+    '__UNPUBLISHED' => 'Nicht mehr veröffentlichen',
 	'saves a content' => 'speichert einen Inhalt',
 	'publishes a content' => 'veröffentlicht einen Inhalt',
 	'unpublishes a content' => 'veröffentlicht einen Inhalt nicht mehr',
@@ -1638,8 +1639,8 @@ use vars qw( @ISA %Lexicon );
 	'System Settings Changes Took Place' => 'Es wurden Änderungen an den Systemeinstellungen vorgenommen.',
 	'Invalid password recovery attempt; Cannot recover the password in this configuration' => 'Versuch zur Passwortanforderung ungültig: Passwörter können in dieser Konfiguration nicht angefordert werden.',
 	'Invalid author_id' => 'Ungültige Autoren-ID',
-	'Temporary directory needs to be writable for export to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss für den Exportvorgang beschreibbar sein. Bitte überprüfen Sie das Konfigurationsparameter TempDir.',
-	'Temporary directory needs to be writable for import to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss für den Importvorgang beschreibbar sein. Bitte überprüfen Sie das Konfigurationsparameter TempDir.',
+	'Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.' => 'Das temporäre Verzeichnis muss für den Exportvorgang beschreibbar sein. Bitte überprüfen Sie das Konfigurationsparameter (Export)TempDir.',
+	'Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.' => 'Das temporäre Verzeichnis muss für den Importvorgang beschreibbar sein. Bitte überprüfen Sie das Konfigurationsparameter (Export)TempDir.',
 	'[_1] is not a number.' => '[_1] ist keine Zahl.',
 	'Copying file [_1] to [_2] failed: [_3]' => 'Die Datei [_1] konnte nicht nach [_2] kopiert werden: [_3]',
 	'Specified file was not found.' => 'Angegebene Datei nicht gefunden.',
@@ -2116,7 +2117,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Endpoint/v2/BackupRestore.pm
 	'An error occurred during the backup process: [_1]' => 'Beim Backup ist ein Fehler aufgetreten: [_1]',
-	'Temporary directory needs to be writable for backup to work correctly.  Please check TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre TempDir-Einstellung.',
+	'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.' => 'Das temporäre Verzeichnis muss zur Sicherung beschreibbar sein. Bitte überprüfen Sie Ihre (Export)TempDir-Einstellung.',
 	'Invalid backup_what: [_1]' => 'backup_what-Parameter ungültig: [_1]',
 	'Invalid backup_archive_format: [_1]' => 'backup_archive_format-Parameter ungültig: [_1]',
 	'Invalid limit_size: [_1]' => 'limit_size-Parameter ungültig: [_1]',

@@ -245,9 +245,6 @@ sub add {
         }
         $params->{return_args} = $app->return_args;
 
-        $params->{confirm_js} = $app->param('confirm_js')
-            if $app->param('confirm_js');
-
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
 

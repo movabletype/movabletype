@@ -201,14 +201,18 @@ sub _write_config {
         if ( ref $config->{$key} eq 'ARRAY' ) {
             for my $value ( @{ $config->{$key} } ) {
                 $value =~ s/\bMT_HOME\b/$MT_HOME/;
-                $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
+                $value =~ s/\bTEST_ROOT\b/$root/ and do {
+                    mkpath($value) unless basename($value) =~ /\./;
+                };
                 print $fh "$key $value\n";
             }
         }
         else {
             my $value = $config->{$key};
             $value =~ s/\bMT_HOME\b/$MT_HOME/;
-            $value =~ s/\bTEST_ROOT\b/$root/ and mkpath($value);
+            $value =~ s/\bTEST_ROOT\b/$root/ and do {
+                mkpath($value) unless basename($value) =~ /\./;
+            };
             print $fh "$key $value\n";
         }
     }
@@ -230,7 +234,7 @@ sub save_file {
     my $dir  = dirname($file);
     mkpath $dir unless -d $dir;
 
-    open my $fh, '>', $file or die $!;
+    open my $fh, '>', $file or die "$file: $!";
     binmode $fh;
     print $fh $body;
 }
