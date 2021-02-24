@@ -6,6 +6,7 @@ use HTML::Form;
 use HTML::LinkExtor;
 use Scalar::Util qw/blessed/;
 use Test::More;
+use JSON ();
 
 requires qw/ request base_url /;
 
@@ -132,6 +133,25 @@ sub content_doesnt_expose {
     my ( $self, $url ) = @_;
     ok $self->content !~ /(<(a|form|meta|link|img|script)\s[^>]+\Q$url\E[^>]+>)/s
         or note "$url is exposed as $1";
+}
+
+sub api_request {
+    my ( $self, $method, $path, $key, $body_params ) = @_;
+    my $params = {};
+    if ( $key && $body_params ) {
+        $params->{$key} = JSON::encode_json($body_params);
+    }
+    $params = _convert_params($params);
+    $params->{__path_info}      = $path;
+    $params->{__request_method} = $method;
+    $self->request($params);
+}
+
+sub api_request_ok {
+    my $self = shift;
+    my $res = $self->api_request(@_);
+    ok $res->is_success, "request succeeded";
+    return JSON::decode_json($res->decoded_content);
 }
 
 1;

@@ -16,6 +16,8 @@ use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
 use String::CamelCase 'camelize';
+use Mock::MonkeyPatch;
+use Sub::Name;
 
 our $MT_HOME;
 
@@ -153,7 +155,6 @@ sub write_config {
         LoggerLevel          => 'DEBUG',
         MailTransfer         => 'debug',
         DBIRaiseError        => 1,
-        ProcessMemoryCommand => 0,                             ## disable process check
     );
 
     if ($extra) {
@@ -175,6 +176,8 @@ sub write_config {
             }
         }
     }
+    # disable process check
+    $config{ProcessMemoryCommand} = 0 unless $config{PerformanceLogging};
 
     $config{$_} = $connect_info{$_} for keys %connect_info;
 
@@ -243,6 +246,40 @@ sub save_file {
 sub image_drivers {
     my $self = shift;
     map { $_ = basename($_); s/\.pm$//; $_ } glob "$MT_HOME/lib/MT/Image/*.pm";
+}
+
+sub cluck_errors {
+    my $self = shift;
+    if ( !@_ or $_[0] ) {
+        my $sub = $self->{error_handler} //= sub {
+            if ($_[1]) {
+                note "If this error is expected, set \$test_env->cluck_errors to 0 hide: $_[1]";
+                Carp::cluck $_[1];
+            }
+            Mock::MonkeyPatch::ORIGINAL(@_);
+        };
+        if ( @_ && ref $_[0] eq 'CODE' ) {
+            $sub = $_[0];
+            $self->{error_handler} = $sub;
+        }
+        $self->{mocked_error_handler} = Mock::MonkeyPatch->patch(
+            'MT::ErrorHandler::error' => subname 'mocked_error_handler' => $sub,
+        );
+    } elsif ( @_ && !$_[0] ) {
+        delete $self->{mocked_error_handler};
+    }
+}
+
+sub reset_cluck_errors {
+    my $self = shift;
+    return unless $self->{mocked_error_handler};
+    delete $self->{mocked_error_handler}{original};
+    require Class::Unload;
+    Class::Unload->unload('MT::ErrorHandler');
+    require MT::ErrorHandler;
+    $self->{mocked_error_handler} = Mock::MonkeyPatch->patch(
+        'MT::ErrorHandler::error' => subname 'mocked_error_handler' => $self->{error_handler},
+    );
 }
 
 sub connect_info {
@@ -662,6 +699,8 @@ sub prepare_fixture {
     }
 
     $ENV{MT_TEST_LOADED_FIXTURE} = 1;
+
+    $self->cluck_errors if $ENV{MT_TEST_CLUCK_ERRORS};
 }
 
 sub slurp {
@@ -1143,6 +1182,8 @@ sub ls {
         my $file = shift;
         note $file if -f $file;
     };
+    $root ||= $self->root;
+    return unless -d $root;
     File::Find::find(
         {   wanted => sub {
                 $callback->($File::Find::name);
@@ -1150,7 +1191,7 @@ sub ls {
             preprocess => sub { sort @_ },
             no_chdir   => 1,
         },
-        $root || $self->root
+        $root
     );
 }
 
