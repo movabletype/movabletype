@@ -17,4 +17,3 @@ class ContentType extends BaseObject
 }
 
 ?>
-
