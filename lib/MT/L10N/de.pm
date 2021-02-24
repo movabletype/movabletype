@@ -1908,6 +1908,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentType.pm
 	'Manage Content Data' => 'Inhaltsdaten verwalten',
+	'Manage All Content Data' => 'Alle Inhaltsdaten verwalten',
 	'Create Content Data' => 'Inhaltsdaten anlegen',
 	'Publish Content Data' => 'Inhaltsdaten veröffentlichen',
 	'Edit All Content Data' => 'Alle Inhaltsdaten bearbeiten',

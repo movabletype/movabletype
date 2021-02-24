@@ -1895,6 +1895,7 @@ Impossible d\'enregistrer le fichier. Le disque est plein.",
 
 ## lib/MT/ContentType.pm
 	'Manage Content Data' => 'Gérer les données de contenu',
+	'Manage All Content Data' => 'Gérer toutes les données de contenu',
 	'Create Content Data' => 'Créer une donnée de contenu',
 	'Publish Content Data' => 'Publier des données de contenu',
 	'Edit All Content Data' => 'Éditer les données de contenu',

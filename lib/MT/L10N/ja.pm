@@ -1975,6 +1975,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentType.pm
 	'Manage Content Data' => 'コンテンツデータの管理',
+	'Manage All Content Data' => 'すべてのコンテンツデータの管理',
 	'Create Content Data' => 'コンテンツデータの作成',
 	'Publish Content Data' => 'コンテンツデータの公開',
 	'Edit All Content Data' => 'すべてのコンテンツデータの編集',

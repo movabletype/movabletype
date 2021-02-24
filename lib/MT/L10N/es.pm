@@ -1909,6 +1909,7 @@ No se pudo escribir el fichero. Disco lleno.",
 
 ## lib/MT/ContentType.pm
 	'Manage Content Data' => 'Administrar datos de contenido',
+	'Manage All Content Data' => 'Administrar todos los datos de contenido',
 	'Create Content Data' => 'Crear datos de contenido',
 	'Publish Content Data' => 'Publicar datos de contenido',
 	'Edit All Content Data' => 'Editar todos los datos de contenido',
