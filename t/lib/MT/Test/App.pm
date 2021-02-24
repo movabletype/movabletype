@@ -80,6 +80,7 @@ sub request {
     }
 
     my $login;
+    my $api_login;
     if ( my $user = $self->{user} ) {
         if ( !$self->{session} ) {
             $app->start_session( $user, 1 );
@@ -91,9 +92,13 @@ sub request {
         $app->param( 'magic_token', $app->current_magic );
         $app->user($user);
         $login = sub { return ( $user, 0 ) };
+        if ( $self->{app_class} eq 'MT::App::DataAPI' ) {
+            $api_login = sub { return $user };
+        }
     }
     no warnings 'redefine';
     local *MT::App::login = $login if $login;
+    local *MT::App::DataAPI::authenticate = $api_login if $api_login;
 
     $app->run;
 
