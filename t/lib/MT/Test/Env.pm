@@ -1182,6 +1182,8 @@ sub ls {
         my $file = shift;
         note $file if -f $file;
     };
+    $root ||= $self->root;
+    return unless -d $root;
     File::Find::find(
         {   wanted => sub {
                 $callback->($File::Find::name);
@@ -1189,7 +1191,7 @@ sub ls {
             preprocess => sub { sort @_ },
             no_chdir   => 1,
         },
-        $root || $self->root
+        $root
     );
 }
 
