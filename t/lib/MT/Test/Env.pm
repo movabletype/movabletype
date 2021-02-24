@@ -3,7 +3,7 @@ package MT::Test::Env;
 use strict;
 use warnings;
 use Carp;
-use Carp::Always;
+use if !$ENV{CI}, "Carp::Always";
 use Test::More;
 use File::Spec;
 use Cwd ();
