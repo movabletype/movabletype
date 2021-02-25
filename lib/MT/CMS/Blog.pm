@@ -1080,6 +1080,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             require MT::CMS::Entry;
             MT::CMS::Entry::ping_continuation(
                 $app,
