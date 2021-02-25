@@ -942,14 +942,16 @@ sub rebuild_file {
             $ctx->{__stash}{category_set} = $category_set;
         }
     }
-    if ( $archiver->entry_based ) {
+    if ( $archiver->entry_based or $args{Entry} ) {
         $entry = $args{Entry};
         die MT->translate( "[_1] archive type requires [_2] parameter",
             $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->{__stash}{entry} = $entry;
+        if ( $archiver->entry_based ) {
+            $ctx->{__stash}{entry} = $entry;
+        }
     }
     if ( $archiver->date_based ) {
 
@@ -1138,6 +1140,10 @@ sub rebuild_file {
                 ( $content_data ? ( ContentData => $content_data ) : () ),
             }
         )
+        or ( $entry && $archiver->entry_based && $entry->status != MT::Entry::RELEASE() )
+        or (   $content_data
+            && $archiver->contenttype_based
+            && $content_data->status != MT::ContentStatus::RELEASE() )
         )
     {
         $map->{__saved_but_removed} = 1;
@@ -1202,14 +1208,9 @@ sub rebuild_file {
             $finfo->virtual(1);
             $finfo->save();
         }
-    }
 
-    return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
-    return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
-    return 1
-        if ( $content_data
-        && $archiver->contenttype_based
-        && $content_data->status != MT::ContentStatus::RELEASE() );
+        return 1;
+    }
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
@@ -1611,18 +1612,18 @@ sub _rebuild_content_archive_type {
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
     return 1 if $at eq 'None';
-    my $content_data
-        = (    $param{ArchiveType} ne 'ContentType-Category'
+    my $content_data = $param{ContentData};
+
+    ## XXX: shouldn't always raise an error if content data is not defined?
+    if (!$content_data
+        && (   $param{ArchiveType} ne 'ContentType-Category'
             && $param{ArchiveType} ne 'ContentType-Author'
             && !exists $param{Start}
             && !exists $param{End} )
-        ? (
-        $param{ContentData}
-            or return $mt->error(
-            MT->translate( "Parameter '[_1]' is required", 'ContentData' )
-            )
         )
-        : undef;
+    {
+        return $mt->error( MT->translate( "Parameter '[_1]' is required", 'ContentData' ) );
+    }
 
     my $blog;
     unless ( $blog = $param{Blog} ) {
@@ -1726,12 +1727,12 @@ sub _rebuild_content_archive_type {
             ? $param{File}
             : $mt->archive_file_for( $content_data, $blog, $at,
             $param{Category}, $map, $ts, $param{Author} );
-        if ( $file eq '' ) {
+        if ( !defined($file) ) {
+            return $mt->error( MT->translate( $blog->errstr() ) );
+        }
+        elsif ( $file eq '' ) {
 
             # np
-        }
-        elsif ( !defined($file) ) {
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         else {
             push @map_build, $map unless $done->{$file};
@@ -2246,14 +2247,14 @@ sub rebuild_deleted_content_data {
                 = $archiver->target_category_ids( $content_data, $map );
             for my $cat_id (@$category_ids) {
                 my $cat = MT::Category->load($cat_id) or next;
-                if ($archiver->does_publish_file(
+                if (!$archiver->does_publish_file(
                         {   Blog        => $blog,
                             ArchiveType => $at,
                             ContentData => $content_data,
                             Category    => $cat,
                             TemplateMap => $map,
                         }
-                    ) == 1
+                    )
                     )
                 {
                     if ( MT->config('DeleteFilesAfterRebuild') ) {
@@ -2330,20 +2331,19 @@ sub rebuild_deleted_content_data {
                 }
             }
             elsif (
-                $archiver->does_publish_file(
+                !$archiver->does_publish_file(
                     {   Blog        => $blog,
                         ArchiveType => $at,
                         ContentData => $content_data,
                         TemplateMap => $map,
-                        (   $archiver->author_based()
-                            ? ( Author => $content_data->author )
+                        (   $archiver->author_based() ? ( Author => $content_data->author )
                             : ()
                         ),
                         (   $archiver->date_based() ? ( Timestamp => $start )
                             : ()
                         ),
                     }
-                ) == 1
+                )
                 )
             {
                 if ( $app->config('DeleteFilesAfterRebuild') ) {

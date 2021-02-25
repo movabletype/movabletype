@@ -1221,8 +1221,10 @@ sub _rebuild_entry_archive_type {
             EndDate   => $end,
             Force     => $param{Force} ? 1 : 0,
         ) or return;
-        $done->{ $map->{__saved_output_file} }++;
+        $done->{ $map->{__saved_output_file} }++
+            unless delete $map->{__saved_but_removed};
     }
+
     1;
 }
 
@@ -1309,15 +1311,17 @@ sub rebuild_file {
         $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
     }
-    if ( $archiver->entry_based ) {
+    if ( $archiver->entry_based or $args{Entry} ) {
         $entry = $args{Entry};
         die MT->translate( "[_1] archive type requires [_2] parameter",
             $archiver->archive_label, 'Entry' )
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->var( 'entry_archive', 1 );
-        $ctx->{__stash}{entry} = $entry;
+        if ( $archiver->entry_based ) {
+            $ctx->var( 'entry_archive', 1 );
+            $ctx->{__stash}{entry} = $entry;
+        }
     }
     if ( $archiver->date_based ) {
 
@@ -1476,9 +1480,10 @@ sub rebuild_file {
                 Timestamp   => $start,
             }
         )
+        or ( $entry && $archiver->entry_based && $entry->status != MT::Entry::RELEASE() )
         )
     {
-        $finfo->remove();
+        $map->{__saved_but_removed} = 1;
         MT::Util::Log::init();
         if ( MT->config->DeleteFilesAfterRebuild ) {
             $finfo->mark_to_remove;
@@ -1538,10 +1543,10 @@ sub rebuild_file {
             $finfo->virtual(1);
             $finfo->save();
         }
+
+        return 1;
     }
 
-    return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
-    return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
