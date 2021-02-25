@@ -514,7 +514,8 @@ sub rebuild_deleted_entry {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
 
-        my ( $start, $end ) = $archiver->date_range( $entry->authored_on )
+        my ( $start, $end );
+        ( $start, $end ) = $archiver->date_range( $entry->authored_on )
             if $archiver->date_based() && $archiver->can('date_range');
 
         # Remove archive file if archive file has not entries.
@@ -972,28 +973,27 @@ sub rebuild_archives {
                 my $cat = MT::Category->load($cat_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$cat_id} } ) {
+                    for my $r ( values %{ $recipe->{$at}->{$cat_id} } ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Category    => $cat,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$cat_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$cat_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$cat_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$cat_id};
+                    delete $r->{id};
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Category    => $cat,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
@@ -1004,42 +1004,39 @@ sub rebuild_archives {
                 my $author = MT::Author->load($auth_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$auth_id} } ) {
+                    for my $r ( values %{ $recipe->{$at}->{$auth_id} } ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Author      => $author,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$auth_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$auth_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$auth_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$auth_id};
+                    delete $r->{id};
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Author      => $author,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
         }
         elsif ( $archiver->date_based() ) {
-            for my $key ( keys %{ $recipe->{$at} } ) {
+            for my $r ( values %{ $recipe->{$at} } ) {
                 $mt->_rebuild_entry_archive_type(
                     NoStatic    => 0,
                     Force       => ( $param{Force} ? 1 : 0 ),
                     Blog        => $blog,
                     ArchiveType => $at,
-                    Start       => $recipe->{$at}->{$key}->{Start},
-                    End         => $recipe->{$at}->{$key}->{End},
-                    Timestamp   => $recipe->{$at}->{$key}->{Timestamp},
+                    %$r,
                 ) or return;
             }
         }
@@ -2071,12 +2068,16 @@ sub rebuild_from_fileinfo {
     return 1 if $at eq 'None';
 
     my ( $start, $end );
-    my $blog = MT::Blog->load( $fi->blog_id )
-        if $fi->blog_id;
-    my $entry = MT::Entry->load( $fi->entry_id )
-        or return $pub->error(
-        MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
-        if $fi->entry_id;
+    my $blog;
+    if ( $fi->blog_id ) {
+        $blog = MT::Blog->load( $fi->blog_id );
+    }
+    my $entry;
+    if ( $fi->entry_id ) {
+        $entry = MT::Entry->load( $fi->entry_id )
+            or return $pub->error(
+            MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
+    }
     if ( $fi->startdate ) {
         my $archiver = $pub->archiver($at);
 
@@ -2087,10 +2088,14 @@ sub rebuild_from_fileinfo {
                 MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
         }
     }
-    my $cat = MT::Category->load( $fi->category_id )
-        if $fi->category_id;
-    my $author = MT::Author->load( $fi->author_id )
-        if $fi->author_id;
+    my $cat;
+    if ( $fi->category_id ) {
+        $cat = MT::Category->load( $fi->category_id );
+    }
+    my $author;
+    if ( $fi->author_id ) {
+        $author = MT::Author->load( $fi->author_id );
+    }
 
     ## Load the template-archive-type map entries for this blog and
     ## archive type. We do this before we load the list of entries, because
@@ -2491,13 +2496,13 @@ sub _delete_archive_file {
 
         return join ':',
             (
-            $entry     ? $entry->id  : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
+            $entry && $entry->id   ? $entry->id  : '0',
+            $blog && $blog->id     ? $blog->id   : '0',
+            $at                    ? $at         : 'None',
+            $cat && $cat->id       ? $cat->id    : '0',
+            $map && $map->id       ? $map->id    : '0',
+            $timestamp             ? $timestamp  : '0',
+            $author && $author->id ? $author->id : '0'
             );
     }
 
