@@ -439,6 +439,7 @@ sub mark_fileinfo {
         }
     );
 
+    require MT::Util::Log;
     MT::Util::Log::init();
     for my $f (@finfo) {
         $f->mark_to_remove;
