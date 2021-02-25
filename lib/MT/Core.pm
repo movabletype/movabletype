@@ -156,6 +156,7 @@ BEGIN {
             'association'     => 'MT::Association',
             'permission'      => 'MT::Permission',
             'fileinfo'        => 'MT::FileInfo',
+            'deletefileinfo'  => 'MT::DeleteFileInfo',
             'placement'       => 'MT::Placement',
             'plugindata'      => 'MT::PluginData',
             'session'         => 'MT::Session',
