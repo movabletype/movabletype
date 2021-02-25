@@ -2467,6 +2467,7 @@ sub _delete_archive_file {
     my ( $blog, $file, $at, $entry )
         = map { $param{$_} } qw(Blog File ArchiveType Entry);
     my $fmgr = $blog->file_mgr;
+    return unless $fmgr->exists($file);
 
     MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry );
 
