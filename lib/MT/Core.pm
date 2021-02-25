@@ -2085,7 +2085,7 @@ BEGIN {
                     height => 162,          # textarea height
                 },
             },
-            'DeleteFilesAfterRebuild'   => { default => 1, },
+            'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED
