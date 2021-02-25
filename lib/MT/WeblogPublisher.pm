@@ -2428,6 +2428,7 @@ sub remove_entry_archive_file {
 
     require File::Spec;
     require MT::PublishOption;
+    require MT::Util::Log;
     MT::Util::Log::init();
     for my $map (@map) {
         next if !$force && $map->build_type == MT::PublishOption::ASYNC();
