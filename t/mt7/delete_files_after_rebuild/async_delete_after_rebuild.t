@@ -1062,4 +1062,77 @@ subtest 'unpublish the newly-created past content data with the same date' => su
     diff_should_be($same_date_content_diff);
 };
 
+# ---------------------------------------------------
+
+subtest 'create yet yet another new content data' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode          => 'view',
+            _type           => 'content_data',
+            content_type_id => $ct_id,
+            blog_id         => $blog_id,
+        }
+    );
+
+    $app->post_form_ok(
+        {   data_label                    => 'yet yet another new content data',
+            "date-$cf_date_id"            => '2021-02-01',
+            "date-$cf_datetime_id"        => '2021-03-01',
+            "time-$cf_datetime_id"        => '12:34:56',
+            "category-$cf_same_fruit_id"  => $cat_apple_id,
+            "category-$cf_other_fruit_id" => $cat_strawberry_id,
+            status                        => MT::ContentStatus::RELEASE(),
+        }
+    );
+    ok !$app->generic_error, "No errors";
+
+    run_rpt_if_async();
+
+    diff_should_be($content_diff);
+};
+
+subtest 'change category of the newly-created content data' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $cd = MT::ContentData->load( { label => 'yet yet another new content data' } );
+    my $cd_id = $cd->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode          => 'view',
+            _type           => 'content_data',
+            content_type_id => $ct_id,
+            blog_id         => $blog_id,
+            id              => $cd_id,
+        }
+    );
+
+    $app->post_form_ok( { "category-$cf_same_fruit_id" => $cat_orange_id, } );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    my @current_files = $test_env->files($site_root);
+    my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
+    my @added         = @{ $diff->added };
+    my @deleted       = @{ $diff->deleted };
+    note explain \@added;
+    note explain \@deleted;
+    is @added                    => 4, "4 new files are added";
+    is grep( /orange/, @added )  => 4, "and all of them belong to the orange category";
+    is @deleted                  => 4, "4 old files are deleted";
+    is grep( /apple/, @deleted ) => 4, "and all of them belong to the apple category";
+};
+
 done_testing;
