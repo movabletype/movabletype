@@ -403,6 +403,35 @@ sub remove_fileinfo {
     1;
 }
 
+sub mark_fileinfo {
+    my $mt    = shift;
+    my %param = @_;
+    my $at    = $param{ArchiveType}
+        or return $mt->error( MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
+    my $blog_id = $param{Blog}
+        or return $mt->error( MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
+    my $entry_id = $param{Entry}, my $author_id = $param{Author};
+    my $start    = $param{StartDate};
+    my $cat_id   = $param{Category};
+
+    require MT::FileInfo;
+    my @finfo = MT::FileInfo->load(
+        {   archive_type => $at,
+            blog_id      => $blog_id,
+            ( $entry_id ? ( entry_id    => $entry_id ) : () ),
+            ( $cat_id   ? ( category_id => $cat_id )   : () ),
+            ( $start    ? ( startdate   => $start )    : () ),
+        }
+    );
+
+    MT::Util::Log::init();
+    for my $f (@finfo) {
+        $f->mark_to_remove;
+        MT::Util::Log->debug( 'Marked to remove ' . $f->file_path );
+    }
+    1;
+}
+
 # rebuild_deleted_entry
 #
 # $mt->rebuild_deleted_entry(
@@ -446,17 +475,26 @@ sub rebuild_deleted_entry {
         @at = grep { $_ ne 'Page' } @at_orig;
     }
 
-    # Remove Individual archive file.
-    if ( $app->config('DeleteFilesAtRebuild') ) {
-        $mt->remove_entry_archive_file( Entry => $entry, );
+    if ( $app->config('DeleteFilesAfterRebuild') ) {
+        $mt->mark_fileinfo(
+            ArchiveType => 'Individual',
+            Blog        => $blog->id,
+            Entry       => $entry->id
+        );
     }
+    else {
+        # Remove Individual archive file.
+        if ( $app->config('DeleteFilesAtRebuild') ) {
+            $mt->remove_entry_archive_file( Entry => $entry, );
+        }
 
-    # Remove Individual fileinfo records.
-    $mt->remove_fileinfo(
-        ArchiveType => 'Individual',
-        Blog        => $blog->id,
-        Entry       => $entry->id
-    );
+        # Remove Individual fileinfo records.
+        $mt->remove_fileinfo(
+            ArchiveType => 'Individual',
+            Blog        => $blog->id,
+            Entry       => $entry->id
+        );
+    }
 
     require MT::Util;
     for my $at (@at) {
@@ -485,23 +523,36 @@ sub rebuild_deleted_entry {
                     )
                     )
                 {
-                    $mt->remove_fileinfo(
-                        ArchiveType => $at,
-                        Blog        => $blog->id,
-                        Category    => $cat->id,
-                        (   $archiver->date_based()
-                            ? ( startdate => $start )
-                            : ()
-                        ),
-                    );
-                    if (   $app->config('RebuildAtDelete')
-                        && $app->config('DeleteFilesAtRebuild') )
-                    {
-                        $mt->remove_entry_archive_file(
-                            Entry       => $entry,
+                    if ( MT->config('DeleteFilesAfterRebuild') ) {
+                        $mt->mark_fileinfo(
                             ArchiveType => $at,
-                            Category    => $cat,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            (   $archiver->date_based()
+                                ? ( startdate => $start )
+                                : ()
+                            ),
                         );
+                    }
+                    else {
+                        $mt->remove_fileinfo(
+                            ArchiveType => $at,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            (   $archiver->date_based()
+                                ? ( startdate => $start )
+                                : ()
+                            ),
+                        );
+                        if (   $app->config('RebuildAtDelete')
+                            && $app->config('DeleteFilesAtRebuild') )
+                        {
+                            $mt->remove_entry_archive_file(
+                                Entry       => $entry,
+                                ArchiveType => $at,
+                                Category    => $cat,
+                            );
+                        }
                     }
                 }
                 else {
@@ -539,26 +590,38 @@ sub rebuild_deleted_entry {
                     == 1 )
                 )
             {
-
-                # Remove archives fileinfo records.
-                $mt->remove_fileinfo(
-                    ArchiveType => $at,
-                    Blog        => $blog->id,
-                    (   $archiver->author_based()
-                            && $entry->author_id
-                        ? ( author_id => $entry->author_id )
-                        : ()
-                    ),
-                    (   $archiver->date_based() ? ( startdate => $start ) : ()
-                    ),
-                );
-                if (   $app->config('RebuildAtDelete')
-                    && $app->config('DeleteFilesAtRebuild') )
-                {
-                    $mt->remove_entry_archive_file(
-                        Entry       => $entry,
-                        ArchiveType => $at
+                if ( $app->config('DeleteFilesAfterRebuild') ) {
+                    $mt->mark_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        (   $archiver->author_based()
+                                && $entry->author_id
+                            ? ( Author => $entry->author_id )
+                            : ()
+                        ),
+                        ( $archiver->date_based() ? ( StartDate => $start ) : () ),
                     );
+                }
+                else {
+                    # Remove archives fileinfo records.
+                    $mt->remove_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        (   $archiver->author_based()
+                                && $entry->author_id
+                            ? ( Author => $entry->author_id )
+                            : ()
+                        ),
+                        ( $archiver->date_based() ? ( StartDate => $start ) : () ),
+                    );
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
+                        $mt->remove_entry_archive_file(
+                            Entry       => $entry,
+                            ArchiveType => $at
+                        );
+                    }
                 }
             }
             else {
@@ -1327,18 +1390,23 @@ sub rebuild_file {
 
          # if the shoe don't fit, remove all shoes and create the perfect shoe
             MT::Util::Log::init();
-            foreach (@finfos) {
-                $_->remove();
-                MT::Util::Log->info( ' Removed ' . $_->file_path );
-                if ( MT->config('DeleteFilesAtRebuild') ) {
-                    $mt->_delete_archive_file(
-                        Blog        => $blog,
-                        File        => $_->file_path,
-                        ArchiveType => $at,
-                        ( $archiver->entry_based && $entry )
-                        ? ( Entry => $entry->id )
-                        : (),
-                    );
+            foreach my $finfo (@finfos) {
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $finfo->mark_to_remove;
+                    MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+                }
+                else {
+                    $finfo->remove();
+                    if ( MT->config('DeleteFilesAtRebuild') ) {
+                        $mt->_delete_archive_file(
+                            Blog        => $blog,
+                            File        => $finfo->file_path,
+                            ArchiveType => $at,
+                            ( $archiver->entry_based && $entry )
+                            ? ( Entry => $entry->id )
+                            : (),
+                        );
+                    }
                 }
             }
 
@@ -1376,13 +1444,20 @@ sub rebuild_file {
     {
         $finfo->remove();
         MT::Util::Log::init();
-        MT::Util::Log->info( ' Removed ' . $finfo->file_path );
-        if ( MT->config->DeleteFilesAtRebuild ) {
-            $mt->_delete_archive_file(
-                Blog        => $blog,
-                File        => $finfo->file_path,
-                ArchiveType => $at
-            );
+        if ( MT->config->DeleteFilesAfterRebuild ) {
+            $finfo->mark_to_remove;
+            MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+        }
+        else {
+            $finfo->remove();
+            MT::Util::Log->debug( 'Removed FileInfo for ' . $finfo->file_path );
+            if ( MT->config->DeleteFilesAtRebuild ) {
+                $mt->_delete_archive_file(
+                    Blog        => $blog,
+                    File        => $finfo->file_path,
+                    ArchiveType => $at
+                );
+            }
         }
 
         return 1;
@@ -2225,15 +2300,25 @@ sub unpublish_past_entries {
                 or die $entry->errstr;
             $app->post_scheduled( $entry, $original );
 
-            # remove file
-            if ( $mt->config('DeleteFilesAtRebuild') ) {
-                my $archive_type = $entry->is_entry ? 'Individual' : 'Page';
-                my $primary_category = $entry->category;
-                $app->remove_entry_archive_file(
-                    Entry       => $entry,
+            my $archive_type     = $entry->is_entry ? 'Individual' : 'Page';
+            my $primary_category = $entry->category;
+            if ( $mt->config('DeleteFilesAfterRebuild') ) {
+                $app->mark_fileinfo(
                     ArchiveType => $archive_type,
-                    Category    => $primary_category,
+                    Blog        => $site->id,
+                    Entry       => $entry->id,
+                    Category    => $primary_category ? $primary_category->id : 0,
                 );
+            }
+            else {
+                # remove file
+                if ( $mt->config('DeleteFilesAtRebuild') ) {
+                    $app->remove_entry_archive_file(
+                        Entry       => $entry,
+                        ArchiveType => $archive_type,
+                        Category    => $primary_category,
+                    );
+                }
             }
 
             MT->run_callbacks( 'unpublish_past_entries', $mt, $entry );
@@ -2329,6 +2414,7 @@ sub remove_entry_archive_file {
 
     require File::Spec;
     require MT::PublishOption;
+    MT::Util::Log::init();
     for my $map (@map) {
         next if !$force && $map->build_type == MT::PublishOption::ASYNC();
 
@@ -2340,12 +2426,29 @@ sub remove_entry_archive_file {
             die MT->translate( $blog->errstr() );
         }
 
-        $mt->_delete_archive_file(
-            Blog        => $blog,
-            File        => $file,
-            ArchiveType => $at,
-            Entry       => $entry,
+        require MT::FileInfo;
+        my @fileinfos = MT::FileInfo->load(
+            {   blog_id   => $blog->id,
+                file_path => $file,
+            }
         );
+        if ( MT->config('DeleteFilesAfterRebuild') ) {
+            for my $fi (@fileinfos) {
+                $fi->mark_to_remove;
+            }
+            MT::Util::Log->debug("Marked to remove $file");
+        }
+        else {
+            for my $fi (@fileinfos) {
+                $fi->remove;
+            }
+            $mt->_delete_archive_file(
+                Blog        => $blog,
+                File        => $file,
+                ArchiveType => $at,
+                Entry       => $entry,
+            );
+        }
     }
     1;
 }

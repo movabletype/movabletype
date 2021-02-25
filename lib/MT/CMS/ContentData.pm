@@ -857,10 +857,14 @@ sub save {
         for my $param (@old_archive_params) {
             my $orig = $param->{ContentData};
             next if $orig->status != MT::ContentStatus::RELEASE();
-            $app->publisher->_delete_archive_file(%$param);
-            if ( my $fi = $param->{FileInfo} ) {
+            my $fi = $param->{FileInfo};
+            if ( MT->config('DeleteFilesAfterRebuild') ) {
+                $fi->mark_to_remove;
+                MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+            }
+            else {
                 $fi->remove;
-                MT::Util::Log->info( ' Removed ' . $fi->file_path );
+                $app->publisher->_delete_archive_file(%$param);
             }
         }
     }
@@ -987,11 +991,13 @@ sub delete {
             $app, $obj )
             or return $app->permission_denied;
 
-        my %recipe;
-        %recipe = $app->publisher->rebuild_deleted_content_data(
-            ContentData => $obj,
-            Blog        => $obj->blog,
-        ) if $obj->status eq MT::ContentStatus::RELEASE();
+        # Mark before FileInfo records are gone by cascading delete
+        my @finfos = MT::FileInfo->load({ cd_id => $obj->id, blog_id => $blog->id });
+        for my $finfo (@finfos) {
+            if ( $app->config('DeleteFilesAfterRebuild') ) {
+                $finfo->mark_to_remove;
+            }
+        }
 
         # Remove object from database
         my $content_type_name
@@ -1002,6 +1008,12 @@ sub delete {
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
         $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
+
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
