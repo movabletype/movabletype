@@ -262,6 +262,9 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+
+    $mt->remove_marked_files($blog);
+
     MT::Util::Log->info('--- End   rebuild.');
     1;
 }
@@ -1221,6 +1224,39 @@ sub _rebuild_entry_archive_type {
         $done->{ $map->{__saved_output_file} }++;
     }
     1;
+}
+
+sub remove_marked_files {
+    my ( $self, $blog, $ondemand_only ) = @_;
+
+    return unless MT->config('DeleteFilesAfterRebuild');
+    MT::Util::Log::init();
+    MT::Util::Log->info('--- Start removing marked files');
+
+    require MT::DeleteFileInfo;
+    my %args;
+    if ($blog) {
+        $args{blog_id} = $blog->id;
+    }
+    if ($ondemand_only) {
+        require MT::PublishOption;
+        $args{build_type} = MT::PublishOption::ONDEMAND();
+    }
+    my @infos = MT::DeleteFileInfo->load( \%args );
+    return unless @infos;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    for my $info (@infos) {
+        my $file = $info->file_path;
+        $info->remove;
+        if ( MT::FileInfo->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
+            next;
+        }
+        $fmgr->delete($file);
+        MT::Util::Log->info("Removed $file");
+    }
+    MT::Util::Log->info('--- End removing marked files');
 }
 
 sub rebuild_file {
@@ -2348,6 +2384,7 @@ sub unpublish_past_entries {
                 }
                 $mt->rebuild_indexes( Blog => $site )
                     or die $mt->errstr;
+                $mt->publisher->remove_marked_files($site);
             };
             if ( my $err = $@ ) {
 

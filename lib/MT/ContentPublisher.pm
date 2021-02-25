@@ -396,6 +396,9 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+
+    $mt->remove_marked_files($blog);
+
     MT::Util::Log->info('--- End   rebuild.');
     1;
 }
@@ -2647,6 +2650,7 @@ sub unpublish_past_contents {
                 }
                 $mt->rebuild_indexes( Blog => $site )
                     or die $mt->errstr;
+                $mt->publisher->remove_marked_files($site);
             };
             if ( my $err = $@ ) {
 

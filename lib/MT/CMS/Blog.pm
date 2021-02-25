@@ -1114,6 +1114,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             if ( MT->has_plugin('Trackback') ) {
                 require Trackback::CMS::Entry;
                 Trackback::CMS::Entry::ping_continuation(
@@ -1137,6 +1138,7 @@ sub rebuild_pages {
             my $blog = MT::Blog->load( $content_data->blog_id )
                 or return $app->errtrans( 'Cannot load blog #[_1].',
                 $content_data->blog_id );
+            $app->publisher->remove_marked_files( $blog, 1 );
             return $app->redirect(
                 $app->uri(
                     mode => 'view',

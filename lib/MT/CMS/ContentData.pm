@@ -893,6 +893,7 @@ sub save {
 
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
@@ -1040,6 +1041,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $b );
+                $app->publisher->remove_marked_files( $b, 1 );
             }
         };
 
