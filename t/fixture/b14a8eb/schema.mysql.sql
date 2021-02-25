@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Wed Sep  2 21:45:03 2020
+-- Created on Fri Feb 26 01:36:46 2021
 --
 SET foreign_key_checks=0;
 
@@ -467,6 +467,20 @@ CREATE TABLE `mt_config` (
   `config_data` mediumtext NULL DEFAULT NULL,
   `config_id` integer(11) NOT NULL auto_increment,
   PRIMARY KEY (`config_id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
+
+DROP TABLE IF EXISTS `mt_deletefileinfo`;
+
+--
+-- Table: `mt_deletefileinfo`
+--
+CREATE TABLE `mt_deletefileinfo` (
+  `deletefileinfo_blog_id` integer(11) NOT NULL,
+  `deletefileinfo_build_type` smallint(6) NOT NULL,
+  `deletefileinfo_file_path` mediumtext NULL DEFAULT NULL,
+  `deletefileinfo_id` integer(11) NOT NULL auto_increment,
+  INDEX `mt_deletefileinfo_blog_id` (`deletefileinfo_blog_id`),
+  PRIMARY KEY (`deletefileinfo_id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET utf8;
 
 DROP TABLE IF EXISTS `mt_entry`;
