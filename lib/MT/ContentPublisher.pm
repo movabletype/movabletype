@@ -1126,6 +1126,7 @@ sub rebuild_file {
                 )
                 || die "Couldn't create FileInfo because "
                 . MT::FileInfo->errstr();
+            MT::Util::Log->debug( 'Created FileInfo for ' . $file );
         }
     }
 
@@ -2105,7 +2106,7 @@ sub remove_fileinfo {
     my @finfo = MT::FileInfo->load( $terms, $args );
     for my $f (@finfo) {
         $f->remove;
-        MT::Util::Log->info( ' Removed ' . $f->file_path );
+        MT::Util::Log->debug( 'Removed FileInfo for ' . $f->file_path );
     }
     1;
 }
