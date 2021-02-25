@@ -411,7 +411,7 @@ sub remove_fileinfo {
     MT::Util::Log::init();
     for my $f (@finfo) {
         $f->remove;
-        MT::Util::Log->info( ' Removed ' . $f->file_path );
+        MT::Util::Log->debug( ' Removed FileInfo for ' . $f->file_path );
     }
     1;
 }
@@ -1445,6 +1445,7 @@ sub rebuild_file {
                 )
                 || die "Couldn't create FileInfo because "
                 . MT::FileInfo->errstr();
+            MT::Util::Log->debug( 'Created FileInfo for ' . $file );
         }
     }
 
@@ -1845,7 +1846,7 @@ sub rebuild_indexes {
                 MT::Util::Log::init();
                 foreach (@finfos) {
                     $_->remove();
-                    MT::Util::Log->info( ' Removed ' . $_->file_path );
+                    MT::Util::Log->debug( ' Removed FileInfo for ' . $_->file_path );
                 }
                 $finfo = MT::FileInfo->set_info_for_url(
                     $rel_url, $file, 'index',
@@ -2421,6 +2422,7 @@ sub remove_entry_archive_file {
 
     require File::Spec;
     require MT::PublishOption;
+    MT::Util::Log::init();
     for my $map (@map) {
         next if !$force && $map->build_type == MT::PublishOption::ASYNC();
 
@@ -2469,6 +2471,7 @@ sub _delete_archive_file {
     MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry );
 
     $fmgr->delete($file);
+    MT::Util::Log->info( "Removed $file" );
 
     MT->run_callbacks( 'post_delete_archive_file', $file, $at, $entry );
 }
