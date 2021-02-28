@@ -91,6 +91,7 @@ sub init_dbh {
     my ($dbh) = @_;
     $dbd->SUPER::init_dbh(@_);
     $dbd->_set_names($dbh);
+    $dbh->{pg_enable_utf8} = 0;
 }
 
 sub _set_names {
