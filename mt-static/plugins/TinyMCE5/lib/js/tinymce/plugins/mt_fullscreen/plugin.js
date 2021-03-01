@@ -40,13 +40,10 @@
                 fitToWindow = function() {
                     var $outer = $parent.find('.tox-tinymce');
                     var $inner_ifr = $parent.find('.tox-tinymce iframe');
-                    var $inner_text = $parent.find('.tox-tinymce textarea');
-
 
                     forEachAffectedEditors(function() {
                         $outer.height($window.height() - header_height);
                         $inner_ifr.height('100%');
-                        $inner_text.height('100%');
                     });
                 };
             });
