@@ -28,7 +28,7 @@
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-json": "cp -rf node_modules/jquery-json/src/jquery.json.* mt-static/jquery/ && cp -rf node_modules/jquery-json/dist/jquery.json.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
-    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
+    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
     "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-riot-ss\" && test `git status -s | wc -l` = 0"
@@ -60,8 +60,8 @@
     "popper.js": "^1.12.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.1.6",
-    "tinymce-i18n": "20.4.4",
+    "tinymce": "5.7.0",
+    "tinymce-i18n": "20.12.25",
     "codemirror": "5.54",
     "xpath": "0.0.32"
   }
