@@ -75,6 +75,15 @@ my $same_date_content_diff = 1;
 rmtree($site_root);
 MT::FileInfo->remove_all;
 
+sub force_cleanup {
+    return unless $ENV{MT_TEST_FORCE_CLEANUP};
+    rmtree($site_root);
+    MT::FileInfo->remove_all;
+    MT->publisher->rebuild( BlogID => $blog_id );
+    run_rpt_if_async();
+    @prev_files = $test_env->files($site_root);
+}
+
 sub diff_should_be {
     my $expected = shift;
 
@@ -102,10 +111,14 @@ sub diff_should_be {
 
         # all the deleted files should not have their FileInfo
         my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@deleted } );
-        ok !@infos, "all the deleted files do not have their FileInfo";
+        ok !@infos, "all the deleted files do not have their FileInfo"
+            or note explain [ map { $_->file_path } @infos ];
     }
     if ( $expected && !@added && !@deleted ) {
         fail "$expected files should be added or deleted";
+    }
+    if ( !$expected && !@added && !@deleted ) {
+        pass "nothing should happen";
     }
 }
 
@@ -122,7 +135,10 @@ sub run_rpt_if_async {
                 or note explain \@deleted_too_early;
         }
     }
+    run_rpt();
+}
 
+sub run_rpt {
     note "process queue";
     my $res = _run_rpt();
     note $res;
@@ -147,6 +163,7 @@ subtest 'async rebuild everything' => sub {
 # different date: more archives are involved
 subtest 'create a new entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -217,6 +234,7 @@ subtest 'delete the newly-created entry' => sub {
 
 subtest 'create another new entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -273,6 +291,7 @@ subtest 'unpublish the newly-created entry' => sub {
 
 subtest 'create yet another new (but out-of-date) entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -309,13 +328,14 @@ subtest 'unpublish the newly-created past entry' => sub {
     $entry->unpublished_on("20200101000000");
     $entry->save or die $entry->errstr;
 
-    run_rpt_if_async();
+    run_rpt();
 
     diff_should_be($entry_diff);
 };
 
 subtest 'create a new entry by DataAPI' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -358,6 +378,7 @@ subtest 'delete the newly-created entry by DataAPI' => sub {
 
 subtest 'create another new entry by DataAPI' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -404,6 +425,7 @@ subtest 'unpublish the newly-created entry by DataAPI' => sub {
 # the same date: less archives are involved
 subtest 'create a new entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -477,6 +499,7 @@ subtest 'delete the newly-created entry with the same date' => sub {
 
 subtest 'create another new entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -536,6 +559,7 @@ subtest 'unpublish the newly-created entry with the same date' => sub {
 
 subtest 'create yet another new (but out-of-date) entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -575,7 +599,7 @@ subtest 'unpublish the newly-created past entry with the same date' => sub {
     $entry->unpublished_on("20200101000000");
     $entry->save or die $entry->errstr;
 
-    run_rpt_if_async();
+    run_rpt();
 
     diff_should_be($same_date_entry_diff);
 };
@@ -583,6 +607,7 @@ subtest 'unpublish the newly-created past entry with the same date' => sub {
 # different date: more contents are involved
 subtest 'create a new content data' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -660,6 +685,7 @@ subtest 'delete the newly-created content data' => sub {
 
 subtest 'create another new content data' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -722,6 +748,7 @@ subtest 'unpublish the newly-created content data' => sub {
 
 subtest 'create yet another new content data' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -763,13 +790,14 @@ subtest 'unpublish the newly-created past content data' => sub {
     $cd->unpublished_on("20200101000000");
     $cd->save;
 
-    run_rpt_if_async();
+    run_rpt();
 
     diff_should_be($content_diff);
 };
 
 subtest 'create a new content data by DataAPI' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -818,6 +846,7 @@ subtest 'delete the newly-created content data by DataAPI' => sub {
 
 subtest 'create another new content data by DataAPI' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -845,7 +874,7 @@ subtest 'create another new content data by DataAPI' => sub {
     diff_should_be($content_diff);
 };
 
-subtest 'unpublish the newly-created content data' => sub {
+subtest 'unpublish the newly-created content data by DataAPI' => sub {
     $test_env->clear_mt_cache;
 
     sleep 1;
@@ -870,6 +899,7 @@ subtest 'unpublish the newly-created content data' => sub {
 # same date: less contents are involved
 subtest 'create a new content data with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -949,6 +979,7 @@ subtest 'delete the newly-created content data with the same date' => sub {
 
 subtest 'create another new content data with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -1057,7 +1088,7 @@ subtest 'unpublish the newly-created past content data with the same date' => su
     $cd->unpublished_on("20200101000000");
     $cd->save;
 
-    run_rpt_if_async();
+    run_rpt();
 
     diff_should_be($same_date_content_diff);
 };
@@ -1066,6 +1097,7 @@ subtest 'unpublish the newly-created past content data with the same date' => su
 
 subtest 'create yet yet another new content data' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
