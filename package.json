@@ -47,7 +47,7 @@
     "clean-css-cli": "^4.1.6",
     "node-sass": "^4.5.3",
     "postcss-cli": "^7.1.2",
-    "postcss-flexbugs-fixes": "^2.1.0"
+    "postcss-flexbugs-fixes": "^5.0.1"
   },
   "dependencies": {
     "bootstrap": "~4.3.1",
