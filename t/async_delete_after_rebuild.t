@@ -23,7 +23,7 @@ use MT::Test::Fixture;
 use MT::Test::Fixture::ArchiveTypeDistinct;
 use MT::Test::App;
 use File::Path;
-use Test::Deep qw/cmp_deeply cmp_bag cmp_set/;
+use Test::Deep qw/cmp_deeply cmp_bag/;
 use Array::Diff;
 use MT::PublishOption;
 use MT::Entry;
@@ -32,7 +32,7 @@ $test_env->prepare_fixture('archive_type_distinct');
 my $objs = MT::Test::Fixture::ArchiveTypeDistinct->load_objs;
 
 my $site = MT::Website->load( { name => 'site_for_archive_test' } );
-$site->server_offset(0);   ## to work around an offset issue
+$site->server_offset(0);    ## to work around an offset issue
 $site->save;
 
 my $blog_id   = $site->id;
@@ -61,13 +61,22 @@ my $same_date_entry_diff = 1;
 rmtree($site_root);
 MT::FileInfo->remove_all;
 
+sub force_cleanup {
+    return unless $ENV{MT_TEST_FORCE_CLEANUP};
+    rmtree($site_root);
+    MT::FileInfo->remove_all;
+    MT->publisher->rebuild( BlogID => $blog_id );
+    run_rpt_if_async();
+    @prev_files = $test_env->files($site_root);
+}
+
 sub diff_should_be {
     my $expected = shift;
 
     my @current_files = $test_env->files($site_root);
-    my $diff    = Array::Diff->diff( \@prev_files, \@current_files );
-    my @added   = @{ $diff->added };
-    my @deleted = @{ $diff->deleted };
+    my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
+    my @added         = @{ $diff->added };
+    my @deleted       = @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
     if (@added) {
@@ -78,23 +87,24 @@ sub diff_should_be {
 
         # all the added files should have their FileInfo
         my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@added } );
-        cmp_bag([map {$_->file_path} @infos], \@added, "all the added files have their FileInfo")
-            or note explain \@infos;
+        is scalar @infos => scalar @added, "all the added files have their FileInfo";
     }
     if (@deleted) {
         ok !@added, "nothing should be added";
-        is @deleted => $expected, "$expected files are deleted";
-        cmp_bag( \@deleted, \@delta, "previously added files match deleted files" );
+        cmp_bag( \@deleted, \@delta, "$expected files are deleted" );
         @prev_files = @current_files;
         @delta      = ();
 
         # all the deleted files should not have their FileInfo
         my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@deleted } );
         ok !@infos, "all the deleted files do not have their FileInfo"
-            or note explain \@infos;
+            or note explain [ map { $_->file_path } @infos ];
     }
     if ( $expected && !@added && !@deleted ) {
         fail "$expected files should be added or deleted";
+    }
+    if ( !$expected && !@added && !@deleted ) {
+        pass "nothing should happen";
     }
 }
 
@@ -111,7 +121,10 @@ sub run_rpt_if_async {
                 or note explain \@deleted_too_early;
         }
     }
+    run_rpt();
+}
 
+sub run_rpt {
     note "process queue";
     my $res = _run_rpt();
     note $res;
@@ -136,6 +149,7 @@ subtest 'async rebuild everything' => sub {
 # different date: more archives are involved
 subtest 'create a new entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -206,6 +220,7 @@ subtest 'delete the newly-created entry' => sub {
 
 subtest 'create another new entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -252,10 +267,7 @@ subtest 'unpublish the newly-created entry' => sub {
         }
     );
 
-    $app->post_form_ok(
-        'entry_form',
-        { status => MT::Entry::HOLD() },
-    );
+    $app->post_form_ok( 'entry_form', { status => MT::Entry::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -266,6 +278,7 @@ subtest 'unpublish the newly-created entry' => sub {
 
 subtest 'create yet another new (but out-of-date) entry' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -303,6 +316,95 @@ subtest 'unpublish the newly-created past entry' => sub {
     $entry->unpublished_on("20200101000000");
     $entry->save or die $entry->errstr;
 
+    run_rpt();
+
+    diff_should_be($entry_diff);
+};
+
+subtest 'create a new entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+    force_cleanup();
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    $app->api_request_ok(
+        POST  => "/v3/sites/$blog_id/entries",
+        entry => {
+            title  => 'new entry by DataAPI',
+            text   => 'body',
+            status => 'Publish',
+        }
+    );
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_diff);
+};
+
+subtest 'delete the newly-created entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'new entry by DataAPI' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    $app->api_request_ok( DELETE => "/v4/sites/$blog_id/entries/$entry_id", );
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_diff);
+};
+
+subtest 'create another new entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+    force_cleanup();
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    $app->api_request_ok(
+        POST  => "/v3/sites/$blog_id/entries",
+        entry => {
+            title  => 'another new entry by DataAPI',
+            text   => 'body',
+            status => 'Publish',
+        }
+    );
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_diff);
+};
+
+subtest 'unpublish the newly-created entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'another new entry by DataAPI' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    $app->api_request_ok(
+        PUT   => "/v3/sites/$blog_id/entries/$entry_id",
+        entry => { status => 'Draft' },
+    );
+
     run_rpt_if_async();
 
     diff_should_be($entry_diff);
@@ -311,6 +413,7 @@ subtest 'unpublish the newly-created past entry' => sub {
 # the same date: less archives are involved
 subtest 'create a new entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -326,12 +429,12 @@ subtest 'create a new entry with the same date' => sub {
 
     $app->post_form_ok(
         'entry_form',
-        {   title  => 'new entry with the same date',
-            text   => 'body',
+        {   title            => 'new entry with the same date',
+            text             => 'body',
             authored_on_date => '2018-12-03',
             authored_on_time => '12:11:10',
-            category_ids => "$cat_ruler_id,$cat_eraser_id",
-            status => MT::Entry::RELEASE(),
+            category_ids     => "$cat_ruler_id,$cat_eraser_id",
+            status           => MT::Entry::RELEASE(),
         }
     );
     ok !$app->generic_error, "No errors";
@@ -384,6 +487,7 @@ subtest 'delete the newly-created entry with the same date' => sub {
 
 subtest 'create another new entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -399,12 +503,12 @@ subtest 'create another new entry with the same date' => sub {
 
     $app->post_form_ok(
         'entry_form',
-        {   title  => 'another new entry with the same date',
-            text   => 'body',
+        {   title            => 'another new entry with the same date',
+            text             => 'body',
             authored_on_date => '2018-12-03',
             authored_on_time => '12:11:10',
-            category_ids => "$cat_ruler_id,$cat_eraser_id",
-            status => MT::Entry::RELEASE(),
+            category_ids     => "$cat_ruler_id,$cat_eraser_id",
+            status           => MT::Entry::RELEASE(),
         }
     );
     ok !$app->generic_error, "No errors";
@@ -433,10 +537,7 @@ subtest 'unpublish the newly-created entry with the same date' => sub {
         }
     );
 
-    $app->post_form_ok(
-        'entry_form',
-        { status => MT::Entry::HOLD() },
-    );
+    $app->post_form_ok( 'entry_form', { status => MT::Entry::HOLD() } );
 
     ok !$app->generic_error, "No errors" or die $app->generic_error;
 
@@ -447,6 +548,7 @@ subtest 'unpublish the newly-created entry with the same date' => sub {
 
 subtest 'create yet another new (but out-of-date) entry with the same date' => sub {
     $test_env->clear_mt_cache;
+    force_cleanup();
 
     sleep 1;
     MT->publisher->start_time(time);
@@ -462,12 +564,12 @@ subtest 'create yet another new (but out-of-date) entry with the same date' => s
 
     $app->post_form_ok(
         'entry_form',
-        {   title  => 'yet another new entry with the same date',
-            text   => 'body',
+        {   title            => 'yet another new entry with the same date',
+            text             => 'body',
             authored_on_date => '2018-12-03',
             authored_on_time => '12:11:10',
-            category_ids => "$cat_ruler_id,$cat_eraser_id",
-            status => MT::Entry::RELEASE(),
+            category_ids     => "$cat_ruler_id,$cat_eraser_id",
+            status           => MT::Entry::RELEASE(),
         }
     );
     ok !$app->generic_error, "No errors";
@@ -487,7 +589,7 @@ subtest 'unpublish the newly-created past entry with the same date' => sub {
     $entry->unpublished_on("20200101000000");
     $entry->save or die $entry->errstr;
 
-    run_rpt_if_async();
+    run_rpt();
 
     diff_should_be($same_date_entry_diff);
 };
