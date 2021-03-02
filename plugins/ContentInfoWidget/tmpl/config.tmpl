@@ -1,0 +1,26 @@
+<mtapp:setting
+  id="template_type"
+  label="<__trans phrase="Template Type">">
+  <ul class="list-unstyled">
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="ct" id="ct" class="custom-control-input" value="1"<mt:if name="ct"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="ct"><__trans phrase="Content Type Archive"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="ct_archive" id="ct_archive" class="custom-control-input" value="1"<mt:if name="ct_archive"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="ct_archive"><__trans phrase="Content Type Listing Archive"></label>
+      </div>
+    </li>
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" name="index" id="index" class="custom-control-input" value="1"<mt:if name="index"> checked="checked"</mt:if> >
+        <label class="custom-control-label" for="index"><__trans phrase="Index"></label>
+      </div>
+    </li>
+  </ul>
+  <label for="_others"><__trans phrase="Others"></label>
+  <input type="text" name="_others" id="_others" class="form-control w-100" value="<mt:var name="_others">">
+</mtapp:setting>
