@@ -2311,6 +2311,14 @@ sub rebuild_deleted_content_data {
                     }
                 }
                 else {
+                    my $new_content_data = $archiver->alternative_content(
+                        {   Blog        => $blog,
+                            ArchiveType => $at,
+                            ContentData => $content_data,
+                            Category    => $cat,
+                            TemplateMap => $map,
+                        }
+                    );
                     if ( $app->config('RebuildAtDelete') ) {
                         if ( $archiver->date_based ) {
                             $rebuild_recipe{$at}{ $cat->id }
@@ -2321,13 +2329,13 @@ sub rebuild_deleted_content_data {
                                 { $start . $end }{'Timestamp'} = $target_dt;
                             $rebuild_recipe{$at}{ $cat->id }
                                 { $start . $end }{'ContentData'}
-                                = $content_data;
+                                = $new_content_data;
                         }
                         else {
                             $rebuild_recipe{$at}{ $cat->id }{id}
                                 = $cat->id;
                             $rebuild_recipe{$at}{ $cat->id }{ContentData}
-                                = $content_data;
+                                = $new_content_data;
                         }
                     }
                 }
@@ -2402,6 +2410,19 @@ sub rebuild_deleted_content_data {
             }
             else {
                 next unless $app->config('RebuildAtDelete');
+                my $new_content_data = $archiver->alternative_content( {
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        ContentType => $content_data->content_type_id,
+                        ContentData => $content_data,
+                        TemplateMap => $map,
+                        (   $archiver->author_based() ? ( Author => $content_data->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start )
+                            : ()
+                        ),
+                } );
 
                 if ( $archiver->author_based && $content_data->author ) {
                     if ( $archiver->date_based ) {
@@ -2412,13 +2433,13 @@ sub rebuild_deleted_content_data {
                         $rebuild_recipe{$at}{ $content_data->author->id }
                             { $start . $end }{'Timestamp'} = $target_dt;
                         $rebuild_recipe{$at}{ $content_data->author->id }
-                            { $start . $end }{'ContentData'} = $content_data;
+                            { $start . $end }{'ContentData'} = $new_content_data;
                     }
                     else {
                         $rebuild_recipe{$at}{ $content_data->author->id }{id}
                             = $content_data->author->id;
                         $rebuild_recipe{$at}{ $content_data->author->id }
-                            {ContentData} = $content_data;
+                            {ContentData} = $new_content_data;
                     }
                 }
                 elsif ( $archiver->date_based ) {
@@ -2428,7 +2449,7 @@ sub rebuild_deleted_content_data {
                     $rebuild_recipe{$at}{ $start . $end }{'Timestamp'}
                         = $target_dt;
                     $rebuild_recipe{$at}{ $start . $end }{'ContentData'}
-                        = $content_data;
+                        = $new_content_data;
                 }
 
                 if ( my $prev = $content_data->previous(1) ) {
