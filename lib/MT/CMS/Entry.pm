@@ -1964,6 +1964,7 @@ sub save {
 
     # Delete old archive files.
     if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+        $app->request->cache( 'file', {} );    # clear cache
         my $file = archive_file_for( $obj, $blog, $archive_type );
         if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
             $app->publisher->remove_entry_archive_file(
@@ -2009,6 +2010,7 @@ sub save {
                                 )
                             : ()
                         ),
+                        OldCategories => join( ',', map { $_->id } @$categories_old ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
@@ -2042,6 +2044,7 @@ sub save {
                         entry_id   => $obj->id,
                         is_new     => $is_new,
                         old_status => $status_old,
+                        old_date   => $orig_obj->authored_on,
                         old_categories =>
                             join( ',', map { $_->id } @$categories_old ),
                         (   $previous_old

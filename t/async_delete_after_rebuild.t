@@ -15,7 +15,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-$ENV{MT_TEST_PUBLISH_ASYNC} //= 1;
+$ENV{MT_TEST_PUBLISH_ASYNC}   //= 1;
+$ENV{MT_TEST_PUBLISH_DYNAMIC} //= 0;
+$ENV{MT_TEST_FORCE_CLEANUP}   //= 0;
 
 use MT;
 use MT::Test;
@@ -25,6 +27,9 @@ use MT::Test::App;
 use File::Path;
 use Test::Deep qw/cmp_deeply cmp_bag/;
 use Array::Diff;
+use List::Util qw/uniq/;
+use Time::Piece;
+use Time::Seconds;
 use MT::PublishOption;
 use MT::Entry;
 
@@ -39,8 +44,18 @@ my $blog_id   = $site->id;
 my $site_root = $site->site_path;
 my $author1   = MT::Author->load( { name => 'author1' } );
 
-my $cat_ruler_id  = $objs->{category}{cat_ruler}->id;
-my $cat_eraser_id = $objs->{category}{cat_eraser}->id;
+my $cat_ruler_id   = $objs->{category}{cat_ruler}->id;
+my $cat_eraser_id  = $objs->{category}{cat_eraser}->id;
+my $cat_compass_id = $objs->{category}{cat_compass}->id;
+
+if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
+    rmtree($site_root);
+    for my $map ( MT::Template->load, MT::TemplateMap->load ) {
+        $map->build_type( MT::PublishOption::DYNAMIC() );
+        $map->save;
+    }
+    $ENV{MT_TEST_PUBLISH_ASYNC} = 0;
+}
 
 if ( !-d $site_root ) {
     MT->publisher->rebuild( BlogID => $blog_id );
@@ -53,35 +68,50 @@ if ( $ENV{MT_TEST_PUBLISH_ASYNC} ) {
     }
 }
 
-my @prev_files = $test_env->files($site_root);
+my @initial_files = list_files();
+my @prev_files    = @initial_files;
 my @delta;
-my $entry_diff           = 9;
-my $same_date_entry_diff = 1;
+my $entry_diff                 = 9;
+my $same_date_entry_diff       = 1;
+my $entry_datetime_change_diff = 9;
+my $entry_category_change_diff = 17;
 
 rmtree($site_root);
 MT::FileInfo->remove_all;
 
+sub list_files {
+    if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
+        return
+            sort { $a cmp $b }
+            uniq map { $_->file_path } MT::FileInfo->load( { blog_id => $blog_id } );
+    }
+    else {
+        return $test_env->files($site_root);
+    }
+}
+
 sub force_cleanup {
-    return unless $ENV{MT_TEST_FORCE_CLEANUP};
+    my $force = shift;
+    return unless $force || $ENV{MT_TEST_FORCE_CLEANUP};
     rmtree($site_root);
     MT::FileInfo->remove_all;
     MT->publisher->rebuild( BlogID => $blog_id );
     run_rpt_if_async();
-    @prev_files = $test_env->files($site_root);
+    @prev_files = list_files();
 }
 
 sub diff_should_be {
     my $expected = shift;
 
-    my @current_files = $test_env->files($site_root);
+    my @current_files = list_files();
     my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
     my @added         = @{ $diff->added };
     my @deleted       = @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
-    if (@added) {
+    if ( !@delta ) {
         is @added => $expected, "$expected files are added";
-        ok !@deleted, "nothing should be deleted";
+        ok !@deleted, "nothing should be deleted" or note explain \@deleted;
         @prev_files = @current_files;
         @delta      = @added;
 
@@ -89,8 +119,8 @@ sub diff_should_be {
         my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@added } );
         is scalar @infos => scalar @added, "all the added files have their FileInfo";
     }
-    if (@deleted) {
-        ok !@added, "nothing should be added";
+    else {
+        ok !@added, "nothing should be added" or note explain \@added;
         cmp_bag( \@deleted, \@delta, "$expected files are deleted" );
         @prev_files = @current_files;
         @delta      = ();
@@ -106,6 +136,8 @@ sub diff_should_be {
     if ( !$expected && !@added && !@deleted ) {
         pass "nothing should happen";
     }
+
+    ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 }
 
 sub run_rpt_if_async {
@@ -592,6 +624,246 @@ subtest 'unpublish the newly-created past entry with the same date' => sub {
     run_rpt();
 
     diff_should_be($same_date_entry_diff);
+};
+
+subtest 'create yet yet another new entry' => sub {
+    $test_env->clear_mt_cache;
+    force_cleanup();
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+        }
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        {   title  => 'yet yet another new entry',
+            text   => 'body',
+            status => MT::Entry::RELEASE(),
+        }
+    );
+    ok !$app->generic_error, "No errors";
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_datetime_change_diff);
+};
+
+subtest 'change authored_on of the newly-created entry' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet another new entry' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+            id      => $entry_id,
+        }
+    );
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->post_form_ok(
+        'entry_form',
+        { "authored_on_date" => $new_date->ymd },
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    my @current_files = list_files();
+    my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
+    my @added         = @{ $diff->added };
+    my @deleted       = @{ $diff->deleted };
+    note explain \@added;
+    note explain \@deleted;
+    is @added                      => 9, "9 new files are added";
+    is grep( /$new_year/, @added ) => 9, "and all of them belong to the new year";
+    is @deleted                    => 9, "9 old files are deleted";
+    is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    push @delta, @added;
+    my %deleted_map = map { $_ => 1 } @deleted;
+    @delta      = grep !$deleted_map{$_}, @delta;
+    @prev_files = @current_files;
+};
+
+subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet another new entry' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+            id      => $entry_id,
+        }
+    );
+
+    my $link = $app->wq_find('a.delete');
+
+    my %return_args = (
+        __mode  => 'list',
+        _type   => $link->attr('mt:object-type'),
+        blog_id => $link->attr('mt:blog-id'),
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        {   __mode      => 'delete',
+            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
+        }
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_datetime_change_diff);
+
+    cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+};
+
+subtest 'create yet yet yet another new entry' => sub {
+    $test_env->clear_mt_cache;
+    force_cleanup();
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+        }
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        {   title        => 'yet yet yet another new entry',
+            text         => 'body',
+            category_ids => "$cat_ruler_id,$cat_eraser_id",
+            status       => MT::Entry::RELEASE(),
+        }
+    );
+    ok !$app->generic_error, "No errors";
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_category_change_diff);
+};
+
+subtest 'change category of the newly-created entry' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet yet another new entry' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+            id      => $entry_id,
+        }
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        { "category_ids" => "$cat_ruler_id,$cat_compass_id" },
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    my @current_files = list_files();
+    my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
+    my @added         = @{ $diff->added };
+    my @deleted       = @{ $diff->deleted };
+    note explain \@added;
+    note explain \@deleted;
+    is @added                     => 4, "4 new files are added";
+    is grep( /compass/, @added )  => 4, "and all of them belong to the compass category";
+    is @deleted                   => 4, "4 old files are deleted";
+    is grep( /eraser/, @deleted ) => 4, "and all of them belong to the eraser category";
+    push @delta, @added;
+    my %deleted_map = map { $_ => 1 } @deleted;
+    @delta      = grep !$deleted_map{$_}, @delta;
+    @prev_files = @current_files;
+};
+
+subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet yet another new entry' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+            id      => $entry_id,
+        }
+    );
+
+    my $link = $app->wq_find('a.delete');
+
+    my %return_args = (
+        __mode  => 'list',
+        _type   => $link->attr('mt:object-type'),
+        blog_id => $link->attr('mt:blog-id'),
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        {   __mode      => 'delete',
+            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
+        }
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_category_change_diff);
+
+    cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
 };
 
 done_testing;
