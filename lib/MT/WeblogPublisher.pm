@@ -2592,7 +2592,7 @@ sub _delete_archive_file {
         }
         local $ctx->{__stash}{category}         = $cat if $cat;
         local $ctx->{__stash}{archive_category} = $cat if $cat;
-        $timestamp = $entry->authored_on() if $entry;
+        $timestamp ||= $entry->authored_on() if $entry;
         local $ctx->{__stash}{entry} = $entry if $entry;
         local $ctx->{__stash}{author}
             = $author ? $author : $entry ? $entry->author : undef;
