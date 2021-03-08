@@ -428,7 +428,7 @@ sub edit {
 
     $param->{can_publish_post} = 1
         if ( $perm->can_do('publish_all_content_data')
-        || $perm->can_do('edit_all_content_data_$ct_unique_id') )
+        || $perm->can_do( 'edit_all_content_data_' . $ct_unique_id ) )
         || ( $content_data
         || $perm->can_republish_content_data( $content_data, $user ) );
 
