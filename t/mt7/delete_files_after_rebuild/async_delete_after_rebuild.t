@@ -15,7 +15,9 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-$ENV{MT_TEST_PUBLISH_ASYNC} //= 1;
+$ENV{MT_TEST_PUBLISH_ASYNC}   //= 1;
+$ENV{MT_TEST_PUBLISH_DYNAMIC} //= 0;
+$ENV{MT_TEST_FORCE_CLEANUP}   //= 0;
 
 use MT;
 use MT::Test;
@@ -25,6 +27,7 @@ use MT::Test::App;
 use File::Path;
 use Test::Deep qw/cmp_deeply cmp_bag/;
 use Array::Diff;
+use List::Util qw/uniq/;
 use MT::PublishOption;
 use MT::EntryStatus;
 use MT::ContentStatus;
@@ -54,6 +57,15 @@ my $cat_strawberry_id = $objs->{category_set}{catset_fruit}{category}{cat_strawb
 my $cat_ruler_id      = $objs->{category}{cat_ruler}->id;
 my $cat_eraser_id     = $objs->{category}{cat_eraser}->id;
 
+if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
+    rmtree($site_root);
+    for my $map ( MT::Template->load, MT::TemplateMap->load ) {
+        $map->build_type( MT::PublishOption::DYNAMIC() );
+        $map->save;
+    }
+    $ENV{MT_TEST_PUBLISH_ASYNC} = 0;
+}
+
 if ( !-d $site_root ) {
     MT->publisher->rebuild( BlogID => $blog_id );
 }
@@ -65,7 +77,8 @@ if ( $ENV{MT_TEST_PUBLISH_ASYNC} ) {
     }
 }
 
-my @prev_files = $test_env->files($site_root);
+my @initial_files = list_files();
+my @prev_files    = @initial_files;
 my @delta;
 my $entry_diff             = 9;
 my $content_diff           = 13;
@@ -75,19 +88,30 @@ my $same_date_content_diff = 1;
 rmtree($site_root);
 MT::FileInfo->remove_all;
 
+sub list_files {
+    if ( $ENV{MT_TEST_PUBLISH_DYNAMIC} ) {
+        return
+            sort { $a cmp $b }
+            uniq map { $_->file_path } MT::FileInfo->load( { blog_id => $blog_id } );
+    }
+    else {
+        return $test_env->files($site_root);
+    }
+}
+
 sub force_cleanup {
     return unless $ENV{MT_TEST_FORCE_CLEANUP};
     rmtree($site_root);
     MT::FileInfo->remove_all;
     MT->publisher->rebuild( BlogID => $blog_id );
     run_rpt_if_async();
-    @prev_files = $test_env->files($site_root);
+    @prev_files = list_files();
 }
 
 sub diff_should_be {
     my $expected = shift;
 
-    my @current_files = $test_env->files($site_root);
+    my @current_files = list_files();
     my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
     my @added         = @{ $diff->added };
     my @deleted       = @{ $diff->deleted };
