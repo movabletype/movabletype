@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.1.6 (2020-01-28)
+ * Version: 5.7.0 (2021-02-10)
  */
 (function () {
     'use strict';
@@ -28,11 +28,6 @@
       var depth = parseInt(editor.getParam('toc_depth', '3'), 10);
       return depth >= 1 && depth <= 9 ? depth : 3;
     };
-    var Settings = {
-      getTocClass: getTocClass,
-      getTocHeader: getTocHeader,
-      getTocDepth: getTocDepth
-    };
 
     var create = function (prefix) {
       var counter = 0;
@@ -41,10 +36,9 @@
         return prefix + guid + (counter++).toString(32);
       };
     };
-    var Guid = { create: create };
 
-    var tocId = Guid.create('mcetoc_');
-    var generateSelector = function generateSelector(depth) {
+    var tocId = create('mcetoc_');
+    var generateSelector = function (depth) {
       var i;
       var selector = [];
       for (i = 1; i <= depth; i++) {
@@ -56,9 +50,9 @@
       return readHeaders(editor).length > 0;
     };
     var readHeaders = function (editor) {
-      var tocClass = Settings.getTocClass(editor);
-      var headerTag = Settings.getTocHeader(editor);
-      var selector = generateSelector(Settings.getTocDepth(editor));
+      var tocClass = getTocClass(editor);
+      var headerTag = getTocHeader(editor);
+      var selector = generateSelector(getTocDepth(editor));
       var headers = editor.$(selector);
       if (headers.length && /^h[1-9]$/i.test(headerTag)) {
         headers = headers.filter(function (i, el) {
@@ -66,8 +60,9 @@
         });
       }
       return global$3.map(headers, function (h) {
+        var id = h.id;
         return {
-          id: h.id ? h.id : tocId(),
+          id: id ? id : tocId(),
           level: parseInt(h.nodeName.replace(/^H/i, ''), 10),
           title: editor.$.text(h),
           element: h
@@ -93,7 +88,7 @@
     };
     var generateTocHtml = function (editor) {
       var html = generateTocContentHtml(editor);
-      return '<div class="' + editor.dom.encode(Settings.getTocClass(editor)) + '" contenteditable="false">' + html + '</div>';
+      return '<div class="' + editor.dom.encode(getTocClass(editor)) + '" contenteditable="false">' + html + '</div>';
     };
     var generateTocContentHtml = function (editor) {
       var html = '';
@@ -103,7 +98,7 @@
       if (!headers.length) {
         return '';
       }
-      html += generateTitle(Settings.getTocHeader(editor), global$2.translate('Table of Contents'));
+      html += generateTitle(getTocHeader(editor), global$2.translate('Table of Contents'));
       for (i = 0; i < headers.length; i++) {
         h = headers[i];
         h.element.id = h.id;
@@ -134,7 +129,7 @@
       return !nodes.length || editor.dom.getParents(nodes[0], '.mce-offscreen-selection').length > 0;
     };
     var insertToc = function (editor) {
-      var tocClass = Settings.getTocClass(editor);
+      var tocClass = getTocClass(editor);
       var $tocElm = editor.$('.' + tocClass);
       if (isEmptyOrOffscren(editor, $tocElm)) {
         editor.insertContent(generateTocHtml(editor));
@@ -143,7 +138,7 @@
       }
     };
     var updateToc = function (editor) {
-      var tocClass = Settings.getTocClass(editor);
+      var tocClass = getTocClass(editor);
       var $tocElm = editor.$('.' + tocClass);
       if ($tocElm.length) {
         editor.undoManager.transact(function () {
@@ -151,24 +146,18 @@
         });
       }
     };
-    var Toc = {
-      hasHeaders: hasHeaders,
-      insertToc: insertToc,
-      updateToc: updateToc
-    };
 
     var register = function (editor) {
       editor.addCommand('mceInsertToc', function () {
-        Toc.insertToc(editor);
+        insertToc(editor);
       });
       editor.addCommand('mceUpdateToc', function () {
-        Toc.updateToc(editor);
+        updateToc(editor);
       });
     };
-    var Commands = { register: register };
 
     var setup = function (editor) {
-      var $ = editor.$, tocClass = Settings.getTocClass(editor);
+      var $ = editor.$, tocClass = getTocClass(editor);
       editor.on('PreProcess', function (e) {
         var $tocElm = $('.' + tocClass, e.node);
         if ($tocElm.length) {
@@ -184,12 +173,11 @@
         }
       });
     };
-    var FilterContent = { setup: setup };
 
     var toggleState = function (editor) {
       return function (api) {
         var toggleDisabledState = function () {
-          return api.setDisabled(editor.readonly || !Toc.hasHeaders(editor));
+          return api.setDisabled(editor.mode.isReadOnly() || !hasHeaders(editor));
         };
         toggleDisabledState();
         editor.on('LoadContent SetContent change', toggleDisabledState);
@@ -200,7 +188,7 @@
     };
     var isToc = function (editor) {
       return function (elm) {
-        return elm && editor.dom.is(elm, '.' + Settings.getTocClass(editor)) && editor.getBody().contains(elm);
+        return elm && editor.dom.is(elm, '.' + getTocClass(editor)) && editor.getBody().contains(elm);
       };
     };
     var register$1 = function (editor) {
@@ -234,13 +222,12 @@
         position: 'node'
       });
     };
-    var Buttons = { register: register$1 };
 
     function Plugin () {
       global.add('toc', function (editor) {
-        Commands.register(editor);
-        Buttons.register(editor);
-        FilterContent.setup(editor);
+        register(editor);
+        register$1(editor);
+        setup(editor);
       });
     }
 
