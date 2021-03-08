@@ -1647,6 +1647,7 @@ sub save {
 
     # Delete old archive files.
     if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+        $app->request->cache( 'file', {} );    # clear cache
         my $file = archive_file_for( $obj, $blog, $archive_type );
         if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
             $app->publisher->remove_entry_archive_file(
