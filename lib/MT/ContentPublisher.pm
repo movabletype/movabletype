@@ -2219,12 +2219,12 @@ sub rebuild_deleted_content_data {
         );
     }
     else {
-        # Remove Individual archive file.
+        # Remove ContentType archive file.
         if ( $app->config('DeleteFilesAtRebuild') ) {
             $mt->remove_content_data_archive_file( ContentData => $content_data );
         }
 
-        # Remove Individual fileinfo records.
+        # Remove ContentType fileinfo records.
         $mt->remove_fileinfo(
             ArchiveType => 'ContentType',
             Blog        => $blog->id,
