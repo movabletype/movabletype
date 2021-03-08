@@ -630,43 +630,17 @@ sub save {
             }
         );
 
-        my @cat_ids = map {@$_} values %categories_old;
-        my @cats    = MT->model('category')->load(
-            {   id              => \@cat_ids,
-                category_set_id => \'> 0',
-            }
-        );
-
-        for my $map (@maps) {
-            my $at       = $map->archive_type;
-            my $archiver = $app->publisher->archiver($at);
-            for my $cat ( $archiver->category_based ? @cats : undef ) {
-                my $file
-                    = MT::Util::archive_file_for( $orig, $blog, $at, $cat,
-                    $map )
-                    or next;
-
-                $file = File::Spec->catfile( $archive_root, $file );
-
-                ## params for _delete_archive_file
-                my %params = (
-                    Blog        => $blog,
-                    File        => $file,
-                    ArchiveType => $at,
-                    ContentData => $orig,
-                );
-
-                ## ignore if fileinfo does not exist
-                $params{FileInfo} = MT->model('fileinfo')->load(
-                    {   blog_id        => $blog_id,
-                        file_path      => $file,
-                        templatemap_id => $map->id,
-                        archive_type   => $at,
-                    }
-                ) or next;
-
-                push @old_archive_params, \%params;
-            }
+        my @finfos = MT->model('fileinfo')->load( { blog_id => $blog_id, cd_id => $orig->id } );
+        for my $finfo (@finfos) {
+            next if $finfo->archive_type eq 'ContentType';
+            my %params = (
+                Blog        => $blog,
+                File        => $finfo->file_path,
+                ArchiveType => $finfo->archive_type,
+                FileInfo    => $finfo,
+                ContentData => $orig,
+            );
+            push @old_archive_params, \%params;
         }
     }
 
