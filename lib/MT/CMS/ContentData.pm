@@ -849,6 +849,10 @@ sub save {
     if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
         || $status_old == MT::ContentStatus::RELEASE() )
     {
+        my $old_categories
+            = %categories_old
+            ? MT::Util::to_json( \%categories_old )
+            : undef;
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks )
         {
@@ -863,6 +867,7 @@ sub save {
                         ? $previous_old->id
                         : undef,
                         OldNext => $next_old ? $next_old->id : undef,
+                        OldCategories => $old_categories,
                     );
 
                     $app->run_callbacks( 'rebuild', $blog );
@@ -874,10 +879,6 @@ sub save {
             return unless $res;
         }
         else {
-            my $old_categories
-                = %categories_old
-                ? MT::Util::to_json( \%categories_old )
-                : undef;
             require MT::Util::UniqueID;
             my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
             if ( my $session = $app->session ) {

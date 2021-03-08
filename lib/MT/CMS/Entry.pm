@@ -1693,6 +1693,7 @@ sub save {
                                 )
                             : ()
                         ),
+                        OldCategories => join( ',', map { $_->id } @$categories_old ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
