@@ -954,6 +954,9 @@ sub delete {
         = ( ( $blog && $blog->count_static_templates('ContentType') == 0 )
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
@@ -971,6 +974,7 @@ sub delete {
         for my $finfo (@finfos) {
             if ( $app->config('DeleteFilesAfterRebuild') ) {
                 $finfo->mark_to_remove;
+                MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
             }
         }
 
