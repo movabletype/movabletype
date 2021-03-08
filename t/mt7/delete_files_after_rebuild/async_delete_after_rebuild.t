@@ -100,7 +100,8 @@ sub list_files {
 }
 
 sub force_cleanup {
-    return unless $ENV{MT_TEST_FORCE_CLEANUP};
+    my $force = shift;
+    return unless $force || $ENV{MT_TEST_FORCE_CLEANUP};
     rmtree($site_root);
     MT::FileInfo->remove_all;
     MT->publisher->rebuild( BlogID => $blog_id );
@@ -117,9 +118,9 @@ sub diff_should_be {
     my @deleted       = @{ $diff->deleted };
     note explain \@added;
     note explain \@deleted;
-    if (@added) {
+    if ( !@delta ) {
         is @added => $expected, "$expected files are added";
-        ok !@deleted, "nothing should be deleted";
+        ok !@deleted, "nothing should be deleted" or note explain \@deleted;
         @prev_files = @current_files;
         @delta      = @added;
 
@@ -127,8 +128,8 @@ sub diff_should_be {
         my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@added } );
         is scalar @infos => scalar @added, "all the added files have their FileInfo";
     }
-    if (@deleted) {
-        ok !@added, "nothing should be added";
+    else {
+        ok !@added, "nothing should be added" or note explain \@added;
         cmp_bag( \@deleted, \@delta, "$expected files are deleted" );
         @prev_files = @current_files;
         @delta      = ();
@@ -144,6 +145,8 @@ sub diff_should_be {
     if ( !$expected && !@added && !@deleted ) {
         pass "nothing should happen";
     }
+
+    ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 }
 
 sub run_rpt_if_async {
