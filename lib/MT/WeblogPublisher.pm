@@ -716,6 +716,10 @@ sub rebuild_entry {
         }
     }
     push @$categories_for_rebuild, ( map {$_} @{ $entry->categories } );
+    my @timestamps = (undef);
+    if ( $param{OldDate} && $param{OldDate} ne $entry->authored_on ) {
+        push @timestamps, $param{OldDate};
+    }
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -734,32 +738,38 @@ sub rebuild_entry {
             next if $entry->class ne $archiver->entry_class;
             if ( $archiver->category_based ) {
                 for my $cat (@$categories_for_rebuild) {
+                    for my $ts (@timestamps) {
+                        $mt->_rebuild_entry_archive_type(
+                            Entry       => $entry,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            Category    => $cat,
+                            NoStatic    => $param{NoStatic},
+                            ( $ts ? ( Timestamp => $ts ) : () ),
+
+                            # Force       => ($param{Force} ? 1 : 0),
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                        ) or return;
+                    }
+                }
+            }
+            else {
+                for my $ts (@timestamps) {
                     $mt->_rebuild_entry_archive_type(
                         Entry       => $entry,
                         Blog        => $blog,
                         ArchiveType => $at,
-                        Category    => $cat,
-                        NoStatic    => $param{NoStatic},
-
-                        # Force       => ($param{Force} ? 1 : 0),
+                        ( $ts ? ( Timestamp => $ts ) : () ),
                         $param{TemplateMap}
                         ? ( TemplateMap => $param{TemplateMap} )
                         : (),
+                        NoStatic => $param{NoStatic},
+                        Force    => ( $param{Force} ? 1 : 0 ),
+                        Author   => $entry->author,
                     ) or return;
                 }
-            }
-            else {
-                $mt->_rebuild_entry_archive_type(
-                    Entry       => $entry,
-                    Blog        => $blog,
-                    ArchiveType => $at,
-                    $param{TemplateMap}
-                    ? ( TemplateMap => $param{TemplateMap} )
-                    : (),
-                    NoStatic => $param{NoStatic},
-                    Force    => ( $param{Force} ? 1 : 0 ),
-                    Author   => $entry->author,
-                ) or return;
             }
         }
     }
@@ -835,97 +845,108 @@ sub rebuild_entry {
                     || $archiver->contenttype_category_based;
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
-                        if (my $prev_arch
-                            = $archiver->previous_archive_entry(
-                                {   entry    => $entry,
-                                    category => $cat,
-                                }
-                            )
-                            )
-                        {
-                            $mt->_rebuild_entry_archive_type(
-                                NoStatic => $param{NoStatic},
+                        for my $ts (@timestamps) {
+                            if (my $prev_arch = $archiver->previous_archive_entry(
+                                    {   entry    => $entry,
+                                        category => $cat,
+                                        ( $ts ? ( ts => $ts ) : () ),
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_entry_archive_type(
+                                    NoStatic => $param{NoStatic},
 
-                                # Force    => ($param{Force} ? 1 : 0),
-                                Entry    => $prev_arch,
-                                Blog     => $blog,
-                                Category => $cat,
-                                $param{TemplateMap}
-                                ? ( TemplateMap => $param{TemplateMap} )
-                                : (),
-                                ArchiveType => $at
-                            ) or return;
-                        }
-                        if (my $next_arch = $archiver->next_archive_entry(
-                                {   entry    => $entry,
-                                    category => $cat,
-                                }
-                            )
-                            )
-                        {
-                            $mt->_rebuild_entry_archive_type(
-                                NoStatic => $param{NoStatic},
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    Entry    => $prev_arch,
+                                    Blog     => $blog,
+                                    Category => $cat,
+                                    ( $ts ? ( Timestamp => $ts ) : () ),
+                                    $param{TemplateMap}
+                                    ? ( TemplateMap => $param{TemplateMap} )
+                                    : (),
+                                    ArchiveType => $at
+                                ) or return;
+                            }
+                            if (my $next_arch = $archiver->next_archive_entry(
+                                    {   entry    => $entry,
+                                        category => $cat,
+                                        ( $ts ? ( ts => $ts ) : () ),
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_entry_archive_type(
+                                    NoStatic => $param{NoStatic},
 
-                                # Force    => ($param{Force} ? 1 : 0),
-                                Entry    => $next_arch,
-                                Blog     => $blog,
-                                Category => $cat,
-                                $param{TemplateMap}
-                                ? ( TemplateMap => $param{TemplateMap} )
-                                : (),
-                                ArchiveType => $at
-                            ) or return;
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    Entry    => $next_arch,
+                                    Blog     => $blog,
+                                    Category => $cat,
+                                    ( $ts ? ( Timestamp => $ts ) : () ),
+                                    $param{TemplateMap}
+                                    ? ( TemplateMap => $param{TemplateMap} )
+                                    : (),
+                                    ArchiveType => $at
+                                ) or return;
+                            }
                         }
                     }
                 }
                 else {
-                    if (my $prev_arch = $archiver->previous_archive_entry(
-                            {   entry => $entry,
-                                $archiver->author_based
-                                ? ( author => $entry->author )
-                                : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_entry_archive_type(
-                            NoStatic => $param{NoStatic},
+                    for my $ts (@timestamps) {
+                        if (my $prev_arch = $archiver->previous_archive_entry(
+                                {   entry => $entry,
+                                    (   $archiver->author_based
+                                        ? ( author => $entry->author )
+                                        : ()
+                                    ),
+                                    ( $ts ? ( ts => $ts ) : () ),
+                                }
+                            )
+                            )
+                        {
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            Entry       => $prev_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $entry->author )
-                            : (),
-                        ) or return;
-                    }
-                    if (my $next_arch = $archiver->next_archive_entry(
-                            {   entry => $entry,
-                                $archiver->author_based
-                                ? ( author => $entry->author )
+                                # Force       => ($param{Force} ? 1 : 0),
+                                Entry       => $prev_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                ( $ts ? ( Timestamp => $ts ) : () ),
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
                                 : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_entry_archive_type(
-                            NoStatic => $param{NoStatic},
+                                $archiver->author_based ? ( Author => $entry->author )
+                                : (),
+                            ) or return;
+                        }
+                        if (my $next_arch = $archiver->next_archive_entry(
+                                {   entry => $entry,
+                                    (   $archiver->author_based
+                                        ? ( author => $entry->author )
+                                        : ()
+                                    ),
+                                    ( $ts ? ( ts => $ts ) : () ),
+                                }
+                            )
+                            )
+                        {
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            Entry       => $next_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $entry->author )
-                            : (),
-                        ) or return;
+                                # Force       => ($param{Force} ? 1 : 0),
+                                Entry       => $next_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                ( $ts ? ( Timestamp => $ts ) : () ),
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
+                                : (),
+                                $archiver->author_based ? ( Author => $entry->author )
+                                : (),
+                            ) or return;
+                        }
                     }
                 }
             }
@@ -1192,7 +1213,7 @@ sub _rebuild_entry_archive_type {
     }
     else {
         if ( $archiver->date_based() && $archiver->can('date_range') ) {
-            ( $start, $end ) = $archiver->date_range( $entry->authored_on );
+            ( $start, $end ) = $archiver->date_range( $param{Timestamp} || $entry->authored_on );
         }
     }
 

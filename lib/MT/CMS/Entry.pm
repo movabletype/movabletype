@@ -1733,6 +1733,7 @@ sub save {
                         entry_id   => $obj->id,
                         is_new     => $is_new,
                         old_status => $status_old,
+                        old_date   => $orig_obj->authored_on,
                         old_categories =>
                             join( ',', map { $_->id } @$categories_old ),
                         (   $previous_old
