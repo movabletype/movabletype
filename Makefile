@@ -6,6 +6,7 @@ BUILD_PACKAGE ?= MTOS
 -include build/mt-dists/$(BUILD_LANGUAGE).mk
 
 BUILD_VERSION_ID ?= $(PRODUCT_VERSION)
+RELEASE_VERSION_ID ?= $(shell perl -Ilib -MMT -e 'print $$MT::RELEASE_VERSION_ID')
 
 local_js = mt-static/mt_en_us.js \
         mt-static/mt_de.js \
@@ -179,6 +180,11 @@ version_file:
 	    -e "s!__BUILD_VERSIONS_TRAILER__!$(BUILD_VERSIONS_TRAILER)!g" \
 	VERSIONS.pre > VERSIONS
 	rm VERSIONS.pre
+	
+	mv VERSIONID VERSIONID.pre
+	sed -e "s!__RELEASE_VERSION_ID__!$(RELEASE_VERSION_ID)!g" \
+	VERSIONID.pre > VERSIONID
+	rm VERSIONID.pre
 
 ##### Other useful targets
 
