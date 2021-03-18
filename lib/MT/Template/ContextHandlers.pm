@@ -3580,7 +3580,7 @@ sub _hdlr_app_listing {
         );
         return $ctx->build(
             qq{<mtapp:statusmsg
-            id="zero-state"
+            id="zero-state-$type"
             class="info zero-state"
             can_close="0">
             $msg
