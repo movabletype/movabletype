@@ -3111,7 +3111,7 @@ sub _hdlr_app_setting {
     }
     if ( $hint && $show_hint ) {
         if ( $hint_id ne "" ) {
-            $hint_id = " id=\"$hint_id\"";
+            $hint_id = " id=\"$hint_id\" ";
         }
         $hint
             = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
