@@ -3603,12 +3603,6 @@ réessayer plus tard.',
 	'Classic Website' => 'Site web classique',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crée un portail de blogs qui agrège les contenus de plusieurs blogs sur un site web.',
 
-## themes/mont-blanc/theme.yaml
-	'Mont-Blanc' => 'Mont-Blanc',
-	'Summary' => 'Sommaire',
-	'__DESCRIPTION' => 'Rainier est un thème web réactif personnalisable, conçu pour des blogs. En plus du support multi-clients via Media Query (CSS), des fonctions Movable Type rendent très simple la personnalisation de la navigation et des éléments graphiques comme logos, bannières ou entêtes.',
-	'og:image' => 'og:image',
-
 ## themes/pico/templates/archive_index.mtml
 	'Related Content' => 'Contenu lié',
 

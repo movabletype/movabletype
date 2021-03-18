@@ -3603,12 +3603,6 @@ ter opnieuw te proberen.',
 	'Classic Website' => 'Klassieke website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Maak een blogportaal dat de inhoud van verschillende blogs samenbrengt in één website.',
 
-## themes/mont-blanc/theme.yaml
-	'Mont-Blanc' => 'Mont-Blanc',
-	'Summary' => 'Samenvatting',
-	'__DESCRIPTION' => '"Rainier" is een aanpasbaar Responsive Web Design thema, ontworpen voor blogs.  Naast ondersteuning voor weergave op meerdere toestellen via Media Query (CSS) biedt het ook Movable Type functies aan om makkelijk navigatie- en afbeeldingselementen zoals logos en hoofdingen aan te passen',
-	'og:image' => 'og:image',
-
 ## themes/pico/templates/archive_index.mtml
 	'Related Content' => 'Gerelateerde inhoud',
 

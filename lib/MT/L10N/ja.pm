@@ -3603,12 +3603,6 @@ use vars qw( @ISA %Lexicon );
 	'Classic Website' => 'クラシックウェブサイト',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 
-## themes/mont-blanc/theme.yaml
-	'Mont-Blanc' => '', # Translate - New
-	'Summary' => '', # Translate - New
-	'__DESCRIPTION' => '', # Translate - New
-	'og:image' => '', # Translate - New
-
 ## themes/pico/templates/archive_index.mtml
 	'Related Content' => '関連コンテンツ',
 

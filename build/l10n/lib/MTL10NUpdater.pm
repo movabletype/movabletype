@@ -313,6 +313,7 @@ sub find_phrases {
             tiny_mce/tinymce.js
             tiny_mce/plugins/help/plugin.js
             tiny_mce/themes/silver/theme.js
+            themes/mont-blanc/
         );
         $ignore_re = $rt->regexp;
     }
@@ -333,7 +334,7 @@ sub find_phrases {
                 return unless -f $file && $file =~ /\.(?:cgi|pm|pl|php|tmpl|pre|js|mtml|tag|yaml|cfg)$/;
                 return if $file =~ /min\.js$/;
                 return if $file =~ m!/L10N/!;
-                return if $ignore_re && $file =~ /$ignore_re$/;
+                return if $ignore_re && $file =~ /$ignore_re/;
                 print STDERR "Scanning $file\n" if $verbose;
                 my $path = $self->relative($file);
                 my $content = $self->slurp($file);

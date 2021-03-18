@@ -3603,12 +3603,6 @@ r, inténtelo más tarde.',
 	'Classic Website' => 'Sitio web clásico',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crear un portal que agrega contenidos de otros blogs en un sitio web.',
 
-## themes/mont-blanc/theme.yaml
-	'Mont-Blanc' => 'Mont-Blanc',
-	'Summary' => 'Sumario',
-	'__DESCRIPTION' => '"Rainier" es un tema para blogs personalizable, basado en el Diseño Web Sensible. Además de ofrecer soporte para múltiples dispositivos, a través de Media Query (CSS), se pueden personalizar los contenidos de navegación, e imágenes, como logos y cabeceras, de forma muy simple.',
-	'og:image' => 'og:image',
-
 ## themes/pico/templates/archive_index.mtml
 	'Related Content' => 'Contenido relacionado',
 

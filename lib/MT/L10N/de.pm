@@ -3604,12 +3604,6 @@ itte versuchen Sie es später erneut.',
 	'Classic Website' => 'Klassische Website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Für Portale, die die Inhalte mehrerer Blogs in einer gemeinsamen Website anzeigen.',
 
-## themes/mont-blanc/theme.yaml
-	'Mont-Blanc' => 'Mont-Blanc',
-	'Summary' => 'Zusammenfassung',
-	'__DESCRIPTION' => '&#8222;Rainier&#8220; ist ein flexibel anpassbares Thema mit Responsive Web Design. Über CSS-Media-Queries wird der Inhalt Ihrer Seiten automatisch optimal an die Fenstergröße des jeweils verwendeten Computers oder Mobilgeräts angepasst. Mit den Movable-Type-eigenen Funktionen gestalten Sie Navigationselemente, Logos und Kopfzeilen im Handumdrehen nach Ihren Vorstellungen.',
-	'og:image' => 'og:image',
-
 ## themes/pico/templates/archive_index.mtml
 	'Related Content' => 'Verwandte Einträge',
 
