@@ -4006,7 +4006,7 @@ sub _hdlr_app_action_bar {
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos-$args->{form_id}" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
   <div class="col">
     $pager
     $buttons_html
