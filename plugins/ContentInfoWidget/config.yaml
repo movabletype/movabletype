@@ -10,15 +10,11 @@ callbacks:
     MT::App::CMS::template_param.edit_template: $ContentInfoWidget::ContentInfoWidget::edit_template_param
 
 settings:
-    - 
-        - ct
-        - default: 1
-    -
-        - ct_archive
-        - default: 1
-    -
-        - index
-        - default: 0
-    -
-        - _others
-        - default:
+    ct:
+        default: 1
+    ct_archive:
+        default: 1
+    index:
+        default: 0
+    _others:
+        default:
