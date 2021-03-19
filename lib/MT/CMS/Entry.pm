@@ -1675,23 +1675,13 @@ sub save {
                     $app->rebuild_entry(
                         Entry => $obj,
                         (   $obj->is_entry
-                            ? ( BuildDependencies => 1 )
+                            ? ( BuildDependencies => 1,
+                                OldEntry          => $orig_obj,
+                                OldPrevious       => $previous_old ? $previous_old->id : undef,
+                                OldNext           => $next_old ? $next_old->id : undef,
+                                OldDate           => $orig_obj->authored_on,
+                                )
                             : ( BuildIndexes => 1 )
-                        ),
-                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
-                        (   $obj->is_entry
-                            ? ( OldPrevious => ($previous_old)
-                                ? $previous_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
-                        (   $obj->is_entry
-                            ? ( OldNext => ($next_old)
-                                ? $next_old->id
-                                : undef
-                                )
-                            : ()
                         ),
                         OldCategories => join( ',', map { $_->id } @$categories_old ),
                     ) or return $app->publish_error();
