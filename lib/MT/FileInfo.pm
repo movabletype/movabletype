@@ -175,13 +175,16 @@ sub mark_to_remove {
             $build_type = $map ? $map->build_type : 0;
         }
     }
-    require MT::DeleteFileInfo;
-    my $del = MT::DeleteFileInfo->new(
-        blog_id    => $self->blog_id,
-        file_path  => $self->file_path,
-        build_type => $build_type || 0,
-    );
-    $del->save;
+    require MT::PublishOption;
+    if ( $build_type != MT::PublishOption::DYNAMIC() ) {
+        require MT::DeleteFileInfo;
+        my $del = MT::DeleteFileInfo->new(
+            blog_id    => $self->blog_id,
+            file_path  => $self->file_path,
+            build_type => $build_type || 0,
+        );
+        $del->save;
+    }
     $self->remove;
 }
 
