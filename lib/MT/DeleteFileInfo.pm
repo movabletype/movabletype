@@ -14,7 +14,7 @@ __PACKAGE__->install_properties(
     {   column_defs => {
             'id'         => 'integer not null auto_increment',
             'blog_id'    => 'integer not null',
-            'file_path'  => 'text',
+            'file_path'  => 'text not null',
             'build_type' => 'smallint not null',
         },
         indexes => {
