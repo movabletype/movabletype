@@ -1794,8 +1794,6 @@ subtest 'change authored_on of the newly-created content data by DataAPI' => sub
     ok !MT::DeleteFileInfo->count, "nothing is left as marked";
 };
 
-done_testing;exit;
-
 subtest 'delete the newly-created content data (just to restore the initial state)' => sub {
     $test_env->clear_mt_cache;
 
