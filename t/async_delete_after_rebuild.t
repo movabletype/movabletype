@@ -866,4 +866,111 @@ subtest 'delete the newly-created entry (just to restore the initial state)' => 
     cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
 };
 
+subtest 'create yet yet yet yet another new entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+    force_cleanup();
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    $app->api_request_ok(
+        POST  => "/v4/sites/$blog_id/entries",
+        entry => {
+            title  => 'yet yet yet yet another new entry by DataAPI',
+            text   => 'body',
+            status => 'Publish',
+        }
+    );
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_diff);
+};
+
+subtest 'change authored_on of the newly-created entry by DataAPI' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet yet yet another new entry by DataAPI' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::DataAPI');
+    $app->login($author1);
+
+    my $date     = Time::Piece->new;
+    my $new_date = Time::Piece->new( time + ONE_YEAR );
+    my $year     = $date->year;
+    my $new_year = $new_date->year;
+
+    $app->api_request_ok(
+        PUT   => "/v4/sites/$blog_id/entries/$entry_id",
+        entry => { date => $new_date->ymd },
+    );
+
+    run_rpt_if_async();
+
+    my @current_files = list_files();
+    my $diff          = Array::Diff->diff( \@prev_files, \@current_files );
+    my @added         = @{ $diff->added };
+    my @deleted       = @{ $diff->deleted };
+    note explain \@added;
+    note explain \@deleted;
+    is @added                      => 9, "9 new files are added";
+    is grep( /$new_year/, @added ) => 9, "and all of them belong to the new year";
+    is @deleted                    => 9, "9 old files are deleted";
+    is grep( /$year/, @deleted )   => 9, "and all of them belong to the current year";
+    push @delta, @added;
+    my %deleted_map = map { $_ => 1 } @deleted;
+    @delta      = grep !$deleted_map{$_}, @delta;
+    @prev_files = @current_files;
+};
+
+subtest 'delete the newly-created entry (just to restore the initial state)' => sub {
+    $test_env->clear_mt_cache;
+
+    sleep 1;
+    MT->publisher->start_time(time);
+
+    ok my $entry = MT::Entry->load( { title => 'yet yet yet yet another new entry by DataAPI' } );
+    my $entry_id = $entry->id;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($author1);
+    $app->get_ok(
+        {   __mode  => 'view',
+            _type   => 'entry',
+            blog_id => $blog_id,
+            id      => $entry_id,
+        }
+    );
+
+    my $link = $app->wq_find('a.delete');
+
+    my %return_args = (
+        __mode  => 'list',
+        _type   => $link->attr('mt:object-type'),
+        blog_id => $link->attr('mt:blog-id'),
+    );
+
+    $app->post_form_ok(
+        'entry_form',
+        {   __mode      => 'delete',
+            return_args => join( '&', map {"$_=$return_args{$_}"} keys %return_args ),
+        }
+    );
+
+    ok !$app->generic_error, "No errors" or die $app->generic_error;
+
+    run_rpt_if_async();
+
+    diff_should_be($entry_category_change_diff);
+
+    cmp_bag( \@prev_files, \@initial_files, "back to the initial state" );
+};
+
 done_testing;
