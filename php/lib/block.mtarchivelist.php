@@ -11,19 +11,19 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
     if (!isset($res)) {
         $blog = $ctx->stash('blog');
         $blog_id = $blog->blog_id;
-        $at = $args['type'];
-        $at or $at = $args['archive_type'];
-        $at or $at = $ctx->stash('current_archive_type');
-        if ($at) {  # do nothing if we have an $at
-        } elseif ($blog_at = $blog->blog_archive_type_preferred) {
-            $at = $blog_at;
-        } elseif (empty($at)) {
-            $types = explode(',', $blog->blog_archive_type);
-            $at = $types[0];
-        }
+        $at = $blog->blog_archive_type;
         if (empty($at) || $at == 'None') {
             $repeat = false;
             return '';
+        }
+        $args_at = $args['type'];
+        $args_at or $args_at = $args['archive_type'];
+        if ($args_at) {
+            $at = $args_at;
+        } else if ($blog->blog_archive_type_preferred) {
+            $at = $blog->blog_archive_type_preferred;
+        } else {
+            $at = explode(',', $at)[0];
         }
 
         try {

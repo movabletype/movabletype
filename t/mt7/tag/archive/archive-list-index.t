@@ -443,9 +443,6 @@ page_author1_coffee
 <mt:ArchiveList type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26109
 
 === Empty with archive_type
 --- archive_type
@@ -453,9 +450,6 @@ https://movabletype.atlassian.net/browse/MTC-26109
 <mt:ArchiveList archive_type="[% archive_type %]" content_type="ct_with_same_catset"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26109
 
 === None with type
 --- archive_type
@@ -464,9 +458,6 @@ None
 <mt:ArchiveList type="[% archive_type %]"><mt:ArchiveTitle>
 </mt:ArchiveList>
 --- expected
---- expected_php_todo
---- FIXME
-https://movabletype.atlassian.net/browse/MTC-26109
 
 === sort_order="ascend"
 --- template
