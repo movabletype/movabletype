@@ -455,7 +455,7 @@
             null,
             null,
             "checkboxes",
-            "da349653f6a36efe57823491a0a70122997f7c07"
+            "2fc5379df9cb44be5c9a98c81af422701970032d"
          ],
          [
             2,
@@ -472,7 +472,7 @@
             null,
             null,
             "radio_button",
-            "3ed94a0c77b19bfc1b375baf56fea8063b0f5d04"
+            "48466905354e94ec34b6a4ce366300c35e4fcc47"
          ],
          [
             2,
@@ -489,7 +489,7 @@
             null,
             null,
             "select_box",
-            "6a5aed5a68a86f7ef291e892efa0aae3eef30990"
+            "94519983886a9de5b0c21e78467412d870354988"
          ]
       ]
    },
@@ -500,7 +500,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0048\n",
+            "DataAPIDisableSite 0\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0049\n",
             1
          ]
       ]
@@ -528,12 +528,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check0\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(da349653f6a36efe57823491a0a70122997f7c07\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_check",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006check0\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_check\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncheckboxes\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(2fc5379df9cb44be5c9a98c81af422701970032d",
             1,
             null,
             "__NOW__",
             "ct_check",
-            "fce97c13df9a3216c34201b24448a3f161079f59",
+            "0b0421ea421bdfab7b7350bfff04ac0c2038eb22",
             null,
             null
          ],
@@ -543,12 +543,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(3ed94a0c77b19bfc1b375baf56fea8063b0f5d04\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio0\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_button\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\bcf_radio\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0006radio0\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(48466905354e94ec34b6a4ce366300c35e4fcc47\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\fradio_button\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012",
             2,
             null,
             "__NOW__",
             "ct_radio",
-            "47386259192565d1078ed2a165f8bb9479c9d8f8",
+            "f017cacb3a07c3e3fd475f91ed5dc13409f9e4c6",
             null,
             null
          ],
@@ -558,12 +558,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(6a5aed5a68a86f7ef291e892efa0aae3eef30990\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checkedH\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select2\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select3\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select0\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_box\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0007\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004name-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0006valuesA\u0000\u0000\u0000\u0004H\u0000\u0000\u0000\u0003\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value1\u0000\u0000\u0000\u0007checked-\u0000\u0000\u0000\u0007checked\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select1H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value2\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select2H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u0006value3\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select3H\u0000\u0000\u0000\u0002\u0000\u0000\u0000\u0005value-\u0000\u0000\u0000\u00010\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u0007select0\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\tcf_select\u0000\u0000\u0000\u0007display-\u0000\u0000\u0000\u0007default\u0000\u0000\u0000\tunique_id-\u0000\u0000\u0000(94519983886a9de5b0c21e78467412d870354988\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\nselect_box\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00013\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\u00011",
             3,
             null,
             "__NOW__",
             "ct_select",
-            "fa68ae5811836f5c564b5d82f4755201a0849c8b",
+            "9311d40353491ca6c913fc857d2fee5d5060c551",
             null,
             null
          ]
@@ -2181,5 +2181,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0048; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0049; formattedtext 1.00; tinymce 1"
 }
