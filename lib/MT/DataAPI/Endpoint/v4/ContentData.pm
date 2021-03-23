@@ -91,12 +91,37 @@ sub update {
     my ( $site, $content_type, $orig_content_data ) = context_objects(@_)
         or return;
 
+    my @old_archive_params;
+    my @maps = MT->model('templatemap')->load(
+        { blog_id => $site->id },
+        {   join => MT->model('template')->join_on(
+                undef,
+                {   id              => \'= templatemap_template_id',
+                    content_type_id => $content_type->id,
+                },
+            ),
+        }
+    );
+
+    my @finfos = MT->model('fileinfo')->load( { blog_id => $site->id, cd_id => $orig_content_data->id } );
+    for my $finfo (@finfos) {
+        next if $finfo->archive_type eq 'ContentType';
+        my %params = (
+            Blog        => $site,
+            File        => $finfo->file_path,
+            ArchiveType => $finfo->archive_type,
+            FileInfo    => $finfo,
+            ContentData => $orig_content_data,
+        );
+        push @old_archive_params, \%params;
+    }
+
     my $new_content_data
         = $app->resource_object( 'content_data', $orig_content_data )
         or return;
 
     my $post_save = _build_post_save_sub( $app, $site, $new_content_data,
-        $orig_content_data );
+        $orig_content_data, \@old_archive_params );
 
     save_object(
         $app,
@@ -155,6 +180,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $site )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $site );
+                $app->publisher->remove_marked_files( $site, 1 );
             }
         );
     }
@@ -163,7 +189,7 @@ sub delete {
 }
 
 sub _build_post_save_sub {
-    my ( $app, $site, $obj, $orig_obj ) = @_;
+    my ( $app, $site, $obj, $orig_obj, $old_archive_params ) = @_;
 
     my $archive_type = 'ContentType';
     my $orig_file
@@ -195,6 +221,23 @@ sub _build_post_save_sub {
                     Force       => 0,
                 );
             }
+            if ($old_archive_params) {
+                require MT::Util::Log;
+                MT::Util::Log::init();
+                for my $param (@$old_archive_params) {
+                    my $orig = $param->{ContentData};
+                    next if $orig_obj->status != MT::ContentStatus::RELEASE();
+                    my $fi = $param->{FileInfo};
+                    if ( MT->config('DeleteFilesAfterRebuild') ) {
+                        $fi->mark_to_remove;
+                        MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+                    }
+                    else {
+                        $fi->remove;
+                        $app->publisher->_delete_archive_file(%$param);
+                    }
+                }
+            }
         }
 
         MT::Util::start_background_task(
@@ -210,6 +253,7 @@ sub _build_post_save_sub {
                 ) or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $site );
                 $app->run_callbacks('post_build');
+                $app->publisher->remove_marked_files( $site, 1 );
                 1;
             }
         );

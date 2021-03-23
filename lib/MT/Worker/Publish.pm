@@ -131,6 +131,8 @@ sub work {
     }
 
     if ($rebuilt) {
+        $mt->publisher->remove_marked_files;
+
         MT::TheSchwartz->debug(
             $mt->translate(
                 "-- set complete ([quant,_1,file,files] in [_2] seconds)",

@@ -1647,6 +1647,7 @@ sub save {
 
     # Delete old archive files.
     if ( $app->config('DeleteFilesAtRebuild') && $id ) {
+        $app->request->cache( 'file', {} );    # clear cache
         my $file = archive_file_for( $obj, $blog, $archive_type );
         if ( $file ne $orig_file || $obj->status != MT::Entry::RELEASE() ) {
             $app->publisher->remove_entry_archive_file(
@@ -1674,27 +1675,19 @@ sub save {
                     $app->rebuild_entry(
                         Entry => $obj,
                         (   $obj->is_entry
-                            ? ( BuildDependencies => 1 )
+                            ? ( BuildDependencies => 1,
+                                OldEntry          => $orig_obj,
+                                OldPrevious       => $previous_old ? $previous_old->id : undef,
+                                OldNext           => $next_old ? $next_old->id : undef,
+                                OldDate           => $orig_obj->authored_on,
+                                )
                             : ( BuildIndexes => 1 )
                         ),
-                        ( $obj->is_entry ? ( OldEntry => $orig_obj ) : () ),
-                        (   $obj->is_entry
-                            ? ( OldPrevious => ($previous_old)
-                                ? $previous_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
-                        (   $obj->is_entry
-                            ? ( OldNext => ($next_old)
-                                ? $next_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
+                        OldCategories => join( ',', map { $_->id } @$categories_old ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
@@ -1730,6 +1723,7 @@ sub save {
                         entry_id   => $obj->id,
                         is_new     => $is_new,
                         old_status => $status_old,
+                        old_date   => $orig_obj->authored_on,
                         old_categories =>
                             join( ',', map { $_->id } @$categories_old ),
                         (   $previous_old
@@ -2857,6 +2851,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $b );
+                $app->publisher->remove_marked_files( $b, 1 );
             }
         };
 
