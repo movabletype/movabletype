@@ -653,8 +653,11 @@ sub can_edit_content_data {
 sub can_republish_content_data {
     my $perms = shift;
     my ( $content_data, $author ) = @_;
+
+    return 0 unless $content_data;
     die unless $author->isa('MT::Author');
     return 1 if $author->is_superuser();
+
     unless ( ref $content_data ) {
         require MT::ContentData;
         $content_data = MT::ContentData->load($content_data)
