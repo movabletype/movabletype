@@ -26,7 +26,7 @@ B<Attributes:>
 =item * type
 
 Specifies a particular type(s) of asset to select. This may be
-one of image, audio, video, or file(a generic for unrecognized file types). 
+one of image, audio, video, or file(a generic for unrecognized file types).
 If unspecified, will select all asset types. Supports a comma-delimited list.
 
 =item * file_ext
@@ -827,7 +827,7 @@ sub _hdlr_asset_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return $a->url;
+    return MT::Util::strip_absolutes($a->url, $args);
 }
 
 ###########################################################################
@@ -1194,6 +1194,8 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
+
+    $url = MT::Util::strip_absolutes($url, $args);
     return $url || '';
 }
 
@@ -1228,8 +1230,9 @@ sub _hdlr_asset_link {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
+    my $url = MT::Util::strip_absolutes($a->url, $args);
 
-    my $ret = sprintf qq(<a href="%s"), $a->url;
+    my $ret = sprintf qq(<a href="%s"), $url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
@@ -1301,7 +1304,10 @@ sub _hdlr_asset_thumbnail_link {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
-    my $ret = sprintf qq(<a href="%s"), $a->url;
+    $url = MT::Util::strip_absolutes($url, $args);
+    my $aurl = MT::Util::strip_absolutes($a->url, $args);
+
+    my $ret = sprintf qq(<a href="%s"), $aurl;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
     }
@@ -1338,6 +1344,7 @@ B<Example:>
 sub _hdlr_asset_count {
     my ( $ctx, $args, $cond ) = @_;
     my ( %terms, %args );
+
     $terms{blog_id} = $ctx->stash('blog_id') if $ctx->stash('blog_id');
     $terms{parent}  = \'is NULL';
     $terms{class}   = $args->{type} || '*';

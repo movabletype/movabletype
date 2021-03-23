@@ -43,7 +43,7 @@ content listed by a L<Contents> tag is reached.
 The contents of this container tag will be displayed when the last
 content listed by a L<Contentss> tag is reached.
 
-=for tags contents 
+=for tags contents
 
 =cut
 

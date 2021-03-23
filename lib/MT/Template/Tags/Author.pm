@@ -114,7 +114,7 @@ select authors based on a particular scoring mechanism.
 =item * scoring_to
 
 If 'namespace' is also specified, filters the authors based on
-the score within that namespace. This attribute specifies which 
+the score within that namespace. This attribute specifies which
 type of object to look up. the object has to be specified in context.
 
 =item * min_score
@@ -742,7 +742,7 @@ is in context, it will use the author of the entry or page in context.
 =cut
 
 sub _hdlr_author_url {
-    my ($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $author = $ctx->stash('author');
     unless ($author) {
         my $e = $ctx->stash('entry');
@@ -750,7 +750,7 @@ sub _hdlr_author_url {
     }
     return $ctx->_no_author_error() unless $author;
     my $url = $author->url;
-    return defined $url ? $url : '';
+    return MT::Util::strip_absolutes(defined $url ? $url : '', $args);
 }
 
 ###########################################################################
@@ -828,7 +828,7 @@ sub _hdlr_author_auth_icon_url {
             $url = $blog_domain . $url;
         }
     }
-    return $url;
+    return MT::Util::strip_absolutes($url, $args);
 }
 
 ###########################################################################

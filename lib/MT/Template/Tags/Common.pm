@@ -34,10 +34,11 @@ sub hdlr_author_link {
     if ( $type eq 'url' ) {
         if ( $a->url && ( $displayname ne '' ) ) {
 
+            my $url = MT::Util::strip_absolutes($a->url, $args)
             # Add vcard properties to link if requested (with hcard="1")
             my $hcard = $args->{show_hcard} ? ' class="fn url"' : '';
             return sprintf qq(<a%s href="%s"%s>%s</a>), $hcard,
-                encode_html( $a->url ), $target, $displayname;
+                encode_html( $url ), $target, $displayname;
         }
     }
     elsif ( $type eq 'email' ) {

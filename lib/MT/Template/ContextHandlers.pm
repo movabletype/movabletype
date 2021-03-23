@@ -5295,6 +5295,10 @@ sub _hdlr_link {
             MT->translate( "Cannot find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
+
+        # add support for relative URLS
+        $site_url = MT::Util::strip_absolutes($site_url, $arg);
+
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5305,6 +5309,9 @@ sub _hdlr_link {
             or return $ctx->error(
             MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
+
+        $link = MT::Util::strip_absolutes($link, $arg);
+
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
         $link;
@@ -5730,7 +5737,7 @@ name is unnecessary):
 
 =cut
 
-sub _hdlr_cgi_path { shift->cgi_path }
+sub _hdlr_cgi_path { MT::Util::strip_absolutes(shift->cgi_path, shift) }
 
 ###########################################################################
 
@@ -5848,7 +5855,7 @@ B<Example:>
 =cut
 
 sub _hdlr_static_path {
-    my ($ctx) = @_;
+    my ($ctx, $args) = @_;
     my $cfg   = $ctx->{config};
     my $path  = $cfg->StaticWebPath;
     if ( !$path ) {
@@ -5867,7 +5874,7 @@ sub _hdlr_static_path {
         }
     }
     $path .= '/' unless $path =~ m!/$!;
-    return $path;
+    return MT::Util::strip_absolutes($path, $args);
 }
 
 ###########################################################################
