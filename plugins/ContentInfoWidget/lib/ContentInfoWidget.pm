@@ -12,7 +12,7 @@ sub edit_template_param {
     my $type    = $param->{type};
     my $plugin  = $cb->plugin;
     my $config  = $plugin->get_config_hash;
-    if ( my $others = delete $config->{_others} ) {
+    if ( my $others = delete $config->{others} ) {
         for my $key ( split /[ ,]+/, $others ) {
             $config->{$key} = 1 if $key;
         }
