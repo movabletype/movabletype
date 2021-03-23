@@ -765,10 +765,14 @@ sub rebuild_pages {
     my $offset = 0;
     my ($total) = $q->param('total');
 
-    my $with_indexes = $q->param('with_indexes');
-    my $no_static    = $q->param('no_static');
-    my $template_id  = $q->param('template_id');
-    my $map_id       = $q->param('templatemap_id');
+    my $with_indexes   = $q->param('with_indexes');
+    my $no_static      = $q->param('no_static');
+    my $template_id    = $q->param('template_id');
+    my $map_id         = $q->param('templatemap_id');
+    my $old_date       = $q->param('old_date');
+    my $old_categories = $q->param('old_categories');
+    my $old_previous   = $q->param('old_previous');
+    my $old_next       = $q->param('old_next');
 
     my ($tmpl_saved);
 
@@ -832,9 +836,10 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
-            OldCategories     => $q->param('old_categories'),
-            OldPrevious       => $q->param('old_previous'),
-            OldNext           => $q->param('old_next')
+            OldDate           => $old_date,
+            OldCategories     => $old_categories,
+            OldPrevious       => $old_previous,
+            OldNext           => $old_next,
         ) or return $app->publish_error();
         $order = "entry '" . $entry->title . "'";
     }
@@ -1080,6 +1085,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             require MT::CMS::Entry;
             MT::CMS::Entry::ping_continuation(
                 $app,
@@ -1276,7 +1282,7 @@ sub start_rebuild_pages_directly {
         $param{is_entry} = 1;
         $param{entry_id} = $entry_id;
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $q->param($col);
         }

@@ -24,6 +24,9 @@ $XML::Atom::ForceUnicode = 1;
 
 sub init {
     my $app = shift;
+
+    $app->config( 'DeleteFilesAfterRebuild', 0, 0 );
+
     $app->{no_read_body} = 1
         if $app->request_method eq 'POST' || $app->request_method eq 'PUT';
     $app->SUPER::init(@_) or return $app->error("Initialization failed");

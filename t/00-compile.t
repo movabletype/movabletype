@@ -98,6 +98,7 @@ use_ok('MT::Category');
 use_ok('MT::Comment');
 use_ok('MT::Entry');
 use_ok('MT::IPBanList');
+use_ok('MT::DeleteFileInfo');
 use_ok('MT::FileInfo');
 use_ok('MT::Config');
 use_ok('MT::Asset');

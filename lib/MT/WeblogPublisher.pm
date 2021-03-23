@@ -271,6 +271,9 @@ sub rebuild {
         $mt->rebuild_indexes( Blog => $blog, NoStatic => $param{NoStatic}, )
             or return;
     }
+
+    $mt->remove_marked_files($blog);
+
     MT::Util::Log->info('--- End   rebuild.');
     1;
 }
@@ -408,7 +411,39 @@ sub remove_fileinfo {
     MT::Util::Log::init();
     for my $f (@finfo) {
         $f->remove;
-        MT::Util::Log->info( ' Removed ' . $f->file_path );
+        MT::Util::Log->debug( ' Removed FileInfo for ' . $f->file_path );
+    }
+    1;
+}
+
+sub mark_fileinfo {
+    my $mt    = shift;
+    my %param = @_;
+    my $at    = $param{ArchiveType}
+        or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'ArchiveType' ) );
+    my $blog_id = $param{Blog}
+        or return $mt->error(
+        MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
+    my $entry_id = $param{Entry}, my $author_id = $param{Author};
+    my $start    = $param{StartDate};
+    my $cat_id   = $param{Category};
+
+    require MT::FileInfo;
+    my @finfo = MT::FileInfo->load(
+        {   archive_type => $at,
+            blog_id      => $blog_id,
+            ( $entry_id ? ( entry_id    => $entry_id ) : () ),
+            ( $cat_id   ? ( category_id => $cat_id )   : () ),
+            ( $start    ? ( startdate   => $start )    : () ),
+        }
+    );
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    for my $f (@finfo) {
+        $f->mark_to_remove;
+        MT::Util::Log->debug( 'Marked to remove ' . $f->file_path );
     }
     1;
 }
@@ -456,24 +491,32 @@ sub rebuild_deleted_entry {
         @at = grep { $_ ne 'Page' } @at_orig;
     }
 
-    # Remove Individual archive file.
-    if ( $app->config('DeleteFilesAtRebuild') ) {
-        $mt->remove_entry_archive_file( Entry => $entry, );
+    if ( $app->config('DeleteFilesAfterRebuild') ) {
+        $mt->mark_fileinfo(
+            ArchiveType => 'Individual',
+            Blog        => $blog->id,
+            Entry       => $entry->id
+        );
+    } else {
+        # Remove Individual archive file.
+        if ( $app->config('DeleteFilesAtRebuild') ) {
+            $mt->remove_entry_archive_file( Entry => $entry, );
+        }
+        # Remove Individual fileinfo records.
+        $mt->remove_fileinfo(
+            ArchiveType => 'Individual',
+            Blog        => $blog->id,
+            Entry       => $entry->id
+        );
     }
-
-    # Remove Individual fileinfo records.
-    $mt->remove_fileinfo(
-        ArchiveType => 'Individual',
-        Blog        => $blog->id,
-        Entry       => $entry->id
-    );
 
     require MT::Util;
     for my $at (@at) {
         my $archiver = $mt->archiver($at);
         next unless $archiver;
 
-        my ( $start, $end ) = $archiver->date_range( $entry->authored_on )
+        my ( $start, $end );
+        ( $start, $end ) = $archiver->date_range( $entry->authored_on )
             if $archiver->date_based() && $archiver->can('date_range');
 
         # Remove archive file if archive file has not entries.
@@ -489,23 +532,36 @@ sub rebuild_deleted_entry {
                     )
                     )
                 {
-                    $mt->remove_fileinfo(
-                        ArchiveType => $at,
-                        Blog        => $blog->id,
-                        Category    => $cat->id,
-                        (   $archiver->date_based()
-                            ? ( startdate => $start )
-                            : ()
-                        ),
-                    );
-                    if (   $app->config('RebuildAtDelete')
-                        && $app->config('DeleteFilesAtRebuild') )
-                    {
-                        $mt->remove_entry_archive_file(
-                            Entry       => $entry,
+                    if ( MT->config('DeleteFilesAfterRebuild') ) {
+                        $mt->mark_fileinfo(
                             ArchiveType => $at,
-                            Category    => $cat,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            (   $archiver->date_based()
+                                ? ( startdate => $start )
+                                : ()
+                            ),
                         );
+                    }
+                    else {
+                        $mt->remove_fileinfo(
+                            ArchiveType => $at,
+                            Blog        => $blog->id,
+                            Category    => $cat->id,
+                            (   $archiver->date_based()
+                                ? ( startdate => $start )
+                                : ()
+                            ),
+                        );
+                        if (   $app->config('RebuildAtDelete')
+                            && $app->config('DeleteFilesAtRebuild') )
+                        {
+                            $mt->remove_entry_archive_file(
+                                Entry       => $entry,
+                                ArchiveType => $at,
+                                Category    => $cat,
+                            );
+                        }
                     }
                 }
                 else {
@@ -543,26 +599,40 @@ sub rebuild_deleted_entry {
                     == 1 )
                 )
             {
-
-                # Remove archives fileinfo records.
-                $mt->remove_fileinfo(
-                    ArchiveType => $at,
-                    Blog        => $blog->id,
-                    (   $archiver->author_based()
-                            && $entry->author_id
-                        ? ( author_id => $entry->author_id )
-                        : ()
-                    ),
-                    (   $archiver->date_based() ? ( startdate => $start ) : ()
-                    ),
-                );
-                if (   $app->config('RebuildAtDelete')
-                    && $app->config('DeleteFilesAtRebuild') )
-                {
-                    $mt->remove_entry_archive_file(
-                        Entry       => $entry,
-                        ArchiveType => $at
+                if ( $app->config('DeleteFilesAfterRebuild') ) {
+                    $mt->mark_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        (   $archiver->author_based()
+                                && $entry->author_id
+                            ? ( Author => $entry->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start ) : ()
+                        ),
                     );
+                }
+                else {
+                    # Remove archives fileinfo records.
+                    $mt->remove_fileinfo(
+                        ArchiveType => $at,
+                        Blog        => $blog->id,
+                        (   $archiver->author_based()
+                                && $entry->author_id
+                            ? ( Author => $entry->author_id )
+                            : ()
+                        ),
+                        (   $archiver->date_based() ? ( StartDate => $start ) : ()
+                        ),
+                    );
+                    if (   $app->config('RebuildAtDelete')
+                        && $app->config('DeleteFilesAtRebuild') )
+                    {
+                        $mt->remove_entry_archive_file(
+                            Entry       => $entry,
+                            ArchiveType => $at
+                        );
+                    }
                 }
             }
             else {
@@ -645,15 +715,18 @@ sub rebuild_entry {
 
     my $categories_for_rebuild;
     if ( my $ids = $param{OldCategories} ) {
-        my %new_ids = map { $_->id => 1 } @{ $entry->categories };
+        my %new_ids = map  { $_->id => 1 } @{ $entry->categories };
         my @old_ids = grep { !$new_ids{$_} } split( ',', $ids );
 
         if (@old_ids) {
-            push( @$categories_for_rebuild,
-                MT::Category->load( { id => \@old_ids } ) );
+            push( @$categories_for_rebuild, MT::Category->load( { id => \@old_ids } ) );
         }
     }
     push @$categories_for_rebuild, ( map {$_} @{ $entry->categories } );
+    my @timestamps = (undef);
+    if ( $param{OldDate} && $param{OldDate} ne $entry->authored_on ) {
+        push @timestamps, $param{OldDate};
+    }
 
     my $at
         = $param{PreferredArchiveOnly} ? $blog->archive_type_preferred
@@ -667,32 +740,38 @@ sub rebuild_entry {
             next if $entry->class ne $archiver->entry_class;
             if ( $archiver->category_based ) {
                 for my $cat (@$categories_for_rebuild) {
+                    for my $ts (@timestamps) {
+                        $mt->_rebuild_entry_archive_type(
+                            Entry       => $entry,
+                            Blog        => $blog,
+                            ArchiveType => $at,
+                            Category    => $cat,
+                            NoStatic    => $param{NoStatic},
+                            ( $ts ? ( Timestamp => $ts ) : () ),
+
+                            # Force       => ($param{Force} ? 1 : 0),
+                            $param{TemplateMap}
+                            ? ( TemplateMap => $param{TemplateMap} )
+                            : (),
+                        ) or return;
+                    }
+                }
+            }
+            else {
+                for my $ts (@timestamps) {
                     $mt->_rebuild_entry_archive_type(
                         Entry       => $entry,
                         Blog        => $blog,
                         ArchiveType => $at,
-                        Category    => $cat,
-                        NoStatic    => $param{NoStatic},
-
-                        # Force       => ($param{Force} ? 1 : 0),
+                        ( $ts ? ( Timestamp => $ts ) : () ),
                         $param{TemplateMap}
                         ? ( TemplateMap => $param{TemplateMap} )
                         : (),
+                        NoStatic => $param{NoStatic},
+                        Force    => ( $param{Force} ? 1 : 0 ),
+                        Author   => $entry->author,
                     ) or return;
                 }
-            }
-            else {
-                $mt->_rebuild_entry_archive_type(
-                    Entry       => $entry,
-                    Blog        => $blog,
-                    ArchiveType => $at,
-                    $param{TemplateMap}
-                    ? ( TemplateMap => $param{TemplateMap} )
-                    : (),
-                    NoStatic => $param{NoStatic},
-                    Force    => ( $param{Force} ? 1 : 0 ),
-                    Author   => $entry->author,
-                ) or return;
             }
         }
     }
@@ -763,97 +842,106 @@ sub rebuild_entry {
                 my $archiver = $mt->archiver($at);
                 if ( $archiver->category_based ) {
                     for my $cat (@$categories_for_rebuild) {
-                        if (my $prev_arch
-                            = $archiver->previous_archive_entry(
-                                {   entry    => $entry,
-                                    category => $cat,
-                                }
-                            )
-                            )
-                        {
-                            $mt->_rebuild_entry_archive_type(
-                                NoStatic => $param{NoStatic},
+                        for my $ts (@timestamps) {
+                            if (my $prev_arch = $archiver->previous_archive_entry(
+                                    {   entry    => $entry,
+                                        category => $cat,
+                                        ( $ts ? ( ts => $ts ) : () ),
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_entry_archive_type(
+                                    NoStatic => $param{NoStatic},
 
-                                # Force    => ($param{Force} ? 1 : 0),
-                                Entry    => $prev_arch,
-                                Blog     => $blog,
-                                Category => $cat,
-                                $param{TemplateMap}
-                                ? ( TemplateMap => $param{TemplateMap} )
-                                : (),
-                                ArchiveType => $at
-                            ) or return;
-                        }
-                        if (my $next_arch = $archiver->next_archive_entry(
-                                {   entry    => $entry,
-                                    category => $cat,
-                                }
-                            )
-                            )
-                        {
-                            $mt->_rebuild_entry_archive_type(
-                                NoStatic => $param{NoStatic},
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    Entry    => $prev_arch,
+                                    Blog     => $blog,
+                                    Category => $cat,
+                                    ( $ts ? ( Timestamp => $ts ) : () ),
+                                    $param{TemplateMap}
+                                    ? ( TemplateMap => $param{TemplateMap} )
+                                    : (),
+                                    ArchiveType => $at
+                                ) or return;
+                            }
+                            if (my $next_arch = $archiver->next_archive_entry(
+                                    {   entry    => $entry,
+                                        category => $cat,
+                                        ( $ts ? ( ts => $ts ) : () ),
+                                    }
+                                )
+                                )
+                            {
+                                $mt->_rebuild_entry_archive_type(
+                                    NoStatic => $param{NoStatic},
 
-                                # Force    => ($param{Force} ? 1 : 0),
-                                Entry    => $next_arch,
-                                Blog     => $blog,
-                                Category => $cat,
-                                $param{TemplateMap}
-                                ? ( TemplateMap => $param{TemplateMap} )
-                                : (),
-                                ArchiveType => $at
-                            ) or return;
+                                    # Force    => ($param{Force} ? 1 : 0),
+                                    Entry    => $next_arch,
+                                    Blog     => $blog,
+                                    Category => $cat,
+                                    ( $ts ? ( Timestamp => $ts ) : () ),
+                                    $param{TemplateMap}
+                                    ? ( TemplateMap => $param{TemplateMap} )
+                                    : (),
+                                    ArchiveType => $at
+                                ) or return;
+                            }
                         }
                     }
                 }
                 else {
-                    if (my $prev_arch = $archiver->previous_archive_entry(
-                            {   entry => $entry,
-                                $archiver->author_based
-                                ? ( author => $entry->author )
-                                : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_entry_archive_type(
-                            NoStatic => $param{NoStatic},
+                    for my $ts (@timestamps) {
+                        if (my $prev_arch = $archiver->previous_archive_entry(
+                                {   entry => $entry,
+                                    $archiver->author_based
+                                    ? ( author => $entry->author )
+                                    : (),
+                                    ( $ts ? ( ts => $ts ) : () ),
+                                }
+                            )
+                            )
+                        {
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            Entry       => $prev_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $entry->author )
-                            : (),
-                        ) or return;
-                    }
-                    if (my $next_arch = $archiver->next_archive_entry(
-                            {   entry => $entry,
-                                $archiver->author_based
-                                ? ( author => $entry->author )
+                                # Force       => ($param{Force} ? 1 : 0),
+                                Entry       => $prev_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                ( $ts ? ( Timestamp => $ts ) : () ),
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
                                 : (),
-                            }
-                        )
-                        )
-                    {
-                        $mt->_rebuild_entry_archive_type(
-                            NoStatic => $param{NoStatic},
+                                $archiver->author_based ? ( Author => $entry->author )
+                                : (),
+                            ) or return;
+                        }
+                        if (my $next_arch = $archiver->next_archive_entry(
+                                {   entry => $entry,
+                                    $archiver->author_based
+                                    ? ( author => $entry->author )
+                                    : (),
+                                    ( $ts ? ( ts => $ts ) : () ),
+                                }
+                            )
+                            )
+                        {
+                            $mt->_rebuild_entry_archive_type(
+                                NoStatic => $param{NoStatic},
 
-                            # Force       => ($param{Force} ? 1 : 0),
-                            Entry       => $next_arch,
-                            Blog        => $blog,
-                            ArchiveType => $at,
-                            $param{TemplateMap}
-                            ? ( TemplateMap => $param{TemplateMap} )
-                            : (),
-                            $archiver->author_based
-                            ? ( Author => $entry->author )
-                            : (),
-                        ) or return;
+                                # Force       => ($param{Force} ? 1 : 0),
+                                Entry       => $next_arch,
+                                Blog        => $blog,
+                                ArchiveType => $at,
+                                ( $ts ? ( Timestamp => $ts ) : () ),
+                                $param{TemplateMap}
+                                ? ( TemplateMap => $param{TemplateMap} )
+                                : (),
+                                $archiver->author_based ? ( Author => $entry->author )
+                                : (),
+                            ) or return;
+                        }
                     }
                 }
             }
@@ -904,28 +992,27 @@ sub rebuild_archives {
                 my $cat = MT::Category->load($cat_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$cat_id} } ) {
+                    for my $r ( values %{ $recipe->{$at}->{$cat_id} } ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Category    => $cat,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$cat_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$cat_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$cat_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$cat_id};
+                    delete $r->{id};
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Category    => $cat,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
@@ -936,42 +1023,39 @@ sub rebuild_archives {
                 my $author = MT::Author->load($auth_id)
                     or next;
                 if ( $archiver->date_based() ) {
-                    for my $key ( keys %{ $recipe->{$at}->{$auth_id} } ) {
+                    for my $r ( values %{ $recipe->{$at}->{$auth_id} } ) {
                         $mt->_rebuild_entry_archive_type(
                             NoStatic    => 0,
                             Force       => ( $param{Force} ? 1 : 0 ),
                             Blog        => $blog,
                             Author      => $author,
                             ArchiveType => $at,
-                            Start =>
-                                $recipe->{$at}->{$auth_id}->{$key}->{Start},
-                            End => $recipe->{$at}->{$auth_id}->{$key}->{End},
-                            Timestamp => $recipe->{$at}->{$auth_id}->{$key}
-                                ->{Timestamp},
+                            %$r,
                         ) or return;
                     }
                 }
                 else {
+                    my $r = $recipe->{$at}{$auth_id};
+                    delete $r->{id};
                     $mt->_rebuild_entry_archive_type(
                         NoStatic    => 0,
                         Force       => ( $param{Force} ? 1 : 0 ),
                         Blog        => $blog,
                         Author      => $author,
                         ArchiveType => $at,
+                        %$r,
                     ) or return;
                 }
             }
         }
         elsif ( $archiver->date_based() ) {
-            for my $key ( keys %{ $recipe->{$at} } ) {
+            for my $r ( values %{ $recipe->{$at} } ) {
                 $mt->_rebuild_entry_archive_type(
                     NoStatic    => 0,
                     Force       => ( $param{Force} ? 1 : 0 ),
                     Blog        => $blog,
                     ArchiveType => $at,
-                    Start       => $recipe->{$at}->{$key}->{Start},
-                    End         => $recipe->{$at}->{$key}->{End},
-                    Timestamp   => $recipe->{$at}->{$key}->{Timestamp},
+                    %$r,
                 ) or return;
             }
         }
@@ -1069,12 +1153,13 @@ sub _rebuild_entry_archive_type {
             ? $param{File}
             : $mt->archive_file_for( $entry, $blog, $at, $param{Category},
             $map, $ts, $param{Author} );
-        if ( $file eq '' ) {
+        if ( !defined($file) ) {
+            $mt->error( MT->translate( $blog->errstr() ) );
+            return 1;
+        }
+        elsif ( $file eq '' ) {
 
             # np
-        }
-        elsif ( !defined($file) ) {
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
         else {
             push @map_build, $map unless $done->{$file};
@@ -1105,7 +1190,7 @@ sub _rebuild_entry_archive_type {
     }
     else {
         if ( $archiver->date_based() && $archiver->can('date_range') ) {
-            ( $start, $end ) = $archiver->date_range( $entry->authored_on );
+            ( $start, $end ) = $archiver->date_range( $param{Timestamp} || $entry->authored_on );
         }
     }
 
@@ -1134,9 +1219,43 @@ sub _rebuild_entry_archive_type {
             EndDate   => $end,
             Force     => $param{Force} ? 1 : 0,
         ) or return;
-        $done->{ $map->{__saved_output_file} }++;
+        $done->{ $map->{__saved_output_file} }++
+            unless delete $map->{__saved_but_removed};
     }
     1;
+}
+
+sub remove_marked_files {
+    my ( $self, $blog, $ondemand_only ) = @_;
+
+    return unless MT->config('DeleteFilesAfterRebuild');
+    MT::Util::Log::init();
+    MT::Util::Log->info('--- Start removing marked files');
+
+    require MT::DeleteFileInfo;
+    my %args;
+    if ($blog) {
+        $args{blog_id} = $blog->id;
+    }
+    if ($ondemand_only) {
+        require MT::PublishOption;
+        $args{build_type} = MT::PublishOption::ONDEMAND();
+    }
+    my @infos = MT::DeleteFileInfo->load(\%args);
+    return unless @infos;
+
+    require MT::FileMgr;
+    my $fmgr = MT::FileMgr->new('Local');
+    for my $info (@infos) {
+        my $file = $info->file_path;
+        $info->remove;
+        if ( MT::FileInfo->exist( { blog_id => $info->blog_id, file_path => $file } ) ) {
+            next;
+        }
+        $fmgr->delete($file);
+        MT::Util::Log->info( "Removed $file" );
+    }
+    MT::Util::Log->info('--- End removing marked files');
 }
 
 sub rebuild_file {
@@ -1188,14 +1307,16 @@ sub rebuild_file {
         $ctx->var( 'category_archive', 1 );
         $ctx->{__stash}{archive_category} = $category;
     }
-    if ( $archiver->entry_based ) {
+    if ( $archiver->entry_based or $args{Entry} ) {
         $entry = $args{Entry};
         die "$at archive type requires Entry parameter"
             unless $entry;
         require MT::Entry;
         $entry = MT::Entry->load($entry) if !ref $entry;
-        $ctx->var( 'entry_archive', 1 );
-        $ctx->{__stash}{entry} = $entry;
+        if ( $archiver->entry_based ) {
+            $ctx->var( 'entry_archive', 1 );
+            $ctx->{__stash}{entry} = $entry;
+        }
     }
     if ( $archiver->date_based ) {
 
@@ -1302,18 +1423,23 @@ sub rebuild_file {
          # if the shoe don't fit, remove all shoes and create the perfect shoe
             require MT::Util::Log;
             MT::Util::Log::init();
-            foreach (@finfos) {
-                $_->remove();
-                MT::Util::Log->info( ' Removed ' . $_->file_path );
-                if ( MT->config('DeleteFilesAtRebuild') ) {
-                    $mt->_delete_archive_file(
-                        Blog        => $blog,
-                        File        => $_->file_path,
-                        ArchiveType => $at,
-                        ( $archiver->entry_based && $entry )
-                        ? ( Entry => $entry->id )
-                        : (),
-                    );
+            foreach my $finfo (@finfos) {
+                if ( MT->config('DeleteFilesAfterRebuild') ) {
+                    $finfo->mark_to_remove;
+                    MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+                }
+                else {
+                    $finfo->remove();
+                    if ( MT->config('DeleteFilesAtRebuild') ) {
+                        $mt->_delete_archive_file(
+                            Blog        => $blog,
+                            File        => $finfo->file_path,
+                            ArchiveType => $at,
+                            ( $archiver->entry_based && $entry )
+                            ? ( Entry => $entry->id )
+                            : (),
+                        );
+                    }
                 }
             }
 
@@ -1335,6 +1461,7 @@ sub rebuild_file {
                 )
                 || die "Couldn't create FileInfo because "
                 . MT::FileInfo->errstr();
+            MT::Util::Log->debug( 'Created FileInfo for ' . $file );
         }
     }
 
@@ -1347,18 +1474,26 @@ sub rebuild_file {
                 Timestamp   => $start,
             }
         )
+        or ( $entry && $archiver->entry_based && $entry->status != MT::Entry::RELEASE() )
         )
     {
-        $finfo->remove();
+        $map->{__saved_but_removed} = 1;
         require MT::Util::Log;
         MT::Util::Log::init();
-        MT::Util::Log->info( ' Removed ' . $finfo->file_path );
-        if ( MT->config->DeleteFilesAtRebuild ) {
-            $mt->_delete_archive_file(
-                Blog        => $blog,
-                File        => $finfo->file_path,
-                ArchiveType => $at
-            );
+        if ( MT->config->DeleteFilesAfterRebuild ) {
+            $finfo->mark_to_remove;
+            MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+        }
+        else {
+            $finfo->remove();
+            MT::Util::Log->debug( 'Removed FileInfo for ' . $finfo->file_path );
+            if ( MT->config->DeleteFilesAtRebuild ) {
+                $mt->_delete_archive_file(
+                    Blog        => $blog,
+                    File        => $finfo->file_path,
+                    ArchiveType => $at
+                );
+            }
         }
 
         return 1;
@@ -1403,10 +1538,10 @@ sub rebuild_file {
             $finfo->virtual(1);
             $finfo->save();
         }
+
+        return 1;
     }
 
-    return 1 if ( $map->build_type == MT::PublishOption::DYNAMIC() );
-    return 1 if ( $entry && $entry->status != MT::Entry::RELEASE() );
     return 1 unless ( $map->build_type );
 
     my $timer = MT->get_timer;
@@ -1727,7 +1862,7 @@ sub rebuild_indexes {
                 MT::Util::Log::init();
                 foreach (@finfos) {
                     $_->remove();
-                    MT::Util::Log->info( ' Removed ' . $_->file_path );
+                    MT::Util::Log->debug( ' Removed FileInfo for ' . $_->file_path );
                 }
                 $finfo = MT::FileInfo->set_info_for_url(
                     $rel_url, $file, 'index',
@@ -1952,12 +2087,16 @@ sub rebuild_from_fileinfo {
     return 1 if $at eq 'None';
 
     my ( $start, $end );
-    my $blog = MT::Blog->load( $fi->blog_id )
-        if $fi->blog_id;
-    my $entry = MT::Entry->load( $fi->entry_id )
-        or return $pub->error(
-        MT->translate( "Parameter '[_1]' is required", 'Entry' ) )
-        if $fi->entry_id;
+    my $blog;
+    if ( $fi->blog_id ) {
+        $blog = MT::Blog->load( $fi->blog_id );
+    }
+    my $entry;
+    if ( $fi->entry_id ) {
+        $entry = MT::Entry->load( $fi->entry_id )
+            or return $pub->error(
+            MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
+    }
     if ( $fi->startdate ) {
         my $archiver = $pub->archiver($at);
 
@@ -1968,10 +2107,14 @@ sub rebuild_from_fileinfo {
                 MT->translate( "Parameter '[_1]' is required", 'Entry' ) );
         }
     }
-    my $cat = MT::Category->load( $fi->category_id )
-        if $fi->category_id;
-    my $author = MT::Author->load( $fi->author_id )
-        if $fi->author_id;
+    my $cat;
+    if ( $fi->category_id ) {
+        $cat = MT::Category->load( $fi->category_id );
+    }
+    my $author;
+    if ( $fi->author_id ) {
+        $author = MT::Author->load( $fi->author_id );
+    }
 
     ## Load the template-archive-type map entries for this blog and
     ## archive type. We do this before we load the list of entries, because
@@ -2189,15 +2332,24 @@ sub unpublish_past_entries {
                 or die $entry->errstr;
             $app->post_scheduled( $entry, $original );
 
-            # remove file
-            if ( $mt->config('DeleteFilesAtRebuild') ) {
-                my $archive_type = $entry->is_entry ? 'Individual' : 'Page';
-                my $primary_category = $entry->category;
-                $app->remove_entry_archive_file(
-                    Entry       => $entry,
+            my $archive_type = $entry->is_entry ? 'Individual' : 'Page';
+            my $primary_category = $entry->category;
+            if ( $mt->config('DeleteFilesAfterRebuild') ) {
+                $app->mark_fileinfo(
                     ArchiveType => $archive_type,
-                    Category    => $primary_category,
+                    Blog        => $site->id,
+                    Entry       => $entry->id,
+                    Category    => $primary_category ? $primary_category->id : 0,
                 );
+            } else {
+                # remove file
+                if ( $mt->config('DeleteFilesAtRebuild') ) {
+                    $app->remove_entry_archive_file(
+                        Entry       => $entry,
+                        ArchiveType => $archive_type,
+                        Category    => $primary_category,
+                    );
+                }
             }
 
             MT->run_callbacks( 'unpublish_past_entries', $mt, $entry );
@@ -2227,6 +2379,7 @@ sub unpublish_past_entries {
                 }
                 $mt->rebuild_indexes( Blog => $site )
                     or die $mt->errstr;
+                $mt->publisher->remove_marked_files($site);
             };
             if ( my $err = $@ ) {
 
@@ -2293,6 +2446,8 @@ sub remove_entry_archive_file {
 
     require File::Spec;
     require MT::PublishOption;
+    require MT::Util::Log;
+    MT::Util::Log::init();
     for my $map (@map) {
         next if !$force && $map->build_type == MT::PublishOption::ASYNC();
 
@@ -2302,15 +2457,31 @@ sub remove_entry_archive_file {
         $file = File::Spec->catfile( $arch_root, $file );
         if ( !defined($file) ) {
             die MT->translate( $blog->errstr() );
-            return $mt->error( MT->translate( $blog->errstr() ) );
         }
 
-        $mt->_delete_archive_file(
-            Blog        => $blog,
-            File        => $file,
-            ArchiveType => $at,
-            Entry       => $entry,
+        require MT::FileInfo;
+        my @fileinfos = MT::FileInfo->load(
+            {   blog_id   => $blog->id,
+                file_path => $file,
+            }
         );
+        if ( MT->config('DeleteFilesAfterRebuild') ) {
+            for my $fi (@fileinfos) {
+                $fi->mark_to_remove;
+            }
+            MT::Util::Log->debug( "Marked to remove $file");
+        }
+        else {
+            for my $fi (@fileinfos) {
+                $fi->remove;
+            }
+            $mt->_delete_archive_file(
+                Blog        => $blog,
+                File        => $file,
+                ArchiveType => $at,
+                Entry       => $entry,
+            );
+        }
     }
     1;
 }
@@ -2321,10 +2492,12 @@ sub _delete_archive_file {
     my ( $blog, $file, $at, $entry )
         = map { $param{$_} } qw(Blog File ArchiveType Entry);
     my $fmgr = $blog->file_mgr;
+    return unless $fmgr->exists($file);
 
     MT->run_callbacks( 'pre_delete_archive_file', $file, $at, $entry );
 
     $fmgr->delete($file);
+    MT::Util::Log->info( "Removed $file" );
 
     MT->run_callbacks( 'post_delete_archive_file', $file, $at, $entry );
 }
@@ -2343,13 +2516,13 @@ sub _delete_archive_file {
 
         return join ':',
             (
-            $entry     ? $entry->id  : '0',
-            $blog      ? $blog->id   : '0',
-            $at        ? $at         : 'None',
-            $cat       ? $cat->id    : '0',
-            $map       ? $map->id    : '0',
-            $timestamp ? $timestamp  : '0',
-            $author    ? $author->id : '0'
+            $entry && $entry->id   ? $entry->id  : '0',
+            $blog && $blog->id     ? $blog->id   : '0',
+            $at                    ? $at         : 'None',
+            $cat && $cat->id       ? $cat->id    : '0',
+            $map && $map->id       ? $map->id    : '0',
+            $timestamp             ? $timestamp  : '0',
+            $author && $author->id ? $author->id : '0'
             );
     }
 
@@ -2419,7 +2592,7 @@ sub _delete_archive_file {
         }
         local $ctx->{__stash}{category}         = $cat if $cat;
         local $ctx->{__stash}{archive_category} = $cat if $cat;
-        $timestamp = $entry->authored_on() if $entry;
+        $timestamp ||= $entry->authored_on() if $entry;
         local $ctx->{__stash}{entry} = $entry if $entry;
         local $ctx->{__stash}{author}
             = $author ? $author : $entry ? $entry->author : undef;
