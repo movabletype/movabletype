@@ -20,5 +20,5 @@ settings:
         default: 1
     cd_search_results:
         default: 1
-    _others:
+    others:
         default:
