@@ -1162,6 +1162,10 @@ sub make_content_actions {
                     content_type_id => $ct->id,
                 },
                 class => 'icon-create',
+                permit_action => {
+                    permit_action => 'create_new_content_data,create_new_content_data_' . $ct->unique_id,
+                    system_action => 'manage_content_data'
+                },
             }
         };
     }
