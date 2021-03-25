@@ -218,7 +218,7 @@ use vars qw( @ISA %Lexicon );
 	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{FTPサーバーのカレントディレクトリが取得できませんでした。},
 	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{FTPサーバーからディレクトリの一覧が取得できませんでした},
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。},
-	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配の信設定 '[_1]' (ID: [_2]) を削除しました。},
+	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を削除しました。},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を保存しました。},
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
