@@ -310,6 +310,8 @@ sub find_phrases {
         $rt->add($_) for qw(
             fabric.js
             chart-api/mtchart.js
+            tiny_mce/plugins/autosave/plugin.js
+            tiny_mce/plugins/insertdatetime/plugin.js
             tiny_mce/plugins/save/plugin.js
             tiny_mce/plugins/spellchecker/plugin.js
             tiny_mce/plugins/template/plugin.js

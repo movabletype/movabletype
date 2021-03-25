@@ -2965,13 +2965,6 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => '', # Translate - New
 
-## mt-static/plugins/TinyMCE5/tiny_mce/plugins/autosave/plugin.js
-	'You have unsaved changes are you sure you want to navigate away?' => '', # Translate - New
-
-## mt-static/plugins/TinyMCE5/tiny_mce/plugins/insertdatetime/plugin.js
-	'%H:%M:%S' => '', # Translate - New
-	'%Y-%m-%d' => '', # Translate - New
-
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'Sort_by="score" erfordert einen Namespace.',
 
