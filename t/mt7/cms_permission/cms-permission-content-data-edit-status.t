@@ -15,6 +15,7 @@ BEGIN {
 }
 
 use MT::Test;
+use MT::Test::App;
 use MT::Test::Permission;
 
 ### Prepare
@@ -27,8 +28,8 @@ $test_env->prepare_fixture(
 
         # Sites
         my $site = MT::Test::Permission->make_website( name => 'my website' );
-        my $site2 =
-          MT::Test::Permission->make_website( name => 'my second website' );
+        my $site2 = MT::Test::Permission->make_website(
+            name => 'my second website' );
 
         # Users
         my $create_user = MT::Test::Permission->make_author(
@@ -36,54 +37,14 @@ $test_env->prepare_fixture(
             nickname => 'Ichiro Aikawa',
         );
 
-        my $create_user2 = MT::Test::Permission->make_author(
-            name     => 'kagawa',
-            nickname => 'Ichiro Kagawa',
-        );
-
         my $edit_user = MT::Test::Permission->make_author(
             name     => 'ichikawa',
             nickname => 'Jiro Ichikawa',
         );
 
-        my $edit_user2 = MT::Test::Permission->make_author(
-            name     => 'kikkawa',
-            nickname => 'Jiro Kikkawa',
-        );
-
         my $manage_user = MT::Test::Permission->make_author(
             name     => 'ukawa',
             nickname => 'Saburo Ukawa',
-        );
-
-        my $manage_user2 = MT::Test::Permission->make_author(
-            name     => 'kumekawa',
-            nickname => 'Saburo Kumekawa',
-        );
-
-        my $publish_user = MT::Test::Permission->make_author(
-            name     => 'egawa',
-            nickname => 'Shiro Egawa',
-        );
-
-        my $publish_user2 = MT::Test::Permission->make_author(
-            name     => 'Kemikawa',
-            nickname => 'Shiro Kemikawa',
-        );
-
-        my $manage_content_data_user = MT::Test::Permission->make_author(
-            name     => 'ogawa',
-            nickname => 'Goro Ogawa',
-        );
-
-        my $manage_content_data_user2 = MT::Test::Permission->make_author(
-            name     => 'koishikawa',
-            nickname => 'Goro Koishikawa',
-        );
-
-        my $sys_manage_content_data_user = MT::Test::Permission->make_author(
-            name     => 'sagawa',
-            nickname => 'IChiro Sagawa',
         );
     }
 );
@@ -92,17 +53,9 @@ $test_env->prepare_fixture(
 my $site  = MT::Website->load( { name => 'my website' } );
 my $site2 = MT::Website->load( { name => 'my second website' } );
 
-my $create_user                  = MT::Author->load( { name => 'aikawa' } );
-my $create_user2                 = MT::Author->load( { name => 'kagawa' } );
-my $edit_user                    = MT::Author->load( { name => 'ichikawa' } );
-my $edit_user2                   = MT::Author->load( { name => 'kikkawa' } );
-my $manage_user                  = MT::Author->load( { name => 'ukawa' } );
-my $manage_user2                 = MT::Author->load( { name => 'kumekawa' } );
-my $publish_user                 = MT::Author->load( { name => 'egawa' } );
-my $publish_user2                = MT::Author->load( { name => 'kemikawa' } );
-my $manage_content_data_user     = MT::Author->load( { name => 'ogawa' } );
-my $manage_content_data_user2    = MT::Author->load( { name => 'koishikawa' } );
-my $sys_manage_content_data_user = MT::Author->load( { name => 'sagawa' } );
+my $create_user = MT::Author->load( { name => 'aikawa' } );
+my $edit_user   = MT::Author->load( { name => 'ichikawa' } );
+my $manage_user = MT::Author->load( { name => 'ukawa' } );
 
 ### Make test data
 # Content Type & Content Field & Content Data
@@ -120,8 +73,7 @@ my $content_field = MT::Test::Permission->make_content_field(
 );
 
 my $field_data = [
-    {
-        id        => $content_field->id,
+    {   id        => $content_field->id,
         order     => 1,
         type      => $content_field->type,
         options   => { label => $content_field->name, },
@@ -138,59 +90,17 @@ my $cd = MT::Test::Permission->make_content_data(
     data            => { $content_field->id => 'test text' },
 );
 
-my $content_type2 = MT::Test::Permission->make_content_type(
-    blog_id => $site2->id,
-    name    => 'test content type2',
-);
-
-my $content_field2 = MT::Test::Permission->make_content_field(
-    blog_id         => $content_type2->blog_id,
-    content_type_id => $content_type2->id,
-    name            => 'single line text2',
-    type            => 'single_line_text',
-);
-
-my $field_data2 = [
-    {
-        id        => $content_field2->id,
-        order     => 1,
-        type      => $content_field2->type,
-        options   => { label => $content_field2->name, },
-        unique_id => $content_field2->unique_id,
-    },
-];
-$content_type2->fields($field_data2);
-$content_type2->save or die $content_type2->errstr;
-
-my $cd2 = MT::Test::Permission->make_content_data(
-    blog_id         => $site2->id,
-    author_id       => $create_user2->id,
-    content_type_id => $content_type2->id,
-    data            => { $content_field2->id => 'test text' },
-);
-
 # Permissions
-my $field_priv =
-    'content_type:'
-  . $content_type->unique_id
-  . '-content_field:'
-  . $content_field->unique_id;
-my $field_priv2 =
-    'content_type:'
-  . $content_type2->unique_id
-  . '-content_field:'
-  . $content_field2->unique_id;
+my $field_priv
+    = 'content_type:'
+    . $content_type->unique_id
+    . '-content_field:'
+    . $content_field->unique_id;
 
 my $create_priv = 'create_content_data:' . $content_type->unique_id;
 my $create_role = MT::Test::Permission->make_role(
     name        => 'create_content_data ' . $content_field->name,
     permissions => "'${create_priv}','${field_priv}'",
-);
-
-my $create_priv2 = 'create_content_data:' . $content_type2->unique_id;
-my $create_role2 = MT::Test::Permission->make_role(
-    name        => 'create_content_data ' . $content_field2->name,
-    permissions => "'${create_priv2}','${field_priv2}'",
 );
 
 my $publish_priv = 'publish_content_data:' . $content_type->unique_id;
@@ -199,60 +109,24 @@ my $publish_role = MT::Test::Permission->make_role(
     permissions => "'${publish_priv}','${create_priv}','${field_priv}'",
 );
 
-my $publish_priv2 = 'publish_content_data:' . $content_type2->unique_id;
-my $publish_role2 = MT::Test::Permission->make_role(
-    name        => 'publish_content_data ' . $content_field2->name,
-    permissions => "'${publish_priv2}','${create_priv2}','${field_priv2}'",
-);
-
 my $edit_priv = 'edit_all_content_data:' . $content_type->unique_id;
 my $edit_role = MT::Test::Permission->make_role(
     name        => 'edit_all_content_data ' . $content_field->name,
     permissions => "'${edit_priv}','${field_priv}'",
 );
 
-my $edit_priv2 = 'edit_all_content_data:' . $content_type2->unique_id;
-my $edit_role2 = MT::Test::Permission->make_role(
-    name        => 'edit_all_content_data ' . $content_field2->name,
-    permissions => "'${edit_priv2}','${field_priv2}'",
-);
-
 my $manage_priv = 'manage_content_data:' . $content_type->unique_id;
 my $manage_role = MT::Test::Permission->make_role(
     name => 'manage_content_data ' . $content_field->name,
     permissions =>
-"'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
-);
-
-my $manage_priv2 = 'manage_content_data:' . $content_type2->unique_id;
-my $manage_role2 = MT::Test::Permission->make_role(
-    name => 'manage_content_data ' . $content_field2->name,
-    permissions =>
-"'${manage_priv2}','${create_priv2}','${publish_priv2}','${edit_priv2}','${field_priv2}'",
-);
-
-my $manage_content_data_role = MT::Test::Permission->make_role(
-    name        => 'manage_content_data',
-    permissions => "'manage_content_data'",
+        "'${manage_priv}','${create_priv}','${publish_priv}','${edit_priv}','${field_priv}'",
 );
 
 print $manage_user->permissions->permissions . "\n";
 require MT::Association;
-MT::Association->link( $create_user   => $create_role   => $site );
-MT::Association->link( $create_user2  => $create_role2  => $site2 );
-MT::Association->link( $edit_user     => $edit_role     => $site );
-MT::Association->link( $edit_user2    => $edit_role2    => $site2 );
-MT::Association->link( $manage_user   => $manage_role   => $site );
-MT::Association->link( $manage_user2  => $manage_role2  => $site2 );
-MT::Association->link( $publish_user  => $publish_role  => $site );
-MT::Association->link( $publish_user2 => $publish_role2 => $site2 );
-MT::Association->link(
-    $manage_content_data_user => $manage_content_data_role => $site );
-MT::Association->link(
-    $manage_content_data_user2 => $manage_content_data_role => $site2 );
-
-$sys_manage_content_data_user->can_manage_content_data(1);
-$sys_manage_content_data_user->save;
+MT::Association->link( $create_user => $create_role => $site );
+MT::Association->link( $edit_user   => $edit_role   => $site );
+MT::Association->link( $manage_user => $manage_role => $site );
 
 my $admin = MT::Author->load(1);
 
@@ -260,64 +134,81 @@ my $admin = MT::Author->load(1);
 my ( $app, $out );
 
 subtest 'mode = view (new)' => sub {
+    my $app = MT::Test::App->new;
+    my @selected;
+    my %options;
 
     # Admin
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $admin,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
+    $app->login($admin);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+        }
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2" selected="selected">Published<\/option>/, 'create by admin - option published');
-    ok( $out =~ /<option value="1">Unpublished \(Draft\)<\/option>/, 'create by admmin - option draft');
-    ok( $out =~ /<option value="4">Scheduled<\/option>/, 'create by manage user - option draft');
+    note $app->wq_find("select[name='status']")->as_html;
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '2', "and the option has value 2";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
+    is $options{4}                 => 1,   "existed option value 4";
 
     # Create user
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-        },
+    $app->login($create_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+        }
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<input type="hidden" name="status" id="status" value="1" \/><span>Unpublished<\/span>/, 'create by create user - draft');
+    note $app->wq_find("input[name='status']")->as_html;
+    my $elem = $app->wq_find("input[name='status']");
+    is $elem->attr('value') => 1, "existed hidden input value 1";
 
     # Manage user
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
+    $app->login($manage_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2" selected="selected">Published<\/option>/, 'create by manage user - option published');
-    ok( $out =~ /<option value="1">Unpublished \(Draft\)<\/option>/, 'create by manage user - option draft');
-    ok( $out =~ /<option value="4">Scheduled<\/option>/, 'create by manage user - option draft');
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '2', "and the option has value 2";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
+    is $options{4}                 => 1,   "existed option value 4";
 };
 
 subtest 'mode = view (edit)' => sub {
+    my $app = MT::Test::App->new;
+    my @selected;
+    my %options;
 
     # Admin
     my $cd_admin = MT::Test::Permission->make_content_data(
@@ -326,23 +217,29 @@ subtest 'mode = view (edit)' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $admin,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_admin->id,
-        },
+    $app->login($admin);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_admin->id,
+        }
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2" selected="selected">Published<\/option>/, 'edit own data by admin - option published');
-    ok( $out =~ /<option value="1">Unpublished \(Draft\)<\/option>/, 'edit own data by admmin - option draft');
+    note $app->wq_find("select[name='status']")->as_html;
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '2', "and the option has value 2";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
 
     # Create user
     my $cd_cuser = MT::Test::Permission->make_content_data(
@@ -351,102 +248,126 @@ subtest 'mode = view (edit)' => sub {
         content_type_id => $content_type->id,
         data            => { $content_field->id => 'test text' },
     );
-    $cd_cuser->status(MT::ContentStatus::HOLD());
+    $cd_cuser->status( MT::ContentStatus::HOLD() );
     $cd_cuser->save();
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $create_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_cuser->id,
+    $app->login($create_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_cuser->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<input type="hidden" name="status" id="status" value="1" \/><span>Unpublished \(Draft\)<\/span>/, 'edit own data by create user - draft');
+    note $app->wq_find("input[name='status']")->as_html;
+    my $elem = $app->wq_find("input[name='status']");
+    is $elem->attr('value') => 1, "existed hidden input value 1";
 
     # Edit user - Other's draft data
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_cuser->id,
+    $app->login($edit_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_cuser->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2">Published<\/option>/, 'edit others draft data by edit user - option published');
-    ok( $out =~ /<option value="1" selected="selected">Unpublished \(Draft\)<\/option>/, 'edit others draft data by edit user - option draft');
-    ok( $out =~ /<option value="4">Scheduled<\/option>/, 'edit others draft data by edit user - option scheduled');
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '1', "and the option has value 1";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
+    is $options{4}                 => 1,   "existed option value 4";
 
     # Edit user - Other's published data
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $edit_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd->id,
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2" selected="selected">Published<\/option>/, 'edit others published data by edit user - option published');
-    ok( $out =~ /<option value="1">Unpublished \(Draft\)<\/option>/, 'edit others published data by edit user - option draft');
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '2', "and the option has value 2";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
 
     # Manage user - Other's draft data
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd_cuser->id,
+    $app->login($manage_user);
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd_cuser->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2">Published<\/option>/, 'edit others draft data by manage user - option published');
-    ok( $out =~ /<option value="1" selected="selected">Unpublished \(Draft\)<\/option>/, 'edit others draft data by manage user - option draft');
-    ok( $out =~ /<option value="4">Scheduled<\/option>/, 'edit others draft data by manage user - option scheduled');
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '1', "and the option has value 1";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
+    is $options{4}                 => 1,   "existed option value 4";
 
     # Manage user - Other's published data
-    $app = _run_app(
-        'MT::App::CMS',
-        {
-            __test_user      => $manage_user,
-            __request_method => 'GET',
-            __mode           => 'view',
-            blog_id          => $site->id,
-            content_type_id  => $content_type->id,
-            _type            => 'content_data',
-            type             => 'content_data_' . $content_type->id,
-            id               => $cd->id,
+    $app->get_ok(
+        {   __mode          => 'view',
+            blog_id         => $site->id,
+            content_type_id => $content_type->id,
+            _type           => 'content_data',
+            type            => 'content_data_' . $content_type->id,
+            id              => $cd->id,
         },
     );
 
-    $out = delete $app->{__test_output};
-    ok( $out =~ /<option value="2" selected="selected">Published<\/option>/, 'edit others published data by manage user - option published');
-    ok( $out =~ /<option value="1">Unpublished \(Draft\)<\/option>/, 'edit others published data by manage user - option draft');
+    note $app->wq_find("select[name='status']")->as_html;
+    @selected = ();
+    $app->wq_find("select[name='status'] option")->each(
+        sub {
+            my ( $i, $elem ) = @_;
+            push @selected, $elem if $elem->attr('selected');
+            $options{ $elem->attr('value') } = 1;
+        }
+    );
+    is @selected                   => 1,   "selected one option";
+    is $selected[0]->attr('value') => '2', "and the option has value 2";
+    is $options{1}                 => 1,   "existed option value 1";
+    is $options{2}                 => 1,   "existed option value 2";
 };
 
 done_testing();
