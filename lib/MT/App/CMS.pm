@@ -4545,7 +4545,7 @@ sub rebuild_these_content_data {
             my $perms = $app->user->permissions( $cd->blog_id );
             return $app->permission_denied()
                 unless $perms
-                && $perms->can_republish_content_data( $cd, $app->user );
+                && $perms->can_publish_content_data( $cd, $app->user );
 
             $blogs{ $cd->blog_id } = ();
             $app->rebuild_content_data(

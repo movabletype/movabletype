@@ -650,33 +650,34 @@ sub can_edit_content_data {
     }
 }
 
-sub can_republish_content_data {
+sub can_publish_content_data {
     my $perms = shift;
-    my ( $content_data, $author ) = @_;
+    my ( $content_data, $author, $content_type_unique_id ) = @_;
 
-    return 0 unless $content_data;
     die unless $author->isa('MT::Author');
-    return 1 if $author->is_superuser();
+    return 1
+        if $author->is_superuser()
+        || $author->can_do('publish_all_content_data');
 
-    unless ( ref $content_data ) {
-        require MT::ContentData;
-        $content_data = MT::ContentData->load($content_data)
+    unless ($content_type_unique_id) {
+        return 0 unless $content_data;
+        unless ( ref $content_data ) {
+            require MT::ContentData;
+            $content_data = MT::ContentData->load($content_data)
+                or return;
+        }
+        $perms = $author->permissions( $content_data->blog_id )
             or return;
+        $content_type_unique_id = $content_data->ct_unique_id;
     }
 
-    $perms = $author->permissions( $content_data->blog_id )
-        or return;
+    return 1 if $perms->can_do('rebuild');
 
-    return 1
-        if $perms->can_do('rebuild')
-        || $perms->can_do('edit_all_content_data');
-
-    my $content_type_unique_id = $content_data->ct_unique_id;
     return 1
         if $perms->can_do(
-        'edit_all_content_data_' . $content_type_unique_id );
+        'publish_all_content_data_' . $content_type_unique_id );
     return 1
-        if $content_data->author_id == $author->id
+        if $content_data && $content_data->author_id == $author->id
         && $perms->can_do(
         'publish_own_content_data_' . $content_type_unique_id );
 
