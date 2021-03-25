@@ -1910,7 +1910,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/ContentType.pm
 	'Manage Content Data' => 'Inhoudsgegevens beheren',
-	'Manage All Content Data' => 'Alle Inhoudsgegevens beheren',
+	'Manage All Content Data' => 'Alle inhoudsgegevens beheren',
 	'Create Content Data' => 'Inhoudsgegevens aanmaken',
 	'Publish Content Data' => 'Inhoudsgegevens publiceren',
 	'Edit All Content Data' => 'Alle inhoudsgegevens bewerken',
