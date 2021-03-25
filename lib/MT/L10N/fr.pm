@@ -1046,6 +1046,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records exported...' => '[_1] enregistrements exportés…',
 	'failed' => 'échec',
 	'ok' => 'OK',
+	qq{\nCannot write file. Disk full.} => qq{\nImpossible d'enregistrer le fichier. Le disque est plein.},
 	q{Cannot open [_1].} => q{Impossible d'ouvrir [_1].},
 	q{Cannot open directory '[_1]': [_2]} => q{Impossible d'ouvrir le répertoire '[_1]' : [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Changement du chemin du fichier '[_1]' (ID:[_2])...},
@@ -1057,7 +1058,6 @@ use vars qw( @ISA %Lexicon );
 	q{Manifest file [_1] was not a valid Movable Type backup manifest file.} => q{Le fichier manifest [_1] n'est pas un fichier manifeste de sauvegarde Movable Type.},
 	q{No manifest file could be found in your import directory [_1].} => q{Aucun fichier manifeste n'a été trouvé dans votre répertoire d'import [_1].},
 	q{The file ([_1]) was not imported.} => q{Le fichier ([_1]) n'a pas été importé.},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'Importing [_1] records:' => 'Import de [_1] enregistrements :',
@@ -2844,7 +2844,6 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding permissions...' => 'Republication des permissions...',
 	'Removing Technorati update-ping service from [_1] (ID:[_2]).' => 'Retrait du service de mise à jour ping Technorati de [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Retrait du widget du tableau de bord...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Mise à jour du nom de rôle existant...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'Website Administrator' => 'Administrateur du site web',
@@ -2857,6 +2856,7 @@ use vars qw( @ISA %Lexicon );
 	q{New user's website} => q{Site web du nouvel utilisateur},
 	q{Populating generic website for current blogs...} => q{Génération d'un site web générique pour les blogs actuels...},
 	q{Recovering type of author...} => q{Récupération du type d'auteur...},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Création de l'ID 'created by' pour chaque utilisateur pour qui ce champ est indéfini...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Ajout du widget "Statistiques du site" au tableau de bord...',
@@ -2985,7 +2985,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'Synchronisation des fichirs terminée',
 	'Done syncing files to [_1] ([_2])' => 'Synchronisation des fichiers de [_1] ([_2]) terminée',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Erreur lors de la synchronisation rsync des fichiers dans [_1] :\n},
 
 ## lib/MT/XMLRPCServer.pm
 	'Invalid login' => 'Login invalide',
@@ -4776,7 +4776,7 @@ réessayer plus tard.',
 	'You must set Theme Name.' => 'Vous devez entrer un nom de thème',
 	'_THEME_AUTHOR' => 'Auteur',
 	q{Author link} => q{Site de l'auteur},
-	q{Cannot install new theme with existing (and protected) theme\'s basename.} => q{Impossible d'installer un nouveau thème avec un nom de base existant (et protégé).},
+	q{Cannot install new theme with existing (and protected) theme's basename.} => q{Impossible d'installer un nouveau thème avec un nom de base existant (et protégé).},
 	q{Theme package have been saved.} => q{L'archive du thème a été enregistrée.},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{Utiliser des lettres, chiffres, tirets ou tirets bas seulement (a-z, A-Z, 0-9, '-' ou '_').},
 

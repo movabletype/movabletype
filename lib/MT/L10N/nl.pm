@@ -1054,10 +1054,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records exported...' => '[_1] recordt geëxporteerd...',
 	'failed' => 'mislukt',
 	'ok' => 'ok',
+	qq{\nCannot write file. Disk full.} => qq{Kan bestand niet schrijven.  Schijf vol.},
 	q{Cannot open directory '[_1]': [_2]} => q{Kan map '[_1]' niet openen: [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Pad voor bestand '[_1]' (ID:[_2]) wordt aangepast...},
 	q{Error making path '[_1]': [_2]} => q{Fout bij aanmaken pad '[_1]': [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the exported file.  Skipping this user record.' => 'Een gebruiker met dezelfde naam als de huidige gebruiker ([_1]) werd gevonden in het exportbestand.  Deze gebruiker wordt overgeslagen.',
@@ -2848,7 +2848,6 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'Type auteur wordt opgehaald...',
 	'Removing Technorati update-ping service from [_1] (ID:[_2]).' => 'Technorati update-ping service aan het verwijderen van [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Widget wordt verwijderd van dashboard...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Bestaande rolnamen aan het bijwerken...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'Website Administrator' => 'Websitebeheerder',
@@ -2857,6 +2856,7 @@ use vars qw( @ISA %Lexicon );
 	q{Can edit, manage and publish blog templates and themes.} => q{Kan sjablonen en thema's van een blog bewerken, beheren en publiceren.},
 	q{Can manage pages, Upload files and publish blog templates.} => q{Kan pagina's beheren, bestanden uploaden en blogsjablonen publiceren.},
 	q{New user's website} => q{Website nieuwe gebruiker},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Bezig het 'created by' ID in te stellen voor elke gebruiker waarvoor dit veld niet gedefiniëerd is...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Bezig "Sitestatistieken" dashboard widget te migreren...',
@@ -2985,7 +2985,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'Synchroniseren bestanden voltooid',
 	'Done syncing files to [_1] ([_2])' => 'Klaar met synchroniseren van bestanden naar [_1] ([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Fout bij het rsyncen van bestanden in [_1]:\n},
 
 ## lib/MT/XMLRPCServer.pm
 	'Error writing uploaded file: [_1]' => 'Fout bij het schrijven van opgeladen bestand: [_1]',
@@ -4771,7 +4771,6 @@ ter opnieuw te proberen.',
 ## tmpl/cms/export_theme.tmpl
 	'Author link' => 'Link auteur',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'De basisnaam mag enkel letters, cijfers, mintekens en underscores bevatten.  De basisnaam moet met een letter beginnen.',
-	'Cannot install new theme with existing (and protected) theme\'s basename.' => '', # Translate - New
 	'Destination' => 'Bestemming',
 	'Setting for [_1]' => 'Instelling voor [_1]',
 	'Theme package have been saved.' => 'Themapakket werd opgeslagen.',
@@ -4779,6 +4778,7 @@ ter opnieuw te proberen.',
 	'Version' => 'Versie',
 	'You must set Theme Name.' => 'U moet de naam van het thema instellen.',
 	'_THEME_AUTHOR' => 'Maker',
+	q{Cannot install new theme with existing (and protected) theme's basename.} => q{Kan geen nieuw thema installeren met bestaande (en beschermde) basisnaam van thema.},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{Gebruik enkel letters, cijfers, streepjes of underscores (a-z, A-Z, 0-9, '-' of '_').},
 
 ## tmpl/cms/field_html/field_html_asset.tmpl

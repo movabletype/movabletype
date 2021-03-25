@@ -152,14 +152,19 @@ sub update {
                         push @needs_update, [$name, $lang, $phrase, ""];
                     }
                     my ($qs, $qe) = ("'", "'");
-                    if ($phrase =~ /\\n/ or $phrase =~ /[^\\]'/ or $trans =~ /[^\\]'/) {
+                    if ($phrase =~ /\n/s or $phrase =~ /[^\\]'/ or $trans =~ /[^\\]'/) {
                         ($qs, $qe) = ('q{', '}');
+                        if ($phrase =~ /\n/s) {
+                            $phrase =~ s/\n/\\n/gs;
+                            $trans =~ s/\n/\\n/gs;
+                            $qs = 'qq{';
+                        }
                         if ($phrase =~ /[{}]/ or $trans =~ /[{}]/) {
                             warn encode_utf8("Unexpected {} in $name $lang:\nPHRASE $phrase\nTRANS: $trans\n");
                             $phrase =~ s/(?<!\\)([{}])/'\\'.$1/eg;
                             $trans  =~ s/(?<!\\)([{}])/'\\'.$1/eg;
                         }
-                        if ($trans && ($phrase =~ /\n/ or $trans =~ /\n/)) {
+                        if ($trans && ($phrase =~ /\n/s or $trans =~ /\n/s)) {
                             my $phrase_n = $phrase =~ tr/\n/\n/;
                             my $trans_n = $trans =~ tr/\n/\n/;
                             warn encode_utf8("Unexpected \\n: in $name $lang ($phrase_n <=> $trans_n):\nPHRASE $phrase\nTRANS: $trans\n");
@@ -349,7 +354,8 @@ sub find_phrases {
                     }
                     next unless exists $args{phrase};
                     my $phrase = $args{phrase};
-                    $phrase =~ s/\\"/"/g;
+                    $phrase =~ s/(?<!\\)\\"/"/g;
+                    $phrase =~ s/(?<![':\\])\\'/'/g;
                     if ($check_component) {
                         push @phrases, [$phrase, 'tmpl'];
                     } else {
@@ -363,10 +369,8 @@ sub find_phrases {
                     while ($msg =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q\{((?:[^}\\]+|\\.)*)}/gs) {
                         $phrase .= ($1 || $2 || $3);
                     }
-                    $phrase =~ s/([^\\]?)'/$1\\'/g;
-                    $phrase =~ s/['"]\s*.\s*\n\s*['"]//gs;
-                    $phrase =~ s/['"]\s*\n\s*.\s*['"]//gs;
-                    $phrase =~ s/\\?\\'/'/g;
+                    $phrase =~ s/(?<![':\\])\\'/'/g;
+                    $phrase =~ s/\\n/\n/g;
                     if ($check_component && $component && $component !~ /^(?:MT|\$mt|\$ctx->mt|\$app|\$self|\$class)$/) {
                         push @phrases, [$phrase, $component];  # component-specific
                     } else {
@@ -378,6 +382,7 @@ sub find_phrases {
                     next if $2 =~ /^$1/;
                     my $phrase = $2.$3;
                     next if $phrase =~ /^string\(/;
+                    $phrase =~ s/(?<![':\\])\\'/'/g;
                     if ($check_component) {
                         push @phrases, [$phrase, 'label'];
                     } else {
@@ -389,7 +394,7 @@ sub find_phrases {
                     while ($content =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) {
                         my $phrase = $1;
                         $phrase =~ s/(^'+|'+$)//;
-                        $phrase =~ s/'/\\'/g;
+                        $phrase =~ s/(?<![':\\])\\'/'/g;
                         push @phrases, $phrase;
                     }
                 }
@@ -397,7 +402,7 @@ sub find_phrases {
                     while ($content =~ /\s*(?:label:|label_plural:)\s*(.+)/g) {
                         my $phrase = $1;
                         $phrase =~ s/(^'+|'+$)//g;
-                        $phrase =~ s/'/\\'/g;
+                        $phrase =~ s/(?<![':\\])\\'/'/g;
                         if ($check_component) {
                             push @phrases, [$phrase, 'label'];
                         } else {

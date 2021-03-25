@@ -1054,10 +1054,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records exported...' => '[_1] registros exportados...',
 	'failed' => 'falló',
 	'ok' => 'ok',
+	qq{\nCannot write file. Disk full.} => qq{\nNo se pudo escribir el fichero. Disco lleno.},
 	q{Cannot open directory '[_1]': [_2]} => q{No se puede abrir el directorio '[_1]': [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Cambiando la ruta del fichero '[_1]' (ID:[_2])...},
 	q{Error making path '[_1]': [_2]} => q{Error creando la ruta '[_1]': [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the exported file.  Skipping this user record.' => 'Se encontró un usuario con el mismo nombre que el usuario actual ([_1]) en el fichero exportado. Ignorando este registro.',
@@ -2850,13 +2850,13 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'Recuperando el tipo de autor...',
 	'Removing Technorati update-ping service from [_1] (ID:[_2]).' => 'Borrando el servicio de ping de technorati de [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Borrando widget del Removing widget from dashboard...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Actualizando nombre de rol existente...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'Website Administrator' => 'Administrador del sitio web',
 	'_WEBMASTER_MT4' => 'Webmaster',
 	q{An error occurred during migrating a blog's site_url: [_1]} => q{Ocurrió un error al migrar el site_url de un blog: [_1]},
 	q{New user's website} => q{Sitio web del nuevo usuario},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Indicando el identificador 'created_by' para los usuarios que no tienen el campo definido...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Añadiendo el widget para el panel "Estadísticas del sitio"...',
@@ -2985,7 +2985,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'Finalizó la sincronización de ficheros',
 	'Done syncing files to [_1] ([_2])' => 'Ficheros sincronizados en [_1] ([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Error en la sincronización de ficheros rsync in [_1]:\n},
 
 ## lib/MT/XMLRPCServer.pm
 	'Error writing uploaded file: [_1]' => 'Error escribiendo el fichero transferido: [_1]',
@@ -4770,7 +4770,6 @@ r, inténtelo más tarde.',
 ## tmpl/cms/export_theme.tmpl
 	'Author link' => 'Enlace del autor',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'El nombre base solo puede contener letras, números, y el guión o guión bajo. El nombre base debe comenzar con una letra.',
-	'Cannot install new theme with existing (and protected) theme\'s basename.' => '', # Translate - New
 	'Destination' => 'Destino',
 	'Setting for [_1]' => 'Configuración para [_1]',
 	'Theme package have been saved.' => 'El paquete del tema se ha guardado.',
@@ -4778,6 +4777,7 @@ r, inténtelo más tarde.',
 	'Version' => 'Versión',
 	'You must set Theme Name.' => 'Debe indicar el nombre del tema.',
 	'_THEME_AUTHOR' => 'Autor',
+	q{Cannot install new theme with existing (and protected) theme's basename.} => q{No se pudo instalar el nuevo tema con el nombre base existeinte (y protegido) del tema.},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{Use exclusivamente letras, números, guiones o guiones bajos (a-z, A-Z, 0-9, '-' o '_').},
 
 ## tmpl/cms/field_html/field_html_asset.tmpl

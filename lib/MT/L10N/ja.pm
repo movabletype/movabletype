@@ -1054,10 +1054,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records exported...' => '[_1]レコードをエクスポートしました...',
 	'failed' => '失敗',
 	'ok' => 'OK',
+	qq{\nCannot write file. Disk full.} => qq{ファイルの書き込みが出来ません: ディスクの空き容量がありません},
 	q{Cannot open directory '[_1]': [_2]} => q{ディレクトリ'[_1]'を開けませんでした: [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{ファイル'[_1]' (ID:[_2])のパスを変更しています...},
 	q{Error making path '[_1]': [_2]} => q{パス('[_1]')を作成できません: [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the exported file.  Skipping this user record.' => '現在サインインしているユーザー([_1])が見つかりました。このレコードはスキップします。',
@@ -2850,13 +2850,13 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'コメンターの権限を再設定しています...',
 	'Removing Technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => '既存のロール名を更新しています...',
 	'Webmaster (MT4)' => 'ウェブサイト管理者(MT4)',
 	'Website Administrator' => 'ウェブサイト管理者',
 	'_WEBMASTER_MT4' => 'ウェブサイト管理者',
 	q{An error occurred during migrating a blog's site_url: [_1]} => q{ブログのサイトURLの移行中にエラーが発生しました: [_1]},
 	q{New user's website} => q{新規ユーザー向けウェブサイト},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{作成者の情報をユーザーに付与しています...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
@@ -2985,7 +2985,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchronizing Files' => 'ファイルを同期しました。',
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{ファイル'[_1]'のrsync中にエラーが発生しました: },
 
 ## lib/MT/XMLRPCServer.pm
 	'Error writing uploaded file: [_1]' => 'アップロードされたファイルを書き込めませんでした: [_1]',
@@ -4770,7 +4770,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/export_theme.tmpl
 	'Author link' => '作者のページ',
 	'Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter.' => 'アルファベット、数字、ダッシュ(-)、アンダースコア(_)を利用。かならずアルファベットで始めてください。',
-	'Cannot install new theme with existing (and protected) theme\'s basename.' => '', # Translate - New
 	'Destination' => '出力形式',
 	'Setting for [_1]' => '[_1]の設定',
 	'Theme package have been saved.' => 'テーマパッケージが保存されました。',
@@ -4778,6 +4777,7 @@ use vars qw( @ISA %Lexicon );
 	'Version' => 'バージョン',
 	'You must set Theme Name.' => 'テーマ名を設定してください。',
 	'_THEME_AUTHOR' => '作者名',
+	q{Cannot install new theme with existing (and protected) theme's basename.} => q{新しいテーマは既存、または保護されたテーマベース名ではインストールできません。},
 	q{Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').} => q{次の文字と数字のみ利用できます: アルファベット、数字、ダッシュ(-)、アンダースコア(_)},
 
 ## tmpl/cms/field_html/field_html_asset.tmpl
