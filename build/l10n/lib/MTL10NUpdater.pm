@@ -310,6 +310,8 @@ sub find_phrases {
         $rt->add($_) for qw(
             fabric.js
             chart-api/mtchart.js
+            tiny_mce/plugins/autosave/plugin.js
+            tiny_mce/plugins/insertdatetime/plugin.js
             tiny_mce/plugins/save/plugin.js
             tiny_mce/plugins/spellchecker/plugin.js
             tiny_mce/plugins/template/plugin.js
@@ -330,7 +332,7 @@ sub find_phrases {
         next unless -d $dir;
         finddepth({
             no_chdir => 1,
-            follow => 1,
+            follow => $self->parent ? 0 : 1,
             preprocess => sub {
                 my @dirs = @_;
                 grep {basename($_) !~ m!(?:^|/)(?:\.|extlib|local|t)$!} @dirs
