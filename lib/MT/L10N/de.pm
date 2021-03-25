@@ -3236,9 +3236,6 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/captcha_lib.php
 	'Type the characters shown in the picture above.' => 'Geben Sie die Zeichen ein, die Sie in obigem Bild sehen.',
 
-## php/lib/content_field_type_lib.php
-	'TextLabelRegistry' => '', # Translate - New
-
 ## php/lib/function.mtassettype.php
 	'file' => 'Datei',
 

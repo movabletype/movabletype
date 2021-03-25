@@ -3236,9 +3236,6 @@ use vars qw( @ISA %Lexicon );
 ## php/lib/captcha_lib.php
 	'Type the characters shown in the picture above.' => 'Teclee los caracteres mostrados en la imagen de arriba.',
 
-## php/lib/content_field_type_lib.php
-	'TextLabelRegistry' => '', # Translate - New
-
 ## php/lib/function.mtassettype.php
 	'file' => 'fichero',
 
