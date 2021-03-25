@@ -657,7 +657,7 @@ sub can_publish_content_data {
     die unless $author->isa('MT::Author');
     return 1
         if $author->is_superuser()
-        || $author->can_do('publish_all_content_data');
+        || $author->can_do('edit_all_content_data');
 
     unless ($content_type_unique_id) {
         return 0 unless $content_data;
@@ -675,7 +675,7 @@ sub can_publish_content_data {
 
     return 1
         if $perms->can_do(
-        'publish_all_content_data_' . $content_type_unique_id );
+        'edit_all_content_data_' . $content_type_unique_id );
     return 1
         if $content_data && $content_data->author_id == $author->id
         && $perms->can_do(
