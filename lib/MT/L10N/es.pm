@@ -1216,10 +1216,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1] registros guardados...',
 	'failed' => 'falló',
 	'ok' => 'ok',
+	qq{\nCannot write file. Disk full.} => qq{\nNo se pudo escribir el fichero. Disco lleno.},
 	q{Cannot open directory '[_1]': [_2]} => q{No se puede abrir el directorio '[_1]': [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Cambiando la ruta del fichero '[_1]' (ID:[_2])...},
 	q{Error making path '[_1]': [_2]} => q{Error creando la ruta '[_1]': [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => 'En la copia de seguridad se encontró un suuario con el mismo nombre que el usuario actual ([_1]). Este registro de usuario se ignorará.',
@@ -2710,12 +2710,12 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'Recuperando el tipo de autor...',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'Borrando el servicio de ping de technorati de [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Borrando widget del Removing widget from dashboard...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Actualizando nombre de rol existente...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'_WEBMASTER_MT4' => 'Webmaster',
 	q{An error occurred during migrating a blog's site_url: [_1]} => q{Ocurrió un error al migrar el site_url de un blog: [_1]},
 	q{New user's website} => q{Sitio web del nuevo usuario},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Indicando el identificador 'created_by' para los usuarios que no tienen el campo definido...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Añadiendo el widget para el panel "Estadísticas del sitio"...',
@@ -2814,7 +2814,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchornizing Files' => 'Sincronización de ficheros realizada',
 	'Done syncing files to [_1] ([_2])' => 'Ficheros sincronizados en [_1] ([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Error en la sincronización de ficheros rsync in [_1]:\n},
 
 ## lib/MT/XMLRPC.pm
 	'HTTP error: [_1]' => 'Error HTTP: [_1]',
@@ -3058,8 +3058,8 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'Trasladando los datos del Administrador de Widgets [_2]...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. La versión anterior de la fuente no estaba disponible. Se devolvió el estado HTTP [_2].',
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Ocurrió un error procesando [_1]. Se utilizó la versión previa de la fuente. Se devolvió el estado HTTP [_2].',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'IP del dominio no coincide con la IP del ping de la URL [_1]; IP del dominio: [_2]; IP del ping: [_3]',

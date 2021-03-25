@@ -1217,10 +1217,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1]レコードをバックアップしました...',
 	'failed' => '失敗',
 	'ok' => 'OK',
+	qq{\nCannot write file. Disk full.} => qq{ファイルの書き込みが出来ません: ディスクの空き容量がありません},
 	q{Cannot open directory '[_1]': [_2]} => q{ディレクトリ'[_1]'を開けませんでした: [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{ファイル'[_1]' (ID:[_2])のパスを変更しています...},
 	q{Error making path '[_1]': [_2]} => q{パス('[_1]')を作成できません: [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => '現在サインインしているユーザー([_1])が見つかりました。このレコードはスキップします。',
@@ -2711,12 +2711,12 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'コメンターの権限を再設定しています...',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'ブログ[_1](ID:[_2])の更新通知先からテクノラティを削除しました。',
 	'Removing widget from dashboard...' => 'ダッシュボードからウィジェットを削除しています...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => '既存のロール名を更新しています...',
 	'Webmaster (MT4)' => 'ウェブサイト管理者(MT4)',
 	'_WEBMASTER_MT4' => 'ウェブサイト管理者',
 	q{An error occurred during migrating a blog's site_url: [_1]} => q{ブログのサイトURLの移行中にエラーが発生しました: [_1]},
 	q{New user's website} => q{新規ユーザー向けウェブサイト},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{作成者の情報をユーザーに付与しています...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => '"サイト情報"ウィジェットを追加しています...',
@@ -2815,7 +2815,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchornizing Files' => 'ファイルを同期しました。',
 	'Done syncing files to [_1] ([_2])' => '[_1]へファイルを同期しました。([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{ファイル'[_1]'のrsync中にエラーが発生しました: },
 
 ## lib/MT/XMLRPC.pm
 	'HTTP error: [_1]' => 'HTTPエラー: [_1]',
@@ -3006,7 +3006,7 @@ use vars qw( @ISA %Lexicon );
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
 
 ## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
-	'The login could not be confirmed because of no/invalid blog_id' => '', # Translate - New
+	'The login could not be confirmed because of no/invalid blog_id' => 'サイトIDが正しくないため、サインインできません。',
 
 ## plugins/FormattedText/lib/FormattedText/App.pm
 	'Are you sure you want to delete the selected boilerplates?' => '定型文を削除してもよろしいですか？',
@@ -3059,8 +3059,8 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しません',

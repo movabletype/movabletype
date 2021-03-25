@@ -1216,10 +1216,10 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1] records gebackupt...',
 	'failed' => 'mislukt',
 	'ok' => 'ok',
+	qq{\nCannot write file. Disk full.} => qq{Kan bestand niet schrijven.  Schijf vol.},
 	q{Cannot open directory '[_1]': [_2]} => q{Kan map '[_1]' niet openen: [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Pad voor bestand '[_1]' (ID:[_2]) wordt aangepast...},
 	q{Error making path '[_1]': [_2]} => q{Fout bij aanmaken pad '[_1]': [_2]},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'A user with the same name as the current user ([_1]) was found in the backup.  Skipping this user record.' => 'Een gebruiker met dezelfde naam als de huidige gebruiker ([_1]) werd gevonden in de backup.  Dit record wordt overgeslagen.',
@@ -2708,7 +2708,6 @@ use vars qw( @ISA %Lexicon );
 	'Recovering type of author...' => 'Type auteur wordt opgehaald...',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'Technorati update-ping service aan het verwijderen van [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Widget wordt verwijderd van dashboard...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Bestaande rolnamen aan het bijwerken...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'_WEBMASTER_MT4' => 'Webmaster',
@@ -2716,6 +2715,7 @@ use vars qw( @ISA %Lexicon );
 	q{Can edit, manage and publish blog templates and themes.} => q{Kan sjablonen en thema's van een blog bewerken, beheren en publiceren.},
 	q{Can manage pages, Upload files and publish blog templates.} => q{Kan pagina's beheren, bestanden uploaden en blogsjablonen publiceren.},
 	q{New user's website} => q{Website nieuwe gebruiker},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Bezig het 'created by' ID in te stellen voor elke gebruiker waarvoor dit veld niet gedefiniëerd is...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Bezig "Sitestatistieken" dashboard widget te migreren...',
@@ -2814,7 +2814,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchornizing Files' => 'Bestanden synchroniseren afgelopen',
 	'Done syncing files to [_1] ([_2])' => 'Klaar met synchroniseren van bestanden naar [_1] ([_2])',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Fout bij het rsyncen van bestanden in [_1]:\n},
 
 ## lib/MT/XMLRPC.pm
 	'HTTP error: [_1]' => 'HTTP fout: [_1]',
@@ -3058,8 +3058,8 @@ use vars qw( @ISA %Lexicon );
 	'Moving storage of Widget Manager [_2]...' => 'Opslag voor widget manager [_2] aan het verhuizen...',
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed was niet beschikbaar.  Een HTTP status van [_2] werd teruggezonden.',
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => 'Er deed zich een fout voor bij het verwerken van [_1].  De vorige versie van de feed werd gebruikt.  Een HTTP status van [_2] werd teruggezonden.',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'Domein IO komt niet overeen met ping IP van bron URL [_1]; domein IP: [_2]; ping IP: [_3]',

@@ -1204,6 +1204,7 @@ use vars qw( @ISA %Lexicon );
 	'[_1] records backed up...' => '[_1] enregistrements sauvegardés...',
 	'failed' => 'échec',
 	'ok' => 'OK',
+	qq{\nCannot write file. Disk full.} => qq{\nImpossible d'enregistrer le fichier. Le disque est plein.},
 	q{Cannot open [_1].} => q{Impossible d'ouvrir [_1].},
 	q{Cannot open directory '[_1]': [_2]} => q{Impossible d'ouvrir le répertoire '[_1]' : [_2]},
 	q{Changing path for the file '[_1]' (ID:[_2])...} => q{Changement du chemin du fichier '[_1]' (ID:[_2])...},
@@ -1219,7 +1220,6 @@ use vars qw( @ISA %Lexicon );
 	q{Restoring url of the assets in page ( [_1] )...} => q{Restauration de l'url de l'élément dans la page ([_1])...},
 	q{The file ([_1]) was not restored.} => q{Le fichier ([_1]) n'a pas été restauré.},
 	q{There were no [_1] records to be backed up.} => q{Il n'y a pas d'enregistrements [_1] à sauvegarder.},
-	q{\nCannot write file. Disk full.} => q{}, # Translate - New
 
 ## lib/MT/BackupRestore/BackupFileHandler.pm
 	'Invalid serializer version was specified.' => 'La version fournie du sérialiseur est invalide.',
@@ -2704,7 +2704,6 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding permissions...' => 'Republication des permissions...',
 	'Removing technorati update-ping service from [_1] (ID:[_2]).' => 'Retrait du service de mise à jour ping Technorati de [_1] (ID:[_2]).',
 	'Removing widget from dashboard...' => 'Retrait du widget du tableau de bord...',
-	'Setting the \'created by\' ID for any user for whom this field is not defined...' => '', # Translate - New
 	'Updating existing role name...' => 'Mise à jour du nom de rôle existant...',
 	'Webmaster (MT4)' => 'Webmaster (MT4)',
 	'_WEBMASTER_MT4' => 'Webmaster',
@@ -2716,6 +2715,7 @@ use vars qw( @ISA %Lexicon );
 	q{New user's website} => q{Site web du nouvel utilisateur},
 	q{Populating generic website for current blogs...} => q{Génération d'un site web générique pour les blogs actuels...},
 	q{Recovering type of author...} => q{Récupération du type d'auteur...},
+	q{Setting the 'created by' ID for any user for whom this field is not defined...} => q{Création de l'ID 'created by' pour chaque utilisateur pour qui ce champ est indéfini...},
 
 ## lib/MT/Upgrade/v6.pm
 	'Adding "Site stats" dashboard widget...' => 'Ajout du widget "Statistiques du site" au tableau de bord...',
@@ -2814,7 +2814,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Worker/Sync.pm
 	'Done Synchornizing Files' => 'Synchronisation des fichiers effectuée',
 	'Done syncing files to [_1] ([_2])' => 'Synchronisation des fichiers de [_1] ([_2]) terminée',
-	q{Error during rsync of files in [_1]:\n} => q{}, # Translate - New
+	qq{Error during rsync of files in [_1]:\n} => qq{Erreur lors de la synchronisation rsync des fichiers dans [_1] :\n},
 
 ## lib/MT/XMLRPC.pm
 	'HTTP error: [_1]' => 'Erreur HTTP : [_1]',
@@ -3058,8 +3058,8 @@ use vars qw( @ISA %Lexicon );
 	q{Moving storage of Widget Manager [_2]...} => q{Déplacement de l'emplacement du gestionnaire de wiget [_2]...},
 
 ## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
-	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
-	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+	q{An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.} => q{Une erreur s'est produite en traitant [_1]. Une version précédente du flux n'est pas disponible. Un statut HTTP de [_2] a été renvoyé.},
+	q{An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.} => q{Une erreur s'est produite en traitant [_1]. La version précédente du flux a été utilisée. Un statut HTTP de [_2] a été retourné.},
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Link was previously published (TrackBack id [_1]).' => 'Le lien a été publié précédemment (ID de trackback [_1]).',
