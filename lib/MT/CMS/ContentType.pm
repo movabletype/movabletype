@@ -388,6 +388,9 @@ sub save {
         $param{error}
             = $app->translate( 'Name \'[_1]\' is already used.', $name );
         $app->mode('view');
+        if ( my $data = $param{data} ) {
+            $param{data} = _encode_data($data);
+        }
         return $app->forward( "view", \%param );
     }
 
@@ -1196,6 +1199,41 @@ sub build_content_type_table {
     }
 
     \@data;
+}
+
+sub _encode_data {
+    my ($data) = @_;
+    if ( $data =~ /^".*"$/ ) {
+        $data =~ s/^"//;
+        $data =~ s/"$//;
+        $data = MT::Util::decode_js($data);
+    }
+    my $decode = JSON->new->utf8(0);
+    my $field_list = $decode->decode($data);
+    my @new_field_list;
+    for my $field (@$field_list) {
+        my %new_field;
+        for my $key ( keys %$field ) {
+            if ( $key eq 'options' ) {
+                my $options = $field->{$key};
+                my %new_options;
+                for my $p ( keys %$options ) {
+                    if ( Encode::is_utf8( $options->{$p} ) ) {
+                        $new_options{$p} = Encode::encode_utf8( $options->{$p} );
+                    }
+                    else {
+                        $new_options{$p} = $options->{$p};
+                    }
+                }
+                $new_field{$key} = \%new_options;
+            }
+            else {
+                $new_field{$key} = $field->{$key};
+            }
+        }
+        push @new_field_list, \%new_field;
+    }
+    return JSON::to_json( \@new_field_list );
 }
 
 1;
