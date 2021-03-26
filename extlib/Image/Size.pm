@@ -41,7 +41,7 @@ BEGIN
                       %CACHE $NO_CACHE $PCD_SCALE $GIF_BEHAVIOR);
     %EXPORT_TAGS = ('all' => [ @EXPORT_OK ]);
 
-    $VERSION = '3.300';
+    $VERSION = '3.300_01';
     $VERSION = eval $VERSION; ## no critic(ProhibitStringyEval)
 
     # Default behavior for GIFs is to return the "screen" size
@@ -801,7 +801,7 @@ sub bmpsize
     }
     else
     {
-        ($x, $y) = unpack 'x18VV', $buffer;     # modern Windows header
+        ($x, $y) = unpack 'x18V!V!', $buffer;     # modern Windows header
     }
     if (defined $x and defined $y)
     {
