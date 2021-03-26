@@ -268,7 +268,7 @@ sub export {
         push @$exporters,
             {
             id       => $hdlr,
-            included => $has_saved ? $last_includes->{$hdlr} : 1,
+            included => $has_saved ? $has_saved->{$hdlr} : 1,
             label =>
                 MT->registry( theme_element_handlers => $hdlr => 'label' ),
             template => $tmpl,
