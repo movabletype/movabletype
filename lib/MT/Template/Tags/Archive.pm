@@ -943,6 +943,7 @@ sub _hdlr_archive_link {
         $author, $content_type_id );
     $arch = MT::Util::strip_index( $arch, $blog )
         unless $args->{with_index};
+
     return $arch;
 }
 

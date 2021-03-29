@@ -140,7 +140,7 @@ B<Attributes:>
 A text string that is used to join each of the items together. For example
 
     <mt:Tags glue=", "><$mt:TagName$></mt:Tags>
-    
+
 would print out each tag name separated by a comma and a space.
 
 =item * type
@@ -403,7 +403,7 @@ would print out each tag name separated by a comma and a space.
 
 A boolean value which controls whether private tags (i.e. tags which start
 with @) should be output by the block.  The default is 0 which suppresses
-the output of private tags.  If set to 1, the tags will be displayed.  
+the output of private tags.  If set to 1, the tags will be displayed.
 
 One example of its use is in publishing a list of related entries to the
 current entry.

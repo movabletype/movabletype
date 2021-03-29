@@ -52,12 +52,12 @@ sub _hdlr_if_previous_results {
 
 A block tag iterates from 1 to the number of the last page in the search
 result. For example, if the limit was 10 and the number of results is 75,
-the tag loops from 1 through 8. 
+the tag loops from 1 through 8.
 
-The page number is set to __value__ standard variable in each iteration. 
+The page number is set to __value__ standard variable in each iteration.
 
 The tag also sets __odd__, __even__, __first__, __last__ and __counter__
-standard variables. 
+standard variables.
 
 B<Example:>
 
@@ -119,7 +119,7 @@ sub _hdlr_pager_block {
 =head2 IfCurrentPage
 
 A conditional tag returns true if the current page in the context of
-PagerBlock is the current page that is being rendered. 
+PagerBlock is the current page that is being rendered.
 The tag must be used in the context of PagerBlock.
 
 =for tags pagination
@@ -131,7 +131,7 @@ The tag must be used in the context of PagerBlock.
 =head2 PagerLink
 
 A function tag returns the URL points to the page in the context of
-PagerBlock. The tag can only be used in the context of PagerBlock. 
+PagerBlock. The tag can only be used in the context of PagerBlock.
 
 =for tags pagination
 
@@ -188,7 +188,7 @@ sub _hdlr_current_page {
 =head2 TotalPages
 
 A function tag returns a number represents the total number of pages
-in the current search context. The number starts from 1. 
+in the current search context. The number starts from 1.
 
 =for tags pagination
 
@@ -207,7 +207,7 @@ sub _hdlr_total_pages {
 
 =head2 PreviousLink
 
-A function tag returns the URL points to the previous page of 
+A function tag returns the URL points to the previous page of
 the current page that is being rendered.
 
 =for tags pagination
@@ -234,7 +234,7 @@ sub _hdlr_previous_link {
 =head2 NextLink
 
 A function tag returns the URL points to the next page of the current page
-that is being rendered. 
+that is being rendered.
 
 =for tags pagination
 

@@ -262,7 +262,7 @@ of entries that follow, you can do this:
     <mt:Entries tag="@featured" lastn="3">
         ...
     </mt:Entries>
-    
+
     <mt:Entries lastn="7" unique="1">
         ...
     </mt:Entries>
@@ -2202,7 +2202,6 @@ sub _hdlr_entry_author_link {
     return '' unless $a;
 
     my $type = $args->{type} || '';
-
     if ( $type && $type eq 'archive' ) {
         require MT::Author;
         if ( $a->type == MT::Author::AUTHOR() ) {
@@ -2216,6 +2215,7 @@ sub _hdlr_entry_author_link {
                 my $target = $args->{new_window} ? ' target="_blank"' : '';
                 my $displayname
                     = encode_html( remove_html( $a->nickname || '' ) );
+
                 return sprintf qq{<a href="%s"%s>%s</a>}, $link, $target,
                     $displayname;
             }

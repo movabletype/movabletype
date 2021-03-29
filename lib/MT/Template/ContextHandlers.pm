@@ -838,6 +838,10 @@ sub core_tags {
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_description',
             AssetCount =>
                 '$Core::MT::Template::Tags::Asset::_hdlr_asset_count',
+            EntryAssetCount =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_entry_asset_count',
+            PageAssetCount =>
+                '$Core::MT::Template::Tags::Asset::_hdlr_entry_asset_count',
 
             ## Userpic
             AuthorUserpic =>
@@ -5295,6 +5299,7 @@ sub _hdlr_link {
             MT->translate( "Cannot find template '[_1]'", $tmpl_name ) );
         my $site_url = $blog->site_url;
         $site_url .= '/' unless $site_url =~ m!/$!;
+
         my $link = $site_url . $tmpl->outfile;
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
@@ -5305,6 +5310,7 @@ sub _hdlr_link {
             or return $ctx->error(
             MT->translate( "Cannot find entry '[_1]'", $entry_id ) );
         my $link = $entry->permalink;
+
         $link = MT::Util::strip_index( $link, $curr_blog )
             unless $arg->{with_index};
         $link;

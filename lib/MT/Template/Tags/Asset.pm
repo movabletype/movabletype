@@ -26,7 +26,7 @@ B<Attributes:>
 =item * type
 
 Specifies a particular type(s) of asset to select. This may be
-one of image, audio, video, or file(a generic for unrecognized file types). 
+one of image, audio, video, or file(a generic for unrecognized file types).
 If unspecified, will select all asset types. Supports a comma-delimited list.
 
 =item * file_ext
@@ -1194,6 +1194,7 @@ sub _hdlr_asset_thumbnail_url {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
+
     return $url || '';
 }
 
@@ -1301,6 +1302,7 @@ sub _hdlr_asset_thumbnail_link {
     }
 
     my ( $url, $w, $h ) = $a->thumbnail_url(%arg);
+
     my $ret = sprintf qq(<a href="%s"), $a->url;
     if ( $args->{new_window} ) {
         $ret .= qq( target="_blank");
@@ -1343,6 +1345,79 @@ sub _hdlr_asset_count {
     $terms{class}   = $args->{type} || '*';
     my $count = MT::Asset->count( \%terms, \%args );
     return $ctx->count_format( $count, $args );
+}
+
+=head2 EntryAssetCount
+
+Returns the number of assets associated with the current entry context.
+
+B<Attributes:>
+
+=over 4
+
+=item type
+
+Allows for filtering by file type. Built-in types supported are "image",
+"audio", "video". These types can be extended by plugins.
+
+=back
+
+B<Example:>
+
+    Images available: <$mt:EntryAssetCount type="image"$>
+
+=for tags assets
+
+=cut
+
+# Page Asset Count is an Alias for EntryAssetCount
+
+=head2 PageAssetCount
+
+Returns the number of assets associated with the current page context.
+
+B<Attributes:>
+
+=over 4
+
+=item type
+
+Allows for filtering by file type. Built-in types supported are "image",
+"audio", "video". These types can be extended by plugins.
+
+=back
+
+B<Example:>
+
+    Images available: <$mt:PageAssetCount type="image"$>
+
+=for tags assets
+
+=cut
+
+sub _hdlr_entry_asset_count {
+    my ( $ctx, $args, $cond ) = @_;
+
+    my $entry = $ctx->stash("entry")
+        or return $ctx->_no_entry_error();
+
+    my $assets = $entry->assets;
+
+    return 0 unless $assets && @$assets[0];
+    return scalar @$assets unless ($args->{type} || $args->{file_ext});
+
+    my $type     = $args->{type} || '';
+    my $file_ext = $args->{file_ext} || '';
+    my $result   = 0;
+
+    foreach my $asset (@$assets) {
+        if ( ( length $types && $asset->class =~ m/$types/ ) ||
+             ( length $file_ext && $asset->file_ext =~ m/$file_ext/ ) ) {
+            $result += 1;
+        }
+    }
+
+    return $result;
 }
 
 ###########################################################################
