@@ -52,7 +52,7 @@ sub edit {
                 $field_data = MT::Util::decode_js($field_data);
             }
             $field_data
-                = JSON::decode_json( MT::Util::decode_url($field_data) );
+                = JSON->new->utf8(0)->decode( MT::Util::decode_url($field_data) );
         }
     }
     else {
