@@ -650,7 +650,7 @@ sub can_edit_content_data {
     }
 }
 
-sub can_publish_content_data {
+sub can_republish_content_data {
     my $perms = shift;
     my ( $content_data, $author, $content_type_unique_id ) = @_;
 
