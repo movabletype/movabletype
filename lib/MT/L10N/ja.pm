@@ -4523,7 +4523,7 @@ use vars qw( @ISA %Lexicon );
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
-	'1 or more label-value pairs are required' => '1つ以上の値トラベルの組み合わせが必要です。',
+	'1 or more label-value pairs are required' => '1つ以上の値とラベルの組み合わせが必要です。',
 	'Available Content Fields' => '利用可能なフィールド',
 	'Contents type settings has been saved.' => 'コンテンツタイプの設定を保存しました',
 	'Edit Content Type' => 'コンテンツタイプの編集',
