@@ -5044,7 +5044,7 @@ use vars qw( @ISA %Lexicon );
 	'_LOG_TABLE_BY' => 'ユーザー',
 
 ## tmpl/cms/include/login_mt.tmpl
-	'Remember me?' => 'サインイン情報を記憶する',
+	'Remember me?' => 'サインイン状態を保持し続ける',
 
 ## tmpl/cms/include/member_table.tmpl
 	'Are you sure you want to remove the [_1] selected users from this [_2]?' => '[_2]から[_1]人のユーザーを削除してよろしいですか?',
