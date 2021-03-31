@@ -929,7 +929,6 @@ subtest 'mode = list' => sub {
                 _type           => 'content_data',
                 content_type_id => $content_type->id,
                 blog_id         => $site->id,
-                content_type_id => $content_type->id,
                 type            => 'content_data_' . $content_type->id,
             }
         );
