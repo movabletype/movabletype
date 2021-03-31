@@ -99,7 +99,7 @@ sub AUTOLOAD {
         if ( 'CODE' eq ref $attr_val ) {
             $code = $attr_val;
         }
-        elsif ( $attr_val =~ m/^sub \{/ || $attr_val =~ m/^\$/ ) {
+        elsif ( defined($attr_val) && ($attr_val =~ m/^sub \{/ || $attr_val =~ m/^\$/) ) {
             $code = MT->handler_to_coderef($attr_val);
         }
 
