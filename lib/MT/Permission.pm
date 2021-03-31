@@ -660,7 +660,6 @@ sub can_republish_content_data {
         || $author->can_do('edit_all_content_data');
 
     unless ($content_type_unique_id) {
-        return 0 unless $content_data;
         unless ( ref $content_data ) {
             require MT::ContentData;
             $content_data = MT::ContentData->load($content_data)
