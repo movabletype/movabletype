@@ -150,15 +150,18 @@ subtest 'mode = view (new)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
-    is $options{4}                 => 1,   "existed option value 4";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 3, "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
     # Create user
     $app->login($create_user);
@@ -191,13 +194,15 @@ subtest 'mode = view (new)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is keys %options               => 3,   "The number of options is 3";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 3, "The number of options is 3";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
@@ -230,13 +235,15 @@ subtest 'mode = view (edit)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is keys %options               => 2,   "The number of options is 2";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 2, "The number of options is 2";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
 
@@ -281,13 +288,15 @@ subtest 'mode = view (edit)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '1', "and the option has value 1";
-    is keys %options               => 3,   "The number of options is 3";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::HOLD(),
+        "and the option has HOLD";
+    is keys %options => 3, "The number of options is 3";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
@@ -308,13 +317,15 @@ subtest 'mode = view (edit)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is keys %options               => 3,   "The number of options is 3";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
+    is keys %options => 3, "The number of options is 3";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
@@ -336,13 +347,15 @@ subtest 'mode = view (edit)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '1', "and the option has value 1";
-    is keys %options               => 3,   "The number of options is 3";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::HOLD(),
+        "and the option has HOLD";
+    is keys %options => 3, "The number of options is 3";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
     ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
@@ -363,11 +376,14 @@ subtest 'mode = view (edit)' => sub {
     $app->wq_find("select[name='status'] option")->each(
         sub {
             my ( $i, $elem ) = @_;
-            push @selected, $elem if $elem->attr('selected');
-            $options{ $elem->attr('value') } = 1;
+            my $value = $elem->attr('value');
+            $options{$value} = 1;
+            push @selected, $value if $elem->attr('selected');
         }
     );
-    is @selected     => 1, "selected one option";
+    is @selected => 1, "selected one option";
+    is $selected[0] => MT::ContentStatus::RELEASE(),
+        "and the option has RELEASE";
     is keys %options => 3, "The number of options is 3";
     ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
     ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
