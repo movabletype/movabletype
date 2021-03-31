@@ -47,8 +47,6 @@ jobs:
     - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
 
     - # Perl 5.20 / PHP 5.6 / MySQL 5.5
@@ -109,10 +107,11 @@ jobs:
     - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
       env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
       env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="phpunit && make test-php-lint"
 
+    - # no need to run extra tests under various environments
+      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
+      env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 #    - if: type = cron
 #      env: TEST_COMMAND="travis_retry npm run test-riot"
 

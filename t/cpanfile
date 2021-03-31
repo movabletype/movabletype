@@ -102,6 +102,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'Mock::MonkeyPatch';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';
@@ -116,6 +117,7 @@ on 'test' => sub {
     requires 'SQL::Maker';
     requires 'SQL::Translator', '1.61';   # changed comment generation
     requires 'String::CamelCase';
+    requires 'Sub::Name';
     requires 'Term::Encoding';
     requires 'Test::Base';
     requires 'Test::Base::Less';

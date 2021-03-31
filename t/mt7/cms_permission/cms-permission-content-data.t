@@ -16,6 +16,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
 ### Prepare
 MT::Test->init_app;
@@ -894,6 +895,51 @@ subtest 'mode = delete' => sub {
 
     $out = delete $app->{__test_output};
     ok( $out !~ /permission=1/, 'delete by non permitted user (edit_all)' );
+
+};
+
+# list
+subtest 'mode = list' => sub {
+    my $app = MT::Test::App->new;
+
+    my $test_users = [
+        {
+            user       => $create_user,
+            permission => 1,
+        },
+        {
+            user       => $edit_user,
+            permission => 0
+        },
+        {
+            user       => $manage_user,
+            permission => 1,
+        },
+        {
+            user       => $publish_user,
+            permission => 1
+        }
+    ];
+
+    foreach my $test_user (@$test_users) {
+        $app->login( $test_user->{user} );
+        $app->get_ok(
+            {
+                __mode          => 'list',
+                _type           => 'content_data',
+                content_type_id => $content_type->id,
+                blog_id         => $site->id,
+                type            => 'content_data_' . $content_type->id,
+            }
+        );
+
+        note $app->wq_find("#content-actions a.icon-create")->as_html;
+        note $app->wq_find("#content-actions a.icon-create")->size;
+        ok(
+            $app->wq_find("#content-actions a.icon-create")->size == $test_user->{permission},
+            $test_user->{user}->name
+        );
+    }
 
 };
 
