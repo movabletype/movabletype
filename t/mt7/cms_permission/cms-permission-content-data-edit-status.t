@@ -18,9 +18,6 @@ use MT::Test;
 use MT::Test::App;
 use MT::Test::Permission;
 
-### Prepare
-MT::Test->init_app;
-
 ### Make test data
 $test_env->prepare_fixture(
     sub {
