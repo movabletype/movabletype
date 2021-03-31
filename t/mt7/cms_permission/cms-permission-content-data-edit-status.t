@@ -197,9 +197,10 @@ subtest 'mode = view (new)' => sub {
     );
     is @selected                   => 1,   "selected one option";
     is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
-    is $options{4}                 => 1,   "existed option value 4";
+    is keys %options               => 3,   "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 };
 
 subtest 'mode = view (edit)' => sub {
@@ -235,8 +236,9 @@ subtest 'mode = view (edit)' => sub {
     );
     is @selected                   => 1,   "selected one option";
     is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
+    is keys %options               => 2,   "The number of options is 2";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
 
     # Create user
     my $cd_cuser = MT::Test::Permission->make_content_data(
@@ -285,9 +287,10 @@ subtest 'mode = view (edit)' => sub {
     );
     is @selected                   => 1,   "selected one option";
     is $selected[0]->attr('value') => '1', "and the option has value 1";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
-    is $options{4}                 => 1,   "existed option value 4";
+    is keys %options               => 3,   "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
     # Edit user - Other's published data
     $app->get_ok(
@@ -311,8 +314,10 @@ subtest 'mode = view (edit)' => sub {
     );
     is @selected                   => 1,   "selected one option";
     is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
+    is keys %options               => 3,   "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
     # Manage user - Other's draft data
     $app->login($manage_user);
@@ -337,9 +342,10 @@ subtest 'mode = view (edit)' => sub {
     );
     is @selected                   => 1,   "selected one option";
     is $selected[0]->attr('value') => '1', "and the option has value 1";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
-    is $options{4}                 => 1,   "existed option value 4";
+    is keys %options               => 3,   "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 
     # Manage user - Other's published data
     $app->get_ok(
@@ -361,10 +367,11 @@ subtest 'mode = view (edit)' => sub {
             $options{ $elem->attr('value') } = 1;
         }
     );
-    is @selected                   => 1,   "selected one option";
-    is $selected[0]->attr('value') => '2', "and the option has value 2";
-    is $options{1}                 => 1,   "existed option value 1";
-    is $options{2}                 => 1,   "existed option value 2";
+    is @selected     => 1, "selected one option";
+    is keys %options => 3, "The number of options is 3";
+    ok $options{ MT::ContentStatus::HOLD() },    "existed option HOLD";
+    ok $options{ MT::ContentStatus::RELEASE() }, "existed option RELEASE";
+    ok $options{ MT::ContentStatus::FUTURE() },  "existed option FUTURE";
 };
 
 done_testing();
