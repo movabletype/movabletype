@@ -665,8 +665,6 @@ sub can_republish_content_data {
             $content_data = MT::ContentData->load($content_data)
                 or return;
         }
-        $perms = $author->permissions( $content_data->blog_id )
-            or return;
         $content_type_unique_id = $content_data->ct_unique_id;
     }
 
