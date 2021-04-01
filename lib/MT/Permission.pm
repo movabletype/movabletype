@@ -659,6 +659,8 @@ sub can_republish_content_data {
         if $author->is_superuser()
         || $author->can_do('edit_all_content_data');
 
+    return 1 if $perms->can_do('rebuild');
+
     unless ($content_type_unique_id) {
         unless ( ref $content_data ) {
             require MT::ContentData;
@@ -667,8 +669,6 @@ sub can_republish_content_data {
         }
         $content_type_unique_id = $content_data->ct_unique_id;
     }
-
-    return 1 if $perms->can_do('rebuild');
 
     return 1
         if $perms->can_do(

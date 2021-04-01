@@ -427,8 +427,7 @@ sub edit {
     }
 
     $param->{can_publish_post} = 1
-        if $perm->can_republish_content_data( $content_data, $user,
-        $content_data ? '' : $ct_unique_id );
+        if $perm->can_republish_content_data( $content_data, $user, $ct_unique_id );
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
