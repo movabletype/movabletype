@@ -57,7 +57,7 @@
     "jquery-ui-touch-punch": "^0.2.3",
     "jquery-validation": "^1.19.1",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
-    "popper.js": "^1.12.1",
+    "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.7.0",
