@@ -659,7 +659,7 @@ sub can_republish_content_data {
         if $author->is_superuser()
         || $author->can_do('edit_all_content_data');
 
-    return 1 if $perms->can_do('rebuild') || $perms->can_do('manage_content_data');
+    return 1 if $perms->can_do('rebuild') || $perms->can_do('edit_all_content_data');
 
     unless ($content_type_unique_id) {
         unless ( ref $content_data ) {
