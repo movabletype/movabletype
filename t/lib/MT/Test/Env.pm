@@ -316,7 +316,7 @@ sub _connect_info_mysql {
         Database     => "mt_test",
     );
 
-    if ( my $dsn = $ENV{PERL_TEST_MYSQLPOOL_DSN} ) {
+    if ( my $dsn = $ENV{MT_TEST_DSN} || $ENV{PERL_TEST_MYSQLPOOL_DSN} ) {
         my $dbh = DBI->connect($dsn) or die $DBI::errstr;
         $self->_prepare_mysql_database($dbh);
         $dsn =~ s/^DBI:mysql://i;
