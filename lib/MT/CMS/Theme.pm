@@ -256,7 +256,7 @@ sub export {
     }
 
 
-    for my $hdlr ( keys %$hdlrs ) {
+    for my $hdlr ( sort keys %$hdlrs ) {
         my $exporter
             = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
         next unless $exporter;
