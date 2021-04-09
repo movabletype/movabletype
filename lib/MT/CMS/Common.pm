@@ -2222,7 +2222,14 @@ sub build_revision_table {
                 $row->{created_by} = $app->translate('(user deleted)');
             }
         }
-        my $revision    = $obj->object_from_revision($rev);
+
+        my $revision = $obj->object_from_revision($rev);
+
+        if ( !$revision ) {
+            $row->{is_broken} = 1;
+            return;
+        }
+
         my $column_defs = $obj->column_defs;
 
         #my @changed = map {

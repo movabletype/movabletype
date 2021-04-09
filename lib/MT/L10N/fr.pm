@@ -2446,6 +2446,7 @@ use vars qw( @ISA %Lexicon );
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Mauvaise configuration du pilote de révision '[_1]' : [_2]},
 	q{Did not get two [_1]} => q{N'a pas obtenu deux [_1]},
 	q{There are not the same types of objects, expecting two [_1]} => q{Ce ne sont pas les mêmes types d'objets, deux [_1] sont attendus},
+	'Broken revision(id:[_1]) of [_2](id:[_3]) will be removed.' => 'La révision cassée (id: [_1]) de [_2] (id: [_3]) sera supprimée.',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Peut administrer le site',

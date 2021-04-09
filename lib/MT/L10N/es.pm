@@ -2446,6 +2446,7 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
 	'Unknown method [_1]' => 'Método desconocido [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Configuración de RevisioningDriver errónea '[_1]': [_2]},
+	'Broken revision(id:[_1]) of [_2](id:[_3]) will be removed.' => 'Se eliminará la revisión rota (id: [_1]) de [_2] (id: [_3]).',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Puede administrar el sitio.',
