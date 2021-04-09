@@ -16,7 +16,7 @@
     },
     "require": {
         "adodb/adodb-php": "^5.20",
-        "smarty/smarty": "v3.1.31"
+        "smarty/smarty": "^v3.1.39"
     },
     "extra": {
         "installer-types": ["library"],
