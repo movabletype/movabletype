@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.17  31-Mar-2020
+@version   v5.20.20  01-Feb-2021
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -63,7 +63,7 @@ if (!function_exists('sqlsrv_log_set_subsystems')) {
 //
 // Also if your month is showing as month-1,
 //   e.g. Jan 13, 2002 is showing as 13/0/2002, then see
-//     http://phplens.com/lens/lensforum/msgs.php?id=7048&x=1
+//     PHPLens Issue No: 7048&x=1
 //   it's a localisation problem.
 //----------------------------------------------------------------
 
@@ -466,21 +466,30 @@ class ADODB_mssqlnative extends ADOConnection {
 	function ErrorNo()
 	{
 		$err = sqlsrv_errors(SQLSRV_ERR_ALL);
-		if($err[0]) return $err[0]['code'];
-		else return 0;
+		if ($err && $err[0]) 
+			return $err[0]['code'];
+		else 
+			return 0;
 	}
 
 	// returns true or false
 	function _connect($argHostname, $argUsername, $argPassword, $argDatabasename)
 	{
 		if (!function_exists('sqlsrv_connect')) return null;
+		
+		if (!empty($this->port))
+			/*
+			* Port uses a comma 
+			*/
+			$argHostname .= ",".$this->port;
+
 		$connectionInfo = $this->connectionInfo;
 		$connectionInfo["Database"]=$argDatabasename;
 		$connectionInfo["UID"]=$argUsername;
 		$connectionInfo["PWD"]=$argPassword;
 		if ( $this->is_utf )
 			$connectionInfo['CharacterSet'] = 'UTF-8';
-		
+
 		foreach ($this->connectionParameters as $parameter=>$value)
 		    $connectionInfo[$parameter] = $value;
 		
@@ -1088,6 +1097,12 @@ class ADORecordset_mssqlnative extends ADORecordSet {
 		is running. All associated result memory for the specified result identifier will automatically be freed.	*/
 	function _close()
 	{
+		/*
+		* If we are closing down a failed query, collect any
+		* error messages. This is a hack fix to the "close too early"
+		* problem so this might go away later
+		*/
+		$this->connection->errorMsg();
 		if(is_resource($this->_queryID)) {
 			$rez = sqlsrv_free_stmt($this->_queryID);
 			$this->_queryID = false;
