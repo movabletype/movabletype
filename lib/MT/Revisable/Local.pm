@@ -182,7 +182,7 @@ sub load_revision {
 sub handle_max_revisions {
     my $driver = shift;
     my ( $obj, $max ) = @_;
-    return unless $max;
+    $max ||= $MT::Revisable::MAX_REVISIONS;
 
     my $datasource = $obj->datasource;
     my $rev_class  = MT->model( $datasource . ':revision' );
