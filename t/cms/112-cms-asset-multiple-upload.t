@@ -37,6 +37,8 @@ $test_env->prepare_fixture('db_data');
 my $admin   = MT->model('author')->load(1);
 my $blog_id = 1;
 
+no Carp::Always;
+
 describe 'Uploaded asset (test.jpg)' => sub {
     context 'first time' => sub {
         my $asset;

@@ -12,6 +12,7 @@ BEGIN {
 }
 
 use Class::Unload;
+no Carp::Always;
 
 subtest 'Load ContentType after Website' => sub {
     ## Clean up
