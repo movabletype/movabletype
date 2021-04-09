@@ -240,9 +240,14 @@ SKIP:
                 $block->ctx_stash  || undef
             );
             my $php_result = MT::Test::PHP->run($php_script);
+            my $expected = $block->expected;
+
+            # for Smarty 3.1.32+
+            $php_result =~ s/\n//g;
+            $expected =~ s/\n//g;
 
             my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
+            is( $php_result, $expected, $name );
         }
     };
 }
