@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.17  31-Mar-2020
+@version   v5.20.20  01-Feb-2021
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -204,7 +204,7 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 		$nrows = (int) $nrows;
 		$offset = (int) $offset;		
 		$offsetStr =($offset>=0) ? "$offset," : '';
-		// jason judge, see http://phplens.com/lens/lensforum/msgs.php?id=9220
+		// jason judge, see PHPLens Issue No: 9220
 		if ($nrows < 0) {
 			$nrows = '18446744073709551615';
 		}
