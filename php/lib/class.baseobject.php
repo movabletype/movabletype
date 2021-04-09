@@ -178,7 +178,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (isset($extra['distinct'])) {
             $mt = MT::get_instance();
             $mtdb = $mt->db();
-            if ( !$mtdb->has_distinct_support ) {
+            if ( !$mtdb->has_distinct_support() ) {
                 $unique_myself = true;
                 $extra['distinct'] = null;
             }

@@ -392,7 +392,7 @@ PHP
 
             $test_script .= <<'PHP';
 
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
     print($error_msg."\n");
 }, E_USER_ERROR );
 

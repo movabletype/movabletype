@@ -20,7 +20,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         $ctx->localize($localvars);
 
         $content_type = _get_content_type( $ctx, $args, $blog_terms );
-        if (!is_object($content_type))
+        if (!is_array($content_type))
             $ctx->error($content_type);
         foreach ( $content_type as $c ) {
             $content_type_id[] = $c->content_type_id;
@@ -62,8 +62,10 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
 
         $counter = 0;
         $limit = $args['limit'];
-        if (!ctype_digit($limit) && $limit === 'none')
+        if (!ctype_digit($limit) && $limit === 'none') {
             $limit = 0;
+            $args['limit'] = 0;
+        }
         $ctx->stash('__out', false);
 
         if ( isset($args['offset']) && ($args['offset'] == 'auto') ) {
@@ -124,7 +126,10 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
         }
 
         $ctx->stash('_contents_glue', $args['glue']);
-        if (!$limit || ($limit > count($contents)) || ($limit == -1)) {
+        if (!isset($contents)) {
+            $limit = 0;
+        }
+        elseif (!$limit || ($limit > count($contents)) || ($limit == -1)) {
             $limit = count($contents);
         }
         $ctx->stash('_contents_limit', $limit);
