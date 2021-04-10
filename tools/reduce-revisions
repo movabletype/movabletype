@@ -1,0 +1,64 @@
+#!/usr/bin/perl -w
+use strict;
+use warnings;
+use utf8;
+use lib "lib", "extlib";
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+use MT::Revisable;
+
+GetOptions(
+    'd|delete' => \my ($delete),
+    "help|?"   => sub { usage(); exit },
+);
+
+my $delete_count = 0;
+my $mt           = MT->new;
+
+my $site_iter = MT::Blog->load_iter( { class => '*' } );
+
+while ( my $site = $site_iter->() ) {
+
+    for my $ds ( 'entry', 'template', 'cd' ) {
+
+        my $model = MT->model($ds);
+        my $col   = 'max_revisions_' . $ds;
+        my $max   = $site->$col || $MT::Revisable::MAX_REVISIONS;
+
+        print "============================================================\n";
+        printf( "Checking %s of site(id:%s) for max=%d\n", $ds, $site->id, $max );
+        print "============================================================\n";
+
+        my $obj_iter  = $model->load_iter( { blog_id => $site->id } );
+        my $rev_class = MT->model( $ds . ':revision' );
+        my $found     = 0;
+
+        while ( my $obj = $obj_iter->() ) {
+            my $count = $rev_class->count( { $ds . '_id' => $obj->id } );
+            if ( $count >= $max ) {
+                $delete_count += ( $count - $max + 1 );
+                print sprintf( "Violation detected and deleting (%d/%d) for id=%d\n",
+                    $count, $max, $obj->id );
+                $obj->handle_max_revisions($max) if $delete;
+                $found = 1;
+            }
+        }
+        print( !$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n" );
+    }
+}
+
+print "============================================================\n";
+print "Total Result\n";
+printf( "%s: %d\n", ( $delete ? 'Deleted' : 'Detected' ), $delete_count );
+print "============================================================\n";
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+-d, --delete            Delete on detecting revision amount excession.
+EOT
+}
