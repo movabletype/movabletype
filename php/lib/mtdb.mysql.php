@@ -56,13 +56,20 @@ class MTDatabasemysql extends MTDatabase {
     }
 
     function entries_recently_commented_on_sql($subsql) {
-        $sql = $subsql;
-        $sql = preg_replace("/from mt_entry/i",
-                    ",MAX(comment_created_on) as cco from mt_entry\ninner join mt_comment on comment_entry_id = entry_id and comment_visible = 1\n",
-                    $sql);
-        $sql = preg_replace("/order by(.+)/i",
-                    "group by entry_id order by cco desc, \$1",
-                   $sql);
+        $sql = "
+            select distinct
+                subs.*, max_comment_created_on
+            from
+                ($subsql) subs
+                inner join (
+                    select comment_entry_id, max(comment_created_on) as max_comment_created_on
+                    from mt_comment
+                    where comment_visible = 1
+                    group by comment_entry_id
+                ) c on comment_entry_id = entry_id
+            order by
+                max_comment_created_on desc
+        ";
         return $sql;
     }
 
