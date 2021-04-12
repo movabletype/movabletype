@@ -1,7 +1,7 @@
 <?php
 /*
 
-@version   v5.20.17  31-Mar-2020
+@version   v5.20.20  01-Feb-2021
 @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Latest version is available at http://adodb.org/
@@ -46,7 +46,7 @@ class ADODB_Active_Table {
 
 // $db = database connection
 // $index = name of index - can be associative, for an example see
-//    http://phplens.com/lens/lensforum/msgs.php?id=17790
+//    PHPLens Issue No: 17790
 // returns index into $_ADODB_ACTIVE_DBS
 function ADODB_SetDatabaseAdapter(&$db, $index=false)
 {
@@ -813,7 +813,7 @@ class ADODB_Active_Record {
 	}
 
 	# useful for multiple record inserts
-	# see http://phplens.com/lens/lensforum/msgs.php?id=17795
+	# see PHPLens Issue No: 17795
 	function Reset()
 	{
 		$this->_where=null;
@@ -1098,7 +1098,7 @@ global $_ADODB_ACTIVE_DBS;
 		$qry = "* from ".$table;
 
 	if (isset($extra['distinct']))
-	$qry = "distinct " . $qry;
+		$qry = "distinct " . $qry;
 	$qry = "select " . $qry;
 
 	if (!empty($whereOrderBy)) {
@@ -1157,7 +1157,6 @@ global $_ADODB_ACTIVE_DBS;
 			$db->_errorMsg = $obj->ErrorMsg();
 			return $false;
 		}
-
 		$obj->Set($row);
 		$arr[] = $obj;
 	} // foreach($rows as $row)
