@@ -187,6 +187,10 @@ SKIP: {
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
 
+                # for Smarty 3.1.32+
+                $php_result =~ s/\n//gs;
+                $expected   =~ s/\n//gs;
++
                 local $TODO = "may fail"
                     if $expected_method =~ /^expected_(?:php_)?todo/;
 
