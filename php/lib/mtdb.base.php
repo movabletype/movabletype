@@ -7,6 +7,7 @@
 
 require_once('adodb-exceptions.inc.php');
 require_once('adodb.inc.php');
+if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
 require_once('adodb-active-record.inc.php');
 
 abstract class MTDatabase {
