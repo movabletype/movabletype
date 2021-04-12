@@ -887,7 +887,7 @@ sub _hdlr_tag_search_link {
             my $blog = $ctx->stash('blog');
             $template_blog_id
                 = $blog->is_blog
-                ? $blog->website->id
+                ? $blog->parent_id
                 : $blog->id;
         }
     }

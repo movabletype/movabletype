@@ -3051,7 +3051,7 @@ sub clone {
         unless $blog->is_blog;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3431,7 +3431,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => $app->blog ? 'blog' : 'website',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? ($new_blog->parent_id || $new_blog->id) : 0 )
             }
             );
         my $setting_url = $app->uri(

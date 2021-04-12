@@ -229,7 +229,7 @@ sub edit {
                             : $tag->[1]->{blog_id}
                             ? [ $tag->[1]->{blog_id}, 0 ]
                             : $tag->[1]->{parent} ? $obj->blog
-                                ? $obj->blog->website->id
+                                ? ($obj->blog->parent_id || $obj->blog->id)
                                 : 0
                             : [ $obj->blog_id, 0 ];
 
@@ -414,7 +414,7 @@ sub edit {
                         = $set->attributes->{blog_id}
                         ? $set->attributes->{blog_id}
                         : $set->attributes->{parent} ? $obj->blog
-                            ? $obj->blog->website->id
+                            ? ($obj->blog->parent_id || $obj->blog->id)
                             : $obj->blog_id
                         : $obj->blog_id;
                     my $wset = MT::Template->load(

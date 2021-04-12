@@ -749,7 +749,7 @@ sub cms_pre_load_filtered_list {
             push @$blog_ids, $perm->blog_id;
         }
         elsif ( $website && $website->class eq 'blog' ) {
-            push @$blog_ids, $website->website->id;
+            push @$blog_ids, $website->parent_id;
         }
     }
 
