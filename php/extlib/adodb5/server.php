@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @version   v5.20.17  31-Mar-2020
+ * @version   v5.20.20  01-Feb-2021
  * @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
  * @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
  * Released under both BSD license and Lesser GPL library license.
@@ -54,7 +54,11 @@ function err($s)
 // undo stupid magic quotes
 function undomq(&$m)
 {
-	if (get_magic_quotes_gpc()) {
+	// PHP7.4 spits deprecated notice, PHP8 removed magic_* stuff
+	if (version_compare(PHP_VERSION, '7.4.0', '<')
+		&& function_exists('get_magic_quotes_gpc')
+		&& get_magic_quotes_gpc()
+	) {
 		// undo the damage
 		$m = str_replace('\\\\','\\',$m);
 		$m = str_replace('\"','"',$m);
