@@ -235,9 +235,14 @@ SKIP:
             close $php_out;
             my $php_result = do { local $/; <$php_in> };
             $php_result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
+            my $expected = $block->expected;
+
+            # for Smarty 3.1.32+
+            $php_result =~ s/\n//g;
+            $expected =~ s/\n//g;
 
             my $name = $block->name . ' - dynamic';
-            is( $php_result, $block->expected, $name );
+            is( $php_result, $expected, $name );
         }
     };
 }
