@@ -100,7 +100,7 @@ class ADODB_oci8po extends ADODB_oci8 {
 	*
 	* @return	string	The modified statement
 	*/	
-	final private function extractBinds($sql,$inputarr)
+	private function extractBinds($sql,$inputarr)
 	{
 		$inString  = false;
 		$escaped   = 0;
@@ -120,7 +120,7 @@ class ADODB_oci8po extends ADODB_oci8 {
 			/*
 			* find the next character of the string
 			*/
-			$c = $sql{$i};
+			$c = $sql[$i];
 
 			if ($c == "'" && !$inString && $escaped==0)
 				/*
