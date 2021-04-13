@@ -59,20 +59,6 @@ jobs:
     - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - # Perl 5.32 / PHP 8.0 / MariaDB 10.5
-      if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12]*.t"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
-    - if: type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="phpunit && make test-php-lint"
-
 before_script:
   - docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
   - rm t/34-sqlite.t
