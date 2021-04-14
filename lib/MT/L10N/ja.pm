@@ -424,7 +424,7 @@ use vars qw( @ISA %Lexicon );
 	'Regex search' => '正規表現',
 
 ## addons/Commercial.pack/templates/professional/website/search_results.mtml
-	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => '',
+	'By default, this search engine looks for all words in any order. To search for an exact phrase, enclose the phrase in quotes:' => 'すべての単語が順序に関係なく検索されます。フレーズで検索したいときは引用符で囲んでください。',
 
 ## addons/Commercial.pack/templates/professional/website/syndication.mtml
 	q{Subscribe to this website's feed} => q{ウェブサイトを購読},
