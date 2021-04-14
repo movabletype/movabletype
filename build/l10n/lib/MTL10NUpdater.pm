@@ -328,6 +328,11 @@ sub find_phrases {
 
     my $verbose = $self->{verbose};
     my %mapping;
+
+    for my $file (glob "*.cgi") {
+        $self->_find_phrases($file, \%mapping);
+    }
+
     for my $dir (@dirs) {
         next unless -d $dir;
         finddepth({
@@ -344,81 +349,87 @@ sub find_phrases {
                 return if $file =~ m!/L10N/!;
                 return if $ignore_re && $file =~ /$ignore_re/;
                 print STDERR "Scanning $file\n" if $verbose;
-                my $path = $self->relative($file);
-                my $content = $self->slurp($file);
 
-                my $check_component = $file =~ /addons|plugins/ ? 1 : 0;
-
-                my @phrases;
-                while ($content =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
-                    my ($msg, %args) = ($1);
-                    while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #'
-                        $args{$1} = $3;
-                    }
-                    next unless exists $args{phrase};
-                    my $phrase = $args{phrase};
-                    $phrase =~ s/(?<!\\)\\"/"/g;
-                    $phrase =~ s/(?<![':\\])\\'/'/g;
-                    if ($check_component) {
-                        push @phrases, [$phrase, 'tmpl'];
-                    } else {
-                        push @phrases, $phrase;
-                    }
-                }
-
-                while ($content =~ /(?:(\S+)\->)?(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q\{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
-                    my ($component, $msg) = ($1, $2);
-                    my $phrase = '';
-                    while ($msg =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q\{((?:[^}\\]+|\\.)*)}/gs) {
-                        $phrase .= ($1 || $2 || $3);
-                    }
-                    $phrase =~ s/(?<![':\\])\\'/'/g;
-                    $phrase =~ s/\\n/\n/g;
-                    if ($check_component && $component && $component !~ /^(?:MT|\$mt|\$ctx->mt|\$app|\$self|\$class)$/) {
-                        push @phrases, [$phrase, $component];  # component-specific
-                    } else {
-                        push @phrases, $phrase;
-                    }
-                }
-
-                while ($content =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
-                    next if $2 =~ /^$1/;
-                    my $phrase = $2.$3;
-                    next if $phrase =~ /^string\(/;
-                    $phrase =~ s/(?<![':\\])\\'/'/g;
-                    if ($check_component) {
-                        push @phrases, [$phrase, 'label'];
-                    } else {
-                        push @phrases, $phrase;
-                    }
-                }
-
-                if ($path =~ /(services|streams)\.yaml$/) {
-                    while ($content =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) {
-                        my $phrase = $1;
-                        $phrase =~ s/(^'+|'+$)//;
-                        $phrase =~ s/(?<![':\\])\\'/'/g;
-                        push @phrases, $phrase;
-                    }
-                }
-                elsif ($path =~ /\.yaml$/) {
-                    while ($content =~ /\s*(?:label:|label_plural:)\s*(.+)/g) {
-                        my $phrase = $1;
-                        $phrase =~ s/(^'+|'+$)//g;
-                        $phrase =~ s/(?<![':\\])\\'/'/g;
-                        if ($check_component) {
-                            push @phrases, [$phrase, 'label'];
-                        } else {
-                            push @phrases, $phrase;
-                        }
-                    }
-                }
-
-                $mapping{$path} = \@phrases;
+                $self->_find_phrases($file, \%mapping);
             },
         }, $dir);
     }
     \%mapping;
+}
+
+sub _find_phrases {
+    my ($self, $file, $mapping) = @_;
+    my $path = $self->relative($file);
+    my $content = $self->slurp($file);
+
+    my $check_component = $file =~ /addons|plugins/ ? 1 : 0;
+
+    my @phrases;
+    while ($content =~ m!(<(?:_|MT)_TRANS(?:\s+((?:\w+)\s*=\s*(["'])(?:<[^>]+?>|[^\3]+?)*?\3))+?\s*/?>)!igm) {
+        my ($msg, %args) = ($1);
+        while ($msg =~ /\b(\w+)\s*=\s*(["'])((?:<[^>]+?>|[^\2])*?)?\2/g) {  #'
+            $args{$1} = $3;
+        }
+        next unless exists $args{phrase};
+        my $phrase = $args{phrase};
+        $phrase =~ s/(?<!\\)\\"/"/g;
+        $phrase =~ s/(?<![':\\])\\'/'/g;
+        if ($check_component) {
+            push @phrases, [$phrase, 'tmpl'];
+        } else {
+            push @phrases, $phrase;
+        }
+    }
+
+    while ($content =~ /(?:(\S+)\->)?(?:translate|errtrans|trans_error|trans|translate_escape|maketext)\s*\(((?:\s*(?:"(?:[^"\\]+|\\.)*"|'(?:[^'\\]+|\\.)*'|q\{(?:[^}\\]+|\\.)*})\s*\.?\s*){1,})[,\)]/gs) {
+        my ($component, $msg) = ($1, $2);
+        my $phrase = '';
+        while ($msg =~ /"((?:[^"\\]+|\\.)*)"|'((?:[^'\\]+|\\.)*)'|q\{((?:[^}\\]+|\\.)*)}/gs) {
+            $phrase .= ($1 || $2 || $3);
+        }
+        $phrase =~ s/(?<![':\\])\\'/'/g;
+        $phrase =~ s/\\n/\n/g;
+        if ($check_component && $component && $component !~ /^(?:MT|\$mt|\$ctx->mt|\$app|\$self|\$class)$/) {
+            push @phrases, [$phrase, $component];  # component-specific
+        } else {
+            push @phrases, $phrase;
+        }
+    }
+
+    while ($content =~ /\s*(?:["'])?label(?:_plural)?(?:["'])?\s*=>\s*(["'])(.*?)([^\\])\1/gs) {
+        next if $2 =~ /^$1/;
+        my $phrase = $2.$3;
+        next if $phrase =~ /^string\(/;
+        $phrase =~ s/(?<![':\\])\\'/'/g;
+        if ($check_component) {
+            push @phrases, [$phrase, 'label'];
+        } else {
+            push @phrases, $phrase;
+        }
+    }
+
+    if ($path =~ /(services|streams)\.yaml$/) {
+        while ($content =~ /\s*(?:description|ident_hint|label|name):\s*(.+)/g) {
+            my $phrase = $1;
+            $phrase =~ s/(^'+|'+$)//;
+            $phrase =~ s/(?<![':\\])\\'/'/g;
+            push @phrases, $phrase;
+        }
+    }
+    elsif ($path =~ /\.yaml$/) {
+        while ($content =~ /\s*(?:label:|label_plural:)\s*(.+)/g) {
+            my $phrase = $1;
+            $phrase =~ s/(^'+|'+$)//g;
+            $phrase =~ s/(?<![':\\])\\'/'/g;
+            if ($check_component) {
+                push @phrases, [$phrase, 'label'];
+            } else {
+                push @phrases, $phrase;
+            }
+        }
+    }
+
+    $mapping->{$path} = \@phrases;
 }
 
 1;
