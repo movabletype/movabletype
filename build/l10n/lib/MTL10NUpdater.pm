@@ -129,8 +129,8 @@ sub update {
                                 $message .= " (possibly removable from core: $component)";
                             }
                             if (!$verbose && !$self->parent) {
-                                $seen{$phrase}--;
-                                next;
+#                                $seen{$phrase}--;
+#                                next;
                             }
                             push @possibly_removable, [$name, $lang, $phrase, $trans];
                         }
