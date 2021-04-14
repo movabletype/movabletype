@@ -756,7 +756,7 @@ use vars qw( @ISA %Lexicon );
 	'Forgot your password?' => 'パスワードをお忘れですか?',
 	'Not a member?&nbsp;&nbsp;<a href="[_1]">Sign Up</a>!' => 'アカウントがないときは<a href="[_1]">サインアップ</a>してください。',
 	'Password' => 'パスワード',
-	'Remember me?' => 'サインイン情報を記憶する',
+	'Remember me?' => 'サインイン状態を保持し続ける',
 	'Sign in using' => 'サインイン',
 	'Username' => 'ユーザー名',
 
@@ -1277,7 +1277,7 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'テンプレートをロードできませんでした。',
-	'Error sending mail ([_1]); try another MailTransfer setting?' => '', # Translate - New
+	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
 	q{Cannot find author for id '[_1]'} => q{ID:[_1]のユーザーが見つかりませんでした。},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
@@ -1304,9 +1304,9 @@ use vars qw( @ISA %Lexicon );
 	'Sync file list' => '同期リスト',
 
 ## addons/Sync.pack/lib/MT/SyncLog.pm
-	'*Sync setting deleted*' => '',
+	'*Sync setting deleted*' => '*削除されました*',
 	'*User deleted*' => '*削除されました*',
-	'Are you sure you want to reset the sync log?' => '', # Translate - New
+	'Are you sure you want to reset the sync log?' => 'サーバー配信履歴を消去してもよろしいですか?',
 	'By' => 'ユーザー',
 	'Clear Sync Log' => '',
 	'Destination Name' => '',
@@ -1316,7 +1316,7 @@ use vars qw( @ISA %Lexicon );
 	'Finish Date' => '',
 	'Finish Time' => '',
 	'Message' => 'ログ',
-	'Parallel' => '',
+	'Parallel' => '即時',
 	'Rsync' => 'rsync',
 	'Scheduled' => '日時指定',
 	'Showing only ID: [_1]' => 'ID:[_1]のログ',
@@ -1325,19 +1325,19 @@ use vars qw( @ISA %Lexicon );
 	'Success' => '完了',
 	'Suspended' => '',
 	'Sync Logs' => '',
-	'Sync Result' => '', # Translate - New
+	'Sync Result' => '配信結果',
 	'Sync Type' => '配信方法',
 	'Trigger' => 'トリガー',
 	q{[_1] in [_2]: [_3]} => q{[_2]が '[_3]' である[_1]},
 
 ## addons/Sync.pack/lib/MT/SyncQueue.pm
-	'Sync Queue' => '', # Translate - New
+	'Sync Queue' => '配信キュー',
 
 ## addons/Sync.pack/lib/MT/SyncSetting.pm
 	'Sync settings' => 'サーバー配信の設定',
 
 ## addons/Sync.pack/lib/MT/SyncStatus.pm
-	'Sync Status' => '', # Translate - New
+	'Sync Status' => '配信状況',
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
 	'Failed to Synchronization([_1]) with an external server([_2]).' => '外部サーバー([_2])へのサーバー配信([_1])が失敗しました。',
@@ -1354,16 +1354,16 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
 	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
-	'Deleting sync file list failed "[_1]": [_2]' => '', # Translate - New
+	'Deleting sync file list failed "[_1]": [_2]' => '[_1]の配信ファイルリスト削除に失敗しました: [_2]',
 	'Permission denied: [_1]' => '権限がありません: [_1]',
 	'Save failed: [_1]' => '保存できませんでした: [_1]',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
-	'The previous synchronization file list has been cleared. [_1] by [_2].' => '', # Translate - New
+	'The previous synchronization file list has been cleared. [_1] by [_2].' => '[_2] が、[_1]の過去の配信ファイルリストを削除しました。',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{FTPサーバー '[_1]' への接続中にエラーが発生しました: [_2]},
 	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{FTPサーバーのカレントディレクトリが取得できませんでした。},
 	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{FTPサーバーからディレクトリの一覧が取得できませんでした},
-	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{}, # Translate - New
+	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配の信設定 '[_1]' (ID: [_2]) を削除しました。},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を保存しました。},
 	q{Synchronization log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
@@ -2994,7 +2994,7 @@ _4]'から削除しました。},
 	q{Reading file '[_1]' failed: [_2]} => q{ファイル '[_1]' を読み取れませんでした: [_2]},
 
 ## lib/MT/Image/ImageMagick.pm
-	'Cannot load [_1]: [_2]' => '', # Translate - New
+	'Cannot load [_1]: [_2]' => '[_1]をロードできません: [_2]',
 	'Converting image to [_1] failed: [_2]' => '画像を[_1]に変換できませんでした: [_2]',
 	'Cropping a [_1]x[_2] square at [_3],[_4] failed: [_5]' => '[_1]x[_2] (X:[_3] / Y:[_4]) にトリミングできませんでした: [_5]',
 	'Flip horizontal failed: [_1]' => '画像を水平反転させることができませんでした: [_1]',
@@ -3681,11 +3681,6 @@ _4]'から削除しました。},
 	'(None)' => '(なし)',
 
 ## mt-static/js/tc/mixer/display.js
-	'Author:' => '', # Translate - New
-	'Description:' => '', # Translate - New
-	'Tags:' => '', # Translate - New
-	'Title:' => '', # Translate - New
-	'URL:' => '', # Translate - New
 
 ## mt-static/js/upload_settings.js
 	'You must set a path begining with %s or %a.' => '%s（サイトパス）か %a（アーカイブパス）から始まるパス名を指定してください。',
@@ -3781,7 +3776,7 @@ _4]'から削除しました。},
 	'value' => 'value',
 
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
-	'HTML' => '', # Translate - New
+	'HTML' => 'HTML',
 
 ## php/lib/block.mtassets.php
 	'sort_by="score" must be used together with a namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
@@ -4725,7 +4720,7 @@ _4]'から削除しました。},
 
 ## tmpl/cms/dialog/comment_reply.tmpl
 	'On [_1], [_2] commented on [_3]' => '[_2]から[_3]へのコメント([_1])',
-	'Reply to comment' => '', # Translate - New
+	'Reply to comment' => 'コメントに返信',
 	'Submit reply (s)' => '返信を投稿 (s)',
 	'Your reply:' => '返信',
 
