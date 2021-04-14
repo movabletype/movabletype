@@ -8,19 +8,25 @@ use MT::Bootstrap;
 use MT;
 use MT::Revisable;
 
+my %target;
+
 GetOptions(
-    'd|delete' => \my ($delete),
-    "help|?"   => sub { usage(); exit },
+    'b|blog_id=i' => \my ($blog_id),
+    'd|delete'   => \my ($delete),
+    'e|entry'    => sub { $target{entry}    = 1 },
+    'c|cd'       => sub { $target{cd}       = 1 },
+    't|template' => sub { $target{template} = 1 },
+    "help|?"     => sub { usage(); exit },
 );
 
 my $delete_count = 0;
 my $mt           = MT->new;
 
-my $site_iter = MT::Blog->load_iter( { class => '*' } );
+my $site_iter = MT::Blog->load_iter($blog_id ? { id => $blog_id } : { class => '*' });
 
 while ( my $site = $site_iter->() ) {
 
-    for my $ds ( 'entry', 'template', 'cd' ) {
+    for my $ds ( keys %target ) {
 
         my $model = MT->model($ds);
         my $col   = 'max_revisions_' . $ds;
@@ -83,6 +89,10 @@ usage: $0
 
 These options are available:
 
+-b, --blog_id           Blog ID.
 -d, --delete            Delete on detecting revision amount excession.
+-e, --entry             process entries.
+-c, --cd                process content data.
+-t, --template          process templates.
 EOT
 }

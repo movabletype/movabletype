@@ -21,30 +21,33 @@ use MT::Revisable;
 
 $test_env->prepare_fixture('db');
 
-my $objs = MT::Test::Fixture->prepare(
-    {   author => [
-            {   name         => 'admin',
-                password     => 'pass',
-                is_superuser => 1,
-            }
-        ],
-        blog         => [ { name     => 'my_blog', } ],
-        entry        => [ { basename => "entry1", } ],
-        content_type => { ct => [ cf_title => 'single_line_text', ], },
-        content_data => {
-            cd => {
-                content_type => 'ct',
-                label        => 'cd1',
-                data         => {},
-            },
+my $objs = MT::Test::Fixture->prepare({
+    author => [{
+        name         => 'admin',
+        password     => 'pass',
+        is_superuser => 1,
+    }],
+    blog => [
+        { id => 1, name => 'my_blog1', },
+        { id => 2, name => 'my_blog2', },
+    ],
+    entry        => [{ blog_id => 2, basename => "entry1", }],
+    content_type => { ct => { blog_id => 2, fields => [cf_title => 'single_line_text'] } },
+    content_data => {
+        cd => {
+            blog_id      => 2,
+            content_type => 'ct',
+            label        => 'cd1',
+            data         => {},
         },
-        template => [
-            {   name => 'template1',
-                text => 'test',
-            },
-        ],
-    }
-);
+    },
+    template => [{
+            blog_id => 2,
+            name    => 'template1',
+            text    => 'test',
+        },
+    ],
+});
 
 my $ds_spec = {
     entry => {
@@ -61,11 +64,24 @@ my $ds_spec = {
     },
 };
 
-my $site = $objs->{blog}{my_blog};
+my $site1 = $objs->{blog}{my_blog1};
+my $site2 = $objs->{blog}{my_blog2};
+
+{
+    my ($stdin, $stdout, $stderr) = do_command(['--entry']);
+    my $oks = () = $stdout =~ /OK\./g;
+    is $oks, 2, 'right number of tests processed';
+}
+
+{
+    my ($stdin, $stdout, $stderr) = do_command(['--entry', '--blog_id=1']);
+    my $oks = () = $stdout =~ /OK\./g;
+    is $oks, 1, 'right number of tests processed';
+}
 
 for my $ds ( 'template', 'cd', 'entry' ) {
     my $col = 'max_revisions_' . $ds;
-    is $site->$col, undef, 'revision_max is undef for brandnew sites';
+    is $site2->$col, undef, 'revision_max is undef for brandnew sites';
 
     my $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
 
@@ -76,57 +92,57 @@ for my $ds ( 'template', 'cd', 'entry' ) {
     }
 
     {
-        my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
+        my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
         is $count, 21, 'excessive';
     }
 
     {
-        my ( $stdin, $stdout, $stderr ) = do_command();
-        my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
+        my ($stdin, $stdout, $stderr) = do_command(["--$ds"]);
+        my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
         is $count, 21, 'not deleted yet';
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 5, 'right number of tests processed';
+        is $oks, 1, 'right number of tests processed';
         is( ( $stdout =~ qr{Detected: (\d+)} )[0], 1, 'right amount detected' );
     }
 
     {
-        my ( $stdin, $stdout, $stderr ) = do_command(1);
-        my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
+        my ($stdin, $stdout, $stderr) = do_command(["--$ds", '--delete']);
+        my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
         is $count, 20, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 5, 'right number of tests processed';
+        is $oks, 1, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 1, 'right amount detected' );
     }
 
     {
-        my ( $stdin, $stdout, $stderr ) = do_command(1);
-        my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
+        my ($stdin, $stdout, $stderr) = do_command(["--$ds", '--delete']);
+        my $count = MT->model($ds . ':revision')->count({ $ds . '_id' => $obj->id });
         is $count, 20, 'no more deletion';
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 6, 'right number of tests processed';
+        is $oks, 2, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 0, 'right amount detected' );
     }
 
-    $site->$col(3);
-    $site->save();
+    $site2->$col(3);
+    $site2->save();
 
     {
-        my ( $stdin, $stdout, $stderr ) = do_command(1);
+        my ( $stdin, $stdout, $stderr ) = do_command(["--$ds", '--delete']);
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
         is $count, 3, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
-        is $oks, 5, 'right number of tests processed';
+        is $oks, 1, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 17, 'right amount detected' );
     }
 }
 
 sub do_command {
-    my $delete = shift;
-    my @cmd    = (
+    my ($cmd_options) = @_;
+    my @cmd = (
         $^X, '-I',
-        File::Spec->catdir( $ENV{MT_HOME}, 't/lib' ),
-        File::Spec->catfile( $ENV{MT_HOME}, 'tools/reduce-revisions' ),
-        $delete ? '--delete' : '',
+        File::Spec->catdir($ENV{MT_HOME}, 't/lib'),
+        File::Spec->catfile($ENV{MT_HOME}, 'tools/reduce-revisions'),
+        @$cmd_options,
     );
 
     run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
