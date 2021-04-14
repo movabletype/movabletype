@@ -36,16 +36,40 @@ while ( my $site = $site_iter->() ) {
 
         while ( my $obj = $obj_iter->() ) {
             my $count = $rev_class->count( { $ds . '_id' => $obj->id } );
-            if ( $count >= $max ) {
-                $delete_count += ( $count - $max + 1 );
+            if ( $count > $max ) {
+                $delete_count += ( $count - $max );
                 print sprintf( "Violation detected and deleting (%d/%d) for id=%d\n",
                     $count, $max, $obj->id );
-                $obj->handle_max_revisions($max) if $delete;
+                handle_max_revisions_bulk($obj, $max) if $delete;
                 $found = 1;
             }
         }
         print( !$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n" );
     }
+}
+
+sub handle_max_revisions_bulk {
+    my ( $obj, $max ) = @_;
+    $max ||= $MT::Revisable::MAX_REVISIONS;
+
+    my $datasource = $obj->datasource;
+    my $rev_class  = MT->model( $datasource . ':revision' );
+    my $terms      = { $datasource . '_id' => $obj->id };
+    my $count      = $rev_class->count($terms);
+    if ( $max < $count ) {
+        my $rev_iter = $rev_class->load_iter(
+            $terms,
+            {   sort      => 'created_on',
+                direction => 'ascend',
+                limit     => $count - $max
+            }
+        );
+        while ( my $rev = $rev_iter->() ) {
+            $rev->remove;
+        }
+        return $max;
+    }
+    return $count;
 }
 
 print "============================================================\n";

@@ -69,7 +69,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
 
     my $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
 
-    for ( 1 .. 20 ) {
+    for ( 1 .. 21 ) {
         my $rev_obj = $obj->clone();
         $rev_obj->{changed_revisioned_cols} = [ $ds_spec->{$ds}->{field} ];
         $rev_obj->save_revision('test');
@@ -77,13 +77,13 @@ for my $ds ( 'template', 'cd', 'entry' ) {
 
     {
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
-        is $count, 20, 'excessive';
+        is $count, 21, 'excessive';
     }
 
     {
         my ( $stdin, $stdout, $stderr ) = do_command();
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
-        is $count, 20, 'not deleted yet';
+        is $count, 21, 'not deleted yet';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 5, 'right number of tests processed';
         is( ( $stdout =~ qr{Detected: (\d+)} )[0], 1, 'right amount detected' );
@@ -92,7 +92,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
     {
         my ( $stdin, $stdout, $stderr ) = do_command(1);
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
-        is $count, 19, 'deleted';
+        is $count, 20, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 5, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 1, 'right amount detected' );
@@ -101,7 +101,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
     {
         my ( $stdin, $stdout, $stderr ) = do_command(1);
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
-        is $count, 19, 'no more deletion';
+        is $count, 20, 'no more deletion';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 6, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 0, 'right amount detected' );
@@ -113,7 +113,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
     {
         my ( $stdin, $stdout, $stderr ) = do_command(1);
         my $count = MT->model( $ds . ':revision' )->count( { $ds . '_id' => $obj->id } );
-        is $count, 2, 'deleted';
+        is $count, 3, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 5, 'right number of tests processed';
         is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 17, 'right amount detected' );
