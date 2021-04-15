@@ -70,7 +70,6 @@ use vars qw( @ISA %Lexicon );
 	'Monthly Archives Dropdown' => 'Uitklapmenu archieven per maand',
 	'Monthly Archives' => 'Archief per maand',
 	'Name' => 'Naam',
-	'Navigation' => 'Navigatie',
 	'New' => 'Nieuw',
 	'No Name' => 'Geen naam',
 	'Not Required' => 'Niet verplicht',
