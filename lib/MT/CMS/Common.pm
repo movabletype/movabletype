@@ -2201,6 +2201,7 @@ sub build_revision_table {
         }
     }
     my %users;
+    my $broken_rev = 0;
     my $hasher = sub {
         my ( $rev, $row ) = @_;
         if ( my $ts = $rev->created_on ) {
@@ -2225,8 +2226,9 @@ sub build_revision_table {
 
         my $revision = $obj->object_from_revision($rev);
 
-        if ( !$revision ) {
+        if (!$revision) {
             $row->{is_broken} = 1;
+            $broken_rev++;
             return;
         }
 
@@ -2244,7 +2246,7 @@ sub build_revision_table {
         $row->{rev_js}     = $js . '&amp;r=' . $row->{rev_number} . "'";
         $row->{is_current} = $param->{revision} == $row->{rev_number};
     };
-    return $app->listing(
+    my $ret = $app->listing(
         {   type   => "$type:revision",
             code   => $hasher,
             terms  => { $class->datasource . '_id' => $obj->id },
@@ -2253,6 +2255,21 @@ sub build_revision_table {
             %$param
         }
     );
+
+    if ($broken_rev > 0) {
+        MT->log({
+            message => MT->translate(
+                '[_1] Broken revisions of [_2](id:[_3]) are removed.',
+                $broken_rev, MT->translate($class->datasource), $obj->id
+            ),
+            blog_id   => $obj->id,
+            author_id => $app->user->id,
+            category  => 'edit',
+            level     => MT::Log::INFO(),
+        });
+    }
+
+    return $ret;
 }
 
 sub list_revision {

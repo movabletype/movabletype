@@ -141,21 +141,11 @@ sub object_from_revision {
     require MT::Serialize;
     my $packed_obj = MT::Serialize->unserialize($serialized_obj);
 
-    if ( ref $$packed_obj ne 'HASH' ) {
+    if (ref $$packed_obj ne 'HASH') {
         $rev->remove();
-        MT->log(
-            {   message => MT->translate(
-                    'Broken revision(id:[_1]) of [_2](id:[_3]) will be removed.', $rev->id,
-                    MT->translate($datasource),                                   $obj->id
-                ),
-                class    => $datasource,
-                category => 'edit',
-                level    => MT::Log::INFO(),
-            }
-        );
         return;
     }
-        
+
     $rev_obj->unpack_revision($$packed_obj);
 
     # Here we cheat since audit columns aren't revisioned

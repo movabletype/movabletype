@@ -2446,7 +2446,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{リビジョンドライバー([_1])の設定が正しくありません: [_2]},
-	'Broken revision(id:[_1]) of [_2](id:[_3]) will be removed.' => '[_2](id:[_3])の壊れたリビジョン(id:[_1])は削除されます。',
+	'[_1] Broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
+	'Deleted due to data breakage' => 'データの破損のため削除されました',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'サイトを管理できます',
