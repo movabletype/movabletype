@@ -1,4 +1,5 @@
 #!/usr/bin/perl -w
+package MT::Tool::ReduceRevisions;
 use strict;
 use warnings;
 use utf8;
@@ -8,18 +9,21 @@ use MT::Bootstrap;
 use MT;
 use MT::Revisable;
 
+our $BULK_DELETE = 100;
 my %target;
 
 GetOptions(
     'b|blog_id=i' => \my ($blog_id),
-    'd|delete'   => \my ($delete),
-    'e|entry'    => sub { $target{entry}    = 1 },
-    'c|cd'       => sub { $target{cd}       = 1 },
-    't|template' => sub { $target{template} = 1 },
-    "help|?"     => sub { usage(); exit },
+    'l|limit=i'   => \my ($delete_limit),
+    'd|delete'    => \my ($delete),
+    'e|entry'     => sub { $target{entry}    = 1 },
+    'c|cd'        => sub { $target{cd}       = 1 },
+    't|template'  => sub { $target{template} = 1 },
+    "help|?"      => sub { usage(); exit },
 );
 
 my $delete_count = 0;
+my $detect_count = 0;
 my $mt           = MT->new;
 
 my $site_iter = MT::Blog->load_iter($blog_id ? { id => $blog_id } : { class => '*' });
@@ -44,15 +48,19 @@ while ( my $site = $site_iter->() ) {
             my $terms = { $ds . '_id' => $obj->id };
             my $count = $rev_class->count($terms);
             if ($count > $max) {
-                $delete_count += ($count - $max);
+                $found = 1;
+                $detect_count += ($count - $max);
                 print sprintf(
                     "Violation detected and deleting (%d/%d) for id=%d\n",
                     $count, $max, $obj->id
                 );
                 if ($delete) {
                     my $plan = $count - $max;
+                    if ($delete_limit) {
+                        $plan = (($plan + $delete_count) <= $delete_limit) ? $plan : $delete_limit - $delete_count;
+                    }
                     while ($plan > 0) {
-                        my $limit = $plan > 100 ? 100 : $plan;
+                        my $limit = $plan > $BULK_DELETE ? $BULK_DELETE : $plan;
                         $plan -= $limit;
                         my @ids = map { $_->id } $rev_class->load(
                             $terms,
@@ -60,10 +68,9 @@ while ( my $site = $site_iter->() ) {
                                 fetchonly => { 'id' => 1 }, sort => 'created_on', direction => 'ascend',
                                 limit     => $limit
                             });
-                        my $res = $rev_class->remove({ id => \@ids }, { nofetch => 1 });
+                        $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
                     };
                 }
-                $found = 1;
             }
         }
         print( !$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n" );
@@ -72,7 +79,7 @@ while ( my $site = $site_iter->() ) {
 
 print "============================================================\n";
 print "Total Result\n";
-printf( "%s: %d\n", ( $delete ? 'Deleted' : 'Detected' ), $delete_count );
+printf($delete ? "Deleted: $delete_count" : "Detected: $detect_count");
 print "============================================================\n";
 
 sub usage {
@@ -82,6 +89,7 @@ usage: $0
 These options are available:
 
 -b, --blog_id           Blog ID.
+-l, --limit             Maximum number of deletion.
 -d, --delete            Delete on detecting revision amount excession.
 -e, --entry             process entries.
 -c, --cd                process content data.

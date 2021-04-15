@@ -136,6 +136,27 @@ for my $ds ( 'template', 'cd', 'entry' ) {
     }
 }
 
+{
+    $site2->max_revisions_entry(3);
+    $site2->save();
+    my $obj = $objs->{'entry'}{'entry1'};
+
+    for (1 .. 5) {
+        my $rev_obj = $obj->clone();
+        $rev_obj->{changed_revisioned_cols} = ['status'];
+        $rev_obj->save_revision('test');
+    }
+
+    {
+        my ($stdin, $stdout, $stderr) = do_command(["--entry", '--delete', '--limit=2']);
+        my $count = MT->model('entry:revision')->count({ 'entry_id' => $obj->id });
+        is $count, 6, 'deleted';
+        my $oks = () = $stdout =~ /OK\./g;
+        is $oks, 1, 'right number of tests processed';
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 2, 'right amount detected');
+    }
+}
+
 sub do_command {
     my ($cmd_options) = @_;
     my @cmd = (
