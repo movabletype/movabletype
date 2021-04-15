@@ -40,42 +40,34 @@ while ( my $site = $site_iter->() ) {
         my $rev_class = MT->model( $ds . ':revision' );
         my $found     = 0;
 
-        while ( my $obj = $obj_iter->() ) {
-            my $count = $rev_class->count( { $ds . '_id' => $obj->id } );
-            if ( $count > $max ) {
-                $delete_count += ( $count - $max );
-                print sprintf( "Violation detected and deleting (%d/%d) for id=%d\n",
-                    $count, $max, $obj->id );
-                handle_max_revisions_bulk($obj, $max) if $delete;
+        while (my $obj = $obj_iter->()) {
+            my $terms = { $ds . '_id' => $obj->id };
+            my $count = $rev_class->count($terms);
+            if ($count > $max) {
+                $delete_count += ($count - $max);
+                print sprintf(
+                    "Violation detected and deleting (%d/%d) for id=%d\n",
+                    $count, $max, $obj->id
+                );
+                if ($delete) {
+                    my $plan = $count - $max;
+                    while ($plan > 0) {
+                        my $limit = $plan > 100 ? 100 : $plan;
+                        $plan -= $limit;
+                        my @ids = map { $_->id } $rev_class->load(
+                            $terms,
+                            {
+                                fetchonly => { 'id' => 1 }, sort => 'created_on', direction => 'ascend',
+                                limit     => $limit
+                            });
+                        my $res = $rev_class->remove({ id => \@ids }, { nofetch => 1 });
+                    };
+                }
                 $found = 1;
             }
         }
         print( !$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n" );
     }
-}
-
-sub handle_max_revisions_bulk {
-    my ( $obj, $max ) = @_;
-    $max ||= $MT::Revisable::MAX_REVISIONS;
-
-    my $datasource = $obj->datasource;
-    my $rev_class  = MT->model( $datasource . ':revision' );
-    my $terms      = { $datasource . '_id' => $obj->id };
-    my $count      = $rev_class->count($terms);
-    if ( $max < $count ) {
-        my $rev_iter = $rev_class->load_iter(
-            $terms,
-            {   sort      => 'created_on',
-                direction => 'ascend',
-                limit     => $count - $max
-            }
-        );
-        while ( my $rev = $rev_iter->() ) {
-            $rev->remove;
-        }
-        return $max;
-    }
-    return $count;
 }
 
 print "============================================================\n";
