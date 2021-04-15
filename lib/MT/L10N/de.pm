@@ -71,7 +71,6 @@ use vars qw( @ISA %Lexicon );
 	'Monthly Archives Dropdown' => 'Monatsarchiv (Dropdown)',
 	'Monthly Archives' => 'Monatsarchiv',
 	'Name' => 'Name',
-	'Navigation' => 'Navigation',
 	'New' => 'Neu',
 	'No Name' => 'Kein Name',
 	'Not Required' => 'Nicht erforderlich',

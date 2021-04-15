@@ -67,7 +67,6 @@ use vars qw( @ISA %Lexicon );
 	'Monthly Archives Dropdown' => 'Liste déroulante des archives mensuelles',
 	'Monthly Archives' => 'Archives mensuelles',
 	'Name' => 'Nom',
-	'Navigation' => 'Navigation',
 	'New' => 'Créer',
 	'No Name' => 'Pas de nom',
 	'Not Required' => 'Non requis',
