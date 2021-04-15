@@ -36,7 +36,7 @@ while ( my $site = $site_iter->() ) {
         printf( "Checking %s of site(id:%s) for max=%d\n", $ds, $site->id, $max );
         print "============================================================\n";
 
-        my $obj_iter  = $model->load_iter( { blog_id => $site->id } );
+        my $obj_iter  = $model->load_iter( { blog_id => $site->id }, { fetchonly => ['id'] } );
         my $rev_class = MT->model( $ds . ':revision' );
         my $found     = 0;
 
