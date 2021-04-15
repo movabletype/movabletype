@@ -28,20 +28,20 @@ my $mt           = MT->new;
 
 my $site_iter = MT::Blog->load_iter($blog_id ? { id => $blog_id } : { class => '*' });
 
-while ( my $site = $site_iter->() ) {
+while (my $site = $site_iter->()) {
 
-    for my $ds ( keys %target ) {
+    for my $ds (keys %target) {
 
         my $model = MT->model($ds);
         my $col   = 'max_revisions_' . $ds;
         my $max   = $site->$col || $MT::Revisable::MAX_REVISIONS;
 
         print "============================================================\n";
-        printf( "Checking %s of site(id:%s) for max=%d\n", $ds, $site->id, $max );
+        printf("Checking %s of site(id:%s) for max=%d\n", $ds, $site->id, $max);
         print "============================================================\n";
 
-        my $obj_iter  = $model->load_iter( { blog_id => $site->id }, { fetchonly => ['id'] } );
-        my $rev_class = MT->model( $ds . ':revision' );
+        my $obj_iter  = $model->load_iter({ blog_id => $site->id }, { fetchonly => ['id'] });
+        my $rev_class = MT->model($ds . ':revision');
         my $found     = 0;
 
         while (my $obj = $obj_iter->()) {
@@ -69,11 +69,11 @@ while ( my $site = $site_iter->() ) {
                                 limit     => $limit
                             });
                         $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
-                    };
+                    }
                 }
             }
         }
-        print( !$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n" );
+        print(!$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n");
     }
 }
 
