@@ -2202,7 +2202,7 @@ use vars qw( @ISA %Lexicon );
 	'JavaScript' => 'JavaScript',
 	'Monthly Archives Dropdown' => '月別アーカイブ(ドロップダウン)',
 	'Monthly Entry Listing' => '月別記事リスト',
-	'Navigation' => 'ナビゲーション',
+	'Navigation' => 'Navigation',
 	'OpenID Accepted' => 'OpenID対応',
 	'Page Listing' => 'ページ一覧',
 	'Popup Image' => 'ポップアップ画像',
