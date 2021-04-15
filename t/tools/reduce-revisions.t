@@ -111,7 +111,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
         is $count, 20, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 1, 'right number of tests processed';
-        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 1, 'right amount detected' );
+        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 1, 'right amount deleted' );
     }
 
     {
@@ -120,7 +120,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
         is $count, 20, 'no more deletion';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 2, 'right number of tests processed';
-        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 0, 'right amount detected' );
+        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 0, 'right amount deleted' );
     }
 
     $site2->$col(3);
@@ -132,7 +132,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
         is $count, 3, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 1, 'right number of tests processed';
-        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 17, 'right amount detected' );
+        is( ( $stdout =~ qr{Deleted: (\d+)} )[0], 17, 'right amount deleted' );
     }
 }
 
@@ -153,7 +153,7 @@ for my $ds ( 'template', 'cd', 'entry' ) {
         is $count, 6, 'deleted';
         my $oks = () = $stdout =~ /OK\./g;
         is $oks, 1, 'right number of tests processed';
-        is(($stdout =~ qr{Deleted: (\d+)})[0], 2, 'right amount detected');
+        is(($stdout =~ qr{Deleted: (\d+)})[0], 2, 'right amount deleted');
     }
 }
 
