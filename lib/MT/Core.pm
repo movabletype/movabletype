@@ -2048,6 +2048,7 @@ BEGIN {
                 { default => '<$MTBlogHost exclude_port="1"$>' },
             'UserSessionCookiePath' => { default => \&UserSessionCookiePath },
             'UserSessionCookieTimeout' => { default => 60 * 60 * 4, },
+            'MaxSession'               => { default => undef },
             'LaunchBackgroundTasks'    => { default => 0 },
             'TransparentProxyIPs'      => { default => 0, },
             'DebugMode'                => { default => 0, },

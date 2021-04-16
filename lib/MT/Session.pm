@@ -131,7 +131,19 @@ sub purge {
 
     $class->remove( $terms, $args )
         or return $class->error( $class->errstr );
+
+    $class->purge_excession();
+
     1;
+}
+
+sub purge_excession {
+    my $class = shift;
+    my $max       = MT->config('MaxSession') || return;
+    my $start_obj = $class->load(
+        {},
+        { sort => 'start', direction => 'descend', limit => 1, offset => $max - 1 }) || return;
+    $class->remove({ start => [undef, $start_obj->start] }, { range => { start => 1 } });
 }
 
 1;
@@ -215,7 +227,7 @@ Cache of the template module is the default use of the kind.
 
 =item BU
 
-BU indicates the backup session whose files should be downloaded 
+BU indicates the backup session whose files should be downloaded
 only within the particular period of time.  Backup data can't be
 downloaded using the link provided by MT after the period is expired.
 
@@ -248,6 +260,10 @@ Disk Usage is the cache for notify free disk space alert. Cloud.pack only.
 =item DW
 
 Cache for the dashboard widget content. Each widget should be separated by its ID.
+
+=item DS
+
+DataAPI Session.
 
 =back
 
