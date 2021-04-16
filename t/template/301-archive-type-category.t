@@ -124,6 +124,7 @@ for my $at (
             TemplateMap => $map,
             Force       => 1,
         );
+        $publisher->remove_marked_files($blog);
         is( -e $file ? 1 : 0,
             $d->{published}, 'Rebuild: When a target file already exists' );
     }

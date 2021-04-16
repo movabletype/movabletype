@@ -7,8 +7,14 @@ use base 'MT::Test::Fixture::ArchiveType';
 my $invalid_id = 1000;
 our %FixtureSpec = (
     author => [qw/author/],
-    blog   => [ { name => 'My Site', server_offset => 0 } ],
-    image  => {
+    blog   => [
+        {   name          => 'My Site',
+            server_offset => 0,
+            site_path     => 'TEST_ROOT/site',
+            archive_path  => 'TEST_ROOT/site/archive',
+        }
+    ],
+    image => {
         'test.jpg' => {
             label       => 'Sample Image 1',
             description => 'Sample photo',

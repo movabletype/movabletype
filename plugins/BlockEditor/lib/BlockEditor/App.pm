@@ -217,7 +217,7 @@ sub search_handler {
         ? MT::Serialize->unserialize( $content_data->convert_breaks )
         : undef;
 
-    if ( $$convert_breaks->{ $field_data->{id} } ne 'blockeditor' ) {
+    if ( ( $$convert_breaks->{ $field_data->{id} } || '' ) ne 'blockeditor' ) {
         return $search_regex ne '' ? $values =~ m!$search_regex! : 1;
     }
 

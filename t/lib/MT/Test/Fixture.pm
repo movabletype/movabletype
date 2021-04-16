@@ -5,11 +5,21 @@ use warnings;
 use Carp;
 use MT::Test::Permission;
 use MT::Serialize;
+use Data::Visitor::Tiny;
 
 sub prepare {
     my ( $class, $spec ) = @_;
 
     local $ENV{MT_TEST_ROOT} = $ENV{MT_TEST_ROOT} || "$ENV{MT_HOME}/t";
+
+    visit(
+        $spec,
+        sub {
+            my ( $key, $valueref ) = @_;
+            $$valueref =~ s/TEST_ROOT/$ENV{MT_TEST_ROOT}/g;
+            $$valueref =~ s/MT_HOME/$ENV{MT_HOME}/g;
+        }
+    );
 
     my %objs;
     $class->prepare_author( $spec, \%objs );
@@ -500,6 +510,7 @@ sub prepare_content_type {
                     next unless defined $cf_arg{$key};
                     $options{$key} = delete $cf_arg{$key};
                 }
+                $options{display} ||= 'default' if $known_options{display};
                 for my $key ( sort keys %options ) {
                     croak "unknown option: $key for $cf_name" unless $known_options{$key};
                 }
@@ -556,7 +567,7 @@ sub prepare_content_data {
                 $arg{author_id} ||= $objs->{author_id};
                 $arg{blog_id}   ||= $objs->{blog_id}
                     or croak "blog_id is required: content_data: $name";
-                $arg{label} = $name;
+                $arg{label} = $name unless defined $arg{label};
 
                 my %data;
                 for my $cf_name ( keys %{ $arg{data} } ) {

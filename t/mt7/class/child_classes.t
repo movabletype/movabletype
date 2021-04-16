@@ -12,10 +12,12 @@ BEGIN {
 }
 
 use Class::Unload;
+no Carp::Always;
 
 subtest 'Load ContentType after Website' => sub {
     ## Clean up
     Class::Unload->unload($_) for qw/MT::ContentType MT::Website/;
+    $test_env->reset_cluck_errors;
 
     ## Initialize some
     $MT::plugins_installed = 0;
@@ -62,6 +64,7 @@ subtest 'Load ContentType after Website' => sub {
 subtest 'Load ContentType before Website: MTC-27225' => sub {
     ## Clean up
     Class::Unload->unload($_) for qw/MT::ContentType MT::Website/;
+    $test_env->reset_cluck_errors;
 
     ## Initialize some
     $MT::plugins_installed = 0;
@@ -106,6 +109,10 @@ subtest 'Load ContentType before Website: MTC-27225' => sub {
 };
 
 subtest 'ContentData removal: MTC-27225' => sub {
+    ## Clean up
+    Class::Unload->unload($_) for qw/MT::ContentType MT::Website/;
+    $test_env->reset_cluck_errors;
+
     $MT::plugins_installed = 0;
     my $mt = bless {}, 'MT';
     $mt->bootstrap unless $MT::MT_DIR;

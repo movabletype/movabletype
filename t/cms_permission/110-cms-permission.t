@@ -922,6 +922,7 @@ $app = _run_app(
         __request_method => 'POST',
         __mode           => 'delete',
         _type            => 'tag',
+        blog_id          => 1,
         id               => 1,
     }
 );
