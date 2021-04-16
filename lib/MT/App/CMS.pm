@@ -2985,7 +2985,7 @@ sub build_blog_selector {
         $terms{class} = 'website';
         my $not_ids;
         push @$not_ids, @fav_websites;
-        push @$not_ids, $blog->parent_id if $blog && $blog->is_blog;
+        push @$not_ids, $blog->parent_id if $blog && $blog->is_blog && $blog->parent_id;
         $terms{id} = { not => $not_ids } if scalar @$not_ids;
         $args{limit} = $max_load
             - ( scalar @fav_websites );    # Don't load over 3 ~ 4 websites.
