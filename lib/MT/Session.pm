@@ -132,18 +132,19 @@ sub purge {
     $class->remove( $terms, $args )
         or return $class->error( $class->errstr );
 
-    $class->purge_excession();
+    $class->purge_user_session_excession();
 
     1;
 }
 
-sub purge_excession {
-    my $class = shift;
-    my $max       = MT->config('MaxSession') || return;
-    my $start_obj = $class->load(
-        {},
+sub purge_user_session_excession {
+    my $class       = shift;
+    my $max         = MT->config('MaxUserSession') || return;
+    my $target_kind = ['US', 'DS'];
+    my $start_obj   = $class->load(
+        { kind => $target_kind },
         { sort => 'start', direction => 'descend', limit => 1, offset => $max - 1 }) || return;
-    $class->remove({ start => [undef, $start_obj->start] }, { range => { start => 1 } });
+    $class->remove({ kind => $target_kind, start => [undef, $start_obj->start] }, { range => { start => 1 } });
 }
 
 1;

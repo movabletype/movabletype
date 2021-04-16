@@ -79,17 +79,20 @@ ok( $session_class->load( $remembered->id ),
 $session_class->remove_all;
 
 {
-    MT->config('MaxSession', 2);
+    MT->config('MaxUserSession', 2);
 
-    my @sess;
+    my @target;
     for (1 .. 4) {
-        push @sess, make_session({ id => $_, kind => 'US', start => time - $_ }, { remember => 1 });
+        push @target, make_session({ id => $_, kind => 'US', start => time - $_ }, { remember => 1 });
     }
-    is(MT::Session->count, 4, 'right number');
+    my $not_target = make_session({ id => 5, kind => 'SI', start => time - 5 });
+
+    is(MT::Session->count, 5, 'right number');
     MT::Core::purge_session_records();
-    is(MT::Session->count(), 2, 'right number');
-    ok(MT::Session->load($sess[0]->id), 'session remains');
-    ok(MT::Session->load($sess[1]->id), 'session remains');
+    is(MT::Session->count(), 3, 'right number');
+    ok(MT::Session->load($target[0]->id),  'session remains');
+    ok(MT::Session->load($target[1]->id),  'session remains');
+    ok(MT::Session->load($not_target->id), 'session remains');
 }
 
 done_testing();
