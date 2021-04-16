@@ -201,22 +201,24 @@ function init() {
             }
         }
     };
-    panel.selectionList.remove = function(name) {
-        var self = this;
-        if(jQuery('#'+name).hasClass('has_child')){
-            jQuery('#'+name).find('.list-unstyled li').each(function(){
-              self.remove.call(self, this.id);
-            });
-        }
-        if (name in this.itemHash) {
-            var pos;
-            for (pos = 0; pos < this.itemList.length; pos++) {
-                if (this.itemList[pos] == name) {
-                    this.itemList.splice(pos, 1);
-                    this.changed(false, name, this.itemHash[name]);
-                    delete this.itemHash[name];
-                    this.render();
-                    return;
+    if (panel.selectionList) {
+        panel.selectionList.remove = function(name) {
+            var self = this;
+            if(jQuery('#'+name).hasClass('has_child')){
+                jQuery('#'+name).find('.list-unstyled li').each(function(){
+                  self.remove.call(self, this.id);
+                });
+            }
+            if (name in this.itemHash) {
+                var pos;
+                for (pos = 0; pos < this.itemList.length; pos++) {
+                    if (this.itemList[pos] == name) {
+                        this.itemList.splice(pos, 1);
+                        this.changed(false, name, this.itemHash[name]);
+                        delete this.itemHash[name];
+                        this.render();
+                        return;
+                    }
                 }
             }
         }
