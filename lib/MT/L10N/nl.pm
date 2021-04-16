@@ -3703,6 +3703,7 @@ use vars qw( @ISA %Lexicon );
 	'Your reply:' => 'Uw antwoord:',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No websites exist in this installation. [_1]Create a website</a>' => 'Er bestaan geen websites in deze installatie.[_1]Maak een website aan</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'Er bestaan geen groepen in deze installatie.[_1]Maak een groep aan</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Er bestaan geen rollen in deze installatie.[_1]Maak een rol aan</a>',
