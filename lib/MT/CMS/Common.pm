@@ -2259,10 +2259,10 @@ sub build_revision_table {
     if ($broken_rev > 0) {
         MT->log({
             message => MT->translate(
-                '[_1] Broken revisions of [_2](id:[_3]) are removed.',
+                '[_1] broken revisions of [_2](id:[_3]) are removed.',
                 $broken_rev, MT->translate($class->datasource), $obj->id
             ),
-            blog_id   => $obj->id,
+            blog_id   => $blog->id,
             author_id => $app->user->id,
             category  => 'edit',
             level     => MT::Log::INFO(),

@@ -30,13 +30,16 @@
         <mt:if name="is_broken" ne="1">
           <a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a>
         <mt:else>
-          <span title="<__trans phrase="Deleted due to data breakage">">
-            <mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S">
-            <mtapp:svgicon id="ic_stop" title="broken" size="sm">
-          </span>
+          <mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S">
         </mt:if>
       </span></td>
-      <td class="note"><span class="revision-note"><mt:var name="description" escape="html"></span></td>
+      <td class="note">
+        <mt:if name="is_broken" ne="1">
+          <span class="revision-note"><mt:var name="description" escape="html"></span>
+        <mt:else>
+          <span class="revision-note"><__trans phrase="*Deleted due to data breakage*"></span>
+        </mt:if>
+      </td>
     <mt:if name="object_type" like="(entry|page|content_data)">
       <td class="status">
       <mt:if name="rev_status" eq="1">
