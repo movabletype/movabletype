@@ -79,7 +79,7 @@ while (my $site = $site_iter->()) {
 
 print "============================================================\n";
 print "Total Result\n";
-printf($delete ? "Deleted: $delete_count" : "Detected: $detect_count");
+printf(($delete ? "Deleted: $delete_count" : "Detected: $detect_count") . "\n");
 print "============================================================\n";
 
 sub usage {
