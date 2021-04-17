@@ -22,6 +22,8 @@ GetOptions(
     "help|?"      => sub { usage(); exit },
 );
 
+map { $target{$_} = 1 } ('entry', 'cd', 'template') unless keys(%target);
+
 my $delete_count = 0;
 my $detect_count = 0;
 my $mt           = MT->new;
