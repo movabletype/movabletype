@@ -4692,7 +4692,7 @@ B<Example:> Passing Parameters to a Template Module
 
             my $local_blog
                 = MT->model('blog')->load( $ctx->stash('local_blog_id') );
-            $blog_id = ($local_blog->parent_id || $local_blog->id);
+            $blog_id = ($local_blog->parent_id || ($local_blog->is_blog ? $local_blog->id : return));
         }
 
         ## Don't know why but hash key has to be encoded
