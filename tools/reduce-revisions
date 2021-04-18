@@ -34,48 +34,45 @@ while (my $site = $site_iter->()) {
 
     for my $ds (keys %target) {
 
-        my $model = MT->model($ds);
-        my $col   = 'max_revisions_' . $ds;
-        my $max   = $site->$col || $MT::Revisable::MAX_REVISIONS;
+        my $model     = MT->model($ds);
+        my $col       = 'max_revisions_' . $ds;
+        my $max       = $site->$col || $MT::Revisable::MAX_REVISIONS;
+        my $rev_class = MT->model($ds . ':revision');
+        my $found     = 0;
 
         print "============================================================\n";
         printf("Checking %s of site(id:%s) for max=%d\n", $ds, $site->id, $max);
         print "============================================================\n";
 
-        my $obj_iter  = $model->load_iter({ blog_id => $site->id }, { fetchonly => ['id'] });
-        my $rev_class = MT->model($ds . ':revision');
-        my $found     = 0;
+        my $count_iter = $rev_class->count_group_by(undef, {
+            join   => $model->join_on(undef, { id => \"= ${ds}_rev_${ds}_id", blog_id => $site->id }),
+            group  => ["${ds}_id"],
+            having => { "count(${ds}_rev_${ds}_id)" => \"> $max" },
+        });
 
-        while (my $obj = $obj_iter->()) {
-            my $terms = { $ds . '_id' => $obj->id };
-            my $count = $rev_class->count($terms);
-            if ($count > $max) {
-                $found = 1;
-                $detect_count += ($count - $max);
-                print sprintf(
-                    "Violation detected(%d/%d) for id=%d",
-                    $count, $max, $obj->id
-                );
-                if ($delete) {
-                    print " and deleting",
-                    my $plan = $count - $max;
-                    if ($delete_limit) {
-                        $plan = (($plan + $delete_count) <= $delete_limit) ? $plan : $delete_limit - $delete_count;
-                    }
-                    while ($plan > 0) {
-                        my $limit = $plan > $BULK_DELETE ? $BULK_DELETE : $plan;
-                        $plan -= $limit;
-                        my @ids = map { $_->id } $rev_class->load(
-                            $terms,
-                            {
-                                fetchonly => { 'id' => 1 }, sort => 'created_on', direction => 'ascend',
-                                limit     => $limit
-                            });
-                        $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
-                    }
+        while (my ($count, $id) = $count_iter->()) {
+            $found = 1;
+            $detect_count += ($count - $max);
+            print sprintf("Violation detected(%d/%d) for id=%d", $count, $max, $id);
+            if ($delete) {
+                print " and deleting";
+                my $plan = $count - $max;
+                if ($delete_limit) {
+                    $plan = (($plan + $delete_count) <= $delete_limit) ? $plan : $delete_limit - $delete_count;
                 }
-                print "\n",
+                while ($plan > 0) {
+                    my $limit = $plan > $BULK_DELETE ? $BULK_DELETE : $plan;
+                    $plan -= $limit;
+                    my @ids = map { $_->id } $rev_class->load(
+                        { $ds . '_id' => $id },
+                        {
+                            fetchonly => { 'id' => 1 }, sort => 'created_on', direction => 'ascend',
+                            limit     => $limit
+                        });
+                    $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
+                }
             }
+            print "\n",;
         }
         print(!$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n");
     }
