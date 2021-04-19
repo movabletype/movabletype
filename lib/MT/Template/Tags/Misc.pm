@@ -151,7 +151,10 @@ sub _hdlr_widget_manager {
     my $blog_id = $args->{blog_id} || $ctx->{__stash}{blog_id} || 0;
     if ( exists $args->{parent} && $args->{parent} ) {
         if ( my $_stash_blog = $ctx->stash('blog') ) {
-            $blog_id = ($_stash_blog->parent_id || ($_stash_blog->is_blog ? $_stash_blog->id : return ''));
+            if ($_stash_blog->is_blog) {
+                $blog_id = $_stash_blog->parent_id or return '';
+            }
+            $blog_id = $_stash_blog->id;
         }
     }
     my $tmpl = MT->model('template')->load(

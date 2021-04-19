@@ -223,15 +223,24 @@ sub edit {
                             = $app->translate('Unknown blog');
                     }
                     else {
-                        my $inc_blog_id
-                            = $tag->[1]->{global}
-                            ? 0
-                            : $tag->[1]->{blog_id}
-                            ? [ $tag->[1]->{blog_id}, 0 ]
-                            : $tag->[1]->{parent} ? $obj->blog
-                                ? ($obj->blog->parent_id || ($obj->blog->is_blog ? $obj->blog_id : next))
-                                : 0
-                            : [ $obj->blog_id, 0 ];
+                        my $inc_blog_id;
+                        if ($tag->[1]->{global}) {
+                            $inc_blog_id = 0;
+                        } elsif ($tag->[1]->{blog_id}) {
+                            $inc_blog_id = [ $tag->[1]->{blog_id}, 0 ];
+                        } elsif ($tag->[1]->{parent}) {
+                            if ($obj->blog) {
+                                if ($obj->blog->is_blog) {
+                                    $inc_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                                } else {
+                                    $inc_blog_id = $obj->blog_id;
+                                }
+                            } else {
+                                $inc_blog_id = 0;
+                            }
+                        } else {
+                            $inc_blog_id = [$obj->blog_id, 0];
+                        }
 
                         my $mod_id
                             = $mod . "::"
@@ -410,13 +419,13 @@ sub edit {
                         = $app->translate('Unknown blog');
                 }
                 else {
-                    my $set_blog_id
-                        = $set->attributes->{blog_id}
-                        ? $set->attributes->{blog_id}
-                        : $set->attributes->{parent} ? $obj->blog
-                            ? ($obj->blog->parent_id || ($obj->blog->is_blog ? $obj->blog_id : next))
-                            : $obj->blog_id
-                        : $obj->blog_id;
+                    my $set_blog_id = $set->attributes->{blog_id};
+                    if (!$set_blog_id) {
+                        if ($set->attributes->{parent} && $obj->blog && $obj->blog->is_blog) {
+                            $set_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                        }
+                        $set_blog_id ||= $obj->blog_id;
+                    }
                     my $wset = MT::Template->load(
                         {   blog_id => [ $set_blog_id, 0 ],
                             name    => $name,
