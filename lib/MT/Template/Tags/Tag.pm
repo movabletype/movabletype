@@ -882,14 +882,6 @@ sub _hdlr_tag_search_link {
         return $ctx->error(
             MT->translate( 'Invalid [_1] parameter.', 'tmpl_blog_id' ) )
             if ( $template_blog_id !~ m/^\d+$/ ) || !$template_blog_id;
-
-        if ( 'parent' eq lc $template_blog_id ) {
-            my $blog = $ctx->stash('blog');
-            $template_blog_id
-                = $blog->is_blog
-                ? ($blog->parent_id || ($blog->is_blog ? $blog->id : return ''))
-                : $blog->id;
-        }
     }
     else {
         if ( my $blog = $ctx->stash('blog') ) {
