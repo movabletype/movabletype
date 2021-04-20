@@ -33,13 +33,13 @@
           <a class="revision-number" href="javascript:void(0);" onclick="javascript:<$mt:var name="rev_js"$>;"><mt:date ts="$created_on" format="%Y-%m-%d %H:%M:%S"></a>
         </mt:if>
       </span></td>
-      <td class="note">
+      <td class="note"><span class="revision-note">
         <mt:if name="is_broken">
-        <span class="revision-note"><__trans phrase="*Deleted due to data breakage*"></span>
+        <__trans phrase="*Deleted due to data breakage*">
         <mt:else>
-          <span class="revision-note"><mt:var name="description" escape="html"></span>
+          <mt:var name="description" escape="html">
         </mt:if>
-      </td>
+      </span></td>
     <mt:if name="object_type" like="(entry|page|content_data)">
       <td class="status">
       <mt:if name="rev_status" eq="1">
