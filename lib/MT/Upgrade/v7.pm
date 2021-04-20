@@ -839,8 +839,11 @@ sub v7_migrate_rebuild_trigger {
         $self->translate_escape('Migrating MultiBlog settings...') );
 
     require MT::PluginData;
-    my @config = MT::PluginData->load( { plugin => 'MultiBlog' } );
+    my @config = MT::PluginData->load( { plugin => 'MultiBlog' },
+        { sort => 'id', direction => 'descend', limit => 1 } );
+
     foreach my $cfg (@config) {
+        next if (ref $cfg->data ne 'HASH');
         if ( $cfg->key =~ m/^configuration$/ ) {
 
             # Config
@@ -906,6 +909,8 @@ sub v7_migrate_rebuild_trigger {
             }
         }
     }
+
+    MT::PluginData->remove( { plugin => 'MultiBlog' } );
 }
 
 sub _v7_migrate_content_type_fields_column {
