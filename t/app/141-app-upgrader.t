@@ -309,6 +309,7 @@ subtest 'MultiBlogMigration' => sub {
     my $parent2 = MT::Test::Permission->make_blog(parent_id => 0);
     my $child1  = MT::Test::Permission->make_blog(parent_id => $parent1->id);
     my $child2  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
+    my $child3  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
 
     my $pd0 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration');
     $pd0->data({ default_access_allowed => 0 });
@@ -326,10 +327,17 @@ subtest 'MultiBlogMigration' => sub {
     });
     $pd2->save;
 
+    my $pd3 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child3->id);
+    $pd3->data(\'1');    # broken data emulation
+    $pd3->save;
+
     is(MT->config('DefaultAccessAllowed'), 1);
     is(MT::RebuildTrigger->count,          0);
 
     MT::Test::Upgrade->upgrade(from => 6.0010);
+
+    my $last_log = MT::Log->load({}, { sort => 'id', direction => 'descend', limit => 1 });
+    like($last_log->message, qr/MultiBlog/);
 
     is(MT->config('DefaultAccessAllowed'),                    0);
     is(MT::Blog->load($parent1->id)->default_mt_sites_sites,  undef);
@@ -344,6 +352,9 @@ subtest 'MultiBlogMigration' => sub {
     is(MT::Blog->load($child2->id)->default_mt_sites_sites,   1);
     is(MT::Blog->load($child2->id)->default_mt_sites_action,  2);
     is(MT::Blog->load($child2->id)->blog_content_accessible,  3);
+    is(MT::Blog->load($child3->id)->default_mt_sites_sites,   undef);
+    is(MT::Blog->load($child3->id)->default_mt_sites_action,  undef);
+    is(MT::Blog->load($child3->id)->blog_content_accessible,  undef);
     is(MT::RebuildTrigger->count,                             3);
 
     my @triggers = MT::RebuildTrigger->load();
