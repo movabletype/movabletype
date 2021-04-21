@@ -153,8 +153,9 @@ sub _hdlr_widget_manager {
         if ( my $_stash_blog = $ctx->stash('blog') ) {
             if ($_stash_blog->is_blog) {
                 $blog_id = $_stash_blog->parent_id or return '';
+            } else {
+                $blog_id = $_stash_blog->id;
             }
-            $blog_id = $_stash_blog->id;
         }
     }
     my $tmpl = MT->model('template')->load(
