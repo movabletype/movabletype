@@ -236,7 +236,7 @@ sub edit {
                                     $inc_blog_id = $obj->blog_id;
                                 }
                             } else {
-                                $inc_blog_id = 0;
+                                $inc_blog_id = 0; # TODO Adding 0 is wrong when parent is given according to manual
                             }
                         } else {
                             $inc_blog_id = [$obj->blog_id, 0];
@@ -427,7 +427,7 @@ sub edit {
                         $set_blog_id ||= $obj->blog_id;
                     }
                     my $wset = MT::Template->load(
-                        {   blog_id => [ $set_blog_id, 0 ],
+                        {   blog_id => [ $set_blog_id, 0 ], # TODO Adding 0 is wrong when parent is given according to manual
                             name    => $name,
                             type    => 'widgetset',
                         },
