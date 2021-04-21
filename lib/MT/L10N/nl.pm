@@ -2320,7 +2320,6 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'Dit zijn verschillende objecttypes, er worden twee [_1] verwacht',
 	'Unknown method [_1]' => 'Onbekende methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Foute RevisioningDriver configuratie '[_1]': [_2]},
-	'Revision Number' => 'Revisienummer',
 	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschadigde revisies van [_2] (id: [_3]) zijn verwijderd.',
 	'*Deleted due to data breakage*' => '*Verwijderd wegens gegevensbreuk*',
 
