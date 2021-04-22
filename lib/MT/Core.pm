@@ -1936,8 +1936,7 @@ BEGIN {
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
             'NewsboxURL' => {
-                default =>
-                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
+                default => 'http://movabletype.org/app/widget.html',
             },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
