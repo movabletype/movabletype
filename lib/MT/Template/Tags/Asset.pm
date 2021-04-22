@@ -1279,7 +1279,6 @@ sub _hdlr_asset_thumbnail_link {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    my $class = ref($a);
     return '' unless UNIVERSAL::isa( $a, 'MT::Asset::Image' );
 
     # # Load MT::Image
