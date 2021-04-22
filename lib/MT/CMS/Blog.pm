@@ -3048,10 +3048,10 @@ sub clone {
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
-        unless $blog->is_blog;
+        unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3431,7 +3431,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => $app->blog ? 'blog' : 'website',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? $new_blog->parent_id : 0 )
             }
             );
         my $setting_url = $app->uri(
