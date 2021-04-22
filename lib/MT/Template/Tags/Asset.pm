@@ -1170,7 +1170,7 @@ sub _hdlr_asset_thumbnail_url {
     my ( $ctx, $args ) = @_;
     my $a = $ctx->stash('asset')
         or return $ctx->_no_asset_error();
-    return '' unless $a->has_thumbnail;
+    return '' unless UNIVERSAL::isa( $a, 'MT::Asset::Image' );
 
     my %arg;
     foreach ( keys %$args ) {
