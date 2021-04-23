@@ -250,11 +250,13 @@ sub export {
     my $hdlrs          = MT->registry('theme_element_handlers');
     my $exporters      = [];
     my $saved_settings = $blog->theme_export_settings;
-    my $has_saved      = $saved_settings;
-    my $last_includes  = $saved_settings->{core}{include};
-    $last_includes = { map { $_ => 1 } @$last_includes };
+    my %last_includes;
+    if ( exists $saved_settings->{core} && exists $saved_settings->{core}{include} ) {
+        %last_includes = map { $_ => 1 } @{ $saved_settings->{core}{include} };
+    }
 
-    for my $hdlr ( keys %$hdlrs ) {
+
+    for my $hdlr ( sort keys %$hdlrs ) {
         my $exporter
             = MT->registry( theme_element_handlers => $hdlr => 'exporter' );
         next unless $exporter;
@@ -268,7 +270,7 @@ sub export {
         push @$exporters,
             {
             id       => $hdlr,
-            included => $has_saved ? $last_includes->{$hdlr} : 1,
+            included => %last_includes ? $last_includes{$hdlr} : 1,
             label =>
                 MT->registry( theme_element_handlers => $hdlr => 'label' ),
             template => $tmpl,
