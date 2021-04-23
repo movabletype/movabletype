@@ -3,7 +3,7 @@ package MT::Tool::ReduceRevisions;
 use strict;
 use warnings;
 use utf8;
-use lib "lib", "extlib";
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use Getopt::Long;
 use MT::Bootstrap;
 use MT;
