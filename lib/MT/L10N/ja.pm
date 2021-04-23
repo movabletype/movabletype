@@ -4186,6 +4186,7 @@ use vars qw( @ISA %Lexicon );
 	'Create and Insert' => '作成して挿入',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'ブログがありません。[_1]ブログを作成する</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'グループがありません。[_1]グループを作成する</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',

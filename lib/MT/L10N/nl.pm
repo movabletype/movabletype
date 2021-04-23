@@ -4187,6 +4187,7 @@ ter opnieuw te proberen.',
 	'Create and Insert' => 'Aanmaken en invoegen',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'Er bestaan geen sites in deze installatie.[_1]Maak een site aan</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'Er bestaan geen groepen in deze installatie.[_1]Maak een groep aan</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Er bestaan geen rollen in deze installatie.[_1]Maak een rol aan</a>',
