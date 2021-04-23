@@ -54,7 +54,7 @@ while (my $site = $site_iter->()) {
         while (my ($count, $id) = $count_iter->()) {
             $found = 1;
             $detect_count += ($count - $max);
-            print sprintf("Violation detected(%d/%d) for id=%d", $count, $max, $id);
+            printf("Violation detected(%d/%d) for id=%d", $count, $max, $id);
             if ($delete) {
                 print " and deleting";
                 my $plan = $count - $max;
@@ -73,7 +73,7 @@ while (my $site = $site_iter->()) {
                     $delete_count += $rev_class->remove({ id => \@ids }, { nofetch => 1 });
                 }
             }
-            print "\n",;
+            print ".\n";
         }
         print(!$found ? "OK.\n\n" : $delete ? "Fixed.\n\n" : "\n");
     }
