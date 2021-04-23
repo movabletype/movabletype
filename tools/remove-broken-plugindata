@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 use utf8;
-use lib "lib", "extlib";
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
 use Getopt::Long;
 use MT::Bootstrap;
 use MT;
@@ -23,7 +24,7 @@ my $installed  = installed_plugins();
 for my $pname (keys %$pd_plugins) {
 
     print "============================================================\n";
-    printf("Found Plugin Data for %s\n", $pname);
+    printf("Checking Plugin Data for %s\n", $pname);
     print "============================================================\n";
 
     my $plugin = $installed->{$pname} || MT::Plugin->new({ id => $pname, name => $pname });
@@ -66,7 +67,7 @@ for my $pname (keys %$pd_plugins) {
         });
     }
 
-    printf("No data breakage nor duplication found.\n") unless $found;
+    printf("No data breakages nor duplications found.\n") unless $found;
 }
 
 sub installed_plugins {
