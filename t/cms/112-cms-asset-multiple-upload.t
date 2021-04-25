@@ -32,7 +32,7 @@ use MT::Test::Image;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $admin   = MT->model('author')->load(1);
 my $blog_id = 1;

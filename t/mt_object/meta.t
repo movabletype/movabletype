@@ -17,7 +17,7 @@ use Data::Dumper;
 
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 use MT::Blog;
 

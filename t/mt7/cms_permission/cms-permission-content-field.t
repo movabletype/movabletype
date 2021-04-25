@@ -18,7 +18,7 @@ use MT::Test;
 use MT::Test::Permission;
 
 ### Make test data
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $site = MT::Test::Permission->make_website( name => 'my website' );
 
