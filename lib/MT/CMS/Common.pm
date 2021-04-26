@@ -440,6 +440,7 @@ sub save {
         if ( 'blog' eq $type ) {
             my $meth = $cfg_screen;
             if ( $meth && $app->handlers_for_mode($meth) ) {
+                $app->mode($meth);
                 $app->error(
                     $app->translate( "Save failed: [_1]", $app->errstr ) );
                 return $app->$meth;

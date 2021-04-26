@@ -56,6 +56,19 @@ for my $module (qw/ Log4perl Minimal /) {
                     "A data was not written to a file. ($module)"
                 );
             }
+
+            eval {
+                use locale;
+                use POSIX qw(locale_h);
+                setlocale(LC_ALL, "ja_JP.UTF-8");
+                my @warnings;
+                local $SIG{__WARN__} = sub { push @warnings, @_ };
+                mkdir $test_env->path("tmp");
+                mkdir $test_env->path("tmp");
+                MT::Util::Log->error("$!");
+                ok !@warnings, "Write Japanese error without warnings" or note explain \@warnings;
+            };
+            warn $@ if $@;
         }
     }
 }

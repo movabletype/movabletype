@@ -63,9 +63,11 @@
   </mt:if>
 </mt:loop>
 
+<mt:unless name="system_msg">
 <mt:setvarblock name="system_msg" append="1">
 <div id="msg-block"></div>
 </mt:setvarblock>
+</mt:unless>
 
 <mt:include name="include/basic_filter_forms.tmpl">
 

@@ -791,6 +791,7 @@ sub rebuild_pages {
     my $template_id    = $app->param('template_id');
     my $map_id         = $app->param('templatemap_id');
     my $fs             = $app->param('fs');
+    my $old_date       = $app->param('old_date');
     my $old_categories = $app->param('old_categories');
     my $old_previous   = $app->param('old_previous');
     my $old_next       = $app->param('old_next');
@@ -882,6 +883,7 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next
@@ -897,6 +899,7 @@ sub rebuild_pages {
         $app->rebuild_content_data(
             ContentData       => $content_data,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next,
@@ -1114,6 +1117,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             if ( MT->has_plugin('Trackback') ) {
                 require Trackback::CMS::Entry;
                 Trackback::CMS::Entry::ping_continuation(
@@ -1137,6 +1141,7 @@ sub rebuild_pages {
             my $blog = MT::Blog->load( $content_data->blog_id )
                 or return $app->errtrans( 'Cannot load blog #[_1].',
                 $content_data->blog_id );
+            $app->publisher->remove_marked_files( $blog, 1 );
             return $app->redirect(
                 $app->uri(
                     mode => 'view',
@@ -1319,7 +1324,7 @@ sub start_rebuild_pages_directly {
         $param{is_entry}   = 1;
         $param{entry_id}   = $entry_id;
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }
@@ -1341,7 +1346,7 @@ sub start_rebuild_pages_directly {
         $param{content_type_id} = $content_data->content_type_id;
 
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }

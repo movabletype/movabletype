@@ -69,6 +69,7 @@ my $template_map = MT::Test::Permission->make_templatemap(
 );
 
 my $blog = MT::Blog->load($blog_id);
+$blog->site_path( join "/", $test_env->root, "site" );
 $blog->archive_path( join "/", $test_env->root, "site/archive" );
 $blog->archive_type('Individual');
 $blog->save;

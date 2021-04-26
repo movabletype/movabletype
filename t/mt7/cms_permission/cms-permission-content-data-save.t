@@ -23,6 +23,8 @@ use MT::ContentStatus;
 
 MT::Test->init_app;
 
+$ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+
 ### Make test data
 my $objs = $test_env->prepare_fixture(
     sub {

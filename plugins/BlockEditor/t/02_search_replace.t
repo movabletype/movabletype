@@ -61,6 +61,8 @@ my $test_data = {
     },
 };
 
+$ENV{MT_TEST_IGNORE_FIXTURE} = 1;
+
 $test_env->prepare_fixture(
     sub {
         MT::Test->init_db;

@@ -62,31 +62,19 @@ sub build_post_save_sub {
                     $app->rebuild_entry(
                         Entry => $entry,
                         (   $entry->is_entry
-                            ? ( BuildDependencies => 1 )
+                            ? ( BuildDependencies => 1,
+                                OldEntry          => $orig_entry,
+                                OldPrevious       => ( $previous_old ? $previous_old->id : undef ),
+                                OldNext           => ( $next_old ? $next_old->id : undef ),
+                                OldDate           => $orig_entry->authored_on,
+                                )
                             : ( BuildIndexes => 1 )
                         ),
-                        (   $entry->is_entry
-                            ? ( OldEntry => $orig_entry )
-                            : ()
-                        ),
                         OldCategories => $categories_old_ids,
-                        (   $entry->is_entry
-                            ? ( OldPrevious => ($previous_old)
-                                ? $previous_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
-                        (   $entry->is_entry
-                            ? ( OldNext => ($next_old)
-                                ? $next_old->id
-                                : undef
-                                )
-                            : ()
-                        ),
                     ) or return $app->publish_error();
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
@@ -260,6 +248,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $blog )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $blog );
+                $app->publisher->remove_marked_files( $blog, 1 );
             }
         );
     }

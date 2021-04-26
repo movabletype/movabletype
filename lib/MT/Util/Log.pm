@@ -193,9 +193,10 @@ sub _get_message {
         $memory = _get_memory();
     }
 
-    my ( $pkg, $filename, $line ) = caller(3);
-    unless ($filename) {
-        ( $pkg, $filename, $line ) = caller(2);
+    my $i = 2;
+    my ( $pkg, $filename, $line ) = caller($i);
+    while ( index( $pkg, "MT::Util::Log" ) == 0 ) {
+        ( $pkg, $filename, $line ) = caller(++$i);
     }
 
     my @time = localtime(time);

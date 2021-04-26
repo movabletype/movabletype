@@ -1553,7 +1553,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        [ abs_path( $app->config->SeachTemplatePath ) ] );
+        [ abs_path( $app->config->SearchTemplatePath ) ] );
     $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
@@ -1615,9 +1615,10 @@ sub _parse_query {
 }
 
 sub _run_rpt {
+    MT::Session->remove( { kind => 'PT' } );
     my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
-    if ( $res =~ /Compilation failed|Can't locate/ ) {
-        diag $res;
+    if ( $res =~ /((?:Compilation failed|Can't locate).*)/ ) {
+        diag $1;
         BAIL_OUT;
     }
     $res;

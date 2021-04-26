@@ -4,9 +4,9 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.1.6 (2020-01-28)
+ * Version: 5.7.0 (2021-02-10)
  */
-(function (domGlobals) {
+(function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
@@ -29,7 +29,6 @@
     var getTabFocus = function (editor) {
       return editor.getParam('tab_focus', getTabFocusElements(editor));
     };
-    var Settings = { getTabFocus: getTabFocus };
 
     var DOM = global$1.DOM;
     var tabCancel = function (e) {
@@ -38,19 +37,19 @@
       }
     };
     var setup = function (editor) {
-      function tabHandler(e) {
-        var x, el, v, i;
+      var tabHandler = function (e) {
+        var x, i;
         if (e.keyCode !== global$6.TAB || e.ctrlKey || e.altKey || e.metaKey || e.isDefaultPrevented()) {
           return;
         }
-        function find(direction) {
-          el = DOM.select(':input:enabled,*[tabindex]:not(iframe)');
-          function canSelectRecursive(e) {
+        var find = function (direction) {
+          var el = DOM.select(':input:enabled,*[tabindex]:not(iframe)');
+          var canSelectRecursive = function (e) {
             return e.nodeName === 'BODY' || e.type !== 'hidden' && e.style.display !== 'none' && e.style.visibility !== 'hidden' && canSelectRecursive(e.parentNode);
-          }
-          function canSelect(el) {
+          };
+          var canSelect = function (el) {
             return /INPUT|TEXTAREA|BUTTON/.test(el.tagName) && global$2.get(e.id) && el.tabIndex !== -1 && canSelectRecursive(el);
-          }
+          };
           global$5.each(el, function (e, i) {
             if (e.id === editor.id) {
               x = i;
@@ -71,12 +70,13 @@
             }
           }
           return null;
-        }
-        v = global$5.explode(Settings.getTabFocus(editor));
+        };
+        var v = global$5.explode(getTabFocus(editor));
         if (v.length === 1) {
           v[1] = v[0];
           v[0] = ':prev';
         }
+        var el;
         if (e.shiftKey) {
           if (v[0] === ':prev') {
             el = find(-1);
@@ -97,14 +97,14 @@
           } else {
             global$4.setTimeout(function () {
               if (!global$3.webkit) {
-                domGlobals.window.focus();
+                window.focus();
               }
               el.focus();
             }, 10);
           }
           e.preventDefault();
         }
-      }
+      };
       editor.on('init', function () {
         if (editor.inline) {
           DOM.setAttrib(editor.getBody(), 'tabIndex', null);
@@ -117,14 +117,13 @@
         }
       });
     };
-    var Keyboard = { setup: setup };
 
     function Plugin () {
       global.add('tabfocus', function (editor) {
-        Keyboard.setup(editor);
+        setup(editor);
       });
     }
 
     Plugin();
 
-}(window));
+}());

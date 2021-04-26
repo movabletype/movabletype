@@ -212,15 +212,35 @@ sub archive_contents_count {
 
     return $self->_getset_coderef( 'archive_contents_count', @_ )
         if ref($self) eq __PACKAGE__;
+    my $count = MT->model('content_data')->count( $self->archive_contents_count_params(@_) );
+}
+
+sub alternative_content {
+    my ( $self, $params ) = @_;
+    my ( $terms, $opts ) = $self->archive_contents_count_params($params);
+    my $content_data = $params->{ContentData} or return;
+    $terms->{id} = { op => '!=', value => $content_data->id };
+    $opts->{limit} = 1;
+    my $similar_content_data = MT->model('content_data')->load( $terms, $opts );
+}
+
+sub archive_contents_count_params {
+    my $self = shift;
 
     my ($params)     = @_;
     my $blog         = $params->{Blog};
     my $at           = $params->{ArchiveType};
     my $ts           = $params->{Timestamp};
     my $cat          = $params->{Category};
-    my $auth         = $params->{Author};
+    my $author       = $params->{Author};
     my $map          = $params->{TemplateMap};
     my $content_data = $params->{ContentData};
+
+    my $blog_id   = $blog && ref $blog ? $blog->id : $blog;
+    my $cat_id    = $cat && ref $cat ? $cat->id : $cat;
+    my $author_id = $author && ref $author ? $author->id : $author;
+
+    my $content_type_id = $content_data ? $content_data->content_type_id : undef;
 
     my ( $start, $end );
     if ($ts) {
@@ -238,17 +258,14 @@ sub archive_contents_count {
         && $map ? $map->dt_field_id : '';
 
     require MT::ContentStatus;
-    my $count = MT->model('content_data')->count(
-        {   blog_id => $blog->id,
+    return (
+        {   blog_id => $blog_id,
             status  => MT::ContentStatus::RELEASE(),
-            (   $content_data
-                ? ( content_type_id => $content_data->content_type_id )
-                : ()
-            ),
+            (   $content_type_id ? ( content_type_id => $content_type_id ) : () ),
             (   !$dt_field_id && $ts ? ( authored_on => [ $start, $end ] )
                 : ()
             ),
-            ( $auth ? ( author_id => $auth->id ) : () ),
+            ( $author_id ? ( author_id => $author_id ) : () ),
         },
         {   (   !$dt_field_id && $ts ? ( range_incl => { authored_on => 1 } )
                 : ()
@@ -258,9 +275,9 @@ sub archive_contents_count {
                     ? ( MT::ContentFieldIndex->join_on(
                             'content_data_id',
                             {   content_field_id => $cat_field_id,
-                                value_integer    => $cat->id
+                                value_integer    => $cat_id
                             },
-                            { alias => 'dt_cf_idx' }
+                            { alias => 'cat_cf_idx' }
                         )
                         )
                     : ()
@@ -279,7 +296,7 @@ sub archive_contents_count {
                                     }
                                 ],
                             ],
-                            { alias => 'cat_cf_idx' }
+                            { alias => 'dt_cf_idx' }
                         )
                         )
                     : ()
@@ -287,7 +304,6 @@ sub archive_contents_count {
             ]
         }
     );
-    return $count;
 }
 
 sub does_publish_file {
