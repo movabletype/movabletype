@@ -20,7 +20,7 @@ use File::Spec;
 use MT;
 use utf8;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance;
 $mt->user( MT::Author->load(1) );

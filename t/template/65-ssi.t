@@ -16,7 +16,7 @@ use MT;
 
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance or die MT->errstr;
 isa_ok($mt, 'MT');

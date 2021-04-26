@@ -18,7 +18,7 @@ use MT::Test::Permission;
 
 MT::Test->init_app;
 
-#$test_env->prepare_fixture('db_data');
+#$test_env->prepare_fixture('db');
 
 #my $blog_id = 1;
 

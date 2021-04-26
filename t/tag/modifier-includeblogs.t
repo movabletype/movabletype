@@ -27,7 +27,7 @@ use MT::Template;
 use MT::Template::Context;
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 # Adding another blog since MT::Test only creates one blog
 my $blog = MT::Blog->new();
