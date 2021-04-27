@@ -37,7 +37,7 @@ my $objs = MT::Test::Fixture->prepare({
         { name => 'child1-1', parent_id => 1 },
         { name => 'child1-2', parent_id => 1 },    # break it later
         { name => 'child1-3', parent_id => 1 },    # break it later
-        { name => 'child2-1', parent_id => 2 },    # break it later for repair mode
+        { name => 'child2-1', parent_id => 2 },    # break it later
         { name => 'child2-2', parent_id => 2 },    # break it later
     ],
     entry => [{ basename => "child1-1", blog_id => 4 }, { basename => "child1-2", blog_id => 5 },],
@@ -72,26 +72,14 @@ $objs->{blog}{'child2-2'}->save;
     is(MT::Entry->count(),   1, 'right number of entry');
 }
 
-$objs->{blog}{'child2-1'}->parent_id(undef);
-$objs->{blog}{'child2-1'}->save;
-
-{
-    my ($stdin, $stdout, $stderr) = do_command(2);
-    my $found = () = $stdout =~ /^Child site/gm;
-    is $found, 1, 'right number of broken sites found';
-    is(MT::Website->count(), 4, 'right number of parents');
-    is(MT::Blog->count(),    1, 'right number of childs');
-    is(MT::Entry->count(),   1, 'right number of entry');
-}
-
 sub do_command {
     my $mode = shift;
     my @cmd  = (
         $^X,
         '-I',
         File::Spec->catdir($ENV{MT_HOME}, 't/lib'),
-        File::Spec->catfile($ENV{MT_HOME}, 'tools/repair-parent-missing-sites'),
-        ($mode ? { 1 => '--delete', 2 => '--repair' }->{$mode} : ''));
+        File::Spec->catfile($ENV{MT_HOME}, 'tools/remove-parent-missing-sites'),
+        ($mode ? { 1 => '--delete' }->{$mode} : ''));
 
     run3 \@cmd, \my $stdin, \my $stdout, \my $stderr;
     note $stderr if $stderr;

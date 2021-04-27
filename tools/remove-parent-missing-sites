@@ -11,7 +11,6 @@ binmode STDOUT, ":utf8";
 binmode STDERR, ":utf8";
 
 GetOptions(
-    'r|repair' => \my ($repair),
     'd|delete' => \my ($delete),
     "help|?"   => sub { usage(); exit },
 );
@@ -19,7 +18,6 @@ GetOptions(
 my $mt = MT->new;
 
 my $site_iter = MT::Blog->load_iter({ class => 'blog', 'parent_id' => undef });
-my $repaired  = 0;
 my $removed   = 0;
 my $detected  = 0;
 
@@ -31,27 +29,17 @@ while (my $site = $site_iter->()) {
     $detected++;
     my $target_str = sprintf(qq{Child site "%s"(id:%d)\n}, $site->name, $site->id);
     print $target_str;
-    if ($repair) {
-        $site->class('website');
-        $site->save();
-        MT->log({
-            message  => sprintf('%s is repaired for missing parent.', $target_str),
-            level    => MT::Log::INFO(),
-        });
-        $repaired++;
-    } elsif ($delete) {
+    if ($delete) {
         $site->remove();
         MT->log({
-            message  => sprintf('%s is deleted due to missing parent.', $target_str),
-            level    => MT::Log::INFO(),
+            message => sprintf('%s is deleted due to missing parent.', $target_str),
+            level   => MT::Log::INFO(),
         });
         $removed++;
     }
 }
 
-if ($repair) {
-    printf("%d sites are detected and repaired.", $detected);
-} elsif ($delete) {
+if ($delete) {
     printf("%d sites are detected and deleted.", $detected);
 } else {
     printf("%d sites are detected.", $detected);
@@ -64,7 +52,6 @@ usage: $0
 
 These options are available:
 
--d, --delete            Delete on detecting revision amount excession. Note --repair takes priority over it.
--r, --repair            Repair broken blogs by changing blog_class to website.
+-d, --delete            Delete on detecting revision amount excession.
 EOT
 }
