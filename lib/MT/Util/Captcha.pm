@@ -19,12 +19,24 @@ sub EXPIRE        { 60 * 10 }
 use MT::Session;
 
 $ENV{MAGICK_THREAD_LIMIT} ||= 1;
+our $MagickClass;
+
+sub magick_class {
+    my $class = shift;
+    return $MagickClass if defined $MagickClass;
+    if (eval {require Graphics::Magick}) {
+        return $MagickClass = "Graphics::Magick";
+    }
+    if (eval {require Image::Magick}) {
+        return $MagickClass = "Image::Magick";
+    }
+    $MagickClass = "";
+}
 
 sub check_availability {
     my $class = shift;
 
-    eval "require Image::Magick;";
-    if ($@) {
+    if (!$class->magick_class) {
         return MT->translate(
             'Movable Type default CAPTCHA provider requires Image::Magick.');
     }
@@ -177,8 +189,9 @@ sub _generate_captcha {
         $app->translate('You need to configure CaptchaSourceImageBase.') )
         unless $base;
 
-    require Image::Magick;
-    my $imbase = Image::Magick->new( magick => 'png' )
+    my $magick_class = $self->magick_class or return MT->translate(
+            'Movable Type default CAPTCHA provider requires Image::Magick.');
+    my $imbase = $magick_class->new( magick => 'png' )
         or return $app->error( $app->translate("Image creation failed.") );
 
     # Read the predefined letter PNG for each letter in $code
@@ -232,7 +245,7 @@ sub _generate_captcha {
 
     # Read in the background file
     my $a          = int rand(5) + 1;
-    my $background = Image::Magick->new();
+    my $background = $self->magick_class->new();
     $background->Read(
         File::Spec->catfile( $base, 'background' . $a . '.png' ) );
     $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
