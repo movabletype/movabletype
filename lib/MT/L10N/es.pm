@@ -2320,6 +2320,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
 	'Unknown method [_1]' => 'Método desconocido [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Configuración de RevisioningDriver errónea '[_1]': [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => 'Se han eliminado [_1] revisiones dañadas de [_2] (id: [_3]).',
+	'*Deleted due to data breakage*' => '*Eliminada debido a la rotura de datos*',
 
 ## lib/MT/Role.pm
 	'Blog Administrator' => 'Administrador del blog',
