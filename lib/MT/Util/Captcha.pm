@@ -245,7 +245,7 @@ sub _generate_captcha {
 
     # Read in the background file
     my $a          = int rand(5) + 1;
-    my $background = $self->magick_class->new();
+    my $background = $magick_class->new();
     $background->Read(
         File::Spec->catfile( $base, 'background' . $a . '.png' ) );
     $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
