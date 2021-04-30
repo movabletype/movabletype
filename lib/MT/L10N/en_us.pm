@@ -293,8 +293,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
     '__LIST_FIELD_LABEL' => 'List',
 
     '__TEXT_LABEL_TEXT' => 'Text',
-
-    '__UNPUBLISHED' => 'Unpublish',
 );
 
 1;
@@ -315,4 +313,3 @@ Judges whether this language consists of only ASCII codes. Returns 1.
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-

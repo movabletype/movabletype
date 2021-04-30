@@ -4205,7 +4205,6 @@ itte versuchen Sie es später erneut.',
 	'Select Trigger Action' => 'Auslöser-Aktion wählen',
 	'Select Trigger Event' => 'Auslöser-Ereignis wählen',
 	'Select Trigger Object' => 'Auslöser-Objekt wählen',
-	'__UNPUBLISHED' => 'Nicht mehr veröffentlichen',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'Beschneiden',
