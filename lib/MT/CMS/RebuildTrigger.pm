@@ -293,22 +293,21 @@ sub add {
         $params->{trigger_loop} = trigger_loop($app);
         $params->{site_name}    = $app->blog->name;
 
-        # Does a site have the content type?
-        my @sites = MT->model('blog')->load( { class => '*' } );
-        my $count_content_type = 0;
-        my @site_has_content_type = map {
-            my $site = $_;
-            my $count
-                = MT->model('content_type')
-                ->count( { blog_id => $site->id } );
-            $count_content_type += $count;
-            { id => $_->id, value => $count };
-        } @sites;
-        $params->{site_has_content_type} = \@site_has_content_type;
-        $params->{"missing_content_type"} = 1 unless $count_content_type;
+        my @site_has_content_type = ct_count();
+        $params->{site_has_content_type}  = \@site_has_content_type;
+        $params->{"missing_content_type"} = 1 unless (scalar @site_has_content_type);
 
-        $app->load_tmpl( 'dialog/create_trigger.tmpl', $params );
+        $app->load_tmpl('dialog/create_trigger.tmpl', $params);
     }
+}
+
+sub ct_count {
+    my @ret;
+    my $count_iter = MT->model('content_type')->count_group_by(undef, { group => ["blog_id"] });
+    while (my ($count, $id) = $count_iter->()) {
+        push @ret, { id => $id, value => $count };
+    }
+    return @ret;
 }
 
 sub trigger_loop {

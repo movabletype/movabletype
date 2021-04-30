@@ -134,7 +134,7 @@ function init() {
                     '<mt:var name="id">': <mt:var name="value">,
                 </mt:loop>
                 };
-                if (site_has_content_type[site_id]) {
+                if (site_has_content_type.hasOwnProperty(site_id)) {
                     jQuery('#object_content').show();
                 }
                 else {
