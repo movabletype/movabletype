@@ -841,12 +841,16 @@ sub v7_migrate_rebuild_trigger {
         my $blog_id = shift;
         my $cfg     = $plugin->get_config_obj($blog_id ? 'blog:' . $blog_id : undef);
         return unless $cfg->id;
-        return ($cfg->data || {}) if (ref $cfg->data eq 'HASH');
+        my $data = $cfg->data;
+        return $data if (ref $data eq 'HASH');
 
         MT->log({
-            message  => MT->translate('MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.', $blog_id),
+              message => $blog_id
+            ? MT->translate('MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.', $blog_id)
+            : MT->translate('MultiBlog migration is skipped due to the data breakage.'),
             category => 'upgrade',
             level    => MT::Log::INFO(),
+            blog_id  => $blog_id ? $blog_id : undef,
         });
 
         return;
@@ -856,43 +860,79 @@ sub v7_migrate_rebuild_trigger {
         MT->config('DefaultAccessAllowed', $data->{default_access_allowed}, 1) if defined $data->{default_access_allowed};
     }
 
-    for my $blog_id (map { $_->id } MT::Blog->load({ class => '*' }, { fetchonly => { id => 1 } })) {
-        my $data = $valid_config->($blog_id) or next;
+    my $iter = MT::Blog->load_iter({ class => '*' });
+
+    while (my $blog = $iter->()) {
+        my $data = $valid_config->($blog->id) or next;
 
         # meta
-        my $blog = MT->model('blog')->load($blog_id) or next;
         $blog->default_mt_sites_sites($data->{default_mtmulitblog_blogs})   if defined $data->{default_mtmulitblog_blogs};
         $blog->default_mt_sites_action($data->{default_mtmultiblog_action}) if defined $data->{default_mtmultiblog_action};
         $blog->blog_content_accessible($data->{blog_content_accessible})    if defined $data->{blog_content_accessible};
         $blog->save;
 
-        # Trigger
-        require MT::RebuildTrigger;
-        for (split(/\|/, $data->{rebuild_triggers} || '')) {
-            my ($action, $id, $event) = split(/:/, $_);
-            my $object_type =
-                  $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
-                : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
-                :                           MT::RebuildTrigger::TYPE_PING();
-            $event =
-                  $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
-                : $event =~ /.*_pub$/  ? MT::RebuildTrigger::EVENT_PUBLISH()
-                :                        MT::RebuildTrigger::EVENT_UNPUBLISH();
-            my $target =
-                  $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
-                : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
-                :                              MT::RebuildTrigger::TARGET_BLOG();
-            my $rt = MT->model('rebuild_trigger')->new;
-            $rt->blog_id($blog_id);
-            $rt->object_type($object_type);
-            $rt->action($action eq 'ri' ? MT::RebuildTrigger::ACTION_RI() : MT::RebuildTrigger::ACTION_RIP());
-            $rt->event($event);
-            $rt->target($target);
-            $rt->target_blog_id($id =~ /\d+/ ? $id : 0);
-            $rt->ct_id(0);
-            $rt->save or return $rt->error($rt->errstr);
+        next unless $data->{rebuild_triggers};
+
+        my $skip_occur = 0;
+
+        for my $rt (_v7_migrate_rebuild_trigger_unserialize($data->{rebuild_triggers})) {
+            if ($rt) {
+                $rt->blog_id($blog->id);
+                $rt->save or return $rt->error($rt->errstr);
+            } else {
+                $skip_occur = 1;
+            }
+        }
+
+        if ($skip_occur) {
+            MT->log({
+                message  => MT->translate('Some MultiBlog migrations for site(ID:[_1]) are skipped due to the data breakage.', $blog->id),
+                category => 'upgrade',
+                level    => MT::Log::INFO(),
+                blog_id  => $blog->id,
+            });
         }
     }
+}
+
+sub _v7_migrate_rebuild_trigger_unserialize {
+    my ($string) = @_;
+    return map { _v7_migrate_rebuild_trigger_unserialize_single($_) } grep { $_ } split(/\|/, $string);
+}
+
+sub _v7_migrate_rebuild_trigger_unserialize_single {
+    my ($string) = @_;
+    my ($action, $id, $event) = split(/:/, $string);
+    my @event_elems = split(/_/, $event);
+
+    $action =
+          $action eq 'ri'  ? MT::RebuildTrigger::ACTION_RI()
+        : $action eq 'rip' ? MT::RebuildTrigger::ACTION_RIP()
+        :                    return 0;
+    my $object_type =
+          $event_elems[0] eq 'entry'   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+        : $event_elems[0] eq 'comment' ? MT::RebuildTrigger::TYPE_COMMENT()
+        : $event_elems[0] eq 'tb'      ? MT::RebuildTrigger::TYPE_PING()
+        :                                return 0;
+    $event =
+          $event_elems[1] eq 'save'  ? MT::RebuildTrigger::EVENT_SAVE()
+        : $event_elems[1] eq 'pub'   ? MT::RebuildTrigger::EVENT_PUBLISH()
+        : $event_elems[1] eq 'unpub' ? MT::RebuildTrigger::EVENT_UNPUBLISH()
+        :                              return 0;
+    my $target =
+          $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
+        : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+        : $id =~ /^[0-9]+$/          ? MT::RebuildTrigger::TARGET_BLOG()
+        :                              return 0;
+
+    my $rt = MT->model('rebuild_trigger')->new;
+    $rt->object_type($object_type);
+    $rt->action($action);
+    $rt->event($event);
+    $rt->target($target);
+    $rt->target_blog_id($target == MT::RebuildTrigger::TARGET_BLOG() ? $id : 0);
+    $rt->ct_id(0);
+    return $rt;
 }
 
 sub _v7_migrate_content_type_fields_column {

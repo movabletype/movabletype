@@ -302,6 +302,90 @@ subtest 'Upgrade from MT6 to MT7' => sub {
 
 };
 
+subtest 'MultiBlogMigrationPartial' => sub {
+    my $model = MT->model('rebuild_trigger');
+    # ri:2:entry_save:0|ri:2:entry_save:0|ri:2:entry_save:0
+
+    subtest 'unserialize single' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:2:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOG );
+        is( $rt->action,         MT::RebuildTrigger::ACTION_RI );
+        is( $rt->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE );
+        is( $rt->target_blog_id, 2 );
+        is( $rt->event,          MT::RebuildTrigger::EVENT_SAVE );
+    };
+
+    subtest 'unserialize single taget=0' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:0:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single taget=_blogs_in_website' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:_blogs_in_website:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single taget=_all' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:_all:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_ALL );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single error' => sub {
+        my @wrong_inputs = (
+            'xx:2:entry_save',
+            'ri::entry_save',
+            'ri:x:entry_save',
+            'ri:1_:entry_save',
+            'ri:2:XXXX_save',
+            'ri:2:entry_XXXX',
+            "ri:2:entry_XXXX\n",
+            "\nri:2:entry_XXXX",
+        );
+        for (@wrong_inputs) {
+            my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single($_);
+            is(ref $rt, '', 'error');
+            is($rt, 0,      'error');
+        }
+    };
+
+    subtest 'unserialize multi' => sub {
+        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
+            'ri:2:entry_save|ri:2:entry_save');
+        is( scalar @rt, 2, 'right number' );
+        for my $i ( 0, 1 ) {
+            is( ref $rt[$i],             $model, 'right class' );
+            is( $rt[$i]->target,         MT::RebuildTrigger::TARGET_BLOG );
+            is( $rt[$i]->action,         MT::RebuildTrigger::ACTION_RI );
+            is( $rt[$i]->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE );
+            is( $rt[$i]->target_blog_id, 2 );
+            is( $rt[$i]->event,          MT::RebuildTrigger::EVENT_SAVE );
+        }
+    };
+
+    subtest 'unserialize wrong formated multi' => sub {
+        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
+            '|ri:2:entry_save||ri:2:entry_save|');
+        is( scalar @rt, 2, 'right number' );
+        for my $i ( 0, 1 ) {
+            is( ref $rt[$i], $model, 'right class' );
+        }
+    };
+
+    subtest 'unserialize wrong formated multi' => sub {
+        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
+            'ri:2:entry_save|ri:2:XXXX_save');
+        is( scalar @rt, 2, 'right number' );
+        is( ref $rt[0], $model, 'right class' );
+        is( $rt[1], 0, '0 for an error' );
+    };
+};
+
 subtest 'MultiBlogMigration' => sub {
     MT::Test->init_db;
 
@@ -310,6 +394,7 @@ subtest 'MultiBlogMigration' => sub {
     my $child1  = MT::Test::Permission->make_blog(parent_id => $parent1->id);
     my $child2  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
     my $child3  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
+    my $child4  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
 
     my $pd0 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration');
     $pd0->data({ default_access_allowed => 0 });
@@ -323,7 +408,7 @@ subtest 'MultiBlogMigration' => sub {
     my $pd2 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child2->id);
     $pd2->data({
         %test_data,
-        rebuild_triggers => join('|', 'ri:_all:entry_save', 'ri:123:entry_aaa', 'rip:_blogs_in_website:comment_pub'),
+        rebuild_triggers => join('|', 'ri:_all:entry_save', 'ri:123:entry_unpub', 'rip:_blogs_in_website:comment_pub'),
     });
     $pd2->save;
 
@@ -331,13 +416,23 @@ subtest 'MultiBlogMigration' => sub {
     $pd3->data(\'1');    # broken data emulation
     $pd3->save;
 
+    my $pd4 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child4->id);
+    $pd4->data({
+        %test_data,
+        rebuild_triggers => 'ri:_all:entry_xxxx',
+    });
+    $pd4->save;
+
     is(MT->config('DefaultAccessAllowed'), 1);
     is(MT::RebuildTrigger->count,          0);
 
     MT::Test::Upgrade->upgrade(from => 6.0010);
 
-    my $last_log = MT::Log->load({}, { sort => 'id', direction => 'descend', limit => 1 });
-    like($last_log->message, qr/MultiBlog/);
+    my ($last_log1, $last_log2) = MT::Log->load({}, { sort => 'id', direction => 'descend', limit => 2 });
+    is($last_log1->blog_id, $child4->id);
+    like($last_log1->message, qr/Some MultiBlog/);
+    is($last_log2->blog_id, $child3->id);
+    like($last_log2->message, qr/MultiBlog/);
 
     is(MT->config('DefaultAccessAllowed'),                    0);
     is(MT::Blog->load($parent1->id)->default_mt_sites_sites,  undef);
