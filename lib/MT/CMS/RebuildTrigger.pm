@@ -6,6 +6,7 @@
 package MT::CMS::RebuildTrigger;
 
 use strict;
+use warnings;
 
 sub config {
     my $app     = shift;
@@ -29,34 +30,9 @@ sub config {
         $param->{default_mt_sites_sites}  = $blog->default_mt_sites_sites || '';
     }
 
-    my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
+    $param->{rebuilds_json} = load_config($app, $blog_id) if $blog_id;
 
-    foreach my $rt (@rebuild_triggers) {
-        my $action = $rt->action == MT::RebuildTrigger::ACTION_RI() ? 'ri' : 'rip';
-        my $target =
-              $rt->target == MT::RebuildTrigger::TARGET_ALL()              ? '_all'
-            : $rt->target == MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE() ? '_blogs_in_website'
-            :                                                                $rt->target_blog_id;
-        my $objct_type =
-              $rt->object_type == MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE() ? 'entry'
-            : $rt->object_type == MT::RebuildTrigger::TYPE_CONTENT_TYPE()  ? 'content'
-            : $rt->object_type == MT::RebuildTrigger::TYPE_COMMENT()       ? 'comment'
-            :                                                                'tb';
-        my $event =
-              $rt->event == MT::RebuildTrigger::EVENT_SAVE()    ? 'save'
-            : $rt->event == MT::RebuildTrigger::EVENT_PUBLISH() ? 'pub'
-            :                                                     'unpub';
-        my $new_trigger = join ':', $action, $target,
-            $objct_type . '_' . $event, $rt->ct_id;
-        $param->{rebuild_triggers} =
-            $param->{rebuild_triggers}
-            ? join '|', $param->{rebuild_triggers}, $new_trigger
-            : $new_trigger;
-    }
-
-    if ($param->{rebuild_triggers}) {
-        load_config($app, $param, ($blog_id ? "blog:$blog_id" : 'system'));
-    }
+    $param->{blog_id} = $app->blog->id if $app->isa('MT::App') && $app->blog;
 
     $app->add_breadcrumb($app->translate('Rebuild Trigger'));
 
@@ -107,7 +83,7 @@ sub add {
         $terms->{id}    = { not => [$blog_id] };
         $terms->{class} = ['website', 'blog'];
     } elsif (my $select_blog_id = $app->param('select_blog_id')) {
-        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/\d+/;
+        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/^[0-9]+$/;
     }
 
     if ($app->param('search') || $app->param('json')) {
@@ -133,6 +109,8 @@ sub add {
         $params->{blog_id}         = $blog_id;
         $params->{dialog_title}    = $app->translate("Create Rebuild Trigger");
         $params->{panel_loop}      = [];
+
+        require MT::RebuildTrigger;
 
         for (my $i = 0; $i <= $#panels; $i++) {
             my $source       = $panels[$i]->{type};
@@ -186,22 +164,19 @@ sub add {
                                 if ((my $loop = $param->{object_loop}) && !$offset) {
                                     if ($app->blog && !$app->blog->is_blog) {
                                         $count++;
-                                        unshift @$loop,
-                                            {
-                                            id          => '_blogs_in_website',
+                                        unshift @$loop, {
+                                            id          => '_' . MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
                                             label       => $app->translate('(All child sites in this site)'),
                                             description => $app->translate('Select to apply this trigger to all child sites in this site.'),
-                                            };
+                                        };
                                     }
                                     $count++;
-                                    unshift @$loop,
-                                        {
-                                        id          => '_all',
+                                    unshift @$loop, {
+                                        id          => '_' . MT::RebuildTrigger::TARGET_ALL(),
                                         label       => $app->translate('(All sites and child sites in this system)'),
                                         description => $app->translate('Select to apply this trigger to all sites and child sites in this system.'),
-                                        };
-                                    splice(@$loop, $limit)
-                                        if scalar(@$loop) > $limit;
+                                    };
+                                    splice(@$loop, $limit) if scalar(@$loop) > $limit;
                                 }
                             }
                         }
@@ -212,42 +187,31 @@ sub add {
 
             push @{ $params->{panel_loop} }, $panel_params;
         }
-        $params->{return_args} = $app->return_args;
-
+        $params->{return_args}         = $app->return_args;
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
+        $params->{object_type_loop}    = object_type_loop($app);
 
-        require MT::RebuildTrigger;
-        $params->{object_type_loop} = [{
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()),
-                label => $app->translate("Entry or Page")
-            },
-            {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_CONTENT_TYPE()),
-                label => $app->translate("Content Type")
-            },
-        ];
         my $plugin_switch  = $app->config->PluginSwitch;
         my $comment_switch = defined($plugin_switch) ? $plugin_switch->{Comments} : 1;
         eval { require Comments; };
 
-        if (!$@ && (!defined($comment_switch) || $comment_switch != 0)) {
-            push @{ $params->{object_type_loop} },
-                {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()),
-                label => $app->translate("Comment") };
+        unless (!$@ && (!defined($comment_switch) || $comment_switch != 0)) {
+            $params->{object_type_loop} =
+                [grep { $_->{id} != MT::RebuildTrigger::TYPE_COMMENT() } @{ $params->{object_type_loop} }];
         }
+
         my $trackback_switch = defined($plugin_switch) ? $plugin_switch->{Trackback} : 1;
         eval { require Trackback; };
-        if (!$@ && (!defined($trackback_switch) || $trackback_switch != 0)) {
-            push @{ $params->{object_type_loop} },
-                {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()),
-                label => $app->translate("Trackback") };
+
+        unless (!$@ && (!defined($trackback_switch) || $trackback_switch != 0)) {
+            $params->{object_type_loop} =
+                [grep { $_->{id} != MT::RebuildTrigger::TYPE_PING() } @{ $params->{object_type_loop} }];
         }
-        $params->{action_loop}  = action_loop($app);
-        $params->{trigger_loop} = trigger_loop($app);
-        $params->{site_name}    = $app->blog->name;
+
+        $params->{action_loop} = action_loop($app);
+        $params->{event_loop}  = event_loop($app);
+        $params->{site_name}   = $app->blog->name;
 
         my @site_has_content_type = ct_count();
         $params->{site_has_content_type}  = \@site_has_content_type;
@@ -266,171 +230,78 @@ sub ct_count {
     return @ret;
 }
 
-sub trigger_loop {
-    my $app = shift;
-    [{
-            trigger_key    => 'entry_save',
-            trigger_name   => $app->translate('saves an entry/page'),
-            trigger_object => $app->translate('Entry/Page'),
-            trigger_action => $app->translate('Save'),
-        },
-        {
-            trigger_key    => 'entry_pub',
-            trigger_name   => $app->translate('publishes an entry/page'),
-            trigger_object => $app->translate('Entry/Page'),
-            trigger_action => $app->translate('Publish'),
-        },
-        {
-            trigger_key    => 'entry_unpub',
-            trigger_name   => $app->translate('unpublishes an entry/page'),
-            trigger_object => $app->translate('Entry/Page'),
-            trigger_action => $app->translate('Unpublish'),
-        },
-        {
-            trigger_key    => 'content_save',
-            trigger_name   => $app->translate('saves a content'),
-            trigger_object => $app->translate('Content Type'),
-            trigger_action => $app->translate('Save'),
-        },
-        {
-            trigger_key    => 'content_pub',
-            trigger_name   => $app->translate('publishes a content'),
-            trigger_object => $app->translate('Content Type'),
-            trigger_action => $app->translate('Publish'),
-        },
-        {
-            trigger_key    => 'content_unpub',
-            trigger_name   => $app->translate('unpublishes a content'),
-            trigger_object => $app->translate('Content Type'),
-            trigger_action => $app->translate('Unpublish'),
-        },
-        {
-            trigger_key    => 'comment_pub',
-            trigger_name   => $app->translate('publishes a comment'),
-            trigger_object => $app->translate('Comment'),
-            trigger_action => $app->translate('Publish'),
-        },
-        {
-            trigger_key    => 'tb_pub',
-            trigger_name   => $app->translate('publishes a TrackBack'),
-            trigger_object => $app->translate('TrackBack'),
-            trigger_action => $app->translate('Publish'),
-        },
-    ];
-}
-
-sub trigger_hash {
-    my $app          = shift;
-    my $trigger_hash = {};
-    foreach my $trigger (@{ trigger_loop($app) }) {
-        $trigger_hash->{ $trigger->{trigger_key} } = $trigger->{trigger_name};
-    }
-    return $trigger_hash;
-}
-
 sub action_loop {
     my $app = shift;
-    [{
-            action_id   => 'ri',
-            action_name => $app->translate('rebuild indexes.'),
-        },
-        {
-            action_id   => 'rip',
-            action_name => $app->translate('rebuild indexes and send pings.'),
-        },
-    ];
+    return [
+        { id => MT::RebuildTrigger::ACTION_RI(),  name => $app->translate('rebuild indexes.') },
+        { id => MT::RebuildTrigger::ACTION_RIP(), name => $app->translate('rebuild indexes and send pings.') }];
 }
 
-sub action_hash {
-    my $app         = shift;
-    my $action_hash = {};
-    foreach my $action (@{ action_loop($app) }) {
-        $action_hash->{ $action->{action_id} } = $action->{action_name};
-    }
-    return $action_hash;
+sub event_loop {
+    my $app = shift;
+    return [
+        { id => MT::RebuildTrigger::EVENT_SAVE(),      name => $app->translate('Save') },
+        { id => MT::RebuildTrigger::EVENT_PUBLISH(),   name => $app->translate('Publish') },
+        { id => MT::RebuildTrigger::EVENT_UNPUBLISH(), name => $app->translate('Unpublish') }];
+}
+
+sub object_type_loop {
+    my $app = shift;
+    return [
+        { id => MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE(), name => $app->translate('Entry/Page') },
+        { id => MT::RebuildTrigger::TYPE_CONTENT_TYPE(),  name => $app->translate('Content Type') },
+        { id => MT::RebuildTrigger::TYPE_COMMENT(),       name => $app->translate('Comment') },
+        { id => MT::RebuildTrigger::TYPE_PING(),          name => $app->translate('TrackBack') }];
 }
 
 sub load_config {
-    my $app = shift;
-    my ($args, $scope) = @_;
+    my ($app, $blog_id) = @_;
 
-    if ($scope =~ /blog:(\d+)/) {
-        my $blog_id = $1;
+    require MT::Blog;
+    require MT::RebuildTrigger;
+    require JSON;
 
-        require MT::Blog;
+    my %actions_hash = (map { $_->{id}, $_->{name} } @{ action_loop($app) });
+    my %event_hash   = (map { $_->{id}, $_->{name} } @{ event_loop($app) });
+    my %object_hash  = (map { $_->{id}, $_->{name} } @{ object_type_loop($app) });
+    my @json_seed;
 
-        $args->{multiblog_trigger_loop} = trigger_loop($app);
-        my %triggers = map {
-            $_->{trigger_key} => {
-                name   => $_->{trigger_name},
-                object => $_->{trigger_object},
-                action => $_->{trigger_action} }
-        } @{ $args->{multiblog_trigger_loop} };
-
-        $args->{multiblog_action_loop} = action_loop($app);
-        my %actions = map { $_->{action_id} => $_->{action_name} } @{ $args->{multiblog_action_loop} };
-
-        my $rebuild_triggers = $args->{rebuild_triggers};
-        my @rebuilds         = map {
-            my ($action, $id, $trigger, $content_type_id) = split(/:/, $_);
-            my $content_type;
-            $content_type = MT->model('content_type')->load($content_type_id) if $content_type_id;
-            my $content_type_name = $content_type ? $content_type->name : '';
-            if ($id eq '_all') {
-                {
-                    action_name    => $actions{$action},
-                    action_value   => $action,
-                    blog_name      => $app->translate('(All sites and child sites in this system)'),
-                    blog_id        => $id,
-                    trigger_name   => $triggers{$trigger}{name},
-                    trigger_object => $content_type_id
-                    ? $content_type_name
-                    : $triggers{$trigger}{object},
-                    trigger_action    => $triggers{$trigger}{action},
-                    trigger_value     => $trigger,
-                    content_type_name => $content_type_name,
-                    content_type_id   => $content_type_id,
-                };
-            } elsif ($id eq '_blogs_in_website') {
-                {
-                    action_name    => $actions{$action},
-                    action_value   => $action,
-                    blog_name      => $app->translate('(All child sites in this site)'),
-                    blog_id        => $id,
-                    trigger_name   => $triggers{$trigger}{name},
-                    trigger_object => $content_type_id
-                    ? $content_type_name
-                    : $triggers{$trigger}{object},
-                    trigger_action    => $triggers{$trigger}{action},
-                    trigger_value     => $trigger,
-                    content_type_name => $content_type_name,
-                    content_type_id   => $content_type_id,
-                };
-            } elsif (my $blog = MT::Blog->load($id, { cached_ok => 1 })) {
-                {
-                    action_name    => $actions{$action},
-                    action_value   => $action,
-                    blog_name      => $blog->name,
-                    blog_id        => $id,
-                    trigger_name   => $triggers{$trigger}{name},
-                    trigger_object => $content_type_id
-                    ? $content_type_name
-                    : $triggers{$trigger}{object},
-                    trigger_action    => $triggers{$trigger}{action},
-                    trigger_value     => $trigger,
-                    content_type_name => $content_type_name,
-                    content_type_id   => $content_type_id,
-                };
-            } else {
-                ();
-            }
-        } split(/\|/, $rebuild_triggers);
-        $args->{rebuilds_loop} = \@rebuilds;
+    for my $rt (MT->model('rebuild_trigger')->load({ blog_id => $blog_id })) {
+        my $ct      = $rt->ct_id ? MT->model('content_type')->load($rt->ct_id) : undef;
+        my $ct_name = $ct        ? $ct->name                                   : '';
+        my $e       = {
+            id             => $rt->id,
+            action_label   => $actions_hash{ $rt->action },
+            action         => $rt->action,
+            object_label   => $rt->ct_id ? $ct_name : $object_hash{ $rt->object_type },
+            event_label    => $event_hash{ $rt->event },
+            object_type    => $rt->object_type,
+            event          => $rt->event,
+            ct_name        => $ct_name,
+            ct_id          => $rt->ct_id,
+            target         => $rt->target,
+            target_blog_id => $rt->target_blog_id,
+        };
+        if ($rt->target == MT::RebuildTrigger::TARGET_ALL()) {
+            $e->{blog_name} = $app->translate('(All sites and child sites in this system)');
+        } elsif ($rt->target == MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()) {
+            $e->{blog_name} = $app->translate('(All child sites in this site)');
+        } elsif (my $blog = MT::Blog->load($rt->target_blog_id, { cached_ok => 1 })) {
+            $e->{blog_name} = $blog->name;
+        } else {
+            $rt->remove() and next;    # never reach here
+        }
+        push @json_seed, $e;
     }
 
-    if ($app->isa('MT::App')) {
-        $args->{blog_id} = $app->blog->id if $app->blog;
-    }
+    return JSON->new->utf8(0)->encode(\@json_seed);
+}
+
+my @key_fields = ('object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
+
+sub _rt_digest {
+    my $rt = shift;
+    return join(',', map { $rt->$_ } @key_fields);
 }
 
 sub save {
@@ -441,65 +312,43 @@ sub save {
         unless $app->user->is_superuser()
         || ($app->blog && $app->user->permissions($app->blog->id)->can_administer_site());
 
-    my $blog_id          = $app->blog ? $app->blog->id : 0;
-    my @p                = $app->multi_param;
-    my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
-    my @new_triggers     = ();
+    if (my $req_triggers = $app->multi_param('rebuild_triggers')) {
 
-    for my $key (qw/ all_triggers blogs_in_website_triggers rebuild_triggers /) {
-        if ($app->multi_param($key)) {
-            my @triggers = split '\|', $app->multi_param($key);
-            foreach my $trigger (@triggers) {
-                my ($action, $id, $event, $content_type_id)
-                    = split ':',
-                    $trigger;
-                $content_type_id = 0 if $content_type_id eq 'undefined';
-                $action =
-                    $action eq 'ri'
-                    ? MT::RebuildTrigger::ACTION_RI()
-                    : MT::RebuildTrigger::ACTION_RIP();
-                my $object_type =
-                      $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
-                    : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
-                    : $event =~ /^tb_.*/      ? MT::RebuildTrigger::TYPE_PING()
-                    :                           MT::RebuildTrigger::TYPE_CONTENT_TYPE();
-                $event =
-                      $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
-                    : $event =~ /.*_pub$/  ? MT::RebuildTrigger::EVENT_PUBLISH()
-                    :                        MT::RebuildTrigger::EVENT_UNPUBLISH();
-                my $target =
-                      $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
-                    : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
-                    :                              MT::RebuildTrigger::TARGET_BLOG();
-                my $target_blog_id = $id =~ /\d+/ ? $id : 0;
-                my ($rt) = grep { $_->blog_id == $blog_id && $_->object_type == $object_type && $_->action == $action && $_->event == $event && $_->target == $target && $_->target_blog_id == $target_blog_id && $_->ct_id == $content_type_id } @rebuild_triggers;
+        my $blog_id = $app->blog ? $app->blog->id : return;
+        my @db_rts  = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
+        my %digests = map { _rt_digest($_), $_ } @db_rts;
 
-                unless ($rt) {
-                    $rt = MT->model('rebuild_trigger')->new;
-                    $rt->blog_id($blog_id);
-                    $rt->object_type($object_type);
-                    $rt->action($action);
-                    $rt->event($event);
-                    $rt->target($target);
-                    $rt->target_blog_id($target_blog_id);
-                    $rt->ct_id($content_type_id);
+        require JSON;
+        my $triggers = JSON->new->utf8(0)->decode(MT::Util::decode_js($req_triggers));
+
+        # delete
+        {
+            my %front_ids       = map { $_->{id}, 1 } grep { $_->{id} } @$triggers;
+            my %db_id_to_digest = map { $digests{$_}->id, $_ } keys(%digests);
+            for my $id (grep { !exists $front_ids{$_} } map { $_->id } @db_rts) {
+                if (my $rt = $digests{ $db_id_to_digest{$id} }) {
+                    $rt->remove or return $app->error($rt->errstr);
+                    delete $digests{ $db_id_to_digest{$id} };
                 }
-                push @new_triggers, $rt;
             }
         }
-    }
 
-    # Remove
-    foreach my $rt (@rebuild_triggers) {
-        my ($exist) = grep { $_->blog_id == $rt->blog_id && $_->object_type == $rt->object_type && $_->action == $rt->action && $_->event == $rt->event && $_->target == $rt->target && $_->target_blog_id == $rt->target_blog_id && $_->ct_id == $rt->ct_id } @new_triggers;
-        unless ($exist) {
-            $rt->remove or return $app->error($rt->errstr);
+        for my $t (@$triggers) {
+            next if (grep { !exists($t->{$_}) } @key_fields);    # in case request is broken
+            my $rt = MT->model('rebuild_trigger')->new;
+            $rt->blog_id($blog_id);
+            $rt->object_type($t->{object_type});
+            $rt->action($t->{action});
+            $rt->event($t->{event});
+            $rt->target($t->{target});
+            $rt->target_blog_id($t->{target_blog_id} || 0);
+            $rt->ct_id($t->{ct_id}                   || 0);
+
+            my $new_digest = _rt_digest($rt);
+            next if (exists $digests{$new_digest});
+            $digests{$new_digest} = 0;
+            $rt->save or return $app->error($rt->errstr);
         }
-    }
-
-    # Save
-    foreach my $rt (@new_triggers) {
-        $rt->save or return $app->error($rt->errstr);
     }
 
     $app->config('DefaultAccessAllowed', $app->multi_param('default_access_allowed'), 1)
