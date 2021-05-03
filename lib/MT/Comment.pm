@@ -137,7 +137,7 @@ sub _nextprev {
     my $obj   = shift;
     my $class = ref($obj);
     my ( $direction, $terms ) = @_;
-    return undef unless ( $direction eq 'next' || $direction eq 'previous' );
+    return unless ( $direction eq 'next' || $direction eq 'previous' );
     my $next = $direction eq 'next';
 
     my $label = '__' . $direction;
