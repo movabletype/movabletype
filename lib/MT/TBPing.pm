@@ -64,8 +64,7 @@ MT::TBPing->add_callback(
     10,
     MT->component('core'),
     sub {
-        MT->model('rebuild_trigger')
-            ->runner( 'post_feedback_save', 'tb_pub', @_ );
+        MT->model('rebuild_trigger')->runner( 'post_feedback_save_tb_pub', @_ );
     }
 );
 

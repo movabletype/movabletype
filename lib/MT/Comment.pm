@@ -72,8 +72,7 @@ MT::Comment->add_callback(
     10,
     MT->component('core'),
     sub {
-        MT->model('rebuild_trigger')
-            ->runner( 'post_feedback_save', 'comment_pub', @_ );
+        MT->model('rebuild_trigger')->runner( 'post_feedback_save_comment_pub', @_ );
     }
 );
 
@@ -157,7 +156,7 @@ sub entry {
     my $entry = $comment->{__entry};
     unless ($entry) {
         my $entry_id = $comment->entry_id;
-        return undef unless $entry_id;
+        return unless $entry_id;
         require MT::Entry;
         $entry = MT::Entry->load($entry_id)
             or return $comment->error(
