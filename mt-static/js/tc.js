@@ -207,7 +207,6 @@ TC.allowTabs = function( element )
 TC.allowTabs.keyPress = function( evt )
 {
 	evt = evt || event;
-	var element = evt.target || evt.srcElement;
 	if( evt.keyCode == 9 )
 	{
 		return TC.stopEvent( evt );
@@ -298,7 +297,6 @@ TC.setCaretPosition = function( element, pos )
         element.selectionEnd = pos;
         return true;
     }
-    return false;
 }
 
 TC.createRange = function( selection, element )

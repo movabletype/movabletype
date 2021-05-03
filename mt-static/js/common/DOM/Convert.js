@@ -41,7 +41,6 @@ extend( DOM, {
         e.innerHTML = html;
         DOM.mergeTextNodes( e );
 
-        var ns = [];
         var proxy = new DOM.Proxy( e );
         do {
             var n = proxy.getNextNode();

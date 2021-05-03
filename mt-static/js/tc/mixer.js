@@ -129,7 +129,6 @@ TC.Mixer.prototype.addEntry =
 TC.Mixer.prototype.addEntries = function()
 {
 	var changed = false;
-	var args = arguments;
 	for( var i = 0; i < arguments.length; i++ )
 	{
 		var entry = arguments[ i ];
