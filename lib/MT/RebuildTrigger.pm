@@ -437,9 +437,8 @@ sub _post_content_common {
         $code->($d);
     }
 
-    if (my $website = $blog->website) {
-        my $d = $self->get_config_value(TARGET_BLOGS_IN_WEBSITE(), $website->id);
-        $code->($d);
+    if ($blog->is_blog && (my $website = $blog->website)) {
+        $code->($self->get_config_value(TARGET_BLOGS_IN_WEBSITE(), $website->id));
     }
 }
 
