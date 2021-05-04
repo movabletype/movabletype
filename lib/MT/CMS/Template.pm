@@ -1126,7 +1126,7 @@ sub list {
         if ( ref $ts ) {
             $set = $ts->{templates};
         }
-        elsif ( $ts ne 'mt_blog' ) {
+        elsif ( $ts && $ts ne 'mt_blog' ) {
             $set = MT->registry(
                 template_sets => $blog->template_set => 'templates' );
         }
