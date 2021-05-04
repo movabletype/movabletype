@@ -794,8 +794,7 @@ sub edit {
             }
         }
     }
-    $param->{publish_queue_available}
-        = eval 'require List::Util; require Scalar::Util; 1;';
+    $param->{publish_queue_available} = eval {require List::Util; require Scalar::Util; 1;};
 
     return $app->return_to_dashboard( redirect => 1 )
         if $param->{type} =~ /['"<>]/;
@@ -1558,7 +1557,7 @@ sub preview {
     $app->run_callbacks( 'cms_pre_preview.template', $app, $preview_tmpl,
         \@data );
 
-    my $has_hires = eval 'require Time::HiRes; 1' ? 1 : 0;
+    my $has_hires = eval { require Time::HiRes; 1 } ? 1 : 0;
     my $start_time = $has_hires ? Time::HiRes::time() : time;
 
     my $ctx = $preview_tmpl->context;
@@ -1753,8 +1752,7 @@ sub _generate_map_table {
     my $template = MT::Template->load($template_id);
     my $tmpl     = $app->load_tmpl('include/archive_maps.tmpl');
     my $maps = _populate_archive_loop( $app, $blog, $template, $new_map_id );
-    $tmpl->param( publish_queue_available => eval
-            'require List::Util; require Scalar::Util; 1;' );
+    $tmpl->param( publish_queue_available => eval { require List::Util; require Scalar::Util; 1; } );
     $tmpl->param( template_map_loop => $maps ) if @$maps;
     my $html = $tmpl->output();
 
