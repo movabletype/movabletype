@@ -7,6 +7,7 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use File::Path;
 use Time::HiRes qw(time);
+use List::Util;
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -24,6 +25,8 @@ use MT::RebuildTrigger;
 use Selenium::Waiter;
 
 $test_env->prepare_fixture('db');
+
+my $s = MT::Test::Selenium->new($test_env);
 
 MT->model('content_type')->remove();
 
@@ -80,9 +83,10 @@ my $senareos = [
     [[7, 7], [1, 1], [],     [3, 3], [2, 1]], [[7, 7], [1, 1], [],     [3, 3], [2, 2]],
 ];
 
+$senareos = [ (List::Util::shuffle(@$senareos))[0..14] ]; # picking up 15 random senarios to test
+
 plan tests => ((scalar @$senareos) * 1) + (scalar(grep { @$_} map { @$_ } @$senareos) * 4);
 
-my $s = MT::Test::Selenium->new($test_env);
 $s->driver->{is_wd3} = 0;
 my $author = MT->model('author')->load(1);
 $author->set_password('Nelson');
