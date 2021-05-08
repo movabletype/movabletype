@@ -4204,6 +4204,7 @@ use vars qw( @ISA %Lexicon );
 	'Select Trigger Action' => 'アクションを選択',
 	'Select Trigger Event' => 'イベントを選択',
 	'Select Trigger Object' => '対象を選択',
+	'__UNPUBLISHED' => '公開終了',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'トリミング',

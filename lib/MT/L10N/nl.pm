@@ -4205,6 +4205,7 @@ ter opnieuw te proberen.',
 	'Select Trigger Action' => 'Selecteer triggeractie',
 	'Select Trigger Event' => 'Selecteer triggergebeurtenis',
 	'Select Trigger Object' => 'Selecteer triggerobject',
+	'__UNPUBLISHED' => 'Publicatie ongedaan maken',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'Bijsnijden',

@@ -242,7 +242,7 @@ sub event_loop {
     return [
         { id => MT::RebuildTrigger::EVENT_SAVE(),      name => $app->translate('Save') },
         { id => MT::RebuildTrigger::EVENT_PUBLISH(),   name => $app->translate('Publish') },
-        { id => MT::RebuildTrigger::EVENT_UNPUBLISH(), name => $app->translate('Unpublish') }];
+        { id => MT::RebuildTrigger::EVENT_UNPUBLISH(), name => $app->translate('__UNPUBLISHED') }];
 }
 
 sub object_type_loop {

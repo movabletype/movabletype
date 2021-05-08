@@ -4204,6 +4204,7 @@ r, inténtelo más tarde.',
 	'Select Trigger Action' => 'Seleccione acción inductora',
 	'Select Trigger Event' => 'Seleccione evento inductor',
 	'Select Trigger Object' => 'Seleccioe el objecto inductor',
+	'__UNPUBLISHED' => 'Despublicar',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'Recortar',
