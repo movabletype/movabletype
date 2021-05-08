@@ -98,7 +98,7 @@ sub post_contents_bulk_save {
 sub post_content_save {
     my $self = shift;
     my ($cb, $app, $content) = @_;
-    my $blog_id = $content->blog_id || 0;
+    my $blog_id = $content->blog_id;
 
     my $code = sub {
         my ($d) = @_;
