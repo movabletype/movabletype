@@ -19,7 +19,12 @@ my @files =
 
 exit unless @files;
 
-my $critic = Perl::Critic->new(-profile => '', -exclude => ['TestingAndDebugging::ProhibitNoStrict']);
+my $critic = Perl::Critic->new(
+    -profile => '',
+    -exclude => [
+        'TestingAndDebugging::ProhibitNoStrict',
+        'Modules::RequireFilenameMatchesPackage'
+    ]);
 $critic->add_policy(-policy => 'TestingAndDebugging::ProhibitNoStrict', -params => { allow => 'refs' });
 $critic->add_policy(-policy => 'Variables::ProhibitUnusedVariables');
 $critic->add_policy(-policy => 'ValuesAndExpressions::ProhibitDuplicateHashKeys');
