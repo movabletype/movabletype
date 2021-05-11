@@ -10,6 +10,7 @@ use Time::HiRes qw(time);
 use List::Util;
 use Test::More;
 use MT::Test::Env;
+use Data::Dumper;
 our $test_env;
 
 BEGIN {
@@ -98,12 +99,11 @@ wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
 my $added_count = 0;
 
 for (my $i = 0; $i < scalar @$senareos; $i++) {
-    note "senario $i";
+    note "senario: ". stringify_senario($senareos->[$i]);
     my $pages = $senareos->[$i];
     $s->driver->find_element('#rebuild_triggers-field .mt-open-dialog', 'css')->click;
     my $iframe = wait_until { $s->driver->find_element('iframe', 'css') };
     wait_until { $s->driver->switch_to_frame($iframe); };
-    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
     my @panels = (
         $s->driver->find_element('#site-panel',         'css'),
         $s->driver->find_element('#object-panel',       'css'),
@@ -120,18 +120,25 @@ for (my $i = 0; $i < scalar @$senareos; $i++) {
         screenshot_full($s->driver, "senario$i-page$j", 1200, 900) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         my $next_button = $panels[$j]->child('.modal-footer button.btn-primary', 'css');
         ok($next_button->get_attribute('disabled') ne '', 'button is not active yet');
-        ok($panels[$j]->is_displayed,                     'panel is visible');
-        is(scalar(grep { $_->is_displayed } @panels), 1, 'other panels are hidden');
+        my @current_panel = grep { $_->is_displayed } @panels;
+        is($current_panel[0],     $panels[$j], 'panel is visible');
+        is(scalar @current_panel, 1,           'other panels are hidden');
         my @selections = grep { $_->is_displayed } $panels[$j]->children('.mt-table tbody tr');
         is(scalar @selections, $pages->[$j]->[0], 'right number of selections');
         $selections[$pages->[$j]->[1] - 1]->click();
         $next_button->click();
     }
     $s->driver->switch_to_frame;
-    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, ++$added_count, 'trigger added');
     screenshot_full($s->driver, "senario$i") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+}
+
+sub stringify_senario {
+    my $ref = shift;
+    my $string = Dumper($ref);
+    $string =~ s{\s}{}g;
+    return (split(/=/, $string, 2))[1];
 }
 
 sub screenshot {
