@@ -44,14 +44,14 @@ function returnTrigger(ok) {
         var object = object_elm.val();
         var event_elm = jQuery('input[name="event-cb"]:checked');
         var event = event_elm.val();
-        var object_label = object_elm.parent().parent().parent().find('.panel-label').text();
-        var event_label = event_elm.parent().parent().parent().find('.panel-label').text();
+        var object_label = object_elm.parents("tr").find('.panel-label').text();
+        var event_label = event_elm.parents("tr").find('.panel-label').text();
         // Content Type
         var ct_name;
         var ct_id;
         <mt:unless name="missing_content_type">
         var ct_elm = jQuery('input[name="content_type-cb"]:checked');
-        ct_name = ct_elm.parent().parent().parent().find('.panel-label').text();
+        ct_name = ct_elm.parents("tr").find('.panel-label').text();
         ct_id = ct_elm.val();
         if (ct_id) {
             object_label = ct_name;
@@ -140,7 +140,7 @@ function init() {
             // Badge
             curr        = 'source-site';
             next        = 'source-data';
-            badge_label = checked.parent().parent().parent().find('.panel-label').text();
+            badge_label = checked.parents("tr").find('.panel-label').text();
         }
         else if ( dialog.currentPanel === 1 ) {
             var checked = jQuery('input[name="object-cb"]:checked');
@@ -163,14 +163,14 @@ function init() {
             // Badge
             curr        = 'source-data';
             next        = select_object === TYPE_CONTENT_TYPE ? 'source-data' : 'source-trigger';
-            badge_label = checked.parent().parent().parent().find('.panel-label').text();
+            badge_label = checked.parents("tr").find('.panel-label').text();
         }
         <mt:unless name="missing_content_type">
         else if ( dialog.currentPanel === 2 ) {
             // Badge
             curr        = 'source-data';
             next        = 'source-trigger';
-            badge_label = jQuery('input[name="content_type-cb"]:checked').parent().parent().parent().find('.panel-label').text();
+            badge_label = jQuery('input[name="content_type-cb"]:checked').parents("tr").find('.panel-label').text();
             badge_label = "<__trans phrase="Content Type">: " + badge_label;
         }
         </mt:unless>
@@ -181,7 +181,7 @@ function init() {
         </mt:if>
             // Badge
             curr        = 'source-trigger';
-            badge_label = jQuery('input[name="event-cb"]:checked').parent().parent().parent().find('.panel-label').text();
+            badge_label = jQuery('input[name="event-cb"]:checked').parents("tr").find('.panel-label').text();
         }
 
         // Badge
