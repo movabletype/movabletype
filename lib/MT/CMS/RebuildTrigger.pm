@@ -49,24 +49,6 @@ sub add {
 
     my $blog_id = $app->blog->id;
 
-    my @panels = (
-        { type => 'blog',         'name' => 'site' },
-        { type => 'content_type', 'name' => 'content_type' },
-    );
-
-    my $panel_info = {
-        'blog' => {
-            panel_title       => $app->translate("Select Site"),
-            panel_label       => $app->translate("Site Name"),
-            panel_description => $app->translate("Description"),
-        },
-        'content_type' => {
-            panel_title       => $app->translate("Select Content Type"),
-            panel_label       => $app->translate("Name"),
-            panel_description => $app->translate("Description"),
-        },
-    };
-
     my $type = $app->param('_type') || '';
 
     my $hasher = sub {
@@ -77,119 +59,121 @@ sub add {
         }
     };
 
-    my $terms = {};
-    if ($type eq 'site') {
-        $terms->{id}    = { not => [$blog_id] };
-        $terms->{class} = ['website', 'blog'];
-    } elsif (my $select_blog_id = $app->param('select_blog_id')) {
-        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/^[0-9]+$/;
-    }
+    require MT::RebuildTrigger;
+
+    my $pre_build = sub {
+        my ($param) = @_;
+        my $count = 0;
+        if ((my $loop = $param->{object_loop}) && !$app->param('offset')) {
+            if ($app->blog && !$app->blog->is_blog) {
+                $count++;
+                unshift @$loop, {
+                    id          => '_' . MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
+                    label       => $app->translate('(All child sites in this site)'),
+                    description => $app->translate('Select to apply this trigger to all child sites in this site.'),
+                };
+            }
+            $count++;
+            unshift @$loop, {
+                id          => '_' . MT::RebuildTrigger::TARGET_ALL(),
+                label       => $app->translate('(All sites and child sites in this system)'),
+                description => $app->translate('Select to apply this trigger to all sites and child sites in this system.'),
+            };
+            splice(@$loop, $param->{limit}) if scalar(@$loop) > $param->{limit};
+        }
+        return $count;
+    };
 
     if ($app->param('search') || $app->param('json')) {
-        my $params = {
-            panel_type      => $type,
-            list_noncron    => 1,
-            panel_multi     => 0,
-            rebuild_trigger => 1,
-        };
-        $app->listing({
-            terms    => $terms,
+        my $listing_params = {
             args     => { sort => 'name' },
             type     => $type,
             code     => $hasher,
-            params   => $params,
+            params   => {
+                panel_type      => $type,
+                list_noncron    => 1,
+                panel_multi     => 0,
+                rebuild_trigger => 1,
+            },
             template => 'include/listing_panel.tmpl',
             $app->param('search') ? (no_limit => 1) : (),
-        });
-    } else {
-        my $params = {};
-        $params->{panel_multi}     = 0;
-        $params->{rebuild_trigger} = 1;
-        $params->{blog_id}         = $blog_id;
-        $params->{dialog_title}    = $app->translate("Create Rebuild Trigger");
-        $params->{panel_loop}      = [];
-
-        require MT::RebuildTrigger;
-
-        for (my $i = 0; $i <= $#panels; $i++) {
-            my $source       = $panels[$i]->{type};
-            my $name         = $panels[$i]->{name};
-            my $id           = $panels[$i]->{id};
-            my $panel_params = {
-                panel_type => $name,
-                %{ $panel_info->{$source} },
-                list_noncron => 1,
-
-                panel_last       => 0,
-                panel_first      => $i == 0,
-                panel_number     => $i == 0 ? 1 : 3,
-                panel_total      => 5,
-                panel_has_steps  => 1,
-                panel_searchable => 1,
-                search_prompt    => (
-                      $i == 0
-                    ? $app->translate("Search Sites and Child Sites")
-                    : $app->translate("Search Content Type"))
-                    . ':',
-            };
-
-            my $limit = $app->param('limit') || 25;
-            my $terms = {};
-            if ($source eq 'blog') {
-                $terms->{id}    = { not => [$blog_id] };
-                $terms->{class} = ['website', 'blog'];
-            } elsif ($source eq 'content_type') {
-                $terms->{blog_id} = $id if $id;
-            }
-            my $args = {};
-            if ($source eq 'blog' || $source eq 'content_type') {
-                $args->{sort}  = 'name';
-                $args->{limit} = $limit;
-            }
-
-            $app->listing({
-                    type      => $source,
-                    code      => $hasher,
-                    terms     => $terms,
-                    args      => $args,
-                    params    => $panel_params,
-                    pre_build => sub {
-                        my ($param) = @_;
-                        my $offset  = $app->param('offset') || 0;
-                        my $limit   = $param->{limit};
-                        my $count   = 0;
-                        if ($source eq 'blog') {
-                            if (!$app->param('search')) {
-                                if ((my $loop = $param->{object_loop}) && !$offset) {
-                                    if ($app->blog && !$app->blog->is_blog) {
-                                        $count++;
-                                        unshift @$loop, {
-                                            id          => '_' . MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE(),
-                                            label       => $app->translate('(All child sites in this site)'),
-                                            description => $app->translate('Select to apply this trigger to all child sites in this site.'),
-                                        };
-                                    }
-                                    $count++;
-                                    unshift @$loop, {
-                                        id          => '_' . MT::RebuildTrigger::TARGET_ALL(),
-                                        label       => $app->translate('(All sites and child sites in this system)'),
-                                        description => $app->translate('Select to apply this trigger to all sites and child sites in this system.'),
-                                    };
-                                    splice(@$loop, $limit) if scalar(@$loop) > $limit;
-                                }
-                            }
-                        }
-                        return $count;
-                    },
-                },
-            );
-
-            push @{ $params->{panel_loop} }, $panel_params;
+        };
+        if ($type eq 'site') {
+            $listing_params->{terms} = { id => { not => [$blog_id] }, class => ['website', 'blog'] };
+            $listing_params->{pre_build} = $pre_build unless $app->param('search');
+        } elsif (my $select_blog_id = $app->param('select_blog_id')) {
+            $listing_params->{terms} = { blog_id => $select_blog_id } if $select_blog_id =~ m/^[0-9]+$/;
         }
+        $app->listing($listing_params);
+    } else {
+
+        my $params = {};
+        $params->{panel_multi}         = 0;
+        $params->{rebuild_trigger}     = 1;
+        $params->{blog_id}             = $blog_id;
+        $params->{dialog_title}        = $app->translate("Create Rebuild Trigger");
+        $params->{panel_loop}          = [];
         $params->{return_args}         = $app->return_args;
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
         $params->{object_type_loop}    = object_type_loop($app);
+        $params->{action_loop}         = action_loop($app);
+        $params->{event_loop}          = event_loop($app);
+        $params->{site_name}           = $app->blog->name;
+
+        my @panels = (
+            {
+                type => 'blog',
+                name => 'site',
+                panel_info => {
+                    panel_title       => $app->translate("Select Site"),
+                    panel_label       => $app->translate("Site Name"),
+                    panel_description => $app->translate("Description"),
+                    search_prompt     => $app->translate("Search Sites and Child Sites"). ':',
+                    panel_number      => 1,
+                    panel_first       => 1,
+                },
+            },
+            {
+                type => 'content_type',
+                name => 'content_type',
+                panel_info => {
+                    panel_title       => $app->translate("Select Content Type"),
+                    panel_label       => $app->translate("Name"),
+                    panel_description => $app->translate("Description"),
+                    search_prompt     => $app->translate("Search Content Type"). ':',
+                    panel_number      => 3,
+                },
+            },
+        );
+
+        for (my $i = 0; $i <= $#panels; $i++) {
+            my $panel_params = {
+                panel_type       => $panels[$i]->{name},
+                list_noncron     => 1,
+                panel_last       => 0,
+                panel_total      => 5,
+                panel_has_steps  => 1,
+                panel_searchable => 1,
+                %{ $panels[$i]->{panel_info} },
+            };
+
+            my $listing_params = {
+                type   => $panels[$i]->{type},
+                code   => $hasher,
+                args   => { sort => 'name', limit => ($app->param('limit') || 25) },
+                params => $panel_params,
+            };
+
+            if ($panels[$i]->{type} eq 'blog') {
+                $listing_params->{terms} = { id => { not => [$blog_id] }, class => ['website', 'blog'] };
+                $listing_params->{pre_build} = $pre_build;
+            }
+
+            $app->listing($listing_params);
+
+            push @{ $params->{panel_loop} }, $panel_params;
+        }
 
         my $plugin_switch  = $app->config->PluginSwitch;
         my $comment_switch = defined($plugin_switch) ? $plugin_switch->{Comments} : 1;
@@ -208,13 +192,9 @@ sub add {
                 [grep { $_->{id} != MT::RebuildTrigger::TYPE_PING() } @{ $params->{object_type_loop} }];
         }
 
-        $params->{action_loop} = action_loop($app);
-        $params->{event_loop}  = event_loop($app);
-        $params->{site_name}   = $app->blog->name;
-
         my @site_has_content_type = ct_count();
         $params->{site_has_content_type}  = \@site_has_content_type;
-        $params->{"missing_content_type"} = 1 unless (scalar @site_has_content_type);
+        $params->{missing_content_type} = 1 unless (scalar @site_has_content_type);
 
         $app->load_tmpl('dialog/create_trigger.tmpl', $params);
     }

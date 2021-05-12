@@ -177,6 +177,36 @@ subtest 'config' => sub {
 
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $blog->id, dialog => 1 });
     $app->get_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, dialog => 1 });
+
+    $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0, search => 'test' });
+    ok $app->content !~ /site-_1/, 'not include pre_build';
+    ok $app->content !~ /site-_2/, 'not include pre_build';
+    ok $app->content =~ /test blog/, 'include test blog';
+    ok $app->content !~ /First Website/, 'not include First Website';
+    ok $app->content =~ /"pager":null/, 'page is null';
+
+    $app->post_ok({ __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'site', offset => 0 });
+    ok $app->content =~ /site-_1/,       'include pre_build selection';
+    ok $app->content =~ /site-_2/,       'include pre_build selection';
+    ok $app->content =~ /test blog/,     'include test blog';
+    ok $app->content =~ /First Website/, 'include First Website';
+    ok $app->content =~ /"listTotal":2/, 'right listTotal';
+
+    $app->post_ok({
+        __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'content_type',
+        select_blog_id => $blog->id, offset => 0, search => 'testct_b'
+    });
+    ok $app->content !~ /testct_a/, 'not include testct_a';
+    ok $app->content =~ /testct_b/, 'include testct_b';
+    ok $app->content =~ /"pager":null/, 'page is null';
+
+    $app->post_ok({
+        __mode => 'add_rebuild_trigger', blog_id => $site->id, json => 1, _type => 'content_type',
+        select_blog_id => $blog->id, offset => 0
+    });
+    ok $app->content =~ /testct_a/, 'include testct_a';
+    ok $app->content =~ /testct_b/, 'include testct_b';
+    ok $app->content =~ /"listTotal":2/, 'right listTotal';
 };
 
 done_testing;
