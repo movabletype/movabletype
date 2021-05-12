@@ -4197,7 +4197,7 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'イベント',
-	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => '<span class="badge source-site-badge badge--selected">サイト</span>にある<span class="badge source-data-badge">データ</span>が<span class="badge source-trigger-badge">トリガー</span>されたとき、<span class="badge destination-site-badge">サイト</span>で<span class="badge destination-action-badge">アクション</span>される。',
+	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>' => '<span class="badge source-site-badge badge--selected">サイト</span>にある<span class="badge source-data-badge">データ</span>が<span class="badge source-trigger-badge">トリガー</span>されたとき、<span class="badge destination-site-badge">サイト</span>で実行される。',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
 	'Object Name' => '対象',

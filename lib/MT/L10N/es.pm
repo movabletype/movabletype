@@ -4197,7 +4197,7 @@ r, inténtelo más tarde.',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'Evento',
-	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => 'Si <span class="badge source-data-badge">Datos</span> en <span class="badge source-site-badge">Sitio</span> es <span class="badge source-trigger-badge">Inducido</span>, <span class="badge destination-action-badge">Acción</span> en <span class="badge destination-site-badge">Sitio</span>',
+	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>' => 'Si <span class="badge source-data-badge">Datos</span> en <span class="badge source-site-badge">Sitio</span> es <span class="badge source-trigger-badge">Inducido</span>, realizará en <span class="badge destination-site-badge">Sitio</span>',
 	'OK (s)' => 'Aceptar (s)',
 	'OK' => 'Aceptar',
 	'Object Name' => 'Nombre del objeto',

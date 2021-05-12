@@ -124,7 +124,7 @@ sub add {
                 panel_last       => 0,
                 panel_first      => $i == 0,
                 panel_number     => $i == 0 ? 1 : 3,
-                panel_total      => 5,
+                panel_total      => 4,
                 panel_has_steps  => 1,
                 panel_searchable => 1,
                 search_prompt    => (
@@ -209,9 +209,8 @@ sub add {
                 [grep { $_->{id} != MT::RebuildTrigger::TYPE_PING() } @{ $params->{object_type_loop} }];
         }
 
-        $params->{action_loop} = action_loop($app);
-        $params->{event_loop}  = event_loop($app);
-        $params->{site_name}   = $app->blog->name;
+        $params->{event_loop} = event_loop($app);
+        $params->{site_name}  = $app->blog->name;
 
         my @site_has_content_type = ct_count();
         $params->{site_has_content_type}  = \@site_has_content_type;
@@ -228,13 +227,6 @@ sub ct_count {
         push @ret, { id => $id, value => $count };
     }
     return @ret;
-}
-
-sub action_loop {
-    my $app = shift;
-    return [
-        { id => MT::RebuildTrigger::ACTION_RI(),  name => $app->translate('rebuild indexes.') },
-        { id => MT::RebuildTrigger::ACTION_RIP(), name => $app->translate('rebuild indexes and send pings.') }];
 }
 
 sub event_loop {
@@ -261,9 +253,8 @@ sub load_config {
     require MT::RebuildTrigger;
     require JSON;
 
-    my %actions_hash = (map { $_->{id}, $_->{name} } @{ action_loop($app) });
-    my %event_hash   = (map { $_->{id}, $_->{name} } @{ event_loop($app) });
-    my %object_hash  = (map { $_->{id}, $_->{name} } @{ object_type_loop($app) });
+    my %event_hash  = (map { $_->{id}, $_->{name} } @{ event_loop($app) });
+    my %object_hash = (map { $_->{id}, $_->{name} } @{ object_type_loop($app) });
     my @json_seed;
 
     for my $rt (MT->model('rebuild_trigger')->load({ blog_id => $blog_id })) {
@@ -271,8 +262,6 @@ sub load_config {
         my $ct_name = $ct        ? $ct->name                                   : '';
         my $e       = {
             id             => $rt->id,
-            action_label   => $actions_hash{ $rt->action },
-            action         => $rt->action,
             object_label   => $rt->ct_id ? $ct_name : $object_hash{ $rt->object_type },
             event_label    => $event_hash{ $rt->event },
             object_type    => $rt->object_type,
@@ -297,7 +286,7 @@ sub load_config {
     return JSON->new->utf8(0)->encode(\@json_seed);
 }
 
-my @key_fields = ('object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
+my @key_fields = ('object_type', 'event', 'target', 'target_blog_id', 'ct_id');
 
 sub _rt_digest {
     my $rt = shift;
@@ -338,7 +327,6 @@ sub save {
             my $rt = MT->model('rebuild_trigger')->new;
             $rt->blog_id($blog_id);
             $rt->object_type($t->{object_type});
-            $rt->action($t->{action});
             $rt->event($t->{event});
             $rt->target($t->{target});
             $rt->target_blog_id($t->{target_blog_id} || 0);

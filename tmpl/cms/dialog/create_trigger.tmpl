@@ -43,10 +43,6 @@ function returnTrigger(ok) {
         if (labels.length == 0) return;
         var blog_name = labels[0].innerHTML;
 
-        // Action
-        var action_elm = jQuery('input[name="action-cb"]:checked');
-        var action_label = action_elm.parent().parent().parent().find('.panel-label').text();
-        var action = action_elm.val();
         // Trigger
         var object_elm = jQuery('input[name="object-cb"]:checked');
         var object = object_elm.val();
@@ -67,8 +63,6 @@ function returnTrigger(ok) {
         </mt:unless>
 
         window.parent.addMultiBlogTrigger({
-            'action_label': action_label,
-            'action': action,
             'blog_name': blog_name,
             'target_blog_id': blog_id.substr(0, 1) === '_' ? 0 : blog_id,
             'target': blog_id.substr(0, 1) === '_' ? blog_id.substr(1) : TARGET_BLOG,
@@ -113,9 +107,6 @@ function init() {
     </mt:unless>
     // Event
     panel = new ListingPanel("event");
-    panels[panels.length] = panel;
-    // Trigger
-    panel = new ListingPanel("action");
     panels[panels.length] = panel;
 
     dialog.setPanels(panels);
@@ -194,7 +185,6 @@ function init() {
         </mt:if>
             // Badge
             curr        = 'source-trigger';
-            next        = 'destination-action';
             badge_label = jQuery('input[name="event-cb"]:checked').parent().parent().parent().find('.panel-label').text();
         }
 
@@ -212,18 +202,9 @@ function init() {
     dialog.previousPanel = function(){
         var curr, next, prev;
         <mt:if name="missing_content_type">
+        if ( dialog.currentPanel === 2 ) {
+        <mt:else>
         if ( dialog.currentPanel === 3 ) {
-        <mt:else>
-        if ( dialog.currentPanel === 4 ) {
-        </mt:if>
-            // Badge
-            curr = 'destination-action';
-            prev = 'source-trigger';
-        }
-        <mt:if name="missing_content_type">
-        else if ( dialog.currentPanel === 2 ) {
-        <mt:else>
-        else if ( dialog.currentPanel === 3 ) {
         </mt:if>
             var select_object = jQuery('input[name="object-cb"]:checked').val();
             if ( select_object !== TYPE_CONTENT_TYPE ) {
@@ -361,7 +342,7 @@ TC.attachLoadEvent( init );
 </mt:setvarblock>
 
 <mt:setvarblock name="modal_rebuildtriggers">
-    <__trans phrase="IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>">
+    <__trans phrase="IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>">
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
@@ -390,7 +371,7 @@ TC.attachLoadEvent( init );
   <div class="panel-body">
   <div class="panel-header modal-description">
     <h4 class="title modal-label"><__trans phrase="Select Trigger Object"></h4>
-    <div class="text-right">2 / 5</div>
+    <div class="text-right">2 / 4</div>
   </div>
   <div class="modal-rebuildtriggers">
     <mt:var name="modal_rebuildtriggers">
@@ -465,7 +446,7 @@ TC.attachLoadEvent( init );
   <div class="panel-body">
   <div class="panel-header modal-description">
     <h4 class="title modal-label"><__trans phrase="Select Trigger Event"></h4>
-    <div class="text-right">4 / 5</div>
+    <div class="text-right">4 / 4</div>
   </div>
   <div class="modal-rebuildtriggers">
     <mt:var name="modal_rebuildtriggers">
@@ -523,88 +504,13 @@ TC.attachLoadEvent( init );
          title="<__trans phrase="Back (b)">"
          class="action previous button btn btn-default">
         <__trans phrase="Back"></button>
-      <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="Continue (s)">"
-         class="continue action primary button next btn btn-primary"
-         disabled="true">
-        <__trans phrase="Continue"></button>
-    </form>
-  </div>
-  </div>
-</div>
-
-<!-- Select Action Panel -->
-<div id="action-panel" style="display: none;">
-  <div class="panel-body">
-  <div class="panel-header modal-description">
-    <h4 class="title modal-label"><__trans phrase="Select Trigger Action"></h4>
-    <div class="text-right">5 / 5</div>
-  </div>
-  <div class="modal-rebuildtriggers">
-    <mt:var name="modal_rebuildtriggers">
-  </div>
-  <div class="modal-body">
-  <div id="selector-action" class="selector listing list-data">
-    <form action="" method="get" onsubmit="return false">
-      <div class="mt-table--outline">
-        <table class="table mt-table">
-          <thead>
-            <tr>
-              <th class="head cb mt-table__control">
-
-                &nbsp;
-
-              </th>
-              <th class="head panel-label primary" scope="col"><span class="col-label"><__trans phrase="Action"></span></th>
-            </tr>
-          </thead>
-          <tbody>
-            <mt:loop name="action_loop">
-            <tr id="action_<mt:var name="id">">
-              <td class="cb" scope="row">
-                <div class="custom-control custom-radio">
-                  <input id="select_action_<mt:var name="id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="id">" />
-                  <label class="custom-control-label" for="select_action_<mt:var name="id">"><span class="sr-only"><__trans phrase="Select"></span></label>
-                </div>
-              </td>
-              <td class="panel-label">
-                <mt:var name="name">
-              </td>
-            </tr>
-            </mt:loop>
-          </tbody>
-        </table>
-      </div>
-    </form>
-    <div class="text-right pagination" style="display: block;"></div>
-  </div>
-  </div>
-  </div> <!-- modal-body -->
-  <div class="modal-footer">
-  <div class="actions-bar actions-bar-bottom">
-    <form action="" method="get" onsubmit="return false" onclick="window.focus();">
-      <a
-         accesskey="x"
-         data-dismiss="modal"
-         data-mt-modal-close
-         class="cancel action button mt-close-dialog btn btn-link btn-sm modal-cancel"
-         title="<__trans phrase="Cancel (x)">">
-        <__trans phrase="Cancel"></a>
-      <button
-         type="submit"
-         accesskey="b"
-         title="<__trans phrase="Back (b)">"
-         class="action previous button btn btn-default">
-        <__trans phrase="Back"></button>
-      <button
-         type="submit"
-         accesskey="s"
-         title="<__trans phrase="OK (s)">"
-         class="close-button action primary button disabled btn btn-primary"
-         disabled="true">
-        <__trans phrase="OK"></button>
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="OK (s)">"
+           class="close-button action primary button disabled btn btn-primary"
+           disabled="true">
+          <__trans phrase="OK"></button>
     </form>
   </div>
   </div>

@@ -4198,7 +4198,7 @@ itte versuchen Sie es später erneut.',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'Ereignis',
-	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => 'Wenn <span class="badge source-data-badge">Daten</span> in <span class="badge source-site-badge">Site</span> <span class="badge source-trigger-badge">ausgelöst</span> sind, <span class="badge destination-action-badge">Aktion</span> in <span class="badge destination-site-badge">Site</span> ausführen',
+	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>' => 'Wenn <span class="badge source-data-badge">Daten</span> in <span class="badge source-site-badge">Site</span> <span class="badge source-trigger-badge">ausgelöst</span> sind, durchgeführt in <span class="badge destination-site-badge">Site</span> ausführen',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
 	'Object Name' => 'Objektname',

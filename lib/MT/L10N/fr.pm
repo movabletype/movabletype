@@ -4197,7 +4197,7 @@ réessayer plus tard.',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'Événement',
-	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => 'IF <span class="badge source-data-badge">une donnée</span> dans <span class="badge source-site-badge">le site</span> est <span class="badge source-trigger-badge">déclenchée</span>, <span class="badge destination-action-badge">agir</span> sur <span class="badge destination-site-badge">le site</span>',
+	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>' => 'IF <span class="badge source-data-badge">une donnée</span> dans <span class="badge source-site-badge">le site</span> est <span class="badge source-trigger-badge">déclenchée</span>, exécutée sur <span class="badge destination-site-badge">le site</span>',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
 	'__UNPUBLISHED' => 'Dé-publier',

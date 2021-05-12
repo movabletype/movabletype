@@ -83,7 +83,6 @@ my $request = MT::Request->instance;
 my $rt = MT::RebuildTrigger->new;
 $rt->blog_id( $site->id );
 $rt->object_type( MT::RebuildTrigger::TYPE_CONTENT_TYPE() );
-$rt->action( MT::RebuildTrigger::ACTION_RI() );
 $rt->event( MT::RebuildTrigger::EVENT_PUBLISH() );
 $rt->target( MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE() );
 $rt->target_blog_id(0);

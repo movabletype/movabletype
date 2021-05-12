@@ -4198,7 +4198,7 @@ ter opnieuw te proberen.',
 
 ## tmpl/cms/dialog/create_trigger.tmpl
 	'Event' => 'Gebeurtenis',
-	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, <span class="badge destination-action-badge">Action</span> in <span class="badge destination-site-badge">Site</span>' => 'ALS <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> wordt <span class="badge source-trigger-badge">Getriggerd</span>, <span class="badge destination-action-badge">Actie</span> in <span class="badge destination-site-badge">Site</span>',
+	'IF <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> is <span class="badge source-trigger-badge">Triggered</span>, performed in <span class="badge destination-site-badge">Site</span>' => 'ALS <span class="badge source-data-badge">Data</span> in <span class="badge source-site-badge">Site</span> wordt <span class="badge source-trigger-badge">Getriggerd</span>, uitgevoerd in <span class="badge destination-site-badge">Site</span>',
 	'OK (s)' => 'OK (s)',
 	'OK' => 'OK',
 	'Object Name' => 'Objectnaam',

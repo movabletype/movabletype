@@ -12,14 +12,12 @@ use base qw( MT::Object );
 use Exporter 'import';
 our @EXPORT_OK = qw(
     TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
-    ACTION_RI ACTION_RIP
     EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
     TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
 );
 our %EXPORT_TAGS = (
     constants => [qw(
         TYPE_ENTRY_OR_PAGE TYPE_CONTENT_TYPE TYPE_COMMENT TYPE_PING
-        ACTION_RI ACTION_RIP
         EVENT_SAVE EVENT_PUBLISH EVENT_UNPUBLISH
         TARGET_ALL TARGET_BLOGS_IN_WEBSITE TARGET_BLOG
     )]);
@@ -28,9 +26,6 @@ sub TYPE_ENTRY_OR_PAGE() { 1 }
 sub TYPE_CONTENT_TYPE()  { 2 }
 sub TYPE_COMMENT()       { 3 }
 sub TYPE_PING()          { 4 }
-
-sub ACTION_RI()  { 1 }    # rebuild index pages
-sub ACTION_RIP() { 2 }    # rebuild index pages and send update ping
 
 sub EVENT_SAVE()      { 1 }
 sub EVENT_PUBLISH()   { 2 }
@@ -47,7 +42,7 @@ __PACKAGE__->install_properties({
         'object_type'    => 'integer',
         'ct_id'          => 'integer',
         'ct_unique_id'   => 'string(40)',
-        'action'         => 'integer',
+        'action'         => 'integer', # DEPRECATED
         'event'          => 'integer',
         'target'         => 'integer',
         'target_blog_id' => 'integer',
@@ -82,7 +77,7 @@ sub get_config_value {
         } else {
             push @blog_ids, $rt->blog_id;
         }
-        $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action } = ($rt->ct_id ? $rt->ct_id : 0) for @blog_ids;
+        $data->{ $rt->object_type }{ $rt->event }{$_} = ($rt->ct_id ? $rt->ct_id : 0) for @blog_ids;
     }
     return $data;
 }
@@ -103,21 +98,15 @@ sub post_content_save {
     my $code = sub {
         my ($d) = @_;
         while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
-            next if $id == $blog_id;
-            for my $action (keys %$a) {
-                next if $a->{$action} ne $content->content_type_id;
-                perform_mb_action($app, $id, $action);
-            }
+            next if ($id == $blog_id || $a ne $content->content_type_id);
+            perform_mb_action($app, $id);
         }
 
         require MT::ContentStatus;
         if (($content->status || 0) == MT::ContentStatus::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_PUBLISH() } })) {
-                next if $id == $blog_id;
-                for my $action (keys %$a) {
-                    next if $a->{$action} ne $content->content_type_id;
-                    perform_mb_action($app, $id, $action);
-                }
+                next if ($id == $blog_id || $a ne $content->content_type_id);
+                perform_mb_action($app, $id);
             }
         }
     };
@@ -136,11 +125,8 @@ sub post_content_pub {
         require MT::ContentStatus;
         if (($content->status || 0) == MT::ContentStatus::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
-                next if $id == $blog_id;
-                for my $action (keys %$a) {
-                    next if $a->{$action} ne $content->content_type_id;
-                    perform_mb_action($app, $id, $action);
-                }
+                next if ($id == $blog_id || $a ne $content->content_type_id);
+                perform_mb_action($app, $id);
             }
         }
     };
@@ -159,11 +145,8 @@ sub post_content_unpub {
         require MT::ContentStatus;
         if (($content->status || 0) == MT::ContentStatus::UNPUBLISH()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_UNPUBLISH() } })) {
-                next if $id == $blog_id;
-                for my $action (keys %$a) {
-                    next if $a->{$action} ne $content->content_type_id;
-                    perform_mb_action($app, $id, $action);
-                }
+                next if ($id == $blog_id || $a ne $content->content_type_id);
+                perform_mb_action($app, $id);
             }
         }
     };
@@ -176,23 +159,16 @@ sub init_rebuilt_cache {
     $app->request('sites_rebuild', {});
 }
 
-sub is_first_rebuild {
-    my ($app, $blog_id, $action) = @_;
-    my $rebuilt = $app->request('sites_rebuild') || {};
-    return if exists $rebuilt->{"$blog_id,$action"};
-    $rebuilt->{"$blog_id,$action"} = 1;
-    $app->request('sites_rebuild', $rebuilt);
-}
-
 sub perform_mb_action {
-    my ($app, $blog_id, $action) = @_;
+    my ($app, $blog_id) = @_;
 
     # Don't rebuild the same thing twice in a same runner
-    return unless is_first_rebuild($app, $blog_id, $action);
+    my $rebuilt = $app->request('sites_rebuild') || {};
+    return if exists $rebuilt->{$blog_id};
+    $rebuilt->{$blog_id} = 1;
+    $app->request('sites_rebuild', $rebuilt);
 
-    # If the action we are performing starts with ri
-    # we rebuild indexes for the given blog_id
-    $app->rebuild_indexes(BlogID => $blog_id) if ($action == ACTION_RI() || $action == ACTION_RIP());
+    $app->rebuild_indexes(BlogID => $blog_id);
 }
 
 sub load_sites_acl {
@@ -307,7 +283,7 @@ sub _post_feedback_save {
 
             while (my ($id, $a) = each(%{ $d->{$type}->{$event} })) {
                 next if $id == $blog_id;
-                perform_mb_action($app, $id, $_) for keys %$a;
+                perform_mb_action($app, $id);
             }
         };
 
@@ -332,14 +308,14 @@ sub post_entry_save {
         my ($d) = @_;
         while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_SAVE() } })) {
             next if $id == $blog_id;
-            perform_mb_action($app, $id, $_) for keys %$a;
+            perform_mb_action($app, $id);
         }
 
         require MT::Entry;
         if (($entry->status || 0) == MT::Entry::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
-                perform_mb_action($app, $id, $_) for keys %$a;
+                perform_mb_action($app, $id);
             }
         }
     };
@@ -359,7 +335,7 @@ sub post_entry_pub {
         if (($entry->status || 0) == MT::Entry::RELEASE()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
-                perform_mb_action($app, $id, $_) for keys %$a;
+                perform_mb_action($app, $id);
             }
         }
     };
@@ -379,7 +355,7 @@ sub post_entry_unpub {
         if (($entry->status || 0) == MT::Entry::UNPUBLISH()) {
             while (my ($id, $a) = each(%{ $d->{ TYPE_ENTRY_OR_PAGE() }->{ EVENT_UNPUBLISH() } })) {
                 next if $id == $blog_id;
-                perform_mb_action($app, $id, $_) for keys %$a;
+                perform_mb_action($app, $id);
             }
         }
     };

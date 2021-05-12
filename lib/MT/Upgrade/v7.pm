@@ -873,10 +873,6 @@ sub v7_migrate_rebuild_trigger {
             my $rebuild_triggers = ( $cfg->data || {} )->{rebuild_triggers};
             foreach ( split( /\|/, $rebuild_triggers ) ) {
                 my ( $action, $id, $event ) = split( /:/, $_ );
-                $action
-                    = $action eq 'ri'
-                    ? MT::RebuildTrigger::ACTION_RI()
-                    : MT::RebuildTrigger::ACTION_RIP();
                 my $object_type
                     = $event =~ /^entry_.*/
                     ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
@@ -897,7 +893,6 @@ sub v7_migrate_rebuild_trigger {
                 my $rt = MT->model('rebuild_trigger')->new;
                 $rt->blog_id($blog_id);
                 $rt->object_type($object_type);
-                $rt->action($action);
                 $rt->event($event);
                 $rt->target($target);
                 $rt->target_blog_id($target_blog_id);
