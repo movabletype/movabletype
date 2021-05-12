@@ -37,11 +37,7 @@ function returnTrigger(ok) {
         }
         var inp = inputs[0];
         var blog_id = inp.value;
-        var row = TC.getParentByTagName( inp, "tr" );
-        if (!row) return;
-        var labels = row.getElementsByClassName('panel-label');
-        if (labels.length == 0) return;
-        var blog_name = labels[0].innerHTML;
+        var blog_name = jQuery(inp).parents("tr").find('.panel-label').text();
 
         // Trigger
         var object_elm = jQuery('input[name="object-cb"]:checked');
