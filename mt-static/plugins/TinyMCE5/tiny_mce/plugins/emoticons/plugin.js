@@ -4,12 +4,84 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.1.6 (2020-01-28)
+ * Version: 5.7.0 (2021-02-10)
  */
-(function (domGlobals) {
+(function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var DEFAULT_ID = 'tinymce.plugins.emoticons';
+    var getEmoticonDatabase = function (editor) {
+      return editor.getParam('emoticons_database', 'emojis', 'string');
+    };
+    var getEmoticonDatabaseUrl = function (editor, pluginUrl) {
+      var database = getEmoticonDatabase(editor);
+      return editor.getParam('emoticons_database_url', pluginUrl + '/js/' + database + editor.suffix + '.js', 'string');
+    };
+    var getEmoticonDatabaseId = function (editor) {
+      return editor.getParam('emoticons_database_id', DEFAULT_ID, 'string');
+    };
+    var getAppendedEmoticons = function (editor) {
+      return editor.getParam('emoticons_append', {}, 'object');
+    };
+    var getEmotionsImageUrl = function (editor) {
+      return editor.getParam('emoticons_images_url', 'https://twemoji.maxcdn.com/v/13.0.1/72x72/', 'string');
+    };
+
+    var __assign = function () {
+      __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+          s = arguments[i];
+          for (var p in s)
+            if (Object.prototype.hasOwnProperty.call(s, p))
+              t[p] = s[p];
+        }
+        return t;
+      };
+      return __assign.apply(this, arguments);
+    };
+
+    var Cell = function (initial) {
+      var value = initial;
+      var get = function () {
+        return value;
+      };
+      var set = function (v) {
+        value = v;
+      };
+      return {
+        get: get,
+        set: set
+      };
+    };
+
+    var hasOwnProperty = Object.prototype.hasOwnProperty;
+    var shallow = function (old, nu) {
+      return nu;
+    };
+    var baseMerge = function (merger) {
+      return function () {
+        var objects = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+          objects[_i] = arguments[_i];
+        }
+        if (objects.length === 0) {
+          throw new Error('Can\'t merge zero objects');
+        }
+        var ret = {};
+        for (var j = 0; j < objects.length; j++) {
+          var curObject = objects[j];
+          for (var key in curObject) {
+            if (hasOwnProperty.call(curObject, key)) {
+              ret[key] = merger(ret[key], curObject[key]);
+            }
+          }
+        }
+        return ret;
+      };
+    };
+    var merge = baseMerge(shallow);
 
     var noop = function () {
     };
@@ -35,7 +107,7 @@
         return n;
       };
       var me = {
-        fold: function (n, s) {
+        fold: function (n, _s) {
           return n();
         },
         is: never,
@@ -63,9 +135,6 @@
         },
         toString: constant('none()')
       };
-      if (Object.freeze) {
-        Object.freeze(me);
-      }
       return me;
     }();
     var some = function (a) {
@@ -124,33 +193,170 @@
     var from = function (value) {
       return value === null || value === undefined ? NONE : some(value);
     };
-    var Option = {
+    var Optional = {
       some: some,
       none: none,
       from: from
     };
 
-    var typeOf = function (x) {
-      if (x === null) {
-        return 'null';
+    var keys = Object.keys;
+    var hasOwnProperty$1 = Object.hasOwnProperty;
+    var each = function (obj, f) {
+      var props = keys(obj);
+      for (var k = 0, len = props.length; k < len; k++) {
+        var i = props[k];
+        var x = obj[i];
+        f(x, i);
       }
-      var t = typeof x;
-      if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      }
-      if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      }
-      return t;
     };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
+    var map = function (obj, f) {
+      return tupleMap(obj, function (x, i) {
+        return {
+          k: i,
+          v: f(x, i)
+        };
+      });
+    };
+    var tupleMap = function (obj, f) {
+      var r = {};
+      each(obj, function (x, i) {
+        var tuple = f(x, i);
+        r[tuple.k] = tuple.v;
+      });
+      return r;
+    };
+    var has = function (obj, key) {
+      return hasOwnProperty$1.call(obj, key);
+    };
+
+    var checkRange = function (str, substr, start) {
+      return substr === '' || str.length >= substr.length && str.substr(start, start + substr.length) === substr;
+    };
+    var contains = function (str, substr) {
+      return str.indexOf(substr) !== -1;
+    };
+    var startsWith = function (str, prefix) {
+      return checkRange(str, prefix, 0);
+    };
+
+    var global$1 = tinymce.util.Tools.resolve('tinymce.Resource');
+
+    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
+
+    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
+
+    var ALL_CATEGORY = 'All';
+    var categoryNameMap = {
+      symbols: 'Symbols',
+      people: 'People',
+      animals_and_nature: 'Animals and Nature',
+      food_and_drink: 'Food and Drink',
+      activity: 'Activity',
+      travel_and_places: 'Travel and Places',
+      objects: 'Objects',
+      flags: 'Flags',
+      user: 'User Defined'
+    };
+    var translateCategory = function (categories, name) {
+      return has(categories, name) ? categories[name] : name;
+    };
+    var getUserDefinedEmoticons = function (editor) {
+      var userDefinedEmoticons = getAppendedEmoticons(editor);
+      return map(userDefinedEmoticons, function (value) {
+        return __assign({
+          keywords: [],
+          category: 'user'
+        }, value);
+      });
+    };
+    var initDatabase = function (editor, databaseUrl, databaseId) {
+      var categories = Cell(Optional.none());
+      var all = Cell(Optional.none());
+      var emojiImagesUrl = getEmotionsImageUrl(editor);
+      var getEmoji = function (lib) {
+        if (startsWith(lib.char, '<img')) {
+          return lib.char.replace(/src="([^"]+)"/, function (match, url) {
+            return 'src="' + emojiImagesUrl + url + '"';
+          });
+        } else {
+          return lib.char;
+        }
+      };
+      var processEmojis = function (emojis) {
+        var cats = {};
+        var everything = [];
+        each(emojis, function (lib, title) {
+          var entry = {
+            title: title,
+            keywords: lib.keywords,
+            char: getEmoji(lib),
+            category: translateCategory(categoryNameMap, lib.category)
+          };
+          var current = cats[entry.category] !== undefined ? cats[entry.category] : [];
+          cats[entry.category] = current.concat([entry]);
+          everything.push(entry);
+        });
+        categories.set(Optional.some(cats));
+        all.set(Optional.some(everything));
+      };
+      editor.on('init', function () {
+        global$1.load(databaseId, databaseUrl).then(function (emojis) {
+          var userEmojis = getUserDefinedEmoticons(editor);
+          processEmojis(merge(emojis, userEmojis));
+        }, function (err) {
+          console.log('Failed to load emoticons: ' + err);
+          categories.set(Optional.some({}));
+          all.set(Optional.some([]));
+        });
+      });
+      var listCategory = function (category) {
+        if (category === ALL_CATEGORY) {
+          return listAll();
+        }
+        return categories.get().bind(function (cats) {
+          return Optional.from(cats[category]);
+        }).getOr([]);
+      };
+      var listAll = function () {
+        return all.get().getOr([]);
+      };
+      var listCategories = function () {
+        return [ALL_CATEGORY].concat(keys(categories.get().getOr({})));
+      };
+      var waitForLoad = function () {
+        if (hasLoaded()) {
+          return global$3.resolve(true);
+        } else {
+          return new global$3(function (resolve, reject) {
+            var numRetries = 15;
+            var interval = global$2.setInterval(function () {
+              if (hasLoaded()) {
+                global$2.clearInterval(interval);
+                resolve(true);
+              } else {
+                numRetries--;
+                if (numRetries < 0) {
+                  console.log('Could not load emojis from url: ' + databaseUrl);
+                  global$2.clearInterval(interval);
+                  reject(false);
+                }
+              }
+            }, 100);
+          });
+        }
+      };
+      var hasLoaded = function () {
+        return categories.get().isSome() && all.get().isSome();
+      };
+      return {
+        listCategories: listCategories,
+        hasLoaded: hasLoaded,
+        waitForLoad: waitForLoad,
+        listAll: listAll,
+        listCategory: listCategory
       };
     };
-    var isFunction = isType('function');
 
-    var nativeSlice = Array.prototype.slice;
     var exists = function (xs, pred) {
       for (var i = 0, len = xs.length; i < len; i++) {
         var x = xs[i];
@@ -160,7 +366,7 @@
       }
       return false;
     };
-    var map = function (xs, f) {
+    var map$1 = function (xs, f) {
       var len = xs.length;
       var r = new Array(len);
       for (var i = 0; i < len; i++) {
@@ -169,12 +375,22 @@
       }
       return r;
     };
-    var from$1 = isFunction(Array.from) ? Array.from : function (x) {
-      return nativeSlice.call(x);
+    var each$1 = function (xs, f) {
+      for (var i = 0, len = xs.length; i < len; i++) {
+        var x = xs[i];
+        f(x, i);
+      }
     };
 
-    var contains = function (str, substr) {
-      return str.indexOf(substr) !== -1;
+    var setup = function (editor) {
+      editor.on('PreInit', function () {
+        editor.parser.addAttributeFilter('data-emoticon', function (nodes) {
+          each$1(nodes, function (node) {
+            node.attr('data-mce-resize', 'false');
+            node.attr('data-mce-placeholder', '1');
+          });
+        });
+      });
     };
 
     var emojiMatches = function (emoji, lowerCasePattern) {
@@ -215,7 +431,7 @@
         fetch: function (pattern, maxResults) {
           return database.waitForLoad().then(function () {
             var candidates = database.listAll();
-            return emojisFrom(candidates, pattern, Option.some(maxResults));
+            return emojisFrom(candidates, pattern, Optional.some(maxResults));
           });
         },
         onAction: function (autocompleteApi, rng, value) {
@@ -226,29 +442,11 @@
       });
     };
 
-    var Cell = function (initial) {
-      var value = initial;
-      var get = function () {
-        return value;
-      };
-      var set = function (v) {
-        value = v;
-      };
-      var clone = function () {
-        return Cell(get());
-      };
-      return {
-        get: get,
-        set: set,
-        clone: clone
-      };
-    };
-
     var last = function (fn, rate) {
       var timer = null;
       var cancel = function () {
         if (timer !== null) {
-          domGlobals.clearTimeout(timer);
+          clearTimeout(timer);
           timer = null;
         }
       };
@@ -258,9 +456,9 @@
           args[_i] = arguments[_i];
         }
         if (timer !== null) {
-          domGlobals.clearTimeout(timer);
+          clearTimeout(timer);
         }
-        timer = domGlobals.setTimeout(function () {
+        timer = setTimeout(function () {
           fn.apply(null, args);
           timer = null;
         }, rate);
@@ -275,199 +473,18 @@
       editor.insertContent(ch);
     };
 
-    var hasOwnProperty = Object.prototype.hasOwnProperty;
-    var shallow = function (old, nu) {
-      return nu;
-    };
-    var baseMerge = function (merger) {
-      return function () {
-        var objects = new Array(arguments.length);
-        for (var i = 0; i < objects.length; i++) {
-          objects[i] = arguments[i];
-        }
-        if (objects.length === 0) {
-          throw new Error('Can\'t merge zero objects');
-        }
-        var ret = {};
-        for (var j = 0; j < objects.length; j++) {
-          var curObject = objects[j];
-          for (var key in curObject) {
-            if (hasOwnProperty.call(curObject, key)) {
-              ret[key] = merger(ret[key], curObject[key]);
-            }
-          }
-        }
-        return ret;
-      };
-    };
-    var merge = baseMerge(shallow);
-
-    var keys = Object.keys;
-    var hasOwnProperty$1 = Object.hasOwnProperty;
-    var each = function (obj, f) {
-      var props = keys(obj);
-      for (var k = 0, len = props.length; k < len; k++) {
-        var i = props[k];
-        var x = obj[i];
-        f(x, i);
-      }
-    };
-    var map$1 = function (obj, f) {
-      return tupleMap(obj, function (x, i) {
-        return {
-          k: i,
-          v: f(x, i)
-        };
-      });
-    };
-    var tupleMap = function (obj, f) {
-      var r = {};
-      each(obj, function (x, i) {
-        var tuple = f(x, i);
-        r[tuple.k] = tuple.v;
-      });
-      return r;
-    };
-    var has = function (obj, key) {
-      return hasOwnProperty$1.call(obj, key);
-    };
-
-    var global$1 = tinymce.util.Tools.resolve('tinymce.Resource');
-
-    var global$2 = tinymce.util.Tools.resolve('tinymce.util.Delay');
-
-    var global$3 = tinymce.util.Tools.resolve('tinymce.util.Promise');
-
-    var DEFAULT_ID = 'tinymce.plugins.emoticons';
-    var getEmoticonDatabaseUrl = function (editor, pluginUrl) {
-      return editor.getParam('emoticons_database_url', pluginUrl + '/js/emojis' + editor.suffix + '.js');
-    };
-    var getEmoticonDatabaseId = function (editor) {
-      return editor.getParam('emoticons_database_id', DEFAULT_ID, 'string');
-    };
-    var getAppendedEmoticons = function (editor) {
-      return editor.getParam('emoticons_append', {}, 'object');
-    };
-    var Settings = {
-      getEmoticonDatabaseUrl: getEmoticonDatabaseUrl,
-      getEmoticonDatabaseId: getEmoticonDatabaseId,
-      getAppendedEmoticons: getAppendedEmoticons
-    };
-
-    var ALL_CATEGORY = 'All';
-    var categoryNameMap = {
-      symbols: 'Symbols',
-      people: 'People',
-      animals_and_nature: 'Animals and Nature',
-      food_and_drink: 'Food and Drink',
-      activity: 'Activity',
-      travel_and_places: 'Travel and Places',
-      objects: 'Objects',
-      flags: 'Flags',
-      user: 'User Defined'
-    };
-    var translateCategory = function (categories, name) {
-      return has(categories, name) ? categories[name] : name;
-    };
-    var getUserDefinedEmoticons = function (editor) {
-      var userDefinedEmoticons = Settings.getAppendedEmoticons(editor);
-      return map$1(userDefinedEmoticons, function (value) {
-        return merge({
-          keywords: [],
-          category: 'user'
-        }, value);
-      });
-    };
-    var initDatabase = function (editor, databaseUrl, databaseId) {
-      var categories = Cell(Option.none());
-      var all = Cell(Option.none());
-      var processEmojis = function (emojis) {
-        var cats = {};
-        var everything = [];
-        each(emojis, function (lib, title) {
-          var entry = {
-            title: title,
-            keywords: lib.keywords,
-            char: lib.char,
-            category: translateCategory(categoryNameMap, lib.category)
-          };
-          var current = cats[entry.category] !== undefined ? cats[entry.category] : [];
-          cats[entry.category] = current.concat([entry]);
-          everything.push(entry);
-        });
-        categories.set(Option.some(cats));
-        all.set(Option.some(everything));
-      };
-      editor.on('init', function () {
-        global$1.load(databaseId, databaseUrl).then(function (emojis) {
-          var userEmojis = getUserDefinedEmoticons(editor);
-          processEmojis(merge(emojis, userEmojis));
-        }, function (err) {
-          domGlobals.console.log('Failed to load emoticons: ' + err);
-          categories.set(Option.some({}));
-          all.set(Option.some([]));
-        });
-      });
-      var listCategory = function (category) {
-        if (category === ALL_CATEGORY) {
-          return listAll();
-        }
-        return categories.get().bind(function (cats) {
-          return Option.from(cats[category]);
-        }).getOr([]);
-      };
-      var listAll = function () {
-        return all.get().getOr([]);
-      };
-      var listCategories = function () {
-        return [ALL_CATEGORY].concat(keys(categories.get().getOr({})));
-      };
-      var waitForLoad = function () {
-        if (hasLoaded()) {
-          return global$3.resolve(true);
-        } else {
-          return new global$3(function (resolve, reject) {
-            var numRetries = 15;
-            var interval = global$2.setInterval(function () {
-              if (hasLoaded()) {
-                global$2.clearInterval(interval);
-                resolve(true);
-              } else {
-                numRetries--;
-                if (numRetries < 0) {
-                  domGlobals.console.log('Could not load emojis from url: ' + databaseUrl);
-                  global$2.clearInterval(interval);
-                  reject(false);
-                }
-              }
-            }, 100);
-          });
-        }
-      };
-      var hasLoaded = function () {
-        return categories.get().isSome() && all.get().isSome();
-      };
-      return {
-        listCategories: listCategories,
-        hasLoaded: hasLoaded,
-        waitForLoad: waitForLoad,
-        listAll: listAll,
-        listCategory: listCategory
-      };
-    };
-
     var patternName = 'pattern';
     var open = function (editor, database) {
       var initialState = {
         pattern: '',
-        results: emojisFrom(database.listAll(), '', Option.some(300))
+        results: emojisFrom(database.listAll(), '', Optional.some(300))
       };
       var currentTab = Cell(ALL_CATEGORY);
       var scan = function (dialogApi) {
         var dialogData = dialogApi.getData();
         var category = currentTab.get();
         var candidates = database.listCategory(category);
-        var results = emojisFrom(candidates, dialogData[patternName], category === ALL_CATEGORY ? Option.some(300) : Option.none());
+        var results = emojisFrom(candidates, dialogData[patternName], category === ALL_CATEGORY ? Optional.some(300) : Optional.none());
         dialogApi.setData({ results: results });
       };
       var updateFilter = last(function (dialogApi) {
@@ -485,7 +502,7 @@
       var getInitialState = function () {
         var body = {
           type: 'tabpanel',
-          tabs: map(database.listCategories(), function (cat) {
+          tabs: map$1(database.listCategories(), function (cat) {
             return {
               title: cat,
               name: cat,
@@ -528,7 +545,7 @@
           updateFilter.throttle(dialogApi);
           dialogApi.focus(patternName);
           dialogApi.unblock();
-        }).catch(function (err) {
+        }).catch(function (_err) {
           dialogApi.redial({
             title: 'Emoticons',
             body: {
@@ -555,11 +572,10 @@
         });
       }
     };
-    var Dialog = { open: open };
 
     var register = function (editor, database) {
       var onAction = function () {
-        return Dialog.open(editor, database);
+        return open(editor, database);
       };
       editor.ui.registry.addButton('emoticons', {
         tooltip: 'Emoticons',
@@ -572,18 +588,18 @@
         onAction: onAction
       });
     };
-    var Buttons = { register: register };
 
     function Plugin () {
       global.add('emoticons', function (editor, pluginUrl) {
-        var databaseUrl = Settings.getEmoticonDatabaseUrl(editor, pluginUrl);
-        var databaseId = Settings.getEmoticonDatabaseId(editor);
+        var databaseUrl = getEmoticonDatabaseUrl(editor, pluginUrl);
+        var databaseId = getEmoticonDatabaseId(editor);
         var database = initDatabase(editor, databaseUrl, databaseId);
-        Buttons.register(editor, database);
+        register(editor, database);
         init(editor, database);
+        setup(editor);
       });
     }
 
     Plugin();
 
-}(window));
+}());

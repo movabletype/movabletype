@@ -630,43 +630,17 @@ sub save {
             }
         );
 
-        my @cat_ids = map {@$_} values %categories_old;
-        my @cats    = MT->model('category')->load(
-            {   id              => \@cat_ids,
-                category_set_id => \'> 0',
-            }
-        );
-
-        for my $map (@maps) {
-            my $at       = $map->archive_type;
-            my $archiver = $app->publisher->archiver($at);
-            for my $cat ( $archiver->category_based ? @cats : undef ) {
-                my $file
-                    = MT::Util::archive_file_for( $orig, $blog, $at, $cat,
-                    $map )
-                    or next;
-
-                $file = File::Spec->catfile( $archive_root, $file );
-
-                ## params for _delete_archive_file
-                my %params = (
-                    Blog        => $blog,
-                    File        => $file,
-                    ArchiveType => $at,
-                    ContentData => $orig,
-                );
-
-                ## ignore if fileinfo does not exist
-                $params{FileInfo} = MT->model('fileinfo')->load(
-                    {   blog_id        => $blog_id,
-                        file_path      => $file,
-                        templatemap_id => $map->id,
-                        archive_type   => $at,
-                    }
-                ) or next;
-
-                push @old_archive_params, \%params;
-            }
+        my @finfos = MT->model('fileinfo')->load( { blog_id => $blog_id, cd_id => $orig->id } );
+        for my $finfo (@finfos) {
+            next if $finfo->archive_type eq 'ContentType';
+            my %params = (
+                Blog        => $blog,
+                File        => $finfo->file_path,
+                ArchiveType => $finfo->archive_type,
+                FileInfo    => $finfo,
+                ContentData => $orig,
+            );
+            push @old_archive_params, \%params;
         }
     }
 
@@ -857,10 +831,14 @@ sub save {
         for my $param (@old_archive_params) {
             my $orig = $param->{ContentData};
             next if $orig->status != MT::ContentStatus::RELEASE();
-            $app->publisher->_delete_archive_file(%$param);
-            if ( my $fi = $param->{FileInfo} ) {
+            my $fi = $param->{FileInfo};
+            if ( MT->config('DeleteFilesAfterRebuild') ) {
+                $fi->mark_to_remove;
+                MT::Util::Log->debug( 'Marked to remove ' . $fi->file_path );
+            }
+            else {
                 $fi->remove;
-                MT::Util::Log->info( ' Removed ' . $fi->file_path );
+                $app->publisher->_delete_archive_file(%$param);
             }
         }
     }
@@ -871,6 +849,10 @@ sub save {
     if ( ( $content_data->status || 0 ) == MT::ContentStatus::RELEASE()
         || $status_old == MT::ContentStatus::RELEASE() )
     {
+        my $old_categories
+            = %categories_old
+            ? MT::Util::to_json( \%categories_old )
+            : undef;
         if ( $blog->count_static_templates($archive_type) == 0
             || MT::Util->launch_background_tasks )
         {
@@ -885,20 +867,18 @@ sub save {
                         ? $previous_old->id
                         : undef,
                         OldNext => $next_old ? $next_old->id : undef,
+                        OldCategories => $old_categories,
                     );
 
                     $app->run_callbacks( 'rebuild', $blog );
                     $app->run_callbacks('post_build');
+                    $app->publisher->remove_marked_files( $blog, 1 );
                     1;
                 }
             );
             return unless $res;
         }
         else {
-            my $old_categories
-                = %categories_old
-                ? MT::Util::to_json( \%categories_old )
-                : undef;
             require MT::Util::UniqueID;
             my $token = MT::Util::UniqueID::create_magic_token( 'rebuild' . time );
             if ( my $session = $app->session ) {
@@ -975,6 +955,9 @@ sub delete {
         = ( ( $blog && $blog->count_static_templates('ContentType') == 0 )
             || MT::Util->launch_background_tasks() ) ? 1 : 0;
 
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
     $app->setup_filtered_ids
         if $app->param('all_selected');
     my %rebuild_recipe;
@@ -987,11 +970,14 @@ sub delete {
             $app, $obj )
             or return $app->permission_denied;
 
-        my %recipe;
-        %recipe = $app->publisher->rebuild_deleted_content_data(
-            ContentData => $obj,
-            Blog        => $obj->blog,
-        ) if $obj->status eq MT::ContentStatus::RELEASE();
+        # Mark before FileInfo records are gone by cascading delete
+        my @finfos = MT::FileInfo->load({ cd_id => $obj->id, blog_id => $blog->id });
+        for my $finfo (@finfos) {
+            if ( $app->config('DeleteFilesAfterRebuild') ) {
+                $finfo->mark_to_remove;
+                MT::Util::Log->debug( 'Marked to remove ' . $finfo->file_path );
+            }
+        }
 
         # Remove object from database
         my $content_type_name
@@ -1002,6 +988,12 @@ sub delete {
             or return $app->errtrans( 'Removing [_1] failed: [_2]',
             $content_type_name, $obj->errstr );
         $app->run_callbacks( 'cms_post_delete.content_data', $app, $obj );
+
+        my %recipe;
+        %recipe = $app->publisher->rebuild_deleted_content_data(
+            ContentData => $obj,
+            Blog        => $obj->blog,
+        ) if $obj->status eq MT::ContentStatus::RELEASE();
 
         my $child_hash = $rebuild_recipe{ $obj->blog_id } || {};
         MT::__merge_hash( $child_hash, \%recipe );
@@ -1028,6 +1020,7 @@ sub delete {
                 $app->rebuild_indexes( Blog => $b )
                     or return $app->publish_error();
                 $app->run_callbacks( 'rebuild', $b );
+                $app->publisher->remove_marked_files( $b, 1 );
             }
         };
 
@@ -1162,6 +1155,10 @@ sub make_content_actions {
                     content_type_id => $ct->id,
                 },
                 class => 'icon-create',
+                permit_action => {
+                    permit_action => 'create_new_content_data,create_new_content_data_' . $ct->unique_id,
+                    system_action => 'manage_content_data'
+                },
             }
         };
     }

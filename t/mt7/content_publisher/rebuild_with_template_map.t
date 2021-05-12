@@ -16,6 +16,7 @@ BEGIN {
 }
 
 use File::Find;
+use File::Path;
 
 use MT::Test::ArchiveType;
 use MT::Test::Fixture::ArchiveType;
@@ -28,17 +29,15 @@ $test_env->prepare_fixture('archive_type');
 my $objs         = MT::Test::Fixture::ArchiveType->load_objs;
 my $blog_id      = $objs->{blog_id} or die;
 my $blog         = $app->model('blog')->load($blog_id) or die;
-my $site_path    = $blog->site_path( $blog->site_path . '/site' );
-my $archive_path = $blog->archive_path . '/archive';
-$blog->archive_path($archive_path);
-$blog->save or die $blog->errstr;
+
+rmtree($blog->site_path);
 
 $app->request->reset;
 
 my $ct_id = $objs->{content_type}{ct_with_same_catset}{content_type}->id
     or die;
 
-my $file_count = _count_files($site_path);
+my $file_count = _count_files($blog->site_path);
 
 my @maps = sort { $a->archive_type cmp $b->archive_type }
     MT::Test::ArchiveType->template_maps;
@@ -58,7 +57,7 @@ for my $map (@maps) {
         },
         "Died when TemplateMap parameter is templatemap_id ($at)",
     );
-    is( _count_files($site_path),
+    is( _count_files($blog->site_path),
         $file_count, "No files have been output ($at)" );
 
     ok( $app->rebuild(
@@ -68,7 +67,7 @@ for my $map (@maps) {
         ),
         "Succeeded when TemplateMap parameter is templatemap instance ($at)",
     );
-    my $next_count = _count_files($site_path);
+    my $next_count = _count_files($blog->site_path);
     ok( $next_count > $file_count, "Some files have been output ($at)" );
     $file_count = $next_count;
 }

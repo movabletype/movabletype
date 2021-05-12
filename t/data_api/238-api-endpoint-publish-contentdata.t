@@ -24,15 +24,13 @@ use MT::FileMgr;
 my $fmgr = MT::FileMgr->new('Local');
 
 my $blog = $app->model('blog')->load( { name => 'My Site' } );
-$blog->site_path( $test_env->root . '/site' );
-$blog->archive_path( $test_env->root . '/site/archives' );
-$blog->save;
 my $blog_id = $blog->id;
+
+sleep 1;
+$test_env->clear_mt_cache;
 
 my $start_time
     = MT::Util::ts2iso( $blog, MT::Util::epoch2ts( $blog, time() ), 1 );
-
-#die explain [map {$_->name} grep {$_->content_type_id} MT::Template->load];
 
 my $tmpl = $app->model('template')->load( {
     blog_id => $blog_id, name => "tmpl_contenttype_test content data",

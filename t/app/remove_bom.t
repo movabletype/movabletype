@@ -42,7 +42,7 @@ my $objs = MT::Test::Fixture->prepare(
                 content_type => 'ct',
                 author       => 'author',
                 authored_on  => '20200826000000',
-                label        => 'first cd',
+                label        => 'first_cd',
                 data         => { cf_text => 'test', },
             },
         },

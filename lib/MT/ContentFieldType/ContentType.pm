@@ -341,7 +341,7 @@ sub search_handler {
             next if $f_data->{type} eq 'content_type';
 
             my $field_registry
-                = MT->registry( 'content_field_types', $f_data->{type} );
+                = MT->registry('content_field_types')->{$f_data->{type}};
             next unless _is_searchable($field_registry);
 
             my $value = $data->{$f_id};

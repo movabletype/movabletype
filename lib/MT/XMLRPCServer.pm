@@ -22,6 +22,8 @@ sub mt_new {
     ## Initialize the MT::Request singleton for this particular request.
     $mt->request->reset();
 
+    $mt->config( 'DeleteFilesAfterRebuild', 0, 0 );
+
     # we need to be UTF-8 here no matter which PublishCharset
     $mt->run_callbacks( 'init_app', $mt, { App => 'xmlrpc' } );
     $mt;

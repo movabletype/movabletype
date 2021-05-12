@@ -3111,7 +3111,7 @@ sub _hdlr_app_setting {
     }
     if ( $hint && $show_hint ) {
         if ( $hint_id ne "" ) {
-            $hint_id = " id=\"$hint_id\"";
+            $hint_id = " id=\"$hint_id\" ";
         }
         $hint
             = "\n<small ${hint_id}class=\"form-text text-muted\">$hint$help</small>";
@@ -3580,7 +3580,7 @@ sub _hdlr_app_listing {
         );
         return $ctx->build(
             qq{<mtapp:statusmsg
-            id="zero-state"
+            id="zero-state-$type"
             class="info zero-state"
             can_close="0">
             $msg
@@ -4006,7 +4006,7 @@ sub _hdlr_app_action_bar {
 
     return $ctx->build(<<EOT);
 $form_id
-<div id="actions-bar-$pos" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
+<div id="actions-bar-$pos-$args->{form_id}" class="row form-inline mb-3 actions-bar actions-bar-$pos $pager_class">
   <div class="col">
     $pager
     $buttons_html

@@ -389,7 +389,7 @@ TC.attachLoadEvent( init );
     <mt:var name="modal_rebuildtriggers">
   </div>
   <div class="modal-body">
-  <div id="selector" class="selector listing list-data">
+  <div id="selector-object" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
       <div class="mt-table--outline">
         <table class="table mt-table">
@@ -408,8 +408,8 @@ TC.attachLoadEvent( init );
             <tr id="object_<mt:var name="id">" class="odd">
               <td class="cb" scope="row">
                 <div class="custom-control custom-radio">
-                  <input id="select_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
-                  <label class="custom-control-label" for="select_<mt:var name="id">"><span class="sr-only">選択</span></label>
+                  <input id="select_object_<mt:var name="id">" type="radio" class="custom-control-input select" name="object-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_object_<mt:var name="id">"><span class="sr-only">選択</span></label>
                 </div>
               </td>
               <td class="panel-label">
@@ -464,7 +464,7 @@ TC.attachLoadEvent( init );
     <mt:var name="modal_rebuildtriggers">
   </div>
   <div class="modal-body">
-  <div id="selector" class="selector listing list-data">
+  <div id="selector-event" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
       <div class="mt-table--outline">
         <table class="table mt-table">
@@ -559,7 +559,7 @@ TC.attachLoadEvent( init );
     <mt:var name="modal_rebuildtriggers">
   </div>
   <div class="modal-body">
-  <div id="selector" class="selector listing list-data">
+  <div id="selector-action" class="selector listing list-data">
     <form action="" method="get" onsubmit="return false">
       <div class="mt-table--outline">
         <table class="table mt-table">
@@ -578,8 +578,8 @@ TC.attachLoadEvent( init );
             <tr id="action_<mt:var name="action_id">" class="odd">
               <td class="cb" scope="row">
                 <div class="custom-control custom-radio">
-                  <input id="select_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
-                  <label class="custom-control-label" for="select_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
+                  <input id="select_action_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
+                  <label class="custom-control-label" for="select_action_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
                 </div>
               </td>
               <td class="panel-label">
