@@ -103,60 +103,62 @@
 </mtapp:setting>
 
 <mt:setvarblock name="js_include" append="1">
-    <script type="text/javascript">
-    'use strict';
+    <script type="text/javascript" data-rebuildTrigger="<mt:var name="rebuilds_json" escape="html">">
+    (function(){
+        'use strict';
+        var multiBlogRebuilds = JSON.parse(document.scripts[document.scripts.length - 1].getAttribute('data-rebuildTrigger'));
 
-    jQuery(function(){
-        var multiBlogRebuilds = <mt:var name="rebuilds_json">;
-        var tpl = jQuery("#multiblog_blog_list tbody tr").remove();
-        var tbody = jQuery('#multiblog_blog_list tbody');
-        rebuildMultiBlogTriggerTable();
+        jQuery(function(){
+            var tpl = jQuery("#multiblog_blog_list tbody tr").remove();
+            var tbody = jQuery('#multiblog_blog_list tbody');
+            rebuildMultiBlogTriggerTable();
 
-        function rebuildMultiBlogTriggerTable() {
-            setStringify();
-            tbody.empty();
-            if (multiBlogRebuilds.length > 0) {
-                for (var i = 0; i < multiBlogRebuilds.length; i++) {
-                    (function(i){
-                        var tr = tpl.clone();
-                        tr.find("td:nth-child(1)").text(multiBlogRebuilds[i].blog_name);
-                        tr.find("td:nth-child(2)").text(multiBlogRebuilds[i].object_label);
-                        tr.find("td:nth-child(3)").text(multiBlogRebuilds[i].event_label);
-                        tr.find("td:nth-child(4)").text(multiBlogRebuilds[i].action_label);
-                        tr.find("td:nth-child(5) a").on("click", function(){
-                            removeMultiBlogTrigger(i);
-                        });
-                        tr.appendTo(tbody).show();
-                    })(i);
+            function rebuildMultiBlogTriggerTable() {
+                setStringify();
+                tbody.empty();
+                if (multiBlogRebuilds.length > 0) {
+                    for (var i = 0; i < multiBlogRebuilds.length; i++) {
+                        (function(i){
+                            var tr = tpl.clone();
+                            tr.find("td:nth-child(1)").text(multiBlogRebuilds[i].blog_name);
+                            tr.find("td:nth-child(2)").text(multiBlogRebuilds[i].object_label);
+                            tr.find("td:nth-child(3)").text(multiBlogRebuilds[i].event_label);
+                            tr.find("td:nth-child(4)").text(multiBlogRebuilds[i].action_label);
+                            tr.find("td:nth-child(5) a").on("click", function(){
+                                removeMultiBlogTrigger(i);
+                            });
+                            tr.appendTo(tbody).show();
+                        })(i);
+                    }
+                    jQuery("#multiblog_blog_list").show();
+                    jQuery('#info-no-trigger').hide();
+                }　else {
+                    jQuery("#multiblog_blog_list").hide();
+                    jQuery('#info-no-trigger').show();
                 }
-                jQuery("#multiblog_blog_list").show();
-                jQuery('#info-no-trigger').hide();
-            }　else {
-                jQuery("#multiblog_blog_list").hide();
-                jQuery('#info-no-trigger').show();
             }
-        }
 
-        function setStringify() {
-            var subset = multiBlogRebuilds.map(function(a){
-                return ['object_type', 'event', 'target','target_blog_id', 'ct_id'].reduce(
-                    function(r, k){ r[k] = a[k]; return r; }, {});
-            });
-            jQuery('#rebuild_triggers').val(JSON.stringify(subset).replace(/(^"|"$)/g, ''));
-        }
+            function setStringify() {
+                var subset = multiBlogRebuilds.map(function(a){
+                    return ['object_type', 'event', 'target','target_blog_id', 'ct_id'].reduce(
+                        function(r, k){ r[k] = a[k]; return r; }, {});
+                });
+                jQuery('#rebuild_triggers').val(JSON.stringify(subset).replace(/(^"|"$)/g, ''));
+            }
 
-        function removeMultiBlogTrigger(index) {
-            multiBlogRebuilds.splice(index, 1);
-            rebuildMultiBlogTriggerTable();
-        }
+            function removeMultiBlogTrigger(index) {
+                multiBlogRebuilds.splice(index, 1);
+                rebuildMultiBlogTriggerTable();
+            }
 
-        function addMultiBlogTrigger(newObj) {
-            multiBlogRebuilds.push(newObj);
-            rebuildMultiBlogTriggerTable();
-        }
+            function addMultiBlogTrigger(newObj) {
+                multiBlogRebuilds.push(newObj);
+                rebuildMultiBlogTriggerTable();
+            }
 
-        window.addMultiBlogTrigger = addMultiBlogTrigger;
-    });
+            window.addMultiBlogTrigger = addMultiBlogTrigger;
+        });
+    })();
     </script>
 </mt:setvarblock>
 
