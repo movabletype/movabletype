@@ -113,7 +113,7 @@
         rebuildMultiBlogTriggerTable();
 
         function rebuildMultiBlogTriggerTable() {
-            jQuery('#rebuild_triggers').val(JSON.stringify(multiBlogRebuilds).replace(/(^"|"$)/g, ''));
+            setStringify();
             tbody.empty();
             if (multiBlogRebuilds.length > 0) {
                 for (var i = 0; i < multiBlogRebuilds.length; i++) {
@@ -135,6 +135,14 @@
                 jQuery("#multiblog_blog_list").hide();
                 jQuery('#info-no-trigger').show();
             }
+        }
+
+        function setStringify() {
+            var subset = multiBlogRebuilds.map(function(a){
+                return ['object_type', 'event', 'target','target_blog_id', 'ct_id'].reduce(
+                    function(r, k){ r[k] = a[k]; return r; }, {});
+            });
+            jQuery('#rebuild_triggers').val(JSON.stringify(subset).replace(/(^"|"$)/g, ''));
         }
 
         function removeMultiBlogTrigger(index) {
