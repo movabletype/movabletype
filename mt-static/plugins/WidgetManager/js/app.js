@@ -76,11 +76,11 @@ function moveOptionDown(obj) {
 	}
 }
 
-<!-- Original:  Phil Webb (phil@philwebb.com) -->
-<!-- Web Site:  http://www.philwebb.com -->
+// Original:  Phil Webb (phil@philwebb.com)
+// Web Site:  http://www.philwebb.com
 
-<!-- This script and many more are available free online at -->
-<!-- The JavaScript Source!! http://javascript.internet.com -->
+// This script and many more are available free online at
+// The JavaScript Source!! http://javascript.internet.com
 
 function move(fbox, tbox) {
 	var arrFbox = new Array();
