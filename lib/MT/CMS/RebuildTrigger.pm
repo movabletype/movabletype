@@ -273,6 +273,17 @@ sub _rt_digest {
     return join(',', map { $rt->$_ } @key_fields);
 }
 
+sub unstringify {
+    my $csv = shift;
+    die if $csv =~ /[^0-9,]/;
+    my @array = split(/,/, $csv, 6);
+    my $hash  = { id => shift @array };
+    for (my $i = 0; $i <= $#key_fields; $i++) {
+        $hash->{ $key_fields[$i] } = $array[$i] || 0;
+    }
+    return $hash;
+}
+
 sub save {
     my $app = shift;
     $app->validate_magic or return;
@@ -281,14 +292,13 @@ sub save {
         unless $app->user->is_superuser()
         || ($app->blog && $app->user->permissions($app->blog->id)->can_administer_site());
 
-    if (my $req_triggers = $app->multi_param('rebuild_triggers')) {
+    if ($app->multi_param('blog_id')) {
 
         my $blog_id = $app->blog ? $app->blog->id : return;
         my @db_rts  = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
         my %digests = map { _rt_digest($_), $_ } @db_rts;
 
-        require JSON;
-        my $triggers = JSON->new->utf8(0)->decode(MT::Util::decode_js($req_triggers));
+        my $triggers = [map { unstringify($_) } $app->multi_param('rebuild_trigger')];
 
         # delete
         {
