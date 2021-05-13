@@ -64,7 +64,6 @@
 <mtapp:setting
    id="rebuild_triggers"
    label="<__trans phrase="Rebuild Triggers">">
-  <input type="hidden" name="rebuild_triggers" id="rebuild_triggers" value="" />
   <p><a href="<mt:var name="script_url">?__mode=add_rebuild_trigger&amp;blog_id=<mt:var name="blog_id">" class="icon-left icon-create mt-open-dialog mt-modal-open" data-mt-modal-large><__trans phrase="Create Rebuild Trigger"></a></p>
   <mtapp:statusmsg
      id="info-no-trigger"
@@ -94,6 +93,7 @@
                     <a href="javascript:void(0)" class="d-inline-block">
                         <svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg>
                     </a>
+                    <input type="hidden" name="rebuild_trigger" value="">
                 </td>
             </tr>
         </tbody>
@@ -114,7 +114,6 @@
             rebuildMultiBlogTriggerTable();
 
             function rebuildMultiBlogTriggerTable() {
-                setStringify();
                 tbody.empty();
                 if (multiBlogRebuilds.length > 0) {
                     for (var i = 0; i < multiBlogRebuilds.length; i++) {
@@ -127,6 +126,7 @@
                             tr.find("td:nth-child(5) a").on("click", function(){
                                 removeMultiBlogTrigger(i);
                             });
+                            tr.find('[name=rebuild_trigger]').val(stringify(multiBlogRebuilds[i]));
                             tr.appendTo(tbody).show();
                         })(i);
                     }
@@ -138,12 +138,9 @@
                 }
             }
 
-            function setStringify() {
-                var subset = multiBlogRebuilds.map(function(a){
-                    return ['object_type', 'event', 'target','target_blog_id', 'ct_id'].reduce(
-                        function(r, k){ r[k] = a[k]; return r; }, {});
-                });
-                jQuery('#rebuild_triggers').val(JSON.stringify(subset).replace(/(^"|"$)/g, ''));
+            function stringify(a) {
+                return ['id', 'object_type', 'event', 'target','target_blog_id', 'ct_id'].reduce(
+                                                        function(r, k){ r.push(a[k] || 0); return r; }, []).join(',');
             }
 
             function removeMultiBlogTrigger(index) {
