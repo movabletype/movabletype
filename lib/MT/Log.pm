@@ -257,11 +257,8 @@ sub list_props {
             terms => sub {
                 my $prop = shift;
                 my ($args) = @_;
-                my @types;
                 my $val = $prop->normalized_value(@_);
-                for ( 1, 2, 4, 8, 16 ) {
-                    push @types, $_ if $val & $_;
-                }
+                my @types = split(',', $val);
                 return { level => \@types };
             },
             single_select_options => [
@@ -286,19 +283,19 @@ sub list_props {
                     text  => 'debug'
                 },
                 {   label => MT->translate('Security or error'),
-                    value => SECURITY() | ERROR(),
+                    value => join(',', (SECURITY(), ERROR())),
                     text  => 'sercurity_or_error',
                 },
                 {   label => MT->translate('Security/error/warning'),
-                    value => SECURITY() | ERROR() | WARNING(),
+                    value => join(',', (SECURITY(), ERROR(), WARNING())),
                     text  => 'security_or_error_or_warning',
                 },
                 {   label => MT->translate('Not debug'),
-                    value => SECURITY() | ERROR() | WARNING() | INFO(),
+                    value => join(',', (SECURITY(), ERROR(), WARNING(), INFO())),
                     text  => 'not_debug',
                 },
                 {   label => MT->translate('Debug/error'),
-                    value => DEBUG() | ERROR(),
+                    value => join(',', (DEBUG(), ERROR())),
                     text  => 'debug_or_error',
                 },
             ],
