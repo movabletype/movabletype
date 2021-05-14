@@ -128,6 +128,33 @@ __SQL__
             priority      => 3.1,
             code          => \&_v6_update_release_number,
         },
+        'v6_reorder_warning_level' => {
+            version_limit => '6.0025',
+            priority      => 3.1,
+            updater       => {
+                type  => 'log',
+                label => 'Reorder WARNING level',
+                sql   => 'UPDATE mt_log SET log_level = 3 WHERE log_level = 2',
+            },
+        },
+        'v6_reorder_security_level' => {
+            version_limit => '6.0025',
+            priority      => 3.1,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder SECURITY level',
+                sql   => 'UPDATE mt_log SET log_level = 5 WHERE log_level = 8',
+            },
+        },
+        'v6_reorder_debug_level' => {
+            version_limit => '6.0025',
+            priority      => 3.1,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder DEBUG level',
+                sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
+        },
     };
 }
 
