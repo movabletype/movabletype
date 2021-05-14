@@ -178,10 +178,32 @@ sub upgrade_functions {
             priority      => 3.1,
             code          => \&_v7_remove_sql_set_names,
         },
-        'v7_reorder_log_level' => {
+        'v7_reorder_warning_level' => {
             version_limit => '7.0049',
             priority      => 3.1,
-            code          => \&_v7_reorder_log_level,
+            updater       => {
+                type  => 'log',
+                label => 'Reorder WARNING level',
+                sql   => 'UPDATE mt_log SET log_level = 3 WHERE log_level = 2',
+            },
+        },
+        'v7_reorder_security_level' => {
+            version_limit => '7.0049',
+            priority      => 3.1,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder SECURITY level',
+                sql   => 'UPDATE mt_log SET log_level = 5 WHERE log_level = 8',
+            },
+        },
+        'v7_reorder_debug_level' => {
+            version_limit => '7.0049',
+            priority      => 3.1,
+            updater       => {
+                type   => 'log',
+                label => 'Reorder DEBUG level',
+                sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
+            },
         },
     };
 }
@@ -1466,25 +1488,6 @@ sub _v7_remove_sql_set_names {
     my $cfg       = MT->config;
     $cfg->SQLSetNames( undef, 1 );
     $cfg->save_config;
-}
-
-sub _v7_reorder_log_level {
-    my $self = shift;
-    my $log_class = MT->model('log');
-    my $iter = $log_class->load_iter({ level => [2, 8, 16] }, { no_class => 1 });
-    while (my $log = $iter->()) {
-        # WARNING :  2 -> 3
-        # SECURITY:  8 -> 5
-        # DEBUG   : 16 -> 0
-        if ($log->level == 2) {
-            $log->level(MT::Log::WARNING());
-        } elsif ($log->level == 8) {
-            $log->level(MT::Log::SECURITY());
-        } elsif ($log->level == 16) {
-            $log->level(MT::Log::DEBUG());
-        }
-        $log->save;
-    }
 }
 
 1;
