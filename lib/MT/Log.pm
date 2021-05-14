@@ -12,15 +12,16 @@ use base qw( MT::Object );
 use MT::Util qw( ts2epoch epoch2ts offset_time );
 
 # use constant is slow
+sub DEBUG ()    {0}
 sub INFO ()     {1}
-sub WARNING ()  {2}
+sub NOTICE ()   {2}
+sub WARNING ()  {3}
 sub ERROR ()    {4}
-sub SECURITY () {8}
-sub DEBUG ()    {16}
+sub SECURITY () {5}
 
 use Exporter;
 *import = \&Exporter::import;
-our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
+our @EXPORT_OK = qw( DEBUG INFO NOTICE WARNING ERROR SECURITY );
 our %EXPORT_TAGS = ( constants => [@EXPORT_OK] );
 
 use MT::Blog;
@@ -759,15 +760,17 @@ constants for each level followed by their numeric equivalent).
 
 =over 4
 
+=item * DEBUG / 0
+
 =item * INFO / 1
 
-=item * WARNING / 2
+=item * NOTICE / 2
+
+=item * WARNING / 3
 
 =item * ERROR / 4
 
-=item * SECURITY / 8
-
-=item * DEBUG / 16
+=item * SECURITY / 5
 
 =back
 
