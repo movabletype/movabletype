@@ -50,6 +50,7 @@ $asset->image_height(480);
 $asset->mime_type('image/jpeg');
 $asset->label('Image photo');
 $asset->created_by($author->id);
+$asset->add_tags('image', '@first', 'a');
 $asset->save or die "Couldn't save asset: " . $asset->errstr;
 
 my $removed_asset = MT::Asset::Image->new;
@@ -74,7 +75,20 @@ $file_asset->file_ext('pdf');
 $file_asset->mime_type('application/pdf');
 $file_asset->label('PDF file');
 $file_asset->created_by($author->id);
+$file_asset->add_tags('pdf', 'b');
 $file_asset->save or die "Couldn't save asset: " . $file_asset->errstr;
+
+my $text_asset = MT::Asset->new;
+$text_asset->blog_id($website->id);
+$text_asset->url($website->site_url . 'test.txt');
+$text_asset->file_path(File::Spec->catfile( $ENV{MT_HOME}, "t", 'files', 'test.txt' ));
+$text_asset->file_name('test.txt');
+$text_asset->file_ext('txt');
+$text_asset->mime_type('text/plain');
+$text_asset->label('Text file');
+$text_asset->created_by($author->id);
+$text_asset->add_tags('text', 'a OR b');
+$text_asset->save or die "Couldn't save asset: " . $text_asset->errstr;
 
 my ($year, $month) = unpack('A4A2', $asset->created_on);
 
@@ -116,6 +130,13 @@ my $guard = Mock::MonkeyPatch->patch(
         Mock::MonkeyPatch::ORIGINAL(@_);
     },
 );
+require MT::ObjectTag;
+{
+    no warnings 'once';
+    *MT::ObjectTag::load = sub {
+        fail "Should not be called MT::ObjectTag::load. We should only use JOIN statement.";
+    };
+}
 
 MT::Test::Tag->run_perl_tests($website->id);
 MT::Test::Tag->run_php_tests($website->id);
@@ -163,3 +184,44 @@ http://example.com/blog/removed.jpg: blank
 </MTAsset>
 --- expected
 http://example.com/blog/test.pdf: blank
+
+=== MTAssets[tag] : Single tag
+--- template
+<MTAssets tag="@first">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTAssets[tag] : Contains "OR" in tag name
+--- SKIP_PHP
+--- template
+<MTAssets tag="a OR b">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.txt
+
+=== MTAssets[tag] : Multiple tags
+--- SKIP_PHP
+--- template
+<MTAssets tag="pdf OR @first" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+
+=== MTAssets[tag] : Multiple tags (comma separated)
+--- SKIP_PHP
+--- template
+<MTAssets tag="pdf, @first" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+
+=== MTAssets[tag] : Multiple tags of same asset
+--- SKIP_PHP
+--- template
+<MTAssets tag="image OR @first">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
