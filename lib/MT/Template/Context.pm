@@ -796,6 +796,89 @@ sub compile_status_filter {
     $@ ? undef : $cexpr;
 }
 
+sub set_tag_filter_context {
+    my ( $ctx, $param ) = @_;
+
+    # You can pass undef to $object_args if you do not want to filter by SQL statements.
+    my ( $args, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(args blog_terms blog_args object_args filters datasource)};
+
+    my $tag_arg = $args->{tags} || $args->{tag}
+        or return 1;
+
+    require MT::Tag;
+    require MT::ObjectTag;
+
+    my $terms;
+    if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
+        my @tags = MT::Tag->split( ',', $tag_arg );
+        $terms   = { name => \@tags };
+        $tag_arg = join " or ", @tags;
+    }
+    my @tags = MT::Tag->load(
+        $terms,
+        {   ( $terms ? ( binary => { name => 1 } ) : () ),
+            join => MT::ObjectTag->join_on(
+                'tag_id',
+                {   object_datasource => $datasource,
+                    %$blog_terms,
+                },
+                { %$blog_args, unique => 1 }
+            ),
+        }
+    );
+
+    my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
+        or return undef;
+
+    my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
+
+    if ( $tag_arg !~ m/\bNOT\b/i ) {
+        if ( !@tags ) {
+            return \&MT::Template::Context::_hdlr_pass_tokens_else;
+        }
+
+        if ($object_args) {
+            push @{ $object_args->{joins} },
+                MT::ObjectTag->join_on(
+                'object_id',
+                {   tag_id            => \@tag_ids,
+                    object_datasource => $datasource,
+                    %$blog_terms
+                },
+                { %$blog_args, unique => 1 }
+                );
+        }
+    }
+
+    # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
+    return 1 if $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
+
+    my $preloader = @tag_ids
+        ? sub {
+        my ($object_id) = @_;
+        my $terms = {
+            tag_id            => \@tag_ids,
+            object_id         => $object_id,
+            object_datasource => $datasource,
+            %$blog_terms,
+        };
+        my $args = {
+            %$blog_args,
+            fetchonly   => ['tag_id'],
+            no_triggers => 1,
+        };
+        my @ot_ids;
+        @ot_ids = MT::ObjectTag->load( $terms, $args );
+        my %map;
+        $map{ $_->tag_id } = 1 for @ot_ids;
+        \%map;
+        }
+        : sub { +{} };
+    push @$filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+
+    return 1;
+}
+
 sub count_format {
     my $ctx = shift;
     my ( $count, $args ) = @_;
