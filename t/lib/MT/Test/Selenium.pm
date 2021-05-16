@@ -33,6 +33,7 @@ our %EXTRA = (
             args => [
                 'headless', ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox',
+                'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
@@ -55,6 +56,7 @@ our %EXTRA = (
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
+                'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
