@@ -23,7 +23,7 @@ jobs:
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: type != cron
-      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -v -It/lib t/selenium/*.t" USE_SELENIUM=1
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type != cron
@@ -117,6 +117,7 @@ jobs:
 
 before_script:
   - docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
+  - docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "BUILD_RELEASE_NUMBER=1 make"
 
 script:
   - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi

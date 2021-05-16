@@ -30,6 +30,7 @@ our %EXTRA = (
             args => [
                 'headless', ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox',
+                'host-rules=MAP * '. MY_HOST,
             ],
             perfLoggingPrefs => {},
         },
@@ -46,6 +47,7 @@ our %EXTRA = (
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
+                'host-rules=MAP * '. MY_HOST,
             ],
         },
         travis => {
