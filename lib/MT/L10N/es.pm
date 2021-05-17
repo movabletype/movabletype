@@ -4721,7 +4721,6 @@ use vars qw( @ISA %Lexicon );
 	'Dashboard' => 'Panel de Control',
 	'Select a Widget...' => 'Seleccione un widget...',
 	'System Overview' => 'Resumen del sistema',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Ha intentado usar una característica para la que no tiene permisos. Si cree que está viendo este mensaje por error, contacte con sus administrador del sistema.',
 	'Your Dashboard has been updated.' => 'Se ha actualizado el Panel de Control.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4995,7 +4994,6 @@ use vars qw( @ISA %Lexicon );
 	'If enabled, TrackBacks will be accepted for this category from any source.' => 'Si se habilita, en esta categoría se aceptarán los TrackBacks de cualquier fuente.',
 	'Inbound TrackBacks' => 'TrackBacks entradas',
 	'Manage entries in this category' => 'Administrar las entradas de esta categorías',
-	'Optional' => 'Opcional',
 	'Outbound TrackBacks' => 'TrackBacks salientes',
 	'Passphrase Protection' => 'Protección por contraseña',
 	'Please enter a valid basename.' => 'Por favor, introduzca un nombre base válido.',
@@ -5018,7 +5016,6 @@ use vars qw( @ISA %Lexicon );
 	'Date this comment was made' => 'Fecha de cuando se hizo el comentario',
 	'Date' => 'Fecha',
 	'Delete this comment (x)' => 'Borrar este comentario (x)',
-	'Details' => 'Detalles',
 	'Email address of commenter' => 'Dirección de correo del comentarista',
 	'Fulltext of the comment entry' => 'Texto completo de la entrada del comentario',
 	'IP Address of the commenter' => 'Dirección IP del comentarista',
