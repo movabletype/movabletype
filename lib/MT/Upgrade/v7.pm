@@ -897,7 +897,7 @@ sub v7_migrate_rebuild_trigger {
 
 sub _v7_migrate_rebuild_trigger_unserialize {
     my ($string) = @_;
-    return map { _v7_migrate_rebuild_trigger_unserialize_single($_) } grep { $_ } split(/\|/, $string);
+    return map { _v7_migrate_rebuild_trigger_unserialize_single($_) || undef } grep { $_ } split(/\|/, $string);
 }
 
 sub _v7_migrate_rebuild_trigger_unserialize_single {
@@ -908,22 +908,22 @@ sub _v7_migrate_rebuild_trigger_unserialize_single {
     $action =
           $action eq 'ri'  ? MT::RebuildTrigger::ACTION_RI()
         : $action eq 'rip' ? MT::RebuildTrigger::ACTION_RIP()
-        :                    return 0;
+        :                    return;
     my $object_type =
           $event_elems[0] eq 'entry'   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
         : $event_elems[0] eq 'comment' ? MT::RebuildTrigger::TYPE_COMMENT()
         : $event_elems[0] eq 'tb'      ? MT::RebuildTrigger::TYPE_PING()
-        :                                return 0;
+        :                                return;
     $event =
           $event_elems[1] eq 'save'  ? MT::RebuildTrigger::EVENT_SAVE()
         : $event_elems[1] eq 'pub'   ? MT::RebuildTrigger::EVENT_PUBLISH()
         : $event_elems[1] eq 'unpub' ? MT::RebuildTrigger::EVENT_UNPUBLISH()
-        :                              return 0;
+        :                              return;
     my $target =
           $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
         : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
         : $id =~ /^[0-9]+$/          ? MT::RebuildTrigger::TARGET_BLOG()
-        :                              return 0;
+        :                              return;
 
     my $rt = MT->model('rebuild_trigger')->new;
     $rt->object_type($object_type);

@@ -350,7 +350,7 @@ subtest 'MultiBlogMigrationPartial' => sub {
         for (@wrong_inputs) {
             my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single($_);
             is(ref $rt, '', 'error');
-            is($rt, 0,      'error');
+            is($rt, undef,      'error');
         }
     };
 
@@ -382,7 +382,7 @@ subtest 'MultiBlogMigrationPartial' => sub {
             'ri:2:entry_save|ri:2:XXXX_save');
         is( scalar @rt, 2, 'right number' );
         is( ref $rt[0], $model, 'right class' );
-        is( $rt[1], 0, '0 for an error' );
+        is( $rt[1], undef, '0 for an error' );
     };
 };
 
