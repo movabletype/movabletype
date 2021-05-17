@@ -523,7 +523,7 @@ sub _migrate_site_archive_type {
     my ( $self, $site ) = @_;
 
     my @archive_type = split ',', $site->archive_type;
-    my %hash = map { $_, 1 } map { my $a = $_; $a =~ s/_/-/; $a; } @archive_type;
+    my %hash = map { $_, 1 } map { my $tmp = $_; $tmp =~ s/_/-/; $tmp; } @archive_type;
     my @unique_archive_type = sort keys %hash;
     $site->archive_type( join( ',', @unique_archive_type ) );
     $site->save
@@ -726,8 +726,8 @@ sub _v7_rebuild_content_field_permissions {
     while ( my $perm = $perm_iter->() ) {
         my $permissions = $perm->permissions;
         my @permissions = split ',', $permissions;
-        @permissions = map { my $a = $_; $a =~ s/content-field:/content_field:/g; $a; } @permissions;
-        @permissions = map { my $a = $_; $a =~ s/'//g;                            $a; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/content-field:/content_field:/g; $tmp; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/'//g;                            $tmp; } @permissions;
 
         # clear_permissions is content-field can not remove.
         $perm->permissions('');
@@ -746,8 +746,8 @@ sub _v7_rebuild_content_field_permissions {
     while ( my $role = $iter->() ) {
         my $permissions = $role->permissions;
         my @permissions = split ',', $permissions;
-        @permissions = map { my $a = $_; $a =~ s/content-field:/content_field:/g; $a; } @permissions;
-        @permissions = map { my $a = $_; $a =~ s/'//g;                            $a; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/content-field:/content_field:/g; $tmp; } @permissions;
+        @permissions = map { my $tmp = $_; $tmp =~ s/'//g;                            $tmp; } @permissions;
 
         # clear_permissions is content-field: can not remove.
         $role->permissions('');
