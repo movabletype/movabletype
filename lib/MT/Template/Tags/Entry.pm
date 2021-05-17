@@ -320,6 +320,8 @@ sub _hdlr_entries {
     %terms = %blog_terms;
     %args  = %blog_args;
 
+    $args{joins} = [];
+
     my $class_type     = $args->{class_type} || 'entry';
     my $class          = MT->model($class_type);
     my $cat_class_type = $class->container_type();
@@ -523,7 +525,7 @@ sub _hdlr_entries {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
                     return MT::Template::Context::_hdlr_pass_tokens_else(@_)
                         unless @cat_ids;
-                    $args{join} = MT::Placement->join_on(
+                    push @{ $args{joins} }, MT::Placement->join_on(
                         'entry_id',
                         {   category_id => \@cat_ids,
                             %blog_terms
@@ -544,79 +546,24 @@ sub _hdlr_entries {
         }
     }
 
-    # Adds a tag filter to the filters list.
-    if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
-        require MT::Tag;
-        require MT::ObjectTag;
+    {
+        my $res = $ctx->set_tag_filter_context({
+            args        => $args,
+            blog_terms  => \%blog_terms,
+            blog_args   => \%blog_args,
+            object_args => $entries ? undef : \%args,
+            filters     => \@filters,
+            datasource  => $class->datasource,
+        });
 
-        my $terms;
-        if ( $tag_arg !~ m/\b(AND|OR|NOT)\b|\(|\)/i ) {
-            my @tags = MT::Tag->split( ',', $tag_arg );
-            $terms = { name => \@tags };
-            $tag_arg = join " or ", @tags;
-        }
-        my $tags = [
-            MT::Tag->load(
-                $terms,
-                {   ( $terms ? ( binary => { name => 1 } ) : () ),
-                    join => MT::ObjectTag->join_on(
-                        'tag_id',
-                        {   object_datasource => $class->datasource,
-                            %blog_terms,
-                        },
-                        { %blog_args, unique => 1 }
-                    ),
-                }
-            )
-        ];
-        my $cexpr = $ctx->compile_tag_filter( $tag_arg, $tags );
-        if ($cexpr) {
-            my @tag_ids
-                = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @$tags;
-            my $preloader = sub {
-                my ($entry_id) = @_;
-                my %map;
-                return \%map unless @tag_ids;
-                my $terms = {
-                    tag_id            => \@tag_ids,
-                    object_id         => $entry_id,
-                    object_datasource => $class->datasource,
-                    %blog_terms,
-                };
-                my $args = {
-                    %blog_args,
-                    fetchonly   => ['tag_id'],
-                    no_triggers => 1
-                };
-                my @ot_ids;
-                @ot_ids = MT::ObjectTag->load( $terms, $args ) if @tag_ids;
-                $map{ $_->tag_id } = 1 for @ot_ids;
-                \%map;
-            };
-            if ( !$entries ) {
-                if ( $tag_arg !~ m/\bNOT\b/i ) {
-                    return MT::Template::Context::_hdlr_pass_tokens_else(@_)
-                        unless @tag_ids;
-                    $args{join} = MT::ObjectTag->join_on(
-                        'object_id',
-                        {   tag_id            => \@tag_ids,
-                            object_datasource => 'entry',
-                            %blog_terms
-                        },
-                        { %blog_args, unique => 1 }
-                    );
-                }
-            }
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
-        }
-        else {
-            return $ctx->error(
-                MT->translate(
-                    "You have an error in your '[_2]' attribute: [_1]",
-                    $tag_arg, 'tag'
-                )
-            );
-        }
+        return $ctx->error(
+        MT->translate(
+            "You have an error in your '[_2]' attribute: [_1]",
+            $args->{tags} || $args->{tag}, 'tag'
+        )
+        ) unless $res;
+
+        return $res->(@_) if ref $res eq 'CODE';
     }
 
     # Adds an author filter to the filters list.
@@ -691,7 +638,7 @@ sub _hdlr_entries {
                 $scored_by = $author;
             }
 
-            $args{join} = MT->model('objectscore')->join_on(
+            push @{ $args{joins} }, MT->model('objectscore')->join_on(
                 undef,
                 {   object_id => \'=entry_id',
                     object_ds => 'entry',
@@ -855,7 +802,7 @@ sub _hdlr_entries {
             # for now, we support one join
             my ( $col, $val ) = %fields;
             my $type = MT::Meta->metadata_by_name( $class, 'field.' . $col );
-            $args{join} = [
+            push @{ $args{joins} }, [
                 $class->meta_pkg,
                 undef,
                 {   type          => 'field.' . $col,
