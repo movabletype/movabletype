@@ -41,10 +41,10 @@ is(MT::PluginData->count(), 12, 'test data prepared');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
     is(MT::PluginData->count(), 4, 'deleted');
-    is(MT::PluginData->count({ id => 1 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 4 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 7 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 10 }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 1,  plugin => 'NotInstalled',  key => 'configuration:blog:10' }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 4,  plugin => 'NotInstalled',  key => 'configuration:blog:10' }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 7,  plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
+    is(MT::PluginData->count({ id => 10, plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
     is(MT::Log->count() - $log_count, 4, 'right number of logs left');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
@@ -59,10 +59,10 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(MT::PluginData->count(), 5, 'added');
     my ($stdin, $stdout, $stderr) = do_command(['--delete']);
     is(MT::PluginData->count(), 4, 'deleted');
-    is(MT::PluginData->count({ id => 1 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 4 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 7 }),  1, 'right record remains');
-    is(MT::PluginData->count({ id => 10 }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 1,  plugin => 'NotInstalled',  key => 'configuration:blog:10' }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 4,  plugin => 'NotInstalled',  key => 'configuration:blog:10' }), 1, 'right record remains');
+    is(MT::PluginData->count({ id => 7,  plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
+    is(MT::PluginData->count({ id => 10, plugin => 'FormattedText', key => 'configuration' }),         1, 'right record remains');
     is(MT::Log->count() - $log_count, 1, 'right number of logs left');
 }
 
