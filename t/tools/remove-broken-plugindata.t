@@ -46,6 +46,9 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(MT::PluginData->count({ id => 7, plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
     is(MT::PluginData->count({ id => 10, plugin => 'FormattedText', key => 'configuration' }),        1, 'right record remains');
     is(MT::Log->count() - $log_count,                                                                 2, 'right number of logs left');
+    my @log = MT::Log->load({}, { sort => 'id', direction => 'decend', limit => 2 });
+    is(scalar(split(',', ($log[0]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
+    is(scalar(split(',', ($log[1]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
     is(MT::PluginData->count(), 4, 'no more deletion');
@@ -64,6 +67,8 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(MT::PluginData->count({ id => 7, plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
     is(MT::PluginData->count({ id => 10, plugin => 'FormattedText', key => 'configuration' }),        1, 'right record remains');
     is(MT::Log->count() - $log_count,                                                                 1, 'right number of logs left');
+    my @log = MT::Log->load({}, { sort => 'id', direction => 'decend', limit => 1 });
+    is(scalar(split(',', ($log[0]->metadata =~ /keys:(.+)/)[0])), 2, 'right number of ids in metadata');
 }
 
 sub do_command {
