@@ -13,6 +13,7 @@ binmode STDERR, ":utf8";
 
 GetOptions(
     'd|delete' => \my ($delete),
+    'v|verbose' => \my ($verbose),
     "help|?"   => sub { usage(); exit },
 );
 
@@ -23,9 +24,11 @@ my $installed  = installed_plugins();
 
 for my $pname (keys %$pd_plugins) {
 
-    print "============================================================\n";
-    printf("Checking Plugin Data for %s\n", $pname);
-    print "============================================================\n";
+    if ($verbose) {
+        print "============================================================\n";
+        printf("Checking Plugin Data for %s\n", $pname);
+        print "============================================================\n";
+    }
 
     my $plugin = $installed->{$pname} || MT::Plugin->new({ id => $pname, name => $pname });
     my $found;
@@ -36,7 +39,7 @@ for my $pname (keys %$pd_plugins) {
         my $active_id = $cfg->id || next;                              # never reach next
 
         if ($count > 1) {
-            printf(qq{%s Duplication for key "%s" is found.\n}, $count, $key);
+            printf(qq{%s Duplication for key "%s" is found.\n}, $count, $key) if $verbose;
             $found = 1;
             if ($delete) {
                 MT::PluginData->remove(
@@ -50,7 +53,7 @@ for my $pname (keys %$pd_plugins) {
         }
 
         if (ref $cfg->data ne 'HASH') {
-            printf(qq{Data breakage for id %d key "%s" is found.\n}, $active_id, $key);
+            printf(qq{Data breakage for id %d key "%s" is found.\n}, $active_id, $key) if $verbose;
             $found = 1;
             if ($delete) {
                 $cfg->remove;
@@ -62,7 +65,7 @@ for my $pname (keys %$pd_plugins) {
         }
     }
 
-    printf("No data breakages nor duplications found.\n") unless $found;
+    printf("No data breakages nor duplications found.\n") if $verbose && !$found;
 }
 
 sub installed_plugins {
@@ -91,6 +94,7 @@ usage: $0
 
 These options are available:
 
--d, --delete    Delete on detecting data breakage or deprecation.
+-d, --delete    Delete on detecting data breakage or duplication.
+-v, --verbose    Verbose output.
 EOT
 }
