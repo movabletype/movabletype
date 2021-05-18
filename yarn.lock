@@ -2911,10 +2911,10 @@ tinymce-i18n@20.12.25:
   resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-20.12.25.tgz#479d2c69613ec2324aeadb4478c9da2d8d4e0bb8"
   integrity sha512-MOVCgGbkZ2ZVvb9B38Mbdhwam1oZOBXDkxmzcHX3W7c3RCB8r4VG9DS8+4BcsoCCgfUg1JXwh2Hk+7aXcYXkkg==
 
-tinymce@5.7.0:
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.7.0.tgz#bc565877e4041db83848a330dfa7916993110cba"
-  integrity sha512-WikgMpJbqYPaucV3lfstCj+Y4NquZlK61gyuJ2eqDUBlSU+4fFh6rpwnelVTxuvtEyJsAVOl8HZmbzBfDJiLsQ==
+tinymce@5.8.0:
+  version "5.8.0"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.8.0.tgz#3ffd1d96da2619153bd0bd2023a382052339bb0a"
+  integrity sha512-1bOI3k+1D76rVjAJC3XkHezXJVghurnKBDREF1STHBLTQUY17XTbaDNJUxNgJqJHa2xg1udd5I1bzdfSd77DGw==
 
 to-object-path@^0.3.0:
   version "0.3.0"
