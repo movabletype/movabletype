@@ -307,7 +307,7 @@ subtest 'MultiBlogMigrationPartial' => sub {
     # ri:2:entry_save:0|ri:2:entry_save:0|ri:2:entry_save:0
 
     subtest 'unserialize single' => sub {
-        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:2:entry_save');
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:2:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target,         MT::RebuildTrigger::TARGET_BLOG );
         is( $rt->action,         MT::RebuildTrigger::ACTION_RI );
@@ -317,20 +317,20 @@ subtest 'MultiBlogMigrationPartial' => sub {
     };
 
     subtest 'unserialize single taget=0' => sub {
-        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:0:entry_save');
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:0:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target_blog_id, 0 );
     };
 
     subtest 'unserialize single taget=_blogs_in_website' => sub {
-        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:_blogs_in_website:entry_save');
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_blogs_in_website:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE );
         is( $rt->target_blog_id, 0 );
     };
 
     subtest 'unserialize single taget=_all' => sub {
-        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single('ri:_all:entry_save');
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_all:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target,         MT::RebuildTrigger::TARGET_ALL );
         is( $rt->target_blog_id, 0 );
@@ -348,41 +348,10 @@ subtest 'MultiBlogMigrationPartial' => sub {
             "\nri:2:entry_XXXX",
         );
         for (@wrong_inputs) {
-            my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize_single($_);
+            my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize($_);
             is(ref $rt, '', 'error');
             is($rt, undef,      'error');
         }
-    };
-
-    subtest 'unserialize multi' => sub {
-        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
-            'ri:2:entry_save|ri:2:entry_save');
-        is( scalar @rt, 2, 'right number' );
-        for my $i ( 0, 1 ) {
-            is( ref $rt[$i],             $model, 'right class' );
-            is( $rt[$i]->target,         MT::RebuildTrigger::TARGET_BLOG );
-            is( $rt[$i]->action,         MT::RebuildTrigger::ACTION_RI );
-            is( $rt[$i]->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE );
-            is( $rt[$i]->target_blog_id, 2 );
-            is( $rt[$i]->event,          MT::RebuildTrigger::EVENT_SAVE );
-        }
-    };
-
-    subtest 'unserialize wrong formated multi' => sub {
-        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
-            '|ri:2:entry_save||ri:2:entry_save|');
-        is( scalar @rt, 2, 'right number' );
-        for my $i ( 0, 1 ) {
-            is( ref $rt[$i], $model, 'right class' );
-        }
-    };
-
-    subtest 'unserialize wrong formated multi' => sub {
-        my @rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize(
-            'ri:2:entry_save|ri:2:XXXX_save');
-        is( scalar @rt, 2, 'right number' );
-        is( ref $rt[0], $model, 'right class' );
-        is( $rt[1], undef, '0 for an error' );
     };
 };
 

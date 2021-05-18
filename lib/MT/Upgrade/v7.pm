@@ -875,8 +875,9 @@ sub v7_migrate_rebuild_trigger {
 
         my $skip_occur = 0;
 
-        for my $rt (_v7_migrate_rebuild_trigger_unserialize($data->{rebuild_triggers})) {
-            if ($rt) {
+        for my $single (split(/\|/, $data->{rebuild_triggers})) {
+            next unless $single;
+            if (my $rt = _v7_migrate_rebuild_trigger_unserialize($single)) {
                 $rt->blog_id($blog->id);
                 $rt->save or return $rt->error($rt->errstr);
             } else {
@@ -896,11 +897,6 @@ sub v7_migrate_rebuild_trigger {
 }
 
 sub _v7_migrate_rebuild_trigger_unserialize {
-    my ($string) = @_;
-    return map { _v7_migrate_rebuild_trigger_unserialize_single($_) || undef } grep { $_ } split(/\|/, $string);
-}
-
-sub _v7_migrate_rebuild_trigger_unserialize_single {
     my ($string) = @_;
     my ($action, $id, $event) = split(/:/, $string);
     my @event_elems = split(/_/, $event);
