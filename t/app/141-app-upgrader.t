@@ -316,20 +316,20 @@ subtest 'MultiBlogMigrationPartial' => sub {
         is( $rt->event,          MT::RebuildTrigger::EVENT_SAVE );
     };
 
-    subtest 'unserialize single taget=0' => sub {
+    subtest 'unserialize single target=0' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:0:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target_blog_id, 0 );
     };
 
-    subtest 'unserialize single taget=_blogs_in_website' => sub {
+    subtest 'unserialize single target=_blogs_in_website' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_blogs_in_website:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE );
         is( $rt->target_blog_id, 0 );
     };
 
-    subtest 'unserialize single taget=_all' => sub {
+    subtest 'unserialize single target=_all' => sub {
         my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_all:entry_save');
         is( ref $rt,             $model, 'right class' );
         is( $rt->target,         MT::RebuildTrigger::TARGET_ALL );
