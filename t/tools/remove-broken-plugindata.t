@@ -45,7 +45,7 @@ is(MT::PluginData->count(), 12, 'test data prepared');
     is(MT::PluginData->count({ id => 4, plugin => 'NotInstalled', key => 'configuration' }),          1, 'right record remains');
     is(MT::PluginData->count({ id => 7, plugin => 'FormattedText', key => 'configuration:blog:10' }), 1, 'right record remains');
     is(MT::PluginData->count({ id => 10, plugin => 'FormattedText', key => 'configuration' }),        1, 'right record remains');
-    is(MT::Log->count() - $log_count,                                                                 4, 'right number of logs left');
+    is(MT::Log->count() - $log_count,                                                                 2, 'right number of logs left');
 
     ($stdin, $stdout, $stderr) = do_command(['--delete']);
     is(MT::PluginData->count(), 4, 'no more deletion');

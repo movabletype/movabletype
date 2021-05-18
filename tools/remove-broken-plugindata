@@ -32,6 +32,7 @@ for my $pname (keys %$pd_plugins) {
 
     my $plugin = $installed->{$pname} || MT::Plugin->new({ id => $pname, name => $pname });
     my $found;
+    my $duplication;
 
     while (my ($key, $count) = each(%{ $pd_plugins->{$pname} })) {
         my $scope_id  = ($key =~ qr{^configuration:?(.*)})[0] || '';
@@ -41,14 +42,11 @@ for my $pname (keys %$pd_plugins) {
         if ($count > 1) {
             printf(qq{%s Duplication for key "%s" is found.\n}, $count, $key);
             $found = 1;
+            $duplication = 1;
             if ($delete) {
                 MT::PluginData->remove(
                     { plugin  => $pname, key => $key, id => { not => $active_id } },
                     { nofetch => 1 });
-                MT->log({
-                    message => MT->translate('Duplications of plugin data(ID:%d) for "[_1]" are deleted', $active_id, $pname),
-                    level   => MT::Log::INFO(),
-                });
             }
         }
 
@@ -58,11 +56,18 @@ for my $pname (keys %$pd_plugins) {
             if ($delete) {
                 $cfg->remove;
                 MT->log({
-                    message => MT->translate('Plugin data(ID:%d) for "[_1]" is deleted due to data breakage.', $active_id, $pname),
-                    level   => MT::Log::INFO(),
+                    message  => MT->translate('Plugin data(ID:%d) for "[_1]" is deleted due to data breakage.', $active_id, $pname),
+                    level    => MT::Log::INFO(),
                 });
             }
         }
+    }
+
+    if ($duplication && $delete) {
+        MT->log({
+            message  => MT->translate('Plugin data duplications for "[_1]" are resolved.', $pname),
+            level    => MT::Log::INFO(),
+        });
     }
 
     printf("No data breakages nor duplications found.\n") unless $found;
