@@ -971,7 +971,7 @@ sub delete {
             or return $app->permission_denied;
 
         # Mark before FileInfo records are gone by cascading delete
-        my @finfos = MT::FileInfo->load({ cd_id => $obj->id, blog_id => $blog->id });
+        my @finfos = MT->model('fileinfo')->load({ cd_id => $obj->id, blog_id => $blog->id });
         for my $finfo (@finfos) {
             if ( $app->config('DeleteFilesAfterRebuild') ) {
                 $finfo->mark_to_remove;
