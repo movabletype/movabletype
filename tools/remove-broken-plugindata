@@ -84,6 +84,7 @@ sub installed_plugins {
     my $plugins;
     for my $k (keys %MT::Plugins) {
         if (my $p = $MT::Plugins{$k}->{object}) {
+            next unless $p->isa('MT::Plugin');
             $plugins->{ $p->key || $p->name } = $p;
         }
     }
