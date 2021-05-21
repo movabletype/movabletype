@@ -77,7 +77,15 @@ for my $pname (keys %$pd_plugins) {
         });
     }
 
-    printf("No data breakages nor duplications found.\n") unless $found;
+    if ($found) {
+        printf("No data breakages nor duplications found.\n");
+    } else {
+        printf("Some data breakages or duplications found.\n");
+    }
+}
+
+if (!%$pd_plugins) {
+    printf("No plugin data is found.\n");
 }
 
 sub installed_plugins {
