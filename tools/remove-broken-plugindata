@@ -12,12 +12,15 @@ binmode STDOUT, ":utf8";
 binmode STDERR, ":utf8";
 
 GetOptions(
-    'd|delete' => \my ($delete),
+    'd|delete'  => \my ($delete),
     'v|verbose' => \my ($verbose),
-    "help|?"   => sub { usage(); exit },
+    'debug'     => \my ($debug),
+    "help|?"    => sub { usage(); exit },
 );
 
 my $mt = MT->new;
+
+MT->config('LoggerLevel', 'NONE') unless $debug;
 
 my $pd_plugins = pd_plugins();
 my $installed  = installed_plugins();
@@ -62,16 +65,20 @@ for my $pname (keys %$pd_plugins) {
     }
 
     if (@fixed_duplication) {
+        my $msg = MT->translate('Plugin data duplications for "[_1]" are resolved.', $pname);
+        print $msg. "\n";
         MT->log({
-            message  => MT->translate('Plugin data duplications for "[_1]" are resolved.', $pname),
+            message  => $msg,
             level    => MT::Log::INFO(),
             metadata => 'keys:'. join(',', @fixed_duplication),
         });
     }
 
     if (@fixed_breakage) {
+        my $msg = MT->translate('Plugin data for "[_1]" is deleted due to data breakage.', $pname);
+        print $msg. "\n";
         MT->log({
-            message  => MT->translate('Plugin data for "[_1]" is deleted due to data breakage.', $pname),
+            message  => $msg,
             level    => MT::Log::INFO(),
             metadata => 'keys:'. join(',', @fixed_breakage),
         });
@@ -110,6 +117,7 @@ usage: $0
 These options are available:
 
 -d, --delete    Delete on detecting data breakage or duplication.
--v, --verbose    Verbose output.
+-v, --verbose   Verbose output.
+    --debug     debug output.
 EOT
 }
