@@ -7,6 +7,7 @@
 package MT::ListProperty;
 use strict;
 use warnings;
+use 5.010;
 use MT;
 use base qw( MT::ErrorHandler );
 
@@ -276,7 +277,8 @@ sub list_properties {
     my $local_props = MT->registry( 'list_properties', $cls );
     if ($local_props) {
         for my $key ( keys %$local_props ) {
-            my $prop = MT::ListProperty->instance( $cls, $key );
+            state %compiled;
+            my $prop = $compiled{"$cls:$key"} ||= MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
                 next unless $prop->condition;
             }
@@ -288,7 +290,8 @@ sub list_properties {
     if ($common_props) {
         for my $key ( keys %$common_props ) {
             next if $props{$key};
-            my $prop = MT::ListProperty->instance( $cls, $key );
+            state %compiled;
+            my $prop = $compiled{"$cls:$key"} ||= MT::ListProperty->instance( $cls, $key );
             if ( $prop->has('condition') ) {
                 next unless $prop->condition;
             }
