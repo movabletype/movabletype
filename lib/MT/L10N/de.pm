@@ -4731,7 +4731,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Dashboard' => 'Übersichtsseite',
 	'Select a Widget...' => 'Widget wählen...',
 	'System Overview' => 'Systemübersicht',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Sie haben für die gewünschte Funktion keine Berechtigung. Bei Fragen wenden Sie sich bitte an Ihren Systemadministrator.',
 	'Your Dashboard has been updated.' => 'Übersichtsseite aktualisiert.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -5005,7 +5004,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'If enabled, TrackBacks will be accepted for this category from any source.' => 'Wenn die Option aktiv ist, sind Kategorie-TrackBacks aus allen Quellen zugelassen',
 	'Inbound TrackBacks' => 'TrackBack-Empfang',
 	'Manage entries in this category' => 'Einträge in dieser Kategorie verwalten',
-	'Optional' => 'Optional',
 	'Outbound TrackBacks' => 'TrackBack-Versand',
 	'Passphrase Protection' => 'Passphrasenschutz',
 	'Please enter a valid basename.' => 'Bitte geben Sie einen gültigen Basisnamen ein.',
@@ -5028,7 +5026,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Date this comment was made' => 'Datum, an dem dieser Kommentar abgegeben wurde',
 	'Date' => 'Datum',
 	'Delete this comment (x)' => 'Diesen Kommentar löschen (x)',
-	'Details' => 'Details',
 	'Email address of commenter' => 'E-Mail-Adresse des Kommentarautors',
 	'Fulltext of the comment entry' => 'Vollständiger Kommentartext',
 	'IP Address of the commenter' => 'IP-Adresse des Kommentarautors',
