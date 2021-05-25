@@ -4168,7 +4168,6 @@ use vars qw( @ISA %Lexicon );
 	'Dashboard' => 'ダッシュボード',
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'System Overview' => 'システム',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4478,7 +4477,6 @@ use vars qw( @ISA %Lexicon );
 	'Comment Text' => '本文',
 	'Commenter Status' => 'コメント投稿者の状態',
 	'Delete this comment (x)' => 'コメントを削除 (x)',
-	'Details' => '詳細',
 	'Manage Comments' => 'コメントの管理',
 	'No url in profile' => '(URL がありません)',
 	'Reply to this comment' => 'コメントに返信',
