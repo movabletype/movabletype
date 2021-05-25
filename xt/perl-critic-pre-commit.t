@@ -14,7 +14,7 @@ my $root = $repo->command('rev-parse', '--show-toplevel');
 chop($root);
 
 my @files =
-    grep { $_ =~ qr{\.(pm|pl|cgi)\z} && $_ !~ qr{^extlib} && $_ !~ qr{^mt-config.cgi\z} }
+    grep { $_ =~ qr{\.(pm|pl|cgi)\z} && $_ !~ qr{^extlib} && $_ !~ qr{^mt-config.cgi\z} && -f $_ }
     map { (split(/\t/, $_, 2))[1]; } $repo->command('diff-index', '--cached', '--name-status', 'HEAD');
 
 exit unless @files;
