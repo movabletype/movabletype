@@ -107,7 +107,7 @@ sub add {
         $terms->{id}    = { not => [$blog_id] };
         $terms->{class} = ['website', 'blog'];
     } elsif (my $select_blog_id = $app->param('select_blog_id')) {
-        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/\d+/;
+        $terms->{blog_id} = $select_blog_id if $select_blog_id =~ m/^[0-9]+$/;
     }
 
     if ($app->param('search') || $app->param('json')) {
