@@ -18,7 +18,7 @@ sub new {
 
     $Log::Minimal::PRINT = sub {
         my ( $time, $type, $message, $trace, $raw_message ) = @_;
-        Test::More::note $message;
+        Test::More::note $message unless $ENV{MT_TEST_RUN_APP_AS_CGI};
         open my $fh, '>>:utf8', $log_file or die "$log_file: $!";
         print $fh $message, "\n";
     };
