@@ -219,7 +219,7 @@ function init() {
         else if ( dialog.currentPanel === 3 ) {
         </mt:if>
             var select_object = jQuery('input[name="object-cb"]:checked').val();
-            if ( select_object !== 'content_type' ) {
+            if ( select_object !== 'content' ) {
                 <mt:unless name="missing_content_type">
                 dialog.currentPanel = 2;
                 </mt:unless>
