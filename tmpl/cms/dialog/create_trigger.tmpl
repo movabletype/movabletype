@@ -9,6 +9,7 @@
 <mt:setvarblock name="js_include" append="1">
 
 <script type="text/javascript">
+'use strict';
 
 var dialog;
 
@@ -78,7 +79,7 @@ function init() {
     // setup
     dialog = new Dialog.MultiPanel("rebuild-trigger");
 
-    panels = [];
+    var panels = [];
     var panel;
 
     // Site
@@ -202,8 +203,7 @@ function init() {
         next_event.apply(this,arguments);
     };
     dialog.previousPanel = function(){
-        var curr;
-        var next;
+        var curr, next, prev;
         <mt:if name="missing_content_type">
         if ( dialog.currentPanel === 3 ) {
         <mt:else>
