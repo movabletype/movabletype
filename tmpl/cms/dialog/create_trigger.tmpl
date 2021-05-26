@@ -413,7 +413,7 @@ TC.attachLoadEvent( init );
                 </div>
               </td>
               <td class="panel-label">
-                <mt:var name="label">
+                <mt:var name="name">
               </td>
             </tr>
             </mt:loop>
@@ -575,15 +575,15 @@ TC.attachLoadEvent( init );
           </thead>
           <tbody>
             <mt:loop name="action_loop">
-            <tr id="action_<mt:var name="action_id">" class="odd">
+            <tr id="action_<mt:var name="id">" class="odd">
               <td class="cb" scope="row">
                 <div class="custom-control custom-radio">
-                  <input id="select_action_<mt:var name="action_id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="action_id">" />
-                  <label class="custom-control-label" for="select_action_<mt:var name="action_id">"><span class="sr-only">選択</span></label>
+                  <input id="select_action_<mt:var name="id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="id">" />
+                  <label class="custom-control-label" for="select_action_<mt:var name="id">"><span class="sr-only">選択</span></label>
                 </div>
               </td>
               <td class="panel-label">
-                <mt:var name="action_name">
+                <mt:var name="name">
               </td>
             </tr>
             </mt:loop>

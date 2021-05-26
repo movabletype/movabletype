@@ -220,11 +220,11 @@ sub add {
         require MT::RebuildTrigger;
         $params->{object_type_loop} = [{
                 id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()),
-                label => $app->translate("Entry or Page")
+                name => $app->translate("Entry or Page")
             },
             {
                 id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_CONTENT_TYPE()),
-                label => $app->translate("Content Type")
+                name => $app->translate("Content Type")
             },
         ];
         my $plugin_switch  = $app->config->PluginSwitch;
@@ -235,7 +235,7 @@ sub add {
             push @{ $params->{object_type_loop} },
                 {
                 id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()),
-                label => $app->translate("Comment") };
+                name => $app->translate("Comment") };
         }
         my $trackback_switch = defined($plugin_switch) ? $plugin_switch->{Trackback} : 1;
         eval { require Trackback; };
@@ -243,7 +243,7 @@ sub add {
             push @{ $params->{object_type_loop} },
                 {
                 id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()),
-                label => $app->translate("Trackback") };
+                name => $app->translate("Trackback") };
         }
         $params->{action_loop}  = action_loop($app);
         $params->{trigger_loop} = trigger_loop($app);
@@ -331,12 +331,12 @@ sub trigger_hash {
 sub action_loop {
     my $app = shift;
     [{
-            action_id   => 'ri',
-            action_name => $app->translate('rebuild indexes.'),
+            id   => 'ri',
+            name => $app->translate('rebuild indexes.'),
         },
         {
-            action_id   => 'rip',
-            action_name => $app->translate('rebuild indexes and send pings.'),
+            id   => 'rip',
+            name => $app->translate('rebuild indexes and send pings.'),
         },
     ];
 }
@@ -345,7 +345,7 @@ sub action_hash {
     my $app         = shift;
     my $action_hash = {};
     foreach my $action (@{ action_loop($app) }) {
-        $action_hash->{ $action->{action_id} } = $action->{action_name};
+        $action_hash->{ $action->{id} } = $action->{name};
     }
     return $action_hash;
 }
@@ -368,7 +368,7 @@ sub load_config {
         } @{ $args->{multiblog_trigger_loop} };
 
         $args->{multiblog_action_loop} = action_loop($app);
-        my %actions = map { $_->{action_id} => $_->{action_name} } @{ $args->{multiblog_action_loop} };
+        my %actions = map { $_->{id} => $_->{name} } @{ $args->{multiblog_action_loop} };
 
         my $rebuild_triggers = $args->{rebuild_triggers};
         my @rebuilds         = map {
