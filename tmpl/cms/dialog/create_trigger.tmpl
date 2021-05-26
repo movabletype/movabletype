@@ -479,39 +479,19 @@ TC.attachLoadEvent( init );
             </tr>
           </thead>
           <tbody>
-            <tr id="event_save" class="odd">
-              <td class="cb" scope="row">
-                <div class="custom-control custom-radio">
-                  <input id="select_save" type="radio" class="custom-control-input select" name="event-cb" value="save" />
-                  <label class="custom-control-label" for="select_save"><span class="sr-only">選択</span></label>
-                </div>
-              </td>
-              <td class="panel-label">
-                <__trans phrase="Save">
-              </td>
-            </tr>
-            <tr id="event_pup" class="even">
-              <td class="cb" scope="row">
-                <div class="custom-control custom-radio">
-                  <input id="select_pub" type="radio" class="custom-control-input select" name="event-cb" value="pub" />
-                  <label class="custom-control-label" for="select_pub"><span class="sr-only">選択</span></label>
-                </div>
-              </td>
-              <td class="panel-label">
-                <__trans phrase="Publish">
-              </td>
-            </tr>
-            <tr id="event_unpub" class="odd">
-              <td class="cb" scope="row">
-                <div class="custom-control custom-radio">
-                  <input id="select_unpub" type="radio" class="custom-control-input select" name="event-cb" value="unpub" />
-                  <label class="custom-control-label" for="select_unpub"><span class="sr-only">選択</span></label>
-                </div>
-              </td>
-              <td class="panel-label">
-                <__trans phrase="__UNPUBLISHED">
-              </td>
-            </tr>
+              <mt:loop name="event_loop">
+                <tr id="event_<mt:var name="id">">
+                  <td class="cb" scope="row">
+                    <div class="custom-control custom-radio">
+                      <input id="select_event_<mt:var name="id">" type="radio" class="custom-control-input select" name="event-cb" value="<mt:var name="id">" />
+                      <label class="custom-control-label" for="select_event_<mt:var name="id">"><span class="sr-only">選択</span></label>
+                    </div>
+                  </td>
+                  <td class="panel-label">
+                    <mt:var name="name">
+                  </td>
+                </tr>
+              </mt:loop>
           </tbody>
         </table>
       </div>
@@ -575,7 +555,7 @@ TC.attachLoadEvent( init );
           </thead>
           <tbody>
             <mt:loop name="action_loop">
-            <tr id="action_<mt:var name="id">" class="odd">
+            <tr id="action_<mt:var name="id">">
               <td class="cb" scope="row">
                 <div class="custom-control custom-radio">
                   <input id="select_action_<mt:var name="id">" type="radio" class="custom-control-input select" name="action-cb" value="<mt:var name="id">" />

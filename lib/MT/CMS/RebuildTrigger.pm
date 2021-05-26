@@ -4,8 +4,8 @@
 #
 # $Id$
 package MT::CMS::RebuildTrigger;
-
 use strict;
+use warnings;
 
 sub config {
     my $app     = shift;
@@ -134,6 +134,8 @@ sub add {
         $params->{dialog_title}    = $app->translate("Create Rebuild Trigger");
         $params->{panel_loop}      = [];
 
+        require MT::RebuildTrigger;
+
         for (my $i = 0; $i <= $#panels; $i++) {
             my $source       = $panels[$i]->{type};
             my $name         = $panels[$i]->{name};
@@ -216,37 +218,28 @@ sub add {
 
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
+        $params->{object_type_loop}    = object_type_loop($app);
 
-        require MT::RebuildTrigger;
-        $params->{object_type_loop} = [{
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()),
-                name => $app->translate("Entry or Page")
-            },
-            {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_CONTENT_TYPE()),
-                name => $app->translate("Content Type")
-            },
-        ];
         my $plugin_switch  = $app->config->PluginSwitch;
         my $comment_switch = defined($plugin_switch) ? $plugin_switch->{Comments} : 1;
         eval { require Comments; };
 
-        if (!$@ && (!defined($comment_switch) || $comment_switch != 0)) {
-            push @{ $params->{object_type_loop} },
-                {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()),
-                name => $app->translate("Comment") };
+        unless (!$@ && (!defined($comment_switch) || $comment_switch != 0)) {
+            $params->{object_type_loop} =
+                [grep { $_->{id} ne MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()) } @{ $params->{object_type_loop} }];
         }
+
         my $trackback_switch = defined($plugin_switch) ? $plugin_switch->{Trackback} : 1;
         eval { require Trackback; };
-        if (!$@ && (!defined($trackback_switch) || $trackback_switch != 0)) {
-            push @{ $params->{object_type_loop} },
-                {
-                id    => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()),
-                name => $app->translate("Trackback") };
+
+        unless (!$@ && (!defined($trackback_switch) || $trackback_switch != 0)) {
+            $params->{object_type_loop} =
+                [grep { $_->{id} ne MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()) } @{ $params->{object_type_loop} }];
         }
+
         $params->{action_loop}  = action_loop($app);
         $params->{trigger_loop} = trigger_loop($app);
+        $params->{event_loop}   = event_loop($app);
         $params->{site_name}    = $app->blog->name;
 
         my @site_has_content_type = ct_count();
@@ -330,15 +323,26 @@ sub trigger_hash {
 
 sub action_loop {
     my $app = shift;
-    [{
-            id   => 'ri',
-            name => $app->translate('rebuild indexes.'),
-        },
-        {
-            id   => 'rip',
-            name => $app->translate('rebuild indexes and send pings.'),
-        },
-    ];
+    return [
+        { id => 'ri',  name => $app->translate('rebuild indexes.') },
+        { id => 'rip', name => $app->translate('rebuild indexes and send pings.') }];
+}
+
+sub event_loop {
+    my $app = shift;
+    return [
+        { id => 'save',  name => $app->translate('Save') },
+        { id => 'pub',   name => $app->translate('Publish') },
+        { id => 'unpub', name => $app->translate('Unpublish') }];
+}
+
+sub object_type_loop {
+    my $app = shift;
+    return [
+        { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()), name => $app->translate("Entry or Page") },
+        { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_CONTENT_TYPE()),  name => $app->translate("Content Type") },
+        { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()),       name => $app->translate("Comment") },
+        { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()),          name => $app->translate("Trackback") }];
 }
 
 sub action_hash {
