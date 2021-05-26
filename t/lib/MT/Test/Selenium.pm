@@ -3,6 +3,10 @@ package MT::Test::Selenium;
 use Role::Tiny::With;
 use strict;
 use warnings;
+use FindBin;
+use Time::HiRes qw(time);
+use File::Path;
+use 5.010;
 use JSON::PP ();    # silence redefine warnings
 use JSON;
 use Test::More;
@@ -345,6 +349,24 @@ sub _get_response_logs {
                 qw/headers status statusText url requestHeaders/ };
     }
     return \@responses;
+}
+
+sub screenshot {
+    my ($self, $id) = @_;
+    state $evidence_dir = sprintf("%s/evidence/%s/%s", $FindBin::Bin, time, $FindBin::Script);
+    File::Path::make_path("$evidence_dir");
+    $self->driver->capture_screenshot("$evidence_dir/$id.png");
+}
+
+sub screenshot_full {
+    my ($self, $id, $width, $height) = @_;
+    my $size_org = $self->driver->get_window_size();
+    $width  = $width  || $self->driver->execute_script('return document.body.scrollWidth / (top === self ? 1 : 0.8)');
+    $height = $height || $self->driver->execute_script('return document.body.scrollHeight / (top === self ? 1 : 0.8)');
+    $self->driver->set_window_size($height, $width);
+    my $name = $self->screenshot($id);
+    $self->driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
+    return $name;
 }
 
 1;
