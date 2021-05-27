@@ -369,7 +369,7 @@ sub load_config {
     return \@rebuilds;
 }
 
-my @key_fields = ('blog_id', 'object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
+my @key_fields = ('object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
 
 sub _rt_digest {
     my $rt = shift;
