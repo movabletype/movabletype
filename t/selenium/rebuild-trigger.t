@@ -132,6 +132,7 @@ for (my $i = 0; $i < scalar @$senareos; $i++) {
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, ++$added_count, 'trigger added');
     $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs2, $added_count, 'trigger added');
