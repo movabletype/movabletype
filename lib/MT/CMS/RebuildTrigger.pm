@@ -382,9 +382,9 @@ sub save {
     my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
     my @new_triggers     = ();
 
-    for my $key (qw/ all_triggers blogs_in_website_triggers rebuild_triggers /) {
-        if ($app->multi_param($key)) {
-            my @triggers = split '\|', $app->multi_param($key);
+    if (my $req_triggers = $app->param('rebuild_triggers')) {
+        
+        my @triggers = split '\|', $req_triggers;
             foreach my $trigger (@triggers) {
                 my ($action, $id, $event, $content_type_id)
                     = split ':',
@@ -423,7 +423,6 @@ sub save {
                 push @new_triggers, $rt;
             }
         }
-    }
 
     # Remove
     foreach my $rt (@rebuild_triggers) {
