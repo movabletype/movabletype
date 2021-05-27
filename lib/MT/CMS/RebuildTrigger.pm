@@ -377,64 +377,63 @@ sub save {
     my $app = shift;
     $app->validate_magic or return;
 
-    my $blog_id          = $app->blog ? $app->blog->id : 0;
-    my @p                = $app->multi_param;
-    my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
-    my @new_triggers     = ();
+    if (defined(my $req_triggers = $app->param('rebuild_triggers'))) {
 
-    if (my $req_triggers = $app->param('rebuild_triggers')) {
-        
+        my $blog_id          = $app->blog ? $app->blog->id : 0;
+        my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
+        my @new_triggers     = ();
+
         my @triggers = split '\|', $req_triggers;
-            foreach my $trigger (@triggers) {
-                my ($action, $id, $event, $content_type_id)
-                    = split ':',
-                    $trigger;
-                $content_type_id = 0 if $content_type_id eq 'undefined';
-                $action =
-                    $action eq 'ri'
-                    ? MT::RebuildTrigger::ACTION_RI()
-                    : MT::RebuildTrigger::ACTION_RIP();
-                my $object_type =
-                      $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
-                    : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
-                    : $event =~ /^tb_.*/      ? MT::RebuildTrigger::TYPE_PING()
-                    :                           MT::RebuildTrigger::TYPE_CONTENT_TYPE();
-                $event =
-                      $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
-                    : $event =~ /.*_pub$/  ? MT::RebuildTrigger::EVENT_PUBLISH()
-                    :                        MT::RebuildTrigger::EVENT_UNPUBLISH();
-                my $target =
-                      $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
-                    : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
-                    :                              MT::RebuildTrigger::TARGET_BLOG();
-                my $target_blog_id = $id =~ /\d+/ ? $id : 0;
-                my ($rt) = grep { $_->blog_id == $blog_id && $_->object_type == $object_type && $_->action == $action && $_->event == $event && $_->target == $target && $_->target_blog_id == $target_blog_id && $_->ct_id == $content_type_id } @rebuild_triggers;
+        foreach my $trigger (@triggers) {
+            my ($action, $id, $event, $content_type_id)
+                = split ':',
+                $trigger;
+            $content_type_id = 0 if $content_type_id eq 'undefined';
+            $action =
+                $action eq 'ri'
+                ? MT::RebuildTrigger::ACTION_RI()
+                : MT::RebuildTrigger::ACTION_RIP();
+            my $object_type =
+                  $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
+                : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
+                : $event =~ /^tb_.*/      ? MT::RebuildTrigger::TYPE_PING()
+                :                           MT::RebuildTrigger::TYPE_CONTENT_TYPE();
+            $event =
+                  $event =~ /.*_save$/ ? MT::RebuildTrigger::EVENT_SAVE()
+                : $event =~ /.*_pub$/  ? MT::RebuildTrigger::EVENT_PUBLISH()
+                :                        MT::RebuildTrigger::EVENT_UNPUBLISH();
+            my $target =
+                  $id eq '_all'              ? MT::RebuildTrigger::TARGET_ALL()
+                : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
+                :                              MT::RebuildTrigger::TARGET_BLOG();
+            my $target_blog_id = $id =~ /\d+/ ? $id : 0;
+            my ($rt) = grep { $_->blog_id == $blog_id && $_->object_type == $object_type && $_->action == $action && $_->event == $event && $_->target == $target && $_->target_blog_id == $target_blog_id && $_->ct_id == $content_type_id } @rebuild_triggers;
 
-                unless ($rt) {
-                    $rt = MT->model('rebuild_trigger')->new;
-                    $rt->blog_id($blog_id);
-                    $rt->object_type($object_type);
-                    $rt->action($action);
-                    $rt->event($event);
-                    $rt->target($target);
-                    $rt->target_blog_id($target_blog_id);
-                    $rt->ct_id($content_type_id);
-                }
-                push @new_triggers, $rt;
+            unless ($rt) {
+                $rt = MT->model('rebuild_trigger')->new;
+                $rt->blog_id($blog_id);
+                $rt->object_type($object_type);
+                $rt->action($action);
+                $rt->event($event);
+                $rt->target($target);
+                $rt->target_blog_id($target_blog_id);
+                $rt->ct_id($content_type_id);
+            }
+            push @new_triggers, $rt;
+        }
+
+        # Remove
+        foreach my $rt (@rebuild_triggers) {
+            my ($exist) = grep { $_->blog_id == $rt->blog_id && $_->object_type == $rt->object_type && $_->action == $rt->action && $_->event == $rt->event && $_->target == $rt->target && $_->target_blog_id == $rt->target_blog_id && $_->ct_id == $rt->ct_id } @new_triggers;
+            unless ($exist) {
+                $rt->remove or return $app->error($rt->errstr);
             }
         }
 
-    # Remove
-    foreach my $rt (@rebuild_triggers) {
-        my ($exist) = grep { $_->blog_id == $rt->blog_id && $_->object_type == $rt->object_type && $_->action == $rt->action && $_->event == $rt->event && $_->target == $rt->target && $_->target_blog_id == $rt->target_blog_id && $_->ct_id == $rt->ct_id } @new_triggers;
-        unless ($exist) {
-            $rt->remove or return $app->error($rt->errstr);
+        # Save
+        foreach my $rt (@new_triggers) {
+            $rt->save or return $app->error($rt->errstr);
         }
-    }
-
-    # Save
-    foreach my $rt (@new_triggers) {
-        $rt->save or return $app->error($rt->errstr);
     }
 
     $app->config('DefaultAccessAllowed', $app->multi_param('default_access_allowed'), 1)
