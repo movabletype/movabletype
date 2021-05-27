@@ -369,6 +369,13 @@ sub load_config {
     return \@rebuilds;
 }
 
+my @key_fields = ('blog_id', 'object_type', 'action', 'event', 'target', 'target_blog_id', 'ct_id');
+
+sub _rt_digest {
+    my $rt = shift;
+    return join(',', map { $rt->$_ } @key_fields);
+}
+
 sub save {
     my $app = shift;
     $app->validate_magic or return;
@@ -399,24 +406,24 @@ sub save {
                 : $id eq '_blogs_in_website' ? MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE()
                 :                              MT::RebuildTrigger::TARGET_BLOG();
             my $target_blog_id = $id =~ /\d+/ ? $id : 0;
-            my ($rt) = grep { $_->blog_id == $blog_id && $_->object_type == $object_type && $_->action == $action && $_->event == $event && $_->target == $target && $_->target_blog_id == $target_blog_id && $_->ct_id == $content_type_id } @rebuild_triggers;
 
-            unless ($rt) {
-                $rt = MT->model('rebuild_trigger')->new;
-                $rt->blog_id($blog_id);
-                $rt->object_type($object_type);
-                $rt->action($action);
-                $rt->event($event);
-                $rt->target($target);
-                $rt->target_blog_id($target_blog_id);
-                $rt->ct_id($content_type_id);
-            }
-            push @new_triggers, $rt;
+            my $rt = MT->model('rebuild_trigger')->new;
+            $rt->blog_id($blog_id);
+            $rt->object_type($object_type);
+            $rt->action($action);
+            $rt->event($event);
+            $rt->target($target);
+            $rt->target_blog_id($target_blog_id);
+            $rt->ct_id($content_type_id);
+
+            my ($exists) = grep { _rt_digest($rt) eq _rt_digest($_) } @rebuild_triggers;
+
+            push @new_triggers, ($exists ? $exists : $rt);
         }
 
         # Remove
         foreach my $rt (@rebuild_triggers) {
-            my ($exist) = grep { $_->blog_id == $rt->blog_id && $_->object_type == $rt->object_type && $_->action == $rt->action && $_->event == $rt->event && $_->target == $rt->target && $_->target_blog_id == $rt->target_blog_id && $_->ct_id == $rt->ct_id } @new_triggers;
+            my ($exist) = grep grep { _rt_digest($rt) eq _rt_digest($_) } @new_triggers;
             unless ($exist) {
                 $rt->remove or return $app->error($rt->errstr);
             }
