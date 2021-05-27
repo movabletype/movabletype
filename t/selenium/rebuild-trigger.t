@@ -86,7 +86,7 @@ my $senareos = [
 
 $senareos = [ (List::Util::shuffle(@$senareos))[0..14] ]; # picking up 15 random senarios to test
 
-plan tests => ((scalar @$senareos) * 1) + (scalar(grep { @$_} map { @$_ } @$senareos) * 4);
+plan tests => ((scalar @$senareos) * 2) + (scalar(grep { @$_} map { @$_ } @$senareos) * 4); # per scenario + per panel
 
 $s->driver->{is_wd3} = 0;
 my $author = MT->model('author')->load(1);
@@ -131,7 +131,11 @@ for (my $i = 0; $i < scalar @$senareos; $i++) {
     $s->driver->switch_to_frame;
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
     is(scalar @trs, ++$added_count, 'trigger added');
-    $s->screenshot_full("senario$i") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs2, $added_count, 'trigger added');
+    $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
 }
 
 sub stringify_senario {
