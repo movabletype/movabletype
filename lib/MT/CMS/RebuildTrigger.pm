@@ -286,7 +286,8 @@ sub _rt_digest {
 sub unstringify {
     my $csv = shift;
     die if $csv =~ /[^0-9,]/;
-    my @array = split(/,/, $csv, 6);
+    my @array = split(/,/, $csv);
+    die if (scalar @array != 7);
     my $hash  = { id => shift @array };
     for (my $i = 0; $i <= $#key_fields; $i++) {
         $hash->{ $key_fields[$i] } = $array[$i] || 0;
