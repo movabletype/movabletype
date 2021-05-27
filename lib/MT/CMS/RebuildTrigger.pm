@@ -287,15 +287,6 @@ sub trigger_loop {
     ];
 }
 
-sub trigger_hash {
-    my $app          = shift;
-    my $trigger_hash = {};
-    foreach my $trigger (@{ trigger_loop($app) }) {
-        $trigger_hash->{ $trigger->{trigger_key} } = $trigger->{trigger_name};
-    }
-    return $trigger_hash;
-}
-
 sub action_loop {
     my $app = shift;
     return [
@@ -318,15 +309,6 @@ sub object_type_loop {
         { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_CONTENT_TYPE()),  name => $app->translate("Content Type") },
         { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_COMMENT()),       name => $app->translate("Comment") },
         { id => MT::RebuildTrigger::type_text(MT::RebuildTrigger::TYPE_PING()),          name => $app->translate("Trackback") }];
-}
-
-sub action_hash {
-    my $app         = shift;
-    my $action_hash = {};
-    foreach my $action (@{ action_loop($app) }) {
-        $action_hash->{ $action->{id} } = $action->{name};
-    }
-    return $action_hash;
 }
 
 sub load_config {
