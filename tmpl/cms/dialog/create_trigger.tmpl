@@ -36,7 +36,7 @@ function returnTrigger(ok) {
         var blog_name = labels[0].innerHTML;
 
         jQuery("#select_blog_name").val(blog_name);
-        jQuery("#select_blog_id").val(blog_id);
+        jQuery("#select_blog_id").val(target);
 
         var trigger_hash = {
         <mt:loop name="trigger_loop">
@@ -46,8 +46,8 @@ function returnTrigger(ok) {
         // Action
         var action_elm = jQuery('input[name="action-cb"]:checked');
         var action_id = action_elm.attr('id');
-        var action_text = action_elm.parent().parent().parent().find('.panel-label').text();
-        var action_value = action_elm.val();
+        var action_label = action_elm.parent().parent().parent().find('.panel-label').text();
+        var action = action_elm.val();
         // Trigger
         var object_elm = jQuery('input[name="object-cb"]:checked');
         var object = object_elm.val();
@@ -59,18 +59,17 @@ function returnTrigger(ok) {
         var trigger_event = event_elm.parent().parent().parent().find('.panel-label').text();
         // Content Type
         var content_type_text;
-        var content_type_id;
+        var ct_id;
         <mt:unless name="missing_content_type">
         var ct_elm = jQuery('input[name="content_type-cb"]:checked');
-        var ct_id = ct_elm.attr('id');
         var content_type_text = ct_elm.parent().parent().parent().find('.panel-label').text();
-        var content_type_id = ct_elm.val();
-        if (content_type_id) {
+        var ct_id = ct_elm.val();
+        if (ct_id) {
             trigger_object = content_type_text;
         }
         </mt:unless>
 
-        win.addMultiBlogTrigger( action_text, action_value, blog_name, blog_id, trigger_text, trigger_value, content_type_text, content_type_id, trigger_object, trigger_event );
+        win.addMultiBlogTrigger( action_label, action, blog_name, blog_id, trigger_text, trigger_value, content_type_text, ct_id, trigger_object, trigger_event );
         jQuery.fn.mtModal.close();
     }
 }

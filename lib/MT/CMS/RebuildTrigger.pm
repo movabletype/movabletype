@@ -342,16 +342,16 @@ sub load_config {
         my $trigger = $objct_type . '_' . $event;
         my $ct      = $rt->ct_id ? MT->model('content_type')->load($rt->ct_id) : undef;
         my $ct_name = $ct        ? $ct->name                                   : '';
-        my $e       = {
-            action_name       => $actions_hash{ $rt->action },
-            action_value      => $rt->action,
-            blog_id           => $target,
-            trigger_name      => $triggers{$trigger}{name},
-            trigger_object    => $rt->ct_id ? $ct_name : $triggers{$trigger}{object},
-            trigger_action    => $triggers{$trigger}{action},
-            trigger_value     => $trigger,
-            content_type_name => $ct_name,
-            content_type_id   => $rt->ct_id,
+        my $e = {
+            action_label   => $actions_hash{ $rt->action },
+            action         => $rt->action,
+            trigger_name   => $triggers{$trigger}{name},
+            trigger_object => $rt->ct_id ? $ct_name : $triggers{$trigger}{object},
+            trigger_action => $triggers{$trigger}{action},
+            trigger_value  => $trigger,
+            ct_name        => $ct_name,
+            ct_id          => $rt->ct_id,
+            target         => $target,
         };
         if ($rt->target == MT::RebuildTrigger::TARGET_ALL()) {
             $e->{blog_name} = $app->translate('(All sites and child sites in this system)');
@@ -388,10 +388,8 @@ sub save {
 
         my @triggers = split '\|', $req_triggers;
         foreach my $trigger (@triggers) {
-            my ($action, $id, $event, $content_type_id)
-                = split ':',
-                $trigger;
-            $content_type_id = 0 if $content_type_id eq 'undefined';
+            my ($action, $id, $event, $ct_id) = split ':', $trigger;
+            $ct_id = 0 if $ct_id eq 'undefined';
             my $object_type =
                   $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
                 : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
@@ -414,7 +412,7 @@ sub save {
             $rt->event($event);
             $rt->target($target);
             $rt->target_blog_id($target_blog_id);
-            $rt->ct_id($content_type_id);
+            $rt->ct_id($ct_id);
 
             my ($exists) = grep { _rt_digest($rt) eq _rt_digest($_) } @rebuild_triggers;
 

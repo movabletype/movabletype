@@ -88,9 +88,9 @@ rebuildMultiBlogTriggerTable();
   /* <![CDATA[ */
   var multiBlogRebuilds = new Array();
   <mt:loop name="rebuilds_loop">
-  multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<mt:var name="action_name" escape="html">", "<mt:var name="action_value">", "<mt:var name="blog_name" escape="html">", "<mt:var name="blog_id">", "<mt:var name="trigger_name">", "<mt:var name="trigger_value">", "<mt:var name="content_type_name">", "<mt:var name="content_type_id">", "<mt:var name="trigger_object">", "<mt:var name="trigger_action">");
+  multiBlogRebuilds[multiBlogRebuilds.length] = new Array ("<mt:var name="action_label" escape="html">", "<mt:var name="action">", "<mt:var name="blog_name" escape="html">", "<mt:var name="target">", "<mt:var name="trigger_name">", "<mt:var name="trigger_value">", "<mt:var name="ct_name">", "<mt:var name="ct_id">", "<mt:var name="trigger_object">", "<mt:var name="trigger_action">");
   </mt:loop>
-  
+
   function rebuildMultiBlogTriggerTable() {
       DOM.addClassName(getByID('multiblog_blog_list_zero_state'), 'hidden');
       DOM.removeClassName(getByID('multiblog_blog_list'), 'hidden');
@@ -129,12 +129,12 @@ rebuildMultiBlogTriggerTable();
           jQuery('#info-no-trigger').css('display', 'block');
       }
   }
-  
+
   function removeMultiBlogTrigger(index) {
       multiBlogRebuilds.splice(index, 1);
       rebuildMultiBlogTriggerTable();
   }
-  
+
   function addMultiBlogTrigger(actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId, triggerObject, triggerEvent) {
       multiBlogRebuilds[multiBlogRebuilds.length] = [actionName, actionValue, blogName, blogId, triggerName, triggerValue, contenttypeName, contenttypeId, triggerObject, triggerEvent];
       rebuildMultiBlogTriggerTable();
