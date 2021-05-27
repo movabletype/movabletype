@@ -290,8 +290,8 @@ sub trigger_loop {
 sub action_loop {
     my $app = shift;
     return [
-        { id => 'ri',  name => $app->translate('rebuild indexes.') },
-        { id => 'rip', name => $app->translate('rebuild indexes and send pings.') }];
+        { id => MT::RebuildTrigger::ACTION_RI(),  name => $app->translate('rebuild indexes.') },
+        { id => MT::RebuildTrigger::ACTION_RIP(), name => $app->translate('rebuild indexes and send pings.') }];
 }
 
 sub event_loop {
@@ -315,6 +315,7 @@ sub load_config {
     my ($app, $blog_id) = @_;
 
     require MT::Blog;
+    require MT::RebuildTrigger;
 
     my %triggers = map {
         $_->{trigger_key} => {
@@ -323,13 +324,12 @@ sub load_config {
             action => $_->{trigger_action} }
     } @{ trigger_loop($app) };
 
-    my %actions = map { $_->{id} => $_->{name} } @{ action_loop($app) };
+    my %actions_hash = (map { $_->{id}, $_->{name} } @{ action_loop($app) });
 
     my @rebuilds;
     my @rebuild_triggers = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
 
     for my $rt (@rebuild_triggers) {
-        my $action = $rt->action == MT::RebuildTrigger::ACTION_RI() ? 'ri' : 'rip';
         my $target =
               $rt->target == MT::RebuildTrigger::TARGET_ALL()              ? '_all'
             : $rt->target == MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE() ? '_blogs_in_website'
@@ -347,8 +347,8 @@ sub load_config {
         my $ct      = $rt->ct_id ? MT->model('content_type')->load($rt->ct_id) : undef;
         my $ct_name = $ct        ? $ct->name                                   : '';
         my $e       = {
-            action_name       => $actions{$action},
-            action_value      => $action,
+            action_name       => $actions_hash{ $rt->action },
+            action_value      => $rt->action,
             blog_id           => $target,
             trigger_name      => $triggers{$trigger}{name},
             trigger_object    => $rt->ct_id ? $ct_name : $triggers{$trigger}{object},
@@ -389,10 +389,6 @@ sub save {
                 = split ':',
                 $trigger;
             $content_type_id = 0 if $content_type_id eq 'undefined';
-            $action =
-                $action eq 'ri'
-                ? MT::RebuildTrigger::ACTION_RI()
-                : MT::RebuildTrigger::ACTION_RIP();
             my $object_type =
                   $event =~ /^entry_.*/   ? MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE()
                 : $event =~ /^comment_.*/ ? MT::RebuildTrigger::TYPE_COMMENT()
