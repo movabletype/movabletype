@@ -337,16 +337,19 @@ sub save {
         }
     }
 
-    $app->config('DefaultAccessAllowed', $app->multi_param('default_access_allowed'), 1)
-        if defined $app->multi_param('default_access_allowed');
+    if (defined(my $val = $app->param('default_access_allowed'))) {
+        $app->config('DefaultAccessAllowed', $val, 1);
+    }
     $app->config->save_config;
 
     if (my $blog = $app->blog) {
-        $blog->blog_content_accessible($app->multi_param('blog_content_accessible'));
-        $blog->default_mt_sites_action($app->multi_param('default_mt_sites_action'))
-            if defined($app->multi_param('default_mt_sites_action'));
-        $blog->default_mt_sites_sites($app->multi_param('default_mt_sites_sites'))
-            if $app->multi_param('default_mt_sites_sites');
+        $blog->blog_content_accessible(scalar $app->param('blog_content_accessible'));
+        if (defined(my $val = $app->param('default_mt_sites_action'))) {
+            $blog->default_mt_sites_action($val);
+        }
+        if (my $val = $app->param('default_mt_sites_sites')) {
+            $blog->default_mt_sites_sites($val);
+        }
         $blog->save;
     }
 
