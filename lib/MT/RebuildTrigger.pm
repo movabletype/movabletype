@@ -142,8 +142,7 @@ sub post_contents_bulk_save {
 sub post_content_save {
     my $self = shift;
     my ($cb, $app, $content) = @_;
-    my $blog_id  = $content->blog_id || 0;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $content->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -167,14 +166,13 @@ sub post_content_save {
         }
     };
 
-    $self->_post_content_common(\@blog_ids, $code, $content->blog);
+    _post_content_common($self, $blog_id, $code, $content->blog);
 }
 
 sub post_content_pub {
     my $self = shift;
     my ($cb, $app, $content) = @_;
-    my $blog_id  = $content->blog_id;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $content->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -191,14 +189,13 @@ sub post_content_pub {
         }
     };
 
-    _post_content_common($self, \@blog_ids, $code, $content->blog);
+    _post_content_common($self, $blog_id, $code, $content->blog);
 }
 
 sub post_content_unpub {
     my $self = shift;
     my ($cb, $app, $content) = @_;
-    my $blog_id  = $content->blog_id;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $content->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -215,7 +212,7 @@ sub post_content_unpub {
         }
     };
 
-    _post_content_common($self, \@blog_ids, $code, $content->blog);
+    _post_content_common($self, $blog_id, $code, $content->blog);
 }
 
 sub init_rebuilt_cache {
@@ -337,9 +334,8 @@ sub post_feedback_save {
     my $self = shift;
     my ($trigger, $eh, $feedback) = @_;
     if ($feedback->visible) {
-        my $blog_id  = $feedback->blog_id;
-        my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
-        my $app      = MT->instance;
+        my $blog_id = $feedback->blog_id;
+        my $app     = MT->instance;
 
         my $code = sub {
             my ($d) = @_;
@@ -350,7 +346,7 @@ sub post_feedback_save {
             }
         };
 
-        _post_content_common($self, \@blog_ids, $code, $feedback->blog);
+        _post_content_common($self, $blog_id, $code, $feedback->blog);
     }
 }
 
@@ -365,8 +361,7 @@ sub post_entries_bulk_save {
 sub post_entry_save {
     my $self = shift;
     my ($cb, $app, $entry) = @_;
-    my $blog_id  = $entry->blog_id;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $entry->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -384,14 +379,13 @@ sub post_entry_save {
         }
     };
 
-    _post_content_common($self, \@blog_ids, $code, $entry->blog);
+    _post_content_common($self, $blog_id, $code, $entry->blog);
 }
 
 sub post_entry_pub {
     my $self = shift;
     my ($cb, $app, $entry) = @_;
-    my $blog_id  = $entry->blog_id;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $entry->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -405,14 +399,13 @@ sub post_entry_pub {
         }
     };
 
-    _post_content_common($self, \@blog_ids, $code, $entry->blog);
+    _post_content_common($self, $blog_id, $code, $entry->blog);
 }
 
 sub post_entry_unpub {
     my $self = shift;
     my ($cb, $app, $entry) = @_;
-    my $blog_id  = $entry->blog_id;
-    my @blog_ids = $blog_id ? ($blog_id, 0) : (0);
+    my $blog_id = $entry->blog_id;
 
     my $code = sub {
         my ($d) = @_;
@@ -426,16 +419,14 @@ sub post_entry_unpub {
         }
     };
 
-    _post_content_common($self, \@blog_ids, $code, $entry->blog);
+    _post_content_common($self, $blog_id, $code, $entry->blog);
 }
 
 sub _post_content_common {
-    my ($self, $blog_ids, $code, $blog) = @_;
+    my ($self, $blog_id, $code, $blog) = @_;
 
-    for my $blog_id (@$blog_ids) {
-        my $d = $self->get_config_value($blog_id == 0 ? TARGET_ALL() : TARGET_BLOG(), $blog_id);
-        $code->($d);
-    }
+    $code->($self->get_config_value(TARGET_BLOG(), $blog_id)) if $blog_id;
+    $code->($self->get_config_value(TARGET_ALL(),  0));
 
     if ($blog->is_blog && (my $website = $blog->website)) {
         my $d = $self->get_config_value(TARGET_BLOGS_IN_WEBSITE(), $website->id);
