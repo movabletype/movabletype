@@ -163,22 +163,19 @@ sub add {
                                 if ((my $loop = $param->{object_loop}) && !$offset) {
                                     if ($app->blog && !$app->blog->is_blog) {
                                         $count++;
-                                        unshift @$loop,
-                                            {
+                                        unshift @$loop, {
                                             id          => '_blogs_in_website',
                                             label       => $app->translate('(All child sites in this site)'),
                                             description => $app->translate('Select to apply this trigger to all child sites in this site.'),
-                                            };
+                                        };
                                     }
                                     $count++;
-                                    unshift @$loop,
-                                        {
+                                    unshift @$loop, {
                                         id          => '_all',
                                         label       => $app->translate('(All sites and child sites in this system)'),
                                         description => $app->translate('Select to apply this trigger to all sites and child sites in this system.'),
-                                        };
-                                    splice(@$loop, $limit)
-                                        if scalar(@$loop) > $limit;
+                                    };
+                                    splice(@$loop, $limit) if scalar(@$loop) > $limit;
                                 }
                             }
                         }
@@ -189,8 +186,7 @@ sub add {
 
             push @{ $params->{panel_loop} }, $panel_params;
         }
-        $params->{return_args} = $app->return_args;
-
+        $params->{return_args}         = $app->return_args;
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
         $params->{object_type_loop}    = object_type_loop($app);
