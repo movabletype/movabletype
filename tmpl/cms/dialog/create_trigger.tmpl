@@ -13,7 +13,6 @@
 
 var dialog;
 
-var win = window.parent;
 function returnTrigger(ok) {
     if (!ok) // user cancelled
         return jQuery.fn.mtModal.close();
@@ -35,9 +34,6 @@ function returnTrigger(ok) {
         if (labels.length == 0) return;
         var blog_name = labels[0].innerHTML;
 
-        jQuery("#select_blog_name").val(blog_name);
-        jQuery("#select_blog_id").val(target);
-
         var trigger_hash = {
         <mt:loop name="trigger_loop">
             "<mt:var name="trigger_key">": "<mt:var name="trigger_name">"<mt:unless name="__last__">,</mt:unless>
@@ -45,7 +41,6 @@ function returnTrigger(ok) {
         };
         // Action
         var action_elm = jQuery('input[name="action-cb"]:checked');
-        var action_id = action_elm.attr('id');
         var action_label = action_elm.parent().parent().parent().find('.panel-label').text();
         var action = action_elm.val();
         // Trigger
@@ -69,7 +64,7 @@ function returnTrigger(ok) {
         }
         </mt:unless>
 
-        win.addMultiBlogTrigger( action_label, action, blog_name, blog_id, trigger_text, trigger_value, content_type_text, ct_id, trigger_object, trigger_event );
+        window.parent.addMultiBlogTrigger( action_label, action, blog_name, blog_id, trigger_text, trigger_value, content_type_text, ct_id, trigger_object, trigger_event );
         jQuery.fn.mtModal.close();
     }
 }
