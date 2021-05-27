@@ -519,6 +519,7 @@ sub AddNewStruct($$$$$$)
             next unless $$fieldInfo{List};
             my $i = 0;
             my ($item, $p);
+            my $level = scalar(() = ($propPath =~ / \d+/g));
             # loop through all list items (note: can't yet write multi-dimensional lists)
             foreach $item (@{$val}) {
                 if ($i) {
@@ -533,7 +534,8 @@ sub AddNewStruct($$$$$$)
                 if (ref $item eq 'HASH') {
                     my $subStruct = $$fieldInfo{Struct} or next;
                     AddNewStruct($et, $tagInfo, $capture, $p, $item, $subStruct) or next;
-                } elsif (length $item) { # don't write empty items in list
+                # don't write empty items in upper-level list
+                } elsif (length $item or (defined $item and $level == 1)) {
                     AddNewTag($et, $fieldInfo, $capture, $p, \$item, \%langIdx);
                     $addedTag = 1;
                 }
@@ -851,7 +853,7 @@ information.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
