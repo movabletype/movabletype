@@ -366,60 +366,35 @@ sub load_config {
 
     my %actions = map { $_->{id} => $_->{name} } @{ action_loop($app) };
 
-    my @rebuilds = map {
-        my ($action, $id, $trigger, $content_type_id) = split(/:/, $_);
-        my $content_type;
-        $content_type = MT->model('content_type')->load($content_type_id) if $content_type_id;
-        my $content_type_name = $content_type ? $content_type->name : '';
+    my @rebuilds;
+
+    for my $rt (split(/\|/, $stringify)) {
+        my ($action, $id, $trigger, $ct_id) = split(/:/, $rt);
+        my $ct      = $ct_id ? MT->model('content_type')->load($ct_id) : undef;
+        my $ct_name = $ct    ? $ct->name                               : '';
+        my $e = {
+            action_name    => $actions{$action},
+            action_value   => $action,
+            blog_id        => $id,
+            trigger_name   => $triggers{$trigger}{name},
+            trigger_object => $ct_id ? $ct_name : $triggers{$trigger}{object},
+            trigger_action    => $triggers{$trigger}{action},
+            trigger_value     => $trigger,
+            content_type_name => $ct_name,
+            content_type_id   => $ct_id,
+        };
         if ($id eq '_all') {
-            {
-                action_name    => $actions{$action},
-                action_value   => $action,
-                blog_name      => $app->translate('(All sites and child sites in this system)'),
-                blog_id        => $id,
-                trigger_name   => $triggers{$trigger}{name},
-                trigger_object => $content_type_id
-                ? $content_type_name
-                : $triggers{$trigger}{object},
-                trigger_action    => $triggers{$trigger}{action},
-                trigger_value     => $trigger,
-                content_type_name => $content_type_name,
-                content_type_id   => $content_type_id,
-            };
+            $e->{blog_name} = $app->translate('(All sites and child sites in this system)');
         } elsif ($id eq '_blogs_in_website') {
-            {
-                action_name    => $actions{$action},
-                action_value   => $action,
-                blog_name      => $app->translate('(All child sites in this site)'),
-                blog_id        => $id,
-                trigger_name   => $triggers{$trigger}{name},
-                trigger_object => $content_type_id
-                ? $content_type_name
-                : $triggers{$trigger}{object},
-                trigger_action    => $triggers{$trigger}{action},
-                trigger_value     => $trigger,
-                content_type_name => $content_type_name,
-                content_type_id   => $content_type_id,
-            };
+            $e->{blog_name} = $app->translate('(All child sites in this site)');
         } elsif (my $blog = MT::Blog->load($id, { cached_ok => 1 })) {
-            {
-                action_name    => $actions{$action},
-                action_value   => $action,
-                blog_name      => $blog->name,
-                blog_id        => $id,
-                trigger_name   => $triggers{$trigger}{name},
-                trigger_object => $content_type_id
-                ? $content_type_name
-                : $triggers{$trigger}{object},
-                trigger_action    => $triggers{$trigger}{action},
-                trigger_value     => $trigger,
-                content_type_name => $content_type_name,
-                content_type_id   => $content_type_id,
-            };
+            $e->{blog_name} = $blog->name;
         } else {
-            ();
+            next;
         }
-    } split(/\|/, $stringify);
+
+        push @rebuilds, $e;
+    }
 
     return \@rebuilds;
 }
