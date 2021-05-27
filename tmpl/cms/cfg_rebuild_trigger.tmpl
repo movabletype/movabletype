@@ -106,7 +106,15 @@
     <script type="text/javascript" data-rebuildTrigger="<mt:var name="rebuilds_json" escape="html">">
     (function(){
         'use strict';
-        var multiBlogRebuilds = JSON.parse(document.scripts[document.scripts.length - 1].getAttribute('data-rebuildTrigger'));
+
+        var json = jQuery("script[data-rebuildTrigger]").attr('data-rebuildTrigger');
+
+        if (!json || json.length == 0) {
+            console.error("Current trigger data couldn't retreived.");
+            return;
+        }
+
+        var multiBlogRebuilds = JSON.parse(json);
 
         jQuery(function(){
             var tpl = jQuery("#multiblog_blog_list tbody tr").remove();
