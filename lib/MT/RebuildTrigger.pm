@@ -106,11 +106,10 @@ sub get_config_value {
     my ($var, $blog_id) = @_;
     my $target_blog      = MT->model('blog')->load($blog_id);
     my $target_blog_id   = $var == TARGET_BLOG() ? $blog_id : 0;
-    my @rebuild_triggers = MT->model('rebuild_trigger')->load({ target_blog_id => $target_blog_id });
+    my @rebuild_triggers = MT->model('rebuild_trigger')->load({ target => $var, target_blog_id => $target_blog_id });
     my $data             = {};
     for my $rt (@rebuild_triggers) {
         my $target = $rt->target;
-        next unless $target eq $var;
         my @blog_ids = ();
         if ($target == TARGET_ALL()) {
             push @blog_ids, $rt->blog_id;
