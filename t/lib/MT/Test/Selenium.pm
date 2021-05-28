@@ -12,6 +12,7 @@ use Plack::Builder;
 use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
+use Encode;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
@@ -303,7 +304,7 @@ sub request {
         # TODO: take care of redirection
         $res = HTTP::Response->new( $log->{status}, $log->{statusText},
             [ %{ $log->{headers} || {} } ] );
-        $res->content( $self->{content} );
+        $res->content(encode_utf8($self->{content}));
     }
     $res ||= HTTP::Response->new(200);
     return $self->{res} = $res;
