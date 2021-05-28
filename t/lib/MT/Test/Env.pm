@@ -155,6 +155,10 @@ sub write_config {
         LoggerLevel          => 'DEBUG',
         MailTransfer         => 'debug',
         DBIRaiseError        => 1,
+        PluginSwitch         => [
+            'TinyMCE=0',
+            'FormattedTextForTinyMCE=0',
+        ],
     );
 
     if ($extra) {
