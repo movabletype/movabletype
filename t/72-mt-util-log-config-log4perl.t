@@ -60,12 +60,14 @@ my $mt = MT->instance;
 require MT::Util::Log;
 MT::Util::Log::init();
 MT::Util::Log->info("Some information");
+MT::Util::Log->notice("Some notice");
 MT::Util::Log->warn("Some warning");
 MT::Util::Log->error("Some error");
 
 ok -f $logfile, "logfile exists";
 my $log = $test_env->slurp($logfile);
 like $log => qr/Some information/, "logfile contains correct info log";
+like $log => qr/Some notice/, "logfile2 contains correct notice log";
 
 ok -f $logfile2, "logfile2 exists";
 my $log2 = $test_env->slurp($logfile2);
