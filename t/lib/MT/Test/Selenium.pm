@@ -31,6 +31,10 @@ our %EXTRA = (
                 'headless', ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox',
             ],
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
             perfLoggingPrefs => {},
         },
         loggingPrefs => { performance => 'ALL' },
@@ -47,6 +51,10 @@ our %EXTRA = (
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
             ],
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
         },
         travis => {
             remote_server_addr => 'chromedriver',
