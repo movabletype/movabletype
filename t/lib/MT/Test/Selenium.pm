@@ -353,9 +353,11 @@ sub _get_response_logs {
 
 sub screenshot {
     my ($self, $id) = @_;
+    state $index = 1;
     state $evidence_dir = sprintf("%s/evidence/%s/%s", $FindBin::Bin, time, $FindBin::Script);
     File::Path::make_path("$evidence_dir");
-    $self->driver->capture_screenshot("$evidence_dir/$id.png");
+    $self->driver->capture_screenshot("$evidence_dir/$index\-$id.png");
+    $index++;
 }
 
 sub screenshot_full {

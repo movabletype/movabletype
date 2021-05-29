@@ -5,7 +5,6 @@ use utf8;
 use 5.010;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
-use List::Util;
 use Test::More;
 use MT::Test::Env;
 use Data::Dumper;
@@ -46,9 +45,15 @@ my $ct4  = MT::Test::Permission->make_content_type(name => 'ct4',   blog_id => 4
 my $ct5  = MT::Test::Permission->make_content_type(name => 'ct5',   blog_id => 5);
 my $ct52 = MT::Test::Permission->make_content_type(name => 'ct5-2', blog_id => 5);
 
+$s->driver->{is_wd3} = 0;
+my $author = MT->model('author')->load(1);
+$author->set_password('Nelson');
+$author->save;
+$s->login($author);
+
 # Single senario contains multiple panels in array ref and single panel has two values.
-# For instance [7, 3] indicates the panel has 7 options and instructs to click the 3rd option.
-my $senareos = [
+# For instance [7, 3] indicates the panel has 7 options and instructs to click on the 3rd one.
+my $senareos_full = [
     [[7, 1], [1, 1], [], [3, 1], [2, 1]], [[7, 1], [1, 1], [], [3, 1], [2, 2]],
     [[7, 1], [1, 1], [], [3, 2], [2, 1]], [[7, 1], [1, 1], [], [3, 2], [2, 2]],
     [[7, 1], [1, 1], [], [3, 3], [2, 1]], [[7, 1], [1, 1], [], [3, 3], [2, 2]],
@@ -84,22 +89,124 @@ my $senareos = [
     [[7, 7], [1, 1], [],     [3, 3], [2, 1]], [[7, 7], [1, 1], [],     [3, 3], [2, 2]],
 ];
 
-$senareos = [ (List::Util::shuffle(@$senareos))[0..14] ]; # picking up 15 random senarios to test
+subtest 'system context' => sub {
+    plan tests => 3;
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=0');
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    is(@{ $s->driver->find_elements('.alert-success', 'css') }, 1, 'save sccess indicated');
+    is(@{ $s->driver->get_log('browser') },                     0, 'no browser error occured');
+};
 
-plan tests => ((scalar @$senareos) * 2) + (scalar(grep { @$_} map { @$_ } @$senareos) * 4); # per scenario + per panel
+subtest 'site context' => sub {
 
-$s->driver->{is_wd3} = 0;
-my $author = MT->model('author')->load(1);
-$author->set_password('Nelson');
-$author->save;
-$s->login($author);
-$s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
-wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    set_up();
 
-my $added_count = 0;
+    my $senareos = $senareos_full;
 
-for (my $i = 0; $i < scalar @$senareos; $i++) {
-    note "senario: ". stringify_senario($senareos->[$i]);
+    if (!$ENV{MT_TEST_FULL_CASES}) {
+        # Only tests random 15 cases to save time. Do not randomize on runtime because it's confusing.
+        $senareos = [@$senareos_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
+        plan tests => 332;
+    } else {
+        plan tests => 1483;
+    }
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+
+    my $added_count = 0;
+
+    for (my $i = 0; $i < scalar @$senareos; $i++) {
+        note "senario: " . stringify_senario($senareos->[$i]);
+        process_senario($senareos, $i);
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs, ++$added_count, 'trigger added');
+        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs2, $added_count, 'trigger added');
+        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    }
+};
+
+subtest 'duplication' => sub {
+
+    set_up();
+
+    my $senareos = [@$senareos_full[1, 1]];
+
+    plan tests => 75;
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+
+    my $added_count = 0;
+
+    for (my $i = 0; $i < scalar @$senareos; $i++) {
+        note "senario: " . stringify_senario($senareos->[$i]);
+
+        # same senario twice
+        process_senario($senareos, $i) for (1, 2);
+
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs, $added_count + 2, 'trigger added');
+        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs2, 1, 'duplication is not added');
+        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $added_count = 1;
+    }
+};
+
+subtest 'duplication with content type' => sub {
+
+    set_up();
+
+    my $senareos = [@$senareos_full[18, 18]];
+
+    plan tests => 91;
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+
+    my $added_count = 0;
+
+    for (my $i = 0; $i < scalar @$senareos; $i++) {
+        note "senario: " . stringify_senario($senareos->[$i]);
+
+        # same senario twice
+        process_senario($senareos, $i) for (1, 2);
+
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs, $added_count + 2, 'triggers are added');
+        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+        my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+        is(scalar @trs2, 1, 'duplication is not added');
+        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $added_count = 1;
+    }
+};
+
+sub process_senario {
+    my ($senareos, $i) = @_;
     my $pages = $senareos->[$i];
     $s->driver->find_element('#rebuild_triggers-field .mt-open-dialog', 'css')->click;
     my $iframe = wait_until { $s->driver->find_element('iframe', 'css') };
@@ -112,7 +219,7 @@ for (my $i = 0; $i < scalar @$senareos; $i++) {
         $s->driver->find_element('#action-panel',       'css'),
     );
     for (my $j = 0; $j < scalar @{$pages}; $j++) {
-        if (!scalar @{ $pages->[$j] }) { # content type skipping
+        if (!scalar @{ $pages->[$j] }) {    # content type skipping
             note "senario $i page $j is skipping";
             next;
         }
@@ -129,19 +236,83 @@ for (my $i = 0; $i < scalar @$senareos; $i++) {
         $next_button->click();
     }
     $s->driver->switch_to_frame;
+}
+
+subtest 'two cases saved at once' => sub {
+
+    set_up();
+
+    my $senareos = [@$senareos_full[18, 19]];
+
+    plan tests => 45;
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+
+    for (my $i = 0; $i < scalar @$senareos; $i++) {
+        note "senario: " . stringify_senario($senareos->[$i]);
+        process_senario($senareos, $i);
+    }
+
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
-    is(scalar @trs, ++$added_count, 'trigger added');
-    $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    is(scalar @trs, 2, 'triggers are added');
+    $s->screenshot_full("added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+    my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs2, 2, 'triggers are saved');
+    $s->screenshot_full("saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+};
+
+subtest 'remove' => sub {
+
+    set_up();
+
+    my $senareos = [@$senareos_full[18, 19]];
+
+    plan tests => 46;
+
+    $s->visit('/cgi-bin/mt.cgi?__mode=cfg_rebuild_trigger&blog_id=1');
+    wait_until { $s->driver->execute_script("document.readyState !== 'loading'") };
+    is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+
+    for (my $i = 0; $i < scalar @$senareos; $i++) {
+        note "senario: " . stringify_senario($senareos->[$i]);
+        process_senario($senareos, $i);
+    }
+
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
     $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs, 2, 'triggers are added');
+
+    # find_elements is needed repeatedly because the table is rebuild everytime after operation.
+    while (my @button = $s->driver->find_elements('#multiblog_blog_list table tbody tr td:nth-child(5) a', 'css')) {
+        $button[0]->click;
+        is(@{ $s->driver->get_log('browser') }, 0, 'no browser error occured');
+    }
+
     my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
-    is(scalar @trs2, $added_count, 'trigger added');
-    $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    is(scalar @trs2, 0, 'triggers are removed');
+    $s->screenshot_full("removed") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
+    my @trs3 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
+    is(scalar @trs3, 0, 'triggers are removed and saved');
+    $s->screenshot_full("removed-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+};
+
+sub set_up {
+    MT->model('rebuild_trigger')->remove();
 }
 
 sub stringify_senario {
-    my $ref = shift;
+    my $ref    = shift;
     my $string = Dumper($ref);
     $string =~ s{\s}{}g;
     return (split(/=/, $string, 2))[1];
 }
+
+done_testing();
