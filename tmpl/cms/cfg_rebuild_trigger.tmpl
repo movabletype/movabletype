@@ -2,6 +2,15 @@
 <$mt:setvar name="position_actions_bottom" value="1"$>
 <mt:setvar name="config-rebuild-trigger" value="1">
 
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+#cfg_rebuild_trigger .template,
+#cfg_rebuild_trigger .hidden {
+    display:none;
+}
+</style>
+</mt:setvarblock>
+
 <mt:setvarblock name="system_msg">
   <mt:if name="saved">
     <mtapp:statusmsg
@@ -82,20 +91,20 @@
             <th class="head primary" scope="col"><span class="col-label"><__trans phrase="Action" escape="js"></span></th>
             <th class="head si" scope="col"><svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg></th>
           </tr>
+          <tr class="hidden template">
+              <td scop="col"></td>
+              <td scop="col"></td>
+              <td scop="col"></td>
+              <td scop="col"></td>
+              <td scop="col" class="si">
+                  <a class="d-inline-block">
+                      <svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg>
+                  </a>
+                  <input type="hidden" name="rebuild_trigger" value="">
+              </td>
+          </tr>
         </thead>
         <tbody>
-            <tr class="hidden">
-                <td scop="col"></td>
-                <td scop="col"></td>
-                <td scop="col"></td>
-                <td scop="col"></td>
-                <td scop="col" class="si">
-                    <a href="javascript:void(0)" class="d-inline-block">
-                        <svg title="<__trans phrase="Remove">" role="img" class="mt-icon mt-icon--sm"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg>
-                    </a>
-                    <input type="hidden" name="rebuild_trigger" value="">
-                </td>
-            </tr>
         </tbody>
       </table>
     </div>
@@ -117,7 +126,7 @@
         var multiBlogRebuilds = JSON.parse(json);
 
         jQuery(function(){
-            var tpl = jQuery("#multiblog_blog_list tbody tr").remove();
+            var tpl = jQuery("#multiblog_blog_list thead tr.template").remove();
             var tbody = jQuery('#multiblog_blog_list tbody');
             rebuildMultiBlogTriggerTable();
 
@@ -133,6 +142,7 @@
                             tr.find("td:nth-child(4)").text(multiBlogRebuilds[i].action_label);
                             tr.find("td:nth-child(5) a").on("click", function(){
                                 removeMultiBlogTrigger(i);
+                                return false;
                             });
                             tr.find('[name=rebuild_trigger]').val(stringify(multiBlogRebuilds[i]));
                             tr.appendTo(tbody).show();
