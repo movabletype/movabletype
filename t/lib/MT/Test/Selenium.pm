@@ -76,8 +76,7 @@ our %EXTRA = (
 sub new {
     my ( $class, $env ) = @_;
 
-    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER}
-        || ( $ENV{TRAVIS} ? 'Selenium::Remote::Driver' : 'Selenium::Chrome' );
+    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
 
     my $extra = $EXTRA{$driver_class} || {};
@@ -96,9 +95,6 @@ sub new {
     }
 
     my $travis_config = delete $extra->{travis};
-    if ( $ENV{TRAVIS} ) {
-        %driver_opts = ( %driver_opts, %$travis_config );
-    }
 
     if (DEBUG) {
         my $log_file = "$ENV{MT_HOME}/selenium_log.txt";
