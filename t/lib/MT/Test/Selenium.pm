@@ -37,9 +37,11 @@ our %EXTRA = (
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
                 'download.prompt_for_download' => $JSON::false,
             },
-            perfLoggingPrefs => {},
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
-        loggingPrefs => { performance => 'ALL' },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         binaries     => [
             'chromedriver',
             '/usr/bin/chromedriver',
@@ -57,7 +59,11 @@ our %EXTRA = (
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
                 'download.prompt_for_download' => $JSON::false,
             },
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         travis => {
             remote_server_addr => 'chromedriver',
             port               => 9515,
@@ -71,8 +77,6 @@ sub new {
     my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER}
         || ( $ENV{TRAVIS} ? 'Selenium::Remote::Driver' : 'Selenium::Chrome' );
     eval "require $driver_class" or plan skip_all => "No $driver_class";
-
-    $Selenium::Remote::Driver::FORCE_WD2 = 1;
 
     my $extra = $EXTRA{$driver_class} || {};
 
