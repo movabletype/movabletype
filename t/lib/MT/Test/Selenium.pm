@@ -12,6 +12,7 @@ use Plack::Builder;
 use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
+use Devel::GlobalDestruction;
 use Encode;
 use URI;
 use URI::QueryParam;
@@ -162,6 +163,9 @@ sub driver { shift->{driver} }
 sub DESTROY {
     my $self = shift;
     return unless $self->{pid} eq $$;
+    if (in_global_destruction) {
+        warn "Destroy MT::Test::Selenium object earlier!\nWebDriver may not be shut down properly at the global destruction";
+    }
     my $driver = $self->{driver} or return;
     $driver->quit;
 }

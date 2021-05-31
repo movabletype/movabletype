@@ -92,6 +92,7 @@ on 'test' => sub {
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
+    requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
     requires 'HTML::Form';
