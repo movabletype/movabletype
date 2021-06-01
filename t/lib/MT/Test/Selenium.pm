@@ -14,6 +14,7 @@ use File::Spec;
 use File::Which qw/which/;
 use Devel::GlobalDestruction;
 use Encode;
+use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
@@ -84,13 +85,16 @@ sub new {
         default_finder      => 'css',
         extra_capabilities  => $extra,
         acceptInsecureCerts => 1,
-        timeout             => 10,
+        startup_timeout     => 10,
     );
     for my $binary ( @{ delete $extra->{binaries} || [] } ) {
         $binary = _fix_binary($binary) or next;
         $driver_opts{binary} = $binary;
         last;
     }
+
+    my $ua = LWP::UserAgent->new(timeout => 300);
+    $driver_opts{ua} = $ua;
 
     my $travis_config = delete $extra->{travis};
 
