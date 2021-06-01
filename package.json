@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "codemirror": "5.54",
+    "jquery-migrate": "^3.3.2",
     "jquery-validation": "^1.19.3",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.7.0",
@@ -16,6 +17,7 @@
   "devDependencies": {},
   "scripts": {
     "copy": "npm run copy-tinymce; npm run copy-tinymce-language; npm run copy-svg4everybody;",
+    "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
     "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
     "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
