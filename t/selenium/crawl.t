@@ -21,10 +21,11 @@ use MT::Test::Fixture;
 use MT::Test::Selenium;
 use Selenium::Waiter;
 
+plan skip_all => "set EXTENDED_TESTING=1 to enable this test" unless $ENV{EXTENDED_TESTING};
+
 $test_env->prepare_fixture('db_data');
 
 my $s = MT::Test::Selenium->new($test_env);
-$s->driver->{is_wd3} = 0;
 my $author = MT->model('author')->load(1);
 $author->set_password('Nelson');
 $author->save;
@@ -42,16 +43,21 @@ while (my $job_obj = shift @queue) {
         $url = $job_obj;
     }
     state $num = 1;
-    note($num++ . ':' . $url);
-    note '        refferrer: '. ($referrer ? $$referrer : 'null');
     $s->visit($url);
     my @urls = map { $_->get_attribute('href') } $s->driver->find_elements('a[href^="/cgi-bin/"]', 'css');
     add_queue(\@urls, $url);
-    if (my @logs = get_filtered_log()) {
-        ok(!scalar(@logs), 'no browser error occurs');
-        note sprintf("<%s> %s", $_->{source}, $_->{message}) for @logs;
-        screenshot_full($s->driver, $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    my @logs = $s->get_browser_error_log();
+    ok(!scalar(@logs), 'no browser error occurs');
+    if (@logs) {
+        diag('test_number_'. $num . ':' . $url);
+        diag '        refferrer: '. ($referrer ? $$referrer : 'null');
+        diag sprintf("<%s> %s", $_->{source}, $_->{message}) for grep { $_->{source} } @logs;
+        $s->screenshot_full('test_number_'. $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    } else {
+        note('test_number_'. $num . ':' . $url);
+        note '        refferrer: '. ($referrer ? $$referrer : 'null');
     }
+    $num++;
     last if $num > 500;
     @queue = List::Util::shuffle(@queue) if $num % 10 == 0;
 }
@@ -70,37 +76,6 @@ sub add_queue {
         $once_queued{$url} = 1;
         shift(@queue) if scalar(@queue) > 500;
     }
-}
-
-sub get_filtered_log {
-    state $ignore_hosts = join('|', ('narnia.na', 'example.com', 'creativecommons.org'));
-    my $logs = $s->driver->get_log('browser');
-    my @filtered;
-    for my $log (@$logs) {
-        if ($log->{source} eq 'network') {
-            next if ($log->{message} =~ qr{^https?://($ignore_hosts)});
-        }
-        push(@filtered, $log);
-    }
-    return @filtered;
-}
-
-sub screenshot {
-    my ($driver, $id) = @_;
-    state $evidence_dir = sprintf("%s/evidence/%s/%s", $FindBin::Bin, time, $FindBin::Script);
-    File::Path::make_path("$evidence_dir");
-    $driver->capture_screenshot("$evidence_dir/$id.png");
-}
-
-sub screenshot_full {
-    my ($driver, $id, $width, $height) = @_;
-    my $size_org = $driver->get_window_size();
-    $width  = $width  || $driver->execute_script('return document.body.scrollWidth / (top === self ? 1 : 0.8)');
-    $height = $height || $driver->execute_script('return document.body.scrollHeight / (top === self ? 1 : 0.8)');
-    $driver->set_window_size($height, $width);
-    my $name = screenshot($driver, $id);
-    $driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
-    return $name;
 }
 
 done_testing;
