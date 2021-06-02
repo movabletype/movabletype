@@ -2368,6 +2368,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Boodschap',
 	'Metadata' => 'Metadata',
 	'Not debug' => 'Debug niet',
+	'Notice' => 'Belangrijke informatie',
 	'Page # [_1] not found.' => 'Pagina # [_1] niet gevonden.',
 	'Security or error' => 'Beveiliging of fout',
 	'Security' => 'Beveiliging',
