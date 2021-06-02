@@ -11,7 +11,13 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
-    $test_env = MT::Test::Env->new(StaticFilePath => 'MT_HOME/mt-static/');
+    $test_env = MT::Test::Env->new(
+        StaticFilePath => 'MT_HOME/mt-static/',
+        PluginSwitch => [
+            'TinyMCE=0',
+            'FormattedTextForTinyMCE=0',
+        ],
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
