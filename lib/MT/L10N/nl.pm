@@ -3071,6 +3071,7 @@ use vars qw( @ISA %Lexicon );
 	'Logs on This Website' => 'Logs op deze website',
 	'Metadata' => 'Metadata',
 	'Not debug' => 'Debug niet',
+	'Notice' => 'Belangrijke informatie',
 	'Page # [_1] not found.' => 'Pagina # [_1] niet gevonden.',
 	'Security or error' => 'Beveiliging of fout',
 	'Security' => 'Beveiliging',

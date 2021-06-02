@@ -3094,6 +3094,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Logs on This Website' => 'Logs dieser Website',
 	'Metadata' => 'Metadaten',
 	'Not debug' => 'Kein Debug',
+	'Notice' => 'Signifikanter Information',
 	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
 	'Security or error' => 'Sicherheit oder Fehler',
 	'Security' => 'Sicherheit',
