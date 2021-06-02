@@ -295,7 +295,7 @@ sub list_props {
                     text  => 'security_or_error_or_warning',
                 },
                 {   label => MT->translate('Not debug'),
-                    value => join(',', (SECURITY(), ERROR(), WARNING(), INFO())),
+                    value => join(',', (SECURITY(), ERROR(), WARNING(), NOTICE(), INFO())),
                     text  => 'not_debug',
                 },
                 {   label => MT->translate('Debug/error'),
