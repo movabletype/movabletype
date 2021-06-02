@@ -56,12 +56,12 @@ while (my $job_obj = shift @queue) {
     ok(!scalar(@logs), 'no browser error occurs');
     if (@logs) {
         diag('test_number_'. $num . ':' . $url);
-        diag '        refferrer: '. ($referrer ? $$referrer : 'null');
+        diag '        referrer: '. ($referrer ? $$referrer : 'null');
         diag sprintf("<%s> %s", $_->{source}, $_->{message}) for grep { $_->{source} } @logs;
         $s->screenshot_full('test_number_'. $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     } else {
         note('test_number_'. $num . ':' . $url);
-        note '        refferrer: '. ($referrer ? $$referrer : 'null');
+        note '        referrer: '. ($referrer ? $$referrer : 'null');
     }
     $num++;
     last if $num > 500;
