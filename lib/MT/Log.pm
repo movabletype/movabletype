@@ -299,6 +299,10 @@ sub list_props {
                     value => WARNING(),
                     text  => 'warning'
                 },
+                {   label => MT->translate('Notice'),
+                    value => NOTICE(),
+                    text  => 'notice'
+                },
                 {   label => MT->translate('Information'),
                     value => INFO(),
                     text  => 'info'
