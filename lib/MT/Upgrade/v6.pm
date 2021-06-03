@@ -129,7 +129,7 @@ __SQL__
             code          => \&_v6_update_release_number,
         },
         'v6_reorder_warning_level' => {
-            version_limit => '6.0025',
+            version_limit => '6.0026',
             priority      => 3.1,
             updater       => {
                 type  => 'log',
@@ -138,7 +138,7 @@ __SQL__
             },
         },
         'v6_reorder_security_level' => {
-            version_limit => '6.0025',
+            version_limit => '6.0026',
             priority      => 3.1,
             updater       => {
                 type   => 'log',
@@ -147,7 +147,7 @@ __SQL__
             },
         },
         'v6_reorder_debug_level' => {
-            version_limit => '6.0025',
+            version_limit => '6.0026',
             priority      => 3.1,
             updater       => {
                 type   => 'log',
