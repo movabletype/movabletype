@@ -2288,15 +2288,15 @@ sub login {
 
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message  => $app->translate(
                     "User '[_1]' (ID:[_2]) logged in successfully",
                     $author->name, $author->id
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'author',
                 category => 'login_user',
-            );
+            });
 
             ## magic_token = the user is trying to post something
             ## (after a long pause, or because of CSRF)
@@ -4411,6 +4411,7 @@ sub log {
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'
