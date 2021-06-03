@@ -103,7 +103,7 @@ subtest 'site context' => sub {
 
     my $senareos = $senareos_full;
 
-    if (!$ENV{MT_TEST_FULL_CASES}) {
+    if (!$ENV{EXTENDED_TESTING}) {
         # Only tests random 15 cases to save time. Do not randomize on runtime because it's confusing.
         $senareos = [@$senareos_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
         plan tests => 475;
