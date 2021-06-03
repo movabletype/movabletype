@@ -133,7 +133,7 @@ sub post_delete {
                 "Folder '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'folder',
             category => 'delete'
         }

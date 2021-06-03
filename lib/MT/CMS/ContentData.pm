@@ -1114,7 +1114,7 @@ sub post_delete {
                 "[_1] '[_4]' (ID:[_2]) deleted by '[_3]'",
                 $ct->name, $obj->id, $author->name, $label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'content_data_' . $ct->id,
             category => 'delete'
         }

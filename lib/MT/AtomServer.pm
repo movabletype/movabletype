@@ -1013,7 +1013,7 @@ sub delete_post {
                 $entry->title, $entry->id, $user->name,
                 $user->id,     $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $entry->class,
             category => 'delete',
         }

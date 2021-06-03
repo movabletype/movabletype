@@ -389,7 +389,7 @@ sub post_delete {
                 "Website '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'website',
             category => 'delete'
         }

@@ -1100,7 +1100,7 @@ sub post_delete {
                 "Content Type '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'content_type',
             category => 'delete'
         }
