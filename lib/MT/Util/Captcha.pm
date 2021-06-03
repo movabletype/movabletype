@@ -237,7 +237,7 @@ sub _generate_captcha {
         if ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 100 ) {
             $error = $im->Draw(
                 primitive => 'line',
-                stroke    => $index,
+                stroke    => "rgba($index)",
                 points    => "$a, $b, $c, $d"
             );
             if ($error) {
