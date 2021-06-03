@@ -220,6 +220,7 @@ sub save_commenter_perm {
                         "User '[_1]' trusted commenter '[_2]'.",
                         $author->name, $cmntr->name
                     ),
+                    level    => MT::Log::NOTICE(),
                     class    => 'comment',
                     category => 'edit',
                 }
@@ -235,6 +236,7 @@ sub save_commenter_perm {
                         "User '[_1]' banned commenter '[_2]'.",
                         $author->name, $cmntr->name
                     ),
+                    level    => MT::Log::NOTICE(),
                     class    => 'comment',
                     category => 'edit',
                 }
@@ -250,6 +252,7 @@ sub save_commenter_perm {
                         "User '[_1]' unbanned commenter '[_2]'.",
                         $author->name, $cmntr->name
                     ),
+                    level    => MT::Log::NOTICE(),
                     class    => 'comment',
                     category => 'edit',
                 }
@@ -265,6 +268,7 @@ sub save_commenter_perm {
                         "User '[_1]' untrusted commenter '[_2]'.",
                         $author->name, $cmntr->name
                     ),
+                    level    => MT::Log::NOTICE(),
                     class    => 'comment',
                     category => 'edit',
                 }

@@ -709,7 +709,7 @@ sub _edit_entry {
                 $author->name, $author->id,
                 $entry->id,    $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $obj_type,
             category => 'edit',
             metadata => $entry->id
