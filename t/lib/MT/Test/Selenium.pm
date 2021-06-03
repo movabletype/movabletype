@@ -6,6 +6,7 @@ use warnings;
 use FindBin;
 use Time::HiRes qw(time);
 use File::Path;
+use Try::Tiny;
 use 5.010;
 use JSON::PP ();    # silence redefine warnings
 use JSON;
@@ -36,7 +37,8 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? ('enable-logging') : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
+                'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
@@ -58,7 +60,8 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
+                'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
                 'download.default_directory'   => $ENV{MT_TEST_ROOT},
@@ -351,12 +354,31 @@ sub _get_response_logs {
     return \@responses;
 }
 
+sub get_browser_error_log {
+    my ($self) = @_;
+    state $ignore_hosts = join('|', ('narnia.na', 'example.com', 'creativecommons.org'));
+    my $logs = $self->driver->get_log('browser');
+    my @filtered;
+    for my $log (@$logs) {
+        if ($log->{source} eq 'network') {
+            next if ($log->{message} =~ qr{^https?://($ignore_hosts)});
+        }
+        if ($log->{source} eq 'console-api' && $log->{level} =~ qr{INFO|WARNING}) {
+            next;
+        }
+        push(@filtered, $log);
+    }
+    return @filtered;
+}
+
 sub screenshot {
+    # TODO consider zero padding for index numbers
     my ($self, $id) = @_;
     state $index = 1;
     state $evidence_dir = sprintf("%s/evidence/%s/%s", $FindBin::Bin, time, $FindBin::Script);
     File::Path::make_path("$evidence_dir");
-    $self->driver->capture_screenshot("$evidence_dir/$index\-$id.png");
+    my $basename = $index. ($id ? '-'. $id : ''). '.png';
+    $self->driver->capture_screenshot("$evidence_dir/$basename");
     $index++;
 }
 
@@ -369,6 +391,24 @@ sub screenshot_full {
     my $name = $self->screenshot($id);
     $self->driver->set_window_size($size_org->{'height'}, $size_org->{'width'});
     return $name;
+}
+
+sub retry_until_success {
+    my $self = shift;
+    my $args = { limit => 5, task => sub { }, teardown => sub { }, @_ };
+    for my $i (1 .. $args->{'limit'}) {
+        my $exception;
+        my $ret = try {
+            return $args->{'task'}->();
+        } catch {
+            $exception = $_;
+            diag($exception . ': ' . ($i == $args->{'limit'} ? 'Aborting' : 'Retrying'));
+            $args->{'teardown'}->();
+        };
+        return $ret unless defined($exception);
+    }
+    diag 'Failed';
+    return;
 }
 
 1;
