@@ -416,7 +416,7 @@ sub bulk_update {
                     $class->class_label,
                     $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $blog->class,
                 category => 'edit',
                 metadata => "[${previous_order}] => [${new_order}]",
@@ -696,7 +696,7 @@ sub post_save {
                     "Category '[_1]' (ID:[_2]) edited by '[_3]'",
                     $obj->label, $obj->id, $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 category => 'edit',
                 metadata => $obj->id,

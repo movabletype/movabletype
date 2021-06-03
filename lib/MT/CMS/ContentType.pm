@@ -1082,7 +1082,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => 'content_type',
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             ( $meta_message ? ( metadata => $meta_message ) : () ),

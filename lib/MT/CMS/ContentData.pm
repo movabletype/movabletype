@@ -1086,7 +1086,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => 'content_data_' . $ct->id,
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             metadata => $obj->id
@@ -1967,7 +1967,7 @@ sub _update_content_data_status {
         );
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'content_data_' . $content_data->content_type_id,
                 category => 'edit',
                 metadata => $content_data->id

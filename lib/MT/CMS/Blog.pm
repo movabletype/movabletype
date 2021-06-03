@@ -2034,7 +2034,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',

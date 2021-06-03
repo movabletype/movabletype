@@ -811,7 +811,7 @@ sub edit_post {
                 $app->{user}->name, $app->{user}->id,
                 $entry->id,         $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'entry',
             category => 'edit',
             metadata => $entry->id
