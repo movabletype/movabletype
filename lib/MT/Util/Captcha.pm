@@ -210,14 +210,6 @@ sub _generate_captcha {
         return $app->error( $app->translate( "Image error: [_1]", $x ) );
     }
 
-    # Futz with the size and blurriness of each letter
-    foreach my $i ( 0 .. ( $len - 1 ) ) {
-        my $a = int rand int( WIDTH() / 14 );
-        my $b = int rand int( HEIGHT() / 12 );
-
-        $imbase->[$i]->Resize( width => $a, height => $b, blur => rand(3) );
-    }
-
     # Combine all the individual tiles into one block
     my $tile_geom    = join( 'x', $len,    1 );
     my $geometry_str = join( 'x', WIDTH(), HEIGHT() );
