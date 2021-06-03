@@ -202,12 +202,12 @@ sub _generate_captcha {
         or return $app->error( $app->translate("Image creation failed.") );
 
     # Read the predefined letter PNG for each letter in $code
-    my $x = $imbase->Read(
+    my $error = $imbase->Read(
         map { File::Spec->catfile( $base, $_ . '.png' ) }
             split( //, $code )
     );
-    if ($x) {
-        return $app->error( $app->translate( "Image error: [_1]", $x ) );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
     }
 
     # Combine all the individual tiles into one block
@@ -217,7 +217,14 @@ sub _generate_captcha {
         geometry => $geometry_str,
         tile     => $tile_geom
     );
-    $im->Blur();
+    if (!ref $im) {
+        return $app->error( $app->translate( "Image error: [_1]", $im ) );
+    }
+
+    $error = $im->Blur();
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
 
     # Add some lines and dots to the image
     for my $i ( 0 .. ( $len * WIDTH() * HEIGHT() / 14 + 200 - 1 ) ) {
@@ -228,38 +235,62 @@ sub _generate_captcha {
         my $index = $im->Get("pixel[$a, $b]");
 
         if ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 100 ) {
-            $im->Draw(
+            $error = $im->Draw(
                 primitive => 'line',
                 stroke    => $index,
                 points    => "$a, $b, $c, $d"
             );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
         elsif ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 2 ) {
-            $im->Set( "pixel[$c, $d]" => $index );
+            $error = $im->Set( "pixel[$c, $d]" => $index );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
         else {
-            $im->Set( "pixel[$c, $d]" => "black" );
+            $error = $im->Set( "pixel[$c, $d]" => "black" );
+            if ($error) {
+                return $app->error( $app->translate( "Image error: [_1]", $error ) );
+            }
         }
     }
 
     # Read in the background file
     my $a          = int rand(5) + 1;
     my $background = $magick_class->new();
-    $background->Read(
+    $error = $background->Read(
         File::Spec->catfile( $base, 'background' . $a . '.png' ) );
-    $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
-    $im->Composite(
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $background->Resize( width => ( $len * WIDTH() ), height => HEIGHT() );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Composite(
         compose => "Bumpmap",
         tile    => 'False',
         image   => $background
     );
-    $im->Modulate( brightness => 105 );
-    $im->Border(
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Modulate( brightness => 105 );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
+    $error = $im->Border(
         fill     => 'black',
         width    => 1,
         height   => 1,
         geometry => join( 'x', WIDTH() * $len, HEIGHT() )
     );
+    if ($error) {
+        return $app->error( $app->translate( "Image error: [_1]", $error ) );
+    }
 
     my @blobs = $im->ImageToBlob( magick => $format );
     return $blobs[0];
