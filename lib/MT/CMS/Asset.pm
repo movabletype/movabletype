@@ -945,7 +945,7 @@ sub post_delete {
                 "File '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->file_name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'asset',
             category => 'delete'
         }

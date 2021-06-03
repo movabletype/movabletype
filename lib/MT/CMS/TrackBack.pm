@@ -316,7 +316,7 @@ sub post_delete {
 
     $app->log(
         {   message  => $message,
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'ping',
             category => 'delete'
         }

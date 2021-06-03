@@ -1014,7 +1014,7 @@ sub post_delete {
                 "Comment (ID:[_1]) by '[_2]' deleted by '[_3]' from entry '[_4]'",
                 $obj->id, $obj->author, $app->user->name, $title
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'comment',
             category => 'delete',
         }

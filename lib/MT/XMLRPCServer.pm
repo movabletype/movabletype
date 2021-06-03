@@ -1041,7 +1041,7 @@ sub _delete_entry {
                 $entry->title, $entry->id, $author->name,
                 $author->id,   $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $entry->class,
             category => 'delete'
         }

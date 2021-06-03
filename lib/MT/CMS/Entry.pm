@@ -3041,7 +3041,7 @@ sub post_delete {
                 $obj->class_label, $obj->title,
                 $obj->id,          $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $obj->class,
             category => 'delete'
         }
