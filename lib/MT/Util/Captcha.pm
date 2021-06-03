@@ -24,6 +24,13 @@ our $MagickClass;
 sub magick_class {
     my $class = shift;
     return $MagickClass if defined $MagickClass;
+    if (MT->config->ImageDriver =~ /Magick$/) {
+        $MagickClass = MT->config->ImageDriver;
+        $MagickClass =~ s/Magick/::Magick/;
+        if (eval "require $MagickClass") {
+            return $MagickClass;
+        }
+    }
     if (eval {require Graphics::Magick}) {
         return $MagickClass = "Graphics::Magick";
     }
