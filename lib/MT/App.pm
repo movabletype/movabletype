@@ -2968,6 +2968,7 @@ sub show_error {
     }
     $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
+    $param->{local_lang_id} = $app->current_language || 'en_us';
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );
     my $out = $tmpl->output;
