@@ -179,7 +179,7 @@ sub upgrade_functions {
             code          => \&_v7_remove_sql_set_names,
         },
         'v7_reorder_warning_level' => {
-            version_limit => '7.0049',
+            version_limit => '7.0050',
             priority      => 3.1,
             updater       => {
                 type  => 'log',
@@ -188,7 +188,7 @@ sub upgrade_functions {
             },
         },
         'v7_reorder_security_level' => {
-            version_limit => '7.0049',
+            version_limit => '7.0050',
             priority      => 3.1,
             updater       => {
                 type   => 'log',
@@ -197,7 +197,7 @@ sub upgrade_functions {
             },
         },
         'v7_reorder_debug_level' => {
-            version_limit => '7.0049',
+            version_limit => '7.0050',
             priority      => 3.1,
             updater       => {
                 type   => 'log',
