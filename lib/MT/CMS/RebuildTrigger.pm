@@ -116,7 +116,7 @@ sub add {
         $params->{return_args}         = $app->return_args;
         $params->{build_compose_menus} = 0;
         $params->{build_user_menus}    = 0;
-        $params->{object_type_loop}    = object_type_loop($app);
+        $params->{object_type_loop}    = object_type_loop_plugin_reduced($app);
         $params->{action_loop}         = action_loop($app);
         $params->{event_loop}          = event_loop($app);
         $params->{site_name}           = $app->blog->name;
@@ -175,29 +175,34 @@ sub add {
             push @{ $params->{panel_loop} }, $panel_params;
         }
 
-        my $plugin_switch  = $app->config->PluginSwitch;
-        my $comment_switch = defined($plugin_switch) ? $plugin_switch->{Comments} : 1;
-        eval { require Comments; };
-
-        unless (!$@ && (!defined($comment_switch) || $comment_switch != 0)) {
-            $params->{object_type_loop} =
-                [grep { $_->{id} != MT::RebuildTrigger::TYPE_COMMENT() } @{ $params->{object_type_loop} }];
-        }
-
-        my $trackback_switch = defined($plugin_switch) ? $plugin_switch->{Trackback} : 1;
-        eval { require Trackback; };
-
-        unless (!$@ && (!defined($trackback_switch) || $trackback_switch != 0)) {
-            $params->{object_type_loop} =
-                [grep { $_->{id} != MT::RebuildTrigger::TYPE_PING() } @{ $params->{object_type_loop} }];
-        }
-
         my @site_has_content_type = ct_count();
         $params->{site_has_content_type}  = \@site_has_content_type;
         $params->{missing_content_type} = 1 unless (scalar @site_has_content_type);
 
         $app->load_tmpl('dialog/create_trigger.tmpl', $params);
     }
+}
+
+sub object_type_loop_plugin_reduced {
+    my $app = shift;
+
+    my $switch = $app->config->PluginSwitch;
+
+    my $comment_switch = $switch ? $switch->{Comments} : 1;
+    eval { require Comments; };
+    my $comment_disabled = $@ || (defined($comment_switch) && $comment_switch == 0);
+
+    my $trackback_switch = $switch ? $switch->{Trackback} : 1;
+    eval { require Trackback; };
+    my $trackback_disabled = $@ || (defined($trackback_switch) && $trackback_switch == 0);
+
+    my @object_type_loop;
+    for my $hash (@{ object_type_loop($app) }) {
+        next if ($hash->{id} == MT::RebuildTrigger::TYPE_COMMENT() && $comment_disabled);
+        next if ($hash->{id} == MT::RebuildTrigger::TYPE_PING()    && $trackback_disabled);
+        push @object_type_loop, $hash;
+    }
+    return \@object_type_loop;
 }
 
 sub ct_count {
