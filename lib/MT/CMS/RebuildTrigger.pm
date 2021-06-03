@@ -30,12 +30,10 @@ sub config {
     }
 
     $param->{rebuilds_json} = load_config($app, $blog_id) if $blog_id;
-
-    $param->{blog_id} = $app->blog->id if $app->isa('MT::App') && $app->blog;
+    $param->{blog_id}       = $blog_id if $blog_id;
+    $param->{saved}         = $app->param('saved');
 
     $app->add_breadcrumb($app->translate('Rebuild Trigger'));
-
-    $param->{saved} = $app->param('saved');
     $app->load_tmpl('cfg_rebuild_trigger.tmpl', $param);
 }
 
