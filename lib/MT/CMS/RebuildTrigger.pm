@@ -145,6 +145,8 @@ sub add {
             },
         );
 
+        my $param_limit = $app->param('limit');
+
         for (my $i = 0; $i <= $#panels; $i++) {
             my $panel_params = {
                 panel_type       => $panels[$i]->{name},
@@ -159,7 +161,7 @@ sub add {
             my $listing_params = {
                 type   => $panels[$i]->{type},
                 code   => $hasher,
-                args   => { sort => 'name', limit => ($app->param('limit') || 25) },
+                args   => { sort => 'name', limit => ($param_limit || 25) },
                 params => $panel_params,
             };
 
