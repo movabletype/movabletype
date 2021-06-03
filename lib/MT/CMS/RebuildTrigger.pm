@@ -290,9 +290,17 @@ sub _rt_digest {
 
 sub unstringify {
     my $csv = shift;
-    die if $csv =~ /[^0-9,]/;
+
+    if ($csv =~ /[^0-9,]/) {
+        die 'Format Error: Trigger data include illegal characters.';
+    }
+
     my @array = split(/,/, $csv);
-    die if (scalar @array != 7);
+
+    if (scalar @array != 7) {
+        die 'Format Error: Comma-separated-values contains wrong number of fields.';
+    }
+
     my $hash  = { id => shift @array };
     for (my $i = 0; $i <= $#key_fields; $i++) {
         $hash->{ $key_fields[$i] } = $array[$i] || 0;
@@ -310,7 +318,10 @@ sub save {
         my @db_rts  = MT->model('rebuild_trigger')->load({ blog_id => $blog_id });
         my %digests = map { _rt_digest($_), $_ } @db_rts;
 
-        my $triggers = [map { unstringify($_) } $app->multi_param('rebuild_trigger')];
+        my $triggers = eval {
+            [map { unstringify($_) } $app->multi_param('rebuild_trigger')];
+        };
+        return $app->error($@) if $@;
 
         # delete
         {
