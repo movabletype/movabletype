@@ -3084,6 +3084,7 @@ use vars qw( @ISA %Lexicon );
 	'Logs on This Website' => 'Históricos de este sitio',
 	'Metadata' => 'Metadatos',
 	'Not debug' => 'No depuración',
+	'Notice' => 'Información importante',
 	'Page # [_1] not found.' => 'Página nº [_1] no encontrada.',
 	'Security or error' => 'Seguridad o error',
 	'Security' => 'Seguridad',

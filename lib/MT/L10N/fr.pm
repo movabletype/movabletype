@@ -3085,6 +3085,7 @@ use vars qw( @ISA %Lexicon );
 	'Logs on This Website' => 'Journaux sur ce site',
 	'Metadata' => 'Métadonnées',
 	'Not debug' => 'Non debug',
+	'Notice' => 'Information importante',
 	'Page # [_1] not found.' => 'Page #[_1] introuvable.',
 	'Security or error' => 'Sécurité ou erreur',
 	'Security' => 'Sécurité',
