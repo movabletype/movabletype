@@ -84,4 +84,7 @@ sub add_queue {
     }
 }
 
+# make sure to shut down chromedriver
+undef $s;
+
 done_testing;
