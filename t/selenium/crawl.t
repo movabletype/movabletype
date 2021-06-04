@@ -54,15 +54,18 @@ while (my $job_obj = shift @queue) {
     $s->visit($url);
     my @urls = map { $_->get_attribute('href') } $s->driver->find_elements('a[href^="/cgi-bin/"]', 'css');
     add_queue(\@urls, $url);
+    my $title = $s->driver->get_title;
     my @logs = $s->get_browser_error_log();
     ok(!scalar(@logs), 'no browser error occurs');
     if (@logs) {
         diag('test_number_'. $num . ':' . $url);
+        diag '        title: ' . $title;
         diag '        referrer: '. ($referrer ? $$referrer : 'null');
         diag sprintf("<%s> %s", $_->{source}, $_->{message}) for grep { $_->{source} } @logs;
         $s->screenshot_full('test_number_'. $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     } else {
         note('test_number_'. $num . ':' . $url);
+        note '        title: ' . $title;
         note '        referrer: '. ($referrer ? $$referrer : 'null');
     }
     $num++;
