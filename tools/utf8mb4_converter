@@ -14,7 +14,7 @@ GetOptions(
     'pass=s'                => \my $pass,
     'collate=s'             => \my $collate,
     'row_format=s'          => \my $row_format,
-    'rerun'                 => \my $rerun,
+    'force'                 => \my $force,
     'verbose'               => \my $verbose,
 );
 
@@ -46,7 +46,7 @@ if ($verbose) {
 
 my ($charset) = $dbh->selectrow_array("select \@\@character_set_database");
 if ( $charset eq 'utf8mb4' ) {
-    if ($rerun) {
+    if ($force) {
         if ($verbose) {
             print "The database character set is already utf8mb4, but the conversion will continue.\n";
         }
