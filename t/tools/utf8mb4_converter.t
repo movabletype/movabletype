@@ -18,6 +18,20 @@ plan skip_all => "Already utf8mb4" if $test_env->mysql_db_charset eq 'utf8mb4';
 
 $test_env->prepare_fixture('db_data');
 
+# Insert data that is considered an illegal data in strict mode
+my $sql_mode = $test_env->mysql_session_variable('sql_mode');
+$test_env->mysql_session_variable('sql_mode', '');
+my $entry = MT->model('entry')->new;
+$entry->set_values({
+    blog_id     => 1,
+    author_id   => 1,
+    title       => 'test',
+    authored_on => '0000-00-00 00:00:00',
+    status      => MT->model('entry')->RELEASE,
+});
+$entry->save;
+$test_env->mysql_session_variable('sql_mode', $sql_mode);
+
 use MT;
 use MT::Test;
 use IPC::Run3 qw/run3/;

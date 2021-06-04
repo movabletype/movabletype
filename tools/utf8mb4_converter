@@ -36,6 +36,12 @@ my $dbh = DBI->connect(
         RaiseError         => 1,
         PrintError         => 0,
         ShowErrorStatement => 1,
+        Callbacks          => {
+            connected => sub {
+                shift->do(q{SET SESSION sql_mode=''});
+                return;
+            },
+        },
     }
 );
 
