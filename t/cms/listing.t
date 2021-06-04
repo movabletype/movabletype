@@ -32,7 +32,6 @@ subtest 'move site modal initial' => sub {
         action_name => 'move_blogs',
         blog_id     => 0,
         return_args => '__mode=list',
-        _type       => 'website',
         does_act    => 1,
         id          => 5,
         dialog      => 1,
