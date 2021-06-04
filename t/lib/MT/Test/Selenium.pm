@@ -36,7 +36,7 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? ('enable-logging') : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
                 'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
@@ -59,7 +59,7 @@ our %EXTRA = (
         'goog:chromeOptions' => {
             args => [
                 'headless', ( DEBUG ? 'enable-logging' : () ),
-                'window-size=1280,800', 'no-sandbox',
+                'window-size=1280,800', 'no-sandbox', 'disable-dev-shm-usage',
                 'host-rules=MAP * '. MY_HOST,
             ],
             prefs => {
