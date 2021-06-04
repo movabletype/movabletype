@@ -395,8 +395,13 @@ sub show_mysql_db_variables {
 }
 
 sub mysql_session_variable {
-    my ( $self, $name ) = @_;
+    my ( $self, $name, $value ) = @_;
     my $dbh = MT::Object->driver->rw_handle;
+
+    if ( defined $value ) {
+        $dbh->do("SET SESSION $name = ?", undef, $value);
+    }
+
     my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
     my $res = $dbh->selectall_arrayref( $sql, { Slice => +{} } );
     return $res->[0]{Value} // '';
