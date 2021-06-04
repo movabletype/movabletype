@@ -2368,6 +2368,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Mitteilung',
 	'Metadata' => 'Metadaten',
 	'Not debug' => 'Kein Debug',
+	'Notice' => 'Signifikanter Information',
 	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
 	'Security or error' => 'Sicherheit oder Fehler',
 	'Security' => 'Sicherheit',

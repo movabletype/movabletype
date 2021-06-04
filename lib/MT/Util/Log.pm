@@ -13,11 +13,12 @@ our %LoggerLevels;
 
 BEGIN {
     %LoggerLevels = (
-        DEBUG => 0,
-        INFO  => 1,
-        WARN  => 2,
-        ERROR => 3,
-        NONE  => 99,
+        DEBUG  => 0,
+        INFO   => 1,
+        NOTICE => 2,
+        WARN   => 3,
+        ERROR  => 4,
+        NONE   => 99,
     );
 }
 use constant \%LoggerLevels;
@@ -163,6 +164,12 @@ sub info {
     my ( $class, $msg ) = @_;
     return if $LoggerLevel > INFO;
     _write_log( 'info', $msg );
+}
+
+sub notice {
+    my ( $class, $msg ) = @_;
+    return if $LoggerLevel > NOTICE;
+    _write_log( 'notice', $msg );
 }
 
 sub warn {

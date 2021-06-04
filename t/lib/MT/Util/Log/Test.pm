@@ -40,6 +40,11 @@ sub info {
     infof($msg);
 }
 
+sub notice {
+    my ( $class, $msg ) = @_;
+    infof($msg);
+}
+
 sub warn {
     my ( $class, $msg ) = @_;
     warnf($msg);

@@ -2368,6 +2368,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'ログ',
 	'Metadata' => 'メタデータ',
 	'Not debug' => 'デバッグを含まない',
+	'Notice' => '有意な情報',
 	'Page # [_1] not found.' => 'ID:[_1]のウェブページが見つかりませんでした。',
 	'Security or error' => 'セキュリティまたはエラー',
 	'Security' => 'セキュリティ',
