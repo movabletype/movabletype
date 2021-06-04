@@ -37,6 +37,8 @@ $author->set_password('Nelson');
 $author->save;
 $s->login($author);
 
+my $max = $ENV{MAX_CRAWLING} || 0;
+
 my @queue;
 
 add_queue(['/cgi-bin/mt.cgi']);
@@ -64,7 +66,7 @@ while (my $job_obj = shift @queue) {
         note '        referrer: '. ($referrer ? $$referrer : 'null');
     }
     $num++;
-    last if $num > 500;
+    last if $max && $num > $max;
     @queue = List::Util::shuffle(@queue) if $num % 10 == 0;
 }
 
@@ -80,7 +82,7 @@ sub add_queue {
         next if $url =~ /__mode=tools/; # skip for now
         push @queue, ($referrer ? [$url, \$referrer] : $url);
         $once_queued{$url} = 1;
-        shift(@queue) if scalar(@queue) > 500;
+        shift(@queue) if $max && scalar(@queue) > $max;
     }
 }
 
