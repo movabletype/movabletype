@@ -93,6 +93,20 @@ subtest 'ignore utf8mb4' => sub {
     ok my $count = MT::Entry->count, "entries exist";
 };
 
+# Insert data that is considered an illegal data in strict mode
+my $sql_mode = $test_env->mysql_session_variable('sql_mode');
+$test_env->mysql_session_variable('sql_mode', '');
+my $entry = MT->model('entry')->new;
+$entry->set_values({
+    blog_id     => 1,
+    author_id   => 1,
+    title       => 'test',
+    authored_on => '0000-00-00 00:00:00',
+    status      => MT->model('entry')->RELEASE,
+});
+$entry->save;
+$test_env->mysql_session_variable('sql_mode', $sql_mode);
+
 subtest 'force' => sub {
     my %connect_info = _connect_info();
     my $db           = $connect_info{db};
@@ -102,6 +116,12 @@ subtest 'force' => sub {
     ok $out =~ /character set is already utf8mb4, but/, "already utf8mb4, but we will convert";
     ok $out =~ /Altered .* 'mt_test'/, "altered database"   or note $out;
     ok $out =~ /Altered 'mt_ts_job'/,  "altered last table" or note $out;
+
+    my ($sql_modes) = $out =~ /Set sql_mode to '([^']+)'/;
+    my %sql_mode_map = map { $_ => 1 } split /,/;
+    ok !$sql_mode_map{NO_ZERO_IN_DATE}, 'NO_ZERO_IN_DATE is removed';
+    ok !$sql_mode_map{NO_ZERO_DATE}, 'NO_ZERO_IN_DATE is removed';
+    ok !$sql_mode_map{NO_ENGINE_SUBSTITUTION}, 'NO_ZERO_IN_DATE is preserved';
 
     ok my $count = MT::Entry->count, "entries exist";
 };
