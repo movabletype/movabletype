@@ -4,6 +4,14 @@ use warnings;
 use Getopt::Long;
 use DBI;
 
+use constant NO_ZERO_DATE_MODES    => [qw(NO_ZERO_IN_DATE NO_ZERO_DATE)];
+use constant COMBINATION_SQL_MODE_MAP => {
+    TRADITIONAL => [qw(
+        STRICT_TRANS_TABLES STRICT_ALL_TABLES NO_ZERO_IN_DATE NO_ZERO_DATE
+        ERROR_FOR_DIVISION_BY_ZERO NO_AUTO_CREATE_USER NO_ENGINE_SUBSTITUTION
+    )],
+};
+
 my %dsn_opts;
 GetOptions(
     'host=s'                => \$dsn_opts{host},
@@ -37,6 +45,17 @@ my $dbh = DBI->connect(
         RaiseError         => 1,
         PrintError         => 0,
         ShowErrorStatement => 1,
+        Callbacks          => {
+            connected => sub {
+                my $dbh = shift;
+
+                if ($force) {
+                    ignore_no_zero_date_modes($dbh);
+                }
+
+                return;
+            },
+        },
     }
 );
 
@@ -88,4 +107,31 @@ for my $table (@$tables) {
     if ($verbose) {
         print "Altered '$table'\n";
     }
+}
+
+sub ignore_no_zero_date_modes {
+    my $dbh = shift;
+
+    my $cur_sql_mode = do {
+        my $sql = "SHOW SESSION VARIABLES LIKE 'sql_mode'";
+        my $res = $dbh->selectall_arrayref($sql, { Slice => +{} });
+        $res->[0]{Value} // '';
+    };
+
+    # expanded modes
+    my @modes = map {
+        my $c = COMBINATION_SQL_MODE_MAP()->{$_};
+        $c ? @$c : $_
+    } split /\s*,\s*/, $cur_sql_mode;
+
+    # filter
+    my %no_zero_date_modes = map { $_ => 1 } @{ NO_ZERO_DATE_MODES() };
+    @modes = grep { !$no_zero_date_modes{$_} } @modes;
+
+    my $new_sql_mode = join(',', @modes);
+
+    return if $new_sql_mode eq $cur_sql_mode;
+
+    print "Set sql_mode to '$new_sql_mode'.\n";
+    $dbh->do('SET SESSION sql_mode = ?', undef, $new_sql_mode);
 }
