@@ -12,6 +12,9 @@ our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file( "lib/Comments.pm", 'package Comments; use strict; 1;' );
+    unshift @INC, $test_env->path('lib');
 }
 
 use MT;
