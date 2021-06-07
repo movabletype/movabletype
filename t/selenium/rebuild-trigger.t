@@ -50,9 +50,9 @@ $author->set_password('Nelson');
 $author->save;
 $s->login($author);
 
-# Single senario contains multiple panels in array ref and single panel has two values.
+# Single scenarios contains multiple panels in array ref and single panel has two values.
 # For instance [7, 3] indicates the panel has 7 options and instructs to click on the 3rd one.
-my $senareos_full = [
+my $scenarios_full = [
     [[7, 1], [1, 1], [], [3, 1], [2, 1]], [[7, 1], [1, 1], [], [3, 1], [2, 2]],
     [[7, 1], [1, 1], [], [3, 2], [2, 1]], [[7, 1], [1, 1], [], [3, 2], [2, 2]],
     [[7, 1], [1, 1], [], [3, 3], [2, 1]], [[7, 1], [1, 1], [], [3, 3], [2, 2]],
@@ -101,11 +101,11 @@ subtest 'site context' => sub {
 
     set_up();
 
-    my $senareos = $senareos_full;
+    my $scenarios = $scenarios_full;
 
     if (!$ENV{EXTENDED_TESTING}) {
         # Only tests random 15 cases to save time. Do not randomize on runtime because it's confusing.
-        $senareos = [@$senareos_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
+        $scenarios = [@$scenarios_full[10, 11, 14, 22, 25, 28, 31, 36, 41, 43, 44, 49, 50, 61, 63]];
         plan tests => 475;
     } else {
         plan tests => 2125;
@@ -117,13 +117,13 @@ subtest 'site context' => sub {
 
     my $added_count = 0;
 
-    for (my $i = 0; $i < scalar @$senareos; $i++) {
-        diag "senario: " . stringify_senario($senareos->[$i]);
-        process_senario($senareos->[$i]);
+    for (my $i = 0; $i < scalar @$scenarios; $i++) {
+        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        process_scenarios($scenarios->[$i]);
         assert_no_browser_errors();
         my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs, ++$added_count, 'trigger added');
-        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
@@ -131,7 +131,7 @@ subtest 'site context' => sub {
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, $added_count, 'trigger added');
-        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     }
 };
 
@@ -139,7 +139,7 @@ subtest 'duplication' => sub {
 
     set_up();
 
-    my $senareos = [@$senareos_full[1, 1]];
+    my $scenarios = [@$scenarios_full[1, 1]];
 
     plan tests => 111;
 
@@ -149,16 +149,16 @@ subtest 'duplication' => sub {
 
     my $added_count = 0;
 
-    for (my $i = 0; $i < scalar @$senareos; $i++) {
-        diag "senario: " . stringify_senario($senareos->[$i]);
+    for (my $i = 0; $i < scalar @$scenarios; $i++) {
+        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
 
-        # same senario twice
-        process_senario($senareos->[$i]) for (1, 2);
+        # same scenarios twice
+        process_scenarios($scenarios->[$i]) for (1, 2);
 
         assert_no_browser_errors();
         my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs, $added_count + 2, 'trigger added');
-        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
@@ -166,7 +166,7 @@ subtest 'duplication' => sub {
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, 1, 'duplication is not added');
-        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         $added_count = 1;
     }
 };
@@ -175,7 +175,7 @@ subtest 'duplication with content type' => sub {
 
     set_up();
 
-    my $senareos = [@$senareos_full[18, 18]];
+    my $scenarios = [@$scenarios_full[18, 18]];
 
     plan tests => 135;
 
@@ -185,16 +185,16 @@ subtest 'duplication with content type' => sub {
 
     my $added_count = 0;
 
-    for (my $i = 0; $i < scalar @$senareos; $i++) {
-        diag "senario: " . stringify_senario($senareos->[$i]);
+    for (my $i = 0; $i < scalar @$scenarios; $i++) {
+        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
 
-        # same senario twice
-        process_senario($senareos->[$i]) for (1, 2);
+        # same scenarios twice
+        process_scenarios($scenarios->[$i]) for (1, 2);
 
         assert_no_browser_errors();
         my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs, $added_count + 2, 'triggers are added');
-        $s->screenshot_full("senario$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-added") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
         assert_no_browser_errors();
         $s->driver->find_element('.mt-mainContent button.save', 'css')->click;
@@ -202,7 +202,7 @@ subtest 'duplication with content type' => sub {
         assert_no_browser_errors();
         my @trs2 = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
         is(scalar @trs2, 1, 'duplication is not added');
-        $s->screenshot_full("senario$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+        $s->screenshot_full("scenarios$i-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
         $added_count = 1;
     }
 };
@@ -211,7 +211,7 @@ subtest 'two cases saved at once' => sub {
 
     set_up();
 
-    my $senareos = [@$senareos_full[18, 19]];
+    my $scenarios = [@$scenarios_full[18, 19]];
 
     plan tests => 67;
 
@@ -219,9 +219,9 @@ subtest 'two cases saved at once' => sub {
     wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
     assert_no_browser_errors();
 
-    for (my $i = 0; $i < scalar @$senareos; $i++) {
-        diag "senario: " . stringify_senario($senareos->[$i]);
-        process_senario($senareos->[$i]);
+    for (my $i = 0; $i < scalar @$scenarios; $i++) {
+        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        process_scenarios($scenarios->[$i]);
     }
 
     my @trs = $s->driver->find_elements('#multiblog_blog_list table tbody tr', 'css');
@@ -241,7 +241,7 @@ subtest 'remove' => sub {
 
     set_up();
 
-    my $senareos = [@$senareos_full[18, 19]];
+    my $scenarios = [@$scenarios_full[18, 19]];
 
     plan tests => 68;
 
@@ -249,9 +249,9 @@ subtest 'remove' => sub {
     wait_until { $s->driver->execute_script("return document.readyState === 'complete'") };
     assert_no_browser_errors();
 
-    for (my $i = 0; $i < scalar @$senareos; $i++) {
-        diag "senario: " . stringify_senario($senareos->[$i]);
-        process_senario($senareos->[$i]);
+    for (my $i = 0; $i < scalar @$scenarios; $i++) {
+        diag "scenarios: " . stringify_scenarios($scenarios->[$i]);
+        process_scenarios($scenarios->[$i]);
     }
 
     wait_until { $s->driver->find_element('.mt-mainContent button.save', 'css')->is_displayed };
@@ -276,7 +276,7 @@ subtest 'remove' => sub {
     $s->screenshot_full("removed-saved") if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
 };
 
-sub process_senario {
+sub process_scenarios {
     my $pages = shift;
 
     my $frame = $s->retry_until_success(
@@ -344,7 +344,7 @@ sub set_up {
     MT->model('rebuild_trigger')->remove();
 }
 
-sub stringify_senario {
+sub stringify_scenarios {
     my $ref    = shift;
     my $string = Dumper($ref);
     $string =~ s{\s}{}g;
