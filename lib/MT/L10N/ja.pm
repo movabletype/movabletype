@@ -4861,6 +4861,28 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => '未選択',
 
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '結合できるセルはすべて選択してください',
+	'Cell is not selected' => 'セルが選択されていません',
+	'Only one cell should be selected' => '1つのセルのみ選択してください',
+	'Source' => 'ソース表示',
+	'align center' => '中央揃え',
+	'align left' => '左揃え',
+	'align right' => '右揃え',
+	'change to td' => 'tdに変更',
+	'change to th' => 'thに変更',
+	'insert column on the left' => '左に列を挿入',
+	'insert column on the right' => '右に列を挿入',
+	'insert row above' => '上に行を挿入',
+	'insert row below' => '下に行を挿入',
+	'merge cell' => 'セルを結合する',
+	'remove column' => '列を削除する',
+	'remove row' => '行を削除する',
+	'split cell' => 'セルを分割する',
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{左上のセルの値のみが保存されます。続行しますか?},
+	q{You can't paste here} => q{ここに貼り付けることはできません},
+	q{You can't split the cell anymore} => q{このセルはこれ以上分割できません},
+
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',
 	'Apply this formatting if text format is not set on each entry.' => '記事に、テキストフォーマットが指定されていない場合に、適用されます。',
