@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => '記事とウェブページの保存時',
 	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
 	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
+	'Format Error: Trigger data include illegal characters.' => 'フォーマットエラー: トリガーデータが不正な文字を含んでいます。',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'フォーマットエラー: CSVのフィールド数が正しくありません。',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',

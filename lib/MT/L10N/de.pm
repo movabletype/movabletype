@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'ein Eintrag/eine Seite gespeichert wird',
 	'unpublishes a content' => 'veröffentlicht einen Inhalt nicht mehr',
 	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird',
+	'Format Error: Trigger data include illegal characters.' => 'Format Fehler: Triggerdaten enthalten unzulässige Zeichen.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Format Fehler: Durch Kommas getrennte Werte enthalten eine falsche Anzahl von Feldern.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Feld "[_1]" erforderlich.',

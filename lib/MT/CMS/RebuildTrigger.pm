@@ -289,16 +289,16 @@ sub _rt_digest {
 }
 
 sub unstringify {
-    my $csv = shift;
+    my ($app, $csv) = @_;
 
     if ($csv =~ /[^0-9,]/) {
-        die 'Format Error: Trigger data include illegal characters.';
+        die $app->translate('Format Error: Trigger data include illegal characters.');
     }
 
     my @array = split(/,/, $csv);
 
     if (scalar @array != 7) {
-        die 'Format Error: Comma-separated-values contains wrong number of fields.';
+        die $app->translate('Format Error: Comma-separated-values contains wrong number of fields.');
     }
 
     my $hash  = { id => shift @array };
@@ -319,7 +319,7 @@ sub save {
         my %digests = map { _rt_digest($_), $_ } @db_rts;
 
         my $triggers = eval {
-            [map { unstringify($_) } $app->multi_param('rebuild_trigger')];
+            [map { unstringify($app, $_) } $app->multi_param('rebuild_trigger')];
         };
         return $app->error($@) if $@;
 

@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'guarda una entrada/página',
 	'unpublishes a content' => 'despublicar un contenido',
 	'unpublishes an entry/page' => 'despublica una entrada/página',
+	'Format Error: Trigger data include illegal characters.' => 'Error de formato: Los datos de activación incluyen caracteres ilegales.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Error de formato: Los valores separados por comas contienen un número incorrecto de campos.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'El campo "[_1]" es necesario.',
