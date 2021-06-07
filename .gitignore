@@ -61,6 +61,7 @@ yarn-error.log
 perltidy.LOG
 *.tdy
 *.ERR
+.php_cs.cache
 
 cover_db/
 
@@ -71,5 +72,3 @@ cover_db/
 .mt_test_env
 
 /vendor/
-
-.mt_test_env

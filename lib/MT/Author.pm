@@ -1600,8 +1600,8 @@ sub rebuild_favorite_sites {
     if (@current_blog) {
         @current_blog = grep { $user->has_perm($_) } @current_blog;
         foreach my $blog_id (@current_blog) {
-            if ( my $blog = MT->model('blog')->load($blog_id) ) {
-                push @parents, $blog->website->id;
+            if ( my $blog = MT->model('blog')->load( $blog_id ) ) {
+                push @parents, $blog->parent_id if $blog->parent_id;
             }
         }
         $user->favorite_blogs( \@current_blog );

@@ -1215,6 +1215,7 @@ sub files {
 
 sub remove_logfile {
     my $self    = shift;
+    require MT::Util::Log;
     my $logfile = MT::Util::Log->_get_logfile_path;
     return unless -f $logfile;
     unlink $logfile;
@@ -1222,6 +1223,7 @@ sub remove_logfile {
 
 sub slurp_logfile {
     my $self    = shift;
+    require MT::Util::Log;
     my $logfile = MT::Util::Log->_get_logfile_path;
     return unless -f $logfile;
     open my $fh, '<', $logfile or die $!;

@@ -43,26 +43,26 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
-    "autoprefixer": "^7.1.2",
-    "clean-css-cli": "^4.1.6",
-    "node-sass": "^5.0.0",
+    "autoprefixer": "^9.8.6",
+    "clean-css-cli": "^5.3.0",
+    "node-sass": "^6.0.0",
     "postcss-cli": "^7.1.2",
     "postcss-flexbugs-fixes": "^5.0.1"
   },
   "dependencies": {
     "bootstrap": "~4.3.1",
+    "codemirror": "^5.61.1",
     "jquery": "^3.4.1",
     "jquery-json": "^2.6.0",
-    "jquery-migrate": "^3.1.0",
+    "jquery-migrate": "^3.3.2",
     "jquery-ui-touch-punch": "^0.2.3",
-    "jquery-validation": "^1.19.1",
+    "jquery-validation": "^1.19.3",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
-    "popper.js": "^1.12.1",
+    "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
     "tinymce": "5.7.0",
     "tinymce-i18n": "20.12.25",
-    "codemirror": "5.54",
     "xpath": "0.0.32"
   }
 }

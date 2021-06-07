@@ -12,6 +12,9 @@ use Plack::Builder;
 use Plack::App::Directory;
 use File::Spec;
 use File::Which qw/which/;
+use Devel::GlobalDestruction;
+use Encode;
+use LWP::UserAgent;
 use URI;
 use URI::QueryParam;
 use MT::PSGI;
@@ -31,9 +34,15 @@ our %EXTRA = (
                 'headless', ( DEBUG ? ('enable-logging') : () ),
                 'window-size=1280,800', 'no-sandbox',
             ],
-            perfLoggingPrefs => {},
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
-        loggingPrefs => { performance => 'ALL' },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         binaries     => [
             'chromedriver',
             '/usr/bin/chromedriver',
@@ -47,7 +56,15 @@ our %EXTRA = (
                 'headless', ( DEBUG ? 'enable-logging' : () ),
                 'window-size=1280,800', 'no-sandbox',
             ],
+            prefs => {
+                'download.default_directory'   => $ENV{MT_TEST_ROOT},
+                'download.prompt_for_download' => $JSON::false,
+            },
+            perfLoggingPrefs => {
+                traceCategories => 'browser,devtools.timeline,devtools',
+            },
         },
+        'goog:loggingPrefs' => { performance => 'ALL', browser => 'ALL' },
         travis => {
             remote_server_addr => 'chromedriver',
             port               => 9515,
@@ -58,11 +75,8 @@ our %EXTRA = (
 sub new {
     my ( $class, $env ) = @_;
 
-    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER}
-        || ( $ENV{TRAVIS} ? 'Selenium::Remote::Driver' : 'Selenium::Chrome' );
+    my $driver_class = $ENV{MT_TEST_SELENIUM_DRIVER} || 'Selenium::Chrome';
     eval "require $driver_class" or plan skip_all => "No $driver_class";
-
-    $Selenium::Remote::Driver::FORCE_WD2 = 1;
 
     my $extra = $EXTRA{$driver_class} || {};
 
@@ -71,7 +85,7 @@ sub new {
         default_finder      => 'css',
         extra_capabilities  => $extra,
         acceptInsecureCerts => 1,
-        timeout             => 10,
+        startup_timeout     => 10,
     );
     for my $binary ( @{ delete $extra->{binaries} || [] } ) {
         $binary = _fix_binary($binary) or next;
@@ -79,10 +93,10 @@ sub new {
         last;
     }
 
+    my $ua = LWP::UserAgent->new(timeout => 300);
+    $driver_opts{ua} = $ua;
+
     my $travis_config = delete $extra->{travis};
-    if ( $ENV{TRAVIS} ) {
-        %driver_opts = ( %driver_opts, %$travis_config );
-    }
 
     if (DEBUG) {
         my $log_file = "$ENV{MT_HOME}/selenium_log.txt";
@@ -153,6 +167,9 @@ sub driver { shift->{driver} }
 sub DESTROY {
     my $self = shift;
     return unless $self->{pid} eq $$;
+    if (in_global_destruction) {
+        warn "Destroy MT::Test::Selenium object earlier!\nWebDriver may not be shut down properly at the global destruction";
+    }
     my $driver = $self->{driver} or return;
     $driver->quit;
 }
@@ -295,7 +312,7 @@ sub request {
         # TODO: take care of redirection
         $res = HTTP::Response->new( $log->{status}, $log->{statusText},
             [ %{ $log->{headers} || {} } ] );
-        $res->content( $self->{content} );
+        $res->content(encode_utf8($self->{content}));
     }
     $res ||= HTTP::Response->new(200);
     return $self->{res} = $res;

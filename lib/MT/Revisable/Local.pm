@@ -140,6 +140,12 @@ sub object_from_revision {
     my $serialized_obj = $rev->$datasource;
     require MT::Serialize;
     my $packed_obj = MT::Serialize->unserialize($serialized_obj);
+
+    if (ref $$packed_obj ne 'HASH') {
+        $rev->remove();
+        return;
+    }
+
     $rev_obj->unpack_revision($$packed_obj);
 
     # Here we cheat since audit columns aren't revisioned

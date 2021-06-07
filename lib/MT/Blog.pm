@@ -694,7 +694,9 @@ sub site_url {
 
     if (@_) {
         my $url = $_[0];
-        $url .= '/' unless $url =~ m{/$};
+        if (defined $url) {
+            $url .= '/' unless $url =~ m{/$};
+        }
         return $blog->column( 'site_url', $url );
     }
     elsif ( $blog->is_dynamic ) {
@@ -763,10 +765,11 @@ sub site_path {
 
     if (@_) {
         my ($new_site_path) = @_;
-        my $sep = quotemeta MT::Util::dir_separator;
-        $sep = qr![\\/]! if $^O eq 'MSWin32';
-        $new_site_path =~ s/$sep*$//;
-
+        if (defined $new_site_path) {
+            my $sep = quotemeta MT::Util::dir_separator;
+            $sep = qr![\\/]! if $^O eq 'MSWin32';
+            $new_site_path =~ s/$sep*$//;
+        }
         $blog->column( 'site_path', $new_site_path );
     }
     else {

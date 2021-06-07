@@ -1086,7 +1086,7 @@ my %fpxFileType = (
             0x0807 => 'German (Swiss)',
             0x0408 => 'Greek',
             0x0409 => 'English (US)',
-            0x0809 => 'English (British)',		
+            0x0809 => 'English (British)',
             0x0c09 => 'English (Australian)',
             0x040a => 'Spanish (Castilian)',
             0x080a => 'Spanish (Mexican)',
@@ -1109,7 +1109,7 @@ my %fpxFileType = (
             0x0415 => 'Polish',
             0x0416 => 'Portuguese (Brazilian)',
             0x0816 => 'Portuguese',
-            0x0417 => 'Rhaeto-Romanic',	
+            0x0417 => 'Rhaeto-Romanic',
             0x0418 => 'Romanian',
             0x0419 => 'Russian',
             0x041a => 'Croato-Serbian (Latin)',
@@ -1646,14 +1646,14 @@ sub ProcessCommentBy($$$)
     my $pos = $$dirInfo{DirStart};
     my $end = $$dirInfo{DirLen} + $pos;
     $et->VerboseDir($$dirInfo{DirName});
-	while ($pos + 2 < $end) {
-		my $len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-		$et->HandleTag($tagTablePtr, CommentBy => $author);
-	}
+    while ($pos + 2 < $end) {
+        my $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        $et->HandleTag($tagTablePtr, CommentBy => $author);
+    }
     return 1;
 }
 
@@ -1669,24 +1669,24 @@ sub ProcessLastSavedBy($$$)
     my $end = $$dirInfo{DirLen} + $pos;
     return 0 if $pos + 6 > $end;
     $et->VerboseDir($$dirInfo{DirName});
-	my $num = Get16u($dataPt, $pos+2);
-	$pos += 6;
-	while ($num >= 2) {
-	    last if $pos + 2 > $end;
-		my $len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-	    last if $pos + 2 > $end;
-		$len = Get16u($dataPt, $pos);
-		$pos += 2;
-	    last if $pos + $len * 2 > $end;
-		my $path = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
-		$pos += $len * 2;
-		$et->HandleTag($tagTablePtr, LastSavedBy => "$author ($path)");
-		$num -= 2;
-	}
+    my $num = Get16u($dataPt, $pos+2);
+    $pos += 6;
+    while ($num >= 2) {
+        last if $pos + 2 > $end;
+        my $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $author = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        last if $pos + 2 > $end;
+        $len = Get16u($dataPt, $pos);
+        $pos += 2;
+        last if $pos + $len * 2 > $end;
+        my $path = $et->Decode(substr($$dataPt, $pos, $len*2), 'UCS2');
+        $pos += $len * 2;
+        $et->HandleTag($tagTablePtr, LastSavedBy => "$author ($path)");
+        $num -= 2;
+    }
     return 1;
 }
 
@@ -2224,7 +2224,7 @@ sub ProcessFPX($$)
         my $rSib = Get32u(\$dir, $pos + 0x48);  # right sibling
         my $chld = Get32u(\$dir, $pos + 0x4c);  # child directory
 
-        # save information about object hierachy
+        # save information about object hierarchy
         my ($obj, $sub);
         $obj = $hier{$index} or $obj = $hier{$index} = { };
         $$obj{Left} = $lSib unless $lSib == FREE_SECT;
@@ -2370,7 +2370,7 @@ JPEG images.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
