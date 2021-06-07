@@ -132,5 +132,7 @@ describe 'On Edit Image dialog (blog_id = 1, asset_id = 1)' => sub {
     };
 };
 
+undef $selenium;
+
 runtests unless caller;
 
