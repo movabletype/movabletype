@@ -203,7 +203,7 @@ div.group-container.multi_line_text-field-container>.form-group {
       var cur_text_format = jQuery(this).attr('data-orig_text_format');
       if ((cur_text_format != 'richtext') && (option == 'richtext') && !noConfirm) {
           // warn user that changing to richtext is not reversible (easily)
-          if (!confirm("<__trans phrase="Converting to rich text may result in changes to your current document." escape="js">")) {
+          if (!confirm("<__trans_section component="blockeditor"><__trans phrase="Converting to rich text may result in changes to your current document." escape="js"></__trans_section>")) {
               // revert selection
               for (var i = 0; i < this.options.length; i++) {
                   if (this.options[i].value == cur_text_format)
@@ -215,7 +215,7 @@ div.group-container.multi_line_text-field-container>.form-group {
       }
       if ((cur_text_format == 'blockeditor') && (option != 'blockeditor')) {
           // warn user that changing to plaintext is not reversible (easily)
-          if (!confirm("<__trans phrase="Changing to plain text is not possible to return to the block edit." escape="js">")) {
+          if (!confirm("<__trans_section component="blockeditor"><__trans phrase="Changing to plain text is not possible to return to the block edit." escape="js"></__trans_section>")) {
               // revert selection
               for (var i = 0; i < this.options.length; i++) {
                   if (this.options[i].value == cur_text_format)
@@ -228,7 +228,7 @@ div.group-container.multi_line_text-field-container>.form-group {
 
       if ((cur_text_format != 'blockeditor') && (option == 'blockeditor')) {
           // warn user that changing to plaintext is not reversible (easily)
-          if (!confirm("<__trans phrase="Changing to block editor is not possible to result return to your current document." escape="js">")) {
+          if (!confirm("<__trans_section component="blockeditor"><__trans phrase="Changing to block editor is not possible to result return to your current document." escape="js"></__trans_section>")) {
               // revert selection
               for (var i = 0; i < this.options.length; i++) {
                   if (this.options[i].value == cur_text_format)

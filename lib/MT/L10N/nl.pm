@@ -2368,6 +2368,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Boodschap',
 	'Metadata' => 'Metadata',
 	'Not debug' => 'Debug niet',
+	'Notice' => 'Belangrijke informatie',
 	'Page # [_1] not found.' => 'Pagina # [_1] niet gevonden.',
 	'Security or error' => 'Beveiliging of fout',
 	'Security' => 'Beveiliging',
@@ -4169,7 +4170,6 @@ ter opnieuw te proberen.',
 	'Dashboard' => 'Dashboard',
 	'Select a Widget...' => 'Selecteer een widget...',
 	'System Overview' => 'Systeemoverzicht',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'U heeft geprobeerd een optie te gebruiken waar u niet voldoende rechten voor heeft.  Als u gelooft dat u deze boodschap onterecht te zien krijgt, contacteer dan uw systeembeheerder.',
 	'Your Dashboard has been updated.' => 'Uw dashboard is bijgewerkt.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4479,7 +4479,6 @@ ter opnieuw te proberen.',
 	'Comment Text' => 'Tekst reactie',
 	'Commenter Status' => 'Status reageerder',
 	'Delete this comment (x)' => 'Deze reactie verwijderen (x)',
-	'Details' => 'Details',
 	'Manage Comments' => 'Reacties beheren',
 	'No url in profile' => 'Geen URL in profiel',
 	'Reply to this comment' => 'Antwoorden op deze reactie',
@@ -4862,6 +4861,28 @@ ter opnieuw te proberen.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Niet geselecteerd',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

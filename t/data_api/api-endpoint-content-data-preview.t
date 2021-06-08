@@ -31,6 +31,9 @@ $user->save;
 $app->user($user);
 
 my $site_id = 1;
+my $site = MT::Website->load($site_id);
+$site->site_path($test_env->root);
+$site->save;
 
 irregular_tests_for_preview_by_id();
 normal_tests_for_preview_by_id();
