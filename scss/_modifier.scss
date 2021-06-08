@@ -1050,11 +1050,21 @@ fieldset.form-group{
 .mt-categorylist{
   margin: 1rem 0 0 0;
   max-height: 10rem;
-  padding: 1rem;
   border: 1px solid $gray-light;
   border-radius: $border-radius;
   background: $white;
+  overflow-x: hidden;
   overflow-y: auto;
+  .list-group-item{
+    flex-wrap: wrap;
+  }
+  .list-group .list-group{
+    width: 100%;
+  }
+  .list-group .list-group .list-group-item{
+    padding: 0.2rem 0 0.2rem 1.5rem;
+    border: 0;
+  }
 }
 
 /* Buttons */
