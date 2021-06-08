@@ -9,7 +9,7 @@
   "dependencies": {
     "codemirror": "5.54",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.8.0",
+    "tinymce": "5.8.1",
     "tinymce-i18n": "20.12.25"
   },
   "devDependencies": {},

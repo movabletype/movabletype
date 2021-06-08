@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.0 (2021-05-06)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -23843,16 +23843,22 @@
             });
           },
           setActive: function (state) {
-            set$1(comp.element, 'aria-pressed', state);
-            descendant$1(comp.element, 'span').each(function (button) {
-              comp.getSystem().getByDom(button).each(function (buttonComp) {
-                return Toggling.set(buttonComp, state);
+            if (comp.getSystem().isConnected()) {
+              set$1(comp.element, 'aria-pressed', state);
+              descendant$1(comp.element, 'span').each(function (button) {
+                comp.getSystem().getByDom(button).each(function (buttonComp) {
+                  return Toggling.set(buttonComp, state);
+                });
               });
-            });
+            }
           },
           isActive: function () {
             return descendant$1(comp.element, 'span').exists(function (button) {
-              return comp.getSystem().getByDom(button).exists(Toggling.isOn);
+              if (comp.getSystem().isConnected()) {
+                return comp.getSystem().getByDom(button).exists(Toggling.isOn);
+              } else {
+                return false;
+              }
             });
           }
         };
@@ -24442,23 +24448,20 @@
     var createSelectButton = function (editor, backstage, spec) {
       var _a = createMenuItems(editor, backstage, spec), items = _a.items, getStyleItems = _a.getStyleItems;
       var getApi = function (comp) {
-        return {
-          getComponent: function () {
-            return comp;
-          }
-        };
+        return { getComponent: constant(comp) };
       };
       var onSetup = function (api) {
-        spec.setInitialValue.each(function (f) {
-          return f(api.getComponent());
-        });
-        return spec.nodeChangeHandler.map(function (f) {
-          var handler = f(api.getComponent());
-          editor.on('NodeChange', handler);
-          return function () {
-            editor.off('NodeChange', handler);
-          };
-        }).getOr(noop);
+        var updateText = function () {
+          var comp = api.getComponent();
+          if (comp.getSystem().isConnected()) {
+            spec.updateText(comp);
+          }
+        };
+        updateText();
+        editor.on('NodeChange', updateText);
+        return function () {
+          editor.off('NodeChange', updateText);
+        };
       };
       return renderCommonDropdown({
         text: spec.icon.isSome() ? Optional.none() : Optional.some(''),
@@ -24567,14 +24570,6 @@
         });
         emitWith(comp, updateMenuIcon, { icon: 'align-' + alignment });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuIcon(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuIcon(comp);
-      });
       var dataset = buildBasicStaticDataset(alignMenuItems);
       var onAction = function (rawItem) {
         return function () {
@@ -24592,8 +24587,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuIcon,
         dataset: dataset,
         shouldHide: false,
         isInvalid: function (item) {
@@ -24699,14 +24693,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'font_formats', defaultFontsFormats, Delimiter.SemiColon);
       return {
         tooltip: 'Fonts',
@@ -24715,8 +24701,7 @@
         getCurrentValue: getCurrentValue,
         getPreviewFor: getPreviewFor,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: never
@@ -24819,14 +24804,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'fontsize_formats', defaultFontsizeFormats, Delimiter.Space);
       return {
         tooltip: 'Font sizes',
@@ -24835,8 +24812,7 @@
         getPreviewFor: getPreviewFor,
         getCurrentValue: getCurrentValue,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: never
@@ -24976,14 +24952,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'block_formats', defaultBlocks, Delimiter.SemiColon);
       return {
         tooltip: 'Blocks',
@@ -24992,8 +24960,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onActionToggleFormat(editor),
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: function (item) {
@@ -25048,14 +25015,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       return {
         tooltip: 'Formats',
         icon: Optional.none(),
@@ -25063,8 +25022,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onActionToggleFormat(editor),
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         shouldHide: editor.getParam('style_formats_autohide', false, 'boolean'),
         isInvalid: function (item) {
           return !editor.formatter.canApply(item.format);

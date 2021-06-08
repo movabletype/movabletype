@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.8.0 (2021-05-06)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -1165,11 +1165,11 @@
         content = trimHtml(content);
         pasteBin.remove();
         var isPlainTextHtml = internal === false && isPlainText(content);
-        var isImage = isImageUrl(editor, content);
-        if (!content.length || isPlainTextHtml && !isImage) {
+        var isAbsoluteUrl$1 = isAbsoluteUrl(content);
+        if (!content.length || isPlainTextHtml && !isAbsoluteUrl$1) {
           plainTextMode = true;
         }
-        if (plainTextMode || isImage) {
+        if (plainTextMode || isAbsoluteUrl$1) {
           if (hasContentType(clipboardContent, 'text/plain') && isPlainTextHtml) {
             content = clipboardContent['text/plain'];
           } else {
