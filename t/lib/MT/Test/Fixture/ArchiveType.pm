@@ -470,7 +470,9 @@ sub load_objs {
         };
     }
 
-    my @content_type_names = keys %{ $spec->{content_type} };
+    my @content_type_labels = keys %{ $spec->{content_type} };
+    my %content_type_name_mapping = map { ($spec->{content_type}{$_}{name} // $_ => $_) } @content_type_labels;
+    my @content_type_names = keys %content_type_name_mapping;
     my @content_types      = MT::ContentType->load(
         {   blog_id => $blog_id,
             name    => \@content_type_names,
@@ -490,7 +492,7 @@ sub load_objs {
     }
 
     for my $ct (@content_types) {
-        $objs{content_type}{ $ct->name } = {
+        $objs{content_type}{ $content_type_name_mapping{$ct->name} } = {
             content_type  => $ct,
             content_field => $content_field_map{ $ct->id },
         };
