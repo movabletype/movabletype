@@ -474,7 +474,7 @@ sub load_objs {
     my %content_type_name_mapping;
     for my $label (@content_type_labels) {
         if (ref $spec->{content_type}{$label} eq 'HASH') {
-            my $key = ref $spec->{content_type}{$label} // $label;
+            my $key = $spec->{content_type}{$label}{name} // $label;
             $content_type_name_mapping{$key} = $label;
         } else {
             $content_type_name_mapping{$label} = $label;
