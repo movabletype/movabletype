@@ -3,7 +3,7 @@ name: Diagnosis
 version: 0.01
 author_link: http://www.movabletype.org/
 author_name: Six Apart Ltd.
-description: <MT_TRANS phrase="Manage boilerplate.">
+description: <MT_TRANS phrase="Diagnosis and Repiar Tool.">
 l10n_class: MT::Plugin::Diagnosis::L10N
 schema_version: 0.09
 object_types:
@@ -41,5 +41,4 @@ tasks:
     RunRepairTasks:
         label: Run Repair Tasks
         frequency: 60
-        code: $Sync::MT::SyncFileMgr::remove_sync_pid_files
         code: $Diagnosis::MT::Plugin::Diagnosis::RepairTask::run_task
