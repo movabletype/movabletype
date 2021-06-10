@@ -471,7 +471,15 @@ sub load_objs {
     }
 
     my @content_type_labels = keys %{ $spec->{content_type} };
-    my %content_type_name_mapping = map { ($spec->{content_type}{$_}{name} // $_ => $_) } @content_type_labels;
+    my %content_type_name_mapping;
+    for my $label (@content_type_labels) {
+        if (ref $spec->{content_type}{$label} eq 'HASH') {
+            my $key = ref $spec->{content_type}{$label} // $label;
+            $content_type_name_mapping{$key} = $label;
+        } else {
+            $content_type_name_mapping{$label} = $label;
+        }
+    }
     my @content_type_names = keys %content_type_name_mapping;
     my @content_types      = MT::ContentType->load(
         {   blog_id => $blog_id,
