@@ -1,6 +1,6 @@
 --
 -- Created by SQL::Translator::Producer::MySQL
--- Created on Sun Apr 25 13:28:04 2021
+-- Created on Thu Jun 10 13:53:50 2021
 --
 SET foreign_key_checks=0;
 
@@ -537,7 +537,7 @@ CREATE TABLE `mt_cf_idx` (
   `cf_idx_modified_on` datetime NULL DEFAULT NULL,
   `cf_idx_value_blob` mediumblob NULL DEFAULT NULL,
   `cf_idx_value_datetime` datetime NULL DEFAULT NULL,
-  `cf_idx_value_double` double(8, 2) NULL DEFAULT NULL,
+  `cf_idx_value_double` double NULL DEFAULT NULL,
   `cf_idx_value_float` float NULL DEFAULT NULL,
   `cf_idx_value_integer` integer(11) NULL DEFAULT NULL,
   `cf_idx_value_text` mediumtext NULL DEFAULT NULL,

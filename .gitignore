@@ -72,3 +72,5 @@ cover_db/
 .mt_test_env
 
 /vendor/
+
+t/selenium/evidence

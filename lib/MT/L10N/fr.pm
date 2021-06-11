@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'une note/page est sauvegardée',
 	'unpublishes a content' => 'Dé-publie le contenu',
 	'unpublishes an entry/page' => 'une note/page est dépubliée',
+	'Format Error: Trigger data include illegal characters.' => 'Erreur de format: Les données de déclenchement incluent des caractères illégaux.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Erreur de format: Les valeurs séparées par des virgules contiennent un nombre incorrect de champs.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Le champ "[_1]" est requis.',

@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'een bericht/pagina opslaat',
 	'unpublishes a content' => 'publicatie inhoud ongedaan maakt',
 	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
+	'Format Error: Trigger data include illegal characters.' => 'Formaatfout: Triggergegevens bevatten illegale tekens.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => q{Door komma's gescheiden waarden bevat een verkeerd aantal velden.},
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]" veld is vereist',
