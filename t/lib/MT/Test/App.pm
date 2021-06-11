@@ -96,11 +96,12 @@ sub login {
 }
 
 sub request {
-    my $self = shift;
+    my ($self, $params, $is_redirect) = @_;
+    $self->{locations} = undef unless $is_redirect;
     if ($self->{server}) {
-        $self->_request_locally(@_);
+        $self->_request_locally($params);
     } else {
-        $self->_request_internally(@_);
+        $self->_request_internally($params);
     }
 }
 
@@ -197,7 +198,7 @@ sub _request_locally {
         sleep 1;
 
         push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params);
+        return $self->request($params, 1);
     }
 
     if (my $message = $self->message_text) {
@@ -273,7 +274,7 @@ sub _request_internally {
         sleep 1;
 
         push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params);
+        return $self->request($params, 1);
     }
 
     if ( my $message = $self->message_text ) {
