@@ -100,6 +100,9 @@ my $app = MT::Test::App->new('MT::App::CMS');
 
 subtest 'mode = save' => sub {
 
+    my $save_message_regex  = qr/Rebuild Trigger settings has been saved/;
+    my $no_permission_regex = qr/You attempted to use a feature that you do not have permission to access/;
+
     $app->login($admin);
     $app->post_ok({
         __mode      => 'save',
@@ -107,9 +110,8 @@ subtest 'mode = save' => sub {
         blog_id     => $blog->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
     });
-    like $app->message_text,  qr/trigger/i,                   'right message by admin';
-    like $app->message_text,  qr/saved/i,                     'right message by admin';
-    like $app->last_location, qr/__mode=cfg_rebuild_trigger/, 'redirected to dashboard';
+    like $app->message_text, $save_message_regex, 'right message by admin';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
 
     $app->login($aikawa);
     $app->post_ok({
@@ -118,9 +120,8 @@ subtest 'mode = save' => sub {
         blog_id     => $blog->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
     });
-    like $app->message_text,  qr/trigger/i,                   'right message by permitted user (child site)';
-    like $app->message_text,  qr/saved/i,                     'right message by permitted user (child site)';
-    like $app->last_location, qr/__mode=cfg_rebuild_trigger/, 'redirected to dashboard';
+    like $app->message_text, $save_message_regex, 'right message by permitted user (child site)';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
 
     $app->login($ichikawa);
     $app->post_ok({
@@ -129,9 +130,8 @@ subtest 'mode = save' => sub {
         blog_id     => $website->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
     });
-    like $app->message_text,  qr/trigger/i,                   'right message by permitted user (parent site)';
-    like $app->message_text,  qr/saved/i,                     'right message by permitted user (parent site)';
-    like $app->last_location, qr/__mode=cfg_rebuild_trigger/, 'redirected to dashboard';
+    like $app->message_text, $save_message_regex, 'right message by permitted user (parent site)';
+    is $app->last_location->query_param('__mode') => 'cfg_rebuild_trigger', 'redirected to dashboard';
 
     $app->login($ukawa);
     $app->post_ok({
@@ -140,9 +140,8 @@ subtest 'mode = save' => sub {
         blog_id     => $blog->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
     });
-    unlike $app->message_text, qr/trigger/i,         'right message by non permitted user (child site)';
-    unlike $app->message_text, qr/saved/i,           'right message by non permitted user (child site)';
-    like $app->last_location,  qr/__mode=dashboard/, 'redirected to dashboard';
+    like $app->message_text, $no_permission_regex, 'right message by non permitted user (child site)';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
 
     $app->login($egawa);
     $app->post_ok({
@@ -151,9 +150,8 @@ subtest 'mode = save' => sub {
         blog_id     => $website->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $website->id,
     });
-    unlike $app->message_text, qr/trigger/i,         'right message by non permitted user (parent site)';
-    unlike $app->message_text, qr/saved/i,           'right message by non permitted user (parent site)';
-    like $app->last_location,  qr/__mode=dashboard/, 'redirected to dashboard';
+    like $app->message_text, $no_permission_regex, 'right message by non permitted user (parent site)';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
 
     $app->login($ogawa);
     $app->post_ok({
@@ -162,12 +160,13 @@ subtest 'mode = save' => sub {
         blog_id     => $blog->id,
         return_args => '__mode=cfg_rebuild_trigger&blog_id=' . $blog->id,
     });
-    unlike $app->message_text, qr/trigger/i,         'right message by other permission user';
-    unlike $app->message_text, qr/saved/i,           'right message by other permission user';
-    like $app->last_location,  qr/__mode=dashboard/, 'redirected to dashboard';
+    like $app->message_text, $no_permission_regex, 'right message by other permission user';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard';
 };
 
 subtest 'mode = add_rebuild_trigger' => sub {
+
+    my $no_permission_regex = qr/You attempted to use a feature that you do not have permission to access/;
 
     $app->login($admin);
     $app->get_ok({
@@ -202,7 +201,8 @@ subtest 'mode = add_rebuild_trigger' => sub {
         blog_id => $blog->id,
         dialog  => 1,
     });
-    like $app->last_location, qr/__mode=dashboard/, 'redirected to dashboard by non permitted user (child site)';
+    like $app->message_text, $no_permission_regex, 'right message by other permission user';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (child site)';
 
     $app->login($egawa);
     $app->get_ok({
@@ -210,7 +210,8 @@ subtest 'mode = add_rebuild_trigger' => sub {
         blog_id => $website->id,
         dialog  => 1,
     });
-    like $app->last_location, qr/__mode=dashboard/, 'redirected to dashboard by non permitted user (parent site)';
+    like $app->message_text, $no_permission_regex, 'right message by other permission user';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by non permitted user (parent site)';
 
     $app->login($ogawa);
     $app->get_ok({
@@ -218,7 +219,8 @@ subtest 'mode = add_rebuild_trigger' => sub {
         blog_id => $blog->id,
         dialog  => 1,
     });
-    like $app->last_location, qr/__mode=dashboard/, 'redirected to dashboard by other permission';
+    like $app->message_text, $no_permission_regex, 'right message by other permission user';
+    is $app->last_location->query_param('__mode') => 'dashboard', 'redirected to dashboard by other permission';
 };
 
 done_testing();
