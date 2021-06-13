@@ -49,19 +49,8 @@ while (my $job = shift @queue) {
     my @urls = map { $_->get_attribute('href') } $s->driver->find_elements('a[href^="/cgi-bin/"]', 'css');
     add_queue(\@urls, $job->url);
     my $title = $s->driver->get_title;
-    my @logs  = $s->get_browser_error_log();
-    ok(!scalar(@logs), 'no browser error occurs');
-    if (@logs) {
-        diag('test_number_' . $num . ':' . 'Visit ' . $job->url);
-        diag '        title: ' . $title;
-        diag '        referrer: ' . ${ $job->referrer };
-        diag sprintf("<%s> %s", $_->{source}, $_->{message}) for grep { $_->{source} } @logs;
-        $s->screenshot_full('test_number_' . $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
-    } else {
-        note('test_number_' . $num . ':' . 'Visit ' . $job->url);
-        note '        title: ' . $title;
-        note '        referrer: ' . ${ $job->referrer };
-    }
+    assert_no_errors($job, $num, 'Visit ' . $job->url, { title => $title, referrer => ${ $job->referrer } });
+
     $num++;
     last                                 if $max && $num > $max;
     @queue = List::Util::shuffle(@queue) if $num % 10 == 0;
@@ -80,6 +69,23 @@ sub add_queue {
         push @queue, MT::Test::Selenium::Crawler::Job->new($url, $referrer ? \$referrer : ());
         $once_queued{$url} = 1;
         shift(@queue) if $max && scalar(@queue) > $max;
+    }
+}
+
+sub assert_no_errors {
+    my ($job, $num, $summary, $extra) = @_;
+    my @logs = $s->get_browser_error_log();
+    @logs = grep { $_->{message} !~ /Scripts may close only the windows that were opened by them/ } @logs;
+    ok(!scalar(@logs), 'no browser error occurs');
+    $summary = 'test_number_' . $num . ': ' . $summary;
+    if (@logs) {
+        diag($summary);
+        diag((' ' x 8) . sprintf('%s: %s', $_, $extra->{$_})) for (sort keys %$extra);
+        diag sprintf("<%s> %s", $_->{source}, $_->{message})  for grep { $_->{source} } @logs;
+        $s->screenshot_full('test_number_' . $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
+    } else {
+        note($summary);
+        note((' ' x 8) . sprintf('%s: %s', $_, $extra->{$_})) for (sort keys %$extra);
     }
 }
 
