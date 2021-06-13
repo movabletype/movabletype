@@ -3985,7 +3985,7 @@ use vars qw( @ISA %Lexicon );
 	'Exclude sites/child sites' => '除外するサイト',
 	'Include sites/child sites' => '含めるサイト',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlogタグの既定の属性:',
-	'Rebuild Trigger settings has been saved.' => '再構築トリガーの設定を保存しました',
+	'Rebuild Trigger settings have been saved.' => '再構築トリガーの設定を保存しました',
 	'Rebuild Triggers' => '再構築トリガー',
 	'Site/Child Site' => 'サイト',
 	'Use system default' => 'システムの既定値を使用',

@@ -100,7 +100,7 @@ my $app = MT::Test::App->new('MT::App::CMS');
 
 subtest 'mode = save' => sub {
 
-    my $save_message_regex  = qr/Rebuild Trigger settings has been saved/;
+    my $save_message_regex  = qr/Rebuild Trigger settings have been saved/;
     my $no_permission_regex = qr/You attempted to use a feature that you do not have permission to access/;
 
     $app->login($admin);
