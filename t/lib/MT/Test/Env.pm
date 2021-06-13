@@ -673,14 +673,13 @@ sub prepare_fixture {
         }
     }
 
+    my $loaded;
     if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
-        $self->load_schema_and_fixture($id) or $code->();
+        $loaded = $self->load_schema_and_fixture($id);
     }
-    else {
+    if (!$loaded) {
         $self->fix_mysql_create_table_sql;
         $code->();
-    }
-    if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
         $self->save_schema;
         $self->save_fixture($id);
 
