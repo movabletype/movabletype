@@ -262,10 +262,11 @@ sub _generate_captcha {
     }
 
     # Read in the background file
-    my $a          = int rand(5) + 1;
+    my @bg_ids = (1, 2, 4, 5);  ## 3 is a bit too hard to read
+    my $bg_id  = $bg_ids[int rand(scalar @bg_ids)];
     my $background = $magick_class->new();
     $error = $background->Read(
-        File::Spec->catfile( $base, 'background' . $a . '.png' ) );
+        File::Spec->catfile( $base, 'background' . $bg_id . '.png' ) );
     if ($error) {
         return $app->error( $app->translate( "Image error: [_1]", $error ) );
     }
