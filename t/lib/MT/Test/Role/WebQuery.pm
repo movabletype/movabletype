@@ -1,11 +1,11 @@
 package MT::Test::Role::WebQuery;
 
 use Role::Tiny;
-use Web::Query;
+use Web::Query::LibXML;
 
 sub wq_find {
     my ( $self, $selector ) = @_;
-    my $wq = Web::Query->new( $self->content );
+    my $wq = Web::Query::LibXML->new( $self->content );
     $wq->find($selector);
 }
 
