@@ -75,7 +75,11 @@ sub add_queue {
 sub assert_no_errors {
     my ($job, $num, $summary, $extra) = @_;
     my @logs = $s->get_browser_error_log();
-    @logs = grep { $_->{message} !~ /Scripts may close only the windows that were opened by them/ } @logs;
+    @logs = grep {
+        $_->{message} !~ /Scripts may close only the windows that were opened by them/ &&
+        $_->{message} !~ /Blocked attempt to show a 'beforeunload' confirmation panel for a frame that never had a user gesture since its load./
+    } @logs;
+
     ok(!scalar(@logs), 'no browser error occurs');
     $summary = 'test_number_' . $num . ': ' . $summary;
     if (@logs) {
