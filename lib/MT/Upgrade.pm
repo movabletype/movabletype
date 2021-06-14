@@ -936,6 +936,7 @@ sub core_finish {
                             $plugin->version || '-',
                             $ver
                         ),
+                        level    => MT::Log::NOTICE(),
                         category => 'upgrade',
                         class    => 'plugin',
                     }
