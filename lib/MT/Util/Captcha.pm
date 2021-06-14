@@ -221,7 +221,7 @@ sub _generate_captcha {
         return $app->error( $app->translate( "Image error: [_1]", $im ) );
     }
 
-    $error = $im->Blur();
+    $error = $im->Blur('0.0x1.0');
     if ($error) {
         return $app->error( $app->translate( "Image error: [_1]", $error ) );
     }
