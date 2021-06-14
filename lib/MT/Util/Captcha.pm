@@ -227,31 +227,34 @@ sub _generate_captcha {
     }
 
     # Add some lines and dots to the image
-    for my $i ( 0 .. ( $len * WIDTH() * HEIGHT() / 14 + 200 - 1 ) ) {
-        my $a     = int rand( $len * WIDTH() );
-        my $b     = int rand HEIGHT();
-        my $c     = int rand( $len * WIDTH() );
-        my $d     = int rand HEIGHT();
-        my $index = $im->Get("pixel[$a, $b]");
+    for my $i ( 0 .. 200 ) {
+        my $x1    = int rand( $len * WIDTH() );
+        my $x2    = int rand( $len * WIDTH() );
+        my $y1    = int rand HEIGHT();
+        my $y2    = int rand HEIGHT();
+        my $index = $im->Get("pixel[$x1, $y1]");
 
-        if ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 100 ) {
+        my $modified_index = join ",", map { $_ >>= 8 while ($_ > 255 || $_ < 0); $_ } split ",", $index;
+        my $color_name     = "rgba($modified_index)";
+
+        if ( $i < 2 ) {
             $error = $im->Draw(
                 primitive => 'line',
-                stroke    => "rgba($index)",
-                points    => "$a, $b, $c, $d"
+                stroke    => "black",  ## seems to be better than $color_name,
+                points    => "$x1, $y1 $x2, $y2"
             );
             if ($error) {
                 return $app->error( $app->translate( "Image error: [_1]", $error ) );
             }
         }
-        elsif ( $i < ( $len * WIDTH() * HEIGHT() / 14 + 200 ) / 2 ) {
-            $error = $im->Set( "pixel[$c, $d]" => $index );
+        elsif ( $i < 100 ) {
+            $error = $im->Set( "pixel[$x2, $y2]" => $color_name );
             if ($error) {
                 return $app->error( $app->translate( "Image error: [_1]", $error ) );
             }
         }
         else {
-            $error = $im->Set( "pixel[$c, $d]" => "black" );
+            $error = $im->Set( "pixel[$x2, $y2]" => "black" );
             if ($error) {
                 return $app->error( $app->translate( "Image error: [_1]", $error ) );
             }
