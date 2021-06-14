@@ -572,7 +572,7 @@ sub _get_id_from_caller {
 
     for ( my $i = 0; $i < 3; $i++ ) {
         my $file = ( caller($i) )[1];
-        next unless $file =~ s!\.t$!!;
+        next unless $file =~ s!\.(t|pl)$!!;
         my $id = $file;
         $id =~ s!^($MT_HOME/)?!!;
         $id =~ s!^(?:(.*?)/)?t/!!;
