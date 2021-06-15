@@ -674,18 +674,30 @@ sub prepare_fixture {
         }
     }
 
-    if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
-        $self->load_schema_and_fixture($id) or $code->();
-    }
-    else {
+    my $code = sub {
         $self->fix_mysql_create_table_sql;
         $code->();
+    };
+
+    my $do_save;
+    if ($ENV{MT_TEST_IGNORE_FIXTURE}) {
+        $code->();
+    } elsif ($ENV{MT_TEST_UPDATE_FIXTURE}) {
+        $code->();
+        $do_save = 1;
+    } elsif ($ENV{MT_TEST_AUTOUPDATE_FIXTURE}) {
+        if (!$self->load_schema_and_fixture($id)) {
+            $code->();
+            $do_save = 1;
+        }
+    } else {
+        $self->load_schema_and_fixture($id) or $code->();
     }
-    if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
+    if ($do_save) {
         $self->save_schema;
         $self->save_fixture($id);
 
-        if ( $self->{fixture_dirs}[-1] ) {
+        if ($self->{fixture_dirs}[-1]) {
             mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
             open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";
