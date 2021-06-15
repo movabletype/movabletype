@@ -16,6 +16,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture::CmsPermission::Common1;
 
 MT::Test->init_app;
 
@@ -25,30 +26,7 @@ my $config = MT->config;
 $config->EnableAddressBook( 1, 1 );
 $config->save_config;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-
-    # Website
-    my $website = MT::Test::Permission->make_website();
-
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-    );
-
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
-
-    # Role
-    require MT::Role;
-    my $blog_admin = MT::Role->load( { name => MT->translate( 'Blog Administrator' ) } );
-
-    require MT::Association;
-    MT::Association->link( $aikawa => $blog_admin => $blog );
-});
+$test_env->prepare_fixture('cms_permission/common1');
 
 my $website     = MT::Website->load( { name => 'my website' } );
 my $blog        = MT::Blog->load( { name => 'my blog' } );
