@@ -568,7 +568,6 @@ sub dbh {
 
 sub _get_id_from_caller {
     my $self = shift;
-    return $self->{fixture_id} if $self->{fixture_id};
 
     for ( my $i = 0; $i < 3; $i++ ) {
         my $file = ( caller($i) )[1];
@@ -577,7 +576,6 @@ sub _get_id_from_caller {
         $id =~ s!^($MT_HOME/)?!!;
         $id =~ s!^(?:(.*?)/)?t/!!;
 
-        $self->{fixture_id}        = $id;
         $self->{extra_plugin_path} = $1;
 
         return $id;
@@ -643,11 +641,12 @@ sub prepare_fixture {
     eval "require $app; 1" or die $@;
     MT->set_instance( $app->new );
 
-    my $id = $self->_get_id_from_caller;
+    my $id;
     $self->_set_fixture_dirs;
 
     my $code;
     if ( ref $_[0] eq 'CODE' ) {
+        $id = $self->_get_id_from_caller;
         $code = shift;
     }
     else {
