@@ -13,12 +13,11 @@ BEGIN {
 }
 
 use MT::Test;
+use File::Path qw(mkpath);
 
 require_ok('MT::Util::Log');
 
-my $mt   = MT->instance;
-my $path = $test_env->path('log');
-mkdir $path;
+my $mt = MT->instance;
 
 # initialize
 require MT::FileMgr;
@@ -27,6 +26,9 @@ my $fmgr = MT::FileMgr->new('Local');
 for my $module (qw/ Log4perl Minimal /) {
     for my $level (qw/ debug warn /) {
     SKIP: {
+            my $path = $test_env->path("log/$module/$level");
+            mkpath $path;
+
             $mt->config( 'LoggerLevel',  $level );
             $mt->config( 'LoggerPath',   $path );
             $mt->config( 'LoggerModule', $module );
@@ -69,6 +71,13 @@ for my $module (qw/ Log4perl Minimal /) {
                 ok !@warnings, "Write Japanese error without warnings" or note explain \@warnings;
             };
             warn $@ if $@;
+
+            if ($module eq 'Log4perl') {
+                Log::Log4perl->reset;
+            }
+            if ($module eq 'Minimal') {
+                undef $Log::Minimal::PRINT;
+            }
         }
     }
 }
