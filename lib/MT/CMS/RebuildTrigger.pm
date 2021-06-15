@@ -312,6 +312,10 @@ sub save {
     my $app = shift;
     $app->validate_magic or return;
 
+    return $app->permission_denied()
+        unless $app->user->is_superuser()
+        || ($app->blog && $app->user->permissions($app->blog->id)->can_administer_site());
+
     if ($app->param('blog_id')) {
 
         my $blog_id = $app->blog ? $app->blog->id : return;
