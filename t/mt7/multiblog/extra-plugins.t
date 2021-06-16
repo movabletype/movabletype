@@ -5,6 +5,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../../../t/lib";    # t/lib
 use lib "$FindBin::Bin/lib";
+use Cwd qw(cwd);
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -28,7 +29,13 @@ my $app = MT->instance;
 subtest 'add param basic' => sub {
     my $a = MT::CMS::RebuildTrigger::object_type_loop_plugin_reduced($app);
     note explain($a);
-    is(@$a, 3, 'right number of loop');
+    my $cwd = cwd();
+    my $expected = 3;
+    if (-e "$cwd/addons/Cloud.pack") {
+        # Comments plugins is automatically disabled if Cloud.pack exists
+        $expected--;
+    }
+    is(@$a, $expected, 'right number of loop');
 };
 
 subtest 'add param plugin disabled' => sub {
