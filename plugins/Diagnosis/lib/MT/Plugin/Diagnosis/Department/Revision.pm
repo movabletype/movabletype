@@ -20,7 +20,7 @@ sub scan {
 
     my %target = ('entry' => 1, 'cd' => 1, 'template' => 1);
 
-    my $site_iter = MT::Blog->load_iter();
+    my $site_iter = MT::Blog->load_iter({class => '*'});
 
     while (my $site = $site_iter->()) {
 
