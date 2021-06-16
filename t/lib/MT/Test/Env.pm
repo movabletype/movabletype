@@ -666,8 +666,7 @@ sub prepare_fixture {
             $code = sub {
                 my @path = map { camelize($_) } split('/', $id);
                 my $fixture_class = 'MT::Test::Fixture::' . (join '::', @path);
-                eval "require $fixture_class; 1"
-                    or croak "Unknown fixture id: $id";
+                eval "require $fixture_class; 1" or croak "Fixture class error: $id:". $@;
                 $fixture_class->prepare_fixture;
             };
         }
