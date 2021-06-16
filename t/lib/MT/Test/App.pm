@@ -178,6 +178,7 @@ sub _request_locally {
 
     require LWP::UserAgent;
     my $ua  = LWP::UserAgent->new;
+    $ua->max_redirect(0);
     my $res = $ua->request($req);
 
     $self->{content} = $res->decoded_content // '';
