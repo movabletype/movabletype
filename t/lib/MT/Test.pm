@@ -1422,7 +1422,7 @@ It\'s a hard rain\'s a-gonna fall',
         MT::Comment->count( { entry_id => 24, visible => 1 } ) || 0 );
     $page->save() or die "Couldn't save page record 24: " . $page->errstr;
 
-    MT->instance->rebuild( BlogId => 1, );
+    MT->instance->rebuild( BlogID => 1, );
 
     ### Make ObjectAsset mappings
     require MT::ObjectAsset;
@@ -1532,7 +1532,7 @@ sub _run_app {
     MT->set_instance($app);
     $app->config( 'TemplatePath', abs_path( $app->config->TemplatePath ) );
     $app->config( 'SearchTemplatePath',
-        [ abs_path( $app->config->SeachTemplatePath ) ] );
+        [ abs_path( $app->config->SearchTemplatePath ) ] );
     $app->config( 'MailTransfer', 'debug' );
 
     # nix upgrade required
@@ -1594,7 +1594,13 @@ sub _parse_query {
 }
 
 sub _run_rpt {
-    `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    MT::Session->remove( { kind => 'PT' } );
+    my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
+    if ( $res =~ /((?:Compilation failed|Can't locate).*)/ ) {
+        diag $1;
+        BAIL_OUT;
+    }
+    $res;
 }
 
 sub _run_tasks {
@@ -1609,6 +1615,28 @@ sub _run_tasks {
 
     require MT::TaskMgr;
     MT::TaskMgr->run_tasks(@$tasks);
+}
+
+sub location_param_contains {
+    my ( $out, $expects, $message ) = @_;
+    my ($location_url) = $out =~ /^Location:\s*(\S+)/m;
+    unless ($location_url) {
+        fail "$message: no Location url";
+        return;
+    }
+    query_param_contains( $location_url, $expects, $message );
+}
+
+sub query_param_contains {
+    my ( $url, $expects, $message ) = @_;
+    my $uri  = URI->new($url);
+    my $fail = 0;
+    for my $key ( sort keys %$expects ) {
+        is $uri->query_param($key) => $expects->{$key},
+            "$key: $expects->{$key}"
+            or $fail++;
+    }
+    ok !$fail, $message;
 }
 
 my $HasPHP;

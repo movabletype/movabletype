@@ -92,6 +92,7 @@ Some styles for textarea are used in no Rich Text mode (Rich Text mode uses ifra
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     border-radius: 0;
+    min-height: auto !important;
 }
 #editor-content textarea:hover,
 #editor-content textarea:focus {

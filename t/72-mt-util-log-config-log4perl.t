@@ -49,6 +49,7 @@ log4perl.appender.Logfile2.layout.ConversionPattern = [%r] %F %L %m%n
 log4perl.appender.Logfile2.Threshold = WARN, ERROR
 log4perl.appender.Screen        = Log::Log4perl::Appender::Screen
 log4perl.appender.Screen.stderr = 0
+log4perl.appender.Screen.utf8 = 1
 log4perl.appender.Screen.layout = Log::Log4perl::Layout::SimpleLayout
 CONFIG
 
@@ -59,16 +60,31 @@ my $mt = MT->instance;
 require MT::Util::Log;
 MT::Util::Log::init();
 MT::Util::Log->info("Some information");
+MT::Util::Log->notice("Some notice");
 MT::Util::Log->warn("Some warning");
 MT::Util::Log->error("Some error");
 
 ok -f $logfile, "logfile exists";
 my $log = $test_env->slurp($logfile);
 like $log => qr/Some information/, "logfile contains correct info log";
+like $log => qr/Some notice/, "logfile2 contains correct notice log";
 
 ok -f $logfile2, "logfile2 exists";
 my $log2 = $test_env->slurp($logfile2);
 like $log2 => qr/Some warning/, "logfile2 contains correct warning log";
 like $log2 => qr/Some error/, "logfile2 contains correct error log";
+
+eval {
+    use locale;
+    use POSIX qw(locale_h);
+    setlocale(LC_ALL, "ja_JP.UTF-8");
+    my @warnings;
+    local $SIG{__WARN__} = sub { push @warnings, @_ };
+    mkdir $test_env->path("tmp");
+    mkdir $test_env->path("tmp");
+    MT::Util::Log->error("$!");
+    ok !@warnings, "Log a Japanese error without warnings" or note explain \@warnings;
+};
+warn $@ if $@;
 
 done_testing();

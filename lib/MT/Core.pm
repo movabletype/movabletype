@@ -156,6 +156,7 @@ BEGIN {
             'association'     => 'MT::Association',
             'permission'      => 'MT::Permission',
             'fileinfo'        => 'MT::FileInfo',
+            'deletefileinfo'  => 'MT::DeleteFileInfo',
             'placement'       => 'MT::Placement',
             'plugindata'      => 'MT::PluginData',
             'session'         => 'MT::Session',
@@ -1998,6 +1999,7 @@ BEGIN {
                     height => 162,          # textarea height
                 },
             },
+            'DeleteFilesAfterRebuild'   => { default => 0, },
             'DeleteFilesAtRebuild'      => { default => 1, },
             'RebuildAtDelete'           => { default => 1, },
             'MaxTagAutoCompletionItems' => { default => 1000, }, ## DEPRECATED

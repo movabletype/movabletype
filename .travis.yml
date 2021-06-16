@@ -60,12 +60,13 @@ jobs:
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
 
 before_script:
+  - docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
   - rm t/34-sqlite.t
   - rm plugins/MultiBlog/t/02.tags.t
 
 script:
   - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi
-  - if [ -n "$USE_SELENIUM" ]; then TEST_IMAGE=movabletype/test:$TEST_IMAGE_NAME docker-compose -f t/selenium/docker-compose.yml run test ; fi
+  - if [ -n "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:

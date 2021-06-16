@@ -32,6 +32,7 @@ sub new {
         {   file   => ">>$log_file",
             layout => "%m%n",
             level  => $numval,
+            utf8   => 1,
         }
     );
 
@@ -45,6 +46,12 @@ sub debug {
 }
 
 sub info {
+    my ( $class, $msg ) = @_;
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info($msg);
+}
+
+sub notice {
     my ( $class, $msg ) = @_;
     my $logger = Log::Log4perl->get_logger();
     $logger->info($msg);
