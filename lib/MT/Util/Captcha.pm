@@ -75,6 +75,12 @@ sub form_fields {
     my $cfg     = MT->config;
     my $cgipath = $cfg->CGIPath;
     $cgipath .= '/' if $cgipath !~ m!/$!;
+    my $static = $cfg->StaticWebPath;
+    if (!$static) {
+        $static = $cgipath;
+        $static .= 'mt-static/';
+    }
+    $static .= '/' if $static !~ m!/$!;
     my $commentscript = $cfg->CommentScript;
 
     my $caption = MT->translate('Captcha');
@@ -84,7 +90,7 @@ sub form_fields {
 <div class="label"><label for="captcha_code">$caption:</label></div>
 <div class="field">
 <input type="hidden" name="token" value="$token" />
-<img src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><br />
+<img id="captcha_image" src="$cgipath$commentscript/captcha/$blog_id/$token" width="150" height="35" /><a href="javascript:void(0)" onclick="var i=document.getElementById('captcha_image');i.src=i.src.replace(/((\\\\?c=\\\\d+)|\\\$)/,'?c='+Date.now());return false;"><img src="${static}images/nav_icons/color/rebuild.gif" alt="refresh captcha" style="margin-bottom:10px"></a><br />
 <input type="text" name="captcha_code" id="captcha_code" class="text" value="" autocomplete="off" />
 <p>$description</p>
 </div>
