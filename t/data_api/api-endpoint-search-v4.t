@@ -13,6 +13,7 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+use MT::Test::Fixture::ContentData;
 use MT::Test::DataAPI;
 use JSON;
 

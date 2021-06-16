@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => '記事とウェブページの保存時',
 	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
 	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
+	'Format Error: Trigger data include illegal characters.' => 'フォーマットエラー: トリガーデータが不正な文字を含んでいます。',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'フォーマットエラー: CSVのフィールド数が正しくありません。',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
@@ -3983,7 +3985,7 @@ use vars qw( @ISA %Lexicon );
 	'Exclude sites/child sites' => '除外するサイト',
 	'Include sites/child sites' => '含めるサイト',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlogタグの既定の属性:',
-	'Rebuild Trigger settings has been saved.' => '再構築トリガーの設定を保存しました',
+	'Rebuild Trigger settings have been saved.' => '再構築トリガーの設定を保存しました',
 	'Rebuild Triggers' => '再構築トリガー',
 	'Site/Child Site' => 'サイト',
 	'Use system default' => 'システムの既定値を使用',
@@ -4860,6 +4862,28 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => '未選択',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '結合できるセルはすべて選択してください',
+	'Cell is not selected' => 'セルが選択されていません',
+	'Only one cell should be selected' => '1つのセルのみ選択してください',
+	'Source' => 'ソース表示',
+	'align center' => '中央揃え',
+	'align left' => '左揃え',
+	'align right' => '右揃え',
+	'change to td' => 'tdに変更',
+	'change to th' => 'thに変更',
+	'insert column on the left' => '左に列を挿入',
+	'insert column on the right' => '右に列を挿入',
+	'insert row above' => '上に行を挿入',
+	'insert row below' => '下に行を挿入',
+	'merge cell' => 'セルを結合する',
+	'remove column' => '列を削除する',
+	'remove row' => '行を削除する',
+	'split cell' => 'セルを分割する',
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{左上のセルの値のみが保存されます。続行しますか?},
+	q{You can't paste here} => q{ここに貼り付けることはできません},
+	q{You can't split the cell anymore} => q{このセルはこれ以上分割できません},
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

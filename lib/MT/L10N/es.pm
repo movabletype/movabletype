@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'guarda una entrada/página',
 	'unpublishes a content' => 'despublicar un contenido',
 	'unpublishes an entry/page' => 'despublica una entrada/página',
+	'Format Error: Trigger data include illegal characters.' => 'Error de formato: Los datos de activación incluyen caracteres ilegales.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Error de formato: Los valores separados por comas contienen un número incorrecto de campos.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'El campo "[_1]" es necesario.',
@@ -3983,7 +3985,7 @@ r, inténtelo más tarde.',
 	'Exclude sites/child sites' => 'Excluir sitios/sitios hijos',
 	'Include sites/child sites' => 'Incluir sitios/sitios hijos',
 	'MTMultiBlog tag default arguments' => 'Argumentos predefinidos de la etiqueta MTMultiBlog',
-	'Rebuild Trigger settings has been saved.' => 'Se ha guardado la configuración del inductor de reconstrucción.',
+	'Rebuild Trigger settings have been saved.' => 'Se ha guardado la configuración del inductor de reconstrucción.',
 	'Rebuild Triggers' => 'Eventos de republicación',
 	'Site/Child Site' => 'Sitio/Sitio hijo',
 	'Use system default' => 'Utilizar valor predefinido del sistema',
@@ -4860,6 +4862,28 @@ r, inténtelo más tarde.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'No seleccionado',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',
