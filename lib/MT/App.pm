@@ -865,7 +865,7 @@ sub set_x_xss_protection_header {
 sub set_referrer_policy {
     my $app = shift;
 
-    my $policy = $app->config->ReferrerPolicy
+    my $policy = $app->config->ReferrerPolicy;
     return unless $policy;
 
     $app->set_header( 'Referrer-Policy', $policy );
