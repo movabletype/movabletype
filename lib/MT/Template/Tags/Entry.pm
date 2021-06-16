@@ -521,6 +521,8 @@ sub _hdlr_entries {
                 $map{ $_->category_id } = 1 for @c_ids;
                 \%map;
             };
+
+            my $filter_only_by_join = 0;
             if ( !$entries ) {
                 if ( $category_arg !~ m/\bNOT\b/i ) {
                     return MT::Template::Context::_hdlr_pass_tokens_else(@_)
@@ -532,9 +534,14 @@ sub _hdlr_entries {
                         },
                         { %blog_args, unique => 1 }
                     );
+
+                    # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
+                    $filter_only_by_join = 1 if $category_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
                 }
             }
-            push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+            unless ($filter_only_by_join) {
+                push @filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
+            }
         }
         else {
             return $ctx->error(
