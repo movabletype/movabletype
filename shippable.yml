@@ -1,5 +1,0 @@
-branches:
-  only:
-    - develop
-    - support-7.0x
-
