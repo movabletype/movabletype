@@ -4582,9 +4582,9 @@ use vars qw( @ISA %Lexicon );
 	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
-	'You must configure this blog before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
-	'You must configure this blog before you can publish this entry.' => '記事を公開する前にブログの設定を行ってください。',
-	'You must configure this blog before you can publish this page.' => 'ページを公開する前にブログの設定を行ってください。',
+	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
+	'You must configure this site before you can publish this entry.' => '記事を公開する前にサイトの設定を行ってください。',
+	'You must configure this site before you can publish this page.' => 'ページを公開する前にサイトの設定を行ってください。',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
