@@ -4697,6 +4697,7 @@ _4]'から削除しました。},
 	'Others:' => 'その他:',
 	'Web Services Settings' => 'Webサービス設定',
 	'When this website is updated, Movable Type will automatically notify the selected sites.' => 'ウェブサイトを更すると、選択したサイトに自動通知します。',
+	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 
 ## tmpl/cms/dashboard.tmpl
 	'Add' => '追加',
