@@ -1054,8 +1054,6 @@ sub init_query {
             }
         }
 
-        $app->run_callbacks('validate_request_params_' . $app->mode, $app) or return $app->errtrans("Invalid request.");
-
         return 1;
     }
 }
@@ -3272,6 +3270,8 @@ sub run {
                 }
 
                 if ($code) {
+                    $app->run_callbacks('validate_request_params_' . $app->mode, $app) or return $app->errtrans("Invalid request.");
+
                     my @forward_params = @{ $app->{forward_params} }
                         if $app->{forward_params};
                     $app->{forward_params} = undef;
