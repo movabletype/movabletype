@@ -364,6 +364,20 @@ sub new_password {
     return $tmpl;
 }
 
+MT->add_callback(validate_request_params_itemset_action => 5, 'MT', \&_validate_action_params);
+
+sub _validate_action_params {
+    my ($cb, $app) = @_;
+    my $type = $app->param('_type') or return;
+    if ($type =~ /\A(?:blog|content_data)\z/) {
+        for my $id (map {split /,/, $_} $app->multi_param('id')) {
+            next unless defined $id;
+            return unless $id =~ /\A[0-9]+\z/;
+        }
+    }
+    return 1;
+}
+
 sub do_list_action {
     my $app = shift;
 
