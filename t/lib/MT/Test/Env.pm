@@ -686,20 +686,17 @@ sub prepare_fixture {
         }
     }
 
-    my $code2 = sub {
-        $self->fix_mysql_create_table_sql;
-        $code->();
-    };
+    $self->fix_mysql_create_table_sql;
 
     my $do_save;
     if ($ENV{MT_TEST_IGNORE_FIXTURE}) {
-        $code2->();
+        $code->();
     } elsif ($ENV{MT_TEST_UPDATE_FIXTURE}) {
-        $code2->();
+        $code->();
         $do_save = 1;
     } elsif ($ENV{MT_TEST_AUTOUPDATE_FIXTURE}) {
         if (!$self->load_schema_and_fixture($id)) {
-            $code2->();
+            $code->();
             $do_save = 1;
         }
     } else {
