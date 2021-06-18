@@ -3284,6 +3284,8 @@ sub run {
                 }
 
                 if ($code) {
+                    $app->run_callbacks('validate_request_params_' . $app->mode, $app) or return $app->errtrans("Invalid request.");
+
                     my @forward_params = @{ $app->{forward_params} || [] };
                     $app->{forward_params} = undef;
                     local $app->{component} = $local_component
