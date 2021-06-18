@@ -15,7 +15,7 @@ use File::Basename qw/dirname basename/;
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
-use String::CamelCase 'camelize';
+use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 
@@ -245,7 +245,7 @@ sub save_file {
 
 sub image_drivers {
     my $self = shift;
-    map { $_ = basename($_); s/\.pm$//; $_ } glob "$MT_HOME/lib/MT/Image/*.pm";
+    map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub cluck_errors {
@@ -630,6 +630,17 @@ sub _create_table_sql_for_old_mysql {
     $sql;
 }
 
+sub detect_basename_collision {
+    my ($self, $id) = @_;
+    my $path1 = join('/', map { decamelize($_) } split(/\//, $id));
+    $path1 = "$MT_HOME/t/$path1.t";
+    my $path2 = join('/', map { camelize($_) } split(/\//, $id));
+    $path2 = "$MT_HOME/t/lib/MT/Test/Fixture/$path2.pm";
+    if (-f $path1 && -f $path2) {
+        die qq{Fixture id "$id" is already in use.};
+    }
+}
+
 sub prepare_fixture {
     my $self = shift;
 
@@ -648,10 +659,12 @@ sub prepare_fixture {
 
     my $code;
     if ( ref $_[0] eq 'CODE' ) {
+        $self->detect_basename_collision($id);
         $code = shift;
     }
     else {
         $id = shift;
+        $self->detect_basename_collision($id);
         if ( $id eq 'db' ) {
             $code = sub {
                 MT::Test->init_db;
@@ -665,26 +678,35 @@ sub prepare_fixture {
         }
         else {
             $code = sub {
-                my $fixture_class = 'MT::Test::Fixture::' . camelize($id);
-                eval "require $fixture_class; 1"
-                    or croak "Unknown fixture id: $id";
+                my @path = map { camelize($_) } split('/', $id);
+                my $fixture_class = 'MT::Test::Fixture::' . (join '::', @path);
+                eval "require $fixture_class; 1" or croak "Fixture class error: $id:". $@;
                 $fixture_class->prepare_fixture;
             };
         }
     }
 
-    if ( !$ENV{MT_TEST_UPDATE_FIXTURE} and !$ENV{MT_TEST_IGNORE_FIXTURE} ) {
+    $self->fix_mysql_create_table_sql;
+
+    my $do_save;
+    if ($ENV{MT_TEST_IGNORE_FIXTURE}) {
+        $code->();
+    } elsif ($ENV{MT_TEST_UPDATE_FIXTURE}) {
+        $code->();
+        $do_save = 1;
+    } elsif ($ENV{MT_TEST_AUTOUPDATE_FIXTURE}) {
+        if (!$self->load_schema_and_fixture($id)) {
+            $code->();
+            $do_save = 1;
+        }
+    } else {
         $self->load_schema_and_fixture($id) or $code->();
     }
-    else {
-        $self->fix_mysql_create_table_sql;
-        $code->();
-    }
-    if ( $ENV{MT_TEST_UPDATE_FIXTURE} ) {
+    if ($do_save) {
         $self->save_schema;
         $self->save_fixture($id);
 
-        if ( $self->{fixture_dirs}[-1] ) {
+        if ($self->{fixture_dirs}[-1]) {
             mkpath $self->{fixture_dirs}[-1] unless -d $self->{fixture_dirs}[-1];
             open my $fh, '>', "$self->{fixture_dirs}[-1]/README" or die $!;
             print $fh join "\n", @{ $self->{addons_and_plugins} }, "";

@@ -16,6 +16,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture::CmsPermission::Common1;
 
 MT::Test->init_app;
 
@@ -26,31 +27,7 @@ sub make_id {
 }
 
 ### Make test data
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-
-    # Website
-    my $website = MT::Test::Permission->make_website();
-
-    # Blog
-    my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-
-    # Author
-    my $aikawa = MT::Test::Permission->make_author(
-        name     => 'aikawa',
-        nickname => 'Ichiro Aikawa',
-    );
-
-    my $admin = MT::Author->load(1);
-
-    # Role
-    require MT::Role;
-    my $site_admin
-        = MT::Role->load( { name => MT->translate('Site Administrator') } );
-
-    require MT::Association;
-    MT::Association->link( $aikawa => $site_admin => $blog );
-});
+$test_env->prepare_fixture('cms_permission/common1');
 
 my $aikawa = MT::Author->load( { name => 'aikawa' } );
 
