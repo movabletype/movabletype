@@ -15,7 +15,7 @@ use File::Basename qw/dirname basename/;
 use DBI;
 use Digest::MD5 'md5_hex';
 use Digest::SHA;
-use String::CamelCase 'camelize';
+use String::CamelCase qw/decamelize camelize/;
 use Mock::MonkeyPatch;
 use Sub::Name;
 
@@ -630,6 +630,17 @@ sub _create_table_sql_for_old_mysql {
     $sql;
 }
 
+sub detect_basename_collision {
+    my ($self, $id) = @_;
+    my $path1 = join('/', map { decamelize($_) } split(/\//, $id));
+    $path1 = "$MT_HOME/t/$path1.t";
+    my $path2 = join('/', map { camelize($_) } split(/\//, $id));
+    $path2 = "$MT_HOME/t/lib/MT/Test/Fixture/$path2.pm";
+    if (-f $path1 && -f $path2) {
+        die qq{Fixture id "$id" is already in use.};
+    }
+}
+
 sub prepare_fixture {
     my $self = shift;
 
@@ -648,10 +659,12 @@ sub prepare_fixture {
 
     my $code;
     if ( ref $_[0] eq 'CODE' ) {
+        $self->detect_basename_collision($id);
         $code = shift;
     }
     else {
         $id = shift;
+        $self->detect_basename_collision($id);
         if ( $id eq 'db' ) {
             $code = sub {
                 MT::Test->init_db;
