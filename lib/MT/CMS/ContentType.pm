@@ -28,6 +28,15 @@ use MT::Log;
 use MT::Util ();
 use MT::Serialize;
 
+sub _validate_params {
+    my ($cb, $app) = @_;
+    for my $name (qw/blog_id content_field_id/) {
+        my $value = $app->param($name);
+        return if defined $value && $value !~ /\A[0-9]+\z/;
+    }
+    return 1;
+}
+
 sub edit {
     my ( $app, $param ) = @_;
     my $cfg = $app->config;
@@ -720,6 +729,8 @@ sub _autosave_content_data {
     $app->print_encode("true");
 
 }
+
+MT->add_callback(validate_request_params_dialog_content_data_modal => 5, 'MT', \&_validate_params);
 
 sub dialog_content_data_modal {
     my $app = shift;
