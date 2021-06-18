@@ -245,7 +245,7 @@ sub save_file {
 
 sub image_drivers {
     my $self = shift;
-    map { $_ = basename($_); s/\.pm$//; $_ } glob "$MT_HOME/lib/MT/Image/*.pm";
+    map { my $tmp = basename($_); $tmp =~ s/\.pm$//; $tmp } glob "$MT_HOME/lib/MT/Image/*.pm";
 }
 
 sub cluck_errors {
