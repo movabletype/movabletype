@@ -16,6 +16,16 @@ use MT::Util;
 my $default_thumbnail_size = 60;
 my $limit = 9;
 
+MT->add_callback(validate_request_params_blockeditor_dialog_list_asset => 5, MT->component('BlockEditor'), sub {
+    my ($cb, $app) = @_;
+    for my $name (qw/blog_id asset_id/) {
+        my $value = $app->param($name);
+        next unless defined $value;
+        return unless $value =~ /\A[0-9]+\z/;
+    }
+    return 1;
+});
+
 sub dialog_list_asset {
     my $app = shift;
 
