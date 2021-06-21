@@ -119,7 +119,6 @@ sub rebuild {
             )
             );
     }
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -554,7 +553,6 @@ sub rebuild_content_data {
     my $blog = $param{Blog} || $content_data->blog
         or return $mt->trans_error( "Load of blog '[_1]' failed",
         $content_data->blog_id );
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -1858,11 +1856,6 @@ sub _rebuild_content_archive_type {
             return $file;
         }
 
-        if ( $blog->is_dynamic ) {
-            require MT::TemplateMap;
-            $map = MT::TemplateMap->new;
-            $map->file_template( $archiver->dynamic_template );
-        }
         unless ($map) {
             my $cache_map = MT::Request->instance->cache('maps');
             unless ($cache_map) {

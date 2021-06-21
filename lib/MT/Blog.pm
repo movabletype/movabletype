@@ -65,7 +65,7 @@ __PACKAGE__->install_properties(
             'autodiscover_links'       => 'boolean',
             'sanitize_spec'            => 'string(255)',
             'cc_license'               => 'string(255)',
-            'is_dynamic'               => 'boolean',
+            'is_dynamic'               => 'boolean', # DEPRECATED
             'remote_auth_token'        => 'string(50)',
             'children_modified_on'     => 'datetime',
             'custom_dynamic_templates' => 'string(25)',
@@ -699,18 +699,6 @@ sub site_url {
         }
         return $blog->column( 'site_url', $url );
     }
-    elsif ( $blog->is_dynamic ) {
-        my $cfg  = MT->config;
-        my $path = $cfg->CGIPath;
-        if ( $path =~ m!^/! ) {
-
-            # relative path, prepend blog domain
-            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
-        }
-        $path .= '/' unless $path =~ m{/$};
-        return $path;
-    }
     else {
         my $url = '';
         if ( $blog->is_blog() ) {
@@ -811,9 +799,6 @@ sub archive_url {
         my $url = $_[0];
         $url .= '/' if $url ne "" && $url !~ m{/$};
         $blog->column( 'archive_url', $url ) || $blog->site_url;
-    }
-    elsif ( $blog->is_dynamic ) {
-        return $blog->site_url;
     }
     else {
         my $url = $blog->site_url;
@@ -2012,7 +1997,7 @@ IF the blog is CC license, this property holds the variation. for example
 
 =item * is_dynamic
 
-Specify if this blog is published dynamically or statically
+DEPRECATED. Specify if this blog is published dynamically or statically
 
 =item * remote_auth_token
 
