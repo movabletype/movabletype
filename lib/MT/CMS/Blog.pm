@@ -1802,10 +1802,6 @@ sub pre_save {
             }
         }
     }
-    else {
-
-       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
-    }
 
     # Set parent site ID
     my $blog_id = $app->param('blog_id');
