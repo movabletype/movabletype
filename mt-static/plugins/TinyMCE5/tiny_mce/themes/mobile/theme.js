@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -41,6 +41,41 @@
           r[k] = a[j];
       return r;
     }
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -239,41 +274,6 @@
       none: none,
       from: from
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
@@ -6089,10 +6089,14 @@
           getSpectrum: getSpectrum
         });
       };
-      var changeValue = function (slider, newValue) {
+      var setValue = function (slider, newValue) {
         modelDetail.value.set(newValue);
         var thumb = getThumb(slider);
         refresh(slider, thumb);
+      };
+      var changeValue = function (slider, newValue) {
+        setValue(slider, newValue);
+        var thumb = getThumb(slider);
         detail.onChange(slider, thumb, newValue);
         return Optional.some(true);
       };
@@ -6166,7 +6170,7 @@
         apis: {
           resetToMin: resetToMin,
           resetToMax: resetToMax,
-          changeValue: changeValue,
+          setValue: setValue,
           refresh: refresh
         },
         domModification: { styles: { position: 'relative' } }
@@ -6179,6 +6183,9 @@
       partFields: SliderParts,
       factory: sketch,
       apis: {
+        setValue: function (apis, slider, value) {
+          apis.setValue(slider, value);
+        },
         resetToMin: function (apis, slider) {
           apis.resetToMin(slider);
         },

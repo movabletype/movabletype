@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -42,6 +42,19 @@
         quirks: quirks
       };
     };
+
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
 
     var noop = function () {
     };
@@ -158,19 +171,6 @@
       none: none,
       from: from
     };
-
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
 
     var nativeSlice = Array.prototype.slice;
     var exists = function (xs, pred) {
@@ -520,8 +520,8 @@
     var isNumericList = function (text) {
       var found;
       var patterns = [
-        /^[IVXLMCD]{1,2}\.[ \u00a0]/,
-        /^[ivxlmcd]{1,2}\.[ \u00a0]/,
+        /^[IVXLMCD]+\.[ \u00a0]/,
+        /^[ivxlmcd]+\.[ \u00a0]/,
         /^[a-z]{1,2}[\.\)][ \u00a0]/,
         /^[A-Z]{1,2}[\.\)][ \u00a0]/,
         /^[0-9]+\.[ \u00a0]/,
@@ -1165,11 +1165,11 @@
         content = trimHtml(content);
         pasteBin.remove();
         var isPlainTextHtml = internal === false && isPlainText(content);
-        var isImage = isImageUrl(editor, content);
-        if (!content.length || isPlainTextHtml && !isImage) {
+        var isAbsoluteUrl$1 = isAbsoluteUrl(content);
+        if (!content.length || isPlainTextHtml && !isAbsoluteUrl$1) {
           plainTextMode = true;
         }
-        if (plainTextMode || isImage) {
+        if (plainTextMode || isAbsoluteUrl$1) {
           if (hasContentType(clipboardContent, 'text/plain') && isPlainTextHtml) {
             content = clipboardContent['text/plain'];
           } else {

@@ -11,7 +11,7 @@
     "jquery-migrate": "^3.3.2",
     "jquery-validation": "^1.19.3",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.7.0",
+    "tinymce": "5.8.1",
     "tinymce-i18n": "20.12.25"
   },
   "devDependencies": {},
