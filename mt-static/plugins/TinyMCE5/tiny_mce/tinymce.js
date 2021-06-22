@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -108,6 +108,48 @@
       }
       return false;
     });
+
+    var typeOf$1 = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf$1(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var eq$1 = function (t) {
+      return function (a) {
+        return t === a;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isNull = eq$1(null);
+    var isBoolean = isSimpleType('boolean');
+    var isUndefined = eq$1(undefined);
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -271,48 +313,6 @@
       none: none,
       from: from
     };
-
-    var typeOf$1 = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf$1(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var eq$1 = function (t) {
-      return function (a) {
-        return t === a;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isNull = eq$1(null);
-    var isBoolean = isSimpleType('boolean');
-    var isUndefined = eq$1(undefined);
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
@@ -811,6 +811,9 @@
     var trim = blank(/^\s+|\s+$/g);
     var lTrim = blank(/^\s+/g);
     var rTrim = blank(/\s+$/g);
+    var isNotEmpty = function (s) {
+      return s.length > 0;
+    };
 
     var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
     var checkContains = function (target) {
@@ -1146,7 +1149,8 @@
         return;
       }
       if (!p[cn]) {
-        p[cn] = noop;
+        p[cn] = function () {
+        };
         de = 1;
       }
       ns[cn] = p[cn];
@@ -10712,6 +10716,9 @@
     var isInlineFormat = function (format) {
       return hasNonNullableKey(format, 'inline');
     };
+    var hasBlockChildren = function (dom, elm) {
+      return exists(elm.childNodes, dom.isBlock);
+    };
 
     var isBookmarkNode$2 = isBookmarkNode$1;
     var getParents$2 = getParents$1;
@@ -11441,6 +11448,8 @@
       SPACEBAR: 32,
       TAB: 9,
       UP: 38,
+      PAGE_UP: 33,
+      PAGE_DOWN: 34,
       END: 35,
       HOME: 36,
       modifierPressed: function (e) {
@@ -11454,7 +11463,7 @@
     var isContentEditableFalse$6 = isContentEditableFalse;
     var ControlSelection = function (selection, editor) {
       var elementSelectionAttr = 'data-mce-selected';
-      var dom = editor.dom, each = Tools.each;
+      var dom = editor.dom, each$2 = Tools.each;
       var selectedElm, selectedElmGhost, resizeHelper, selectedHandle, resizeBackdrop;
       var startX, startY, selectedElmX, selectedElmY, startW, startH, ratio, resizeStarted;
       var width, height;
@@ -11507,13 +11516,16 @@
           editor.selection.select(target);
         }
       };
-      var getResizeTarget = function (elm) {
+      var getResizeTargets = function (elm) {
         if (dom.is(elm, 'figure.image')) {
-          return elm.querySelector('img');
+          return [elm.querySelector('img')];
         } else if (dom.hasClass(elm, 'mce-preview-object') && isNonNullable(elm.firstElementChild)) {
-          return elm.firstElementChild;
+          return [
+            elm,
+            elm.firstElementChild
+          ];
         } else {
-          return elm;
+          return [elm];
         }
       };
       var isResizable = function (elm) {
@@ -11540,11 +11552,21 @@
           return elm.cloneNode(true);
         }
       };
+      var setSizeProp = function (element, name, value) {
+        if (isNonNullable(value)) {
+          var targets = getResizeTargets(element);
+          each(targets, function (target) {
+            if (target.style[name] || !editor.schema.isValid(target.nodeName.toLowerCase(), name)) {
+              dom.setStyle(target, name, value);
+            } else {
+              dom.setAttrib(target, name, '' + value);
+            }
+          });
+        }
+      };
       var setGhostElmSize = function (ghostElm, width, height) {
-        dom.setStyles(getResizeTarget(ghostElm), {
-          width: width,
-          height: height
-        });
+        setSizeProp(ghostElm, 'width', width);
+        setSizeProp(ghostElm, 'height', height);
       };
       var resizeGhostElement = function (e) {
         var deltaX, deltaY, proportional;
@@ -11602,19 +11624,9 @@
       var endGhostResize = function () {
         var wasResizeStarted = resizeStarted;
         resizeStarted = false;
-        var setSizeProp = function (name, value) {
-          if (value) {
-            var target = getResizeTarget(selectedElm);
-            if (target.style[name] || !editor.schema.isValid(target.nodeName.toLowerCase(), name)) {
-              dom.setStyle(target, name, value);
-            } else {
-              dom.setAttrib(target, name, '' + value);
-            }
-          }
-        };
         if (wasResizeStarted) {
-          setSizeProp('width', width);
-          setSizeProp('height', height);
+          setSizeProp(selectedElm, 'width', width);
+          setSizeProp(selectedElm, 'height', height);
         }
         dom.unbind(editableDoc, 'mousemove', resizeGhostElement);
         dom.unbind(editableDoc, 'mouseup', endGhostResize);
@@ -11648,13 +11660,14 @@
         var e = editor.fire('ObjectSelected', { target: targetElm });
         var selectedValue = dom.getAttrib(selectedElm, elementSelectionAttr, '1');
         if (isResizable(targetElm) && !e.isDefaultPrevented()) {
-          each(resizeHandles, function (handle, name) {
+          each$2(resizeHandles, function (handle, name) {
             var handleElm;
             var startDrag = function (e) {
+              var target = getResizeTargets(selectedElm)[0];
               startX = e.screenX;
               startY = e.screenY;
-              startW = getResizeTarget(selectedElm).clientWidth;
-              startH = getResizeTarget(selectedElm).clientHeight;
+              startW = target.clientWidth;
+              startH = target.clientHeight;
               ratio = startH / startW;
               selectedHandle = handle;
               selectedHandle.name = name;
@@ -11754,7 +11767,7 @@
         if (resizeStarted || editor.removed) {
           return;
         }
-        each(dom.select('img[data-mce-selected],hr[data-mce-selected]'), function (img) {
+        each$2(dom.select('img[data-mce-selected],hr[data-mce-selected]'), function (img) {
           img.removeAttribute(elementSelectionAttr);
         });
         controlElm = e.type === 'mousedown' ? e.target : selection.getNode();
@@ -13420,7 +13433,7 @@
         var attributesRequired, attributesDefault, attributesForced;
         var anyAttributesRequired, attrValue, idCount = 0;
         var decode = Entities.decode;
-        var filteredUrlAttrs = Tools.makeMap('src,href,data,background,formaction,poster,xlink:href');
+        var filteredUrlAttrs = Tools.makeMap('src,href,data,background,action,formaction,poster,xlink:href');
         var scriptUriRegExp = /((java|vb)script|mhtml):/i;
         var parsingMode = format === 'html' ? 0 : 1;
         var processEndTag = function (name) {
@@ -14014,6 +14027,108 @@
         return writer.getContent();
       };
       return { serialize: serialize };
+    };
+
+    var nonInheritableStyles = new Set();
+    (function () {
+      var nonInheritableStylesArr = [
+        'margin',
+        'margin-left',
+        'margin-right',
+        'margin-top',
+        'margin-bottom',
+        'padding',
+        'padding-left',
+        'padding-right',
+        'padding-top',
+        'padding-bottom',
+        'border',
+        'border-width',
+        'border-style',
+        'border-color',
+        'background',
+        'background-attachment',
+        'background-clip',
+        'background-color',
+        'background-image',
+        'background-origin',
+        'background-position',
+        'background-repeat',
+        'background-size',
+        'float',
+        'position',
+        'left',
+        'right',
+        'top',
+        'bottom',
+        'z-index',
+        'display',
+        'transform',
+        'width',
+        'max-width',
+        'min-width',
+        'height',
+        'max-height',
+        'min-height',
+        'overflow',
+        'overflow-x',
+        'overflow-y',
+        'text-overflow',
+        'vertical-align',
+        'transition',
+        'transition-delay',
+        'transition-duration',
+        'transition-property',
+        'transition-timing-function'
+      ];
+      each(nonInheritableStylesArr, function (style) {
+        nonInheritableStyles.add(style);
+      });
+    }());
+    var shorthandStyleProps = [
+      'font',
+      'text-decoration',
+      'text-emphasis'
+    ];
+    var getStyleProps = function (dom, node) {
+      return keys(dom.parseStyle(dom.getAttrib(node, 'style')));
+    };
+    var isNonInheritableStyle = function (style) {
+      return nonInheritableStyles.has(style);
+    };
+    var hasInheritableStyles = function (dom, node) {
+      return forall(getStyleProps(dom, node), function (style) {
+        return !isNonInheritableStyle(style);
+      });
+    };
+    var getLonghandStyleProps = function (styles) {
+      return filter(styles, function (style) {
+        return exists(shorthandStyleProps, function (prop) {
+          return startsWith(style, prop);
+        });
+      });
+    };
+    var hasStyleConflict = function (dom, node, parentNode) {
+      var nodeStyleProps = getStyleProps(dom, node);
+      var parentNodeStyleProps = getStyleProps(dom, parentNode);
+      var valueMismatch = function (prop) {
+        var nodeValue = dom.getStyle(node, prop);
+        var parentValue = dom.getStyle(parentNode, prop);
+        return isNotEmpty(nodeValue) && isNotEmpty(parentValue) && nodeValue !== parentValue;
+      };
+      return exists(nodeStyleProps, function (nodeStyleProp) {
+        var propExists = function (props) {
+          return exists(props, function (prop) {
+            return prop === nodeStyleProp;
+          });
+        };
+        if (!propExists(parentNodeStyleProps) && propExists(shorthandStyleProps)) {
+          var longhandProps = getLonghandStyleProps(parentNodeStyleProps);
+          return exists(longhandProps, valueMismatch);
+        } else {
+          return valueMismatch(nodeStyleProp);
+        }
+      });
     };
 
     var isChar = function (forward, predicate, pos) {
@@ -14945,11 +15060,20 @@
       var textInlineElements = editor.schema.getTextInlineElements();
       var dom = editor.dom;
       if (merge) {
-        var root_1 = editor.getBody(), elementUtils_1 = ElementUtils(dom);
+        var root_1 = editor.getBody();
+        var elementUtils_1 = ElementUtils(dom);
         Tools.each(dom.select('*[data-mce-fragment]'), function (node) {
-          for (var testNode = node.parentNode; testNode && testNode !== root_1; testNode = testNode.parentNode) {
-            if (textInlineElements[node.nodeName.toLowerCase()] && elementUtils_1.compare(testNode, node)) {
-              dom.remove(node, true);
+          var isInline = isNonNullable(textInlineElements[node.nodeName.toLowerCase()]);
+          if (isInline && hasInheritableStyles(dom, node)) {
+            for (var parentNode = node.parentNode; isNonNullable(parentNode) && parentNode !== root_1; parentNode = parentNode.parentNode) {
+              var styleConflict = hasStyleConflict(dom, node, parentNode);
+              if (styleConflict) {
+                break;
+              }
+              if (elementUtils_1.compare(parentNode, node)) {
+                dom.remove(node, true);
+                break;
+              }
             }
           }
         });
@@ -15400,7 +15524,7 @@
           if (matchName(ed.dom, node, format) && matchItems(dom, node, format, 'attributes', similar, vars) && matchItems(dom, node, format, 'styles', similar, vars)) {
             if (classes = format.classes) {
               for (x = 0; x < classes.length; x++) {
-                if (!ed.dom.hasClass(node, classes[x])) {
+                if (!ed.dom.hasClass(node, replaceVars(classes[x], vars))) {
                   return;
                 }
               }
@@ -16036,11 +16160,16 @@
                 }
               }
             }
-            if (name === 'class') {
-              elm.removeAttribute('className');
-            }
             if (MCE_ATTR_RE.test(name)) {
               elm.removeAttribute('data-mce-' + name);
+            }
+            if (name === 'style' && matchNodeNames(['li'])(elm) && dom.getStyle(elm, 'list-style-type') === 'none') {
+              elm.removeAttribute(name);
+              dom.setStyle(elm, 'list-style-type', 'none');
+              return;
+            }
+            if (name === 'class') {
+              elm.removeAttribute('className');
             }
             elm.removeAttribute(name);
           }
@@ -16141,6 +16270,10 @@
       };
       var process = function (node) {
         var lastContentEditable, hasContentEditableState;
+        var parentNode = node.parentNode;
+        if (isText$1(node) && hasBlockChildren(dom, parentNode)) {
+          removeFormat(ed, format, vars, parentNode, parentNode);
+        }
         if (isElement$1(node) && dom.getContentEditable(node)) {
           lastContentEditable = contentEditable;
           contentEditable = dom.getContentEditable(node) === 'true';
@@ -16461,6 +16594,9 @@
             }
             if (isSelectorFormat(format)) {
               var found = applyNodeStyle(formatList, node);
+              if (isText$1(node) && hasBlockChildren(dom, node.parentNode)) {
+                applyNodeStyle(formatList, node.parentNode);
+              }
               if (!hasFormatProperty(format, 'inline') || found) {
                 currentWrapElm = null;
                 return;
@@ -17634,13 +17770,18 @@
     var isRtc = function (editor) {
       return has(editor.plugins, 'rtc');
     };
+    var getRtcSetup = function (editor) {
+      return get$1(editor.plugins, 'rtc').bind(function (rtcPlugin) {
+        return Optional.from(rtcPlugin.setup);
+      });
+    };
     var setup$5 = function (editor) {
       var editorCast = editor;
-      return get$1(editor.plugins, 'rtc').fold(function () {
+      return getRtcSetup(editor).fold(function () {
         editorCast.rtcInstance = makePlainAdaptor(editor);
         return Optional.none();
-      }, function (rtc) {
-        return Optional.some(rtc.setup().then(function (rtcEditor) {
+      }, function (setup) {
+        return Optional.some(setup().then(function (rtcEditor) {
           editorCast.rtcInstance = makeRtcAdaptor(rtcEditor);
           return rtcEditor.rtc.isRemote;
         }, function (err) {
@@ -19857,7 +19998,7 @@
           });
           addNotification(notification);
           reposition();
-          editor.fire('OpenNotification', __assign({}, notification));
+          editor.fire('OpenNotification', { notification: __assign({}, notification) });
           return notification;
         });
       };
@@ -20665,7 +20806,7 @@
             defaultBlock: 'div'
           },
           {
-            selector: 'img,table',
+            selector: 'img,table,audio,video',
             collapsed: false,
             styles: { float: 'left' },
             preview: 'font-family font-size'
@@ -20687,7 +20828,7 @@
             preview: 'font-family font-size'
           },
           {
-            selector: 'img',
+            selector: 'img,audio,video',
             collapsed: false,
             styles: {
               display: 'block',
@@ -20722,7 +20863,7 @@
             defaultBlock: 'div'
           },
           {
-            selector: 'img,table',
+            selector: 'img,table,audio,video',
             collapsed: false,
             styles: { float: 'right' },
             preview: 'font-family font-size'
@@ -20877,7 +21018,7 @@
         },
         removeformat: [
           {
-            selector: 'b,strong,em,i,font,u,strike,s,sub,sup,dfn,code,samp,kbd,var,cite,mark,q,del,ins',
+            selector: 'b,strong,em,i,font,u,strike,s,sub,sup,dfn,code,samp,kbd,var,cite,mark,q,del,ins,small',
             remove: 'all',
             split: true,
             expand: false,
@@ -20907,7 +21048,7 @@
           }
         ]
       };
-      Tools.each('p h1 h2 h3 h4 h5 h6 div address pre div dt dd samp'.split(/\s/), function (name) {
+      Tools.each('p h1 h2 h3 h4 h5 h6 div address pre dt dd samp'.split(/\s/), function (name) {
         formats[name] = {
           block: name,
           remove: 'all'
@@ -22326,6 +22467,433 @@
       }
     };
 
+    var BreakType;
+    (function (BreakType) {
+      BreakType[BreakType['Br'] = 0] = 'Br';
+      BreakType[BreakType['Block'] = 1] = 'Block';
+      BreakType[BreakType['Wrap'] = 2] = 'Wrap';
+      BreakType[BreakType['Eol'] = 3] = 'Eol';
+    }(BreakType || (BreakType = {})));
+    var flip = function (direction, positions) {
+      return direction === HDirection.Backwards ? reverse(positions) : positions;
+    };
+    var walk$3 = function (direction, caretWalker, pos) {
+      return direction === HDirection.Forwards ? caretWalker.next(pos) : caretWalker.prev(pos);
+    };
+    var getBreakType = function (scope, direction, currentPos, nextPos) {
+      if (isBr(nextPos.getNode(direction === HDirection.Forwards))) {
+        return BreakType.Br;
+      } else if (isInSameBlock(currentPos, nextPos) === false) {
+        return BreakType.Block;
+      } else {
+        return BreakType.Wrap;
+      }
+    };
+    var getPositionsUntil = function (predicate, direction, scope, start) {
+      var caretWalker = CaretWalker(scope);
+      var currentPos = start, nextPos;
+      var positions = [];
+      while (currentPos) {
+        nextPos = walk$3(direction, caretWalker, currentPos);
+        if (!nextPos) {
+          break;
+        }
+        if (isBr(nextPos.getNode(false))) {
+          if (direction === HDirection.Forwards) {
+            return {
+              positions: flip(direction, positions).concat([nextPos]),
+              breakType: BreakType.Br,
+              breakAt: Optional.some(nextPos)
+            };
+          } else {
+            return {
+              positions: flip(direction, positions),
+              breakType: BreakType.Br,
+              breakAt: Optional.some(nextPos)
+            };
+          }
+        }
+        if (!nextPos.isVisible()) {
+          currentPos = nextPos;
+          continue;
+        }
+        if (predicate(currentPos, nextPos)) {
+          var breakType = getBreakType(scope, direction, currentPos, nextPos);
+          return {
+            positions: flip(direction, positions),
+            breakType: breakType,
+            breakAt: Optional.some(nextPos)
+          };
+        }
+        positions.push(nextPos);
+        currentPos = nextPos;
+      }
+      return {
+        positions: flip(direction, positions),
+        breakType: BreakType.Eol,
+        breakAt: Optional.none()
+      };
+    };
+    var getAdjacentLinePositions = function (direction, getPositionsUntilBreak, scope, start) {
+      return getPositionsUntilBreak(scope, start).breakAt.map(function (pos) {
+        var positions = getPositionsUntilBreak(scope, pos).positions;
+        return direction === HDirection.Backwards ? positions.concat(pos) : [pos].concat(positions);
+      }).getOr([]);
+    };
+    var findClosestHorizontalPositionFromPoint = function (positions, x) {
+      return foldl(positions, function (acc, newPos) {
+        return acc.fold(function () {
+          return Optional.some(newPos);
+        }, function (lastPos) {
+          return lift2(head(lastPos.getClientRects()), head(newPos.getClientRects()), function (lastRect, newRect) {
+            var lastDist = Math.abs(x - lastRect.left);
+            var newDist = Math.abs(x - newRect.left);
+            return newDist <= lastDist ? newPos : lastPos;
+          }).or(acc);
+        });
+      }, Optional.none());
+    };
+    var findClosestHorizontalPosition = function (positions, pos) {
+      return head(pos.getClientRects()).bind(function (targetRect) {
+        return findClosestHorizontalPositionFromPoint(positions, targetRect.left);
+      });
+    };
+    var getPositionsUntilPreviousLine = curry(getPositionsUntil, CaretPosition.isAbove, -1);
+    var getPositionsUntilNextLine = curry(getPositionsUntil, CaretPosition.isBelow, 1);
+    var isAtFirstLine = function (scope, pos) {
+      return getPositionsUntilPreviousLine(scope, pos).breakAt.isNone();
+    };
+    var isAtLastLine = function (scope, pos) {
+      return getPositionsUntilNextLine(scope, pos).breakAt.isNone();
+    };
+    var getPositionsAbove = curry(getAdjacentLinePositions, -1, getPositionsUntilPreviousLine);
+    var getPositionsBelow = curry(getAdjacentLinePositions, 1, getPositionsUntilNextLine);
+    var getFirstLinePositions = function (scope) {
+      return firstPositionIn(scope).map(function (pos) {
+        return [pos].concat(getPositionsUntilNextLine(scope, pos).positions);
+      }).getOr([]);
+    };
+    var getLastLinePositions = function (scope) {
+      return lastPositionIn(scope).map(function (pos) {
+        return getPositionsUntilPreviousLine(scope, pos).positions.concat(pos);
+      }).getOr([]);
+    };
+
+    var getNodeClientRects = function (node) {
+      var toArrayWithNode = function (clientRects) {
+        return map(clientRects, function (clientRect) {
+          clientRect = clone$2(clientRect);
+          clientRect.node = node;
+          return clientRect;
+        });
+      };
+      if (isElement$1(node)) {
+        return toArrayWithNode(node.getClientRects());
+      }
+      if (isText$1(node)) {
+        var rng = node.ownerDocument.createRange();
+        rng.setStart(node, 0);
+        rng.setEnd(node, node.data.length);
+        return toArrayWithNode(rng.getClientRects());
+      }
+    };
+    var getClientRects = function (nodes) {
+      return bind(nodes, getNodeClientRects);
+    };
+
+    var VDirection;
+    (function (VDirection) {
+      VDirection[VDirection['Up'] = -1] = 'Up';
+      VDirection[VDirection['Down'] = 1] = 'Down';
+    }(VDirection || (VDirection = {})));
+    var findUntil$1 = function (direction, root, predicateFn, node) {
+      while (node = findNode(node, direction, isEditableCaretCandidate, root)) {
+        if (predicateFn(node)) {
+          return;
+        }
+      }
+    };
+    var walkUntil = function (direction, isAboveFn, isBeflowFn, root, predicateFn, caretPosition) {
+      var line = 0;
+      var result = [];
+      var add = function (node) {
+        var i, clientRect, clientRects;
+        clientRects = getClientRects([node]);
+        if (direction === -1) {
+          clientRects = clientRects.reverse();
+        }
+        for (i = 0; i < clientRects.length; i++) {
+          clientRect = clientRects[i];
+          if (isBeflowFn(clientRect, targetClientRect)) {
+            continue;
+          }
+          if (result.length > 0 && isAboveFn(clientRect, last$1(result))) {
+            line++;
+          }
+          clientRect.line = line;
+          if (predicateFn(clientRect)) {
+            return true;
+          }
+          result.push(clientRect);
+        }
+      };
+      var targetClientRect = last$1(caretPosition.getClientRects());
+      if (!targetClientRect) {
+        return result;
+      }
+      var node = caretPosition.getNode();
+      add(node);
+      findUntil$1(direction, root, add, node);
+      return result;
+    };
+    var aboveLineNumber = function (lineNumber, clientRect) {
+      return clientRect.line > lineNumber;
+    };
+    var isLineNumber = function (lineNumber, clientRect) {
+      return clientRect.line === lineNumber;
+    };
+    var upUntil = curry(walkUntil, VDirection.Up, isAbove, isBelow);
+    var downUntil = curry(walkUntil, VDirection.Down, isBelow, isAbove);
+    var positionsUntil = function (direction, root, predicateFn, node) {
+      var caretWalker = CaretWalker(root);
+      var walkFn, isBelowFn, isAboveFn, caretPosition;
+      var result = [];
+      var line = 0, clientRect;
+      var getClientRect = function (caretPosition) {
+        if (direction === 1) {
+          return last$1(caretPosition.getClientRects());
+        }
+        return last$1(caretPosition.getClientRects());
+      };
+      if (direction === 1) {
+        walkFn = caretWalker.next;
+        isBelowFn = isBelow;
+        isAboveFn = isAbove;
+        caretPosition = CaretPosition.after(node);
+      } else {
+        walkFn = caretWalker.prev;
+        isBelowFn = isAbove;
+        isAboveFn = isBelow;
+        caretPosition = CaretPosition.before(node);
+      }
+      var targetClientRect = getClientRect(caretPosition);
+      do {
+        if (!caretPosition.isVisible()) {
+          continue;
+        }
+        clientRect = getClientRect(caretPosition);
+        if (isAboveFn(clientRect, targetClientRect)) {
+          continue;
+        }
+        if (result.length > 0 && isBelowFn(clientRect, last$1(result))) {
+          line++;
+        }
+        clientRect = clone$2(clientRect);
+        clientRect.position = caretPosition;
+        clientRect.line = line;
+        if (predicateFn(clientRect)) {
+          return result;
+        }
+        result.push(clientRect);
+      } while (caretPosition = walkFn(caretPosition));
+      return result;
+    };
+    var isAboveLine = function (lineNumber) {
+      return function (clientRect) {
+        return aboveLineNumber(lineNumber, clientRect);
+      };
+    };
+    var isLine = function (lineNumber) {
+      return function (clientRect) {
+        return isLineNumber(lineNumber, clientRect);
+      };
+    };
+
+    var isContentEditableFalse$8 = isContentEditableFalse;
+    var findNode$1 = findNode;
+    var distanceToRectLeft = function (clientRect, clientX) {
+      return Math.abs(clientRect.left - clientX);
+    };
+    var distanceToRectRight = function (clientRect, clientX) {
+      return Math.abs(clientRect.right - clientX);
+    };
+    var isInsideX = function (clientX, clientRect) {
+      return clientX >= clientRect.left && clientX <= clientRect.right;
+    };
+    var isInsideY = function (clientY, clientRect) {
+      return clientY >= clientRect.top && clientY <= clientRect.bottom;
+    };
+    var findClosestClientRect = function (clientRects, clientX) {
+      return reduce(clientRects, function (oldClientRect, clientRect) {
+        var oldDistance = Math.min(distanceToRectLeft(oldClientRect, clientX), distanceToRectRight(oldClientRect, clientX));
+        var newDistance = Math.min(distanceToRectLeft(clientRect, clientX), distanceToRectRight(clientRect, clientX));
+        if (isInsideX(clientX, clientRect)) {
+          return clientRect;
+        }
+        if (isInsideX(clientX, oldClientRect)) {
+          return oldClientRect;
+        }
+        if (newDistance === oldDistance && isContentEditableFalse$8(clientRect.node)) {
+          return clientRect;
+        }
+        if (newDistance < oldDistance) {
+          return clientRect;
+        }
+        return oldClientRect;
+      });
+    };
+    var walkUntil$1 = function (direction, root, predicateFn, startNode, includeChildren) {
+      var node = findNode$1(startNode, direction, isEditableCaretCandidate, root, !includeChildren);
+      do {
+        if (!node || predicateFn(node)) {
+          return;
+        }
+      } while (node = findNode$1(node, direction, isEditableCaretCandidate, root));
+    };
+    var findLineNodeRects = function (root, targetNodeRect, includeChildren) {
+      if (includeChildren === void 0) {
+        includeChildren = true;
+      }
+      var clientRects = [];
+      var collect = function (checkPosFn, node) {
+        var lineRects = filter(getClientRects([node]), function (clientRect) {
+          return !checkPosFn(clientRect, targetNodeRect);
+        });
+        clientRects = clientRects.concat(lineRects);
+        return lineRects.length === 0;
+      };
+      clientRects.push(targetNodeRect);
+      walkUntil$1(VDirection.Up, root, curry(collect, isAbove), targetNodeRect.node, includeChildren);
+      walkUntil$1(VDirection.Down, root, curry(collect, isBelow), targetNodeRect.node, includeChildren);
+      return clientRects;
+    };
+    var getFakeCaretTargets = function (root) {
+      return filter(from$1(root.getElementsByTagName('*')), isFakeCaretTarget);
+    };
+    var caretInfo = function (clientRect, clientX) {
+      return {
+        node: clientRect.node,
+        before: distanceToRectLeft(clientRect, clientX) < distanceToRectRight(clientRect, clientX)
+      };
+    };
+    var closestFakeCaret = function (root, clientX, clientY) {
+      var fakeTargetNodeRects = getClientRects(getFakeCaretTargets(root));
+      var targetNodeRects = filter(fakeTargetNodeRects, curry(isInsideY, clientY));
+      var closestNodeRect = findClosestClientRect(targetNodeRects, clientX);
+      if (closestNodeRect) {
+        var includeChildren = !isTable(closestNodeRect.node) && !isMedia(closestNodeRect.node);
+        closestNodeRect = findClosestClientRect(findLineNodeRects(root, closestNodeRect, includeChildren), clientX);
+        if (closestNodeRect && isFakeCaretTarget(closestNodeRect.node)) {
+          return caretInfo(closestNodeRect, clientX);
+        }
+      }
+      return null;
+    };
+
+    var moveToRange = function (editor, rng) {
+      editor.selection.setRng(rng);
+      scrollRangeIntoView(editor, editor.selection.getRng());
+    };
+    var renderRangeCaretOpt = function (editor, range, scrollIntoView) {
+      return Optional.some(renderRangeCaret(editor, range, scrollIntoView));
+    };
+    var moveHorizontally = function (editor, direction, range, isBefore, isAfter, isElement) {
+      var forwards = direction === HDirection.Forwards;
+      var caretWalker = CaretWalker(editor.getBody());
+      var getNextPosFn = curry(getVisualCaretPosition, forwards ? caretWalker.next : caretWalker.prev);
+      var isBeforeFn = forwards ? isBefore : isAfter;
+      if (!range.collapsed) {
+        var node = getSelectedNode(range);
+        if (isElement(node)) {
+          return showCaret(direction, editor, node, direction === HDirection.Backwards, false);
+        }
+      }
+      var caretPosition = getNormalizedRangeEndPoint(direction, editor.getBody(), range);
+      if (isBeforeFn(caretPosition)) {
+        return selectNode(editor, caretPosition.getNode(!forwards));
+      }
+      var nextCaretPosition = normalizePosition(forwards, getNextPosFn(caretPosition));
+      var rangeIsInContainerBlock = isRangeInCaretContainerBlock(range);
+      if (!nextCaretPosition) {
+        return rangeIsInContainerBlock ? Optional.some(range) : Optional.none();
+      }
+      if (isBeforeFn(nextCaretPosition)) {
+        return showCaret(direction, editor, nextCaretPosition.getNode(!forwards), forwards, false);
+      }
+      var peekCaretPosition = getNextPosFn(nextCaretPosition);
+      if (peekCaretPosition && isBeforeFn(peekCaretPosition)) {
+        if (isMoveInsideSameBlock(nextCaretPosition, peekCaretPosition)) {
+          return showCaret(direction, editor, peekCaretPosition.getNode(!forwards), forwards, false);
+        }
+      }
+      if (rangeIsInContainerBlock) {
+        return renderRangeCaretOpt(editor, nextCaretPosition.toRange(), false);
+      }
+      return Optional.none();
+    };
+    var moveVertically = function (editor, direction, range, isBefore, isAfter, isElement) {
+      var caretPosition = getNormalizedRangeEndPoint(direction, editor.getBody(), range);
+      var caretClientRect = last$1(caretPosition.getClientRects());
+      var forwards = direction === VDirection.Down;
+      if (!caretClientRect) {
+        return Optional.none();
+      }
+      var walkerFn = forwards ? downUntil : upUntil;
+      var linePositions = walkerFn(editor.getBody(), isAboveLine(1), caretPosition);
+      var nextLinePositions = filter(linePositions, isLine(1));
+      var clientX = caretClientRect.left;
+      var nextLineRect = findClosestClientRect(nextLinePositions, clientX);
+      if (nextLineRect && isElement(nextLineRect.node)) {
+        var dist1 = Math.abs(clientX - nextLineRect.left);
+        var dist2 = Math.abs(clientX - nextLineRect.right);
+        return showCaret(direction, editor, nextLineRect.node, dist1 < dist2, false);
+      }
+      var currentNode;
+      if (isBefore(caretPosition)) {
+        currentNode = caretPosition.getNode();
+      } else if (isAfter(caretPosition)) {
+        currentNode = caretPosition.getNode(true);
+      } else {
+        currentNode = getSelectedNode(range);
+      }
+      if (currentNode) {
+        var caretPositions = positionsUntil(direction, editor.getBody(), isAboveLine(1), currentNode);
+        var closestNextLineRect = findClosestClientRect(filter(caretPositions, isLine(1)), clientX);
+        if (closestNextLineRect) {
+          return renderRangeCaretOpt(editor, closestNextLineRect.position.toRange(), false);
+        }
+        closestNextLineRect = last$1(filter(caretPositions, isLine(0)));
+        if (closestNextLineRect) {
+          return renderRangeCaretOpt(editor, closestNextLineRect.position.toRange(), false);
+        }
+      }
+      if (nextLinePositions.length === 0) {
+        return getLineEndPoint(editor, forwards).filter(forwards ? isAfter : isBefore).map(function (pos) {
+          return renderRangeCaret(editor, pos.toRange(), false);
+        });
+      }
+      return Optional.none();
+    };
+    var getLineEndPoint = function (editor, forward) {
+      var rng = editor.selection.getRng();
+      var body = editor.getBody();
+      if (forward) {
+        var from = CaretPosition.fromRangeEnd(rng);
+        var result = getPositionsUntilNextLine(body, from);
+        return last(result.positions);
+      } else {
+        var from = CaretPosition.fromRangeStart(rng);
+        var result = getPositionsUntilPreviousLine(body, from);
+        return head(result.positions);
+      }
+    };
+    var moveToLineEndPoint = function (editor, forward, isElementPosition) {
+      return getLineEndPoint(editor, forward).filter(isElementPosition).exists(function (pos) {
+        editor.selection.setRng(pos.toRange());
+        return true;
+      });
+    };
+
     var setCaretPosition = function (editor, pos) {
       var rng = editor.dom.createRng();
       rng.setStart(pos.container(), pos.offset());
@@ -22403,6 +22971,23 @@
     };
     var moveNextWord = curry(moveWord, true);
     var movePrevWord = curry(moveWord, false);
+    var moveToLineEndPoint$1 = function (editor, forward, caret) {
+      if (isInlineBoundariesEnabled(editor)) {
+        var linePoint = getLineEndPoint(editor, forward).getOrThunk(function () {
+          var rng = editor.selection.getRng();
+          return forward ? CaretPosition.fromRangeEnd(rng) : CaretPosition.fromRangeStart(rng);
+        });
+        return readLocation(curry(isInlineTarget, editor), editor.getBody(), linePoint).exists(function (loc) {
+          var outsideLoc = outside(loc);
+          return renderCaret(caret, outsideLoc).exists(function (pos) {
+            setCaretPosition(editor, pos);
+            return true;
+          });
+        });
+      } else {
+        return false;
+      }
+    };
 
     var rangeFromPositions = function (from, to) {
       var range = document.createRange();
@@ -22873,433 +23458,6 @@
       editor.on('keyup compositionstart', curry(handleBlockContainer, editor));
     };
 
-    var BreakType;
-    (function (BreakType) {
-      BreakType[BreakType['Br'] = 0] = 'Br';
-      BreakType[BreakType['Block'] = 1] = 'Block';
-      BreakType[BreakType['Wrap'] = 2] = 'Wrap';
-      BreakType[BreakType['Eol'] = 3] = 'Eol';
-    }(BreakType || (BreakType = {})));
-    var flip = function (direction, positions) {
-      return direction === HDirection.Backwards ? reverse(positions) : positions;
-    };
-    var walk$3 = function (direction, caretWalker, pos) {
-      return direction === HDirection.Forwards ? caretWalker.next(pos) : caretWalker.prev(pos);
-    };
-    var getBreakType = function (scope, direction, currentPos, nextPos) {
-      if (isBr(nextPos.getNode(direction === HDirection.Forwards))) {
-        return BreakType.Br;
-      } else if (isInSameBlock(currentPos, nextPos) === false) {
-        return BreakType.Block;
-      } else {
-        return BreakType.Wrap;
-      }
-    };
-    var getPositionsUntil = function (predicate, direction, scope, start) {
-      var caretWalker = CaretWalker(scope);
-      var currentPos = start, nextPos;
-      var positions = [];
-      while (currentPos) {
-        nextPos = walk$3(direction, caretWalker, currentPos);
-        if (!nextPos) {
-          break;
-        }
-        if (isBr(nextPos.getNode(false))) {
-          if (direction === HDirection.Forwards) {
-            return {
-              positions: flip(direction, positions).concat([nextPos]),
-              breakType: BreakType.Br,
-              breakAt: Optional.some(nextPos)
-            };
-          } else {
-            return {
-              positions: flip(direction, positions),
-              breakType: BreakType.Br,
-              breakAt: Optional.some(nextPos)
-            };
-          }
-        }
-        if (!nextPos.isVisible()) {
-          currentPos = nextPos;
-          continue;
-        }
-        if (predicate(currentPos, nextPos)) {
-          var breakType = getBreakType(scope, direction, currentPos, nextPos);
-          return {
-            positions: flip(direction, positions),
-            breakType: breakType,
-            breakAt: Optional.some(nextPos)
-          };
-        }
-        positions.push(nextPos);
-        currentPos = nextPos;
-      }
-      return {
-        positions: flip(direction, positions),
-        breakType: BreakType.Eol,
-        breakAt: Optional.none()
-      };
-    };
-    var getAdjacentLinePositions = function (direction, getPositionsUntilBreak, scope, start) {
-      return getPositionsUntilBreak(scope, start).breakAt.map(function (pos) {
-        var positions = getPositionsUntilBreak(scope, pos).positions;
-        return direction === HDirection.Backwards ? positions.concat(pos) : [pos].concat(positions);
-      }).getOr([]);
-    };
-    var findClosestHorizontalPositionFromPoint = function (positions, x) {
-      return foldl(positions, function (acc, newPos) {
-        return acc.fold(function () {
-          return Optional.some(newPos);
-        }, function (lastPos) {
-          return lift2(head(lastPos.getClientRects()), head(newPos.getClientRects()), function (lastRect, newRect) {
-            var lastDist = Math.abs(x - lastRect.left);
-            var newDist = Math.abs(x - newRect.left);
-            return newDist <= lastDist ? newPos : lastPos;
-          }).or(acc);
-        });
-      }, Optional.none());
-    };
-    var findClosestHorizontalPosition = function (positions, pos) {
-      return head(pos.getClientRects()).bind(function (targetRect) {
-        return findClosestHorizontalPositionFromPoint(positions, targetRect.left);
-      });
-    };
-    var getPositionsUntilPreviousLine = curry(getPositionsUntil, CaretPosition.isAbove, -1);
-    var getPositionsUntilNextLine = curry(getPositionsUntil, CaretPosition.isBelow, 1);
-    var isAtFirstLine = function (scope, pos) {
-      return getPositionsUntilPreviousLine(scope, pos).breakAt.isNone();
-    };
-    var isAtLastLine = function (scope, pos) {
-      return getPositionsUntilNextLine(scope, pos).breakAt.isNone();
-    };
-    var getPositionsAbove = curry(getAdjacentLinePositions, -1, getPositionsUntilPreviousLine);
-    var getPositionsBelow = curry(getAdjacentLinePositions, 1, getPositionsUntilNextLine);
-    var getFirstLinePositions = function (scope) {
-      return firstPositionIn(scope).map(function (pos) {
-        return [pos].concat(getPositionsUntilNextLine(scope, pos).positions);
-      }).getOr([]);
-    };
-    var getLastLinePositions = function (scope) {
-      return lastPositionIn(scope).map(function (pos) {
-        return getPositionsUntilPreviousLine(scope, pos).positions.concat(pos);
-      }).getOr([]);
-    };
-
-    var getNodeClientRects = function (node) {
-      var toArrayWithNode = function (clientRects) {
-        return map(clientRects, function (clientRect) {
-          clientRect = clone$2(clientRect);
-          clientRect.node = node;
-          return clientRect;
-        });
-      };
-      if (isElement$1(node)) {
-        return toArrayWithNode(node.getClientRects());
-      }
-      if (isText$1(node)) {
-        var rng = node.ownerDocument.createRange();
-        rng.setStart(node, 0);
-        rng.setEnd(node, node.data.length);
-        return toArrayWithNode(rng.getClientRects());
-      }
-    };
-    var getClientRects = function (nodes) {
-      return bind(nodes, getNodeClientRects);
-    };
-
-    var VDirection;
-    (function (VDirection) {
-      VDirection[VDirection['Up'] = -1] = 'Up';
-      VDirection[VDirection['Down'] = 1] = 'Down';
-    }(VDirection || (VDirection = {})));
-    var findUntil$1 = function (direction, root, predicateFn, node) {
-      while (node = findNode(node, direction, isEditableCaretCandidate, root)) {
-        if (predicateFn(node)) {
-          return;
-        }
-      }
-    };
-    var walkUntil = function (direction, isAboveFn, isBeflowFn, root, predicateFn, caretPosition) {
-      var line = 0;
-      var result = [];
-      var add = function (node) {
-        var i, clientRect, clientRects;
-        clientRects = getClientRects([node]);
-        if (direction === -1) {
-          clientRects = clientRects.reverse();
-        }
-        for (i = 0; i < clientRects.length; i++) {
-          clientRect = clientRects[i];
-          if (isBeflowFn(clientRect, targetClientRect)) {
-            continue;
-          }
-          if (result.length > 0 && isAboveFn(clientRect, last$1(result))) {
-            line++;
-          }
-          clientRect.line = line;
-          if (predicateFn(clientRect)) {
-            return true;
-          }
-          result.push(clientRect);
-        }
-      };
-      var targetClientRect = last$1(caretPosition.getClientRects());
-      if (!targetClientRect) {
-        return result;
-      }
-      var node = caretPosition.getNode();
-      add(node);
-      findUntil$1(direction, root, add, node);
-      return result;
-    };
-    var aboveLineNumber = function (lineNumber, clientRect) {
-      return clientRect.line > lineNumber;
-    };
-    var isLineNumber = function (lineNumber, clientRect) {
-      return clientRect.line === lineNumber;
-    };
-    var upUntil = curry(walkUntil, VDirection.Up, isAbove, isBelow);
-    var downUntil = curry(walkUntil, VDirection.Down, isBelow, isAbove);
-    var positionsUntil = function (direction, root, predicateFn, node) {
-      var caretWalker = CaretWalker(root);
-      var walkFn, isBelowFn, isAboveFn, caretPosition;
-      var result = [];
-      var line = 0, clientRect;
-      var getClientRect = function (caretPosition) {
-        if (direction === 1) {
-          return last$1(caretPosition.getClientRects());
-        }
-        return last$1(caretPosition.getClientRects());
-      };
-      if (direction === 1) {
-        walkFn = caretWalker.next;
-        isBelowFn = isBelow;
-        isAboveFn = isAbove;
-        caretPosition = CaretPosition.after(node);
-      } else {
-        walkFn = caretWalker.prev;
-        isBelowFn = isAbove;
-        isAboveFn = isBelow;
-        caretPosition = CaretPosition.before(node);
-      }
-      var targetClientRect = getClientRect(caretPosition);
-      do {
-        if (!caretPosition.isVisible()) {
-          continue;
-        }
-        clientRect = getClientRect(caretPosition);
-        if (isAboveFn(clientRect, targetClientRect)) {
-          continue;
-        }
-        if (result.length > 0 && isBelowFn(clientRect, last$1(result))) {
-          line++;
-        }
-        clientRect = clone$2(clientRect);
-        clientRect.position = caretPosition;
-        clientRect.line = line;
-        if (predicateFn(clientRect)) {
-          return result;
-        }
-        result.push(clientRect);
-      } while (caretPosition = walkFn(caretPosition));
-      return result;
-    };
-    var isAboveLine = function (lineNumber) {
-      return function (clientRect) {
-        return aboveLineNumber(lineNumber, clientRect);
-      };
-    };
-    var isLine = function (lineNumber) {
-      return function (clientRect) {
-        return isLineNumber(lineNumber, clientRect);
-      };
-    };
-
-    var isContentEditableFalse$8 = isContentEditableFalse;
-    var findNode$1 = findNode;
-    var distanceToRectLeft = function (clientRect, clientX) {
-      return Math.abs(clientRect.left - clientX);
-    };
-    var distanceToRectRight = function (clientRect, clientX) {
-      return Math.abs(clientRect.right - clientX);
-    };
-    var isInsideX = function (clientX, clientRect) {
-      return clientX >= clientRect.left && clientX <= clientRect.right;
-    };
-    var isInsideY = function (clientY, clientRect) {
-      return clientY >= clientRect.top && clientY <= clientRect.bottom;
-    };
-    var findClosestClientRect = function (clientRects, clientX) {
-      return reduce(clientRects, function (oldClientRect, clientRect) {
-        var oldDistance = Math.min(distanceToRectLeft(oldClientRect, clientX), distanceToRectRight(oldClientRect, clientX));
-        var newDistance = Math.min(distanceToRectLeft(clientRect, clientX), distanceToRectRight(clientRect, clientX));
-        if (isInsideX(clientX, clientRect)) {
-          return clientRect;
-        }
-        if (isInsideX(clientX, oldClientRect)) {
-          return oldClientRect;
-        }
-        if (newDistance === oldDistance && isContentEditableFalse$8(clientRect.node)) {
-          return clientRect;
-        }
-        if (newDistance < oldDistance) {
-          return clientRect;
-        }
-        return oldClientRect;
-      });
-    };
-    var walkUntil$1 = function (direction, root, predicateFn, startNode, includeChildren) {
-      var node = findNode$1(startNode, direction, isEditableCaretCandidate, root, !includeChildren);
-      do {
-        if (!node || predicateFn(node)) {
-          return;
-        }
-      } while (node = findNode$1(node, direction, isEditableCaretCandidate, root));
-    };
-    var findLineNodeRects = function (root, targetNodeRect, includeChildren) {
-      if (includeChildren === void 0) {
-        includeChildren = true;
-      }
-      var clientRects = [];
-      var collect = function (checkPosFn, node) {
-        var lineRects = filter(getClientRects([node]), function (clientRect) {
-          return !checkPosFn(clientRect, targetNodeRect);
-        });
-        clientRects = clientRects.concat(lineRects);
-        return lineRects.length === 0;
-      };
-      clientRects.push(targetNodeRect);
-      walkUntil$1(VDirection.Up, root, curry(collect, isAbove), targetNodeRect.node, includeChildren);
-      walkUntil$1(VDirection.Down, root, curry(collect, isBelow), targetNodeRect.node, includeChildren);
-      return clientRects;
-    };
-    var getFakeCaretTargets = function (root) {
-      return filter(from$1(root.getElementsByTagName('*')), isFakeCaretTarget);
-    };
-    var caretInfo = function (clientRect, clientX) {
-      return {
-        node: clientRect.node,
-        before: distanceToRectLeft(clientRect, clientX) < distanceToRectRight(clientRect, clientX)
-      };
-    };
-    var closestFakeCaret = function (root, clientX, clientY) {
-      var fakeTargetNodeRects = getClientRects(getFakeCaretTargets(root));
-      var targetNodeRects = filter(fakeTargetNodeRects, curry(isInsideY, clientY));
-      var closestNodeRect = findClosestClientRect(targetNodeRects, clientX);
-      if (closestNodeRect) {
-        var includeChildren = !isTable(closestNodeRect.node) && !isMedia(closestNodeRect.node);
-        closestNodeRect = findClosestClientRect(findLineNodeRects(root, closestNodeRect, includeChildren), clientX);
-        if (closestNodeRect && isFakeCaretTarget(closestNodeRect.node)) {
-          return caretInfo(closestNodeRect, clientX);
-        }
-      }
-      return null;
-    };
-
-    var moveToRange = function (editor, rng) {
-      editor.selection.setRng(rng);
-      scrollRangeIntoView(editor, editor.selection.getRng());
-    };
-    var renderRangeCaretOpt = function (editor, range, scrollIntoView) {
-      return Optional.some(renderRangeCaret(editor, range, scrollIntoView));
-    };
-    var moveHorizontally = function (editor, direction, range, isBefore, isAfter, isElement) {
-      var forwards = direction === HDirection.Forwards;
-      var caretWalker = CaretWalker(editor.getBody());
-      var getNextPosFn = curry(getVisualCaretPosition, forwards ? caretWalker.next : caretWalker.prev);
-      var isBeforeFn = forwards ? isBefore : isAfter;
-      if (!range.collapsed) {
-        var node = getSelectedNode(range);
-        if (isElement(node)) {
-          return showCaret(direction, editor, node, direction === HDirection.Backwards, false);
-        }
-      }
-      var caretPosition = getNormalizedRangeEndPoint(direction, editor.getBody(), range);
-      if (isBeforeFn(caretPosition)) {
-        return selectNode(editor, caretPosition.getNode(!forwards));
-      }
-      var nextCaretPosition = normalizePosition(forwards, getNextPosFn(caretPosition));
-      var rangeIsInContainerBlock = isRangeInCaretContainerBlock(range);
-      if (!nextCaretPosition) {
-        return rangeIsInContainerBlock ? Optional.some(range) : Optional.none();
-      }
-      if (isBeforeFn(nextCaretPosition)) {
-        return showCaret(direction, editor, nextCaretPosition.getNode(!forwards), forwards, false);
-      }
-      var peekCaretPosition = getNextPosFn(nextCaretPosition);
-      if (peekCaretPosition && isBeforeFn(peekCaretPosition)) {
-        if (isMoveInsideSameBlock(nextCaretPosition, peekCaretPosition)) {
-          return showCaret(direction, editor, peekCaretPosition.getNode(!forwards), forwards, false);
-        }
-      }
-      if (rangeIsInContainerBlock) {
-        return renderRangeCaretOpt(editor, nextCaretPosition.toRange(), false);
-      }
-      return Optional.none();
-    };
-    var moveVertically = function (editor, direction, range, isBefore, isAfter, isElement) {
-      var caretPosition = getNormalizedRangeEndPoint(direction, editor.getBody(), range);
-      var caretClientRect = last$1(caretPosition.getClientRects());
-      var forwards = direction === VDirection.Down;
-      if (!caretClientRect) {
-        return Optional.none();
-      }
-      var walkerFn = forwards ? downUntil : upUntil;
-      var linePositions = walkerFn(editor.getBody(), isAboveLine(1), caretPosition);
-      var nextLinePositions = filter(linePositions, isLine(1));
-      var clientX = caretClientRect.left;
-      var nextLineRect = findClosestClientRect(nextLinePositions, clientX);
-      if (nextLineRect && isElement(nextLineRect.node)) {
-        var dist1 = Math.abs(clientX - nextLineRect.left);
-        var dist2 = Math.abs(clientX - nextLineRect.right);
-        return showCaret(direction, editor, nextLineRect.node, dist1 < dist2, false);
-      }
-      var currentNode;
-      if (isBefore(caretPosition)) {
-        currentNode = caretPosition.getNode();
-      } else if (isAfter(caretPosition)) {
-        currentNode = caretPosition.getNode(true);
-      } else {
-        currentNode = getSelectedNode(range);
-      }
-      if (currentNode) {
-        var caretPositions = positionsUntil(direction, editor.getBody(), isAboveLine(1), currentNode);
-        var closestNextLineRect = findClosestClientRect(filter(caretPositions, isLine(1)), clientX);
-        if (closestNextLineRect) {
-          return renderRangeCaretOpt(editor, closestNextLineRect.position.toRange(), false);
-        }
-        closestNextLineRect = last$1(filter(caretPositions, isLine(0)));
-        if (closestNextLineRect) {
-          return renderRangeCaretOpt(editor, closestNextLineRect.position.toRange(), false);
-        }
-      }
-      if (nextLinePositions.length === 0) {
-        return getLineEndPoint(editor, forwards).filter(forwards ? isAfter : isBefore).map(function (pos) {
-          return renderRangeCaret(editor, pos.toRange(), false);
-        });
-      }
-      return Optional.none();
-    };
-    var getLineEndPoint = function (editor, forward) {
-      var rng = editor.selection.getRng();
-      var body = editor.getBody();
-      if (forward) {
-        var from = CaretPosition.fromRangeEnd(rng);
-        var result = getPositionsUntilNextLine(body, from);
-        return last(result.positions);
-      } else {
-        var from = CaretPosition.fromRangeStart(rng);
-        var result = getPositionsUntilPreviousLine(body, from);
-        return head(result.positions);
-      }
-    };
-    var moveToLineEndPoint = function (editor, forward, isElementPosition) {
-      return getLineEndPoint(editor, forward).filter(isElementPosition).exists(function (pos) {
-        editor.selection.setRng(pos.toRange());
-        return true;
-      });
-    };
-
     var isContentEditableFalse$9 = isContentEditableFalse;
     var moveToCeFalseHorizontally = function (direction, editor, range) {
       return moveHorizontally(editor, direction, range, isBeforeContentEditableFalse, isAfterContentEditableFalse, isContentEditableFalse$9);
@@ -23369,7 +23527,7 @@
         return true;
       });
     };
-    var moveToLineEndPoint$1 = function (editor, forward) {
+    var moveToLineEndPoint$2 = function (editor, forward) {
       var isCefPosition = forward ? isAfterContentEditableFalse : isBeforeContentEditableFalse;
       return moveToLineEndPoint(editor, forward, isCefPosition);
     };
@@ -23491,7 +23649,7 @@
         return true;
       });
     };
-    var moveToLineEndPoint$2 = function (editor, forward) {
+    var moveToLineEndPoint$3 = function (editor, forward) {
       var isNearMedia = forward ? isAfterMedia : isBeforeMedia;
       return moveToLineEndPoint(editor, forward, isNearMedia);
     };
@@ -24668,16 +24826,8 @@
       });
     };
 
-    var executeKeydownOverride$2 = function (editor, evt) {
+    var executeKeydownOverride$2 = function (editor, caret, evt) {
       execute([
-        {
-          keyCode: VK.END,
-          action: action(moveToLineEndPoint$1, editor, true)
-        },
-        {
-          keyCode: VK.HOME,
-          action: action(moveToLineEndPoint$1, editor, false)
-        },
         {
           keyCode: VK.END,
           action: action(moveToLineEndPoint$2, editor, true)
@@ -24685,15 +24835,31 @@
         {
           keyCode: VK.HOME,
           action: action(moveToLineEndPoint$2, editor, false)
+        },
+        {
+          keyCode: VK.END,
+          action: action(moveToLineEndPoint$3, editor, true)
+        },
+        {
+          keyCode: VK.HOME,
+          action: action(moveToLineEndPoint$3, editor, false)
+        },
+        {
+          keyCode: VK.END,
+          action: action(moveToLineEndPoint$1, editor, true, caret)
+        },
+        {
+          keyCode: VK.HOME,
+          action: action(moveToLineEndPoint$1, editor, false, caret)
         }
       ], evt).each(function (_) {
         evt.preventDefault();
       });
     };
-    var setup$f = function (editor) {
+    var setup$f = function (editor, caret) {
       editor.on('keydown', function (evt) {
         if (evt.isDefaultPrevented() === false) {
-          executeKeydownOverride$2(editor, evt);
+          executeKeydownOverride$2(editor, caret, evt);
         }
       });
     };
@@ -24719,6 +24885,54 @@
       editor.on('input', function (e) {
         if (e.isComposing === false) {
           normalizeNbspsInEditor(editor);
+        }
+      });
+    };
+
+    var platform$2 = detect$3();
+    var executeKeyupAction = function (editor, caret, evt) {
+      execute([
+        {
+          keyCode: VK.PAGE_UP,
+          action: action(moveToLineEndPoint$1, editor, false, caret)
+        },
+        {
+          keyCode: VK.PAGE_DOWN,
+          action: action(moveToLineEndPoint$1, editor, true, caret)
+        }
+      ], evt);
+    };
+    var stopImmediatePropagation = function (e) {
+      return e.stopImmediatePropagation();
+    };
+    var isPageUpDown = function (evt) {
+      return evt.keyCode === VK.PAGE_UP || evt.keyCode === VK.PAGE_DOWN;
+    };
+    var setNodeChangeBlocker = function (blocked, editor, block) {
+      if (block && !blocked.get()) {
+        editor.on('NodeChange', stopImmediatePropagation, true);
+      } else if (!block && blocked.get()) {
+        editor.off('NodeChange', stopImmediatePropagation);
+      }
+      blocked.set(block);
+    };
+    var setup$h = function (editor, caret) {
+      if (platform$2.os.isOSX()) {
+        return;
+      }
+      var blocked = Cell(false);
+      editor.on('keydown', function (evt) {
+        if (isPageUpDown(evt)) {
+          setNodeChangeBlocker(blocked, editor, true);
+        }
+      });
+      editor.on('keyup', function (evt) {
+        if (evt.isDefaultPrevented() === false) {
+          executeKeyupAction(editor, caret, evt);
+        }
+        if (isPageUpDown(evt) && blocked.get()) {
+          setNodeChangeBlocker(blocked, editor, false);
+          editor.nodeChanged();
         }
       });
     };
@@ -24789,7 +25003,7 @@
         evt.preventDefault();
       });
     };
-    var setup$h = function (editor) {
+    var setup$i = function (editor) {
       editor.on('keydown', function (evt) {
         if (evt.isDefaultPrevented() === false) {
           executeKeydownOverride$3(editor, evt);
@@ -24803,12 +25017,13 @@
       setup$c(editor, caret);
       setup$d(editor, caret);
       setup$e(editor);
-      setup$h(editor);
+      setup$i(editor);
       setup$g(editor);
-      setup$f(editor);
+      setup$f(editor, caret);
+      setup$h(editor, caret);
       return caret;
     };
-    var setup$i = function (editor) {
+    var setup$j = function (editor) {
       if (!isRtc(editor)) {
         return registerKeyboardOverrides(editor);
       } else {
@@ -24925,7 +25140,7 @@
         });
       });
     };
-    var setup$j = function (editor) {
+    var setup$k = function (editor) {
       preventSummaryToggle(editor);
       filterDetails(editor);
     };
@@ -24955,7 +25170,7 @@
       }
       editor.selection.setRng(normalize$2(rng));
     };
-    var setup$k = function (editor) {
+    var setup$l = function (editor) {
       editor.on('click', function (e) {
         if (e.detail >= 3) {
           normalizeSelection$1(editor);
@@ -25295,7 +25510,7 @@
       }
     };
 
-    var setup$l = function (editor) {
+    var setup$m = function (editor) {
       var renderFocusCaret = first(function () {
         if (!editor.removed && editor.getBody().contains(document.activeElement)) {
           var rng = editor.selection.getRng();
@@ -25313,7 +25528,7 @@
       });
     };
 
-    var setup$m = function (editor) {
+    var setup$n = function (editor) {
       editor.on('init', function () {
         editor.on('focusin', function (e) {
           var target = e.target;
@@ -25532,8 +25747,8 @@
           }
         });
         init(editor);
-        setup$l(editor);
         setup$m(editor);
+        setup$n(editor);
       };
       var isWithinCaretContainer = function (node) {
         return isCaretContainer(node) || startsWithCaretContainer(node) || endsWithCaretContainer(node);
@@ -25671,7 +25886,7 @@
       var hideFakeCaret = function () {
         fakeCaret.hide();
       };
-      if (Env.ceFalse) {
+      if (Env.ceFalse && !isRtc(editor)) {
         registerEvents();
       }
       return {
@@ -26063,44 +26278,69 @@
         var sel = editor.selection.getSel();
         return !sel || !sel.rangeCount || sel.rangeCount === 0;
       };
-      removeBlockQuoteOnBackSpace();
-      emptyEditorWhenDeleting();
-      if (!Env.windowsPhone) {
-        normalizeSelection();
-      }
-      if (isWebKit) {
-        inputMethodFocus();
-        selectControlElements();
-        setDefaultBlockType();
-        blockFormSubmitInsideEditor();
-        disableBackspaceIntoATable();
-        removeAppleInterchangeBrs();
-        if (Env.iOS) {
-          restoreFocusOnKeyDown();
-          bodyHeight();
-          tapLinksAndImages();
-        } else {
+      var setupRtc = function () {
+        if (isWebKit) {
+          selectControlElements();
+          blockFormSubmitInsideEditor();
           selectAll();
+          if (Env.iOS) {
+            restoreFocusOnKeyDown();
+            bodyHeight();
+            tapLinksAndImages();
+          }
         }
-      }
-      if (Env.ie >= 11) {
-        bodyHeight();
-        disableBackspaceIntoATable();
-      }
-      if (Env.ie) {
-        selectAll();
-        disableAutoUrlDetect();
-        ieInternalDragAndDrop();
-      }
-      if (isGecko) {
-        removeHrOnBackspace();
-        focusBody();
-        removeStylesWhenDeletingAcrossBlockElements();
-        setGeckoEditingOptions();
-        addBrAfterLastLinks();
-        showBrokenImageIcon();
-        blockCmdArrowNavigation();
-        disableBackspaceIntoATable();
+        if (isGecko) {
+          focusBody();
+          setGeckoEditingOptions();
+          showBrokenImageIcon();
+          blockCmdArrowNavigation();
+        }
+      };
+      var setup = function () {
+        removeBlockQuoteOnBackSpace();
+        emptyEditorWhenDeleting();
+        if (!Env.windowsPhone) {
+          normalizeSelection();
+        }
+        if (isWebKit) {
+          inputMethodFocus();
+          selectControlElements();
+          setDefaultBlockType();
+          blockFormSubmitInsideEditor();
+          disableBackspaceIntoATable();
+          removeAppleInterchangeBrs();
+          if (Env.iOS) {
+            restoreFocusOnKeyDown();
+            bodyHeight();
+            tapLinksAndImages();
+          } else {
+            selectAll();
+          }
+        }
+        if (Env.ie >= 11) {
+          bodyHeight();
+          disableBackspaceIntoATable();
+        }
+        if (Env.ie) {
+          selectAll();
+          disableAutoUrlDetect();
+          ieInternalDragAndDrop();
+        }
+        if (isGecko) {
+          removeHrOnBackspace();
+          focusBody();
+          removeStylesWhenDeletingAcrossBlockElements();
+          setGeckoEditingOptions();
+          addBrAfterLastLinks();
+          showBrokenImageIcon();
+          blockCmdArrowNavigation();
+          disableBackspaceIntoATable();
+        }
+      };
+      if (isRtc(editor)) {
+        setupRtc();
+      } else {
+        setup();
       }
       return {
         refreshContentEditable: refreshContentEditable,
@@ -26321,7 +26561,7 @@
       };
       promiseObj.all(makeStylesheetLoadingPromises(editor, css, fontCss)).then(loaded).catch(loaded);
     };
-    var preInit = function (editor, rtcMode) {
+    var preInit = function (editor) {
       var settings = editor.settings, doc = editor.getDoc(), body = editor.getBody();
       if (!settings.browser_spellcheck && !settings.gecko_spellcheck) {
         doc.body.spellcheck = false;
@@ -26345,7 +26585,7 @@
       editor.on('SetContent', function () {
         editor.addVisual(editor.getBody());
       });
-      if (rtcMode === false) {
+      if (!isRtc(editor)) {
         editor.load({
           initial: true,
           format: 'html'
@@ -26424,28 +26664,28 @@
       editor._nodeChangeDispatcher = new NodeChange(editor);
       editor._selectionOverrides = SelectionOverrides(editor);
       setup$9(editor);
-      setup$j(editor);
+      setup$k(editor);
       if (!isRtc(editor)) {
-        setup$k(editor);
+        setup$l(editor);
       }
-      var caret = setup$i(editor);
+      var caret = setup$j(editor);
       setup$8(editor, caret);
       setup$a(editor);
       setup$7(editor);
       firePreInit(editor);
       setup$5(editor).fold(function () {
-        preInit(editor, false);
+        preInit(editor);
       }, function (loadingRtc) {
         editor.setProgressState(true);
-        loadingRtc.then(function (rtcMode) {
+        loadingRtc.then(function (_rtcMode) {
           editor.setProgressState(false);
-          preInit(editor, rtcMode);
+          preInit(editor);
         }, function (err) {
           editor.notificationManager.open({
             type: 'error',
             text: String(err)
           });
-          preInit(editor, true);
+          preInit(editor);
         });
       });
     };
@@ -26988,10 +27228,8 @@
       }).getOr('');
     };
     var lineHeightAction = function (editor, lineHeight) {
-      editor.undoManager.transact(function () {
-        editor.formatter.toggle('lineheight', { value: String(lineHeight) });
-        editor.nodeChanged();
-      });
+      editor.formatter.toggle('lineheight', { value: String(lineHeight) });
+      editor.nodeChanged();
     };
 
     var processValue = function (value) {
@@ -28825,8 +29063,8 @@
       suffix: null,
       $: DomQuery,
       majorVersion: '5',
-      minorVersion: '7.0',
-      releaseDate: '2021-02-10',
+      minorVersion: '8.1',
+      releaseDate: '2021-05-20',
       editors: legacyEditors,
       i18n: I18n,
       activeEditor: null,

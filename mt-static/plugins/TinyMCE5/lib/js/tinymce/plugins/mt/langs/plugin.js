@@ -18,5 +18,14 @@ tinyMCE.addI18n(tinymce.settings.language, {
 
     // wisywig buttons
     "btn_blockquote": "blockquote",
-    "Blockquote": trans("Block Quotation")
+    "Blockquote": trans("Block Quotation"),
+
+    // table
+    "Cut column": trans('Cut column'),
+    "Copy column": trans('Copy column'),
+    "Paste column before": trans('Paste column before'),
+    "Paste column after": trans('Paste column after'),
+    "Horizontal align": trans('Horizontal align'),
+    "Vertical align": trans('Vertical align')
+
 });

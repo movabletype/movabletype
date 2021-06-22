@@ -3272,6 +3272,12 @@ use vars qw( @ISA %Lexicon );
 	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
 	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
+	'Cut column' => '列の切り取り',
+	'Copy column' => '列のコピー',
+	'Paste column before' => '列の前に貼り付け',
+	'Paste column after' => '列の後に貼り付け',
+	'Horizontal align' => '横配置',
+	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
 	'HTML' => 'HTML',

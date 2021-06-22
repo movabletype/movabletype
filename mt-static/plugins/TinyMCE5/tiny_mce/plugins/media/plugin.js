@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -22,6 +22,33 @@
         return t;
       };
       return __assign.apply(this, arguments);
+    };
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
     };
 
     var noop = function () {
@@ -140,33 +167,6 @@
       from: from
     };
 
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-
     var nativePush = Array.prototype.push;
     var each = function (xs, f) {
       for (var i = 0, len = xs.length; i < len; i++) {
@@ -208,23 +208,6 @@
         var x = obj[i];
         f(x, i);
       }
-    };
-    var objAcc = function (r) {
-      return function (x, i) {
-        r[i] = x;
-      };
-    };
-    var internalFilter = function (obj, pred, onTrue, onFalse) {
-      var r = {};
-      each$1(obj, function (x, i) {
-        (pred(x, i) ? onTrue : onFalse)(x, i);
-      });
-      return r;
-    };
-    var filter = function (obj, pred) {
-      var t = {};
-      internalFilter(obj, pred, objAcc(t), noop);
-      return t;
     };
     var get = function (obj, key) {
       return has(obj, key) ? Optional.from(obj[key]) : Optional.none();
@@ -1125,18 +1108,15 @@
     };
     var createPreviewNode = function (editor, node) {
       var name = node.name;
-      var styles = editor.dom.parseStyle(node.attr('style'));
-      var filteredStyles = filter(styles, function (value, key) {
-        return key !== 'width' && key !== 'height';
-      });
       var previewWrapper = new global$7('span', 1);
       previewWrapper.attr({
         'contentEditable': 'false',
-        'style': editor.dom.serializeStyle(filteredStyles),
+        'style': node.attr('style'),
         'data-mce-object': name,
         'class': 'mce-preview-object mce-object-' + name
       });
       retainAttributesAndInnerHtml(editor, node, previewWrapper);
+      var styles = editor.dom.parseStyle(node.attr('style'));
       var previewNode = new global$7(name, 1);
       setDimensions(node, previewNode, styles);
       previewNode.attr({

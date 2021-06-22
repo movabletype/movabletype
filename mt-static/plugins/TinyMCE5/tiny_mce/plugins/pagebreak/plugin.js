@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -20,19 +20,21 @@
       return editor.getParam('pagebreak_split_block', false);
     };
 
-    var getPageBreakClass = function () {
-      return 'mce-pagebreak';
-    };
-    var getPlaceholderHtml = function () {
-      return '<img src="' + global$1.transparentSrc + '" class="' + getPageBreakClass() + '" data-mce-resize="false" data-mce-placeholder />';
+    var pageBreakClass = 'mce-pagebreak';
+    var getPlaceholderHtml = function (shouldSplitBlock) {
+      var html = '<img src="' + global$1.transparentSrc + '" class="' + pageBreakClass + '" data-mce-resize="false" data-mce-placeholder />';
+      return shouldSplitBlock ? '<p>' + html + '</p>' : html;
     };
     var setup = function (editor) {
       var separatorHtml = getSeparatorHtml(editor);
+      var shouldSplitBlock$1 = function () {
+        return shouldSplitBlock(editor);
+      };
       var pageBreakSeparatorRegExp = new RegExp(separatorHtml.replace(/[\?\.\*\[\]\(\)\{\}\+\^\$\:]/g, function (a) {
         return '\\' + a;
       }), 'gi');
       editor.on('BeforeSetContent', function (e) {
-        e.content = e.content.replace(pageBreakSeparatorRegExp, getPlaceholderHtml());
+        e.content = e.content.replace(pageBreakSeparatorRegExp, getPlaceholderHtml(shouldSplitBlock$1()));
       });
       editor.on('PreInit', function () {
         editor.serializer.addNodeFilter('img', function (nodes) {
@@ -40,9 +42,9 @@
           while (i--) {
             node = nodes[i];
             className = node.attr('class');
-            if (className && className.indexOf('mce-pagebreak') !== -1) {
+            if (className && className.indexOf(pageBreakClass) !== -1) {
               var parentNode = node.parent;
-              if (editor.schema.getBlockElements()[parentNode.name] && shouldSplitBlock(editor)) {
+              if (editor.schema.getBlockElements()[parentNode.name] && shouldSplitBlock$1()) {
                 parentNode.type = 3;
                 parentNode.value = separatorHtml;
                 parentNode.raw = true;
@@ -60,17 +62,13 @@
 
     var register = function (editor) {
       editor.addCommand('mcePageBreak', function () {
-        if (shouldSplitBlock(editor)) {
-          editor.insertContent('<p>' + getPlaceholderHtml() + '</p>');
-        } else {
-          editor.insertContent(getPlaceholderHtml());
-        }
+        editor.insertContent(getPlaceholderHtml(shouldSplitBlock(editor)));
       });
     };
 
     var setup$1 = function (editor) {
       editor.on('ResolveName', function (e) {
-        if (e.target.nodeName === 'IMG' && editor.dom.hasClass(e.target, getPageBreakClass())) {
+        if (e.target.nodeName === 'IMG' && editor.dom.hasClass(e.target, pageBreakClass)) {
           e.name = 'pagebreak';
         }
       });

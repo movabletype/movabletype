@@ -4,7 +4,7 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
@@ -36,6 +36,19 @@
         setDir(editor, 'rtl');
       });
     };
+
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
 
     var noop = function () {
     };
@@ -157,19 +170,6 @@
       none: none,
       from: from
     };
-
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
 
     var isSupported = function (dom) {
       return dom.style !== undefined && isFunction(dom.style.getPropertyValue);
