@@ -1521,19 +1521,23 @@ sub archive_file {
     my $blog = $self->blog or return '';
     $at ||= 'ContentType';    # should check $blog->archive_type here
 
-    # Load category
-    my $obj_category = MT->model('objectcategory')->load(
-        {   object_ds  => 'content_data',
-            object_id  => $self->id,
-            is_primary => 1
-        }
-    );
-    my $cat
-        = $obj_category
-        ? MT->model('category')->load( $obj_category->category_id )
-        : '';
+    my $map = MT->publisher->archiver($at)->get_preferred_map({
+        blog_id         => $blog->id,
+        content_type_id => $self->content_type_id,
+    });
 
-    my $file = MT::Util::archive_file_for( $self, $blog, $at, $cat );
+    # Load category
+    my $cat;
+    if ($map && $map->cat_field_id) {
+        my $obj_category = MT->model('objectcategory')->load({
+            object_ds  => 'content_data',
+            object_id  => $self->id,
+            is_primary => 1,
+            cf_id      => $map->cat_field_id,
+        });
+        $cat = $obj_category ? MT->model('category')->load($obj_category->category_id) : '';
+    }
+    my $file = MT::Util::archive_file_for($self, $blog, $at, $cat, $map);
     $file = '' unless defined $file;
     return $file;
 }
