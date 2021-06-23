@@ -17,8 +17,6 @@ use MT::ContentData;
 use MT::Util::Log;
 use File::Basename;
 use File::Spec;
-
-use MT::ArchiveType;
 use MT::PublishOption;
 use MT::Template;
 use MT::TemplateMap;
@@ -1839,9 +1837,7 @@ sub _rebuild_content_archive_type {
         my $mt = shift;
         init_archive_types() unless %ArchiveTypes;
 
-        my ( $obj, $blog, $at, $cat, $map, $timestamp, $author,
-            $content_type_id )
-            = @_;
+        my ($obj, $blog, $at, $cat, $map, $timestamp, $author, $ct_id) = @_;
         return if $at eq 'None';
         my $archiver = $mt->archiver($at);
         return '' unless $archiver;
@@ -1856,45 +1852,7 @@ sub _rebuild_content_archive_type {
             return $file;
         }
 
-        unless ($map) {
-            my $cache_map = MT::Request->instance->cache('maps');
-            unless ($cache_map) {
-                MT::Request->instance->cache( 'maps', $cache_map = {} );
-            }
-            $content_type_id ||=
-                ref $obj eq 'MT::ContentData'
-                ? $obj->content_type_id
-                : '';
-            my $cache_map_key
-                = $blog->id . ':'
-                . (
-                ( $at =~ /^ContentType/ && $content_type_id )
-                ? $content_type_id . ':'
-                : ''
-                ) . $at;
-            unless ( $map = $cache_map->{$cache_map_key} ) {
-                my $args
-                    = ( $at =~ /^ContentType/ && $content_type_id )
-                    ? {
-                    join => MT->model('template')->join_on(
-                        undef,
-                        {   id              => \'= templatemap_template_id',
-                            content_type_id => $content_type_id,
-                        }
-                    )
-                    }
-                    : {};
-                require MT::TemplateMap;
-                $map = MT::TemplateMap->load(
-                    {   blog_id      => $blog->id,
-                        archive_type => $at,
-                        is_preferred => 1
-                    },
-                    $args,
-                );
-                $cache_map->{$cache_map_key} = $map if $map;
-            }
-        }
+        $map ||= $archiver->get_preferred_map({ blog_id => $blog->id, content_type_id => $ct_id });
         my $file_tmpl;
         $file_tmpl = $map->file_template if $map;
         unless ($file_tmpl) {
