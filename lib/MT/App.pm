@@ -862,6 +862,15 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub set_referrer_policy {
+    my $app = shift;
+
+    my $policy = $app->config->ReferrerPolicy;
+    return unless $policy;
+
+    $app->set_header( 'Referrer-Policy', $policy );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -2980,6 +2989,7 @@ sub show_error {
     }
     $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
+    $param->{local_lang_id} = $app->current_language || 'en_us';
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );
     my $out = $tmpl->output;
@@ -3142,6 +3152,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->set_referrer_policy;
 
     my ($body);
 

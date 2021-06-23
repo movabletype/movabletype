@@ -80,7 +80,7 @@ my $mt_app = sub {
         $app->{cgi_headers}{-type} = $type;
         my ( $status, $headers )
             = $app->{query}->psgi_header( %{ $app->{cgi_headers} } );
-        return [ $status, $headers, [$body] ];
+        return [ $status, $headers, (defined $body ? [$body] : []) ];
     };
 };
 
@@ -439,7 +439,7 @@ using XMLRPC::Transport::HTTP::Plack.
 
 =item plack_middlewares
 
-You can use Plack::Middleware. The following options can be specified. 
+You can use Plack::Middleware. The following options can be specified.
 
 =over 8
 

@@ -62,7 +62,7 @@ for my $driver ( $test_env->image_drivers ) {
             ok( $image->can('exif'), 'Has exif method.' );
             my $exif = Image::ExifTool->new;
             $exif->ExtractInfo( $image->file_path );
-            is_deeply( $image->exif, $exif, 'Check exif data.' );
+            is_deeply(_remove_access_date($image->exif), _remove_access_date($exif), 'Check exif data.' );
         };
 
         subtest 'has_metadata method' => sub {
@@ -142,3 +142,9 @@ for my $driver ( $test_env->image_drivers ) {
 }
 
 done_testing;
+
+sub _remove_access_date {
+    my $exif = shift;
+    delete $exif->{VALUE}{FileAccessDate};
+    $exif;
+}

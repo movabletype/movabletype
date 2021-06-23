@@ -1320,7 +1320,7 @@ use vars qw( @ISA %Lexicon );
 	'System' => 'Système',
 	'Unknown Content Type' => 'Type de contenu inconnu.',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'Vous devriez supprimer "SSLVerifyNone 1" dans mt-config.cgi.',
-	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Un outil de traitement d'image, souvent spécifié par la directive de configuration ImageDriver, n'est pas présent sur votre serveur ou n'est pas configuré correctement. Un outil doit être installé pour permettre l'utilisation correcte de la fonctionnalité des images d'utilsateurs. Veuillez installer Image::Magick, NetPBM, GD ou Imager, puis spécifiez la directive de configuration ImageDriver.},
+	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Un outil de traitement d'image, souvent spécifié par la directive de configuration ImageDriver, n'est pas présent sur votre serveur ou n'est pas configuré correctement. Un outil doit être installé pour permettre l'utilisation correcte de la fonctionnalité des images d'utilsateurs. Veuillez installer Graphics::Magick, Image::Magick, NetPBM, GD ou Imager, puis spécifiez la directive de configuration ImageDriver.},
 	q{Error: This child site does not have a parent site.} => q{Erreur : ce site enfant n'a pas de site parent.},
 	q{ImageDriver is not configured.} => q{ImageDriver n'est pas configuré.},
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{Movable Type n'a pas pu écrire dans son répertoire 'support'. Merci de créer un répertoire à cet endroit : [_1], et de lui ajouter des droits qui permettent au serveur web d'écrire dedans.},
@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'une note/page est sauvegardée',
 	'unpublishes a content' => 'Dé-publie le contenu',
 	'unpublishes an entry/page' => 'une note/page est dépubliée',
+	'Format Error: Trigger data include illegal characters.' => 'Erreur de format: Les données de déclenchement incluent des caractères illégaux.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Erreur de format: Les valeurs séparées par des virgules contiennent un nombre incorrect de champs.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Le champ "[_1]" est requis.',
@@ -3982,7 +3984,7 @@ réessayer plus tard.',
 	'Exclude sites/child sites' => 'Exclure des sites / sites enfants',
 	'Include sites/child sites' => 'Inclure des sites / sites enfants',
 	'MTMultiBlog tag default arguments' => 'Arguments par défaut de la balise MTMultiBlog',
-	'Rebuild Trigger settings has been saved.' => 'Les paramètres du déclencheur de republication ont été sauvegardés.',
+	'Rebuild Trigger settings have been saved.' => 'Les paramètres du déclencheur de republication ont été sauvegardés.',
 	'Rebuild Triggers' => 'Événements de republication',
 	'Site/Child Site' => 'Site / site enfant',
 	'Use system default' => 'Utiliser la règle par défaut du système',
@@ -4860,6 +4862,28 @@ réessayer plus tard.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Non sélectionné',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

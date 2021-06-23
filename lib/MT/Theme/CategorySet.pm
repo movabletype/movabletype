@@ -79,7 +79,7 @@ sub template {
     my %checked_ids
         = $saved
         ? map { $_ => 1 } @{ $saved->{default_category_set_export_ids} }
-        : undef;
+        : ();
 
     my @list;
     for my $cs (@category_sets) {

@@ -2410,7 +2410,7 @@ sub dialog_restore_upload {
     $app->print_encode(
         $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
-    if ( defined $objects_json ) {
+    if ( $objects_json ) {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
