@@ -335,7 +335,7 @@ sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
 
-sub _get_preferred_map {
+sub get_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
@@ -346,6 +346,8 @@ sub _get_preferred_map {
 
     return $self->_search_preferred_map($args);
 }
+
+*_get_preferred_map = \&get_preferred_map;
 
 sub _is_valid_map {
     my $self = shift;
