@@ -457,10 +457,11 @@ sub edit {
     }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
-        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
-        $domain .= '/' if $domain !~ m!/$!;
-        $param->{website_scheme} = $scheme;
-        $param->{website_domain} = $domain;
+        if (my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!) {
+            $domain .= '/' if $domain !~ m!/$!;
+            $param->{website_scheme} = $scheme;
+            $param->{website_domain} = $domain;
+        }
     }
 
     1;
