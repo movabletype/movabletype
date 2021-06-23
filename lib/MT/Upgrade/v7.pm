@@ -876,7 +876,7 @@ sub v7_migrate_rebuild_trigger {
             ? MT->translate('MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.', $blog_id)
             : MT->translate('MultiBlog migration is skipped due to the data breakage.'),
             category => 'upgrade',
-            level    => MT::Log::INFO(),
+            level    => MT::Log::WARNING(),
             blog_id  => $blog_id ? $blog_id : undef,
         });
 
@@ -916,7 +916,7 @@ sub v7_migrate_rebuild_trigger {
             MT->log({
                 message  => MT->translate('Some MultiBlog migrations for site(ID:[_1]) are skipped due to the data breakage.', $blog->id),
                 category => 'upgrade',
-                level    => MT::Log::INFO(),
+                level    => MT::Log::WARNING(),
                 blog_id  => $blog->id,
             });
         }
