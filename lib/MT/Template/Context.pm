@@ -874,13 +874,18 @@ sub set_tag_filter_context {
     );
 
     my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
-        or return;
+        or return $ctx->error(
+            MT->translate(
+                "You have an error in your '[_2]' attribute: [_1]",
+                $tag_arg, 'tag'
+            )
+            );
 
     my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
 
     if ( $tag_arg !~ m/\bNOT\b/i ) {
         if ( !@tags ) {
-            return \&MT::Template::Context::_hdlr_pass_tokens_else;
+            return;
         }
 
         if ($object_args) {
