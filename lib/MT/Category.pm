@@ -690,12 +690,13 @@ sub content_data_count {
             return MT::ContentData->count({
                     blog_id => $self->blog_id,
                     status  => MT::Entry::RELEASE(),
-                    $ct_id ? (content_type_id  => $ct_id) : (),
+                    $ct_id ? (content_type_id => $ct_id) : (),
                 },
                 {
                     join => MT::ObjectCategory->join_on(
                         'object_id',
                         {
+                            object_ds   => 'content_data',
                             category_id => $self->id,
                             $cf_id ? (cf_id => $cf_id) : (),
                         },
