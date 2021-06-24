@@ -563,14 +563,22 @@ sub _hdlr_entries {
             datasource  => $class->datasource,
         });
 
-        return $ctx->error(
-        MT->translate(
-            "You have an error in your '[_2]' attribute: [_1]",
-            $args->{tags} || $args->{tag}, 'tag'
-        )
-        ) unless $res;
-
-        return $res->(@_) if ref $res eq 'CODE';
+        if ($res) {
+            if ($res eq 'no_matching_tags') {
+                return MT::Template::Context::_hdlr_pass_tokens_else($ctx, $args, $cond);
+            }
+            elsif ($res eq 'compile_error') {
+                return $ctx->error(
+                MT->translate(
+                    "You have an error in your '[_2]' attribute: [_1]",
+                    $args->{tags} || $args->{tag}, 'tag'
+                )
+                );
+            }
+            else {
+                return $ctx->error($res);
+            }
+        }
     }
 
     # Adds an author filter to the filters list.
