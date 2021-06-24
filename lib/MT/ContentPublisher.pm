@@ -1266,6 +1266,9 @@ sub rebuild_file {
                 my $contents
                     = sub { $archiver->archive_group_contents($ctx) };
                 $ctx->stash( 'contents', MT::Promise::delay($contents) );
+                my $content_type
+                    = MT::ContentType->load( $tmpl->content_type_id );
+                $ctx->stash( 'content_type', $content_type );
             }
             else {
                 require MT::Promise;

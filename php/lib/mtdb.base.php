@@ -453,6 +453,9 @@ abstract class MTDatabase {
         if (isset($args['blog_id'])) {
             $blog_filter = 'and template_blog_id = ' . intval($args['blog_id']);
         }
+        if (isset($args['content_type_id'])) {
+            $blog_filter = 'and template_content_type_id= ' . intval($args['content_type_id']);
+        }
 
         $where = "1 = 1
                   $blog_filter
@@ -1770,11 +1773,18 @@ abstract class MTDatabase {
         return $this->fetch_categories($args);
     }
 
-    public function fetch_category($cat_id) {
+    public function fetch_category($cat_id, $set_id = null, $cf_id = null) {
         if (isset($this->_cat_id_cache['c'.$cat_id])) {
             return $this->_cat_id_cache['c'.$cat_id];
         }
-        $cats = $this->fetch_categories(array('category_id' => $cat_id, 'show_empty' => 1));
+        $args = array('category_id' => $cat_id, 'show_empty' => 1);
+        if ($set_id) {
+            $args += array('category_set_id' => $set_id);
+        }
+        if ($cf_id) {
+            $args += array('cf_id' => $cf_id);
+        }
+        $cats = $this->fetch_categories($args);
         if ($cats && (count($cats) > 0)) {
             $this->_cat_id_cache['c'.$cat_id] = $cats[0];
             return $cats[0];
@@ -1884,6 +1894,9 @@ abstract class MTDatabase {
         else {
             if ($args['show_empty']) {
                 $join_clause = 'left outer join mt_objectcategory on objectcategory_category_id = category_id and objectcategory_object_ds = \'content_data\'';
+                if ($args['cf_id']) {
+                    $join_clause .= ' and objectcategory_cf_id = '.intval($args['cf_id']);
+                }
                 if (isset($args['content_id'])) {
                     $join_clause .= ' left outer join mt_cd on objectcategory_object_id = cd_id and cd_id = '.intval($args['content_id']);
                 } else {

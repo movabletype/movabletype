@@ -26,12 +26,19 @@ sub _load_sibling_categories {
     return $cats if $cats;
 
     my $class = MT->model($class_type);
+    my $map = $ctx->stash('template_map');
+    my $content = $ctx->stash('content');
     my @cats  = $class->load(
         {   blog_id         => $blog_id,
             parent          => $cat->parent,
             category_set_id => $cat->category_set_id,
         },
-        { 'sort' => 'label', direction => 'ascend' },
+        {   $map && $content
+            ? ( join => [ 'MT::ObjectCategory', 'category_id', { cf_id => $map->cat_field_id, }, ] )
+            : (),
+            'sort' => 'label',
+            direction => 'ascend'
+        },
     );
     $r->stash( '__cat_cache_' . $blog_id . '_' . $cat->parent, \@cats );
     \@cats;

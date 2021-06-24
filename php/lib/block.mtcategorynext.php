@@ -33,7 +33,19 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
             $class = $args['class'];
         }
 
-        $cats = _catx_load_categories($ctx, $cat, $class, $args);
+        if ($tmpl = $ctx->stash('template')) {
+            $sql = "select
+                        templatemap_cat_field_id
+                    from mt_templatemap
+                    where
+                        templatemap_template_id = ".$tmpl->id;
+            $result = $ctx->mt->db()->SelectLimit($sql);
+            if (!$result->EOF) {
+                $cf_id = $result->Fields('templatemap_cat_field_id');
+            }
+        }
+
+        $cats = _catx_load_categories($ctx, $cat, $class, $args, $cf_id);
         if ($cats == null) {
             $repeat = false;
             return $content;
@@ -49,6 +61,9 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         $repeat = false;
         if (isset($pos)) {
             $pos += $step;
+            if ($cf_id) {
+                $terms = array(content_field_id => $cf_id);
+            }
             while (($pos >= 0) && ($pos < count($cats))) {
                 if (!$cats[$pos]->category_category_set_id && $cats[$pos]->entry_count() == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
@@ -57,7 +72,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
                         continue;
                     }
                 }
-                else if ($cats[$pos]->category_category_set_id && $cats[$pos]->content_data_count() == 0) {
+                else if ($cats[$pos]->category_category_set_id && $cats[$pos]->content_data_count($terms) == 0) {
                     if (isset($args['show_empty']) && $args['show_empty']) {
                     } else {
                         $pos += $step;
@@ -78,7 +93,7 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
     return $content;
 }
 
-function _catx_load_categories(&$ctx, $cat, $class, $args) {
+function _catx_load_categories(&$ctx, $cat, $class, $args, $cf_id) {
     $blog_id = $cat->category_blog_id;
     $parent = $cat->category_parent;
     $parent or $parent = 0;
@@ -116,15 +131,20 @@ function _catx_load_categories(&$ctx, $cat, $class, $args) {
         $tag = $ctx->this_tag();
         if (preg_match('!^mtcontent!i', $tag)) {
         }
-        $cats = $ctx->mt->db()->fetch_categories(array(
+        $terms = array(
             'blog_id' => $blog_id,
             'parent' => $parent,
-            'category_set_id' => $cat->category_category_set_id,
+            'category_set_id' => intval($cat->category_category_set_id),
+            'cf_id' => $cf_id,
             'show_empty' => 1,
             'class' => $class,
             'sort_order' => $sort_order,
             'sort_by' => $sort_by,
-        ));
+        );
+        if ($cf_id) {
+            $terms += array(cf_id => $cf_id);
+        }
+        $cats = $ctx->mt->db()->fetch_categories($terms);
         $ctx->stash($cache_key, $cats);
     }
     return $cats;
