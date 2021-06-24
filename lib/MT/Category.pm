@@ -661,28 +661,24 @@ sub content_data_count {
     my ($terms) = @_;
     $terms ||= {};
 
-    my $content_type_id  = $terms->{content_type_id};
-    my $content_field_id = $terms->{content_field_id};
+    my $ct_id = $terms->{content_type_id};
+    my $cf_id = $terms->{content_field_id};
 
-    if ( !$content_field_id && $terms->{content_field_name} ) {
-        my $cf = MT->model('content_field')->load(
-            {   blog_id => $self->blog_id,
-                name    => $terms->{content_field_name},
-                $content_type_id
-                ? ( content_type_id => $content_type_id )
-                : (),
-            }
-        );
+    if (!$cf_id && $terms->{content_field_name}) {
+        my $cf = MT->model('content_field')->load({
+            blog_id => $self->blog_id,
+            name    => $terms->{content_field_name},
+            $ct_id ? (content_type_id => $ct_id) : (),
+        });
         return 0 unless $cf;
-        $content_field_id = $cf->id;
+        $cf_id = $cf->id;
     }
 
     my $key_suffix = '';
-    if ($content_type_id) {
-        $key_suffix = ":ct-$content_type_id";
-    }
-    elsif ($content_field_id) {
-        $key_suffix = ":cf-$content_field_id";
+    if ($ct_id) {
+        $key_suffix = ":ct-$ct_id";
+    } elsif ($cf_id) {
+        $key_suffix = ":cf-$cf_id";
     }
 
     require MT::ContentFieldIndex;
@@ -691,26 +687,23 @@ sub content_data_count {
     return $self->cache_property(
         "content_data_count$key_suffix",
         sub {
-            return MT::ContentData->count(
-                {   blog_id => $self->blog_id,
+            return MT::ContentData->count({
+                    blog_id => $self->blog_id,
                     status  => MT::Entry::RELEASE(),
                 },
-                {   join => MT::ContentFieldIndex->join_on(
+                {
+                    join => MT::ContentFieldIndex->join_on(
                         'content_data_id',
-                        {   value_integer => $self->id,
-                            $content_type_id
-                            ? ( content_type_id => $content_type_id )
-                            : (),
-                            $content_field_id
-                            ? ( content_field_id => $content_field_id )
-                            : (),
+                        {
+                            value_integer => $self->id,
+                            $ct_id ? (content_type_id  => $ct_id) : (),
+                            $cf_id ? (content_field_id => $cf_id) : (),
                         },
                         { unique => 1 },
                     ),
-                }
-            );
+                });
         },
-        ( $terms->{count} ? ( $terms->{count} ) : () ),
+        ($terms->{count} ? ($terms->{count}) : ()),
     );
 }
 
