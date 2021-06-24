@@ -187,7 +187,7 @@ sub _hdlr_assets {
     }
 
     {
-        my $res = $ctx->set_tag_filter_context({
+        my $status = $ctx->set_tag_filter_context({
             args        => $args,
             blog_terms  => \%blog_terms,
             blog_args   => \%blog_args,
@@ -196,14 +196,8 @@ sub _hdlr_assets {
             datasource  => MT::Asset->datasource,
         });
 
-        return $ctx->error(
-        MT->translate(
-            "You have an error in your '[_2]' attribute: [_1]",
-            $args->{tags} || $args->{tag}, 'tag'
-        )
-        ) unless $res;
-
-        return $res->(@_) if ref $res eq 'CODE';
+        return $ctx->error( $ctx->errstr ) unless $status;
+        return $ctx->_hdlr_pass_tokens_else($args, $cond) if $status eq 'no_matching_tags';
     }
 
     if ( $args->{namespace} ) {
