@@ -874,7 +874,7 @@ sub set_tag_filter_context {
     );
 
     my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
-        or return undef;
+        or return;
 
     my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
 
