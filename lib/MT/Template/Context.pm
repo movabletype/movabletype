@@ -800,10 +800,7 @@ sub set_tag_filter_context {
     my ( $ctx, $param ) = @_;
 
     # You can pass undef to $object_args if you do not want to filter by SQL statements.
-    my ( $args, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(args blog_terms blog_args object_args filters datasource)};
-
-    my $tag_arg = $args->{tags} || $args->{tag}
-        or return 1;
+    my ( $tag_arg, $blog_terms, $blog_args, $object_args, $filters, $datasource ) = @$param{qw(tag_arg blog_terms blog_args object_args filters datasource)};
 
     require MT::Tag;
     require MT::ObjectTag;
@@ -828,13 +825,18 @@ sub set_tag_filter_context {
     );
 
     my $cexpr = $ctx->compile_tag_filter( $tag_arg, \@tags )
-        or return;
+        or return $ctx->error(
+            MT->translate(
+                "You have an error in your '[_2]' attribute: [_1]",
+                $tag_arg, 'tag'
+            )
+            );
 
     my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
 
     if ( $tag_arg !~ m/\bNOT\b/i ) {
         if ( !@tags ) {
-            return \&MT::Template::Context::_hdlr_pass_tokens_else;
+            return 'no_matching_tags';
         }
 
         if ($object_args) {
@@ -851,7 +853,7 @@ sub set_tag_filter_context {
     }
 
     # We can filter by "JOIN" statement for simple args. (single tag, "or" condition)
-    return 1 if $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
+    return 'filter_only_by_join' if $object_args && $tag_arg !~ m/\b(AND|NOT)\b|\(|\)/i;
 
     my $preloader = @tag_ids
         ? sub {
@@ -876,7 +878,7 @@ sub set_tag_filter_context {
         : sub { +{} };
     push @$filters, sub { $cexpr->( $preloader->( $_[0]->id ) ) };
 
-    return 1;
+    return 'filter_added';
 }
 
 sub count_format {
