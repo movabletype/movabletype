@@ -902,19 +902,19 @@ sub set_tag_filter_context {
     my $preloader = @tag_ids
         ? sub {
         my ($object_id) = @_;
-        my $terms = {
+        my $preload_terms = {
             tag_id            => \@tag_ids,
             object_id         => $object_id,
             object_datasource => $datasource,
             %$blog_terms,
         };
-        my $args = {
+        my $preload_args = {
             %$blog_args,
             fetchonly   => ['tag_id'],
             no_triggers => 1,
         };
         my @ot_ids;
-        @ot_ids = MT::ObjectTag->load( $terms, $args );
+        @ot_ids = MT::ObjectTag->load( $preload_terms, $preload_args );
         my %map;
         $map{ $_->tag_id } = 1 for @ot_ids;
         \%map;
