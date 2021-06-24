@@ -681,7 +681,7 @@ sub content_data_count {
         $key_suffix = ":cf-$cf_id";
     }
 
-    require MT::ContentFieldIndex;
+    require MT::ObjectCategory;
     require MT::ContentData;
     require MT::Entry;
     return $self->cache_property(
@@ -690,14 +690,14 @@ sub content_data_count {
             return MT::ContentData->count({
                     blog_id => $self->blog_id,
                     status  => MT::Entry::RELEASE(),
+                    $ct_id ? (content_type_id  => $ct_id) : (),
                 },
                 {
-                    join => MT::ContentFieldIndex->join_on(
-                        'content_data_id',
+                    join => MT::ObjectCategory->join_on(
+                        'object_id',
                         {
-                            value_integer => $self->id,
-                            $ct_id ? (content_type_id  => $ct_id) : (),
-                            $cf_id ? (content_field_id => $cf_id) : (),
+                            category_id => $self->id,
+                            $cf_id ? (cf_id => $cf_id) : (),
                         },
                         { unique => 1 },
                     ),
