@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use feature 'state';
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
@@ -110,21 +111,14 @@ $test_env->prepare_fixture(
             my @field_data;
 
             # create 2 category fields
-            for my $field_id ( 1 .. 2 ) {
+            for ( 1 .. 2 ) {
+                state $field_id = 1;
                 my $cat_field = MT::Test::Permission->make_content_field(
                     blog_id         => $ct->blog_id,
                     content_type_id => $ct->id,
                     type            => 'categories',
+                    name => 'field' . ( $field_id - 1 ),
                 );
-                if ( $ct_id == 1 ) {
-                    $cat_field->id($field_id);
-                    $cat_field->name( 'field' . ( $field_id - 1 ) );
-                }
-                else {
-                    $cat_field->id( $field_id + 2 );
-                    $cat_field->name( 'field' . ( $field_id + 2 - 1 ) );
-                }
-                $cat_field->save or die $cat_field->errstr;
 
                 $category_fields[ $ct->id - 1 ] ||= [];
                 push @{ $category_fields[ $ct->id - 1 ] }, $cat_field;
@@ -141,6 +135,7 @@ $test_env->prepare_fixture(
                     unique_id => $cat_field->id,
                 };
                 push @field_data, $data;
+                $field_id++;
             }
 
             $ct->fields( \@field_data );
@@ -178,12 +173,9 @@ $test_env->prepare_fixture(
 my @cats = MT::Category->load( { id => [ 1 .. 3 ] } );
 my @content_types = MT::ContentType->load( { id => [ 1 .. 2 ] } );
 my @category_fields;
-for my $ct_id ( 1 .. 2 ) {
-    for my $field_id ( 1 .. 2 ) {
-        $category_fields[ $ct_id - 1 ][ $field_id - 1 ]
-            = MT::ContentField->load(
-            { id => ( $ct_id - 1 ) * 2 + $field_id } );
-    }
+for my $ct_id (1 .. 2) {
+    my @a = MT::ContentField->load({ content_type_id => $ct_id, type => 'categories' }, { sort => 'id' });
+    $category_fields[$ct_id - 1] = \@a;
 }
 
 subtest 'content_data_count()' => sub {
