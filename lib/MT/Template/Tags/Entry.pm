@@ -569,8 +569,6 @@ sub _hdlr_entries {
             $args->{tags} || $args->{tag}, 'tag'
         )
         ) unless $res;
-
-        return $res->(@_) if ref $res eq 'CODE';
     }
 
     # Adds an author filter to the filters list.

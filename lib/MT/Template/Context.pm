@@ -879,10 +879,6 @@ sub set_tag_filter_context {
     my @tag_ids = map { $_->id, ( $_->n8d_id ? ( $_->n8d_id ) : () ) } @tags;
 
     if ( $tag_arg !~ m/\bNOT\b/i ) {
-        if ( !@tags ) {
-            return \&MT::Template::Context::_hdlr_pass_tokens_else;
-        }
-
         if ($object_args) {
             push @{ $object_args->{joins} },
                 MT::ObjectTag->join_on(

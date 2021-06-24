@@ -202,8 +202,6 @@ sub _hdlr_assets {
             $args->{tags} || $args->{tag}, 'tag'
         )
         ) unless $res;
-
-        return $res->(@_) if ref $res eq 'CODE';
     }
 
     if ( $args->{namespace} ) {
