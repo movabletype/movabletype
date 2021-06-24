@@ -138,6 +138,27 @@ $test_env->prepare_fixture(
                 $field_id++;
             }
 
+            my $asset_field;
+            {
+                # MTC-27923 add asset field
+                $asset_field = MT::Test::Permission->make_content_field(
+                    blog_id         => $ct->blog_id,
+                    content_type_id => $ct->id,
+                    type            => 'asset',
+                    name            => 'my_asset'. $ct->id,
+                );
+                push @field_data, {
+                    id      => $asset_field->id,
+                    order   => 1,
+                    type    => $asset_field->type,
+                    options => {
+                        label    => $asset_field->name,
+                        multiple => 1,
+                    },
+                    unique_id => $asset_field->unique_id,
+                };
+            }
+
             $ct->fields( \@field_data );
             $ct->save or die $ct->errstr;
 
@@ -165,6 +186,12 @@ $test_env->prepare_fixture(
                     $category_fields[ $ct->id - 1 ][1]->id =>
                         [ $cats[0]->id, $cats[1]->id, $cats[2]->id ]
                 },
+            );
+            # MTC-27923
+            MT::Test::Permission->make_content_data(
+                blog_id         => $ct->blog_id,
+                content_type_id => $ct->id,
+                data            => { $asset_field->id => [$cats[0]->id, $cats[1]->id, $cats[2]->id] },
             );
         }
     }
