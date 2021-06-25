@@ -548,6 +548,7 @@ sub _hdlr_entries {
         }
     }
 
+    # Adds a tag filter to the filters list.
     if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
         my $status = $ctx->set_tag_filter_context({
             tag_arg     => $tag_arg,
