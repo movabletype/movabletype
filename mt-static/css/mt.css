@@ -11862,6 +11862,11 @@ a:hover .mt-icon--secondary {
   margin-bottom: 0.5rem;
 }
 
+.mt_suggest__list li.complete-highlight {
+  color: #1A1A1A;
+  background-color: #dcdddd;
+}
+
 .mt-suggest__select {
   display: block;
   margin: 0;

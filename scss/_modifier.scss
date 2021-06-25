@@ -1991,6 +1991,10 @@ a:hover .mt-icon--secondary{
     &:last-child{
       margin-bottom: 0.5rem;
     }
+    &.complete-highlight{
+      color: #1A1A1A;
+      background-color: #dcdddd;
+    }
   }
 }
 .mt-suggest__select{
