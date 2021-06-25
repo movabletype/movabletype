@@ -989,7 +989,7 @@ sub core_finish {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
         $version_upgraded = 1;
     }
-    if ($version_upgraded) {
+    if ($cfg->NotifyUpgrade && $version_upgraded) {
         MT->log({
             message  => MT->translate("Movable Type has been upgraded to version [_1].",
                 ($cur_rel ? $cur_version . '.' . $cur_rel : $cur_version),
