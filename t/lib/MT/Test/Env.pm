@@ -312,7 +312,7 @@ sub _connect_info_mysql {
 
     my %info = (
         ObjectDriver => "DBI::mysql",
-        DBHost       => "localhost",
+        DBHost       => "127.0.0.1",
         DBUser       => "mt",
         Database     => "mt_test",
     );
