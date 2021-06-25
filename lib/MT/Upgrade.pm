@@ -905,6 +905,7 @@ sub core_finish {
                         "User '[_1]' upgraded database to version [_2]",
                         $user->name, $cur_schema
                     ),
+                    level    => MT::Log::NOTICE(),
                     category => 'upgrade',
                 }
             );
@@ -958,6 +959,7 @@ sub core_finish {
                             $plugin->version || '-',
                             $ver
                         ),
+                        level    => MT::Log::NOTICE(),
                         category => 'install',
                         class    => 'plugin',
                     }
