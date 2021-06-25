@@ -131,7 +131,7 @@ function ymd2rd($y,$m,$d) {
     if ( $y < 0 )
     {
         $adj = (int)(( 399 - $y ) / 400);
-        $d -= 146097 * $adj; 
+        $d -= 146097 * $adj;
         $y += 400 * $adj;
     }
 
@@ -175,7 +175,7 @@ function substr_wref($str, $start, $length) {
 
 function format_ts($format, $ts, $blog, $lang = null) {
     global $Languages;
-    if (!isset($lang) || empty($lang)) { 
+    if (!isset($lang) || empty($lang)) {
         $mt = MT::get_instance();
         $lang = (
               $blog && $blog->blog_date_language
@@ -195,7 +195,7 @@ function format_ts($format, $ts, $blog, $lang = null) {
     global $_format_ts_cache;
     if (!isset($_format_ts_cache)) {
         $_format_ts_cache = array();
-    }   
+    }
     if (isset($_format_ts_cache[$ts.$lang])) {
         $f = $_format_ts_cache[$ts.$lang];
     } else {
@@ -682,7 +682,7 @@ $Languages = array(
             "%e %B %Y",
             "%k:%M",
           ),
-            
+
     'fi' => array(
             array('sunnuntai','maanantai','tiistai','keskiviikko','torstai','perjantai',
                   'lauantai'),
@@ -692,18 +692,18 @@ $Languages = array(
             array('AM','PM'),
             "%d.%m.%y %H:%M",
           ),
-            
+
     'is' => array(
             array('Sunnudagur', "M&#xe1;nudagur", "&#xde;ri&#xf0;judagur",
                "Mi&#xf0;vikudagur", 'Fimmtudagur', "F&#xf6;studagur",
                'Laugardagur'),
             array("jan&#xfa;ar", "febr&#xfa;ar", 'mars', "apr&#xed;l", "ma&#xed;",
-               "j&#xfa;n&#xed;", "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st", 'september',             
+               "j&#xfa;n&#xed;", "j&#xfa;l&#xed;", "&#xe1;g&#xfa;st", 'september',
                "okt&#xf3;ber", "n&#xf3;vember", 'desember'),
             array('FH','EH'),
             "%d.%m.%y %H:%M",
           ),
-            
+
     'si' => array(
             array('nedelja', 'ponedeljek', 'torek', 'sreda', "&#xe3;etrtek",
                'petek', 'sobota'),
@@ -712,7 +712,7 @@ $Languages = array(
             array('AM','PM'),
             "%d.%m.%y %H:%M",
           ),
-            
+
     'cz' => array(
             array('Ned&#283;le', 'Pond&#283;l&#237;', '&#218;ter&#253;',
                'St&#345;eda', '&#268;tvrtek', 'P&#225;tek', 'Sobota'),
@@ -724,7 +724,7 @@ $Languages = array(
             "%e. %B %Y",
             "%k:%M",
           ),
-            
+
     'sk' => array(
             array('nede&#318;a', 'pondelok', 'utorok', 'streda',
                '&#353;tvrtok', 'piatok', 'sobota'),
@@ -789,12 +789,12 @@ function _check_xml_char($matches) {
     if ($is_hex)
         $val = hexdec($val);
     $val = 0 + $val;
-    if (   ($val == 9) 
-        || ($val == 0xA) 
-        || ($val == 0xD) 
-        || (($val >= 0x20) and ($val <= 0xD7FF)) 
-        || (($val >= 0xE000) and ($val <= 0xFFFD)) 
-        || (($val >= 0x10000) and ($val <= 0x10FFFF))) 
+    if (   ($val == 9)
+        || ($val == 0xA)
+        || ($val == 0xD)
+        || (($val >= 0x20) and ($val <= 0xD7FF))
+        || (($val >= 0xE000) and ($val <= 0xFFFD))
+        || (($val >= 0x10000) and ($val <= 0x10FFFF)))
     {
         return "&#" . $is_hex . $matches[2] . ";";
     }
@@ -977,6 +977,23 @@ function decode_html($str, $quote_style = ENT_QUOTES) {
     return (strtr($str, array_flip($trans_table)));
 }
 
+function get_content_type_context(&$ctx, $args) {
+    $blog         = $ctx->stash('blog');
+    $content_type = $ctx->stash('content_type');
+    $blog_id      = ($args['blog_id'] || $blog->id || '');
+    if ($str = $args['content_type']) {
+        ## If $str points to $content_type, just return it
+        if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
+            ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
+            return $content_type;
+        }
+        $ct2 = $ctx->mt->db()->fetch_content_types(['blog_id' => $blog_id, 'content_type' => $str]);
+        return $ct2 ? $ct2[0] : null;
+    }
+
+    return $content_type;
+}
+
 function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) {
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template
@@ -1070,9 +1087,9 @@ function substr_text($text, $startpos, $length) {
 }
 
 function first_n_text($text, $n) {
-    if (!isset($lang) || empty($lang)) { 
+    if (!isset($lang) || empty($lang)) {
         $mt = MT::get_instance();
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
+        $lang = ($blog && $blog->blog_language ? $blog->blog_language :
                      $mt->config('DefaultLanguage'));
     }
     if ($lang == 'jp') {
@@ -1340,7 +1357,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $tags = array_values($tags_used);
 
     # Create a PHP-blessed function of that code and return it
-    # if all is well.  This function will be used later to 
+    # if all is well.  This function will be used later to
     # test for existence of specified tags in entries.
     $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
     try {
@@ -1384,7 +1401,7 @@ function static_path($host) {
             $host .= '/';
         if (preg_match('!^(https?://[^/:]+)(:\d+)?/!', $host, $matches)) {
             $path = $matches[1] . $path;
-        }        
+        }
     }
     if (substr($path, strlen($path) - 1, 1) != '/')
         $path .= '/';
