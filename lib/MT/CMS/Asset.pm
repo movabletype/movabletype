@@ -13,6 +13,11 @@ use MT::Util
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $user  = $app->user;
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -324,10 +329,6 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    $app->validate_param({
-        id => [qw/ID/],
-    }) or return;
-
     if (   $app->param('edit_field')
         && $app->param('edit_field') =~ m/^customfield_.*$/ )
     {
@@ -495,10 +496,6 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    $app->validate_param({
-        user_id => [qw/ID/],
-    }) or return;
-
     my $is_userpic = $app->param('type') eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
@@ -646,11 +643,6 @@ sub complete_insert {
     my $asset  = $args{asset};
 
     $app->validate_magic() or return;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        id      => [qw/ID/],
-    }) or return;
 
     if ( !$asset && $app->param('id') ) {
         require MT::Asset;
@@ -1140,11 +1132,6 @@ sub build_asset_table {
 sub asset_insert_text {
     my $app     = shift;
     my ($param) = @_;
-
-    $app->validate_param({
-        id => [qw/ID/],
-    }) or return;
-
     my $q       = $app->param;
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
@@ -3003,11 +2990,6 @@ sub dialog_edit_image {
 
 sub thumbnail_image {
     my ($app) = @_;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        id      => [qw/ID/],
-    }) or return;
 
     my $id = $app->param('id');
     my $blog_id = $app->param('blog_id') || 0;
