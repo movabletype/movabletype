@@ -35,7 +35,7 @@ sub dated_group_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $obj->_get_preferred_map(
+    my $map = $obj->get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,
@@ -93,7 +93,7 @@ sub dated_category_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $obj->_get_preferred_map(
+    my $map = $obj->get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,
@@ -172,7 +172,7 @@ sub dated_author_contents {
         $start = $ctx->{current_timestamp};
         $end   = $ctx->{current_timestamp_end};
     }
-    my $map = $obj->_get_preferred_map(
+    my $map = $obj->get_preferred_map(
         {   archive_type    => $at,
             blog_id         => $blog->id,
             content_type_id => $content_type_id,

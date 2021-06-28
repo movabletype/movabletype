@@ -9,7 +9,7 @@
   "scripts": {
     "build-mt-css": "yarn build-mt-css-compile && yarn build-mt-css-prefix && yarn build-mt-css-minify",
     "build-mt-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/mt.scss mt-static/css/mt.css",
-    "build-mt-css-minify": "cleancss --level 1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
+    "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
     "build-mt-css-prefix": "postcss --config build/postcss.config.js --replace mt-static/css/mt.css",
     "build-riot": "yarn build-riot-listing; yarn build-riot-contenttype",
     "build-riot-listing": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
@@ -61,7 +61,7 @@
     "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.7.0",
+    "tinymce": "5.8.1",
     "tinymce-i18n": "20.12.25",
     "xpath": "0.0.32"
   }

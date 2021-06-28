@@ -1975,6 +1975,7 @@ a:hover .mt-icon--secondary{
   border-top-color: $border-color;
   border-radius: 0 0 $border-radius $border-radius;
   background: $white;
+  z-index: 1;
 }
 .mt_suggest__list{
   ul{

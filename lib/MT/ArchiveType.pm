@@ -335,7 +335,7 @@ sub get_content {
     shift->_getset_coderef( 'get_content', @_ );
 }
 
-sub _get_preferred_map {
+sub get_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
@@ -346,6 +346,8 @@ sub _get_preferred_map {
 
     return $self->_search_preferred_map($args);
 }
+
+*_get_preferred_map = \&get_preferred_map;
 
 sub _is_valid_map {
     my $self = shift;
@@ -371,29 +373,37 @@ sub _search_preferred_map {
     my $self = shift;
     my ($args) = @_;
     $args ||= {};
-    my $archive_type    = $args->{archive_type} || $self->name;
-    my $blog_id         = $args->{blog_id};
-    my $content_type_id = $args->{content_type_id};
 
-    my $map_args
-        = ( $self->_is_contenttype_archiver && $content_type_id )
-        ? +{
-        join => MT->model('template')->join_on(
-            undef,
-            {   id              => \'= templatemap_template_id',
-                content_type_id => $content_type_id,
+    my $archive_type = $args->{archive_type} || $self->name;
+    my $blog_id      = $args->{blog_id};
+    my $ct_id        = $args->{content_type_id};
+    require MT::Request;
+    my $cache_map = MT::Request->instance->cache('maps') || MT::Request->instance->cache('maps', {});
+    my $cache_key = join(':', $blog_id, $ct_id ? $ct_id : (), $self->name);
+    my $map       = $cache_map->{$cache_key};
+
+    if (!$map) {
+        my $map_args = ($self->_is_contenttype_archiver && $ct_id)
+            ? +{
+            join => MT->model('template')->join_on(
+                undef,
+                {
+                    id              => \'= templatemap_template_id',
+                    content_type_id => $ct_id,
+                },
+            ),
+            }
+            : undef;
+
+        $map = MT->model('templatemap')->load({
+                archive_type => $archive_type,
+                blog_id      => $blog_id,
+                is_preferred => 1,
             },
-        ),
-        }
-        : undef;
-
-    my $map = MT->model('templatemap')->load(
-        {   archive_type => $archive_type,
-            blog_id      => $blog_id,
-            is_preferred => 1,
-        },
-        $map_args || (),
-    );
+            $map_args || (),
+        );
+        $cache_map->{$cache_key} = $map if $map;
+    }
     return $map;
 }
 

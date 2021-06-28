@@ -14,6 +14,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture::Cms::Common1;
 use YAML::Tiny;
 
 MT::Test->init_app;
@@ -29,23 +30,7 @@ my $data;
 MT->instance;
 MT->component('core')->registry->{themes} = $data;
 
-$test_env->prepare_fixture(sub {
-    MT::Test->init_db;
-
-    # Website
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
-
-    # Blog
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name => 'my blog',
-    );
-
-    # Author
-    my $admin = MT->model('author')->load(1);
-});
+$test_env->prepare_fixture('cms/common1');
 
 my $website = MT::Website->load( { name => 'my website' } );
 my $blog    = MT::Blog->load( { name => 'my blog' } );
@@ -224,4 +209,3 @@ very_old_theme:
         core: 1.0
     optional_components:
         commercial: 2.0
-                          
