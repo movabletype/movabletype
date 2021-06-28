@@ -34,6 +34,7 @@ sub edit {
         convert_breaks            => [qw/MAYBE_STRING/],
         convert_breaks_for_mobile => [qw/MAYBE_STRING/],
         dirty                     => [qw/MAYBE_STRING/],
+        id                        => [qw/ID/],
         include_asset_ids         => [qw/IDS/],
         mobile_view               => [qw/MAYBE_STRING/],
         no_snapshot               => [qw/MAYBE_STRING/],
