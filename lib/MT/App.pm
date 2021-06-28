@@ -720,6 +720,15 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub set_referrer_policy {
+    my $app = shift;
+
+    my $policy = $app->config->ReferrerPolicy;
+    return unless $policy;
+
+    $app->set_header( 'Referrer-Policy', $policy );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -3127,6 +3136,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->set_referrer_policy;
 
     my ($body);
 
