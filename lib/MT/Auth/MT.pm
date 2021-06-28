@@ -13,6 +13,11 @@ use MT::Author qw( AUTHOR );
 sub sanity_check {
     my $auth  = shift;
     my ($app) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $q     = $app->param;
     my $id    = $q->param('id');
 

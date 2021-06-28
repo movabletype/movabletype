@@ -11,6 +11,11 @@ sub rename_tag {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        __id   => [qw/ID/],
+        __type => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog_id;
     $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
@@ -255,6 +260,10 @@ sub add_tags_to_entries {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $xhr = $app->param('xhr');
     my @id  = $app->param('id');
 
@@ -302,6 +311,10 @@ sub remove_tags_from_entries {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @id = $app->param('id');
 
     require MT::Tag;
@@ -333,6 +346,11 @@ sub remove_tags_from_entries {
 sub add_tags_to_assets {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
 
     my @id      = $app->param('id');
     my $blog_id = $app->param('blog_id');
@@ -380,6 +398,11 @@ sub add_tags_to_assets {
 sub remove_tags_from_assets {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
 
     my @id      = $app->param('id');
     my $blog_id = $app->param('blog_id');

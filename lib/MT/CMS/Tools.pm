@@ -1002,6 +1002,10 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    $app->validate_param({
+        author_id => [qw/ID/],
+    }) or return;
+
     my $q = $app->param;
 
     require MT::Auth;
@@ -1162,6 +1166,12 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_what => [qw/IDS/],
+        blog_id     => [qw/ID/],
+    }) or return;
+
     my $user    = $app->user;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
@@ -1904,6 +1914,10 @@ sub adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        asset_ids => [qw/MAYBE_IDS/],
+    }) or return;
+
     require MT::BackupRestore;
 
     my $q         = $app->param;
@@ -2600,6 +2614,12 @@ sub dialog_restore_upload {
 
 sub dialog_adjust_sitepath {
     my $app  = shift;
+
+    $app->validate_param({
+        asset_ids => [qw/MAYBE_IDS/],
+        blog_ids  => [qw/IDS/],
+    }) or return;
+
     my $user = $app->user;
     return $app->permission_denied()
         if !$user->is_superuser;
@@ -2746,6 +2766,11 @@ sub update_list_prefs {
 
 sub recover_passwords {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @id  = $app->param('id');
 
     return $app->permission_denied()

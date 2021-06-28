@@ -14,6 +14,11 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        _type   => [qw/OBJTYPE/],
+        blog_id => [qw/ID/],
+    }) or return;
+
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $blog    = $app->blog;
@@ -186,6 +191,12 @@ sub save_commenter_perm {
 
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        action       => [qw/MAYBE_STRING/],
+        blog_id      => [qw/ID/],
+        commenter_id => [qw/ID/],
+    }) or return;
+
     my $acted_on;
     my %rebuild_set;
     my @ids     = $params ? @$params : $app->param('commenter_id');
@@ -300,6 +311,11 @@ sub save_commenter_perm {
 
 sub trust_commenter_by_comment {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'trust' );
@@ -308,6 +324,11 @@ sub trust_commenter_by_comment {
 
 sub untrust_commenter_by_comment {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'untrust' );
@@ -316,6 +337,11 @@ sub untrust_commenter_by_comment {
 
 sub ban_commenter_by_comment {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'ban' );
@@ -324,6 +350,11 @@ sub ban_commenter_by_comment {
 
 sub unban_commenter_by_comment {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @comments   = $app->param('id');
     my @commenters = map_comment_to_commenter( $app, \@comments );
     $app->param( 'action', 'unban' );
@@ -332,6 +363,11 @@ sub unban_commenter_by_comment {
 
 sub trust_commenter {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @commenters = $app->param('id');
     $app->param( 'action', 'trust' );
     save_commenter_perm( $app, \@commenters );
@@ -339,6 +375,11 @@ sub trust_commenter {
 
 sub ban_commenter {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @commenters = $app->param('id');
     $app->param( 'action', 'ban' );
     save_commenter_perm( $app, \@commenters );
@@ -346,6 +387,11 @@ sub ban_commenter {
 
 sub unban_commenter {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @commenters = $app->param('id');
     $app->param( 'action', 'unban' );
     save_commenter_perm( $app, \@commenters );
@@ -353,6 +399,11 @@ sub unban_commenter {
 
 sub untrust_commenter {
     my $app        = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @commenters = $app->param('id');
     $app->param( 'action', 'untrust' );
     save_commenter_perm( $app, \@commenters );
@@ -409,6 +460,13 @@ sub empty_junk {
 
 sub handle_junk {
     my $app   = shift;
+
+    $app->validate_param({
+        _type   => [qw/OBJTYPE/],
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
+
     my @ids   = $app->param("id");
     my $type  = $app->param("_type");
     my $class = $app->model($type);
@@ -511,6 +569,11 @@ sub handle_junk {
 sub not_junk {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
 
     my @ids = $app->param("id");
     my @item_loop;
@@ -626,6 +689,13 @@ sub do_reply {
 
     $app->validate_magic
         or return $app->error( $app->translate("Invalid request") );
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        magic_token => [qw/MAYBE_STRING/],
+        reply_to    => [qw/ID/],
+        return_url  => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $q = $app->param;
 
@@ -756,6 +826,12 @@ sub reply_preview {
 sub dialog_post_comment {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        reply_to    => [qw/ID/],
+        return_args => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $user      = $app->user;
     my $parent_id = $app->param('reply_to');

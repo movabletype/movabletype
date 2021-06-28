@@ -520,6 +520,11 @@ sub dialog_select_website {
 sub dialog_move_blogs {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID MULTI/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
 
     my $terms = {};
@@ -566,6 +571,11 @@ sub move_blogs {
     return unless $app->validate_magic;
     return $app->error( $app->translate('Permission denied.') )
         unless $app->can_do('move_blogs');
+
+    $app->validate_param({
+        blog_ids => [qw/IDS/],
+        ids      => [qw/MAYBE_STRING/],   # ID?
+    }) or return;
 
     my $website_class = $app->model('website');
     my $ids           = $app->param('ids');

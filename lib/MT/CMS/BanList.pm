@@ -20,6 +20,12 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     my $ip    = $app->param('ip');
     $ip =~ s/(^\s+|\s+$)//g;
     return $eh->error(

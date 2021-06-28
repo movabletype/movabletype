@@ -609,6 +609,13 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+
+    $app->validate_param({
+        _type      => [qw/OBJTYPE/],
+        blog_id    => [qw/ID/],
+        entry_type => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
 
     return $app->permission_denied()
@@ -657,6 +664,11 @@ sub search_replace {
 sub do_search_replace {
     my $app     = shift;
     my ($param) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+    }) or return;
+
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;

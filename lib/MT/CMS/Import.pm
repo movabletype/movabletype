@@ -97,6 +97,11 @@ sub start_import {
 sub do_import {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id        => [qw/ID/],
+        default_cat_id => [qw/ID/],
+    }) or return;
+
     my $q = $app->param;
     require MT::Blog;
     my $blog_id = $q->param('blog_id')
