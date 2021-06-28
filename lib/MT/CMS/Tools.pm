@@ -364,20 +364,6 @@ sub new_password {
     return $tmpl;
 }
 
-MT->add_callback(validate_request_params_itemset_action => 5, 'MT', \&_validate_action_params);
-
-sub _validate_action_params {
-    my ($cb, $app) = @_;
-    my $type = $app->param('_type') or return;
-    if ($type =~ /\A(?:blog|content_data)\z/) {
-        for my $id (map {split /,/, $_} $app->multi_param('id')) {
-            next unless defined $id;
-            return unless $id =~ /\A[0-9]+\z/;
-        }
-    }
-    return 1;
-}
-
 sub do_list_action {
     my $app = shift;
 
@@ -999,6 +985,10 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    $app->validate_param({
+        author_id => [qw/ID/],
+    }) or return;
+
     require MT::Auth;
     require MT::Log;
     if ( !MT::Auth->can_recover_password ) {
@@ -1157,6 +1147,14 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_archive_format => [qw/MAYBE_STRING/],
+        backup_what           => [qw/IDS/],
+        blog_id               => [qw/ID/],
+        size_limit            => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id') || 0;
     my $perms   = $app->permissions
@@ -1900,6 +1898,16 @@ sub adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        asset_ids      => [qw/MAYBE_IDS/],
+        assets         => [qw/MAYBE_STRING/],
+        current_file   => [qw/MAYBE_STRING/],
+        error          => [qw/MAYBE_STRING/],
+        redirect       => [qw/MAYBE_STRING/],
+        restore_upload => [qw/MAYBE_STRING/],
+        tmp_dir        => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::BackupRestore;
 
     my $tmp_dir   = $app->param('tmp_dir');
@@ -2603,6 +2611,15 @@ sub dialog_adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
+    $app->validate_param({
+        asset_ids      => [qw/MAYBE_IDS/],
+        blog_ids       => [qw/IDS/],
+        current_file   => [qw/MAYBE_STRING/],
+        error          => [qw/MAYBE_STRING/],
+        restore_upload => [qw/MAYBE_STRING/],
+        tmp_dir        => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $tmp_dir    = $app->param('tmp_dir');
     my $error      = $app->param('error') || q();
     my $uploaded   = $app->param('restore_upload') || 0;
@@ -2737,6 +2754,11 @@ sub convert_to_html {
 
 sub recover_passwords {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my @id  = $app->multi_param('id');
 
     return $app->permission_denied()

@@ -28,18 +28,13 @@ use MT::Log;
 use MT::Util ();
 use MT::Serialize;
 
-sub _validate_params {
-    my ($cb, $app) = @_;
-    for my $name (qw/blog_id content_field_id/) {
-        my $value = $app->param($name);
-        return if defined $value && $value !~ /\A[0-9]+\z/;
-    }
-    return 1;
-}
-
 sub edit {
     my ( $app, $param ) = @_;
     my $cfg = $app->config;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
 
     return $app->return_to_dashboard( redirect => 1 )
         unless $app->blog;
@@ -297,6 +292,13 @@ sub edit {
 
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
+    $app->validate_param({
+        _type         => [qw/OBJTYPE/],
+        saved_deleted => [qw/MAYBE_STRING/],
+        type          => [qw/WORD/],
+    }) or return;
+
     if ($app->mode eq 'list'
         && (   $app->param('_type') eq 'content_data'
             && $app->param('type') =~ /^content_data_(\d+)$/ )
@@ -330,6 +332,16 @@ sub save {
     my ($app) = @_;
     my $cfg   = $app->config;
     my $user  = $app->user;
+
+    $app->validate_param({
+        blog_id          => [qw/ID/],
+        data             => [qw/MAYBE_STRING/],
+        description      => [qw/MAYBE_STRING/],
+        id               => [qw/ID/],
+        label_field      => [qw/MAYBE_STRING/],
+        name             => [qw/MAYBE_STRING/],
+        user_disp_option => [qw/MAYBE_STRING/],
+    }) or return;
 
     my %param = ();
     for my $col (qw{ name description user_disp_option label_field data }) {
@@ -730,10 +742,12 @@ sub _autosave_content_data {
 
 }
 
-MT->add_callback(validate_request_params_dialog_content_data_modal => 5, 'MT', \&_validate_params);
-
 sub dialog_content_data_modal {
     my $app = shift;
+
+    $app->validate_param({
+        content_field_id => [qw/ID/],
+    }) or return;
 
     my ( $can_multi, $content_type_id, $content_type_name );
     my $content_field_id = $app->param('content_field_id');
@@ -760,6 +774,13 @@ sub dialog_content_data_modal {
 
 sub dialog_list_content_data {
     my $app              = shift;
+
+    $app->validate_param({
+        content_field_id => [qw/ID/],
+        dialog           => [qw/MAYBE_STRING/],
+        no_insert        => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog             = $app->blog;
     my $content_field_id = $app->param('content_field_id') || 0;
     my $content_field    = MT::ContentField->load($content_field_id);

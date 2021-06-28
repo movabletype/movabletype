@@ -12,6 +12,11 @@ use MT::I18N qw( wrap_text );
 
 sub entry_notify {
     my $app = shift;
+
+    $app->validate_param({
+        entry_id => [qw/ID/],
+    }) or return;
+
     return $app->return_to_dashboard( permission => 1 )
         unless $app->can_do('open_entry_notification_screen');
     my $entry_id = $app->param('entry_id')
@@ -32,6 +37,15 @@ sub entry_notify {
 sub send_notify {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        entry_id           => [qw/ID/],
+        message            => [qw/MAYBE_STRING/],
+        send_body          => [qw/MAYBE_STRING/],
+        send_excerpt       => [qw/MAYBE_STRING/],
+        send_notify_emails => [qw/MAYBE_STRING/],
+        send_notify_list   => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $entry_id = $app->param('entry_id')
         or return $app->error( $app->translate("No entry ID was provided") );
@@ -267,6 +281,14 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        email   => [qw/MAYBE_STRING/],
+        id      => [qw/ID/],
+        url     => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $email = lc( $app->param('email') || '' );
     $email =~ s/(^\s+|\s+$)//gs;
     my $blog_id = $app->param('blog_id');

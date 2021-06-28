@@ -40,6 +40,15 @@ sub config {
 sub add {
     my $app = shift;
 
+    $app->validate_param({
+        _type          => [qw/OBJTYPE/],
+        json           => [qw/MAYBE_STRING/],
+        limit          => [qw/MAYBE_STRING/],
+        offset         => [qw/MAYBE_STRING/],
+        search         => [qw/MAYBE_STRING/],
+        select_blog_id => [qw/ID/],
+    }) or return;
+
     return $app->permission_denied()
         unless $app->user->is_superuser()
         || ($app->blog

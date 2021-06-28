@@ -198,6 +198,11 @@ sub theme_export_handler {
 
 sub options_html_params {
     my ( $app, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $parent_id = $app->param('id');
     my $content_type_loop
         = MT->model('content_type')
@@ -281,6 +286,11 @@ sub feed_value_handler {
 
 sub field_type_validation_handler {
     my $app                 = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return $app->errstr;
+
     my $content_type_id     = $app->param('id');
     my $content_type_exists = MT::ContentType->exist(
         {   blog_id => $app->blog->id,

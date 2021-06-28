@@ -711,6 +711,12 @@ sub cfg_web_services {
 
 sub rebuild_phase {
     my $app  = shift;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
+
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->multi_param('id');
     $app->{goback} = $app->return_uri;
@@ -744,6 +750,32 @@ sub rebuild_phase {
 
 sub rebuild_pages {
     my $app   = shift;
+
+    $app->validate_param({
+        blog_id            => [qw/ID/],
+        content_data_id    => [qw/ID/],
+        content_type_id    => [qw/ID/],
+        entry_id           => [qw/ID/],
+        fs                 => [qw/MAYBE_STRING/],
+        is_new             => [qw/MAYBE_STRING/],
+        next               => [qw/MAYBE_STRING/],
+        no_rebuilding_tmpl => [qw/MAYBE_STRING/],
+        no_static          => [qw/MAYBE_STRING/],
+        offset             => [qw/MAYBE_STRING/],
+        old_categories     => [qw/MAYBE_STRING/],
+        old_date           => [qw/MAYBE_STRING/],
+        old_next           => [qw/MAYBE_STRING/],
+        old_previous       => [qw/MAYBE_STRING/],
+        old_status         => [qw/MAYBE_STRING/],
+        return_args        => [qw/MAYBE_STRING/],
+        start_time         => [qw/MAYBE_STRING/],
+        template_id        => [qw/ID/],
+        templatemap_id     => [qw/ID/],
+        total              => [qw/MAYBE_STRING/],
+        type               => [qw/MAYBE_STRING/],
+        with_indexes       => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     require MT::Entry;
@@ -1258,6 +1290,20 @@ sub start_rebuild_pages {
 sub start_rebuild_pages_directly {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id            => [qw/ID/],
+        content_type_id    => [qw/ID/],
+        next               => [qw/MAYBE_STRING/],
+        no_rebuilding_tmpl => [qw/MAYBE_STRING/],
+        no_static          => [qw/MAYBE_STRING/],
+        single_template    => [qw/MAYBE_STRING/],
+        start_time         => [qw/MAYBE_STRING/],
+        template_id        => [qw/ID/],
+        total              => [qw/MAYBE_STRING/],
+        type               => [qw/MAYBE_STRING/],
+        with_indexes       => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
@@ -1403,6 +1449,13 @@ sub _create_build_order {
 
 sub rebuild_confirm {
     my $app     = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        prompt  => [qw/MAYBE_STRING/],
+        tmpl_id => [qw/ID/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id)
@@ -1452,6 +1505,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -3020,6 +3078,29 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_param({
+        archive_path          => [qw/MAYBE_STRING/],
+        archive_path_absolute => [qw/MAYBE_STRING/],
+        archive_url           => [qw/MAYBE_STRING/],
+        archive_url_path      => [qw/MAYBE_STRING/],
+        archive_url_subdomain => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID/],
+        clone                 => [qw/MAYBE_STRING/],
+        enable_archive_paths  => [qw/MAYBE_STRING/],
+        id                    => [qw/ID MULTI/],
+        new_blog_name         => [qw/MAYBE_STRING/],
+        site_path             => [qw/MAYBE_STRING/],
+        site_path_absolute    => [qw/MAYBE_STRING/],
+        site_url              => [qw/MAYBE_STRING/],
+        site_url_path         => [qw/MAYBE_STRING/],
+        site_url_subdomain    => [qw/MAYBE_STRING/],
+        use_absolute          => [qw/MAYBE_STRING/],
+        use_absolute_archive  => [qw/MAYBE_STRING/],
+        use_archive_subdomain => [qw/MAYBE_STRING/],
+        use_subdomain         => [qw/MAYBE_STRING/],
+        verify                => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     $app->{hide_goback_button} = 1;
@@ -3603,6 +3684,11 @@ sub data_api_is_enabled {
 
 sub save_data_api_settings {
     my ( $app, $blog_id, $new_value ) = @_;
+
+    $app->validate_param({
+        enable_data_api => [qw/MAYBE_STRING/],
+        id              => [qw/ID/],
+    }) or return;
 
     $blog_id   = $app->param('id') || 0         unless defined $blog_id;
     $new_value = $app->param('enable_data_api') unless defined $new_value;

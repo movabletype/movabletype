@@ -10,6 +10,10 @@ use warnings;
 sub view {
     my $app = shift;
 
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $perm = $app->permissions
         or return $app->permission_denied;
 

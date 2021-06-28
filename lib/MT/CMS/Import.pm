@@ -99,6 +99,16 @@ sub start_import {
 sub do_import {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id        => [qw/ID/],
+        convert_breaks => [qw/MAYBE_STRING/],
+        default_cat_id => [qw/ID/],
+        encoding       => [qw/MAYBE_STRING/],
+        import_as_me   => [qw/MAYBE_STRING/],
+        import_type    => [qw/MAYBE_STRING/],
+        password       => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Blog;
     my $blog_id = $app->param('blog_id')
         or return $app->return_to_dashboard( redirect => 1 );

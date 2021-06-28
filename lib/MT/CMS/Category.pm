@@ -12,6 +12,12 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        tab   => [qw/MAYBE_STRING/],
+        type  => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog = $app->blog;
 
     if ($id) {
@@ -102,6 +108,13 @@ sub edit {
 
 sub save {
     my $app   = shift;
+
+    $app->validate_param({
+        _type       => [qw/OBJTYPE/],
+        blog_id     => [qw/ID/],
+        move_cat_id => [qw/ID/],
+    }) or return;
+
     my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
@@ -173,6 +186,16 @@ sub save {
 sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id         => [qw/ID/],
+        checksum        => [qw/MAYBE_STRING/],
+        datasource      => [qw/OBJTYPE/],
+        is_category_set => [qw/MAYBE_STRING/],
+        objects         => [qw/MAYBE_STRING/],
+        set_id          => [qw/ID/],
+        set_name        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $is_category_set = $app->param('is_category_set');
     my $set_id          = $app->param('set_id');
@@ -459,6 +482,16 @@ sub js_add_category {
     unless ( $app->validate_magic ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
+
+    $app->validate_param({
+        _type           => [qw/OBJTYPE/],
+        basename        => [qw/MAYBE_STRING/],
+        blog_id         => [qw/ID/],
+        category_set_id => [qw/ID/],
+        label           => [qw/MAYBE_STRING/],
+        parent          => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     my $user            = $app->user;
     my $blog_id         = $app->param('blog_id');
     my $type            = $app->param('_type') || 'category';
@@ -794,6 +827,12 @@ sub _adjust_ancestry {
 
 sub move_category {
     my $app   = shift;
+
+    $app->validate_param({
+        _type       => [qw/OBJTYPE/],
+        move_cat_id => [qw/ID/],
+    }) or return;
+
     my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
@@ -840,6 +879,12 @@ sub move_category {
 
 sub template_param_list {
     my ( $cb, $app, $param, $tmpl ) = @_;
+
+    $app->validate_param({
+        _type           => [qw/OBJTYPE/],
+        id              => [qw/ID/],
+        is_category_set => [qw/MAYBE_STRING/],
+    }) or return;
 
     if ( $param->{is_category_set} = $app->param('is_category_set') ) {
         my $set_id = $app->param('id');
@@ -890,6 +935,12 @@ sub template_param_list {
 
 sub pre_load_filtered_list {
     my ( $cb, $app, $filter, $opts, $cols ) = @_;
+
+    $app->validate_param({
+        is_category_set => [qw/MAYBE_STRING/],
+        set_id          => [qw/ID/],
+    }) or return;
+
     delete $opts->{limit};
     delete $opts->{offset};
     delete $opts->{sort_order};
@@ -917,6 +968,12 @@ sub pre_load_filtered_list {
 
 sub filtered_list_param {
     my ( $cb, $app, $param, $objs ) = @_;
+
+    $app->validate_param({
+        datasource      => [qw/MAYBE_STRING/],
+        is_category_set => [qw/MAYBE_STRING/],
+        set_id          => [qw/ID/],
+    }) or return;
 
     my $sort_order = '';
     if ( $app->param('is_category_set') ) {
