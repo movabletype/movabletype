@@ -3995,6 +3995,32 @@ sub param_hash {
     %result;
 }
 
+sub validate_param {
+    my ($app, $rules) = @_;
+    return 1 if $app->config->DisableValidateParam;
+
+    require MT::ParamValidator;
+    unless ($MT::ParamValidator::Initialized) {
+        my $handlers = $app->registry('param_validator') || {};
+        for my $name (keys %$handlers) {
+            next unless $name && $name =~ /^[A-Za-z][A-Za-z0-9_]*$/;
+            my $code = $app->handler_to_coderef($handlers->{$name});
+            MT::ParamValidator->set_handler($name => $code);
+        }
+        $MT::ParamValidator::Initialized = 1;
+    }
+    my $validator = MT::ParamValidator->new($rules) or return $app->error(MT::ParamValidator->errstr);
+    my $res = $validator->validate_param($app);
+    if (!$res) {
+        if ($MT::DebugMode) {
+            return $app->error($validator->errstr);
+        } else {
+            return $app->error(MT->translate("Invalid request."));
+        }
+    }
+    return $res;
+}
+
 ## Path/server/script-name determination methods
 
 sub query_string {
