@@ -505,7 +505,7 @@ sub save {
         authored_on_second    => [qw/MAYBE_STRING/],
         authored_on_time      => [qw/MAYBE_STRING/],
         authored_on_year      => [qw/MAYBE_STRING/],
-        blog_id               => [qw/ID/],
+        blog_id               => [qw/ID MULTI/],     # FIXME: after uploading an image
         content_type_id       => [qw/ID/],
         data_label            => [qw/MAYBE_STRING/],
         from_preview          => [qw/MAYBE_STRING/],

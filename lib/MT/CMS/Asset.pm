@@ -16,6 +16,11 @@ my $default_thumbnail_size = 60;
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $user  = $app->user;
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -318,13 +323,6 @@ sub insert {
 
     $app->validate_magic() or return;
 
-    $app->validate_param({
-        changed_file_ext => [qw/MAYBE_STRING/],
-        edit_field       => [qw/MAYBE_STRING/],
-        id               => [qw/ID/],
-        no_insert        => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $edit_field = $app->param('edit_field') || '';
     if ( $edit_field =~ m/^customfield_.*$/ ) {
         return $app->permission_denied()
@@ -506,14 +504,6 @@ sub start_upload {
 sub js_upload_file {
     my $app = shift;
 
-    $app->validate_param({
-        changed_file_ext => [qw/MAYBE_STRING/],
-        require_type     => [qw/MAYBE_STRING/],
-        thumbnail_size   => [qw/MAYBE_STRING/],
-        type             => [qw/MAYBE_STRING/],
-        user_id          => [qw/ID/],
-    }) or return;
-
     my $is_userpic = ( $app->param('type') || '' ) eq 'userpic' ? 1 : 0;
     my $user_id = $app->param('user_id');
     if ($is_userpic) {
@@ -664,18 +654,6 @@ sub complete_insert {
     my $asset  = $args{asset};
 
     $app->validate_magic() or return;
-
-    $app->validate_param({
-        asset_select     => [qw/MAYBE_STRING/],
-        blog_id          => [qw/ID/],
-        changed_file_ext => [qw/MAYBE_STRING/],
-        dialog           => [qw/MAYBE_STRING/],
-        extra_path       => [qw/MAYBE_STRING/],
-        force_insert     => [qw/MAYBE_STRING/],
-        id               => [qw/ID/],
-        middle_path      => [qw/MAYBE_STRING/],
-        no_insert        => [qw/MAYBE_STRING/],
-    }) or return;
 
     my $id      = $app->param('id');
     my $blog_id = $app->param('blog_id');
@@ -1176,12 +1154,6 @@ sub build_asset_table {
 sub asset_insert_text {
     my $app     = shift;
     my ($param) = @_;
-
-    $app->validate_param({
-        edit_field => [qw/MAYBE_STRING/],
-        id         => [qw/ID/],
-    }) or return;
-
     my $id      = $app->param('id')
         or return $app->errtrans("Invalid request.");
     my $asset = MT->model('asset')->load($id)
@@ -2819,7 +2791,7 @@ sub js_save_asset {
         description => [qw/MAYBE_STRING/],
         id          => [qw/ID/],
         label       => [qw/MAYBE_STRING/],
-    }) or return;
+    }) or return $app->json_error($app->errstr);
 
     $app->validate_magic()
         or return $app->error(
@@ -2942,13 +2914,6 @@ sub dialog_edit_image {
 
 sub thumbnail_image {
     my ($app) = @_;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        height  => [qw/MAYBE_STRING/],
-        id      => [qw/ID/],
-        width   => [qw/MAYBE_STRING/],
-    }) or return;
 
     my $id = $app->param('id');
     my $blog_id = $app->param('blog_id') || 0;
@@ -3164,6 +3129,7 @@ sub dialog_insert_options {
     $app->validate_param({
         asset_select        => [qw/MAYBE_STRING/],
         blog_id             => [qw/ID/],
+        content_field_id    => [qw/ID/],
         direct_asset_insert => [qw/MAYBE_STRING/],
         edit_field          => [qw/MAYBE_STRING/],
         id                  => [qw/IDS/],
