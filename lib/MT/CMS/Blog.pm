@@ -3685,11 +3685,6 @@ sub data_api_is_enabled {
 sub save_data_api_settings {
     my ( $app, $blog_id, $new_value ) = @_;
 
-    $app->validate_param({
-        enable_data_api => [qw/MAYBE_STRING/],
-        id              => [qw/ID/],
-    }) or return;
-
     $blog_id   = $app->param('id') || 0         unless defined $blog_id;
     $new_value = $app->param('enable_data_api') unless defined $new_value;
 

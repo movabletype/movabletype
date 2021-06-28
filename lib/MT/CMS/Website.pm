@@ -604,7 +604,7 @@ sub move_blogs {
 
     $app->validate_param({
         blog_ids => [qw/IDS/],
-        ids      => [qw/MAYBE_STRING/],   # ID?
+        ids      => [qw/ID/],
     }) or return;
 
     my $website_class = $app->model('website');
