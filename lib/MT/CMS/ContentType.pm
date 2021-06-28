@@ -293,12 +293,6 @@ sub edit {
 sub tmpl_param_list_common {
     my ( $cb, $app, $param, $tmpl ) = @_;
 
-    $app->validate_param({
-        _type         => [qw/OBJTYPE/],
-        saved_deleted => [qw/MAYBE_STRING/],
-        type          => [qw/WORD/],
-    }) or return;
-
     if ($app->mode eq 'list'
         && (   $app->param('_type') eq 'content_data'
             && $app->param('type') =~ /^content_data_(\d+)$/ )
