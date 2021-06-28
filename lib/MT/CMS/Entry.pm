@@ -16,6 +16,7 @@ sub edit {
 
     $app->validate_param({
         _type                     => [qw/OBJTYPE/],
+        id                        => [qw/ID/],
         asset_id                  => [qw/ID/],
         category_id               => [qw/ID/],
         category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
