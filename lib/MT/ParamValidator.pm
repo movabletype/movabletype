@@ -82,7 +82,7 @@ sub validate_param {
 
     my @names = @{ $self->{names} };
     if (my @re_names = @{ $self->{re_names} }) {
-        my @all_names = $app->multi_param;
+        my @all_names = $app->param;
         for my $re (@re_names) {
             for my $matched (grep { /$re/ } @all_names) {
                 $self->{validators}{$matched} = $self->{validators}{$re};
@@ -96,7 +96,7 @@ sub validate_param {
     for my $name (@names) {
         next unless exists $self->{validators}{$name};
         my $last_error;
-        my @values = $app->multi_param($name);
+        my @values = $app->param($name);
         if (@values > 1 && !$self->{multi}{$name}) {
             _warn(MT->translate("'[_1]' has multiple values", $name) . join ",", @values);
         }
