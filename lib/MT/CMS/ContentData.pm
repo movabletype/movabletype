@@ -1448,10 +1448,6 @@ sub validate_content_fields {
 
     # TODO: permission check
 
-    $app->validate_param({
-        content_type_id => [qw/ID/],
-    }) or return;
-
     my $blog_id         = $app->blog ? $app->blog->id : undef;
     my $content_type_id = $app->param('content_type_id') || 0;
     my $content_type    = MT::ContentType->load( { id => $content_type_id } );
@@ -1509,11 +1505,6 @@ sub _get_form_data {
 
 sub cms_pre_load_filtered_list {
     my ( $cb, $app, $filter, $load_options, $cols ) = @_;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        type    => [qw/WORD/],
-    }) or return;
 
     my $terms = $load_options->{terms} || {};
 
@@ -2141,10 +2132,6 @@ sub can_delete {
 sub build_content_data_table {
     my $app  = shift;
     my %args = @_;
-
-    $app->validate_param({
-        content_type_id => [qw/ID/],
-    }) or return;
 
     my $app_author = $app->user;
     my $param      = $args{param} || {};
