@@ -2875,7 +2875,7 @@ sub declare_deprecation {
     my ($class, %args) = @_;
     my $msg = '';
 
-    $args{name} ||= (caller 0)[3];
+    $args{name} ||= (caller 1)[3];
 
     if ($args{deleting} && $args{alterative}) {
         $msg = MT->translate("[_1] is deprecated and will be removed on [_2]. Use [_3] instead.", $args{name}, $args{deleting}, $args{alterative});
