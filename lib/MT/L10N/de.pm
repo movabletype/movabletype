@@ -1889,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Inhaltsdaten # [_1] nicht gefunden.',
 	'Create Content Data' => 'Inhaltsdaten anlegen',
 	'Edit All Content Data' => 'Alle Inhaltsdaten bearbeiten',
+	'Manage All Content Data' => 'Alle inhaltsdaten verwalten',
 	'Manage Content Data' => 'Inhaltsdaten verwalten',
 	'Publish Content Data' => 'Inhaltsdaten veröffentlichen',
 	'Tags with [_1]' => 'Tags mit [_1]',
