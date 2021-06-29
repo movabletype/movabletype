@@ -13,6 +13,7 @@ sub edit {
     my ( $app, $id, $obj, $param ) = @_;
 
     $app->validate_param({
+        id    => [qw/ID/],
         _type => [qw/OBJTYPE/],
         type  => [qw/OBJTYPE/],
     }) or return;
@@ -86,13 +87,6 @@ sub edit {
 
 sub save {
     my $app   = shift;
-
-    $app->validate_param({
-        _type       => [qw/OBJTYPE/],
-        blog_id     => [qw/ID/],
-        move_cat_id => [qw/ID/],
-    }) or return;
-
     my $q     = $app->param;
     my $type  = $q->param('_type');
     my $class = $app->model($type)
@@ -733,12 +727,6 @@ sub _adjust_ancestry {
 
 sub move_category {
     my $app   = shift;
-
-    $app->validate_param({
-        _type       => [qw/OBJTYPE/],
-        move_cat_id => [qw/ID/],
-    }) or return;
-
     my $type  = $app->param('_type');
     my $class = $app->model($type)
         or return $app->errtrans("Invalid request.");
