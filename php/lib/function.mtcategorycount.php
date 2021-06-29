@@ -34,7 +34,7 @@ function smarty_function_mtcategorycount($args, &$ctx) {
             if (is_numeric($args['content_type'])) {
                 $terms['content_type_id'] = $args['content_type'];
             } else {
-                $content_type = $ctx->get_content_type_context($args);
+                $content_type = get_content_type_context($ctx, $args);
                 if (isset($content_type)) {
                     $terms['content_type_id'] = $content_type->id;
                 }
