@@ -906,6 +906,7 @@ sub core_finish {
                         "User '[_1]' upgraded database to version [_2]",
                         $user->name, $cur_schema
                     ),
+                    level    => MT::Log::NOTICE(),
                     category => 'upgrade',
                 }
             );
@@ -960,6 +961,7 @@ sub core_finish {
                             $plugin->version || '-',
                             $ver
                         ),
+                        level    => MT::Log::NOTICE(),
                         category => 'install',
                         class    => 'plugin',
                     }
@@ -972,11 +974,13 @@ sub core_finish {
         $cfg->PluginSchemaVersion( $plugin_schema, 1 );
     }
 
+    my $version_upgraded;
     my $cur_version = MT->version_number;
     my $cur_rel     = MT->release_number;
     if ( !defined( $cfg->MTVersion ) || ( $cur_version > $cfg->MTVersion ) ) {
         $cfg->MTVersion( $cur_version, 1 );
         $cfg->MTReleaseNumber( $cur_rel, 1 );
+        $version_upgraded = 1;
     }
     elsif (
         !defined( $cfg->MTReleaseNumber )
@@ -985,6 +989,15 @@ sub core_finish {
         )
     {
         $cfg->MTReleaseNumber( $cur_rel, 1 );
+        $version_upgraded = 1;
+    }
+    if ($cfg->NotifyUpgrade && $version_upgraded) {
+        MT->log({
+            message  => MT->translate("Movable Type has been upgraded to version [_1].", MT->release_version_id),
+            level    => MT::Log::NOTICE(),
+            class    => 'system',
+            category => 'upgrade',
+        });
     }
     $cfg->save_config unless $DryRun;
 
