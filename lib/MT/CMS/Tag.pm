@@ -11,11 +11,6 @@ sub rename_tag {
     my $app = shift;
     $app->validate_magic or return;
 
-    $app->validate_param({
-        __id   => [qw/ID/],
-        __type => [qw/OBJTYPE/],
-    }) or return;
-
     my $blog_id;
     $blog_id = $app->blog->id if $app->blog;
     $app->can_do('rename_tag')
