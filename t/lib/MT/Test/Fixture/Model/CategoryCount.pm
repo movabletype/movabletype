@@ -18,14 +18,20 @@ use base 'MT::Test::Fixture';
 #     + type: categories
 #     + category_set_id: 1
 #
+#   - my_asset1 (ID:3)
+#     + type: asset
+#
 # * content type1 (ID:2)
-#   - content field2 (ID:3)
+#   - content field2 (ID:4)
 #     + type: categories
 #     + category_set_id: 1
 #
-#   - content field3 (ID:4)
+#   - content field3 (ID:5)
 #     + type: categories
 #     + category_set_id: 1
+#
+#   - my_asset2 (ID:6)
+#     + type: asset
 
 # * content data0 (ID:1)
 #   - content_type_id: 1
@@ -39,23 +45,31 @@ use base 'MT::Test::Fixture';
 #
 # * content data2 (ID:3)
 #   - content_type_id: 1
-#   - status: draft
-#   - content_field1: category0, category1, category2
+#   - my_asset1: 1, 2, 3
 #
 # * content data3 (ID:4)
-#   - content_type_id: 2
-#   - status: release
-#   - content_field2: category0, category1
+#   - content_type_id: 1
+#   - status: draft
+#   - content_field1: category0, category1, category2
 #
 # * content data4 (ID:5)
 #   - content_type_id: 2
 #   - status: release
-#   - content_field3: category0
+#   - content_field2: category0, category1
 #
 # * content data5 (ID:6)
 #   - content_type_id: 2
+#   - status: release
+#   - content_field3: category0
+#
+# * content data6 (ID:7)
+#   - content_type_id: 2
 #   - status: draft
 #   - content_field3: category0, $category1, category2
+#
+# * content data2 (ID:8)
+#   - content_type_id: 2
+#   - my_asset2: 1, 2, 3
 
 sub prepare_fixture {
     MT::Test->init_db;
@@ -149,7 +163,7 @@ sub prepare_fixture {
         $ct->fields( \@field_data );
         $ct->save or die $ct->errstr;
 
-        # create 2 content data
+        # create 4 content data
         MT::Test::Permission->make_content_data(
             blog_id         => $ct->blog_id,
             content_type_id => $ct->id,
