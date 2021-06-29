@@ -830,6 +830,7 @@ sub main {
                         : $cur_version
                     ),
                 ),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 category => 'upgrade',
             }
