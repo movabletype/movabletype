@@ -613,6 +613,8 @@ sub js_upload_file {
 sub upload_file {
     my $app = shift;
 
+    MT::Util::declare_deprecation();
+
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
             unless $perms->can_do('upload');
@@ -1373,6 +1375,9 @@ sub _set_start_upload_params {
 ### DEPRECATED: v6.2
 sub _upload_file_compat {
     my $app = shift;
+
+    MT::Util::declare_deprecation();
+
     my (%upload_param) = @_;
     require MT::Image;
 

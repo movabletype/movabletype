@@ -9,6 +9,7 @@ use warnings;
 use Carp;
 use utf8;
 use base 'Exporter';
+use MT::Util;
 
 our @EXPORT_OK = qw(
     dsa_verify dec2bin bin2dec
@@ -82,7 +83,7 @@ our @EXPORT_OK = qw(
     }
 
     sub dec2bin {
-        warn "dec2bin() is deprecated and will be removed in the future.";
+        MT::Util::declare_deprecation();
 
         my ($decimal) = @_;
         my @digits = split //, $decimal;
@@ -98,7 +99,7 @@ our @EXPORT_OK = qw(
     }
 
     sub bin2dec {
-        warn "bin2dec() is deprecated and will be removed in the future.";
+        MT::Util::declare_deprecation();
 
         my $bin    = $_[0];
         my $result = '';
@@ -196,7 +197,7 @@ sub perl_sha1_digest_hex {
 }
 
 sub perl_sha1_digest_base64 {
-    warn "perl_sha1_digest_base64() is deprecated and will be removed in the future.";
+    MT::Util::declare_deprecation();
 
     require MIME::Base64;
     MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
@@ -208,7 +209,7 @@ sub perl_sha1_digest_base64 {
     sub dsa_verify {
         my %param = @_;
 
-        warn "dsa_verify() is deprecated and will be removed in the future.";
+        MT::Util::declare_deprecation();
 
         unless ( defined $has_crypt_dsa ) {
             eval { require Crypt::DSA; };

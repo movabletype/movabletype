@@ -1175,6 +1175,8 @@ sub make_atom_id {
 
 # Deprecated (case #112321).
 sub sync_assets {
+    MT::Util::declare_deprecation();
+    
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
 

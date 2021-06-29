@@ -4158,7 +4158,7 @@ sub app_path {
     $app->{__path} = $path;
 }
 
-sub envelope {''}
+sub envelope { MT::Util::declare_deprecation(); '' }
 
 sub script {
     my $app = shift;

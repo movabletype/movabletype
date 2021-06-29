@@ -537,6 +537,7 @@ sub clear_cache {
 
 ### DEPRECATED
 sub cache {
+    MT::Util::declare_deprecation();
     my $pkg     = shift;
     my (%param) = @_;
     my $user_id = $param{user_id};

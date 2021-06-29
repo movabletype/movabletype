@@ -586,6 +586,8 @@ sub recover_lockout {
 sub upload_userpic {
     my $app = shift;
 
+    MT::Util::declare_deprecation();
+
     $app->validate_magic() or return;
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
