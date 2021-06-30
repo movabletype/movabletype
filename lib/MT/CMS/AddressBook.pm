@@ -309,7 +309,7 @@ sub post_delete {
                 "Subscriber '[_1]' (ID:[_2]) deleted from address book by '[_3]'",
                 $obj->email, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'system',
             category => 'delete'
         }
