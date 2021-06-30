@@ -956,7 +956,6 @@ sub grant_role {
         blog      => [qw/IDS/],
         blog_id   => [qw/ID/],
         group_id  => [qw/ID/],
-        role      => [qw/IDS/],
         role_id   => [qw/ID/],
     }) or return;
 
