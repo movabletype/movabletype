@@ -39,7 +39,8 @@ sub check_mariadb_vesion {
 }
 
 # https://mariadb.com/kb/en/datetime/#internal-format
-$dbh->do("SET GLOBAL mysql56_temporal_format=OFF");
+eval { $dbh->do("SET GLOBAL mysql56_temporal_format=OFF") }
+    or plan skip_all => "Requires SUPER privilege for DB connection";
 MT::Test->init_db;
 
 my $created_on_column = $dbh->selectrow_hashref(
