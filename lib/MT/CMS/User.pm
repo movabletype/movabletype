@@ -915,7 +915,7 @@ sub grant_role {
         blog_id   => [qw/ID/],
         group     => [qw/MAYBE_STRING/],
         group_id  => [qw/ID/],
-        role      => [qw/IDS/],
+        role      => [qw/MAYBE_STRING/],
         role_id   => [qw/ID/],
         site      => [qw/MAYBE_STRING/],
         website   => [qw/MAYBE_STRING/],
