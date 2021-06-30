@@ -501,8 +501,8 @@ package MT::App::CMS;
 use strict;
 
 sub register_type {
-    require MT::Util;
-    MT::Util::declare_deprecation();
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => 7.8);
 }
 
 sub add_rebuild_option {

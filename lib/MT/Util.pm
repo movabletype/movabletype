@@ -13,7 +13,6 @@ use base 'Exporter';
 use MT::I18N qw( const );
 use Time::Local qw( timegm );
 use List::Util qw( sum );
-use Carp;
 
 use MT::Util::Deprecated qw(
     bin2dec dec2bin dsa_verify
@@ -2869,26 +2868,6 @@ sub date_for_listing {
         : MT::Util::format_ts( $date_format, $ts, $blog,
         $app->user ? $app->user->preferred_language
         : undef );
-}
-
-sub declare_deprecation {
-    my ($class, %args) = @_;
-    my $msg = '';
-
-    $args{name} ||= (caller 1)[3];
-
-    if ($args{deleting} && $args{alterative}) {
-        $msg = MT->translate("[_1] is deprecated and will be removed on [_2]. Use [_3] instead.", $args{name}, $args{deleting}, $args{alterative});
-    } elsif ($args{alterative}) {
-        $msg = MT->translate("[_1] is deprecated and will be removed in the future. Use [_2] instead.", $args{name}, $args{alterative});
-    } else {
-        $msg = MT->translate("[_1] is deprecated and will be removed in the future.", $args{name});
-    }
-
-    MT->log({ message => $msg, level => MT::Log::WARNING() }) if $args{deleting};
-
-    local $Carp::CarpLevel = 1;
-    carp $msg;
 }
 
 package MT::Util::XML::SAX::LexicalHandler;

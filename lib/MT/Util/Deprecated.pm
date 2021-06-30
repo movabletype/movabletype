@@ -10,11 +10,36 @@ use Carp;
 use utf8;
 use base 'Exporter';
 use MT::Util;
+use Carp;
 
 our @EXPORT_OK = qw(
     dsa_verify dec2bin bin2dec
     perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
 );
+
+sub warning {
+    my (%args) = @_;
+    my $msg = '';
+
+    return unless ($MT::VERSION > $args{since});
+
+    $args{name} ||= (caller 1)[3];
+
+    my $version = $args{major} ? MT->translate('the next version') : MT->translate('the next major version');
+
+    if ($args{alterative}) {
+        $msg = MT->translate("[_1] is deprecated and will be removed in [_2]. Use [_3] instead.", $args{name}, $version, $args{alterative});
+    } else {
+        $msg = MT->translate("[_1] is deprecated and will be removed in [_2].", $args{name}, $version);
+    }
+
+    local $Carp::CarpLevel = 1;
+    carp $msg;
+
+    unless ($args{major}) {
+        # TODO display on browser
+    }
+}
 
 {
     eval { require bytes; 1; };
@@ -83,7 +108,7 @@ our @EXPORT_OK = qw(
     }
 
     sub dec2bin {
-        MT::Util::declare_deprecation();
+        MT::Util::Deprecated::warning(since => 7.8);
 
         my ($decimal) = @_;
         my @digits = split //, $decimal;
@@ -99,7 +124,7 @@ our @EXPORT_OK = qw(
     }
 
     sub bin2dec {
-        MT::Util::declare_deprecation();
+        MT::Util::Deprecated::warning(since => 7.8);
 
         my $bin    = $_[0];
         my $result = '';
@@ -197,7 +222,7 @@ sub perl_sha1_digest_hex {
 }
 
 sub perl_sha1_digest_base64 {
-    MT::Util::declare_deprecation();
+    MT::Util::Deprecated::warning(since => 7.8);
 
     require MIME::Base64;
     MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
@@ -209,7 +234,7 @@ sub perl_sha1_digest_base64 {
     sub dsa_verify {
         my %param = @_;
 
-        MT::Util::declare_deprecation();
+        MT::Util::Deprecated::warning(since => 7.8);
 
         unless ( defined $has_crypt_dsa ) {
             eval { require Crypt::DSA; };

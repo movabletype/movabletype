@@ -348,8 +348,8 @@ sub get_preferred_map {
 }
 
 sub _get_preferred_map {
-    require MT::Util;
-    MT::Util::declare_deprecation(alterative => 'get_preferred_map', deleting => 'version 8.x');
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => 7.8, alterative => 'get_preferred_map');
     shift->get_preferred_map(@_);
 }
 
