@@ -14,11 +14,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    $app->validate_param({
-        _type   => [qw/OBJTYPE/],
-        blog_id => [qw/ID/],
-    }) or return;
-
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $blog    = $app->blog;
@@ -194,7 +189,7 @@ sub save_commenter_perm {
     $app->validate_param({
         action       => [qw/MAYBE_STRING/],
         blog_id      => [qw/ID/],
-        commenter_id => [qw/ID/],
+        commenter_id => [qw/ID MULTI/],
     }) or return;
 
     my $acted_on;
@@ -1163,6 +1158,11 @@ sub set_item_visible {
     my $app    = shift;
     my $perms  = $app->permissions;
     my $author = $app->user;
+
+    $app->validate_param({
+        _type        => [qw/OBJTYPE/],
+        id           => [qw/ID MULTI/],
+    }) or return;
 
     my $type = $app->param('_type');
     return $app->errtrans("Invalid request.")

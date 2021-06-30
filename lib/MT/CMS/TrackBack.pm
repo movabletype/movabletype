@@ -14,11 +14,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    $app->validate_param({
-        _type   => [qw/OBJTYPE/],
-        blog_id => [qw/ID/],
-    }) or return;
-
     my $q     = $app->param;
     my $perms = $app->permissions
         or return $app->permission_denied();
