@@ -194,13 +194,6 @@ sub dialog_select_group_user {
 
 sub remove_member {
     my $app      = shift;
-
-    $app->validate_param({
-        all_selected => [qw/MAYBE_STRING/],
-        group_id     => [qw/ID/],
-        id           => [qw/ID MULTI/],
-    }) or return;
-
     my $user     = $app->user;
     my $group_id = $app->param('group_id');
     my @id       = $app->multi_param('id');
@@ -240,11 +233,6 @@ sub remove_member {
 sub add_member {
     my $app  = shift;
     my $user = $app->user;
-
-    $app->validate_param({
-        author => [qw/IDS/],
-        group  => [qw/IDS/],
-    }) or return;
 
     $app->validate_magic or return;
     $user->can_manage_users_groups() or return $app->permission_denied();
@@ -460,11 +448,6 @@ sub build_group_table {
 sub remove_group {
     my $app       = shift;
 
-    $app->validate_param({
-        author_id => [qw/ID/],
-        id        => [qw/ID MULTI/],
-    }) or return;
-
     my $user      = $app->user;
     my $author_id = $app->param('author_id');
     my @id        = $app->multi_param('id');
@@ -505,11 +488,6 @@ sub remove_group {
 sub add_group {
     my $app  = shift;
     my $user = $app->user;
-
-    $app->validate_param({
-        author_id => [qw/ID/],
-        ids       => [qw/IDS/],
-    }) or return;
 
     $app->validate_magic or return;
     $user->can_manage_users_groups() or return $app->permission_denied();
@@ -555,11 +533,6 @@ sub add_group {
 
 sub edit_role {
     my $app         = shift;
-
-    $app->validate_param({
-        id => [qw/ID/],
-    }) or return;
-
     my $role_id     = $app->param('id');
     my $tmpl        = $app->response_content or return;
     my $params      = $tmpl->param;
