@@ -591,11 +591,6 @@ sub recover_lockout {
 sub upload_userpic {
     my $app = shift;
 
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        user_id => [qw/ID/],
-    }) or return;
-
     $app->validate_magic() or return;
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
@@ -773,7 +768,7 @@ sub save_cfg_system_users {
 
     $app->validate_param({
         new_user_default_website_id => [qw/ID/],
-        notify_user_id              => [qw/MAYBE_ID/],
+        notify_user_id              => [qw/IDS/],
     }) or return;
 
     my $theme_id = $app->param('new_user_theme_id') || '';
@@ -950,14 +945,6 @@ sub revoke_role {
 
 sub grant_role {
     my $app = shift;
-
-    $app->validate_param({
-        author_id => [qw/ID/],
-        blog      => [qw/IDS/],
-        blog_id   => [qw/ID/],
-        group_id  => [qw/ID/],
-        role_id   => [qw/ID/],
-    }) or return;
 
     my $user = $app->user;
     return unless $app->validate_magic;
@@ -1223,13 +1210,6 @@ sub dialog_select_sysadmin {
 # Adding groups->roles->blogs
 sub dialog_grant_role {
     my $app = shift;
-
-    $app->validate_param({
-        _type          => [qw/OBJTYPE/],
-        author_id      => [qw/ID/],
-        blog_id        => [qw/ID/],
-        role_id        => [qw/ID/],
-    }) or return;
 
     my $author_id = $app->param('author_id');
     my $blog_id   = $app->param('blog_id');
@@ -1606,10 +1586,6 @@ sub save_filter {
         $opts->{skip_encode_html} ? $_[0] : encode_html( $_[0] );
     };
 
-    $app->validate_param({
-        id => [qw/ID/],
-    }) or return;
-
     my $name = $accessor->('name');
     if ( $name && !$opts->{skip_validate_unique_name} ) {
         require MT::Author;
@@ -1895,11 +1871,6 @@ sub _merge_default_assignments {
 sub build_author_table {
     my $app = shift;
     my (%args) = @_;
-
-    $app->validate_param({
-        blog_id    => [qw/ID/],
-        entry_type => [qw/OBJTYPE/],
-    }) or return;
 
     my $i = 1;
     my @author;
