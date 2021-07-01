@@ -13,11 +13,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    $app->validate_param({
-        _type   => [qw/OBJTYPE/],
-        blog_id => [qw/ID/],
-    }) or return;
-
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
 
@@ -1902,10 +1897,6 @@ sub pre_save {
 sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
-
-    $app->validate_param({
-        type => [qw/OBJTYPE/],
-    }) or return;
 
     if ( $app->can('autosave_session_obj') ) {
         my $sess_obj = $app->autosave_session_obj;
