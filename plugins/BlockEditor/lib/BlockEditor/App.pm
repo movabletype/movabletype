@@ -15,16 +15,6 @@ use MT::ContentFieldType::MultiLineText;
 sub field_html_params {
     my ( $app, $field_data ) = @_;
 
-    $app->validate_param({
-        _recover          => [qw/MAYBE_STRING/],
-        block_editor_data => [qw/MAYBE_STRING/],
-        content_type_id   => [qw/ID/],
-        id                => [qw/ID/],
-        r                 => [qw/MAYBE_STRING/],
-        reedit            => [qw/MAYBE_STRING/],
-        serialized_data   => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $param = MT::ContentFieldType::MultiLineText->field_html_params( $app,
         $field_data );
 
