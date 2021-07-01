@@ -14,27 +14,6 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
-    $app->validate_param({
-        _type               => [qw/OBJTYPE/],
-        archive_type        => [qw/MAYBE_STRING/],
-        blog_id             => [qw/ID/],
-        cat_field           => [qw/MAYBE_STRING/],
-        content_type_id     => [qw/ID/],
-        create_new_template => [qw/MAYBE_STRING/],
-        dirty               => [qw/MAYBE_STRING/],
-        dt_field            => [qw/MAYBE_STRING/],
-        filter_key          => [qw/MAYBE_STRING/],
-        name                => [qw/MAYBE_STRING/],
-        no_snapshot         => [qw/MAYBE_STRING/],
-        published           => [qw/MAYBE_STRING/],
-        r                   => [qw/MAYBE_STRING/],
-        reedit              => [qw/MAYBE_STRING/],
-        save_revision       => [qw/MAYBE_STRING/],
-        saved               => [qw/MAYBE_STRING/],
-        saved_rebuild       => [qw/MAYBE_STRING/],
-        type                => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $blog_id = $app->param('blog_id');
 
     # FIXME: enumeration of types
@@ -2196,10 +2175,6 @@ sub pre_save {
 sub post_save {
     my $eh = shift;
     my ( $app, $obj, $original ) = @_;
-
-    $app->validate_param({
-        type => [qw/OBJTYPE/],
-    }) or return;
 
     if ( $app->can('autosave_session_obj') ) {
         my $sess_obj = $app->autosave_session_obj;
