@@ -987,7 +987,7 @@ function get_content_type_context(&$ctx, $args) {
             ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
             return $content_type;
         }
-        $ct2 = $ctx->mt->db()->fetch_content_types(['blog_id' => $blog_id, 'content_type' => $str]);
+        $ct2 = $ctx->mt->db()->fetch_content_types(array('blog_id' => $blog_id, 'content_type' => $str));
         return $ct2 ? $ct2[0] : null;
     }
 
