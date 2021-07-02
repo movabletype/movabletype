@@ -1002,10 +1002,6 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
-    $app->validate_param({
-        author_id => [qw/ID/],
-    }) or return;
-
     my $q = $app->param;
 
     require MT::Auth;
@@ -1914,10 +1910,6 @@ sub adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    $app->validate_param({
-        asset_ids => [qw/MAYBE_IDS/],
-    }) or return;
-
     require MT::BackupRestore;
 
     my $q         = $app->param;
@@ -2766,11 +2758,6 @@ sub update_list_prefs {
 
 sub recover_passwords {
     my $app = shift;
-
-    $app->validate_param({
-        id => [qw/ID MULTI/],
-    }) or return;
-
     my @id  = $app->param('id');
 
     return $app->permission_denied()

@@ -695,12 +695,6 @@ sub cfg_web_services {
 
 sub rebuild_phase {
     my $app  = shift;
-
-    $app->validate_param({
-        _type => [qw/OBJTYPE/],
-        id    => [qw/ID MULTI/],
-    }) or return;
-
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->param('id');
     $app->{goback} = $app->return_uri;
@@ -731,14 +725,6 @@ sub rebuild_phase {
 
 sub rebuild_pages {
     my $app   = shift;
-
-    $app->validate_param({
-        blog_id        => [qw/ID/],
-        entry_id       => [qw/ID/],
-        template_id    => [qw/ID/],
-        templatemap_id => [qw/ID/],
-    }) or return;
-
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     require MT::Entry;
@@ -1197,11 +1183,6 @@ sub start_rebuild_pages {
 sub start_rebuild_pages_directly {
     my $app = shift;
 
-    $app->validate_param({
-        blog_id     => [qw/ID/],
-        template_id => [qw/ID/],
-    }) or return;
-
     my $q          = $app->param;
     my $start_time = $q->param('start_time');
 
@@ -1355,12 +1336,6 @@ sub _create_build_order {
 
 sub rebuild_confirm {
     my $app     = shift;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        tmpl_id => [qw/ID/],
-    }) or return;
-
     my $blog_id = $app->param('blog_id');
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id)

@@ -664,11 +664,6 @@ sub search_replace {
 sub do_search_replace {
     my $app     = shift;
     my ($param) = @_;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-    }) or return;
-
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $author  = $app->user;
