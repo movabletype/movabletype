@@ -203,6 +203,12 @@ sub edit {
 sub edit_role {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         if $app->param('blog_id');
 
@@ -373,6 +379,13 @@ sub save_role {
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
 
+    $app->validate_param({
+        description => [qw/MAYBE_STRING/],
+        id          => [qw/ID/],
+        name        => [qw/MAYBE_STRING/],
+        permission  => [qw/MAYBE_STRING MULTI/],
+    }) or return;
+
     my $id    = $app->param('id');
     my @perms = $app->multi_param('permission');
     my $role;
@@ -425,6 +438,13 @@ sub disable {
 
 sub set_object_status {
     my ( $app, $new_status ) = @_;
+
+    $app->validate_param({
+        _type         => [qw/OBJTYPE/],
+        all_selected  => [qw/MAYBE_STRING/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->permission_denied()
@@ -510,6 +530,12 @@ sub set_object_status {
 sub unlock {
     my ($app) = @_;
 
+    $app->validate_param({
+        all_selected  => [qw/MAYBE_STRING/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Lockout;
 
     $app->validate_magic() or return;
@@ -542,6 +568,13 @@ sub unlock {
 
 sub recover_lockout {
     my $app     = shift;
+
+    $app->validate_param({
+        return_args => [qw/MAYBE_STRING/],
+        token       => [qw/MAYBE_STRING/],
+        user_id     => [qw/ID/],
+    }) or return;
+
     my $user_id = $app->param('user_id');
     my $token   = $app->param('token');
 
@@ -727,6 +760,20 @@ sub save_cfg_system_users {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    $app->validate_param({
+        combo_letter_number         => [qw/MAYBE_STRING/],
+        combo_upper_lower           => [qw/MAYBE_STRING/],
+        default_language            => [qw/MAYBE_STRING/],
+        default_time_zone           => [qw/MAYBE_STRING/],
+        default_user_tag_delimiter  => [qw/MAYBE_STRING/],
+        minimum_length              => [qw/MAYBE_STRING/],
+        new_user_default_website_id => [qw/ID/],
+        new_user_theme_id           => [qw/MAYBE_STRING/],
+        notify_user_id              => [qw/IDS/],
+        registration                => [qw/MAYBE_STRING/],
+        require_special_characters  => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $theme_id = $app->param('new_user_theme_id') || '';
     if ($theme_id) {
         require MT::Theme;
@@ -811,6 +858,12 @@ sub save_cfg_system_users {
 sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        all_selected => [qw/MAYBE_STRING/],
+        blog_id      => [qw/ID/],
+        id           => [qw/ID MULTI/],
+    }) or return;
 
     my $user = $app->user;
     return $app->permission_denied()
@@ -1553,6 +1606,11 @@ PERMCHECK: {
 sub remove_userpic {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        user_id => [qw/ID/],
+    }) or return;
+
     my $user_id = $app->param('user_id');
     my $user    = $app->model('author')->load($user_id)
         or return;

@@ -16,20 +16,28 @@ use MT::Util;
 my $default_thumbnail_size = 60;
 my $limit = 9;
 
-MT->add_callback(validate_request_params_blockeditor_dialog_list_asset => 5, MT->component('BlockEditor'), sub {
-    my ($cb, $app) = @_;
-    for my $name (qw/blog_id asset_id/) {
-        my $value = $app->param($name);
-        next unless defined $value;
-        return unless $value =~ /\A[0-9]+\z/;
-    }
-    return 1;
-});
-
 sub dialog_list_asset {
     my $app = shift;
 
     return dialog_asset_modal( $app, @_ ) unless $app->param('json');
+
+    $app->validate_param({
+        asset_id      => [qw/ID/],
+        blog_id       => [qw/ID/],
+        d             => [qw/MAYBE_STRING/],
+        dialog        => [qw/MAYBE_STRING/],
+        edit          => [qw/MAYBE_STRING/],
+        edit_field    => [qw/MAYBE_STRING/],
+        ext_from      => [qw/MAYBE_STRING/],
+        ext_to        => [qw/MAYBE_STRING/],
+        filter        => [qw/MAYBE_STRING/],
+        filter_val    => [qw/MAYBE_STRING/],
+        json          => [qw/MAYBE_STRING/],
+        no_insert     => [qw/MAYBE_STRING/],
+        offset        => [qw/MAYBE_STRING/],
+        saved_deleted => [qw/MAYBE_STRING/],
+        search        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $blog_id    = $app->param('blog_id');
     my $blog_class = $app->model('blog');
@@ -198,6 +206,22 @@ sub dialog_list_asset {
 sub dialog_asset_modal {
     my $app = shift;
 
+    $app->validate_param({
+        asset_id     => [qw/ID/],
+        asset_select => [qw/MAYBE_STRING/],
+        blog_id      => [qw/ID/],
+        can_multi    => [qw/MAYBE_STRING/],
+        edit         => [qw/MAYBE_STRING/],
+        edit_field   => [qw/MAYBE_STRING/],
+        filter       => [qw/MAYBE_STRING/],
+        filter_val   => [qw/MAYBE_STRING/],
+        next_mode    => [qw/MAYBE_STRING/],
+        no_insert    => [qw/MAYBE_STRING/],
+        options      => [qw/MAYBE_STRING/],
+        search       => [qw/MAYBE_STRING/],
+        upload_mode  => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $blog_id    = $app->param('blog_id');
     my $blog_class = $app->model('blog');
     my $blog;
@@ -279,6 +303,14 @@ sub dialog_insert_options {
     my $app    = shift;
     my (%args) = @_;
     my $assets = $args{assets};
+
+    $app->validate_param({
+        blog_id    => [qw/ID/],
+        edit       => [qw/MAYBE_STRING/],
+        edit_field => [qw/MAYBE_STRING/],
+        id         => [qw/IDS/],
+        options    => [qw/MAYBE_STRING/],
+    }) or return;
 
     if ( !$assets ) {
         my $ids = $app->param('id');

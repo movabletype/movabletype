@@ -539,6 +539,13 @@ sub dialog_select_website {
 sub dialog_move_blogs {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID MULTI/],
+        json        => [qw/MAYBE_STRING/],
+        return_args => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->{hide_goback_button} = 1;
 
     my $blog_id = $app->param('blog_id');
@@ -594,6 +601,11 @@ sub move_blogs {
     return unless $app->validate_magic;
     return $app->error( $app->translate('Permission denied.') )
         unless $app->can_do('move_blogs');
+
+    $app->validate_param({
+        blog_ids => [qw/IDS/],
+        ids      => [qw/ID/],
+    }) or return;
 
     my $website_class = $app->model('website');
     my $ids           = $app->param('ids');

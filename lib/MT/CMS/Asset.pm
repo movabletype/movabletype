@@ -16,6 +16,11 @@ my $default_thumbnail_size = 60;
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $user  = $app->user;
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -372,6 +377,12 @@ sub asset_userpic {
     my ($param) = @_;
 
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        edit_field => [qw/MAYBE_STRING/],
+        id         => [qw/ID/],
+        user_id    => [qw/ID/],
+    }) or return;
 
     my ( $id, $asset );
     if ( $asset = $param->{asset} ) {
@@ -2649,6 +2660,12 @@ sub _check_thumbnail_dir {
 sub dialog_edit_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        saved_image => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     my $blog_id = $app->param('blog_id');
@@ -2769,6 +2786,13 @@ sub dialog_edit_asset {
 sub js_save_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        description => [qw/MAYBE_STRING/],
+        id          => [qw/ID/],
+        label       => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     $app->validate_magic()
         or return $app->error(
         $app->json_error( $app->translate("Invalid Request.") ) );
@@ -2829,6 +2853,12 @@ sub js_save_asset {
 
 sub dialog_edit_image {
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        return_args => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $asset;
 
@@ -2924,6 +2954,14 @@ sub thumbnail_image {
 sub transform_image {
     my ($app) = @_;
 
+    $app->validate_param({
+        actions             => [qw/MAYBE_STRING/],
+        id                  => [qw/ID/],
+        remove_all_metadata => [qw/MAYBE_STRING/],
+        remove_gps_metadata => [qw/MAYBE_STRING/],
+        return_args         => [qw/MAYBE_STRING/],
+    }) or return;
+
     if ( !$app->validate_magic ) {
         return;
     }
@@ -2980,6 +3018,21 @@ sub transform_image {
 
 sub dialog_asset_modal {
     my $app = shift;
+
+    $app->validate_param({
+        asset_select     => [qw/MAYBE_STRING/],
+        blog_id          => [qw/ID/],
+        can_multi        => [qw/MAYBE_STRING/],
+        content_field_id => [qw/ID/],
+        edit_field       => [qw/MAYBE_STRING/],
+        filter           => [qw/MAYBE_STRING/],
+        filter_val       => [qw/MAYBE_STRING/],
+        next_mode        => [qw/MAYBE_STRING/],
+        no_insert        => [qw/MAYBE_STRING/],
+        require_type     => [qw/MAYBE_STRING/],
+        search           => [qw/MAYBE_STRING/],
+        upload_mode      => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $blog_id = $app->param('blog_id');
     my $mode_userpic = $app->param('upload_mode') || '';
@@ -3073,6 +3126,16 @@ sub dialog_insert_options {
     my (%args) = @_;
     my $assets = $args{assets};
 
+    $app->validate_param({
+        asset_select        => [qw/MAYBE_STRING/],
+        blog_id             => [qw/ID/],
+        content_field_id    => [qw/ID/],
+        direct_asset_insert => [qw/MAYBE_STRING/],
+        edit_field          => [qw/MAYBE_STRING/],
+        id                  => [qw/IDS/],
+        no_insert           => [qw/MAYBE_STRING/],
+    }) or return;
+
     # Validate magic token
     $app->validate_magic() or return;
 
@@ -3154,6 +3217,15 @@ sub insert_asset {
     my ($param) = @_;
 
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        content_field_id    => [qw/ID/],
+        direct_asset_insert => [qw/MAYBE_STRING/],
+        edit_field          => [qw/MAYBE_STRING/],
+        new_entry           => [qw/MAYBE_STRING/],
+        no_insert           => [qw/MAYBE_STRING/],
+        prefs_json          => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $edit_field = $app->param('edit_field') || '';
     if ( $edit_field =~ m/^customfield_.*$/ ) {

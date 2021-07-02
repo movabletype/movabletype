@@ -364,20 +364,6 @@ sub new_password {
     return $tmpl;
 }
 
-MT->add_callback(validate_request_params_itemset_action => 5, 'MT', \&_validate_action_params);
-
-sub _validate_action_params {
-    my ($cb, $app) = @_;
-    my $type = $app->param('_type') or return;
-    if ($type =~ /\A(?:blog|content_data)\z/) {
-        for my $id (map {split /,/, $_} $app->multi_param('id')) {
-            next unless defined $id;
-            return unless $id =~ /\A[0-9]+\z/;
-        }
-    }
-    return 1;
-}
-
 sub do_list_action {
     my $app = shift;
 
@@ -1157,6 +1143,14 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_archive_format => [qw/MAYBE_STRING/],
+        backup_what           => [qw/IDS/],
+        blog_id               => [qw/ID/],
+        size_limit            => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id') || 0;
     my $perms   = $app->permissions
@@ -2602,6 +2596,15 @@ sub dialog_adjust_sitepath {
     return $app->permission_denied()
         if !$user->is_superuser;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        asset_ids      => [qw/MAYBE_IDS/],
+        blog_ids       => [qw/IDS/],
+        current_file   => [qw/MAYBE_STRING/],
+        error          => [qw/MAYBE_STRING/],
+        restore_upload => [qw/MAYBE_STRING/],
+        tmp_dir        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $tmp_dir    = $app->param('tmp_dir');
     my $error      = $app->param('error') || q();
