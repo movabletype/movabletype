@@ -29,10 +29,9 @@ sub warning {
         my $error   = version->parse($args{error})->numify;
         if ($error - $current <= 0.001) {
             $version = MT->translate('the next version');
-        } else {
-            $version = MT->translate('the future');
         }
     }
+    $version ||= MT->translate('the future');
 
     if ($args{alterative}) {
         $msg = MT->translate("[_1] is deprecated and will be removed in [_2]. Use [_3] instead.", $args{name}, $version, $args{alterative});
