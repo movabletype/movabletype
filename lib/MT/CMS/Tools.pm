@@ -923,7 +923,7 @@ sub save_cfg_system_general {
         $app->log(
             {   message =>
                     $app->translate('System Settings Changes Took Place'),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 metadata => $message,
                 category => 'edit',

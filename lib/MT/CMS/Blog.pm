@@ -1992,7 +1992,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',
@@ -2194,7 +2194,7 @@ sub post_delete {
                 "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'blog',
             category => 'delete'
         }

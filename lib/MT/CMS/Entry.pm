@@ -2323,7 +2323,7 @@ PERMCHECK: {
         }
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
@@ -3056,7 +3056,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => $obj->class,
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             metadata => $obj->id
@@ -3080,7 +3080,7 @@ sub post_delete {
                 $obj->class_label, $obj->title,
                 $obj->id,          $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $obj->class,
             category => 'delete'
         }
@@ -3169,7 +3169,7 @@ sub update_entry_status {
         );
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $entry->class,
                 category => 'edit',
                 metadata => $entry->id
