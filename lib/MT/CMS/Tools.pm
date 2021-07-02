@@ -1162,6 +1162,12 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_what => [qw/IDS/],
+        blog_id     => [qw/ID/],
+    }) or return;
+
     my $user    = $app->user;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
@@ -2600,6 +2606,12 @@ sub dialog_restore_upload {
 
 sub dialog_adjust_sitepath {
     my $app  = shift;
+
+    $app->validate_param({
+        asset_ids => [qw/MAYBE_IDS/],
+        blog_ids  => [qw/IDS/],
+    }) or return;
+
     my $user = $app->user;
     return $app->permission_denied()
         if !$user->is_superuser;
