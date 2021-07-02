@@ -507,7 +507,7 @@ sub save {
                         "'[_1]' edited the template '[_2]' in the blog '[_3]'",
                         $app->user->name, $obj->name, $blog->name
                     ),
-                    level    => MT::Log::INFO(),
+                    level    => MT::Log::NOTICE(),
                     blog_id  => $blog->id,
                     class    => 'template',
                     category => 'edit',
@@ -520,7 +520,7 @@ sub save {
                         "'[_1]' edited the global template '[_2]'",
                         $app->user->name, $obj->name
                     ),
-                    level    => MT::Log::INFO(),
+                    level    => MT::Log::NOTICE(),
                     class    => 'template',
                     category => 'edit',
                 }
@@ -2265,7 +2265,7 @@ sub build_revision_table {
             blog_id   => $blog->id,
             author_id => $app->user->id,
             category  => 'edit',
-            level     => MT::Log::INFO(),
+            level     => MT::Log::NOTICE(),
         });
     }
 

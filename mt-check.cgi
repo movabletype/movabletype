@@ -829,14 +829,11 @@ print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 INFO
-if ($version) {
+if ($release_version) {
 
-    # sanitize down to letters numbers dashes and period
-    $version =~ s/[^a-zA-Z0-9\-\.]//g;
-    $version = $cgi->escapeHTML($version);
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version ($version)</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version</code></li>
 </ul>
 INFO
 }

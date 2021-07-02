@@ -427,10 +427,7 @@ sub edit {
     }
 
     $param->{can_publish_post} = 1
-        if ( $perm->can_do('publish_all_content_data')
-        || $perm->can_do('edit_all_content_data_$ct_unique_id') )
-        || ( $content_data
-        || $perm->can_republish_content_data( $content_data, $user ) );
+        if $perm->can_republish_content_data( $content_data, $user, $ct_unique_id );
 
     ## Load text filters if user displays them
     my $filters = MT->all_text_filters;
@@ -1086,7 +1083,7 @@ sub post_save {
     require MT::Log;
     $app->log(
         {   message => $message,
-            level   => MT::Log::INFO(),
+            $orig_obj->id ? ( level => MT::Log::NOTICE() ) : ( level => MT::Log::INFO() ),
             class   => 'content_data_' . $ct->id,
             $orig_obj->id ? ( category => 'edit' ) : ( category => 'new' ),
             metadata => $obj->id
@@ -1114,7 +1111,7 @@ sub post_delete {
                 "[_1] '[_4]' (ID:[_2]) deleted by '[_3]'",
                 $ct->name, $obj->id, $author->name, $label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'content_data_' . $ct->id,
             category => 'delete'
         }
@@ -1967,7 +1964,7 @@ sub _update_content_data_status {
         );
         $app->log(
             {   message  => $message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'content_data_' . $content_data->content_type_id,
                 category => 'edit',
                 metadata => $content_data->id

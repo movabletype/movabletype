@@ -1889,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Create Content Data' => 'コンテンツデータの作成',
 	'Edit All Content Data' => 'すべてのコンテンツデータの編集',
+	'Manage All Content Data' => 'すべてのコンテンツデータの管理',
 	'Manage Content Data' => 'コンテンツデータの管理',
 	'Publish Content Data' => 'コンテンツデータの公開',
 	'Tags with [_1]' => '[_1]のタグ',
