@@ -614,7 +614,7 @@ sub upload_file {
     my $app = shift;
 
     require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => 7.8);
+    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
@@ -1378,7 +1378,7 @@ sub _upload_file_compat {
     my $app = shift;
 
     require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => 7.8);
+    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
     my (%upload_param) = @_;
     require MT::Image;

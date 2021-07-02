@@ -9,7 +9,6 @@ use warnings;
 use Carp;
 use utf8;
 use base 'Exporter';
-use MT::Util;
 use Carp;
 
 our @EXPORT_OK = qw(
@@ -21,11 +20,19 @@ sub warning {
     my (%args) = @_;
     my $msg = '';
 
-    return unless ($MT::VERSION > $args{since});
-
     $args{name} ||= (caller 1)[3];
 
-    my $version = $args{major} ? MT->translate('the next version') : MT->translate('the next major version');
+    my $version;
+    if ($args{error}) {
+        require version;
+        my $current = version->parse($MT::VERSION)->numify;
+        my $error   = version->parse($args{error})->numify;
+        if ($error - $current <= 0.001) {
+            $version = MT->translate('the next version');
+        } else {
+            $version = MT->translate('the future');
+        }
+    }
 
     if ($args{alterative}) {
         $msg = MT->translate("[_1] is deprecated and will be removed in [_2]. Use [_3] instead.", $args{name}, $version, $args{alterative});
@@ -36,7 +43,7 @@ sub warning {
     local $Carp::CarpLevel = 1;
     carp $msg;
 
-    unless ($args{major}) {
+    if ($args{error}) {
         # TODO display on browser
     }
 }
@@ -108,7 +115,7 @@ sub warning {
     }
 
     sub dec2bin {
-        MT::Util::Deprecated::warning(since => 7.8);
+        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
         my ($decimal) = @_;
         my @digits = split //, $decimal;
@@ -124,7 +131,7 @@ sub warning {
     }
 
     sub bin2dec {
-        MT::Util::Deprecated::warning(since => 7.8);
+        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
         my $bin    = $_[0];
         my $result = '';
@@ -217,12 +224,13 @@ sub warning {
 sub perl_sha1_digest_hex {
     # XXX: suppress this warning until this function is not used in the core (too noisy)
     # warn "Old Pure Perl implementation of perl_sha1_digest_hex() is deprecated and will be removed in the future.";
+    MT::Util::Deprecated::warning(since => '7.8');
 
     sprintf( "%.8x" x 5, unpack( 'N*', &perl_sha1_digest(@_) ) );
 }
 
 sub perl_sha1_digest_base64 {
-    MT::Util::Deprecated::warning(since => 7.8);
+    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
     require MIME::Base64;
     MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
@@ -234,7 +242,7 @@ sub perl_sha1_digest_base64 {
     sub dsa_verify {
         my %param = @_;
 
-        MT::Util::Deprecated::warning(since => 7.8);
+        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
 
         unless ( defined $has_crypt_dsa ) {
             eval { require Crypt::DSA; };
@@ -300,6 +308,38 @@ MT::Util::Deprecated - Deprecated Movable Type utility functions
 I<MT::Util::Deprecated> provides a variety of deprecated utility functions
 used by the Movable Type libraries. These functions should not be used any more,
 and will be removed in the future.
+
+=head1 FUNCTIONS
+
+=head2 warning
+
+Warning deprecation.
+
+    warning(since => '7.8');
+
+Warning starts immidiately on server log.
+
+    warning(since => '7.8', error => '7.12');
+
+Warning on server log and on browser immidiately.
+
+=over 4
+
+=item * since
+
+The version number in string that indicates staring version of deprecation. Note that the option is only for
+source code notation and has nothing to do with the actual behavior.
+
+=item * error
+
+The version number in string that indicates staring version of urgent warning. If it's given, browser alert also
+starting immidiately.
+
+=item * alternative
+
+If any, the option suggests an alternative to the function.
+
+=back
 
 =head1 AUTHOR & COPYRIGHTS
 
