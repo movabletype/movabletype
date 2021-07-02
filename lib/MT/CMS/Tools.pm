@@ -985,10 +985,6 @@ sub recover_profile_password {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
-    $app->validate_param({
-        author_id => [qw/ID/],
-    }) or return;
-
     require MT::Auth;
     require MT::Log;
     if ( !MT::Auth->can_recover_password ) {
@@ -1898,16 +1894,6 @@ sub adjust_sitepath {
         if !$user->is_superuser;
     $app->validate_magic() or return;
 
-    $app->validate_param({
-        asset_ids      => [qw/MAYBE_IDS/],
-        assets         => [qw/MAYBE_STRING/],
-        current_file   => [qw/MAYBE_STRING/],
-        error          => [qw/MAYBE_STRING/],
-        redirect       => [qw/MAYBE_STRING/],
-        restore_upload => [qw/MAYBE_STRING/],
-        tmp_dir        => [qw/MAYBE_STRING/],
-    }) or return;
-
     require MT::BackupRestore;
 
     my $tmp_dir   = $app->param('tmp_dir');
@@ -2754,11 +2740,6 @@ sub convert_to_html {
 
 sub recover_passwords {
     my $app = shift;
-
-    $app->validate_param({
-        id => [qw/ID MULTI/],
-    }) or return;
-
     my @id  = $app->multi_param('id');
 
     return $app->permission_denied()

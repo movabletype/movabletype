@@ -711,12 +711,6 @@ sub cfg_web_services {
 
 sub rebuild_phase {
     my $app  = shift;
-
-    $app->validate_param({
-        _type => [qw/OBJTYPE/],
-        id    => [qw/ID MULTI/],
-    }) or return;
-
     my $type = $app->param('_type') || 'entry';
     my @ids  = $app->multi_param('id');
     $app->{goback} = $app->return_uri;
@@ -750,32 +744,6 @@ sub rebuild_phase {
 
 sub rebuild_pages {
     my $app   = shift;
-
-    $app->validate_param({
-        blog_id            => [qw/ID/],
-        content_data_id    => [qw/ID/],
-        content_type_id    => [qw/ID/],
-        entry_id           => [qw/ID/],
-        fs                 => [qw/MAYBE_STRING/],
-        is_new             => [qw/MAYBE_STRING/],
-        next               => [qw/MAYBE_STRING/],
-        no_rebuilding_tmpl => [qw/MAYBE_STRING/],
-        no_static          => [qw/MAYBE_STRING/],
-        offset             => [qw/MAYBE_STRING/],
-        old_categories     => [qw/MAYBE_STRING/],
-        old_date           => [qw/MAYBE_STRING/],
-        old_next           => [qw/MAYBE_STRING/],
-        old_previous       => [qw/MAYBE_STRING/],
-        old_status         => [qw/MAYBE_STRING/],
-        return_args        => [qw/MAYBE_STRING/],
-        start_time         => [qw/MAYBE_STRING/],
-        template_id        => [qw/ID/],
-        templatemap_id     => [qw/ID/],
-        total              => [qw/MAYBE_STRING/],
-        type               => [qw/MAYBE_STRING/],
-        with_indexes       => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     require MT::Entry;
@@ -1290,20 +1258,6 @@ sub start_rebuild_pages {
 sub start_rebuild_pages_directly {
     my $app = shift;
 
-    $app->validate_param({
-        blog_id            => [qw/ID/],
-        content_type_id    => [qw/ID/],
-        next               => [qw/MAYBE_STRING/],
-        no_rebuilding_tmpl => [qw/MAYBE_STRING/],
-        no_static          => [qw/MAYBE_STRING/],
-        single_template    => [qw/MAYBE_STRING/],
-        start_time         => [qw/MAYBE_STRING/],
-        template_id        => [qw/ID/],
-        total              => [qw/MAYBE_STRING/],
-        type               => [qw/MAYBE_STRING/],
-        with_indexes       => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $start_time = $app->param('start_time');
 
     if ( !$start_time ) {
@@ -1449,13 +1403,6 @@ sub _create_build_order {
 
 sub rebuild_confirm {
     my $app     = shift;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        prompt  => [qw/MAYBE_STRING/],
-        tmpl_id => [qw/ID/],
-    }) or return;
-
     my $blog_id = $app->param('blog_id');
     require MT::Blog;
     my $blog = MT::Blog->load($blog_id)

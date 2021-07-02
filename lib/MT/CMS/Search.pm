@@ -812,19 +812,6 @@ sub search_replace {
 sub do_search_replace {
     my $app     = shift;
     my ($param) = @_;
-
-    $app->validate_param({
-        __mode          => [qw/MAYBE_STRING/],
-        blog_id         => [qw/ID/],
-        content_type_id => [qw/ID/],
-        error           => [qw/MAYBE_STRING/],
-        limit           => [qw/MAYBE_STRING/],
-        orig_search     => [qw/MAYBE_STRING/],
-        search          => [qw/MAYBE_STRING/],
-        search_cols     => [qw/MAYBE_STRING MULTI/],
-        tab             => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $blog_id = $app->param('blog_id');
     my $author  = $app->user;
 

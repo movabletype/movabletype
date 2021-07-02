@@ -281,14 +281,6 @@ sub can_delete {
 sub save_filter {
     my $eh    = shift;
     my ($app) = @_;
-
-    $app->validate_param({
-        blog_id => [qw/ID/],
-        email   => [qw/MAYBE_STRING/],
-        id      => [qw/ID/],
-        url     => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $email = lc( $app->param('email') || '' );
     $email =~ s/(^\s+|\s+$)//gs;
     my $blog_id = $app->param('blog_id');

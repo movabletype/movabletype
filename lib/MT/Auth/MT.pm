@@ -15,13 +15,6 @@ sub sanity_check {
     my $auth = shift;
     my ($app) = @_;
 
-    $app->validate_param({
-        id          => [qw/ID/],
-        old_pass    => [qw/MAYBE_STRING/],
-        pass        => [qw/MAYBE_STRING/],
-        pass_verify => [qw/MAYBE_STRING/],
-    }) or return;
-
     my $id          = $app->param('id');
     my $pass        = $app->param('pass');
     my $pass_verify = $app->param('pass_verify');
