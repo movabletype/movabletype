@@ -26,6 +26,9 @@ my $app = MT->instance;
 $test_env->prepare_fixture('archive_type');
 
 my $blog_id = 2;
+my $blog = $app->model('blog')->load( $blog_id ) or die;
+$blog->sort_order_posts('ascend');
+$blog->save or die;
 
 my $entry = $app->model('entry')->load(
     {   blog_id => $blog_id,
@@ -47,6 +50,40 @@ MT::Test::ArchiveType->run_tests(@non_ct_archive_maps);
 done_testing;
 
 __END__
+
+=== MTEntries (sort_order_posts => 'ascend') (MTC-13272)
+--- stash
+{
+  author         => 'author1',
+  cat_field      => 'cf_same_catset_fruit',
+  category       => 'cat_apple',
+  cd             => 'cd_same_apple_orange',
+  entry          => 'entry_author1_ruler_eraser',
+  entry_category => 'cat_ruler',
+  page           => 'page_author1_coffee',
+}
+--- template
+<MTEntries><MTEntryID>: <MTEntryTitle> | <MTEntryDate>
+</MTEntries>
+--- expected
+2: entry_author1_ruler_eraser | December  3, 2018 12:11 PM
+1: entry_author1_ruler_eraser_plus | December  3, 2018 12:12 PM
+--- expected_author
+3: entry_author1_compass | December  3, 2017 12:11 PM
+2: entry_author1_ruler_eraser | December  3, 2018 12:11 PM
+1: entry_author1_ruler_eraser_plus | December  3, 2018 12:12 PM
+--- expected_individual
+5: entry_author2_no_category | December  3, 2015 12:11 PM
+4: entry_author2_pencil_eraser | December  3, 2016 12:11 PM
+3: entry_author1_compass | December  3, 2017 12:11 PM
+2: entry_author1_ruler_eraser | December  3, 2018 12:11 PM
+1: entry_author1_ruler_eraser_plus | December  3, 2018 12:12 PM
+--- expected_page
+5: entry_author2_no_category | December  3, 2015 12:11 PM
+4: entry_author2_pencil_eraser | December  3, 2016 12:11 PM
+3: entry_author1_compass | December  3, 2017 12:11 PM
+2: entry_author1_ruler_eraser | December  3, 2018 12:11 PM
+1: entry_author1_ruler_eraser_plus | December  3, 2018 12:12 PM
 
 === MTEntries sort_order="ascend"
 --- stash
