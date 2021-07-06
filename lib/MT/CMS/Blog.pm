@@ -1992,7 +1992,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',
@@ -2194,7 +2194,7 @@ sub post_delete {
                 "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'blog',
             category => 'delete'
         }
@@ -3107,10 +3107,10 @@ sub clone {
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
-        unless $blog->is_blog;
+        unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3496,7 +3496,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => 'blog',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? $new_blog->parent_id : 0 )
             }
             );
         my $setting_url = $app->uri(

@@ -4,10 +4,51 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var eq = function (t) {
+      return function (a) {
+        return t === a;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isUndefined = eq(undefined);
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -165,47 +206,6 @@
       none: none,
       from: from
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var eq = function (t) {
-      return function (a) {
-        return t === a;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isUndefined = eq(undefined);
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativeIndexOf = Array.prototype.indexOf;
@@ -6858,16 +6858,16 @@
       });
     };
     var getSelectionStartFromSelector = function (selector) {
-      return function (start) {
+      return function (start, isRoot) {
         var startCellName = name(start);
         var startCell = startCellName === 'col' || startCellName === 'colgroup' ? getSelectionStartCellFallback(start) : start;
-        return closest$1(startCell, selector);
+        return closest$1(startCell, selector, isRoot);
       };
     };
     var getSelectionStartCell = getSelectionStartFromSelector('th,td');
     var getSelectionStartCellOrCaption = getSelectionStartFromSelector('th,td,caption');
-    var getCellsFromSelection = function (start, selections) {
-      return getSelectionStartCell(start).map(function (_cell) {
+    var getCellsFromSelection = function (start, selections, isRoot) {
+      return getSelectionStartCell(start, isRoot).map(function (_cell) {
         return selection(selections);
       }).getOr([]);
     };
@@ -7625,7 +7625,7 @@
       {
         name: 'halign',
         type: 'listbox',
-        label: 'H Align',
+        label: 'Horizontal align',
         items: [
           {
             text: 'None',
@@ -7648,7 +7648,7 @@
       {
         name: 'valign',
         type: 'listbox',
-        label: 'V Align',
+        label: 'Vertical align',
         items: [
           {
             text: 'None',
@@ -8199,7 +8199,7 @@
       var tableElm;
       var data = extractDataFromSettings(editor, hasAdvancedTableTab(editor));
       if (insertNewTable === false) {
-        tableElm = dom.getParent(editor.selection.getStart(), 'table');
+        tableElm = dom.getParent(editor.selection.getStart(), 'table', editor.getBody());
         if (tableElm) {
           data = extractDataFromTableElement(editor, tableElm, hasAdvancedTableTab(editor));
         } else {
@@ -8272,10 +8272,10 @@
     };
 
     var getSelectionStartCellOrCaption$1 = function (editor) {
-      return getSelectionStartCellOrCaption(getSelectionStart(editor));
+      return getSelectionStartCellOrCaption(getSelectionStart(editor), getIsRoot(editor));
     };
     var getSelectionStartCell$1 = function (editor) {
-      return getSelectionStartCell(getSelectionStart(editor));
+      return getSelectionStartCell(getSelectionStart(editor), getIsRoot(editor));
     };
     var registerCommands = function (editor, actions, cellSelection, selections, clipboard) {
       var isRoot = getIsRoot(editor);
@@ -8480,7 +8480,7 @@
         if (!isObject(args)) {
           return;
         }
-        var cells = getCellsFromSelection(getSelectionStart(editor), selections);
+        var cells = getCellsFromSelection(getSelectionStart(editor), selections, isRoot);
         if (cells.length === 0) {
           return;
         }
@@ -9160,11 +9160,11 @@
 
     var global$3 = tinymce.util.Tools.resolve('tinymce.util.VK');
 
-    var forward = function (editor, isRoot, cell, actions) {
-      return go(editor, isRoot, next(cell), actions);
+    var forward = function (editor, isRoot, cell) {
+      return go(editor, isRoot, next(cell));
     };
-    var backward = function (editor, isRoot, cell, actions) {
-      return go(editor, isRoot, prev(cell), actions);
+    var backward = function (editor, isRoot, cell) {
+      return go(editor, isRoot, prev(cell));
     };
     var getCellFirstCursorPosition = function (editor, cell) {
       var selection = SimSelection.exact(cell, 0, cell, 0);
@@ -9178,17 +9178,14 @@
         });
       });
     };
-    var go = function (editor, isRoot, cell, actions) {
+    var go = function (editor, isRoot, cell) {
       return cell.fold(Optional.none, Optional.none, function (current, next) {
         return first(next).map(function (cell) {
           return getCellFirstCursorPosition(editor, cell);
         });
       }, function (current) {
         return table(current, isRoot).bind(function (table) {
-          var targets = noMenu(current);
-          editor.undoManager.transact(function () {
-            actions.insertRowsAfter(table, targets);
-          });
+          editor.execCommand('mceTableInsertRowAfter');
           return getNewRowCursorPosition(editor, table);
         });
       });
@@ -9198,7 +9195,7 @@
       'li',
       'dl'
     ];
-    var handle$1 = function (event, editor, actions) {
+    var handle$1 = function (event, editor, cellSelection) {
       if (event.keyCode === global$3.TAB) {
         var body_1 = getBody$1(editor);
         var isRoot_1 = function (element) {
@@ -9206,17 +9203,17 @@
           return eq$1(element, body_1) || contains(rootElements, name$1);
         };
         var rng = editor.selection.getRng();
-        if (rng.collapsed) {
-          var start = SugarElement.fromDom(rng.startContainer);
-          cell(start, isRoot_1).each(function (cell) {
-            event.preventDefault();
-            var navigation = event.shiftKey ? backward : forward;
-            var rng = navigation(editor, isRoot_1, cell, actions);
-            rng.each(function (range) {
-              editor.selection.setRng(range);
-            });
+        var container = SugarElement.fromDom(event.shiftKey ? rng.startContainer : rng.endContainer);
+        cell(container, isRoot_1).each(function (cell) {
+          event.preventDefault();
+          table(cell, isRoot_1).each(cellSelection.clear);
+          editor.selection.collapse(event.shiftKey);
+          var navigation = event.shiftKey ? backward : forward;
+          var rng = navigation(editor, isRoot_1, cell);
+          rng.each(function (range) {
+            editor.selection.setRng(range);
           });
-        }
+        });
       }
     };
 
@@ -10426,7 +10423,7 @@
         });
       };
       var findTargets = function () {
-        return getSelectionStartCellOrCaption(getSelectionStart(editor)).bind(function (cellOrCaption) {
+        return getSelectionStartCellOrCaption(getSelectionStart(editor), getIsRoot(editor)).bind(function (cellOrCaption) {
           var table$1 = table(cellOrCaption);
           return table$1.map(function (table) {
             if (isCaption(cellOrCaption)) {
@@ -10924,7 +10921,7 @@
       });
       if (hasTabNavigation(editor)) {
         editor.on('keydown', function (e) {
-          handle$1(e, editor, actions);
+          handle$1(e, editor, cellSelection);
         });
       }
       editor.on('remove', function () {

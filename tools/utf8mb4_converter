@@ -14,6 +14,7 @@ GetOptions(
     'pass=s'                => \my $pass,
     'collate=s'             => \my $collate,
     'row_format=s'          => \my $row_format,
+    'force'                 => \my $force,
     'verbose'               => \my $verbose,
 );
 
@@ -45,10 +46,16 @@ if ($verbose) {
 
 my ($charset) = $dbh->selectrow_array("select \@\@character_set_database");
 if ( $charset eq 'utf8mb4' ) {
-    warn "Database character set of '$db' is already utf8mb4.\n";
-    exit;
+    if ($force) {
+        if ($verbose) {
+            print "The database character set is already utf8mb4, but the conversion will continue.\n";
+        }
+    } else {
+        warn "Database character set of '$db' is already utf8mb4.\n";
+        exit;
+    }
 }
-elsif ( $charset ne 'utf8' ) {
+elsif ( $charset ne 'utf8' and $charset ne 'utf8mb3' ) {
     die "Unsupported character set: $charset\n";
 }
 

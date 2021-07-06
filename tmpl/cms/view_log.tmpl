@@ -131,15 +131,15 @@
                 <__trans phrase="is">
                 <span id="filter-level" style="display: none">
                     <select id="level-val" name="filter_val" onchange="enableFilterButton()">
-                        <option value="8"><__trans phrase="Security"></option>
+                        <option value="5"><__trans phrase="Security"></option>
                         <option value="4"><__trans phrase="Error"></option>
-                        <option value="2"><__trans phrase="Warning"></option>
+                        <option value="3"><__trans phrase="Warning"></option>
                         <option value="1"><__trans phrase="Information"></option>
-                        <option value="16"><__trans phrase="Debug"></option>
-                        <option value="12"><__trans phrase="Security or error"></option>
-                        <option value="14"><__trans phrase="Security/error/warning"></option>
-                        <option value="15"><__trans phrase="Not debug"></option>
-                        <option value="20"><__trans phrase="Debug/error"></option>
+                        <option value="0"><__trans phrase="Debug"></option>
+                        <option value="5,4"><__trans phrase="Security or error"></option>
+                        <option value="5,4,3"><__trans phrase="Security/error/warning"></option>
+                        <option value="5,4,3,2,1"><__trans phrase="Not debug"></option>
+                        <option value="4,0"><__trans phrase="Debug/error"></option>
                     </select>
                 </span>
     <mt:if name="class_loop">

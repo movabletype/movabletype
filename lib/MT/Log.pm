@@ -11,15 +11,16 @@ use base qw( MT::Object );
 use MT::Util qw( ts2epoch epoch2ts offset_time );
 
 # use constant is slow
+sub DEBUG ()    {0}
 sub INFO ()     {1}
-sub WARNING ()  {2}
+sub NOTICE ()   {2}
+sub WARNING ()  {3}
 sub ERROR ()    {4}
-sub SECURITY () {8}
-sub DEBUG ()    {16}
+sub SECURITY () {5}
 
 use Exporter;
 *import = \&Exporter::import;
-our @EXPORT_OK = qw( INFO WARNING ERROR SECURITY DEBUG );
+our @EXPORT_OK = qw( DEBUG INFO NOTICE WARNING ERROR SECURITY );
 our %EXPORT_TAGS = ( constants => [@EXPORT_OK] );
 
 use MT::Blog;
@@ -256,11 +257,8 @@ sub list_props {
             terms => sub {
                 my $prop = shift;
                 my ($args) = @_;
-                my @types;
                 my $val = $prop->normalized_value(@_);
-                for ( 1, 2, 4, 8, 16 ) {
-                    push @types, $_ if $val & $_;
-                }
+                my @types = split(',', $val);
                 return { level => \@types };
             },
             single_select_options => [
@@ -276,6 +274,10 @@ sub list_props {
                     value => WARNING(),
                     text  => 'warning'
                 },
+                {   label => MT->translate('Notice'),
+                    value => NOTICE(),
+                    text  => 'notice'
+                },
                 {   label => MT->translate('Information'),
                     value => INFO(),
                     text  => 'info'
@@ -285,19 +287,19 @@ sub list_props {
                     text  => 'debug'
                 },
                 {   label => MT->translate('Security or error'),
-                    value => SECURITY() | ERROR(),
+                    value => join(',', (SECURITY(), ERROR())),
                     text  => 'sercurity_or_error',
                 },
                 {   label => MT->translate('Security/error/warning'),
-                    value => SECURITY() | ERROR() | WARNING(),
+                    value => join(',', (SECURITY(), ERROR(), WARNING())),
                     text  => 'security_or_error_or_warning',
                 },
                 {   label => MT->translate('Not debug'),
-                    value => SECURITY() | ERROR() | WARNING() | INFO(),
+                    value => join(',', (SECURITY(), ERROR(), WARNING(), NOTICE(), INFO())),
                     text  => 'not_debug',
                 },
                 {   label => MT->translate('Debug/error'),
-                    value => DEBUG() | ERROR(),
+                    value => join(',', (DEBUG(), ERROR())),
                     text  => 'debug_or_error',
                 },
             ],
@@ -733,15 +735,17 @@ constants for each level followed by their numeric equivalent).
 
 =over 4
 
+=item * DEBUG / 0
+
 =item * INFO / 1
 
-=item * WARNING / 2
+=item * NOTICE / 2
+
+=item * WARNING / 3
 
 =item * ERROR / 4
 
-=item * SECURITY / 8
-
-=item * DEBUG / 16
+=item * SECURITY / 5
 
 =back
 

@@ -4,10 +4,62 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var eq = function (t) {
+      return function (a) {
+        return t === a;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isUndefined = eq(undefined);
+    var isNullable = function (a) {
+      return a === null || a === undefined;
+    };
+    var isNonNullable = function (a) {
+      return !isNullable(a);
+    };
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
+    var isArrayOf = function (value, pred) {
+      if (isArray(value)) {
+        for (var i = 0, len = value.length; i < len; ++i) {
+          if (!pred(value[i])) {
+            return false;
+          }
+        }
+        return true;
+      }
+      return false;
+    };
 
     var noop = function () {
     };
@@ -204,58 +256,6 @@
       some: some,
       none: none,
       from: from
-    };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var eq = function (t) {
-      return function (a) {
-        return t === a;
-      };
-    };
-    var isString = isType('string');
-    var isObject = isType('object');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isUndefined = eq(undefined);
-    var isNullable = function (a) {
-      return a === null || a === undefined;
-    };
-    var isNonNullable = function (a) {
-      return !isNullable(a);
-    };
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
-    var isArrayOf = function (value, pred) {
-      if (isArray(value)) {
-        for (var i = 0, len = value.length; i < len; ++i) {
-          if (!pred(value[i])) {
-            return false;
-          }
-        }
-        return true;
-      }
-      return false;
     };
 
     var nativeSlice = Array.prototype.slice;
@@ -10612,18 +10612,31 @@
     var fixedContainerSelector = function (editor) {
       return editor.getParam('fixed_toolbar_container', '', 'string');
     };
+    var fixedToolbarContainerTarget = function (editor) {
+      return editor.getParam('fixed_toolbar_container_target');
+    };
     var isToolbarPersist = function (editor) {
       return editor.getParam('toolbar_persist', false, 'boolean');
     };
-    var fixedContainerElement = function (editor) {
+    var fixedContainerTarget = function (editor) {
+      if (!editor.inline) {
+        return Optional.none();
+      }
       var selector = fixedContainerSelector(editor);
-      return selector.length > 0 && editor.inline ? descendant$1(body(), selector) : Optional.none();
+      if (selector.length > 0) {
+        return descendant$1(body(), selector);
+      }
+      var element = fixedToolbarContainerTarget(editor);
+      if (isNonNullable(element)) {
+        return Optional.some(SugarElement.fromDom(element));
+      }
+      return Optional.none();
     };
     var useFixedContainer = function (editor) {
-      return editor.inline && fixedContainerElement(editor).isSome();
+      return editor.inline && fixedContainerTarget(editor).isSome();
     };
     var getUiContainer = function (editor) {
-      var fixedContainer = fixedContainerElement(editor);
+      var fixedContainer = fixedContainerTarget(editor);
       return fixedContainer.getOrThunk(function () {
         return getContentContainer(getRootNode(SugarElement.fromDom(editor.getElement())));
       });
@@ -11282,7 +11295,7 @@
     };
     var toHex = function (component) {
       var hex = component.toString(16);
-      return hex.length === 1 ? '0' + hex : hex;
+      return (hex.length === 1 ? '0' + hex : hex).toUpperCase();
     };
     var fromRgba = function (rgbaColour) {
       var value = toHex(rgbaColour.red) + toHex(rgbaColour.green) + toHex(rgbaColour.blue);
@@ -11707,12 +11720,8 @@
       };
     };
     var setIconColor = function (splitButtonApi, name, newColor) {
-      var setIconFillAndStroke = function (pathId, color) {
-        splitButtonApi.setIconFill(pathId, color);
-        splitButtonApi.setIconStroke(pathId, color);
-      };
       var id = name === 'forecolor' ? 'tox-icon-text-color__color' : 'tox-icon-highlight-bg-color__color';
-      setIconFillAndStroke(id, newColor);
+      splitButtonApi.setIconFill(id, newColor);
     };
     var registerTextColorButton = function (editor, name, format, tooltip, lastColor) {
       editor.ui.registry.addSplitButton(name, {
@@ -11777,24 +11786,26 @@
     };
     var colorPickerDialog = function (editor) {
       return function (callback, value) {
-        var getOnSubmit = function (callback) {
-          return function (api) {
-            var data = api.getData();
-            callback(Optional.from(data.colorpicker));
+        var isValid = false;
+        var onSubmit = function (api) {
+          var data = api.getData();
+          var hex = data.colorpicker;
+          if (isValid) {
+            callback(Optional.from(hex));
             api.close();
-          };
+          } else {
+            editor.windowManager.alert(editor.translate([
+              'Invalid hex color code: {0}',
+              hex
+            ]));
+          }
         };
-        var onAction = function (api, details) {
+        var onAction = function (_api, details) {
           if (details.name === 'hex-valid') {
-            if (details.value) {
-              api.enable('ok');
-            } else {
-              api.disable('ok');
-            }
+            isValid = details.value;
           }
         };
         var initialData = { colorpicker: value };
-        var submit = getOnSubmit(callback);
         editor.windowManager.open({
           title: 'Color Picker',
           size: 'normal',
@@ -11821,7 +11832,7 @@
           ],
           initialData: initialData,
           onAction: onAction,
-          onSubmit: submit,
+          onSubmit: onSubmit,
           onClose: noop,
           onCancel: function () {
             callback(Optional.none());
@@ -14845,45 +14856,6 @@
       });
     };
 
-    var hsvColour = function (hue, saturation, value) {
-      return {
-        hue: hue,
-        saturation: saturation,
-        value: value
-      };
-    };
-    var fromRgb = function (rgbaColour) {
-      var h = 0;
-      var s = 0;
-      var v = 0;
-      var r = rgbaColour.red / 255;
-      var g = rgbaColour.green / 255;
-      var b = rgbaColour.blue / 255;
-      var minRGB = Math.min(r, Math.min(g, b));
-      var maxRGB = Math.max(r, Math.max(g, b));
-      if (minRGB === maxRGB) {
-        v = minRGB;
-        return hsvColour(0, 0, v * 100);
-      }
-      var d = r === minRGB ? g - b : b === minRGB ? r - g : b - r;
-      h = r === minRGB ? 3 : b === minRGB ? 1 : 5;
-      h = 60 * (h - d / (maxRGB - minRGB));
-      s = (maxRGB - minRGB) / maxRGB;
-      v = maxRGB;
-      return hsvColour(Math.round(h), Math.round(s * 100), Math.round(v * 100));
-    };
-
-    var calcHex = function (value) {
-      var hue = (100 - value) / 100 * 360;
-      var hsv = hsvColour(hue, 100, 100);
-      var rgb = fromHsv(hsv);
-      return fromRgba(rgb);
-    };
-
-    var fieldsUpdate = generate$1('rgb-hex-update');
-    var sliderUpdate = generate$1('slider-update');
-    var paletteUpdate = generate$1('palette-update');
-
     var labelPart = optional({
       schema: [strict$1('dom')],
       name: 'label'
@@ -15671,10 +15643,14 @@
           getSpectrum: getSpectrum
         });
       };
-      var changeValue = function (slider, newValue) {
+      var setValue = function (slider, newValue) {
         modelDetail.value.set(newValue);
         var thumb = getThumb(slider);
         refresh(slider, thumb);
+      };
+      var changeValue = function (slider, newValue) {
+        setValue(slider, newValue);
+        var thumb = getThumb(slider);
         detail.onChange(slider, thumb, newValue);
         return Optional.some(true);
       };
@@ -15748,7 +15724,7 @@
         apis: {
           resetToMin: resetToMin,
           resetToMax: resetToMax,
-          changeValue: changeValue,
+          setValue: setValue,
           refresh: refresh
         },
         domModification: { styles: { position: 'relative' } }
@@ -15761,6 +15737,9 @@
       partFields: SliderParts,
       factory: sketch,
       apis: {
+        setValue: function (apis, slider, value) {
+          apis.setValue(slider, value);
+        },
         resetToMin: function (apis, slider) {
           apis.resetToMin(slider);
         },
@@ -15772,6 +15751,45 @@
         }
       }
     });
+
+    var hsvColour = function (hue, saturation, value) {
+      return {
+        hue: hue,
+        saturation: saturation,
+        value: value
+      };
+    };
+    var fromRgb = function (rgbaColour) {
+      var h = 0;
+      var s = 0;
+      var v = 0;
+      var r = rgbaColour.red / 255;
+      var g = rgbaColour.green / 255;
+      var b = rgbaColour.blue / 255;
+      var minRGB = Math.min(r, Math.min(g, b));
+      var maxRGB = Math.max(r, Math.max(g, b));
+      if (minRGB === maxRGB) {
+        v = minRGB;
+        return hsvColour(0, 0, v * 100);
+      }
+      var d = r === minRGB ? g - b : b === minRGB ? r - g : b - r;
+      h = r === minRGB ? 3 : b === minRGB ? 1 : 5;
+      h = 60 * (h - d / (maxRGB - minRGB));
+      s = (maxRGB - minRGB) / maxRGB;
+      v = maxRGB;
+      return hsvColour(Math.round(h), Math.round(s * 100), Math.round(v * 100));
+    };
+
+    var hexToHsv = function (hex) {
+      return fromRgb(fromHex(hex));
+    };
+    var hsvToHex = function (hsv) {
+      return fromRgba(fromHsv(hsv));
+    };
+
+    var fieldsUpdate = generate$1('rgb-hex-update');
+    var sliderUpdate = generate$1('slider-update');
+    var paletteUpdate = generate$1('palette-update');
 
     var sliderFactory = function (translate, getClass) {
       var spectrum = Slider.parts.spectrum({
@@ -16050,6 +16068,7 @@
           set(prop, Optional.some(val));
           getValueRgb().each(function (rgb) {
             var hex = copyRgbToHex(form, rgb);
+            emitWith(form, fieldsUpdate, { hex: hex });
             updatePreview(form, hex);
           });
         };
@@ -16156,9 +16175,18 @@
         ctx.fillStyle = grdBlack;
         ctx.fillRect(0, 0, width, height);
       };
-      var setSliderColour = function (slider, rgba) {
+      var setPaletteHue = function (slider, hue) {
         var canvas = slider.components()[0].element.dom;
+        var hsv = hsvColour(hue, 100, 100);
+        var rgba = fromHsv(hsv);
         setColour(canvas, toString(rgba));
+      };
+      var setPaletteThumb = function (slider, hex) {
+        var hsv = fromRgb(fromHex(hex));
+        Slider.setValue(slider, {
+          x: hsv.saturation,
+          y: 100 - hsv.value
+        });
       };
       var factory = function (_detail) {
         var getInitialValue = constant({
@@ -16200,8 +16228,11 @@
         name: 'SaturationBrightnessPalette',
         configFields: [],
         apis: {
-          setRgba: function (_apis, slider, rgba) {
-            setSliderColour(slider, rgba);
+          setHue: function (_apis, slider, hue) {
+            setPaletteHue(slider, hue);
+          },
+          setThumb: function (_apis, slider, hex) {
+            setPaletteThumb(slider, hex);
           }
         },
         extraApis: {}
@@ -16213,14 +16244,22 @@
       var factory = function (detail) {
         var rgbForm = rgbFormFactory(translate, getClass, detail.onValidHex, detail.onInvalidHex);
         var sbPalette = paletteFactory(translate, getClass);
-        var state = { paletteRgba: Cell(red) };
+        var hueSliderToDegrees = function (hue) {
+          return (100 - hue) / 100 * 360;
+        };
+        var hueDegreesToSlider = function (hue) {
+          return 100 - hue / 360 * 100;
+        };
+        var state = {
+          paletteRgba: Cell(red),
+          paletteHue: Cell(0)
+        };
+        var memSlider = record(sliderFactory(translate, getClass));
         var memPalette = record(sbPalette.sketch({}));
         var memRgb = record(rgbForm.sketch({}));
-        var updatePalette = function (anyInSystem, hex) {
+        var updatePalette = function (anyInSystem, _hex, hue) {
           memPalette.getOpt(anyInSystem).each(function (palette) {
-            var rgba = fromHex(hex);
-            state.paletteRgba.set(rgba);
-            sbPalette.setRgba(palette, rgba);
+            sbPalette.setHue(palette, hue);
           });
         };
         var updateFields = function (anyInSystem, hex) {
@@ -16228,32 +16267,61 @@
             rgbForm.updateHex(form, hex);
           });
         };
-        var runUpdates = function (anyInSystem, hex, updates) {
-          each(updates, function (update) {
-            update(anyInSystem, hex);
+        var updateSlider = function (anyInSystem, _hex, hue) {
+          memSlider.getOpt(anyInSystem).each(function (slider) {
+            Slider.setValue(slider, { y: hueDegreesToSlider(hue) });
           });
         };
-        var paletteUpdates = function () {
+        var updatePaletteThumb = function (anyInSystem, hex) {
+          memPalette.getOpt(anyInSystem).each(function (palette) {
+            sbPalette.setThumb(palette, hex);
+          });
+        };
+        var updateState = function (hex, hue) {
+          var rgba = fromHex(hex);
+          state.paletteRgba.set(rgba);
+          state.paletteHue.set(hue);
+        };
+        var runUpdates = function (anyInSystem, hex, hue, updates) {
+          updateState(hex, hue);
+          each(updates, function (update) {
+            update(anyInSystem, hex, hue);
+          });
+        };
+        var onPaletteUpdate = function () {
           var updates = [updateFields];
           return function (form, simulatedEvent) {
             var value = simulatedEvent.event.value;
-            var oldRgb = state.paletteRgba.get();
-            var hsvColour$1 = fromRgb(oldRgb);
-            var newHsvColour = hsvColour(hsvColour$1.hue, value.x, 100 - value.y);
-            var rgb = fromHsv(newHsvColour);
-            var nuHex = fromRgba(rgb);
-            runUpdates(form, nuHex, updates);
+            var oldHue = state.paletteHue.get();
+            var newHsv = hsvColour(oldHue, value.x, 100 - value.y);
+            var newHex = hsvToHex(newHsv);
+            runUpdates(form, newHex, oldHue, updates);
           };
         };
-        var sliderUpdates = function () {
+        var onSliderUpdate = function () {
           var updates = [
             updatePalette,
             updateFields
           ];
           return function (form, simulatedEvent) {
-            var value = simulatedEvent.event.value;
-            var hex = calcHex(value.y);
-            runUpdates(form, hex, updates);
+            var hue = hueSliderToDegrees(simulatedEvent.event.value.y);
+            var oldRgb = state.paletteRgba.get();
+            var oldHsv = fromRgb(oldRgb);
+            var newHsv = hsvColour(hue, oldHsv.saturation, oldHsv.value);
+            var newHex = hsvToHex(newHsv);
+            runUpdates(form, newHex, hue, updates);
+          };
+        };
+        var onFieldsUpdate = function () {
+          var updates = [
+            updatePalette,
+            updateSlider,
+            updatePaletteThumb
+          ];
+          return function (form, simulatedEvent) {
+            var hex = simulatedEvent.event.hex;
+            var hsv = hexToHsv(hex);
+            runUpdates(form, hex, hsv.hue, updates);
           };
         };
         return {
@@ -16261,13 +16329,14 @@
           dom: detail.dom,
           components: [
             memPalette.asSpec(),
-            sliderFactory(translate, getClass),
+            memSlider.asSpec(),
             memRgb.asSpec()
           ],
           behaviours: derive$1([
             config('colour-picker-events', [
-              run(paletteUpdate, paletteUpdates()),
-              run(sliderUpdate, sliderUpdates())
+              run(fieldsUpdate, onFieldsUpdate()),
+              run(paletteUpdate, onPaletteUpdate()),
+              run(sliderUpdate, onSliderUpdate())
             ]),
             Composing.config({
               find: function (comp) {
@@ -17586,29 +17655,33 @@
       });
     };
 
+    var ceilWithPrecision = function (num, precision) {
+      if (precision === void 0) {
+        precision = 2;
+      }
+      var mul = Math.pow(10, precision);
+      var upper = Math.round(num * mul);
+      return Math.ceil(upper / mul);
+    };
     var rotate = function (ir, angle) {
       return ir.toCanvas().then(function (canvas) {
         return applyRotate(canvas, ir.getType(), angle);
       });
     };
     var applyRotate = function (image, type, angle) {
-      var canvas = create$5(image.width, image.height);
+      var degrees = angle < 0 ? 360 + angle : angle;
+      var rad = degrees * Math.PI / 180;
+      var width = image.width;
+      var height = image.height;
+      var sin = Math.sin(rad);
+      var cos = Math.cos(rad);
+      var newWidth = ceilWithPrecision(Math.abs(width * cos) + Math.abs(height * sin));
+      var newHeight = ceilWithPrecision(Math.abs(width * sin) + Math.abs(height * cos));
+      var canvas = create$5(newWidth, newHeight);
       var context = get2dContext(canvas);
-      var translateX = 0;
-      var translateY = 0;
-      angle = angle < 0 ? 360 + angle : angle;
-      if (angle === 90 || angle === 270) {
-        resize(canvas, canvas.height, canvas.width);
-      }
-      if (angle === 90 || angle === 180) {
-        translateX = canvas.width;
-      }
-      if (angle === 270 || angle === 180) {
-        translateY = canvas.height;
-      }
-      context.translate(translateX, translateY);
-      context.rotate(angle * Math.PI / 180);
-      context.drawImage(image, 0, 0);
+      context.translate(newWidth / 2, newHeight / 2);
+      context.rotate(rad);
+      context.drawImage(image, -width / 2, -height / 2);
       return fromCanvas(canvas, type);
     };
     var flip = function (ir, axis) {
@@ -23770,16 +23843,22 @@
             });
           },
           setActive: function (state) {
-            set$1(comp.element, 'aria-pressed', state);
-            descendant$1(comp.element, 'span').each(function (button) {
-              comp.getSystem().getByDom(button).each(function (buttonComp) {
-                return Toggling.set(buttonComp, state);
+            if (comp.getSystem().isConnected()) {
+              set$1(comp.element, 'aria-pressed', state);
+              descendant$1(comp.element, 'span').each(function (button) {
+                comp.getSystem().getByDom(button).each(function (buttonComp) {
+                  return Toggling.set(buttonComp, state);
+                });
               });
-            });
+            }
           },
           isActive: function () {
             return descendant$1(comp.element, 'span').exists(function (button) {
-              return comp.getSystem().getByDom(button).exists(Toggling.isOn);
+              if (comp.getSystem().isConnected()) {
+                return comp.getSystem().getByDom(button).exists(Toggling.isOn);
+              } else {
+                return false;
+              }
             });
           }
         };
@@ -24369,23 +24448,20 @@
     var createSelectButton = function (editor, backstage, spec) {
       var _a = createMenuItems(editor, backstage, spec), items = _a.items, getStyleItems = _a.getStyleItems;
       var getApi = function (comp) {
-        return {
-          getComponent: function () {
-            return comp;
-          }
-        };
+        return { getComponent: constant(comp) };
       };
       var onSetup = function (api) {
-        spec.setInitialValue.each(function (f) {
-          return f(api.getComponent());
-        });
-        return spec.nodeChangeHandler.map(function (f) {
-          var handler = f(api.getComponent());
-          editor.on('NodeChange', handler);
-          return function () {
-            editor.off('NodeChange', handler);
-          };
-        }).getOr(noop);
+        var updateText = function () {
+          var comp = api.getComponent();
+          if (comp.getSystem().isConnected()) {
+            spec.updateText(comp);
+          }
+        };
+        updateText();
+        editor.on('NodeChange', updateText);
+        return function () {
+          editor.off('NodeChange', updateText);
+        };
       };
       return renderCommonDropdown({
         text: spec.icon.isSome() ? Optional.none() : Optional.some(''),
@@ -24494,14 +24570,6 @@
         });
         emitWith(comp, updateMenuIcon, { icon: 'align-' + alignment });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuIcon(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuIcon(comp);
-      });
       var dataset = buildBasicStaticDataset(alignMenuItems);
       var onAction = function (rawItem) {
         return function () {
@@ -24519,8 +24587,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuIcon,
         dataset: dataset,
         shouldHide: false,
         isInvalid: function (item) {
@@ -24626,14 +24693,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'font_formats', defaultFontsFormats, Delimiter.SemiColon);
       return {
         tooltip: 'Fonts',
@@ -24642,8 +24701,7 @@
         getCurrentValue: getCurrentValue,
         getPreviewFor: getPreviewFor,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: never
@@ -24746,14 +24804,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'fontsize_formats', defaultFontsizeFormats, Delimiter.Space);
       return {
         tooltip: 'Font sizes',
@@ -24762,8 +24812,7 @@
         getPreviewFor: getPreviewFor,
         getCurrentValue: getCurrentValue,
         onAction: onAction,
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: never
@@ -24903,14 +24952,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       var dataset = buildBasicSettingsDataset(editor, 'block_formats', defaultBlocks, Delimiter.SemiColon);
       return {
         tooltip: 'Blocks',
@@ -24919,8 +24960,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onActionToggleFormat(editor),
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         dataset: dataset,
         shouldHide: false,
         isInvalid: function (item) {
@@ -24975,14 +25015,6 @@
         });
         emitWith(comp, updateMenuText, { text: text });
       };
-      var nodeChangeHandler = Optional.some(function (comp) {
-        return function () {
-          return updateSelectMenuText(comp);
-        };
-      });
-      var setInitialValue = Optional.some(function (comp) {
-        return updateSelectMenuText(comp);
-      });
       return {
         tooltip: 'Formats',
         icon: Optional.none(),
@@ -24990,8 +25022,7 @@
         getCurrentValue: Optional.none,
         getPreviewFor: getPreviewFor,
         onAction: onActionToggleFormat(editor),
-        setInitialValue: setInitialValue,
-        nodeChangeHandler: nodeChangeHandler,
+        updateText: updateSelectMenuText,
         shouldHide: editor.getParam('style_formats_autohide', false, 'boolean'),
         isInvalid: function (item) {
           return !editor.formatter.canApply(item.format);
@@ -28393,6 +28424,14 @@
     };
     var separator$3 = { type: 'separator' };
     var makeContextItem = function (item) {
+      var commonMenuItem = function (item) {
+        return {
+          text: item.text,
+          icon: item.icon,
+          disabled: item.disabled,
+          shortcut: item.shortcut
+        };
+      };
       if (isString(item)) {
         return item;
       } else {
@@ -28400,10 +28439,7 @@
         case 'separator':
           return separator$3;
         case 'submenu':
-          return {
-            type: 'nestedmenuitem',
-            text: item.text,
-            icon: item.icon,
+          return __assign(__assign({ type: 'nestedmenuitem' }, commonMenuItem(item)), {
             getSubmenuItems: function () {
               var items = item.getSubmenuItems();
               if (isString(items)) {
@@ -28412,14 +28448,9 @@
                 return map(items, makeContextItem);
               }
             }
-          };
+          });
         default:
-          return {
-            type: 'menuitem',
-            text: item.text,
-            icon: item.icon,
-            onAction: noarg(item.onAction)
-          };
+          return __assign(__assign({ type: 'menuitem' }, commonMenuItem(item)), { onAction: noarg(item.onAction) });
         }
       }
     };
@@ -28439,8 +28470,8 @@
     };
     var generateContextMenu = function (contextMenus, menuConfig, selectedElement) {
       var sections = foldl(menuConfig, function (acc, name) {
-        if (has(contextMenus, name)) {
-          var items = contextMenus[name].update(selectedElement);
+        return get$1(contextMenus, name.toLowerCase()).map(function (menu) {
+          var items = menu.update(selectedElement);
           if (isString(items)) {
             return addContextMenuGroup(acc, items.split(' '));
           } else if (items.length > 0) {
@@ -28449,9 +28480,9 @@
           } else {
             return acc;
           }
-        } else {
+        }).getOrThunk(function () {
           return acc.concat([name]);
-        }
+        });
       }, []);
       if (sections.length > 0 && isSeparator$1(sections[sections.length - 1])) {
         sections.pop();
@@ -29299,29 +29330,6 @@
       }
     };
 
-    var ResizeTypes;
-    (function (ResizeTypes) {
-      ResizeTypes[ResizeTypes['None'] = 0] = 'None';
-      ResizeTypes[ResizeTypes['Both'] = 1] = 'Both';
-      ResizeTypes[ResizeTypes['Vertical'] = 2] = 'Vertical';
-    }(ResizeTypes || (ResizeTypes = {})));
-    var getDimensions = function (editor, deltas, resizeType, originalHeight, originalWidth) {
-      var dimensions = {};
-      dimensions.height = calcCappedSize(originalHeight + deltas.top, getMinHeightSetting(editor), getMaxHeightSetting(editor));
-      if (resizeType === ResizeTypes.Both) {
-        dimensions.width = calcCappedSize(originalWidth + deltas.left, getMinWidthSetting(editor), getMaxWidthSetting(editor));
-      }
-      return dimensions;
-    };
-    var resize$3 = function (editor, deltas, resizeType) {
-      var container = SugarElement.fromDom(editor.getContainer());
-      var dimensions = getDimensions(editor, deltas, resizeType, get$7(container), get$8(container));
-      each$1(dimensions, function (val, dim) {
-        return set$2(container, dim, numToPx(val));
-      });
-      fireResizeEditor(editor);
-    };
-
     var isHidden$1 = function (elm) {
       if (elm.nodeType === 1) {
         if (elm.nodeName === 'BR' || !!elm.getAttribute('data-mce-bogus')) {
@@ -29434,6 +29442,88 @@
       };
     };
 
+    var ResizeTypes;
+    (function (ResizeTypes) {
+      ResizeTypes[ResizeTypes['None'] = 0] = 'None';
+      ResizeTypes[ResizeTypes['Both'] = 1] = 'Both';
+      ResizeTypes[ResizeTypes['Vertical'] = 2] = 'Vertical';
+    }(ResizeTypes || (ResizeTypes = {})));
+    var getDimensions = function (editor, deltas, resizeType, originalHeight, originalWidth) {
+      var dimensions = {};
+      dimensions.height = calcCappedSize(originalHeight + deltas.top, getMinHeightSetting(editor), getMaxHeightSetting(editor));
+      if (resizeType === ResizeTypes.Both) {
+        dimensions.width = calcCappedSize(originalWidth + deltas.left, getMinWidthSetting(editor), getMaxWidthSetting(editor));
+      }
+      return dimensions;
+    };
+    var resize$3 = function (editor, deltas, resizeType) {
+      var container = SugarElement.fromDom(editor.getContainer());
+      var dimensions = getDimensions(editor, deltas, resizeType, get$7(container), get$8(container));
+      each$1(dimensions, function (val, dim) {
+        return set$2(container, dim, numToPx(val));
+      });
+      fireResizeEditor(editor);
+    };
+
+    var getResizeType = function (editor) {
+      var fallback = !editor.hasPlugin('autoresize');
+      var resize = editor.getParam('resize', fallback);
+      if (resize === false) {
+        return ResizeTypes.None;
+      } else if (resize === 'both') {
+        return ResizeTypes.Both;
+      } else {
+        return ResizeTypes.Vertical;
+      }
+    };
+    var keyboardHandler = function (editor, resizeType, x, y) {
+      var scale = 20;
+      var delta = SugarPosition(x * scale, y * scale);
+      resize$3(editor, delta, resizeType);
+      return Optional.some(true);
+    };
+    var renderResizeHandler = function (editor, providersBackstage) {
+      var resizeType = getResizeType(editor);
+      if (resizeType === ResizeTypes.None) {
+        return Optional.none();
+      }
+      return Optional.some({
+        dom: {
+          tag: 'div',
+          classes: ['tox-statusbar__resize-handle'],
+          attributes: { title: providersBackstage.translate('Resize') },
+          innerHtml: get$e('resize-handle', providersBackstage.icons)
+        },
+        behaviours: derive$1([
+          Dragging.config({
+            mode: 'mouse',
+            repositionTarget: false,
+            onDrag: function (_comp, _target, delta) {
+              return resize$3(editor, delta, resizeType);
+            },
+            blockerClass: 'tox-blocker'
+          }),
+          Keying.config({
+            mode: 'special',
+            onLeft: function () {
+              return keyboardHandler(editor, resizeType, -1, 0);
+            },
+            onRight: function () {
+              return keyboardHandler(editor, resizeType, 1, 0);
+            },
+            onUp: function () {
+              return keyboardHandler(editor, resizeType, 0, -1);
+            },
+            onDown: function () {
+              return keyboardHandler(editor, resizeType, 0, 1);
+            }
+          }),
+          Tabstopping.config({}),
+          Focusing.config({})
+        ])
+      });
+    };
+
     var renderWordCount = function (editor, providersBackstage) {
       var _a;
       var replaceCountText = function (comp, count, mode) {
@@ -29496,27 +29586,6 @@
     };
 
     var renderStatusbar = function (editor, providersBackstage) {
-      var renderResizeHandlerIcon = function (resizeType) {
-        return {
-          dom: {
-            tag: 'div',
-            classes: ['tox-statusbar__resize-handle'],
-            attributes: {
-              'title': providersBackstage.translate('Resize'),
-              'aria-hidden': 'true'
-            },
-            innerHtml: get$e('resize-handle', providersBackstage.icons)
-          },
-          behaviours: derive$1([Dragging.config({
-              mode: 'mouse',
-              repositionTarget: false,
-              onDrag: function (comp, target, delta) {
-                resize$3(editor, delta, resizeType);
-              },
-              blockerClass: 'tox-blocker'
-            })])
-        };
-      };
       var renderBranding = function () {
         var label = global$6.translate([
           'Powered by {0}',
@@ -29530,17 +29599,6 @@
             innerHtml: linkHtml
           }
         };
-      };
-      var getResizeType = function (editor) {
-        var fallback = !editor.hasPlugin('autoresize');
-        var resize = editor.getParam('resize', fallback);
-        if (resize === false) {
-          return ResizeTypes.None;
-        } else if (resize === 'both') {
-          return ResizeTypes.Both;
-        } else {
-          return ResizeTypes.Vertical;
-        }
       };
       var getTextComponents = function () {
         var components = [];
@@ -29566,11 +29624,8 @@
       };
       var getComponents = function () {
         var components = getTextComponents();
-        var resizeType = getResizeType(editor);
-        if (resizeType !== ResizeTypes.None) {
-          components.push(renderResizeHandlerIcon(resizeType));
-        }
-        return components;
+        var resizeHandler = renderResizeHandler(editor, providersBackstage);
+        return components.concat(resizeHandler.toArray());
       };
       return {
         dom: {
@@ -29788,7 +29843,7 @@
           Disabling.config({ disableClass: 'tox-tinymce--disabled' }),
           Keying.config({
             mode: 'cyclic',
-            selector: '.tox-menubar, .tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow--open, .tox-sidebar__overflow--open, .tox-statusbar__path, .tox-statusbar__wordcount, .tox-statusbar__branding a'
+            selector: '.tox-menubar, .tox-toolbar, .tox-toolbar__primary, .tox-toolbar__overflow--open, .tox-sidebar__overflow--open, .tox-statusbar__path, .tox-statusbar__wordcount, .tox-statusbar__branding a, .tox-statusbar__resize-handle'
           })
         ])
       }));

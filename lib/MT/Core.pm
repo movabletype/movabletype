@@ -2136,6 +2136,7 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'XXSSProtection'    => undef,
+            'ReferrerPolicy'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
