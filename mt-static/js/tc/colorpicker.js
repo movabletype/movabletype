@@ -158,7 +158,6 @@ TC.ColorPicker.prototype.bakeRecentColors = function()
 {
 	if( !this.cookie )
 		return;
-	var colors = [];
 	this.cookie.value = this.recentColors.join( "," );
 	this.cookie.expires = new Date();
 	this.cookie.expires.setFullYear( parseInt( this.cookie.expires.getFullYear() ) + 100 );

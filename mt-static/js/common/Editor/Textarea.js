@@ -120,7 +120,6 @@ Editor.Textarea = new Class( Component, {
             case "insertUnorderedList":
             case "insertOrderedList":
                 var list = text.split( /\r?\n/ );
-                var li = [];
                 for ( var i = 0; i < list.length; i++ )
                     list[ i ] = "\t<li>" + list[ i ] + "</li>";
                 if ( command == "insertUnorderedList" )
