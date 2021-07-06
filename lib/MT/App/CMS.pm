@@ -4330,7 +4330,7 @@ sub add_to_favorite_websites {
     my @current = @{ $auth->favorite_websites || [] };
 
     return if @current && ( $current[0] == $fav );
-    @current = grep { $_ != $fav } @current;
+    @current = grep { $_ && $_ != $fav } @current;
     unshift @current, $fav;
     @current = @current[ 0 .. 9 ]
         if @current > 10;
