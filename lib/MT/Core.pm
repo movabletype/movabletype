@@ -1935,9 +1935,7 @@ BEGIN {
             },
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
-            'NewsboxURL' => {
-                default => 'http://movabletype.org/app/widget.html',
-            },
+            'NewsboxURL' => { default => 'https://movabletype.org/app/widget.html', },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
 
