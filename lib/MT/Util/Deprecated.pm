@@ -303,21 +303,12 @@ Warning deprecation.
 
 Warning starts immidiately on server log.
 
-    warning(since => '7.8', error => '7.12');
-
-Warning on server log and on browser immidiately.
-
 =over 4
 
 =item * since
 
 The version number in string that indicates staring version of deprecation. Note that the option is only for
 source code notation and has nothing to do with the actual behavior.
-
-=item * error
-
-The version number in string that indicates staring version of urgent warning. If it's given, browser alert also
-starting immidiately.
 
 =item * alternative
 
