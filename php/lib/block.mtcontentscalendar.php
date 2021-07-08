@@ -15,7 +15,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         # first iterations:
         $ctx->localize($local_vars);
         $blog_id = $ctx->stash('blog_id');
-        $today = strftime("%Y%m", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today = sprintf("%04d%02d", $ts[5] + 1900, $ts[4] + 1);
 
         $start_with_offset = 0;
         if (isset($args['weeks_start_with'])) {
@@ -139,7 +140,8 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         } else {
             $cat_name = '';
         }
-        $today .= strftime("%d", time());
+        $ts = offset_time_list( time(), $blog_id );
+        $today .= sprintf("%02d", $ts[3]);
         list($start, $end) = start_end_month($prefix);
         $y = substr($prefix, 0, 4);
         $m = substr($prefix, 4, 2);
