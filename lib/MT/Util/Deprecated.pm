@@ -38,12 +38,11 @@ sub warning {
     $args{name} ||= (caller 1)[3];
 
     my $version;
-    if ($args{error}) {
-        if (version_subtraction($args{error}, $MT::VERSION) <= 0.001) {
-            $version = MT->translate('the next version');
-        }
+    if ($args{error} && version_subtraction($args{error}, $MT::VERSION) <= 0.001) {
+        $version = MT->translate('the next version');
+    } else {
+        $version = MT->translate('the future');
     }
-    $version ||= MT->translate('the future');
 
     if ($args{alterative}) {
         $msg = MT->translate("[_1] is deprecated and will be removed in [_2]. Use [_3] instead.", $args{name}, $version, $args{alterative});
