@@ -9,7 +9,6 @@ use warnings;
 use Carp;
 use utf8;
 use base 'Exporter';
-use Carp;
 
 our @EXPORT_OK = qw(
     dsa_verify dec2bin bin2dec
