@@ -69,4 +69,50 @@
       </small>
     </p>
   </div>
+
+
+  <div class="w-100 fixed-bottom text-center p-5 mobile_view_button_block <mt:Unless name="pc_view">d-none</mt:Unless>">
+    <button class="btn btn-lg mobile_view_button"><__trans phrase="Mobile View"></button>
+  </div>
+
+  <style>
+    .mobile_view_button_block {
+      background-color: rgba(0,0,0,.5)
+
+    }
+    .mobile_view_button {
+      width: 90%;
+      background-color: #ffffff;
+      font-size: 500%;
+      margin: 86px 0;
+      padding: 80px 0;
+      border-radius: 15px;
+      color: #004B9A;
+    }
+  </style>
+
+  <mt:setvarblock name="jq_js_include" append="1">
+    jQuery('.mobile_view_button').on('click', function(){
+      jQuery.ajax({
+        type: 'POST',
+        url: '<mt:var name="script_url">',
+        dataType: 'json',
+        data: {
+          __mode: 'change_to_mobile_view'
+        }
+      }).done(function () {
+        jQuery('meta[name=viewport]').attr('content', 'width=device-width, initial-scale=1.0');
+        jQuery(window).trigger('change_to_mobile_view');
+        jQuery(window).trigger('resize');
+      });
+    });
+    jQuery(window).on('change_to_mobile_view', function () {
+      jQuery('.mobile_view_button_block').addClass('d-none');
+    });
+    jQuery(window).on('change_to_pc_view', function () {
+      jQuery('.mobile_view_button_block').removeClass('d-none');
+    });
+  </mt:setvarblock>
+
+
 </div>

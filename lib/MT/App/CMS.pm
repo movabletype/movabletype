@@ -390,6 +390,10 @@ sub core_methods {
             code     => "${pkg}Mobile::change_to_pc_view",
             app_mode => 'JSON',
         },
+        'change_to_mobile_view' => {
+            code     => "${pkg}Mobile::change_to_mobile_view",
+            app_mode => 'JSON',
+          }
     };
 }
 
