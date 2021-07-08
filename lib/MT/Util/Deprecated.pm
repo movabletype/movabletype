@@ -16,6 +16,21 @@ our @EXPORT_OK = qw(
     perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
 );
 
+sub version_numify {
+	my $in = shift;
+    require version;
+	my $v = version->parse($in);
+	return $v->numify if ($v->is_qv && $v =~ /^v/);
+	return version->parse('v'. $in)->numify;
+}
+
+sub version_subtraction {
+    my ($a, $b) = @_;
+	my ($parsed_a, $parsed_b) = (version_numify($a), version_numify($b));
+	my $sign = $parsed_a > $parsed_b ? '1' : '-1';
+    return int(($parsed_a - $parsed_b) * 1000000 + (0.5 * $sign)) / 1000000;
+}
+
 sub warning {
     my (%args) = @_;
     my $msg = '';
@@ -24,10 +39,7 @@ sub warning {
 
     my $version;
     if ($args{error}) {
-        require version;
-        my $current = version->parse($MT::VERSION)->numify;
-        my $error   = version->parse($args{error})->numify;
-        if ($error - $current <= 0.001) {
+        if (version_subtraction($args{error}, $MT::VERSION) <= 0.001) {
             $version = MT->translate('the next version');
         }
     }
