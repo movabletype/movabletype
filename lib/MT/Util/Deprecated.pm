@@ -20,12 +20,17 @@ sub warning {
 
     $args{name} ||= (caller 1)[3];
 
+    my $msg;
     local $Carp::CarpLevel = 1;
     if ($args{alterative}) {
-        carp sprintf("%s is deprecated and will be removed in the future. Use %s instead.", $args{name}, $args{alterative});
+        $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future. Use %s instead.", $args{name}, $args{alterative});
     } else {
-        carp sprintf("%s is deprecated and will be removed in the future.", $args{name});
+        $msg = Carp::shortmess sprintf("%s is deprecated and will be removed in the future.", $args{name});
     }
+    require MT::Util::Log;
+    MT::Util::Log::init();
+    chomp($msg);
+    MT::Util::Log->warn($msg);
 }
 
 {
