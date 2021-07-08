@@ -502,7 +502,7 @@ use strict;
 
 sub register_type {
     require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+    MT::Util::Deprecated::warning(since => '7.8');
 }
 
 sub add_rebuild_option {

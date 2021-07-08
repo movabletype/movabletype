@@ -587,7 +587,7 @@ sub upload_userpic {
     my $app = shift;
 
     require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+    MT::Util::Deprecated::warning(since => '7.8');
 
     $app->validate_magic() or return;
     return $app->errtrans("Invalid request.")

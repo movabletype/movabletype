@@ -16,42 +16,17 @@ our @EXPORT_OK = qw(
     perl_sha1_digest perl_sha1_digest_hex perl_sha1_digest_base64
 );
 
-sub version_numify {
-	my $in = shift;
-    require version;
-	my $v = version->parse($in);
-	return $v->numify if ($v->is_qv && $v =~ /^v/);
-	return version->parse('v'. $in)->numify;
-}
-
-sub version_subtraction {
-    my ($a, $b) = @_;
-	my ($parsed_a, $parsed_b) = (version_numify($a), version_numify($b));
-	my $sign = $parsed_a > $parsed_b ? '1' : '-1';
-    return int(($parsed_a - $parsed_b) * 1000000 + (0.5 * $sign)) / 1000000;
-}
-
 sub warning {
     my (%args) = @_;
-    my $msg = '';
 
     $args{name} ||= (caller 1)[3];
 
-    my $version;
-    if ($args{error} && version_subtraction($args{error}, $MT::VERSION) <= 0.001) {
-        $version = MT->translate('the next version');
-    } else {
-        $version = MT->translate('the future');
-    }
-
-    if ($args{alterative}) {
-        $msg = MT->translate("[_1] is deprecated and will be removed in [_2]. Use [_3] instead.", $args{name}, $version, $args{alterative});
-    } else {
-        $msg = MT->translate("[_1] is deprecated and will be removed in [_2].", $args{name}, $version);
-    }
-
     local $Carp::CarpLevel = 1;
-    carp $msg;
+    if ($args{alterative}) {
+        carp sprintf("%s is deprecated and will be removed in the future. Use %s instead.", $args{name}, $args{alterative});
+    } else {
+        carp sprintf("%s is deprecated and will be removed in the future.", $args{name});
+    }
 }
 
 {
@@ -121,7 +96,7 @@ sub warning {
     }
 
     sub dec2bin {
-        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+        MT::Util::Deprecated::warning(since => '7.8');
 
         my ($decimal) = @_;
         my @digits = split //, $decimal;
@@ -137,7 +112,7 @@ sub warning {
     }
 
     sub bin2dec {
-        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+        MT::Util::Deprecated::warning(since => '7.8');
 
         my $bin    = $_[0];
         my $result = '';
@@ -235,7 +210,7 @@ sub perl_sha1_digest_hex {
 }
 
 sub perl_sha1_digest_base64 {
-    MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+    MT::Util::Deprecated::warning(since => '7.8');
 
     require MIME::Base64;
     MIME::Base64::encode_base64( perl_sha1_digest(@_), '' );
@@ -247,7 +222,7 @@ sub perl_sha1_digest_base64 {
     sub dsa_verify {
         my %param = @_;
 
-        MT::Util::Deprecated::warning(since => '7.8', error => '7.9');
+        MT::Util::Deprecated::warning(since => '7.8');
 
         unless ( defined $has_crypt_dsa ) {
             eval { require Crypt::DSA; };
