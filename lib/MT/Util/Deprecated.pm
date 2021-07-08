@@ -235,7 +235,6 @@ sub warning {
 sub perl_sha1_digest_hex {
     # XXX: suppress this warning until this function is not used in the core (too noisy)
     # warn "Old Pure Perl implementation of perl_sha1_digest_hex() is deprecated and will be removed in the future.";
-    MT::Util::Deprecated::warning(since => '7.8');
 
     sprintf( "%.8x" x 5, unpack( 'N*', &perl_sha1_digest(@_) ) );
 }
