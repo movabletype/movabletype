@@ -53,10 +53,6 @@ sub warning {
 
     local $Carp::CarpLevel = 1;
     carp $msg;
-
-    if ($args{error}) {
-        # TODO display on browser
-    }
 }
 
 {
