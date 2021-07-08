@@ -347,7 +347,11 @@ sub get_preferred_map {
     return $self->_search_preferred_map($args);
 }
 
-*_get_preferred_map = \&get_preferred_map;
+sub _get_preferred_map {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8', alterative => 'get_preferred_map');
+    shift->get_preferred_map(@_);
+}
 
 sub _is_valid_map {
     my $self = shift;
