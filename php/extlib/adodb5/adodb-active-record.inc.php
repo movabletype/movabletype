@@ -1143,6 +1143,8 @@ global $_ADODB_ACTIVE_DBS;
 	foreach($rows as $row) {
 
 		$obj = new $class($table,$primkeyArr,$db);
+
+		$has_error = false;
 		if ($db->databaseType == 'mssqlnative') {
 			if ($obj->ErrorMsg()) {
 				if ($obj->ErrorNo())

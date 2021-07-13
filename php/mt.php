@@ -753,7 +753,7 @@ class MT {
             && is_numeric($data->fileinfo_entry_id)
         ) {
             $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'page') {
+            if (isset($tmpl_map) && strtolower($tmpl_map->templatemap_archive_type) == 'page') {
                 $entry = $this->db->fetch_page($data->fileinfo_entry_id);
             } else {
                 $entry = $this->db->fetch_entry($data->fileinfo_entry_id);
