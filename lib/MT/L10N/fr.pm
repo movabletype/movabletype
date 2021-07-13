@@ -3564,6 +3564,9 @@ use vars qw( @ISA %Lexicon );
 	'Migrating the record for recently accessed blogs...' => 'Migration des enregistrements des blogs récemments vus...',
 	'Rebuilding permission records...' => 'Reconstruction des autorisations...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reordering dashboard widgets...' => 'Réarrangement des widgets du tableau de bord...',
 	q{Migrating "This is you" dashboard widget...} => q{Migration du widget de tableau de bord "C'est vous"},
 

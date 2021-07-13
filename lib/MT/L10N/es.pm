@@ -3564,6 +3564,9 @@ use vars qw( @ISA %Lexicon );
 	'Migrating the record for recently accessed blogs...' => 'Migrando el registro de accesos recientes a blogs...',
 	'Rebuilding permission records...' => 'Reconstruyendo los registros de permisos...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reordering dashboard widgets...' => 'Reordenando los widgets de paneles...',
 
 ## lib/MT/Util.pm
