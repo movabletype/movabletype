@@ -43,24 +43,19 @@ subtest 'invoke read_config_db multiple time' => sub {
 };
 
 subtest 'DB/File priority' => sub {
-    $cfg->define({Array => {type => 'ARRAY'}, ArrayB => {type => 'ARRAY'}, Hash => {type => 'HASH'}});
+    $cfg->define({Array => {type => 'ARRAY'}, Hash => {type => 'HASH'}});
     $cfg->set('Scalar', 'file');
-    $cfg->set('ScalarB', 'file');
     $cfg->set('Array', 'file_1');
     $cfg->set('Array', 'file_2');
-    $cfg->set('Array2', 'file_1');
-    $cfg->set('Array2', 'file_2');
     $cfg->set('Hash', 'b=');
     $cfg->set('Hash', 'c=file_c');
     $cfg->set('Hash', 'd=file_d');
     my $cfg_raw = $mt->model('config')->load(1);
     $cfg_raw->data(<<EOF);
 Scalar db
-ScalarB
 Array db_1
 Array db_2
 Array db_3
-ArrayB
 Hash a=db_a
 Hash b=db_b
 Hash c=db_c
@@ -68,11 +63,8 @@ EOF
     $cfg_raw->save;
     $cfg->read_config_db;
     is($cfg->Scalar, 'file');
-    is($cfg->ScalarB, 'file'); # TODO suspicious spec
     my @array = $cfg->Array;
     is_deeply(\@array, ['file_1', 'file_2']);
-    my @array_b = $cfg->ArrayB;
-    is_deeply(\@array_b, []);
     my $hash = $cfg->Hash;
     is ref($hash), 'HASH';
     is scalar(keys %$hash), '4';
