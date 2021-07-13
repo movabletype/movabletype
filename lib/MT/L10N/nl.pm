@@ -2907,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Bezig objectcategoriën opnieuw op te bouwen...',
 	'Rebuilding object tags...' => 'Bezig objecttags opnieuw op te bouwen...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Standaard dashboard widgets terugzetten...',
 	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...',
 	'add administer_site permission for Blog Administrator...' => 'voeg admininister_site permissie toe aan Blog Administrator...',
