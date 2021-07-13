@@ -860,7 +860,7 @@ EOT;
                 $fn = array($this, 'function_wrapper');
             }
         }
-        $old_handler = $this->_handlers[$tag];
+        $old_handler = isset($this->_handlers[$tag]) ? $this->_handlers[$tag] : null;
         $this->_handlers[$tag] = array( $fn, $type );
         if ($old_handler) {
             $fn = $old_handler[0];
