@@ -1881,7 +1881,7 @@ use vars qw( @ISA %Lexicon );
 	q{Parameter '[_1]' is required} => q{Le paramètre '[_1]' est requis},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{Le renommage de tempfile '[_1]' a échoué : [_2]},
 	q{Writing to '[_1]' failed: [_2]} => q{L'écriture sur '[_1]' a échoué : [_2]},
-	q{You did not set your blog publishing path} => q{Vous n'avez pas spécifié le chemin de publication de votre blog},
+	q{You did not set your site publishing path} => q{Vous n'avez pas spécifié le chemin de publication de votre blog},
 	q{[_1] archive type requires [_2] parameter} => q{Le type d'archive [_1] requiert un paramètre [_2]},
 
 ## lib/MT/ContentType.pm

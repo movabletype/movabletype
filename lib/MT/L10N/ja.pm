@@ -1871,7 +1871,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => '公開終了日を過ぎたコンテンツデータの処理中にエラーが発生しました: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'カテゴリ (ID:[_1])をロードできません。',
 	'Scheduled publishing.' => '指定日公開',
-	'You did not set your blog publishing path' => 'ブログの公開パスを設定していません。',
+	'You did not set your site publishing path' => 'サイトの公開パスを設定していません。',
 	'[_1] archive type requires [_2] parameter' => '[_1]アーカイブの再構築には[_2]パラメータが必要です',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{[_1]「[_2]」の再構築中にエラーが発生しました: [_3]},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{日付アーカイブ「[_1]」の再構築中にエラーが発生しました: [_2]},

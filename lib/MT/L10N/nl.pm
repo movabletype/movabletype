@@ -1871,7 +1871,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => 'Er deed zich een fout voor bij het ontpubliceren van oude inhoud: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'Kan categorie niet laden. (ID: [_1])',
 	'Scheduled publishing.' => 'Geplande berichten.',
-	'You did not set your blog publishing path' => 'U stelde geen blogpublicatiepad in',
+	'You did not set your site publishing path' => 'U stelde geen blogpublicatiepad in',
 	'[_1] archive type requires [_2] parameter' => 'Archieftype [_1] vereist een [_2] parameter',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{Er deed zich een fout voor bij het publiceren van [_1] '[_2]': [_3]},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{Er deed zich een fout voor bij het publiceren van datum-gebaseerd archief '[_1]': [_2]},
