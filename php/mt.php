@@ -144,7 +144,7 @@ class MT {
             $lang = substr(strtolower(
                 $blog && $blog->blog_language
                     ? $blog->blog_language
-                    : $mt->config('DefaultLanguage')
+                    : $this->config('DefaultLanguage')
                 ), 0, 2);
         }
         else {

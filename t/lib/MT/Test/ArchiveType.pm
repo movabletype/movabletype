@@ -392,7 +392,7 @@ PHP
 
             $test_script .= <<'PHP';
 
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
     print($error_msg."\n");
 }, E_USER_ERROR );
 
@@ -435,12 +435,18 @@ PHP
             $expected =~ s/\\r/\\n/g;
             $expected =~ s/\r/\n/g;
 
+            $expected = $self->_filter_vars($expected);
+
+            # for Smarty 3.1.32+
+            $result   =~ s/\n//gs;
+            $expected =~ s/\n//gs;
+
             my $name = $block->name;
 
             local $TODO = "may fail"
                 if $expected_method =~ /^expected_(?:php_)?todo/
                 or $ENV{MARK_ALL_PHP_TESTS_TODO};
-            is( $result, $self->_filter_vars($expected), "$name $test_info" );
+            is( $result, $expected, "$name $test_info" );
         }
     }
 }
