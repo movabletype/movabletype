@@ -123,4 +123,67 @@ subtest 'publish' => sub {
     cmp_bag \@files, \@expected, "all files exist";
 };
 
+subtest 'unpublish' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        id              => $cd->id,
+    });
+    my $res = $app->post_form_ok({ status => MT::ContentStatus::HOLD() });
+
+    my @files = get_files();
+    my @expected = qw(
+        news/index.html
+        topic/index.html
+    );
+    cmp_bag \@files, \@expected, "all the index files still exist even if nothing remains in their categories";
+};
+
+subtest 'publish again' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        id              => $cd->id,
+    });
+    my $res = $app->post_form_ok({ status => MT::ContentStatus::RELEASE() });
+
+    my @files = get_files();
+    my @expected = qw(
+        news/index.html
+        topic/index.html
+    );
+    cmp_bag \@files, \@expected, "all the files still exist";
+};
+
+subtest 'unpublish after disabling publish_empty_archive' => sub {
+    $blog->publish_empty_archive(0);
+    $blog->save;
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        id              => $cd->id,
+    });
+    my $res = $app->post_form_ok({ status => MT::ContentStatus::HOLD() });
+
+    my @files = get_files();
+    my @expected = qw();
+    cmp_bag \@files, \@expected, "all the index files are gone now";
+};
+
 done_testing;
