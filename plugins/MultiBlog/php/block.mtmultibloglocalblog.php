@@ -5,7 +5,9 @@
 #
 # $Id$
 
-if (MULTIBLOG_ENABLED) {
+require_once 'init.MultiBlog.php';
+
+if (defined('MULTIBLOG_ENABLED') && MULTIBLOG_ENABLED) {
 function smarty_block_mtmultibloglocalblog($args, $content, &$ctx, &$repeat) {
     $localvars = array('local_blog_id', 'blog_id', 'blog');
     if (!isset($content)) {

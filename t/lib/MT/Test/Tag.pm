@@ -187,6 +187,10 @@ SKIP: {
                 $expected =~ s/\\r/\\n/g;
                 $expected =~ s/\r/\n/g;
 
+                # for Smarty 3.1.32+
+                $php_result =~ s/\n//gs;
+                $expected   =~ s/\n//gs;
++
                 local $TODO = "may fail"
                     if $expected_method =~ /^expected_(?:php_)?todo/;
 
@@ -253,7 +257,7 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
     print($error_msg."\n");
 }, E_USER_ERROR );
 
