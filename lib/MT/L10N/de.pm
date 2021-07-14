@@ -3574,6 +3574,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Migrating the record for recently accessed blogs...' => 'Migriere Aufzeichnung der kürzlich aufgerufenen Blogs....',
 	'Rebuilding permission records...' => 'Baue Berechtigungs-Datensätze neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reordering dashboard widgets...' => 'Ordne Dashboard-Widgets neu an...',
 
 ## lib/MT/Util.pm
