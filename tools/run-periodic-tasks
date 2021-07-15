@@ -127,8 +127,6 @@ $mt->run_callbacks( 'init_app', $mt );
 my $client = eval {
     require MT::TheSchwartz;
     my $c = MT::TheSchwartz->new(%cfg);
-    no warnings 'once';
-    $TheSchwartz::FIND_JOB_BATCH_SIZE = $load;
     $c;
 };
 if ( ( my $error = $@ ) && $verbose ) {
@@ -136,6 +134,7 @@ if ( ( my $error = $@ ) && $verbose ) {
 }
 
 if ( $daemonize && $client ) {
+    $client->set_batch_size($load);
     $client->work_periodically($sleep);
 }
 else {
