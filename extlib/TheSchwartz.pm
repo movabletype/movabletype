@@ -6,7 +6,7 @@ use strict;
 use fields
     qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard prioritize floor batch_size strict_remove_ability);
 
-our $VERSION = "1.15";
+our $VERSION = "1.16";
 
 use Carp qw( croak );
 use Data::ObjectDriver::Errors;
@@ -27,6 +27,7 @@ our $T_LOST_RACE;
 
 ## Number of jobs to fetch at a time in find_job_for_workers.
 our $FIND_JOB_BATCH_SIZE = 50;
+our $RANDOMIZE_JOBS = 1;
 
 sub new {
     my TheSchwartz $client = shift;
@@ -400,7 +401,7 @@ sub _grab_a_job {
     my $driver             = $client->driver_for($hashdsn);
 
     ## Got some jobs! Randomize them to avoid contention between workers.
-    my @jobs = shuffle(@_);
+    my @jobs = $RANDOMIZE_JOBS ? shuffle(@_) : @_;
 
 JOB:
     while ( my $job = shift @jobs ) {
@@ -1032,7 +1033,7 @@ randomized order.
 
 =item * C<floor>
 
-A value indicating the minimum priority a job needs to be for this worker to 
+A value indicating the minimum priority a job needs to be for this worker to
 perform. If unspecified all jobs are considered.
 
 =item * C<batch_size>
@@ -1227,7 +1228,7 @@ a scoreboard file in a location it determines is optimal.
 Passing in any other option sets the directory the TheSchwartz scoreboard directory should
 be created in.  For example, if you set this to C</tmp> then this would create a directory
 called C</tmp/theschwartz> and a scoreboard file C</tmp/theschwartz/scoreboard.pid> in it
-(where pid is the current process pid.) 
+(where pid is the current process pid.)
 
 =head2 C<< $client->scoreboard() >>
 
@@ -1262,7 +1263,7 @@ to reuse exist Database handles like so:
         my $driver = Data::ObjectDriver::Driver::DBI->new( dbh => $dbh);
         return TheSchwartz->new(databases => [{ driver => $driver }]);
 
-B<Note>: it's important that the C<RaiseError> and C<AutoCommit> flags are 
+B<Note>: it's important that the C<RaiseError> and C<AutoCommit> flags are
 set on the handle for various bits of functionality to work.
 
 =head1 COPYRIGHT, LICENSE & WARRANTY
@@ -1276,4 +1277,3 @@ under the same terms as Perl itself.
 TheSchwartz comes with no warranty of any kind.
 
 =cut
-
