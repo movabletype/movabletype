@@ -1,12 +1,12 @@
 # $Id$
 
 package TheSchwartz;
-use 5.008;
+use 5.008001;
 use strict;
 use fields
     qw( databases retry_seconds dead_dsns retry_at funcmap_cache verbose all_abilities current_abilities current_job cached_drivers driver_cache_expiration scoreboard prioritize floor batch_size strict_remove_ability);
 
-our $VERSION = "1.12";
+our $VERSION = "1.16";
 
 use Carp qw( croak );
 use Data::ObjectDriver::Errors;
@@ -27,6 +27,7 @@ our $T_LOST_RACE;
 
 ## Number of jobs to fetch at a time in find_job_for_workers.
 our $FIND_JOB_BATCH_SIZE = 50;
+our $RANDOMIZE_JOBS = 1;
 
 sub new {
     my TheSchwartz $client = shift;
@@ -400,7 +401,7 @@ sub _grab_a_job {
     my $driver             = $client->driver_for($hashdsn);
 
     ## Got some jobs! Randomize them to avoid contention between workers.
-    my @jobs = shuffle(@_);
+    my @jobs = $RANDOMIZE_JOBS ? shuffle(@_) : @_;
 
 JOB:
     while ( my $job = shift @jobs ) {
