@@ -48,7 +48,7 @@ sub new {
     my $class = shift;
     $class->mt_schwartz_init();
     my (%param) = @_;
-    my $workers;
+    my $workers = [];
     $workers        = delete $param{workers}   if exists $param{workers};
     $RANDOMIZE_JOBS = delete $param{randomize} if exists $param{randomize};
 
@@ -58,37 +58,14 @@ sub new {
     $param{verbose} = \&default_logger
         if $param{verbose} && ( ref $param{verbose} ne 'CODE' );
 
-    my $client = $class->SUPER::new(%param);
+    my $client = $class->SUPER::new(%param) or return;
+    $instance = $client;
 
-    if ($client) {
-        $instance = $client;
-        unless ($workers) {
-            $workers = [];
-
-            my $all_workers ||= MT->registry("task_workers") || {};
-
-            foreach my $id ( keys %$all_workers ) {
-                my $w = $all_workers->{$id};
-                my $c = $w->{class} or next;
-                push @$workers, $c;
-            }
-        }
-
-        if (@$workers) {
-
-            # Can we do this?
-            foreach my $c (@$workers) {
-                if ( eval( 'require ' . $c ) ) {
-
-                    # Yes, we can do this.
-                    $client->can_do($c);
-                }
-                else {
-
-                    # No, we can't. Here's why...
-                    print STDERR "Failed to load worker class '$c': $@\n";
-                }
-            }
+    for my $c (@$workers) {
+        if ( eval( 'require ' . $c ) ) {
+            $client->can_do($c);
+        } else {
+            print STDERR "Failed to load worker class '$c': $@\n";
         }
     }
 
