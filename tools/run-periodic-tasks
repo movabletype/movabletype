@@ -20,7 +20,7 @@ my $scoreboard;
 my $randomize_jobs = 0;
 my $trace_objects  = 0;
 my $workers;
-my $ignore;
+my $ignore = '';
 my $floor;
 my $process_cap;
 
@@ -101,8 +101,7 @@ if ($workers) {
         $name = "MT::Worker::" . $name unless $name =~ /::/;
         push @worker_classes, $name;
     }
-}
-elsif ($ignore) {
+} else {
     my %ignore_map;
     for my $name ( split /,/, $ignore ) {
         $name = "MT::Worker::" . $name unless $name =~ /::/;
