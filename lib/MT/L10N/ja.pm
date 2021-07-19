@@ -4137,7 +4137,7 @@ use vars qw( @ISA %Lexicon );
 	'add' => '追加',
 
 ## tmpl/cms/content_field_type_options/content_type.tmpl
-	'Allow users to select multiple values?' => '複数選択できる',
+	'Allow users to select multiple values?' => '複数選択を許可する',
 	'Source Content Type' => 'コンテンツタイプ',
 	'There is no content type that can be selected. Please create a content type if you use the Content Type field type.' => 'コンテンツタイプが存在しないため利用できません。コンテンツタイプを作成する必要があります。',
 
