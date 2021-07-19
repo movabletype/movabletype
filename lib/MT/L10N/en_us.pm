@@ -55,7 +55,7 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'You should be able to log in to Movable Type using this new password from the URL below. Once you have logged in, you should change your password to something more memorable.',
 
     '_BACKUP_TEMPDIR_WARNING' =>
-        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] <strong>immediately</strong> because exported files contain sensitive information.',
+        'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] by clicking each link or with the help of an FTP client.',
     '_BACKUP_DOWNLOAD_MESSAGE' =>
         'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
     '_USAGE_BOOKMARKLET_1' =>
