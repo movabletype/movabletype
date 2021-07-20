@@ -22,11 +22,15 @@ $test_env->prepare_fixture('db');
 
 for my $plugin_name ('NotInstalled', 'FormattedText') {
     for (1 .. 3) {
-        my $pd = MT::PluginData->new('plugin' => $plugin_name, 'key' => 'configuration:blog:10');
+        my $pd = MT::PluginData->new;
+        $pd->plugin($plugin_name);
+        $pd->key('configuration:blog:10');
         $pd->save;
     }
     for (1 .. 3) {
-        my $pd = MT::PluginData->new('plugin' => $plugin_name, 'key' => 'configuration');
+        my $pd = MT::PluginData->new;
+        $pd->plugin($plugin_name);
+        $pd->key('configuration');
         $pd->save;
     }
 }
@@ -56,7 +60,9 @@ is(MT::PluginData->count(), 12, 'test data prepared');
 
 {
     my $log_count = MT::Log->count();
-    my $pd        = MT::PluginData->new('plugin' => 'NotInstalled', 'key' => 'configuration:blog:100');
+    my $pd        = MT::PluginData->new;
+    $pd->plugin('NotInstalled');
+    $pd->key('configuration:blog:100');
     $pd->data(\'1');    # broken data emulation
     $pd->save;
     is(MT::PluginData->count(), 5, 'added');
