@@ -1,70 +1,112 @@
-          </code>
-        </pre>
-      </div>
-    </div>
-<script type="text/javascript">
-/* <![CDATA[ */
-var progress = MT.Util.getByID("progressbar");
-if (progress) {
-    progress.style.display = "none";
+<mt:setvarblock name="page_title"><__trans phrase="Export Sites"></mt:setvarblock>
+<mt:setvar name="backup" value="1">
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.mt-mainContent .hidden {
+    display: none;
 }
-/* ]]> */
-</script>
+</style>
+</mt:setvarblock>
 
-<mt:if name="backup_success">
-<h2><__trans phrase="All of the data has been exported successfully!"></h2>
-<mt:if name="files_loop">
-<p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
-<h2><__trans phrase="Export Files"></h2>
-<ul id="backup-files">
-<mt:loop name="files_loop">
-  <li class="list-item">
-  <mt:if name="url">
-    <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">">
-      <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
-    </a>
-  <mt:else>
-    <mt:var name="filename">
-  </mt:if>
-  </li>
-</mt:loop>
-</ul>
-<mt:else>
-<form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
-  <input type="hidden" name="__mode" value="backup_download" />
-  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  <input type="hidden" name="filename" value="<mt:var name="filename" escape="html">" />
-<mt:if name="blog_id">
-  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
-</mt:if>
-</form>
+<mt:include name="layout/common/header.tmpl">
 
-<script type="text/javascript">
-/* <![CDATA[ */
-var timer;
+<div class="row">
+    <mt:if name="has_menu">
+        <mt:include name="include/primary_navigation.tmpl">
+    </mt:if>
 
-function submit_form() {
-    window.clearTimeout(timer);
-    var p = MT.Util.getByID('download_message');
-    if (p)
-        p.style.display = 'none';
-    var f = document['file_download'];
-    if (f) {
-        f.submit();
+    <script type="text/javascript">
+    function progress(str, id) {
+        var el = MT.Util.getByID(id);
+        if (el) el.innerHTML = str;
     }
-}
+    </script>
 
-timer = window.setTimeout("submit_form()", 3000);
-/* ]]> */
-</script>
+    <div class="mt-mainContent" style="overflow: hidden;">
+        <mt:include name="include/breadcrumbs.tmpl">
+        <mt:include name="include/page_title.tmpl">
 
-<p id="download_message"><strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong></p>
-  </mt:if>
-<mt:else>
-<p><strong><__trans phrase="An error occurred during the export process: [_1]" params="<mt:var name="error">"></strong></p>
-</mt:if>
+        <div class="backup-status">
+            <div id="progressbar" class="mt-progress mb-3">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" data-role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-block">
+                <pre class="pre-scrollable progress-log p-3"><code><__trans phrase="Exporting Movable Type"></code></pre>
+            </div>
+        </div>
 
-  </div>
+        <div class="result success hidden">
+            <h2><__trans phrase="All of the data has been exported successfully!"></h2>
+            <div class="files">
+                <p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
+                <h2><__trans phrase="Export Files"></h2>
+                <ul id="backup-files">
+                </ul>
+            </div>
+            <form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
+                <input type="hidden" name="__mode" value="backup_download" />
+                <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+                <input type="hidden" name="filename" value="" />
+            </form>
+            <p id="download_message">
+                <strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong>
+            </p>
+        </div>
+        <div class="result error hidden">
+            <p>
+                <strong><__trans phrase="An error occurred during the export process: [_1]" params="<mt:var name="error">"></strong>
+            </p>
+        </div>
+    </div>
 </div>
+
+<script>
+(function($){
+    var progress_pointer = 0;
+    var tid = setInterval(function(){
+        $.ajax({
+            type: 'GET',
+            url: '<mt:var name="script_url" escape="js">?__mode=backup_result',
+            dataType: 'json'
+        }).done(function(data) {
+            console.log(data);
+            var diff = data.progress.slice(progress_pointer);
+            progress_pointer = data.progress.length;
+
+            data.progress.forEach(function(e, i){
+                $(".progress-log").text($(".progress-log").text() + "\n" + e.message);
+            });
+
+            if (data.done == '1') {
+                clearInterval(tid);
+                $("#progressbar").addClass('hidden');
+                $(".result.success").removeClass('hidden');
+                if (data.urls.length == 1 && !data.urls[0].hasOwnProperty('url')) {
+                    $("#download_message").addClass('hidden');
+                    $("#file_download [name=filename]").attr("value", data.urls[0].filename);
+                    $("#file_download").submit();
+                } else {
+                    $(".files").removeClass('hidden');
+                    data.urls.forEach(function(e, i){
+                        var a = $("<a/>").attr({
+                            "target" : "<__trans phrase="_external_link_target" escape="js">",
+                            "href"   : '<mt:var name="script_url" escape="js">?' + e.url,
+                            "title"  : "<__trans phrase="Download This File" escape="js">"
+                        }).text(e.filename);
+                        var li = $("<li/>").append(a).addClass('list-item');
+                        $("#backup-files").append(li);
+                    });
+                }
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown){
+            console.error(jqXHR, textStatus, errorThrown);
+        });
+    }, 5000);
+})(jQuery);
+</script>
 
 <mt:include name="layout/common/footer.tmpl">

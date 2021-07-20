@@ -1022,20 +1022,13 @@ sub recover_profile_password {
 }
 
 sub _allowed_blog_ids_for_backup {
-    my ( $app, $blog_id ) = @_;
-    my $blog = $app->model('blog')->load($blog_id)
-        or return $blog_id;
+    my ($app, $blog_id) = @_;
+    my $blog = $app->model('blog')->load($blog_id);
+    return $blog_id if !$blog || $blog->is_blog;
 
-    my @blog_ids = ();
-
-    if ( !$blog->is_blog ) {
-        my $user  = $app->user;
-        my $blogs = $blog->blogs;
-        push( @blog_ids,
-            grep { $user->permissions($_)->can_do('backup_blog') }
-            map  { $_->id } @$blogs );
-    }
-
+    my $user     = $app->user;
+    my $blogs    = $blog->blogs;
+    my @blog_ids = grep { $user->permissions($_)->can_do('backup_blog') } map { $_->id } @$blogs;
     @blog_ids, $blog_id;
 }
 
@@ -1141,83 +1134,106 @@ sub start_restore {
     $app->load_tmpl( 'restore.tmpl', \%param );
 }
 
+sub backup_result {
+    my $app = shift;
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id) || return;
+    return MT::Util::to_json($sess->combine);
+}
+
 sub backup {
-    my $app     = shift;
-    my $user    = $app->user;
+    my $app = shift;
+
+    my $job = insert_backup_job($app);
+    return $job unless (ref $job && ref $job eq 'TheSchwartz::Job');
+
     my $blog_id = $app->param('blog_id') || 0;
-    my $perms   = $app->permissions
-        or return $app->permission_denied();
+    $app->add_breadcrumb(
+        $app->translate($blog_id ? 'Export Site' : 'Export Sites'),
+        $app->uri(mode => 'start_backup', args => { blog_id => $blog_id }));
+    $app->add_breadcrumb($app->translate('Export'));
+    my $param = {};
+    $app->build_page('include/backup_end.tmpl', $param);
+}
+
+sub insert_backup_job {
+    my $app = shift;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    my $blog_id = $app->param('blog_id') || 0;
     my $blog_ids = $app->param('backup_what') || '';
+    my @blog_ids = split ',', $blog_ids;
+    my $perms   = $app->permissions or return $app->permission_denied();
+
+    # Get all target blog_id when system administrator choose website.
+    if ($app->user->is_superuser) {
+        if (@blog_ids) {
+            my $blog_class = $app->model('blog');
+            for my $bid (@blog_ids) {
+                my $target = $blog_class->load($bid);
+                next if $target->is_blog;
+                push @blog_ids, map { $_->id } @{ $target->blogs };
+            }
+        }
+    } else {
+        return $app->permission_denied() unless $perms->can_do('backup_blog');
+
+        # Only System Administrator can do all backup.
+        return $app->errtrans('Invalid request') unless $blog_ids;
+
+        my %allowed_blog_ids = map { $_ => 1} _allowed_blog_ids_for_backup($app, $blog_id);
+        return $app->permission_denied() if grep { !exists($allowed_blog_ids{$_}) } @blog_ids;
+    }
+    $app->validate_magic() or return;
+
+    my $sess_name = 'backup:'. $app->user->id;
+
+    require MT::BackupRestore::Session;
+    MT::BackupRestore::Session->start($sess_name, $app->make_magic_token());
+
+    require MT::TheSchwartz;
+    require TheSchwartz::Job;
+    my $job = TheSchwartz::Job->new;
+    $job->funcname('MT::Worker::Export');
+    $job->uniqkey($sess_name);
+    $job->priority(5);
+    $job->arg([{$app->param_hash}, $app->user->id]);
+    MT::TheSchwartz->insert($job);
+
+    return $job;
+}
+
+sub backup_internal {
+    my ($job_params, $user_id) = @_;
+    require MT::App;
+    my $user = MT->model('author')->load($user_id);
+    my $app  = MT::App->new or die MT->errstr;
+    $app->user($user);
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+    my $blog_id  = $job_params->{'blog_id'}     || 0;
+    my $blog_ids = $job_params->{'backup_what'} || '';
     my @blog_ids = split ',', $blog_ids;
 
     require MT::Util::Log;
     MT::Util::Log::init();
 
-    MT::Util::Log->info('=== Start export.');
+    my $size = $job_params->{'size_limit'} || 0;
+    return $app->errtrans('[_1] is not a number.', encode_html($size)) if $size !~ /^\d+$/;
 
-    if ( $user->is_superuser ) {
-
-        # Get all target blog_id when system administrator choose website.
-        if (@blog_ids) {
-            my @child_ids;
-            my $blog_class = $app->model('blog');
-            foreach my $bid (@blog_ids) {
-                my $target = $blog_class->load($bid);
-                if ( !$target->is_blog && scalar @{ $target->blogs } ) {
-                    my @blogs = map { $_->id } @{ $target->blogs };
-                    push @child_ids, @blogs;
-                }
-            }
-            push @blog_ids, @child_ids if @child_ids;
-        }
-    }
-    else {
-        return $app->permission_denied()
-            unless defined($blog_id) && $perms->can_do('backup_blog');
-
-        # Only System Administrator can do all backup.
-        return $app->errtrans('Invalid request')
-            unless $blog_ids;
-
-        my @allowed_blog_ids = _allowed_blog_ids_for_backup( $app, $blog_id );
-        for my $blog_id (@blog_ids) {
-            return $app->permission_denied()
-                unless grep { $_ eq $blog_id } @allowed_blog_ids;
-        }
-    }
-    $app->validate_magic() or return;
-
-    my $size = $app->param('size_limit') || 0;
-    return $app->errtrans( '[_1] is not a number.', encode_html($size) )
-        if $size !~ /^\d+$/;
-
-    my $archive = $app->param('backup_archive_format');
+    my $archive = $job_params->{'backup_archive_format'};
     my $enc     = $app->charset || 'utf-8';
-    my @ts      = gmtime(time);
-    my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
-        $ts[4] + 1,
-        @ts[ 3, 2, 1, 0 ];
-    my $file = "Movable_Type-$ts" . '-Export';
+    my $file    = _backup_filename($sess->sess->start);
 
     my $param = { return_args => '__mode=start_backup' };
     $app->{no_print_body} = 1;
-    $app->add_breadcrumb(
-        $app->translate( $blog_id ? 'Export Site' : 'Export Sites' ),
-        $app->uri(
-            mode => 'start_backup',
-            args => { blog_id => $blog_id },
-        )
-    );
-    $app->add_breadcrumb( $app->translate('Export') );
-    $param->{system_overview_nav} = 1 if defined($blog_ids) && $blog_ids;
-    $param->{blog_id}  = $blog_id  if $blog_id;
-    $param->{blog_ids} = $blog_ids if $blog_ids;
-    $param->{nav_backup} = 1;
+    $param->{system_overview_nav} = 1         if $blog_ids;
+    $param->{blog_id}             = $blog_id  if $blog_id;
+    $param->{blog_ids}            = $blog_ids if $blog_ids;
+    $param->{nav_backup}          = 1;
 
-    local $| = 1;
-    $app->send_http_header('text/html');
-    $app->print_encode(
-        $app->build_page( 'include/backup_start.tmpl', $param ) );
     require File::Temp;
     require File::Spec;
     use File::Copy;
@@ -1227,27 +1243,23 @@ sub backup {
     $fmgr->mkpath($temp_dir) unless -d $temp_dir;
 
     require MT::BackupRestore;
-    my $count_term
-        = @blog_ids ? { class => '*', blog_id => [ [0], @blog_ids ] }
-        : $blog_id ? { class => '*', blog_id => [ 0, $blog_id ] }
-        :            { class => '*' };
+    my $count_term =
+          @blog_ids ? { class => '*', blog_id => [[0], @blog_ids] }
+        : $blog_id  ? { class => '*', blog_id => [0, $blog_id] }
+        :             { class => '*' };
     my $num_assets = $app->model('asset')->count($count_term);
     my $printer;
     my $splitter;
     my $finisher;
-    my $progress = sub { _progress( $app, @_ ); };
-    my $fh;
-    my $fname;
-    my $arc_buf;
 
-    if ( !( $size || $num_assets ) ) {
+    require MT::BackupRestore::Session;
+    if (!($size || $num_assets)) {
         $splitter = sub { };
 
-        if ( !$archive ) {
-            ( $fh, my $filepath )
-                = File::Temp::tempfile( 'xml.XXXXXXXX', DIR => $temp_dir );
+        if (!$archive) {
+            my ($fh, $filepath) = File::Temp::tempfile('xml.XXXXXXXX', DIR => $temp_dir);
             binmode $fh, ":encoding(utf8)";
-            ( my $vol, my $dir, $fname ) = File::Spec->splitpath($filepath);
+            my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
             $printer = sub {
                 my ($data) = @_;
                 print $fh $data;
@@ -1256,10 +1268,12 @@ sub backup {
             $finisher = sub {
                 my ($asset_files) = @_;
                 close $fh;
-                _backup_finisher( $app, $fname, $param );
+                _backup_finisher($app, $fname, $param);
+                my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+                $sess->urls([{filename => $fname}]);
             };
-        }
-        else {    # archive/compress files
+        } else {    # archive/compress files
+            my $arc_buf;
             $printer = sub {
                 my ($data) = @_;
                 $arc_buf .= $data;
@@ -1268,220 +1282,139 @@ sub backup {
             $finisher = sub {
                 require MT::Util::Archive;
                 my ($asset_files) = @_;
-                ( my $fh, my $filepath )
-                    = File::Temp::tempfile( $archive . '.XXXXXXXX',
-                    DIR => $temp_dir );
-                ( my $vol, my $dir, $fname )
-                    = File::Spec->splitpath($filepath);
+                (my $fh, my $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
+                my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
                 close $fh;
                 unlink $filepath;
-                my $arc = MT::Util::Archive->new( $archive, $filepath );
-                $arc->add_string( Encode::encode_utf8($arc_buf),
-                    "$file.xml" );
+                my $arc = MT::Util::Archive->new($archive, $filepath);
+                $arc->add_string(Encode::encode_utf8($arc_buf), "$file.xml");
                 $arc->add_string(
-                    "<manifest xmlns='"
-                        . MT::BackupRestore::NS_MOVABLETYPE()
-                        . "'><file type='backup' name='$file.xml' /></manifest>",
+                    "<manifest xmlns='" . MT::BackupRestore::NS_MOVABLETYPE() . "'><file type='backup' name='$file.xml' /></manifest>",
                     "$file.manifest"
                 );
                 $arc->close;
-                _backup_finisher( $app, $fname, $param );
+                _backup_finisher($app, $fname, $param);
+                my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+                $sess->urls([{filename => $fname}]);
             };
         }
-    }
-    else {
+    } else {
         my @files;
-        my $filename = File::Spec->catfile( $temp_dir, $file . "-1.xml" );
-        $fh = gensym();
+        my $filename = File::Spec->catfile($temp_dir, $file . "-1.xml");
+        my $fh = gensym();
         open $fh, ">", $filename or die "Couldn't open $filename: $!";
-        my $url = $app->uri . "?__mode=backup_download&name=$file-1.xml";
-        $url .= "&magic_token=" . $app->current_magic
-            if defined( $app->current_magic );
+        my $url = "__mode=backup_download&name=$file-1.xml";
         $url .= "&blog_id=$blog_id" if defined($blog_id);
-        push @files,
-            {
-            url      => $url,
-            filename => $file . "-1.xml"
-            };
+        push @files, { url => $url, filename => $file . "-1.xml" };
         $printer = sub {
             require bytes;
             my ($data) = @_;
-            $data = Encode::encode_utf8($data)
-                if Encode::is_utf8($data);
+            $data = Encode::encode_utf8($data) if Encode::is_utf8($data);
             print $fh $data;
             return bytes::length($data);
         };
         $splitter = sub {
-            my ( $findex, $header ) = @_;
+            my ($findex, $header) = @_;
 
             print $fh '</movabletype>';
             close $fh;
-            my $filename
-                = File::Spec->catfile( $temp_dir, $file . "-$findex.xml" );
+            my $filename = File::Spec->catfile($temp_dir, $file . "-$findex.xml");
             $fh = gensym();
             open $fh, ">", $filename or die "Couldn't open $filename: $!";
-            my $url
-                = $app->uri
-                . "?__mode=backup_download&name=$file-$findex.xml";
-            $url .= "&magic_token=" . $app->current_magic
-                if defined( $app->current_magic );
+            my $url = "__mode=backup_download&name=$file-$findex.xml";
             $url .= "&blog_id=$blog_id" if defined($blog_id);
-            push @files,
-                {
-                url      => $url,
-                filename => $file . "-$findex.xml"
-                };
+            push @files, { url => $url, filename => $file . "-$findex.xml" };
             print $fh $header;
         };
         $finisher = sub {
             my ($asset_files) = @_;
             close $fh;
-            my $filename = File::Spec->catfile( $temp_dir, "$file.manifest" );
+            my $filename = File::Spec->catfile($temp_dir, "$file.manifest");
             $fh = gensym();
             open $fh, ">", $filename or die "Couldn't open $filename: $!";
-            print $fh "<manifest xmlns='"
-                . MT::BackupRestore::NS_MOVABLETYPE() . "'>\n";
-            for my $file (@files) {
-                my $name = $file->{filename};
-                print $fh "<file type='backup' name='$name' />\n";
-            }
+            printf $fh "<manifest xmlns='%s'>\n", MT::BackupRestore::NS_MOVABLETYPE();
+            printf $fh "<file type='backup' name='%s' />\n", $_->{filename} for @files;
             require MT::FileMgr::Local;
-            for my $id ( keys %$asset_files ) {
+            for my $id (keys %$asset_files) {
                 my $name = $id . '-' . $asset_files->{$id}->[2];
-                my $tmp = File::Spec->catfile( $temp_dir, $name );
-                unless (
-                    copy(
-                        MT::FileMgr::Local::_local(
-                            $asset_files->{$id}->[1]
-                        ),
-                        MT::FileMgr::Local::_local($tmp)
-                    )
-                    )
-                {
-                    $app->log(
-                        {   message => $app->translate(
-                                'Copying file [_1] to [_2] failed: [_3]',
-                                $asset_files->{$id}->[1],
-                                $tmp, $!
-                            ),
-                            level    => MT::Log::WARNING(),
-                            class    => 'system',
-                            category => 'backup'
-                        }
-                    );
+                my $tmp  = File::Spec->catfile($temp_dir, $name);
+                unless (copy(MT::FileMgr::Local::_local($asset_files->{$id}->[1]), MT::FileMgr::Local::_local($tmp))) {
+                    $app->log({
+                        message  => $app->translate('Copying file [_1] to [_2] failed: [_3]', $asset_files->{$id}->[1], $tmp, $!),
+                        level    => MT::Log::WARNING(),
+                        class    => 'system',
+                        category => 'backup'
+                    });
                     next;
                 }
                 my $xml_name = $asset_files->{$id}->[2];
-                require MT::Util;
-                print $fh "<file type='asset' name='"
-                    . MT::Util::encode_xml( $xml_name, 1, 1 )
-                    . "' asset_id='"
-                    . $id
-                    . "' />\n";
-                my $url
-                    = $app->uri
-                    . "?__mode=backup_download&assetname="
-                    . MT::Util::encode_url($name);
-                $url .= "&magic_token=" . $app->current_magic
-                    if defined( $app->current_magic );
+                printf $fh "<file type='asset' name='%s' asset_id='%s' />\n", MT::Util::encode_xml($xml_name, 1, 1), $id;
+                my $url = "__mode=backup_download&assetname=" . MT::Util::encode_url($name);
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
-                push @files,
-                    {
-                    url      => $url,
-                    filename => MT::FileMgr::Local::_local($name),
-                    };
+                push @files, { url => $url, filename => MT::FileMgr::Local::_local($name) };
             }
             print $fh "</manifest>\n";
             close $fh;
-            my $url
-                = $app->uri . "?__mode=backup_download&name=$file.manifest";
-            $url .= "&magic_token=" . $app->current_magic
-                if defined( $app->current_magic );
+            my $url = "__mode=backup_download&name=$file.manifest";
             $url .= "&blog_id=$blog_id" if defined($blog_id);
-            push @files,
-                {
-                url      => $url,
-                filename => "$file.manifest"
-                };
-            if ( !$archive ) {
-
+            push @files, { url => $url, filename => "$file.manifest" };
+            my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+            if (!$archive) {
                 for my $f (@files) {
-                    $f->{filename}
-                        = MT::FileMgr::Local::_syserr( $f->{filename} )
-                        if ( $f->{filename}
-                        && !Encode::is_utf8( $f->{filename} ) );
+                    $f->{filename} = MT::FileMgr::Local::_syserr($f->{filename})
+                        if ($f->{filename} && !Encode::is_utf8($f->{filename}));
                 }
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
-                _backup_finisher( $app, \@fnames, $param );
-            }
-            else {
-                my ( $fh_arc, $filepath )
-                    = File::Temp::tempfile( $archive . '.XXXXXXXX',
-                    DIR => $temp_dir );
-                ( my $vol, my $dir, $fname )
-                    = File::Spec->splitpath($filepath);
+                _backup_finisher($app, \@fnames, $param);
+                $sess->urls(\@files);
+            } else {
+                my ($fh_arc, $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
+                my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
                 require MT::Util::Archive;
                 close $fh_arc;
                 unlink $filepath;
-                my $arc = MT::Util::Archive->new( $archive, $filepath );
-                for my $f (@files) {
-                    $arc->add_file( $temp_dir, $f->{filename} );
-                }
+                my $arc = MT::Util::Archive->new($archive, $filepath);
+                $arc->add_file($temp_dir, $_->{filename}) for @files;
                 $arc->close;
 
                 # for safery, don't unlink before closing $arc here.
-                for my $f (@files) {
-                    unlink File::Spec->catfile( $temp_dir, $f->{filename} );
-                }
-                _backup_finisher( $app, $fname, $param );
+                unlink File::Spec->catfile($temp_dir, $_->{filename}) for @files;
+                _backup_finisher($app, $fname, $param);
+                my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+                $sess->urls([{filename => $fname}]);
             }
         };
     }
 
     my @tsnow    = gmtime(time);
     my $metadata = {
-        backup_by => MT::Util::encode_xml( $app->user->name, 1 ) . '(ID: '
-            . $app->user->id . ')',
-        backup_on => sprintf(
-            "%04d-%02d-%02dT%02d:%02d:%02d",
-            $tsnow[5] + 1900,
-            $tsnow[4] + 1,
-            @tsnow[ 3, 2, 1, 0 ]
-        ),
-        backup_what    => join( ',', @blog_ids ),
+        backup_by => MT::Util::encode_xml($user->name, 1) . '(ID: ' . $user_id . ')',
+        backup_on => sprintf("%04d-%02d-%02dT%02d:%02d:%02d", $tsnow[5] + 1900, $tsnow[4] + 1, @tsnow[3, 2, 1, 0]),
+        backup_what    => join(',', @blog_ids),
         schema_version => $app->config('SchemaVersion'),
     };
-    eval {
-        MT::BackupRestore->backup( \@blog_ids, $printer, $splitter, $finisher,
-            $progress, $size * 1024,
-            $enc, $metadata );
-    };
-    if ($@) {
+    my $sess_name = 'backup:'. $user_id;
+    eval { MT::BackupRestore->backup(\@blog_ids, $printer, $splitter, $finisher, $sess_name, $size * 1024, $enc, $metadata); };
+}
 
-        # Abnormal end
-        $param->{error} = $@;
-        close $fh;
-        _backup_finisher( $app, $fname, $param );
-    }
-
-    MT::Util::Log->info('=== End   export.');
-
+sub _backup_filename {
+    my $time = shift;
+    my @ts = gmtime($time);
+    my $ts = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900, $ts[4] + 1, @ts[3, 2, 1, 0];
+    return "Movable_Type-$ts" . '-Export';
 }
 
 sub backup_download {
     my $app     = shift;
     my $user    = $app->user;
-    my $blog_id = $app->param('blog_id');
-    unless ( $user->is_superuser ) {
+    unless ($user->is_superuser) {
         my $perms = $app->permissions;
         return $app->permission_denied()
             unless defined($perms)
-            && defined($blog_id)
             && $perms->can_do('backup_download');
     }
-    $app->validate_magic() or return;
     my $filename  = $app->param('filename');
     my $assetname = $app->param('assetname');
     my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
@@ -1489,81 +1422,56 @@ sub backup_download {
 
     $app->{hide_goback_button} = 1;
 
-    if ( defined($assetname) ) {
-        my $sess = MT::Session->load( { kind => 'BU', name => $assetname } );
-        if ( !defined($sess) || !$sess ) {
-            return $app->errtrans("Specified file was not found.");
-        }
-        $newfilename = $filename = $assetname;
-        $sess->remove;
-    }
-    elsif ( defined($filename) ) {
-        my $sess = MT::Session->load( { kind => 'BU', name => $filename } );
-        if ( !defined($sess) || !$sess ) {
-            return $app->errtrans("Specified file was not found.");
-        }
-        my @ts = gmtime( $sess->start );
-        my $ts = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
-            $ts[4] + 1, @ts[ 3, 2, 1, 0 ];
-        $newfilename = "Movable_Type-$ts" . '-Export';
-        $sess->remove;
-    }
-    else {
-        $newfilename = $app->param('name') || '';
-        return
-            if $newfilename
-            !~ /Movable_Type-\d{4}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-Export(?:-\d+)?\.\w+/;
-        $filename = $newfilename;
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+
+    if (my $req_name = ($assetname || $app->param('name'))) {
+        $newfilename = $filename = $sess->get_file($req_name) or return $app->errtrans("Specified file was not found.");
+    } elsif ($filename) {
+        $sess->get_file($filename) or return $app->errtrans("Specified file was not found.");
+        $newfilename = _backup_filename($sess->sess->start);
+    } else {
+        return $app->errtrans("File name is not given."); # Never reach here
     }
 
     require File::Spec;
-    my $fname = File::Spec->catfile( $temp_dir, $filename );
+    my $fname = File::Spec->catfile($temp_dir, $filename);
 
     my $contenttype;
-    if ( !defined($assetname) && ( $filename =~ m/^xml\..+$/i ) ) {
+    if (!defined($assetname) && ($filename =~ m/^xml\..+$/i)) {
         my $enc = $app->charset || 'utf-8';
         $contenttype = "text/xml; charset=$enc";
         $newfilename .= '.xml';
-    }
-    elsif ( $filename =~ m/^tgz\..+$/i ) {
+    } elsif ($filename =~ m/^tgz\..+$/i) {
         $contenttype = 'application/x-tar-gz';
         $newfilename .= '.tar.gz';
-    }
-    elsif ( $filename =~ m/^zip\..+$/i ) {
+    } elsif ($filename =~ m/^zip\..+$/i) {
         $contenttype = 'application/zip';
         $newfilename .= '.zip';
-    }
-    else {
+    } else {
         $contenttype = 'application/octet-stream';
-        if ( $app->param->user_agent =~ /MSIE/ ) {
-            $newfilename = Encode::encode( 'Shift_JIS', $newfilename );
+        if ($app->param->user_agent =~ /MSIE/) {
+            $newfilename = Encode::encode('Shift_JIS', $newfilename);
         }
     }
 
-    if ( open( my $fh, "<", MT::FileMgr::Local::_local($fname) ) ) {
+    if (open(my $fh, "<", MT::FileMgr::Local::_local($fname))) {
         binmode $fh;
         $app->{no_print_body} = 1;
-        $app->set_header( "Content-Disposition" => 'attachment; filename="'
-                . $newfilename
-                . '"' );
+        $app->set_header("Content-Disposition" => 'attachment; filename="' . $newfilename . '"');
         $app->send_http_header($contenttype);
-        while ( read $fh, my ($chunk), 8192 ) {
+        while (read $fh, my ($chunk), 8192) {
             $app->print($chunk);
         }
         close $fh;
-        $app->log(
-            {   message => $app->translate(
-                    '[_1] successfully downloaded export file ([_2])',
-                    $app->user->name, $fname
-                ),
-                level    => MT::Log::INFO(),
-                class    => 'system',
-                category => 'restore'
-            }
-        );
+        $app->log({
+            message => $app->translate('[_1] successfully downloaded export file ([_2])', $app->user->name, $fname),
+            level    => MT::Log::INFO(),
+            class    => 'system',
+            category => 'restore'
+        });
         MT::FileMgr::Local->delete($fname);
-    }
-    else {
+    } else {
         $app->errtrans('Specified file was not found.');
     }
 }
@@ -3061,45 +2969,25 @@ sub restore_upload_manifest {
 
 sub _backup_finisher {
     my $app = shift;
-    my ( $fnames, $param ) = @_;
-    unless ( ref $fnames ) {
-        $fnames = [$fnames];
-    }
+    my ($fnames, $param) = @_;
+    $fnames                  = [$fnames] unless (ref $fnames);
     $param->{filename}       = $fnames->[0];
-    $param->{backup_success} = 1
-        unless $param->{error};
-    require MT::Session;
-    MT::Session->remove( { kind => 'BU' } );
-    foreach my $fname (@$fnames) {
-        my $sess = MT::Session->new;
-        $sess->id( $app->make_magic_token() );
-        $sess->kind('BU');    # BU == Backup
-        $sess->name($fname);
-        $sess->start(time);
-        $sess->save;
-    }
+    $param->{backup_success} = 1 unless $param->{error};
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id);
+    $sess->file($_) for @$fnames;
     my $message;
-    if ( my $blog_id = $param->{blog_id} || $param->{blog_ids} ) {
-        $message = $app->translate(
-            "Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'",
-            $blog_id, $app->user->name
-        );
+    if (my $blog_id = $param->{blog_id} || $param->{blog_ids}) {
+        $message = $app->translate("Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'", $blog_id, $app->user->name);
+    } else {
+        $message = $app->translate("Movable Type system was successfully exported by user '[_1]'", $app->user->name);
     }
-    else {
-        $message
-            = $app->translate(
-            "Movable Type system was successfully exported by user '[_1]'",
-            $app->user->name );
-    }
-    $app->log(
-        {   message  => $message,
-            level    => MT::Log::INFO(),
-            class    => 'system',
-            category => 'restore'
-        }
-    );
-    $app->print_encode(
-        $app->build_page( 'include/backup_end.tmpl', $param ) );
+    $app->log({
+        message  => $message,
+        level    => MT::Log::INFO(),
+        class    => 'system',
+        category => 'restore'
+    });
 }
 
 sub _progress {
@@ -3109,15 +2997,11 @@ sub _progress {
     my ( $str, $id ) = @_;
     if ( $id && $ids->{$id} ) {
         my $str_js = encode_js($str);
-        $app->print_encode(
-            qq{<script type="text/javascript">progress('$str_js', '$id');</script>}
-        );
-    }
-    elsif ($id) {
+        $app->print_encode(qq{<script type="text/javascript">progress('$str_js', '$id');</script>});
+    } elsif ($id) {
         $ids->{$id} = 1;
         $app->print_encode(qq{\n<span id="$id">$str</span>});
-    }
-    else {
+    } else {
         $app->print_encode("<span>$str</span>");
     }
 
