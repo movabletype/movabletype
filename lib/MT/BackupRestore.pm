@@ -258,8 +258,11 @@ sub backup {
     MT::Util::Log->info('--- Start export.');
 
     my $class = shift;
-    my ($blog_ids, $printer, $splitter, $finisher, $progress, $size, $enc, $metadata) = @_;
+    my ($blog_ids, $printer, $splitter, $finisher, $sess_name, $size, $enc, $metadata) = @_;
     $blog_ids ||= [];
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load($sess_name);
+    my $progress = sub { $sess->progress(@_) };
 
     # removed global items from backup for blog-specific backups as this creates multiple copies of global items
     # when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
@@ -280,10 +283,7 @@ sub backup {
 
     MT::Util::Log->debug(' Start _loop_through_objects.');
 
-    my $backuped_objs = _loop_through_objects(
-        $printer,  $splitter,
-        $finisher, $progress, $size, $obj_to_backup, $files, $header
-    );
+    my $backuped_objs = _loop_through_objects($printer,  $splitter, $progress, $size, $obj_to_backup, $files, $header);
 
     MT::Util::Log->debug(' End   _loop_through_objects.');
 
@@ -302,11 +302,12 @@ sub backup {
     $printer->('</movabletype>');
     $finisher->($files);
 
+    $sess->done();
     MT::Util::Log->info('--- End   export.');
 }
 
 sub _loop_through_objects {
-    my ($printer, $splitter, $finisher, $progress, $size, $obj_to_backup, $files, $header) = @_;
+    my ($printer, $splitter, $progress, $size, $obj_to_backup, $files, $header) = @_;
 
     my $counter = 1;
     my $bytes   = 0;

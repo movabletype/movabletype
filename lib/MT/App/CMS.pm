@@ -271,6 +271,7 @@ sub core_methods {
         'start_backup'             => "${pkg}Tools::start_backup",
         'start_restore'            => "${pkg}Tools::start_restore",
         'backup'                   => "${pkg}Tools::backup",
+        'backup_result'            => "${pkg}Tools::backup_result",
         'backup_download'          => "${pkg}Tools::backup_download",
         'restore'                  => "${pkg}Tools::restore",
         'restore_premature_cancel' => "${pkg}Tools::restore_premature_cancel",

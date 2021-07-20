@@ -81,12 +81,17 @@ my $metadata = {
     schema_version => MT->config->SchemaVersion,
 };
 
-MT::BackupRestore->backup(
-    undef,    # no blog_ids
-    $printer, sub { }, sub { }, sub { print $_[0], "\n"; },
-    0,        'UTF-8',
-    $metadata
-);
+{
+    require MT::BackupRestore::Session;
+    my $progress_key = 'backup:1234';
+    my $progress = MT::BackupRestore::Session->start($progress_key, 'SOME-SESSION-ID');
+    MT::BackupRestore->backup(
+        undef,    # no blog_ids
+        $printer, sub { }, sub { }, $progress_key,
+        0,        'UTF-8',
+        $metadata
+    );
+}
 
 # These records need to be removed for creating new records.
 MT::Author->remove_all();
