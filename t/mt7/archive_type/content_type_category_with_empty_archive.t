@@ -15,6 +15,7 @@ use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::App;
 use File::Spec;
+use File::Path;
 use Test::Deep qw(cmp_bag);
 
 $test_env->prepare_fixture('db');
@@ -184,6 +185,51 @@ subtest 'unpublish after disabling publish_empty_archive' => sub {
     my @files = get_files();
     my @expected = qw();
     cmp_bag \@files, \@expected, "all the index files are gone now";
+};
+
+subtest 'publish again' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    $app->get_ok({
+        __mode          => 'view',
+        _type           => 'content_data',
+        blog_id         => $blog->id,
+        content_type_id => $ct->id,
+        id              => $cd->id,
+    });
+    my $res = $app->post_form_ok({ status => MT::ContentStatus::RELEASE() });
+
+    my @files = get_files();
+    my @expected = qw(
+        news/index.html
+        topic/index.html
+    );
+    cmp_bag \@files, \@expected, "all the files still exist";
+};
+
+subtest 'publish everything again' => sub {
+    $blog->publish_empty_archive(1);
+    $blog->save;
+
+    rmtree($site_path);
+    mkpath($site_path);
+
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+
+    $app->get_ok({
+        __mode  => 'rebuild_confirm',
+        blog_id => $blog->id,
+    });
+    my $res = $app->post_form_ok({});
+
+    my @files = get_files();
+    my @expected = qw(
+        news/index.html
+        topic/index.html
+    );
+    cmp_bag \@files, \@expected, "all the files still exist";
 };
 
 done_testing;
