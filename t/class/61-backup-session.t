@@ -11,9 +11,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-# Fix the bug that website is not backed up.
-# https://movabletype.fogbugz.com/f/cases/113358/
-
 use MT::Test;
 use MT::BackupRestore::Session;
 
