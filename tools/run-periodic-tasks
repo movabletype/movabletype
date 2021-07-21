@@ -124,6 +124,7 @@ $mt->run_callbacks( 'init_app', $mt );
 
 my $client = eval {
     require MT::TheSchwartz;
+    no warnings 'once';
     $TheSchwartz::RANDOMIZE_JOBS = !!$randomize_jobs;
     my $c = MT::TheSchwartz->new(%cfg);
     $c;
