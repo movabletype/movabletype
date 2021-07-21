@@ -97,7 +97,7 @@ sub get_internal {
 
     $val = $mgr->{__dbvar}{$var} if $mgr->is_overwritable($var);
     $val = $mgr->{__var}{$var} unless defined($val);
-    $val = {%{$mgr->{__dbvar}{$var}}, %$val} if ($mgr->type($var) eq 'HASH' && $mgr->{__dbvar}{$var});
+    $val = { %{ $mgr->{__dbvar}{$var} }, %$val } if ($mgr->type($var) eq 'HASH' && $val && $mgr->{__dbvar}{$var});
     $val = $mgr->{__dbvar}{$var} unless defined($val);
     return $mgr->default($var) unless defined($val);
 
