@@ -27,6 +27,7 @@ sub start {
 
 sub load {
     my ($self, $name) = @_;
+    $name ||= ref $self ? $self->{sess}->name : return;
     my $sess = MT::Session->load({ kind => 'BU', name => $name }) or return;
     if (ref $self) {
         $self->{sess} = $sess;
@@ -42,20 +43,20 @@ sub sess {
 
 sub combine {
     my ($self) = @_;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     return {map { $_ => $self->sess->get($_) } ('progress', 'urls', 'done')};
 }
 
 sub progress {
     my ($self, $str, $id) = @_;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     push @{ $self->sess->get('progress') }, { message => $str, $id ? (id => $id) : () };
     $self->sess->save;
 }
 
 sub urls {
     my ($self, $urls) = @_;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     my $files = $self->sess->get('urls');
     push @$files, @$urls;
     $self->sess->save;
@@ -64,7 +65,7 @@ sub urls {
 sub file {
     my ($self, $fname) = @_;
     return unless $fname;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     my $files = $self->sess->get('files');
     $files->{$fname} = 1;
     $self->sess->save;
@@ -72,7 +73,7 @@ sub file {
 
 sub get_file {
     my ($self, $fname) = @_;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     my $files = $self->sess->get('files');
     delete $files->{$fname} or return; # only one time available
     $self->sess->save;
@@ -81,7 +82,7 @@ sub get_file {
 
 sub done {
     my ($self) = @_;
-    $self = $self->load($self->sess->name);
+    $self = $self->load;
     $self->sess->set('done', 1);
     $self->sess->save;
 }
