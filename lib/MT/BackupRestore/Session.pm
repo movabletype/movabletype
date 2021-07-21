@@ -17,7 +17,6 @@ sub start {
     $sess->kind('BU');
     $sess->name($name);
     $sess->start(time);
-    $sess->set('ids', {});
     $sess->set('progress', []);
     $sess->set('files', {});
     $sess->set('urls', []);
@@ -44,22 +43,13 @@ sub sess {
 sub combine {
     my ($self) = @_;
     $self = $self->load($self->sess->name);
-    return {map { $_ => $self->sess->get($_) } ('ids', 'progress', 'urls', 'done')};
+    return {map { $_ => $self->sess->get($_) } ('progress', 'urls', 'done')};
 }
 
 sub progress {
     my ($self, $str, $id) = @_;
     $self = $self->load($self->sess->name);
-    my $progress = $self->sess->get('progress');
-    my $ids = $self->sess->get('ids');
-    if ( $id && $ids->{$id} ) {
-        push @$progress, {message => $str, id => $id, nest => 1};
-    } elsif ($id) {
-        $ids->{$id} = 1;
-        push @$progress, {message => $str, id => $id};
-    } else {
-        push @$progress, {message => $str};
-    }
+    push @{ $self->sess->get('progress') }, { message => $str, $id ? (id => $id) : () };
     $self->sess->save;
 }
 
