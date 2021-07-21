@@ -83,14 +83,73 @@ my $metadata = {
 
 {
     require MT::BackupRestore::Session;
-    my $progress_key = 'backup:1234';
-    my $progress = MT::BackupRestore::Session->start($progress_key, 'SOME-SESSION-ID');
+    my $sess_key = 'backup:1234';
+    my $sess = MT::BackupRestore::Session->start($sess_key, 'SOME-SESSION-ID');
+    my $files;
+
     MT::BackupRestore->backup(
         undef,    # no blog_ids
-        $printer, sub { }, sub { }, $progress_key,
+        $printer, sub { }, sub { $files = shift }, $sess_key,
         0,        'UTF-8',
         $metadata
     );
+
+    my %expected_tags = (
+        'association'    => 7,   'author'       => 5,  'file'           => 1,   'plugindata' => 1,  'url'         => 7,
+        'tag'            => 17,  'placement'    => 6,  'image_metadata' => 2,   'trackback'  => 3,  'data'        => 1,
+        'text'           => 138, 'permissions'  => 16, 'website'        => 1,   'entry'      => 9,  'comment'     => 16,
+        'pinged_urls'    => 2,   'page'         => 5,  'category'       => 10,  'keywords'   => 7,  'permission'  => 9,
+        'formatted_text' => 1,   'objectasset'  => 6,  'templatemap'    => 11,  'folder'     => 6,  'image'       => 6,
+        'blog'           => 1,   'description'  => 29, 'tbping'         => 3,   'text_more'  => 9,  'group'       => 1,
+        'objectscore'    => 20,  'archive_type' => 2,  'template'       => 110, 'file_path'  => 38, 'movabletype' => 1,
+        'excerpt'        => 7,   'objecttag'    => 39, 'notification'   => 2,   'role'       => 7,  'fileinfo'    => 40,
+    );
+
+    my %expected_asset_names = (
+        '7' => ['http://narnia.na/nana/images/test3.jpg', '/mt/t/images/test3.jpg', 'test3.jpg'],
+        '3' => ['/mt-static/support/uploads//test.jpg',   '/mt/t/images/test.jpg',  'test.jpg'],
+        '5' => ['http://narnia.na/nana/images/test1.jpg', '/mt/t/images/test1.jpg', 'test1.jpg'],
+        '2' => ['http://narnia.na/nana/files/test.tmpl',  '/mt/t/test.tmpl',        'test.tmpl'],
+        '1' => ['http://narnia.na/nana/images/test.jpg',  '/mt/t/images/test.jpg',  'test.jpg'],
+        '6' => ['http://narnia.na/nana/images/test2.jpg', '/mt/t/images/test2.jpg', 'test2.jpg'],
+        '4' => ['/mt-static/support/uploads/test2.jpg',   '/mt/t/images/test2.jpg', 'test2.jpg'],
+    );
+
+    my %actual_tags;
+    while ($backup_data =~ /<(\w+)\b/g) {
+        $actual_tags{$1}++;
+    }
+
+    for my $k (keys %expected_tags) {
+        is($actual_tags{$k}, $expected_tags{$k}, 'right number of tag occurance');
+    }
+
+    is(keys %$files, keys %expected_asset_names, 'right number of keys finisher param');
+
+    for my $k (keys %expected_asset_names) {
+        is($files->{$k}->[0], $expected_asset_names{$k}->[0], 'right url');
+        is($files->{$k}->[1], $expected_asset_names{$k}->[1], 'right file path');
+        is($files->{$k}->[2], $expected_asset_names{$k}->[2], 'right basename');
+    }
+
+    my %expected_progress_ids = (
+        'template'    => 3, 'audio'       => 2, 'plugindata'      => 2, 'category_set' => 2, 'comment'        => 2,
+        'tbping'      => 2, 'association' => 2, 'trackback'       => 2, 'file'         => 2, 'folder'         => 2,
+        'tag'         => 2, 'video'       => 2, 'objectcategory'  => 2, 'foo'          => 2, 'deletefileinfo' => 2,
+        'author'      => 2, 'group'       => 2, 'objecttag'       => 2, 'cf'           => 2, 'filter'         => 2,
+        'objectasset' => 2, 'permission'  => 2, 'rebuild_trigger' => 2, 'image'        => 4, 'formatted_text' => 2,
+        'cd'          => 2, 'entry'       => 2, 'fileinfo'        => 2, 'blog'         => 2, 'placement'      => 2,
+        'page'        => 2, 'ipbanlist'   => 2, 'system'          => 2, 'notification' => 2, 'templatemap'    => 2,
+        'website'     => 2, 'objectscore' => 2, 'content_type'    => 2, 'category'     => 2, 'role'           => 2,
+    );
+
+    my $messages = $sess->load->sess->get('progress');
+    is(scalar @$messages, 83, 'right number of progress messages');
+    my %actual_progress_ids;
+    $actual_progress_ids{$_->{id}}++ for (@$messages);
+    for my $k (keys %expected_progress_ids) {
+        is($actual_progress_ids{$k}, $expected_progress_ids{$k}, 'right number of progress id occurance');
+    }
 }
 
 # These records need to be removed for creating new records.
