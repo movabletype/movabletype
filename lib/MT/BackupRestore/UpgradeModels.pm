@@ -8,6 +8,8 @@ package MT::BackupRestore::UpgradeModels;
 
 
 package MT::Object;
+use strict;
+use warnings;
 
 sub _is_element {
     my $obj = shift;
@@ -177,6 +179,8 @@ sub restore_parent_ids {
 }
 
 package MT::Website;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -193,6 +197,8 @@ sub backup_terms_args {
 }
 
 package MT::Blog;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -224,6 +230,8 @@ sub parents {
 }
 
 package MT::Tag;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -239,6 +247,8 @@ sub backup_terms_args {
 }
 
 package MT::Role;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -287,6 +297,8 @@ sub backup_terms_args {
 }
 
 package MT::Asset;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -316,6 +328,8 @@ sub parents {
 }
 
 package MT::PluginData;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -351,6 +365,8 @@ sub restore_parent_ids {
 }
 
 package MT::Association;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
@@ -392,6 +408,8 @@ sub restore_parent_ids {
 }
 
 package MT::Category;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -423,6 +441,8 @@ sub parents {
 }
 
 package MT::CategorySet;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -430,6 +450,8 @@ sub parents {
 }
 
 package MT::ContentType;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -437,6 +459,8 @@ sub parents {
 }
 
 package MT::ContentField;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -449,6 +473,8 @@ sub parents {
 }
 
 package MT::ContentData;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -460,6 +486,8 @@ sub parents {
 }
 
 package MT::Comment;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -471,6 +499,8 @@ sub parents {
 }
 
 package MT::Entry;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -481,6 +511,8 @@ sub parents {
 }
 
 package MT::FileInfo;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -504,6 +536,8 @@ sub parents {
 }
 
 package MT::Notification;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -511,6 +545,8 @@ sub parents {
 }
 
 package MT::ObjectTag;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
@@ -569,6 +605,8 @@ sub parents {
 }
 
 package MT::Permission;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -579,6 +617,8 @@ sub parents {
 }
 
 package MT::Placement;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -590,6 +630,8 @@ sub parents {
 }
 
 package MT::TBPing;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -600,6 +642,8 @@ sub parents {
 }
 
 package MT::Template;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -627,6 +671,8 @@ sub parents {
 }
 
 package MT::TemplateMap;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -639,6 +685,8 @@ sub parents {
 }
 
 package MT::Trackback;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
@@ -689,6 +737,8 @@ sub parents {
 }
 
 package MT::ObjectAsset;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
@@ -754,6 +804,8 @@ sub parents {
 }
 
 package MT::ObjectCategory;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
@@ -817,6 +869,8 @@ sub parents {
 }
 
 package MT::ObjectScore;
+use strict;
+use warnings;
 
 sub backup_terms_args {
     my $class = shift;
@@ -855,6 +909,8 @@ sub parents {
 }
 
 package MT::IPBanList;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -862,6 +918,8 @@ sub parents {
 }
 
 package MT::Blocklist;
+use strict;
+use warnings;
 
 sub parents {
     my $obj = shift;
@@ -869,6 +927,8 @@ sub parents {
 }
 
 package MT::Filter;
+use strict;
+use warnings;
 
 sub restore_parent_ids {
     my $obj = shift;
