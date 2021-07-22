@@ -416,30 +416,25 @@ sub _loop_through_objects {
 
 sub restore_file {
     my $class = shift;
-    my ( $fh, $errormsg, $schema_version, $overwrite, $callback ) = @_;
+    my ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
 
     my $objects  = {};
     my $deferred = {};
     my $errors   = [];
 
-    my ( $blog_ids, $asset_ids ) = eval {
-        $class->restore_process_single_file( $fh, $objects, $deferred,
-            $errors, $schema_version, $overwrite, $callback );
+    my ($blog_ids, $asset_ids) = eval {
+        $class->restore_process_single_file($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback);
     };
 
-    unless ($@) {
-        MT->run_callbacks( 'restore', $objects, $deferred, $errors,
-            $callback );
-    }
-    $$errormsg = join( '; ', @$errors );
-    ( $deferred, $blog_ids );
+    MT->run_callbacks('restore', $objects, $deferred, $errors, $callback) unless $@;
+
+    $$errormsg = join('; ', @$errors);
+    ($deferred, $blog_ids);
 }
 
 sub restore_process_single_file {
     my $class = shift;
-    my ( $fh, $objects, $deferred, $errors, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback) = @_;
 
     require XML::SAX;
     require MT::Util;
@@ -450,12 +445,12 @@ sub restore_process_single_file {
     my $pos     = tell($fh);
     $parser->{Handler} = $scanner;
     eval { $parser->parse_file($fh); };
-    if ( my $e = $@ ) {
+    if (my $e = $@) {
         push @$errors, $e;
         $callback->($e);
         die $e;
     }
-    seek( $fh, $pos, 0 );
+    seek($fh, $pos, 0);
 
     my %restored_blogs = map { $objects->{$_}->id => 1; }
         grep { 'blog' eq $objects->{$_}->datasource } keys %$objects;
@@ -471,11 +466,11 @@ sub restore_process_single_file {
     );
 
     $parser = MT::Util::sax_parser();
-    $callback->( ref($parser) . "\n" ) if MT->config->DebugMode;
-    $handler->{is_pp} = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
+    $callback->(ref($parser) . "\n") if MT->config->DebugMode;
+    $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
-    if ( my $e = $@ ) {
+    if (my $e = $@) {
         push @$errors, $e;
         $callback->($e);
         die $e if $handler->{critical};
@@ -484,12 +479,10 @@ sub restore_process_single_file {
     my @blog_ids;
     my @asset_ids;
 
-    while ( my ( $key, $value ) = each %$objects ) {
-        if ( 'blog' eq $value->datasource ) {
-            push @blog_ids, $value->id
-                unless exists $restored_blogs{ $value->id };
-        }
-        elsif ( 'asset' eq $value->datasource ) {
+    while (my ($key, $value) = each %$objects) {
+        if ('blog' eq $value->datasource) {
+            push @blog_ids, $value->id unless exists $restored_blogs{ $value->id };
+        } elsif ('asset' eq $value->datasource) {
             my ($old_id) = $key =~ /^.+#(\d+)$/;
             push @asset_ids, $value->id, $old_id;
         }
@@ -497,14 +490,12 @@ sub restore_process_single_file {
 
     my $blog_ids  = scalar(@blog_ids)  ? \@blog_ids  : undef;
     my $asset_ids = scalar(@asset_ids) ? \@asset_ids : undef;
-    ( $blog_ids, $asset_ids );
+    ($blog_ids, $asset_ids);
 }
 
 sub restore_directory {
     my $class = shift;
-    my ( $dir, $errors, $error_assets, $schema_version, $overwrite,
-        $callback )
-        = @_;
+    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -512,43 +503,30 @@ sub restore_directory {
     MT::Util::Log->info(' Start restore_directory');
 
     my $manifest;
-    opendir my $dh,
-        $dir
-        or push( @$errors,
-        MT->translate( "Cannot open directory '[_1]': [_2]", $dir, "$!" ) ),
-        return undef;
-    for my $f ( readdir $dh ) {
+    opendir my $dh, $dir or push(@$errors, MT->translate("Cannot open directory '[_1]': [_2]", $dir, "$!")), return undef;
+    for my $f (readdir $dh) {
         next if $f !~ /^.+\.manifest$/i;
-        $manifest = File::Spec->catfile( $dir,
-            Encode::decode( MT->config->PublishCharset, $f ) );
+        $manifest = File::Spec->catfile($dir, Encode::decode(MT->config->PublishCharset, $f));
         last;
     }
     closedir $dh;
     unless ($manifest) {
         push @$errors,
-            MT->translate(
-            "No manifest file could be found in your import directory [_1].",
-            $dir
-            );
-        return ( undef, undef );
+            MT->translate("No manifest file could be found in your import directory [_1].", $dir);
+        return (undef, undef);
     }
 
     my $fh = gensym;
-    open $fh, "<", $manifest
-        or push( @$errors, MT->translate( "Cannot open [_1].", $manifest ) ),
-        return 0;
+    open $fh, "<", $manifest or push(@$errors, MT->translate("Cannot open [_1].", $manifest)), return 0;
     my $backups = __PACKAGE__->process_manifest($fh);
     close $fh;
     unless ($backups) {
         push @$errors,
-            MT->translate(
-            "Manifest file [_1] was not a valid Movable Type backup manifest file.",
-            $manifest
-            );
-        return ( undef, undef );
+            MT->translate("Manifest file [_1] was not a valid Movable Type backup manifest file.", $manifest);
+        return (undef, undef);
     }
 
-    $callback->( MT->translate( "Manifest file: [_1]", $manifest ) . "\n" );
+    $callback->(MT->translate("Manifest file: [_1]", $manifest) . "\n");
 
     my %objects;
     my $deferred = {};
@@ -557,14 +535,15 @@ sub restore_directory {
     my @blog_ids;
     my @asset_ids;
     for my $file (@$files) {
-        my $fh = gensym;
-        my $filepath = File::Spec->catfile( $dir, $file );
-        open $fh, "<", $filepath
-            or push @$errors, MT->translate("Cannot open [_1]."), next;
+        my $fh       = gensym;
+        my $filepath = File::Spec->catfile($dir, $file);
+        open $fh, "<", $filepath or push @$errors, MT->translate("Cannot open [_1]."), next;
 
-        my ( $tmp_blog_ids, $tmp_asset_ids ) = eval {
-            __PACKAGE__->restore_process_single_file( $fh, \%objects,
-                $deferred, $errors, $schema_version, $overwrite, $callback );
+        my ($tmp_blog_ids, $tmp_asset_ids) = eval {
+            __PACKAGE__->restore_process_single_file(
+                $fh,             \%objects,  $deferred, $errors,
+                $schema_version, $overwrite, $callback
+            );
         };
 
         close $fh;
@@ -577,8 +556,7 @@ sub restore_directory {
     MT::Util::Log->debug('  Start callback restore.');
 
     unless ($@) {
-        MT->run_callbacks( 'restore', \%objects, $deferred, $errors,
-            $callback );
+        MT->run_callbacks('restore', \%objects, $deferred, $errors, $callback);
     }
 
     MT::Util::Log->debug('  End   callback restore.');
@@ -588,15 +566,15 @@ sub restore_directory {
 
     MT::Util::Log->info(' End   restore_directory');
 
-    ( $deferred, $blog_ids, $asset_ids );
+    ($deferred, $blog_ids, $asset_ids);
 }
 
 sub process_manifest {
     my $class = shift;
     my ($stream) = @_;
 
-    if ( UNIVERSAL::isa( $stream, 'Fh' ) || ( ref($stream) eq 'GLOB' ) ) {
-        seek( $stream, 0, 0 ) or return undef;
+    if (UNIVERSAL::isa($stream, 'Fh') || (ref($stream) eq 'GLOB')) {
+        seek($stream, 0, 0) or return undef;
         require XML::SAX;
         require MT::BackupRestore::ManifestFileHandler;
         my $handler = MT::BackupRestore::ManifestFileHandler->new();
@@ -605,7 +583,7 @@ sub process_manifest {
         my $parser = MT::Util::sax_parser();
         $parser->{Handler} = $handler;
         eval { $parser->parse_file($stream); };
-        if ( my $e = $@ ) {
+        if (my $e = $@) {
             die $e;
         }
         return $handler->{backups};
@@ -615,57 +593,46 @@ sub process_manifest {
 
 sub restore_asset {
     my $class = shift;
-    my ( $file, $asset, $old_id, $fmgr, $errors, $callback ) = @_;
+    my ($file, $asset, $old_id, $fmgr, $errors, $callback) = @_;
 
     my $id = $asset->id;
 
     my $path = $asset->file_path;
-    unless ( defined($path) ) {
-        $callback->(
-            MT->translate( 'Path was not found for the file, [_1].', $id ) );
+    unless (defined($path)) {
+        $callback->(MT->translate('Path was not found for the file, [_1].', $id));
         return 0;
     }
-    my ( $vol, $dir, $fn ) = File::Spec->splitpath($path);
+    my ($vol, $dir, $fn) = File::Spec->splitpath($path);
     my $voldir = "$vol$dir";
-    if ( !-w $voldir ) {
-        unless ( defined $fmgr ) {
-            my $blog = MT->model('blog')->load( $asset->blog_id );
+    if (!-w $voldir) {
+        unless (defined $fmgr) {
+            my $blog = MT->model('blog')->load($asset->blog_id);
             $fmgr = $blog->file_mgr if $blog;
         }
-        unless ( defined $fmgr ) {
-            $errors->{$id}
-                = MT->translate( '[_1] is not writable.', $voldir );
-        }
-        else {
-            $voldir =~ s|/$||
-                unless $voldir eq
-                '/';    ## OS X doesn't like / at the end in mkdir().
-            unless ( $fmgr->exists($voldir) ) {
+        unless (defined $fmgr) {
+            $errors->{$id} = MT->translate('[_1] is not writable.', $voldir);
+        } else {
+            $voldir =~ s|/$|| unless $voldir eq '/';    ## OS X doesn't like / at the end in mkdir().
+            unless ($fmgr->exists($voldir)) {
                 $fmgr->mkpath($voldir)
-                    or $errors->{$id}
-                    = MT->translate( "Error making path '[_1]': [_2]",
-                    $path, $fmgr->errstr );
+                    or $errors->{$id} = MT->translate("Error making path '[_1]': [_2]", $path, $fmgr->errstr);
             }
         }
     }
-    if ( -w $voldir ) {
+    if (-w $voldir) {
         my $filename = "$old_id-" . $asset->file_name;
-        $callback->(
-            MT->translate( "Copying [_1] to [_2]...", $filename, $path ) );
-        $file = MT::FileMgr::Local::_local($file)
-            unless ref($file);
-        copy( $file, MT::FileMgr::Local::_local($path) )
-            or $errors->{$id} = $!;
+        $callback->(MT->translate("Copying [_1] to [_2]...", $filename, $path));
+        $file = MT::FileMgr::Local::_local($file) unless ref($file);
+        copy($file, MT::FileMgr::Local::_local($path)) or $errors->{$id} = $!;
     }
 
-    if ( exists $errors->{$id} ) {
-        return $callback->(
-            MT->translate('Failed: ') . $errors->{$id} . "\n" );
+    if (exists $errors->{$id}) {
+        return $callback->(MT->translate('Failed: ') . $errors->{$id} . "\n");
     }
 
-    $callback->( MT->translate("Done.") . "\n" );
+    $callback->(MT->translate("Done.") . "\n");
 
-    MT->run_callbacks( 'restore_asset', $asset, $callback );
+    MT->run_callbacks('restore_asset', $asset, $callback);
 
     1;
 }
@@ -685,63 +652,51 @@ sub _sync_asset_id {
 
 sub cb_restore_objects {
     my $pkg = shift;
-    my ( $all_objects, $callback ) = @_;
+    my ($all_objects, $callback) = @_;
 
     my %entries;
     my %assets;
     my %content_types;
     my @content_data;
-    for my $key ( keys %$all_objects ) {
+    for my $key (keys %$all_objects) {
         my $obj = $all_objects->{$key};
-        if ( $obj->properties->{audit} ) {
+        if ($obj->properties->{audit}) {
             my $author_class = MT->model('author');
-            if (   $obj->created_by
-                && $all_objects->{ "$author_class#" . $obj->created_by } )
-            {
-                my $new_id
-                    = $all_objects->{ "$author_class#" . $obj->created_by }
-                    ->id;
+            if ($obj->created_by && $all_objects->{ "$author_class#" . $obj->created_by }) {
+                my $new_id = $all_objects->{ "$author_class#" . $obj->created_by }->id;
                 $obj->created_by($new_id);
             }
-            if (   $obj->modified_by
-                && $all_objects->{ "$author_class#" . $obj->modified_by } )
-            {
-                my $new_id
-                    = $all_objects->{ "$author_class#" . $obj->modified_by }
-                    ->id;
+            if ($obj->modified_by && $all_objects->{ "$author_class#" . $obj->modified_by }) {
+                my $new_id = $all_objects->{ "$author_class#" . $obj->modified_by }->id;
                 $obj->modified_by($new_id);
             }
             $obj->save;
         }
 
-        if ( $key =~ /^MT::Entry#(\d+)$/ ) {
+        if ($key =~ /^MT::Entry#(\d+)$/) {
             my $new_id = $all_objects->{$key}->id;
             $entries{$new_id} = $all_objects->{$key};
-        }
-        elsif ( $key =~ /^MT::Asset#(\d+)$/ ) {
+        } elsif ($key =~ /^MT::Asset#(\d+)$/) {
             my $old_id = $1;
             my $new_id = $all_objects->{$key}->id;
             $assets{$new_id} = {
                 object => $all_objects->{$key},
                 old_id => $old_id,
             };
-        }
-        elsif ( $key =~ /^MT::Author#(\d+)$/ ) {
+        } elsif ($key =~ /^MT::Author#(\d+)$/) {
 
             # restore userpic association now
             my $new_author = $all_objects->{$key};
-            if ( !$all_objects->{$key}->{no_overwrite} ) {
-                if ( my $userpic_id = $new_author->userpic_asset_id ) {
-                    if ( my $new_asset
-                        = $all_objects->{ 'MT::Asset#' . $userpic_id } )
-                    {
-                        $new_author->userpic_asset_id( $new_asset->id );
+            if (!$all_objects->{$key}->{no_overwrite}) {
+                if (my $userpic_id = $new_author->userpic_asset_id) {
+                    if (my $new_asset = $all_objects->{ 'MT::Asset#' . $userpic_id }) {
+                        $new_author->userpic_asset_id($new_asset->id);
                     }
                 }
             }
 
             # also restore ids of favorite blogs
-            if ( my $favorites = $new_author->favorite_blogs ) {
+            if (my $favorites = $new_author->favorite_blogs) {
                 next unless 'ARRAY' eq ref($favorites);
                 my @new_favs;
                 if (@$favorites) {
@@ -750,9 +705,9 @@ sub cb_restore_objects {
                         push @new_favs, $blog->id if $blog;
                     }
                 }
-                $new_author->favorite_blogs( \@new_favs ) if @new_favs;
+                $new_author->favorite_blogs(\@new_favs) if @new_favs;
             }
-            if ( my $favorites = $new_author->favorite_websites ) {
+            if (my $favorites = $new_author->favorite_websites) {
                 next unless 'ARRAY' eq ref($favorites);
                 my @new_favs;
                 if (@$favorites) {
@@ -761,43 +716,35 @@ sub cb_restore_objects {
                         push @new_favs, $blog->id if $blog;
                     }
                 }
-                $new_author->favorite_websites( \@new_favs ) if @new_favs;
+                $new_author->favorite_websites(\@new_favs) if @new_favs;
             }
             $new_author->update;
 
             # call trigger to save meta
-            $new_author->call_trigger( 'post_save', $new_author );
-        }
-        elsif ( $key =~ /^MT::Role#(\d+)$/ ) {
+            $new_author->call_trigger('post_save', $new_author);
+        } elsif ($key =~ /^MT::Role#(\d+)$/) {
             my $role                = $all_objects->{$key};
-            my $updated_permissions = MT::BackupRestore::ContentTypePermission
-                ->update_permissions( $role->permissions, $all_objects );
+            my $updated_permissions = MT::BackupRestore::ContentTypePermission->update_permissions($role->permissions, $all_objects);
             if ($updated_permissions) {
                 $role->permissions($updated_permissions);
                 $role->save;
             }
-        }
-        elsif ( $key =~ /^MT::(?:Blog|Website)#(\d+)$/ ) {
+        } elsif ($key =~ /^MT::(?:Blog|Website)#(\d+)$/) {
             my $blog   = $all_objects->{$key};
             my $orders = {
                 category => 'MT::Category#',
                 folder   => 'MT::Folder#',
             };
-            for my $c ( keys %$orders ) {
+            for my $c (keys %$orders) {
                 my $col = "${c}_order";
-                if ( my $cat_order = $blog->$col ) {
+                if (my $cat_order = $blog->$col) {
                     my @cats = split ',', $cat_order;
-                    my @new_cats
-                        = map $_->id,
-                        grep defined $_,
-                        map $all_objects->{ $orders->{$c} . $_ },
-                        @cats;
-                    $blog->$col( join ',', @new_cats );
+                    my @new_cats = map $_->id, grep defined $_, map $all_objects->{ $orders->{$c} . $_ }, @cats;
+                    $blog->$col(join ',', @new_cats);
                     $blog->save;
                 }
             }
-        }
-        elsif ( $key =~ /^MT::CategorySet#\d+$/ ) {
+        } elsif ($key =~ /^MT::CategorySet#\d+$/) {
             my $category_set = $all_objects->{$key};
             my $old_order    = $category_set->order or next;
             my $new_order    = join ',', map { $_->id }
@@ -806,13 +753,10 @@ sub cb_restore_objects {
                 split ',', $old_order;
             $category_set->order($new_order);
             $category_set->save;
-        }
-        elsif ( $key =~ /^MT::ContentType#\d+$/ ) {
+        } elsif ($key =~ /^MT::ContentType#\d+$/) {
             my $content_type = $all_objects->{$key};
-            if ( $content_type->data_label ) {
-                my $new_data_label_field
-                    = $all_objects->{ 'MT::ContentField#uid:'
-                        . $content_type->data_label };
+            if ($content_type->data_label) {
+                my $new_data_label_field = $all_objects->{ 'MT::ContentField#uid:' . $content_type->data_label };
                 $content_type->data_label(
                       $new_data_label_field
                     ? $new_data_label_field->unique_id
@@ -822,45 +766,36 @@ sub cb_restore_objects {
             my $old_fields = $content_type->fields;
             my @new_fields;
             for my $f (@$old_fields) {
-                my $old_id = $f->{id} or next;
-                my $new_field = $all_objects->{"MT::ContentField#$old_id"}
-                    or next;
+                my $old_id    = $f->{id} or next;
+                my $new_field = $all_objects->{"MT::ContentField#$old_id"} or next;
                 $f->{id}        = $new_field->id;
                 $f->{unique_id} = $new_field->unique_id;
-                my $field_type_registry
-                    = MT->registry( 'content_field_types', $f->{type} );
-                if ( my $handler
-                    = $field_type_registry->{site_import_handler} )
-                {
-                    if ( $handler = MT->handler_to_coderef($handler) ) {
-                        $handler->( $f, $new_field, $all_objects );
+                my $field_type_registry = MT->registry('content_field_types', $f->{type});
+                if (my $handler = $field_type_registry->{site_import_handler}) {
+                    if ($handler = MT->handler_to_coderef($handler)) {
+                        $handler->($f, $new_field, $all_objects);
                     }
                 }
                 push @new_fields, $f;
             }
-            $content_type->fields( \@new_fields );
+            $content_type->fields(\@new_fields);
             $content_type->save or die $content_type->errstr;
             $content_types{ $content_type->id } = $content_type;
-        }
-        elsif ( $key =~ /^MT::ContentData#\d+$/ ) {
+        } elsif ($key =~ /^MT::ContentData#\d+$/) {
             push @content_data, $all_objects->{$key};
         }
     }
 
     my $i = 0;
-    $callback->(
-        MT->translate( "Importing asset associations ... ( [_1] )", $i++ ),
-        'cb-restore-entry-asset'
-    );
-    for my $obj_id ( keys %entries ) {
+    $callback->(MT->translate("Importing asset associations ... ( [_1] )", $i++), 'cb-restore-entry-asset');
+    for my $obj_id (keys %entries) {
         my $entry = $entries{$obj_id};
 
-        my @placements = MT->model('objectasset')->load(
-            {   object_id => $obj_id,
-                object_ds => 'entry',
-                blog_id   => $entry->blog_id
-            }
-        );
+        my @placements = MT->model('objectasset')->load({
+            object_id => $obj_id,
+            object_ds => 'entry',
+            blog_id   => $entry->blog_id
+        });
         next unless @placements;
 
         my %related;
@@ -870,139 +805,103 @@ sub cb_restore_objects {
             $related{ $asset_hash->{old_id} } = $asset_hash->{object};
         }
 
-        if ( $entry->class == 'entry' ) {
+        if ($entry->class == 'entry') {
             $callback->(
-                MT->translate(
-                    "Importing asset associations in entry ... ( [_1] )",
-                    $i++
-                ),
+                MT->translate("Importing asset associations in entry ... ( [_1] )", $i++),
                 'cb-restore-entry-asset'
             );
-        }
-        else {
+        } else {
             $callback->(
-                MT->translate(
-                    "Importing asset associations in page ... ( [_1] )", $i++
-                ),
+                MT->translate("Importing asset associations in page ... ( [_1] )", $i++),
                 'cb-restore-entry-asset'
             );
         }
 
         for my $col (qw( text text_more )) {
-            my $text = $entry->$col;
-            next unless $text;
-            $text = _sync_asset_id( $text, \%related );
-            $entry->$col($text);
+            my $text = $entry->$col or next;
+            $entry->$col(_sync_asset_id($text, \%related));
         }
-        $entry->update()
-            ;    # directly call update to bypass processing in save()
+        $entry->update();    # directly call update to bypass processing in save()
     }
-    $callback->( MT->translate("Done.") . "\n" );
+    $callback->(MT->translate("Done.") . "\n");
 
     $i = 0;
     $callback->(
-        MT->translate( "Importing content data ... ( [_1] )", $i++ ),
+        MT->translate("Importing content data ... ( [_1] )", $i++),
         'cb-restore-content-data-data'
     );
     for my $content_data (@content_data) {
         my $old_data     = $content_data->data;
         my $content_type = $content_types{ $content_data->content_type_id };
         my %new_data;
-        for my $old_field_id ( keys %{ $old_data || {} } ) {
-            my $new_field = $all_objects->{"MT::ContentField#$old_field_id"}
-                or next;
+        for my $old_field_id (keys %{ $old_data || {} }) {
+            my $new_field = $all_objects->{"MT::ContentField#$old_field_id"} or next;
             $new_data{ $new_field->id } = $old_data->{$old_field_id};
-            my $field_data = $content_type->get_field( $new_field->id );
-            my $field_type_registry
-                = MT->registry( 'content_field_types', $field_data->{type} );
-            if ( my $handler
-                = $field_type_registry->{site_data_import_handler} )
-            {
-                if ( $handler = MT->handler_to_coderef($handler) ) {
+            my $field_data          = $content_type->get_field($new_field->id);
+            my $field_type_registry = MT->registry('content_field_types', $field_data->{type});
+            if (my $handler = $field_type_registry->{site_data_import_handler}) {
+                if ($handler = MT->handler_to_coderef($handler)) {
                     $new_data{ $new_field->id } = $handler->(
-                        $field_data, $new_data{ $new_field->id },
+                        $field_data,   $new_data{ $new_field->id },
                         $content_data, $all_objects
                     );
                 }
             }
         }
-        $content_data->data( \%new_data );
+        $content_data->data(\%new_data);
 
-        if ( my $raw_convert_breaks = $content_data->convert_breaks ) {
-            if ( my $convert_breaks
-                = MT::Serialize->unserialize($raw_convert_breaks) )
-            {
-                if (   $convert_breaks
-                    && $$convert_breaks
-                    && ref $$convert_breaks eq 'HASH' )
-                {
+        if (my $raw_convert_breaks = $content_data->convert_breaks) {
+            if (my $convert_breaks = MT::Serialize->unserialize($raw_convert_breaks)) {
+                if ($convert_breaks && $$convert_breaks && ref $$convert_breaks eq 'HASH') {
                     my %new_convert_breaks;
-                    for my $old_field_id ( keys %{$$convert_breaks} ) {
-                        my $new_field
-                            = $all_objects->{"MT::ContentField#$old_field_id"}
-                            or next;
-                        $new_convert_breaks{ $new_field->id }
-                            = $$convert_breaks->{$old_field_id};
+                    for my $old_field_id (keys %{$$convert_breaks}) {
+                        my $new_field = $all_objects->{"MT::ContentField#$old_field_id"} or next;
+                        $new_convert_breaks{ $new_field->id } = $$convert_breaks->{$old_field_id};
                     }
-                    my $new_raw_conver_breaks
-                        = MT::Serialize->serialize( \{%new_convert_breaks} );
+                    my $new_raw_conver_breaks = MT::Serialize->serialize(\{%new_convert_breaks});
                     $content_data->convert_breaks($new_raw_conver_breaks);
                 }
             }
         }
 
-        if ( MT->component('BlockEditor') ) {
+        if (MT->component('BlockEditor')) {
             require BlockEditor::BackupRestore;
-            BlockEditor::BackupRestore->update_cd_block_editor_data(
-                $content_data, $all_objects );
+            BlockEditor::BackupRestore->update_cd_block_editor_data($content_data, $all_objects);
         }
 
-        $callback->(
-            MT->translate( "Importing content data ... ( [_1] )", $i++ ),
-            'cb-restore-content-data-data'
-        );
+        $callback->(MT->translate("Importing content data ... ( [_1] )", $i++), 'cb-restore-content-data-data');
         $content_data->save or die $content_data->errstr;
     }
-    $callback->( MT->translate("Done.") . "\n" );
+    $callback->(MT->translate("Done.") . "\n");
 
     $i = 0;
-    $callback->(
-        MT->translate( "Rebuilding permissions ... ( [_1] )", $i++ ),
-        'cb-restore-permission'
-    );
+    $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", $i++), 'cb-restore-permission');
     my $iter = MT->model('permission')->load_iter;
-    while ( my $permission = $iter->() ) {
+    while (my $permission = $iter->()) {
         $permission->permissions('');
         $permission->rebuild;
-        $callback->(
-            MT->translate( "Rebuilding permissions ... ( [_1] )", $i++ ),
-            'cb-restore-permission'
-        );
+        $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", $i++), 'cb-restore-permission');
     }
-    $callback->( MT->translate("Done.") . "\n" );
+    $callback->(MT->translate("Done.") . "\n");
 
     1;
 }
 
 sub _sync_asset_url {
-    my ( $text, $asset ) = @_;
+    my ($text, $asset) = @_;
 
-    my $filename = quotemeta( encode_url( $asset->file_name ) );
+    my $filename = quotemeta(encode_url($asset->file_name));
     my $url      = $asset->url;
     my $id       = $asset->id;
-    my @children
-        = MT->model('asset')
-        ->load(
-        { parent => $asset->id, blog_id => $asset->blog_id, class => '*' } );
+    my @children = MT->model('asset')->load({ parent => $asset->id, blog_id => $asset->blog_id, class => '*' });
     my %children = map {
         $_->id => {
-            'filename' => quotemeta( encode_url( $_->file_name ) ),
+            'filename' => quotemeta(encode_url($_->file_name)),
             'url'      => $_->url
-            }
+        }
     } @children;
 
-    $text
-        =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
+    $text =~ s!<form([^>]*?\s)mt:asset-id=(["'])$id(["'])([^>]*?)>(.+?)</form>!
         my $result = '<form' . $1 . 'mt:asset-id=' . $2 . $id . $3 . $4 . '>';
         my $html = $5;
         $html =~ s#<a([^>]*? )href=(["'])[^>]+?/$filename(["'])([^>]*?)>#<a$1href=$2$url$3$4>#gim;
@@ -1024,112 +923,94 @@ sub _sync_asset_url {
 
 sub cb_restore_asset {
     my $pkg = shift;
-    my ( $asset, $callback ) = @_;
+    my ($asset, $callback) = @_;
 
-    my @placements = MT->model('objectasset')->load(
-        {   asset_id  => $asset->id,
-            object_ds => 'entry',
-            blog_id   => $asset->blog_id
-        }
-    );
+    my @placements = MT->model('objectasset')->load({
+        asset_id  => $asset->id,
+        object_ds => 'entry',
+        blog_id   => $asset->blog_id
+    });
 
     my $i = 0;
-    $callback->(
-        MT->translate( 'Importing url of the assets ( [_1] )...', $i++ ),
-        'cb-restore-asset-url'
-    );
+    $callback->(MT->translate('Importing url of the assets ( [_1] )...', $i++), 'cb-restore-asset-url');
     for my $placement (@placements) {
-        my $entry = MT->model('entry')->load( $placement->object_id );
+        my $entry = MT->model('entry')->load($placement->object_id);
         next unless $entry;
 
-        if ( $entry->class eq 'entry' ) {
+        if ($entry->class eq 'entry') {
             $callback->(
-                MT->translate(
-                    'Importing url of the assets in entry ( [_1] )...', $i++
-                ),
+                MT->translate('Importing url of the assets in entry ( [_1] )...', $i++),
                 'cb-restore-asset-url'
             );
-        }
-        else {
+        } else {
             $callback->(
-                MT->translate(
-                    'Importing url of the assets in page ( [_1] )...', $i++
-                ),
+                MT->translate('Importing url of the assets in page ( [_1] )...', $i++),
                 'cb-restore-asset-url'
             );
         }
         for my $col (qw( text text_more )) {
-            my $text = $entry->$col;
-            next unless $text;
-            $text = _sync_asset_url( $text, $asset );
-            $entry->$col($text);
+            my $text = $entry->$col or next;
+            $entry->$col(_sync_asset_url($text, $asset));
         }
-        $entry->update()
-            ;    # directly call update to bypass processing in save()
+        $entry->update();    # directly call update to bypass processing in save()
     }
-    $callback->( MT->translate("Done.") . "\n" );
+    $callback->(MT->translate("Done.") . "\n");
     1;
 }
 
 sub _restore_asset_multi {
     my $class = shift;
-    my ( $asset_element, $objects, $errors, $callback, $blogs_meta ) = @_;
+    my ($asset_element, $objects, $errors, $callback, $blogs_meta) = @_;
 
     my $old_id = $asset_element->{asset_id};
-    if ( !defined($old_id) ) {
-        $callback->( MT->translate('ID for the file was not set.') );
+    if (!defined($old_id)) {
+        $callback->(MT->translate('ID for the file was not set.'));
         return 0;
     }
     my $asset_class = MT->model('asset');
     my $asset       = $objects->{"$asset_class#$old_id"};
-    unless ( defined($asset) ) {
-        $callback->(
-            MT->translate( 'The file ([_1]) was not imported.', $old_id ) );
+    unless (defined($asset)) {
+        $callback->(MT->translate('The file ([_1]) was not imported.', $old_id));
         return 0;
     }
 
     my $fmgr;
-    if ( exists $blogs_meta->{ $asset->blog_id } ) {
-        my $blog = MT->model('blog')->load( $asset->blog_id )
-            or return 0;
+    if (exists $blogs_meta->{ $asset->blog_id }) {
+        my $blog = MT->model('blog')->load($asset->blog_id) or return 0;
 
         my $meta = $blogs_meta->{ $asset->blog_id };
         my $path = $asset->file_path;
         my $url  = $asset->url;
-        if ( my $archive_path = $meta->{'archive_path'} ) {
+        if (my $archive_path = $meta->{'archive_path'}) {
             my $old_archive_path = $meta->{'old_archive_path'};
             $path =~ s/\Q$old_archive_path\E/$archive_path/i;
             $asset->file_path($path);
         }
-        if ( my $archive_url = $meta->{'archive_url'} ) {
+        if (my $archive_url = $meta->{'archive_url'}) {
             my $old_archive_url = $meta->{'old_archive_url'};
             $url =~ s/\Q$old_archive_url\E/$archive_url/i;
             $asset->url($url);
         }
-        if ( my $site_path = $meta->{'site_path'} ) {
+        if (my $site_path = $meta->{'site_path'}) {
             my $old_site_path = $meta->{'old_site_path'};
             $path =~ s/\Q$old_site_path\E/$site_path/i;
             $asset->file_path($path);
         }
-        if ( my $site_url = $meta->{'site_url'} ) {
+        if (my $site_url = $meta->{'site_url'}) {
             my $old_site_url = $meta->{'old_site_url'};
             $url =~ s/\Q$old_site_url\E/$site_url/i;
             $asset->url($url);
         }
-        $callback->(
-            MT->translate(
-                "Changing path for the file '[_1]' (ID:[_2])...",
-                $asset->label, $asset->id
-            )
-        );
-        $asset->save or $callback->( MT->translate("failed") . "\n" );
-        $callback->( MT->translate("ok") . "\n" );
+        $callback->(MT->translate(
+            "Changing path for the file '[_1]' (ID:[_2])...",
+            $asset->label, $asset->id
+        ));
+        $asset->save or $callback->(MT->translate("failed") . "\n");
+        $callback->(MT->translate("ok") . "\n");
 
         $fmgr = $blog->file_mgr;
     }
-    my $file = $asset_element->{fh};
-    $class->restore_asset( $file, $asset, $old_id, $fmgr, $errors,
-        $callback );
+    $class->restore_asset($asset_element->{fh}, $asset, $old_id, $fmgr, $errors, $callback);
 }
 
 package MT::Object;
@@ -1137,10 +1018,7 @@ package MT::Object;
 sub _is_element {
     my $obj = shift;
     my ($def) = @_;
-    return (   ( 'text' eq $def->{type} )
-            || ( ( 'string' eq $def->{type} ) && ( 255 < $def->{size} ) ) )
-        ? 1
-        : 0;
+    return (('text' eq $def->{type}) || (('string' eq $def->{type}) && (255 < $def->{size}))) ? 1 : 0;
 }
 
 sub to_xml {
