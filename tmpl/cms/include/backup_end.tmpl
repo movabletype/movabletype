@@ -66,7 +66,8 @@
             type: 'GET',
             url: '<mt:var name="script_url" escape="js">?__mode=backup_result',
             dataType: 'json'
-        }).done(function(data) {
+        }).done(function(json) {
+            var data = json.result;
             data.progress.slice(progress_pointer).forEach(function(e, i){
                 var div = progress.find(".id" + e.id);
                 if (div.length) {
