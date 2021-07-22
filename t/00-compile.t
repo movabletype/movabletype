@@ -398,6 +398,7 @@ use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
 use_ok('MT::BackupRestore::BackupFileScanner');
 use_ok('MT::BackupRestore::Session');
+use_ok('MT::BackupRestore::UpgradeModels');
 
 # Cache support
 use_ok('MT::Cache::Negotiate');
