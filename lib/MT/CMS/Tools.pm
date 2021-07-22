@@ -1137,8 +1137,8 @@ sub start_restore {
 sub backup_result {
     my $app = shift;
     require MT::BackupRestore::Session;
-    my $sess = MT::BackupRestore::Session->load('backup:'. $app->user->id) || return;
-    return MT::Util::to_json($sess->combine);
+    my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id) || return;
+    return $app->json_result($sess->combine);
 }
 
 sub backup {
