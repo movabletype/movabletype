@@ -34,7 +34,7 @@ binmode STDOUT, ':encoding(utf8)';
 
 # MTC-26702
 my $group = MT::Test::Permission->make_group;
-my $site  = MT::Blog->load( 1 ) or die; 
+my $site  = MT::Blog->load( 1 ) or die;
 my $role  = MT::Role->load or die;
 MT::Association->link( $group, $site, $role );
 
@@ -106,13 +106,13 @@ my $metadata = {
     );
 
     my %expected_asset_names = (
-        '7' => ['http://narnia.na/nana/images/test3.jpg', '/mt/t/images/test3.jpg', 'test3.jpg'],
-        '3' => ['/mt-static/support/uploads//test.jpg',   '/mt/t/images/test.jpg',  'test.jpg'],
-        '5' => ['http://narnia.na/nana/images/test1.jpg', '/mt/t/images/test1.jpg', 'test1.jpg'],
-        '2' => ['http://narnia.na/nana/files/test.tmpl',  '/mt/t/test.tmpl',        'test.tmpl'],
-        '1' => ['http://narnia.na/nana/images/test.jpg',  '/mt/t/images/test.jpg',  'test.jpg'],
-        '6' => ['http://narnia.na/nana/images/test2.jpg', '/mt/t/images/test2.jpg', 'test2.jpg'],
-        '4' => ['/mt-static/support/uploads/test2.jpg',   '/mt/t/images/test2.jpg', 'test2.jpg'],
+        '7' => ['http://narnia.na/nana/images/test3.jpg', qr'/t/images/test3.jpg', 'test3.jpg'],
+        '3' => ['/mt-static/support/uploads//test.jpg',   qr'/t/images/test.jpg',  'test.jpg'],
+        '5' => ['http://narnia.na/nana/images/test1.jpg', qr'/t/images/test1.jpg', 'test1.jpg'],
+        '2' => ['http://narnia.na/nana/files/test.tmpl',  qr'/t/test.tmpl',        'test.tmpl'],
+        '1' => ['http://narnia.na/nana/images/test.jpg',  qr'/t/images/test.jpg',  'test.jpg'],
+        '6' => ['http://narnia.na/nana/images/test2.jpg', qr'/t/images/test2.jpg', 'test2.jpg'],
+        '4' => ['/mt-static/support/uploads/test2.jpg',   qr'/t/images/test2.jpg', 'test2.jpg'],
     );
 
     my %actual_tags;
@@ -128,7 +128,7 @@ my $metadata = {
 
     for my $k (keys %expected_asset_names) {
         is($files->{$k}->[0], $expected_asset_names{$k}->[0], 'right url');
-        is($files->{$k}->[1], $expected_asset_names{$k}->[1], 'right file path');
+        like($files->{$k}->[1], $expected_asset_names{$k}->[1], 'right file path');
         is($files->{$k}->[2], $expected_asset_names{$k}->[2], 'right basename');
     }
 
