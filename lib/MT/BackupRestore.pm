@@ -259,10 +259,9 @@ sub backup {
     MT::Util::Log->info('--- Start export.');
 
     my $class = shift;
-    my ($blog_ids, $printer, $splitter, $finisher, $sess_name, $size, $enc, $metadata) = @_;
+    my ($blog_ids, $printer, $splitter, $finisher, $sess, $size, $enc, $metadata) = @_;
     $blog_ids ||= [];
     require MT::BackupRestore::Session;
-    my $sess = MT::BackupRestore::Session->load($sess_name);
     my $progress = sub { $sess->progress(@_) };
 
     # removed global items from backup for blog-specific backups as this creates multiple copies of global items
@@ -301,7 +300,7 @@ sub backup {
     $printer->($_) for @else_xml;
 
     $printer->('</movabletype>');
-    $finisher->($files);
+    $finisher->($sess, $files);
 
     $sess->done();
     MT::Util::Log->info('--- End   export.');

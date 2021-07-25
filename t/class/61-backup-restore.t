@@ -89,7 +89,7 @@ my $metadata = {
 
     MT::BackupRestore->backup(
         undef,    # no blog_ids
-        $printer, sub { }, sub { $files = shift }, $sess_key,
+        $printer, sub { }, sub { shift; $files = shift }, $sess,
         0,        'UTF-8',
         $metadata
     );

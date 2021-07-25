@@ -1243,10 +1243,9 @@ sub backup_internal {
                 return length($data);
             };
             $finisher = sub {
-                my ($asset_files) = @_;
+                my ($sess, $asset_files) = @_;
                 close $fh;
                 _backup_finisher($app, $fname, $param);
-                my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
                 $sess->urls([{ filename => $fname }]);
             };
         } else {    # archive/compress files
@@ -1258,7 +1257,7 @@ sub backup_internal {
             };
             $finisher = sub {
                 require MT::Util::Archive;
-                my ($asset_files) = @_;
+                my ($sess, $asset_files) = @_;
                 (my $fh, my $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
                 my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
                 close $fh;
@@ -1271,7 +1270,6 @@ sub backup_internal {
                 );
                 $arc->close;
                 _backup_finisher($app, $fname, $param);
-                my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
                 $sess->urls([{ filename => $fname }]);
             };
         }
@@ -1304,7 +1302,7 @@ sub backup_internal {
             print $fh $header;
         };
         $finisher = sub {
-            my ($asset_files) = @_;
+            my ($sess, $asset_files) = @_;
             close $fh;
             my $filename = File::Spec->catfile($temp_dir, "$file.manifest");
             $fh = gensym();
@@ -1336,7 +1334,6 @@ sub backup_internal {
             my $url = "__mode=backup_download&name=$file.manifest";
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files, { url => $url, filename => "$file.manifest" };
-            my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
             if (!$archive) {
                 for my $f (@files) {
                     $f->{filename} = MT::FileMgr::Local::_syserr($f->{filename})
@@ -1359,8 +1356,7 @@ sub backup_internal {
 
                 # for safery, don't unlink before closing $arc here.
                 unlink File::Spec->catfile($temp_dir, $_->{filename}) for @files;
-                _backup_finisher($app, $fname, $param);
-                my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
+                _backup_finisher($app, $sess, $fname, $param);
                 $sess->urls([{ filename => $fname }]);
             }
         };
@@ -1373,8 +1369,7 @@ sub backup_internal {
         backup_what    => join(',', @blog_ids),
         schema_version => $app->config('SchemaVersion'),
     };
-    my $sess_name = 'backup:' . $user_id;
-    eval { MT::BackupRestore->backup(\@blog_ids, $printer, $splitter, $finisher, $sess_name, $size * 1024, $enc, $metadata); };
+    eval { MT::BackupRestore->backup(\@blog_ids, $printer, $splitter, $finisher, $sess, $size * 1024, $enc, $metadata); };
 }
 
 sub _backup_filename {
@@ -2677,13 +2672,10 @@ sub restore_upload_manifest {
 }
 
 sub _backup_finisher {
-    my $app = shift;
-    my ($fnames, $param) = @_;
+    my ($app, $sess, $fnames, $param) = @_;
     $fnames                  = [$fnames] unless (ref $fnames);
     $param->{filename}       = $fnames->[0];
     $param->{backup_success} = 1 unless $param->{error};
-    require MT::BackupRestore::Session;
-    my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
     $sess->file($_) for @$fnames;
     my $message;
 
