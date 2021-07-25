@@ -35,7 +35,7 @@ sub backup {
         local *MT::build_page                     = sub { };
 
         my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
-        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[2]; $_backup_finisher->(@_) };
+        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[3]; $_backup_finisher->(@_) };
 
         my $job = MT::CMS::Tools::insert_backup_job($app);
 
@@ -43,7 +43,7 @@ sub backup {
         if (ref $job && ref $job eq 'TheSchwartz::Job') {
             require MT::TheSchwartz;
             my $client = MT::TheSchwartz->new();
-            $client->can_do('MT::Worker::Export');
+            $client->can_do('MT::Worker::BackupRestore');
             $client->work_once($job);
         }
     }
@@ -184,7 +184,15 @@ sub restore {
         local *MT::App::print_encode              = sub { };
         local *MT::build_page                     = sub { $param = $_[2] };
 
-        MT::CMS::Tools::restore($app);
+        my $job = MT::CMS::Tools::insert_restore_job($app);
+
+        # TODO Implement non-blocking API
+        if (ref $job && ref $job eq 'TheSchwartz::Job') {
+            require MT::TheSchwartz;
+            my $client = MT::TheSchwartz->new();
+            $client->can_do('MT::Worker::BackupRestore');
+            $client->work_once($job);
+        }
     }
 
     # TODO: Implement adjust_sitepath process and upload_asset process..

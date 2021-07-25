@@ -274,6 +274,7 @@ sub core_methods {
         'backup_result'            => "${pkg}Tools::backup_result",
         'backup_download'          => "${pkg}Tools::backup_download",
         'restore'                  => "${pkg}Tools::restore",
+        'restore_result'            => "${pkg}Tools::restore_result",
         'restore_premature_cancel' => "${pkg}Tools::restore_premature_cancel",
         'adjust_sitepath'          => "${pkg}Tools::adjust_sitepath",
         'system_check'             => "${pkg}Tools::system_check",

@@ -417,7 +417,7 @@ use_ok('MT::Worker::Publish');
 use_ok('MT::Worker::Sync');
 use_ok('MT::Worker::Summarize');
 use_ok('MT::Worker::SummaryWatcher');
-use_ok('MT::Worker::Export');
+use_ok('MT::Worker::BackupRestore');
 
 # Tag Handlers
 use_ok('MT::Template::Tags::Archive');
