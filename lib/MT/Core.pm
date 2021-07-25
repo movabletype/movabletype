@@ -2423,9 +2423,9 @@ BEGIN {
                 label => "Adds Summarize workers to queue.",
                 class => 'MT::Worker::SummaryWatcher',
             },
-            'mt_export_sites' => {
-                label => "Export sites.",
-                class => 'MT::Worker::Export',
+            'mt_backup_restore' => {
+                label => "Backup/Restore.",
+                class => 'MT::Worker::BackupRestore',
             },
         },
         archivers => {
@@ -2720,7 +2720,7 @@ sub purge_session_records {
 
     # remove expired backup sessions
     require MT::BackupRestore::Session;
-    MT::BackupRestore::Session::purge();
+    MT::BackupRestore::Session->purge(MT->config->UserSessionTimeout);
 
     # remove stale search cache
     MT::Session->remove( { kind => 'CS', start => [ undef, time - 60 * 60 ] },

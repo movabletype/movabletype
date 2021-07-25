@@ -262,7 +262,7 @@ sub backup {
     my ($blog_ids, $printer, $splitter, $finisher, $sess, $size, $enc, $metadata) = @_;
     $blog_ids ||= [];
     require MT::BackupRestore::Session;
-    my $progress = sub { $sess->progress(@_) };
+    my $progress = sub { $sess->progress(\@_, 1) };
 
     # removed global items from backup for blog-specific backups as this creates multiple copies of global items
     # when multiple blogs from the same instance are restored one-by-one. ideally, this should be a user setting on the backup form
@@ -302,7 +302,7 @@ sub backup {
     $printer->('</movabletype>');
     $finisher->($sess, $files);
 
-    $sess->done();
+    $sess->done(1);
     MT::Util::Log->info('--- End   export.');
 }
 

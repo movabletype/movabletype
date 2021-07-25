@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::Worker::Export;
+package MT::Worker::BackupRestore;
 use strict;
 use warnings;
 use base qw( TheSchwartz::Worker );
@@ -16,7 +16,15 @@ sub work {
 
     require MT::CMS::Tools;
 
-    eval { MT::CMS::Tools::backup_internal(@{ $job->arg }) };
+    my $method = (split /:/, $job->uniqkey)[0];
+
+    eval {
+        if ($method eq 'backup') {
+            MT::CMS::Tools::backup_internal(@{ $job->arg });
+        } elsif ($method eq 'restore') {
+            MT::CMS::Tools::restore_internal(@{ $job->arg });
+        }
+    };
 
     if ($@) {
         $job->permanent_failure();
