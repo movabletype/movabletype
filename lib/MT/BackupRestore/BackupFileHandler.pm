@@ -559,7 +559,6 @@ sub end_element {
                 {
                     $exists = 1;
                     $self->{objects}->{"$class#$old_id"} = $tag;
-                    $self->{callback}->("\n");
                     $self->{callback}->(
                         MT->translate(
                             "Tag '[_1]' exists in the system.",
@@ -688,7 +687,6 @@ sub end_element {
                         )
                     {
                         $exists = 1;
-                        $self->{callback}->("\n");
                         $self->{callback}->(
                             MT->translate(
                                 "The system level settings for plugin '[_1]' already exist.  Skipping this record.",

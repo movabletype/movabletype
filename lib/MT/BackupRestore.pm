@@ -330,7 +330,7 @@ sub _loop_through_objects {
             my $err ||= $@;
         }
         if ($err) {
-            $progress->("$err\n", 'Error');
+            $progress->("$err", 'Error');
             next;
         }
         my @metacolumns;
@@ -356,7 +356,7 @@ sub _loop_through_objects {
             $args->{limit}  = $limit + 1;
             my $iter = eval { $class->load_iter($terms, $args); };
             if (my $err = $@) {
-                $progress->("$class:$err\n", 'Error');
+                $progress->("$class:$err", 'Error');
             }
             last unless $iter;
             my $count = 0;
@@ -466,7 +466,7 @@ sub restore_process_single_file {
     );
 
     $parser = MT::Util::sax_parser();
-    $callback->(ref($parser) . "\n") if MT->config->DebugMode;
+    $callback->(ref($parser)) if MT->config->DebugMode;
     $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
     eval { $parser->parse_file($fh); };
@@ -526,7 +526,7 @@ sub restore_directory {
         return (undef, undef);
     }
 
-    $callback->(MT->translate("Manifest file: [_1]", $manifest) . "\n");
+    $callback->(MT->translate("Manifest file: [_1]", $manifest));
 
     my %objects;
     my $deferred = {};
@@ -619,18 +619,19 @@ sub restore_asset {
             }
         }
     }
+
+    my $filename = "$old_id-" . $asset->file_name;
+    my $msg = MT->translate("Copying [_1] to [_2]...", $filename, $path);
+    $callback->($msg, 'restore_asset');
+
     if (-w $voldir) {
-        my $filename = "$old_id-" . $asset->file_name;
-        $callback->(MT->translate("Copying [_1] to [_2]...", $filename, $path));
         $file = MT::FileMgr::Local::_local($file) unless ref($file);
         copy($file, MT::FileMgr::Local::_local($path)) or $errors->{$id} = $!;
     }
 
-    if (exists $errors->{$id}) {
-        return $callback->(MT->translate('Failed: ') . $errors->{$id} . "\n");
-    }
+    return $callback->($msg . MT->translate('Failed: ') . $errors->{$id}, 'restore_asset') if (exists $errors->{$id});
 
-    $callback->(MT->translate("Done.") . "\n");
+    $callback->($msg . MT->translate("Done."), 'restore_asset');
 
     MT->run_callbacks('restore_asset', $asset, $callback);
 
@@ -787,7 +788,7 @@ sub cb_restore_objects {
     }
 
     my $i = 0;
-    $callback->(MT->translate("Importing asset associations ... ( [_1] )", $i++), 'cb-restore-entry-asset');
+    $callback->(MT->translate("Importing asset associations ... ( [_1] )", $i), 'cb-restore-entry-asset');
     for my $obj_id (keys %entries) {
         my $entry = $entries{$obj_id};
 
@@ -807,12 +808,12 @@ sub cb_restore_objects {
 
         if ($entry->class == 'entry') {
             $callback->(
-                MT->translate("Importing asset associations in entry ... ( [_1] )", $i++),
+                MT->translate("Importing asset associations in entry ... ( [_1] )", ++$i),
                 'cb-restore-entry-asset'
             );
         } else {
             $callback->(
-                MT->translate("Importing asset associations in page ... ( [_1] )", $i++),
+                MT->translate("Importing asset associations in page ... ( [_1] )", ++$i),
                 'cb-restore-entry-asset'
             );
         }
@@ -823,11 +824,14 @@ sub cb_restore_objects {
         }
         $entry->update();    # directly call update to bypass processing in save()
     }
-    $callback->(MT->translate("Done.") . "\n");
+    $callback->(
+        MT->translate("Importing asset associations ... ( [_1] )", $i) . MT->translate("Done."),
+        'cb-restore-entry-asset'
+    );
 
     $i = 0;
     $callback->(
-        MT->translate("Importing content data ... ( [_1] )", $i++),
+        MT->translate("Importing content data ... ( [_1] )", $i),
         'cb-restore-content-data-data'
     );
     for my $content_data (@content_data) {
@@ -869,20 +873,26 @@ sub cb_restore_objects {
             BlockEditor::BackupRestore->update_cd_block_editor_data($content_data, $all_objects);
         }
 
-        $callback->(MT->translate("Importing content data ... ( [_1] )", $i++), 'cb-restore-content-data-data');
+        $callback->(MT->translate("Importing content data ... ( [_1] )", ++$i), 'cb-restore-content-data-data');
         $content_data->save or die $content_data->errstr;
     }
-    $callback->(MT->translate("Done.") . "\n");
+    $callback->(
+        MT->translate("Importing content data ... ( [_1] )", $i) . MT->translate("Done."),
+        'cb-restore-content-data-data'
+    );
 
     $i = 0;
-    $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", $i++), 'cb-restore-permission');
+    $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", $i), 'cb-restore-permission');
     my $iter = MT->model('permission')->load_iter;
     while (my $permission = $iter->()) {
         $permission->permissions('');
         $permission->rebuild;
-        $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", $i++), 'cb-restore-permission');
+        $callback->(MT->translate("Rebuilding permissions ... ( [_1] )", ++$i), 'cb-restore-permission');
     }
-    $callback->(MT->translate("Done.") . "\n");
+    $callback->(
+        MT->translate("Rebuilding permissions ... ( [_1] )", $i) . MT->translate("Done."),
+        'cb-restore-permission'
+    );
 
     1;
 }
@@ -932,19 +942,19 @@ sub cb_restore_asset {
     });
 
     my $i = 0;
-    $callback->(MT->translate('Importing url of the assets ( [_1] )...', $i++), 'cb-restore-asset-url');
+    $callback->(MT->translate('Importing url of the assets ( [_1] )...', $i), 'cb-restore-asset-url');
     for my $placement (@placements) {
         my $entry = MT->model('entry')->load($placement->object_id);
         next unless $entry;
 
         if ($entry->class eq 'entry') {
             $callback->(
-                MT->translate('Importing url of the assets in entry ( [_1] )...', $i++),
+                MT->translate('Importing url of the assets in entry ( [_1] )...', ++$i),
                 'cb-restore-asset-url'
             );
         } else {
             $callback->(
-                MT->translate('Importing url of the assets in page ( [_1] )...', $i++),
+                MT->translate('Importing url of the assets in page ( [_1] )...', ++$i),
                 'cb-restore-asset-url'
             );
         }
@@ -954,7 +964,10 @@ sub cb_restore_asset {
         }
         $entry->update();    # directly call update to bypass processing in save()
     }
-    $callback->(MT->translate("Done.") . "\n");
+    $callback->(
+        MT->translate('Importing url of the assets ( [_1] )...', $i) . MT->translate("Done."),
+        'cb-restore-asset-url'
+    );
     1;
 }
 
@@ -1001,12 +1014,8 @@ sub _restore_asset_multi {
             $url =~ s/\Q$old_site_url\E/$site_url/i;
             $asset->url($url);
         }
-        $callback->(MT->translate(
-            "Changing path for the file '[_1]' (ID:[_2])...",
-            $asset->label, $asset->id
-        ));
-        $asset->save or $callback->(MT->translate("failed") . "\n");
-        $callback->(MT->translate("ok") . "\n");
+        my $res = $asset->save ? MT->translate("ok") : MT->translate("failed");
+        $callback->(MT->translate("Changing path for the file '[_1]' (ID:[_2])...", $asset->label, $asset->id) . $res);
 
         $fmgr = $blog->file_mgr;
     }
