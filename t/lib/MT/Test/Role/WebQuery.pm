@@ -22,6 +22,11 @@ sub _find_text {
     eval { $self->wq_find($selector)->text };
 }
 
+sub header_title {
+    my $self = shift;
+    _trim( $self->_find_text("title") );
+}
+
 sub page_title {
     my $self = shift;
     _trim( $self->_find_text("#page-title") );
