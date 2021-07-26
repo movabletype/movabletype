@@ -1543,16 +1543,17 @@ sub restore_internal {
 
     require File::Path;
 
-    my ($dir, $param_blog_ids, $open_dialog, $do_upload);
+    my ($param_dir, $param_blog_ids, $open_dialog, $do_upload);
     my $error = '';
 
     if (!$fh) {
-        $dir = $app->config('ImportPath');
+        my $dir = $app->config('ImportPath');
         my ($blog_ids, $asset_ids) = eval { restore_directory($app, $sess, $dir, \$error) };
         return $return_error->($@) if $@;
 
         if (defined $blog_ids) {
             $open_dialog    = 1;
+            $param_dir      = $dir;
             $param_blog_ids = join(',', @$blog_ids);
             $sess->asset_ids($asset_ids) if defined $asset_ids;
         } elsif (defined $asset_ids) {
@@ -1577,7 +1578,6 @@ sub restore_internal {
             }
         }
     } else {
-        $dir       = $sess->dir;
         $do_upload = 1;
         if ($uploaded_filename =~ /^.+\.xml$/i) {
             my $blog_ids = eval { restore_file($app, $sess, $fh, \$error) };
@@ -1617,6 +1617,7 @@ sub restore_internal {
 
             MT::Util::Log->info('=== Start extract ' . $uploaded_filename);
 
+            my $dir = $sess->dir;
             $arc->extract($dir);
 
             MT::Util::Log->info('=== End   extract ' . $uploaded_filename);
@@ -1628,6 +1629,7 @@ sub restore_internal {
             if (defined $blog_ids) {
                 $open_dialog    = 1;
                 $param_blog_ids = join(',', @$blog_ids) if defined $blog_ids;
+                $param_dir      = $dir;
                 $sess->asset_ids($asset_ids) if defined $asset_ids;
             } elsif (defined $asset_ids) {
                 my %asset_ids = @$asset_ids;
@@ -1659,7 +1661,7 @@ sub restore_internal {
         my @q = (
             '__mode=dialog_adjust_sitepath',
             'blog_ids=' . $param_blog_ids,
-            'tmp_dir=' . encode_url($dir),
+            'tmp_dir=' . ($param_dir ? encode_url($param_dir) : ''),
         );
         push @q, 'restore_upload=1'            if $do_upload;
         push @q, 'error=' . encode_url($error) if $error;
