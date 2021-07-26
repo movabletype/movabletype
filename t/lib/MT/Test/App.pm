@@ -242,6 +242,7 @@ sub _request_internally {
     MT->set_instance($app);
     $app->{init_request} = 0;
     $app->init_request( CGIObject => $cgi );
+    $self->{_app} = $app;
 
     for my $key ( keys %$app_params ) {
         $app->{$key} = $app_params->{$key};
@@ -272,6 +273,11 @@ sub _request_internally {
 
     my $out = delete $app->{__test_output};
     my $res = HTTP::Response->parse($out);
+}
+
+sub _app {
+    my $self = shift;
+    $self->{_app} || $self->{app_class}->instance;
 }
 
 sub locations {
