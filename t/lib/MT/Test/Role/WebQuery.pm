@@ -1,11 +1,11 @@
 package MT::Test::Role::WebQuery;
 
 use Role::Tiny;
-use Web::Query;
+use Web::Query::LibXML;
 
 sub wq_find {
     my ( $self, $selector ) = @_;
-    my $wq = Web::Query->new( $self->content );
+    my $wq = Web::Query::LibXML->new( $self->content );
     $wq->find($selector);
 }
 
@@ -20,6 +20,11 @@ sub _trim {
 sub _find_text {
     my ( $self, $selector ) = @_;
     eval { $self->wq_find($selector)->text };
+}
+
+sub header_title {
+    my $self = shift;
+    _trim( $self->_find_text("title") );
 }
 
 sub page_title {
