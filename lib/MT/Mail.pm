@@ -77,6 +77,10 @@ sub send {
         return $class->error(MT->translate("System Email Address is not configured."));
     }
 
+    # The following a few dozens of lines should eventually be moved into _render_mail
+    # (or into another sub to be called from _render_mail) so that we can add an option
+    # to use a fully-equipped third party library, but not yet because of the mail_filter
+    # callback.
     my $mail_enc = lc( $mgr->MailEncoding || $mgr->PublishCharset );
 
     require MT::I18N::default;
@@ -303,6 +307,9 @@ sub _send_mt_smtp {
     }
 
     # Set sender header if smtp user id is valid email
+    # TODO: RFC: If the originator of the message can be indicated
+    # by a single mailbox and the author and transmitter are identical, the
+    # "Sender:" field SHOULD NOT be used.
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
     my ($mail, @recipients) = $class->_render_mail($hdrs, $body, 'hide_bcc');
