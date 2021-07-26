@@ -43,6 +43,11 @@ sub _set_default_alias {
     }
 }
 
+sub _encode_mime {
+    my ($str, $enc) = @_;
+    MIME::EncWords::encode_mimeword(MT::I18N::default->encode_text_encode($str, undef, $enc), 'b', $enc);
+}
+
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
@@ -94,28 +99,10 @@ sub send {
                     {
                         if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                                $_ = MIME::EncWords::encode_mimeword(
-                                    MT::I18N::default->encode_text_encode(
-                                        $1, undef, $mail_enc
-                                    ),
-                                    'b',
-                                    $mail_enc
-                                    )
-                                    . ' '
-                                    . $2;
+                                $_ = _encode_mime($1, $mail_enc) . ' ' . $2;
                             }
-                        }
-                        elsif ( $header
-                            !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
-                            )
-                        {
-                            $_ = MIME::EncWords::encode_mimeword(
-                                MT::I18N::default->encode_text_encode(
-                                    $_, undef, $mail_enc
-                                ),
-                                'b',
-                                $mail_enc
-                            );
+                        } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
+                            $_ = _encode_mime($_, $mail_enc);
                         }
                     }
                 }
@@ -126,28 +113,10 @@ sub send {
                 {
                     if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
                         if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
-                            $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                                MT::I18N::default->encode_text_encode(
-                                    $1, undef, $mail_enc
-                                ),
-                                'b',
-                                $mail_enc
-                                )
-                                . ' '
-                                . $2;
+                            $hdrs{$header} = _encode_mime($1, $mail_enc) . ' ' . $2;
                         }
-                    }
-                    elsif ( $header
-                        !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
-                        )
-                    {
-                        $hdrs{$header} = MIME::EncWords::encode_mimeword(
-                            MT::I18N::default->encode_text_encode(
-                                $val, undef, $mail_enc
-                            ),
-                            'b',
-                            $mail_enc
-                        );
+                    } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
+                        $hdrs{$header} = _encode_mime($val, $mail_enc);
                     }
                 }
             }
