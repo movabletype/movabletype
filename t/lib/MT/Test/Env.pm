@@ -151,6 +151,8 @@ sub write_config {
         LoggerLevel         => 'DEBUG',
         MailTransfer        => 'debug',
         DBIRaiseError       => 1,
+        ShowIpInformation   => 1,
+        EnableAddressBook   => 1,
     );
 
     if ($extra) {
