@@ -131,6 +131,8 @@ sub request {
             BAIL_OUT $message;
         }
         note $message;
+    } elsif (my $error = $self->generic_error) {
+        note "ERROR: $error";
     }
 
     $self->{res} = $res;
