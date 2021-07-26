@@ -35,7 +35,7 @@ sub get {
 sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
-    ok $res->is_success, "get succeeded";
+    ok !$res->is_error, "get succeeded";
     $res;
 }
 
@@ -49,7 +49,7 @@ sub post {
 sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
-    ok $res->is_success, "post succeeded";
+    ok !$res->is_error, "post succeeded";
     $res;
 }
 
