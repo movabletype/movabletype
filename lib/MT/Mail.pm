@@ -342,7 +342,7 @@ sub _send_mt_sendmail {
         )
     ) unless $sm_loc;
     local $SIG{PIPE} = {};
-    my $pid = open my $MAIL, '|-';
+    my $pid = open my $PIPE, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
@@ -352,8 +352,8 @@ sub _send_mt_sendmail {
     }
 
     my $mail = $class->_render_mail($hdrs, $body);
-    print $MAIL $mail;
-    close $MAIL;
+    print $PIPE $mail;
+    close $PIPE;
     1;
 }
 
