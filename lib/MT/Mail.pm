@@ -155,19 +155,37 @@ sub send {
     }
 }
 
+sub _render_mail {
+    my ($class, $hdrs, $body, $hide_bcc) = @_;
+
+    my $crlf = "\x0d\x0a";
+
+    # Setup headers
+    my $mail;
+    foreach my $k ( keys %$hdrs ) {
+        next if ( $k =~ /^(To|Bcc|Cc)$/ );
+        $mail .= "$k: " . $hdrs->{$k} . $crlf;
+    }
+
+    my @recipients;
+    foreach my $h (qw( To Bcc Cc )) {
+        if ( defined $hdrs->{$h} ) {
+            my $addrs = $hdrs->{$h};
+            $addrs = [$addrs] unless 'ARRAY' eq ref $addrs;
+            push @recipients, @$addrs;
+            $mail .= "$h: " . join( ",$crlf ", @$addrs ) . $crlf unless $h eq 'Bcc' && $hide_bcc;
+        }
+    }
+    $mail .= $crlf;
+    $mail .= $body;
+    return wantarray ? ($mail, @recipients) : $mail;
+}
 
 sub _send_mt_debug {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    for my $key ( keys %$hdrs ) {
-        my @arr
-            = ref( $hdrs->{$key} ) eq 'ARRAY'
-            ? @{ $hdrs->{$key} }
-            : ( $hdrs->{$key} );
-        print STDERR map "$key: $_\n", @arr;
-    }
-    print STDERR "\n";
-    print STDERR $body;
+    my $mail = $class->_render_mail($hdrs, $body);
+    print STDERR $mail;
     1;
 }
 
@@ -286,46 +304,16 @@ sub _send_mt_smtp {
     # Set sender header if smtp user id is valid email
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
-    # Setup headers
-    my $hdr;
-    foreach my $k ( keys %$hdrs ) {
-        next if ( $k =~ /^(To|Bcc|Cc)$/ );
-        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
-    }
+    my ($mail, @recipients) = $class->_render_mail($hdrs, $body, 'hide_bcc');
 
     # Sending mail
     $smtp->mail( $hdrs->{From} );
-
-    foreach my $h (qw( To Bcc Cc )) {
-        if ( defined $hdrs->{$h} ) {
-            my $addr = $hdrs->{$h};
-            $addr = [$addr] unless 'ARRAY' eq ref $addr;
-            foreach my $a (@$addr) {
-                $smtp->recipient($a);
-            }
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
-        }
-    }
-
-    my $_check_smtp_err;
-    {
-        $_check_smtp_err = sub {
-
-     # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
-            return unless $smtp->can('status');
-
-            # status 4xx or 5xx is not send message.
-            die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
-        };
-    }
+    $smtp->recipient($_) for @recipients;
 
     eval {
         $smtp->data();
-        $smtp->datasend($hdr);
-        $_check_smtp_err->();
-        $smtp->datasend("\n");
-        $smtp->datasend($body);
-        $_check_smtp_err->();
+        $smtp->datasend($mail);
+        die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
         $smtp->dataend();
         $smtp->quit;
     };
@@ -362,15 +350,9 @@ sub _send_mt_sendmail {
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }
-    for my $key ( keys %$hdrs ) {
-        my @arr
-            = ref( $hdrs->{$key} ) eq 'ARRAY'
-            ? @{ $hdrs->{$key} }
-            : ( $hdrs->{$key} );
-        print $MAIL map "$key: $_\n", @arr;
-    }
-    print $MAIL "\n";
-    print $MAIL $body;
+
+    my $mail = $class->_render_mail($hdrs, $body);
+    print $MAIL $mail;
     close $MAIL;
     1;
 }
