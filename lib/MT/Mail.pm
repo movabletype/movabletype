@@ -47,9 +47,6 @@ sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
 
-    local $hdrs_arg->{id} = $hdrs_arg->{id};
-    my $id = delete $hdrs_arg->{id};
-
     $class->_set_default_alias unless %Alias;
 
     my %hdrs;
@@ -71,6 +68,7 @@ sub send {
             $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
         }
     }
+    my $id = delete $hdrs{id};
 
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
