@@ -1871,7 +1871,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => '公開終了日を過ぎたコンテンツデータの処理中にエラーが発生しました: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'カテゴリ (ID:[_1])をロードできません。',
 	'Scheduled publishing.' => '指定日公開',
-	'You did not set your blog publishing path' => 'ブログの公開パスを設定していません。',
+	'You did not set your site publishing path' => 'サイトの公開パスを設定していません。',
 	'[_1] archive type requires [_2] parameter' => '[_1]アーカイブの再構築には[_2]パラメータが必要です',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{[_1]「[_2]」の再構築中にエラーが発生しました: [_3]},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{日付アーカイブ「[_1]」の再構築中にエラーが発生しました: [_2]},
@@ -4097,7 +4097,7 @@ use vars qw( @ISA %Lexicon );
 	'Data API Settings' => 'Data API の設定',
 	'Data API' => 'Data API',
 	'Enable Data API in system scope.' => 'システム全般での Data API の利用を許可する。',
-	'Enable Data API in this site.' => 'Data API のアクセスを許可する。',
+	'Enable Data API in this site.' => 'Data API の利用を許可する。',
 	'External Notifications' => '更新通知',
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
@@ -4137,7 +4137,7 @@ use vars qw( @ISA %Lexicon );
 	'add' => '追加',
 
 ## tmpl/cms/content_field_type_options/content_type.tmpl
-	'Allow users to select multiple values?' => '複数選択できる',
+	'Allow users to select multiple values?' => '複数選択を許可する',
 	'Source Content Type' => 'コンテンツタイプ',
 	'There is no content type that can be selected. Please create a content type if you use the Content Type field type.' => 'コンテンツタイプが存在しないため利用できません。コンテンツタイプを作成する必要があります。',
 
@@ -5006,7 +5006,7 @@ use vars qw( @ISA %Lexicon );
 	'Download This File' => 'このファイルをダウンロード',
 	'Download: [_1]' => 'ダウンロード: [_1]',
 	'Export Files' => 'エクスポートファイル',
-	'_BACKUP_TEMPDIR_WARNING' => 'バックアップはディレクトリ[_1]に正常に保存されました。バックアップファイルには公開するべきではない情報も含まれています。一覧に表示されたファイルを[_1]ディレクトリからダウンロードした後、<strong>ディレクトリから削除されたことを</strong>すぐに確認してください。',
+	'_BACKUP_TEMPDIR_WARNING' => 'バックアップはディレクトリ[_1]に正常に保存されました。一覧に表示されたリンクをクリックしてファイルごとにダウンロードするか、FTP などでサーバーに直接接続し、[_1] にあるファイルをすべてダウンロード後、該当ディレクトリ内のファイルを削除してください。',
 	q{_BACKUP_DOWNLOAD_MESSAGE} => q{数秒後にバックアップファイルのダウンロードが開始します。ダウンロードが始まらない場合は<a href='#' onclick='submit_form()'>ここ</a>をクリックしてください。},
 
 ## tmpl/cms/include/backup_start.tmpl

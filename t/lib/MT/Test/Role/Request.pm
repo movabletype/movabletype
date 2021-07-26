@@ -35,7 +35,7 @@ sub get {
 sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
-    ok $res->is_success, "get succeeded";
+    ok !$res->is_error, "get succeeded";
     $res;
 }
 
@@ -49,7 +49,7 @@ sub post {
 sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
-    ok $res->is_success, "post succeeded";
+    ok !$res->is_error, "post succeeded";
     $res;
 }
 
@@ -118,15 +118,15 @@ sub status_isnt {
 sub content { shift->{content} // '' }
 
 sub content_like {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content =~ /$pattern/, "content contains $pattern";
+    ok $self->content =~ /$pattern/, $message // "content contains $pattern";
 }
 
 sub content_unlike {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content !~ /$pattern/, "content doesn't contain $pattern";
+    ok $self->content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 sub content_doesnt_expose {

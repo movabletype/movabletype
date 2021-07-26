@@ -1871,7 +1871,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => 'Ocurrió un error durante la despublicación de contenidos antiguos: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'No se pudo leer la categoría. (ID: [_1]',
 	'Scheduled publishing.' => 'Publicación programada.',
-	'You did not set your blog publishing path' => 'No configuró la ruta de publicación del blog',
+	'You did not set your site publishing path' => 'No configuró la ruta de publicación del blog',
 	'[_1] archive type requires [_2] parameter' => 'El tipo de archivo [_1] necesita [_2] parámetro',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{Un error se ha producido durante la publicación},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{Ocurrió un error publicando el archivo de fechas '[_1]': [_2]},

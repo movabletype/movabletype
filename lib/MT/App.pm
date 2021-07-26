@@ -4184,7 +4184,11 @@ sub app_path {
     $app->{__path} = $path;
 }
 
-sub envelope {''}
+sub envelope {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+    '';
+}
 
 sub script {
     my $app = shift;
