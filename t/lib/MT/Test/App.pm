@@ -18,7 +18,7 @@ with qw(
 my %Initialized;
 
 sub init {
-    my ( $class, $app_class ) = @_;
+    my ($class, $app_class) = @_;
 
     return if $Initialized{$app_class};
 
@@ -47,11 +47,11 @@ sub init {
 
 sub new {
     my $class = shift;
-    my %args  = ( @_ == 1 ) ? ( app_class => shift ) : @_;
+    my %args  = (@_ == 1) ? (app_class => shift) : @_;
 
     $args{app_class} ||= $ENV{MT_APP} || 'MT::App::CMS';
 
-    if ( $args{app_class} !~ /^MT::App::/ ) {
+    if ($args{app_class} !~ /^MT::App::/) {
         $args{app_class} = "MT::App::$args{app_class}";
     }
 
@@ -90,7 +90,7 @@ sub base_url {
 }
 
 sub login {
-    my ( $self, $user ) = @_;
+    my ($self, $user) = @_;
     $self->{user} = $user;
     delete $self->{session};
     delete $self->{access_token};
@@ -100,7 +100,8 @@ sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
 
-    my $res = $self->{server}
+    my $res =
+          $self->{server}
         ? $self->_request_locally($params)
         : $self->_request_internally($params);
 
@@ -108,11 +109,9 @@ sub request {
 
     # redirect?
     my $location;
-    if ( $res->code =~ /^30/ ) {
+    if ($res->code =~ /^30/) {
         $location = $res->headers->header('Location');
-    }
-    elsif ( $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/ )
-    {
+    } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
     if ($location) {
@@ -127,8 +126,8 @@ sub request {
         return $self->request($params, 1) unless $self->{no_redirect};
     }
 
-    if ( my $message = $self->message_text ) {
-        if ( $message =~ /Compilation failed/ ) {
+    if (my $message = $self->message_text) {
+        if ($message =~ /Compilation failed/) {
             BAIL_OUT $message;
         }
         note $message;
@@ -139,7 +138,7 @@ sub request {
     # json response?
     if ($self->{content} =~ /\A\s*[\{\[]/) {
         if (my $json = eval { decode_json($self->{content}) }) {
-            if ($json->{result}{messages} && @{$json->{result}{messages} || []}) {
+            if ($json->{result}{messages} && @{ $json->{result}{messages} || [] }) {
                 note explain $json->{result}{messages};
             }
             if ($json->{error}) {
@@ -225,7 +224,7 @@ sub _request_locally {
     }
 
     require LWP::UserAgent;
-    my $ua  = LWP::UserAgent->new;
+    my $ua = LWP::UserAgent->new;
     $ua->max_redirect(0);
     my $res = $ua->request($req);
 }
@@ -238,35 +237,34 @@ sub _request_internally {
 
     my $app_params = $self->_app_params($params);
     my $cgi        = $self->_create_cgi_object($params);
-    my $app        = $self->{app_class}->new( CGIObject => $cgi );
+    my $app        = $self->{app_class}->new(CGIObject => $cgi);
     MT->set_instance($app);
     $app->{init_request} = 0;
-    $app->init_request( CGIObject => $cgi );
+    $app->init_request(CGIObject => $cgi);
     $self->{_app} = $app;
 
-    for my $key ( keys %$app_params ) {
+    for my $key (keys %$app_params) {
         $app->{$key} = $app_params->{$key};
     }
 
     my $login;
     my $api_login;
-    if ( my $user = $self->{user} ) {
-        if ( !$self->{session} ) {
-            $app->start_session( $user, 1 );
+    if (my $user = $self->{user}) {
+        if (!$self->{session}) {
+            $app->start_session($user, 1);
             $self->{session} = $app->{session}->id;
+        } else {
+            $app->session_user($user, $self->{session});
         }
-        else {
-            $app->session_user( $user, $self->{session} );
-        }
-        $app->param( 'magic_token', $app->current_magic );
+        $app->param('magic_token', $app->current_magic);
         $app->user($user);
-        $login = sub { return ( $user, 0 ) };
-        if ( $self->{app_class} eq 'MT::App::DataAPI' ) {
+        $login = sub { return ($user, 0) };
+        if ($self->{app_class} eq 'MT::App::DataAPI') {
             $api_login = sub { return $user };
         }
     }
     no warnings 'redefine';
-    local *MT::App::login = $login if $login;
+    local *MT::App::login                 = $login     if $login;
     local *MT::App::DataAPI::authenticate = $api_login if $api_login;
 
     $app->run;
@@ -281,7 +279,7 @@ sub _app {
 }
 
 sub locations {
-    my ( $self, $id ) = @_;
+    my ($self, $id) = @_;
     return unless $self->{locations};
     $self->{locations}[$id];
 }
@@ -297,9 +295,9 @@ my %app_params_mapping = (
 );
 
 sub _app_params {
-    my ( $self, $params ) = @_;
+    my ($self, $params) = @_;
     my %app_params;
-    for my $key ( keys %app_params_mapping ) {
+    for my $key (keys %app_params_mapping) {
         next unless exists $params->{$key};
         $app_params{ $app_params_mapping{$key} } = delete $params->{$key};
     }
@@ -307,18 +305,18 @@ sub _app_params {
 }
 
 sub _create_cgi_object {
-    my ( $self, $params ) = @_;
+    my ($self, $params) = @_;
     my $cgi = CGI->new;
-    while ( my ( $k, $v ) = each %$params ) {
-        if ( $k eq '__test_upload' ) {
-            my ( $key, $src ) = @$v;
+    while (my ($k, $v) = each %$params) {
+        if ($k eq '__test_upload') {
+            my ($key, $src) = @$v;
             require CGI::File::Temp;
-            my $fh = CGI::File::Temp->new( UNLINK => 1 )
+            my $fh = CGI::File::Temp->new(UNLINK => 1)
                 or die "CGI::File::Temp: $!";
             my $basename = basename($src);
-            if ( $^O eq 'MSWin32' ) {
+            if ($^O eq 'MSWin32') {
                 require Encode;
-                Encode::from_to( $basename, 'cp932', 'utf8' );
+                Encode::from_to($basename, 'cp932', 'utf8');
             }
             $fh->_mp_filename($basename);
             binmode $fh;
@@ -329,10 +327,9 @@ sub _create_cgi_object {
             close $in;
             print $fh $body;
             seek $fh, 0, 0;
-            $cgi->param( $key, $fh );
-        }
-        else {
-            $cgi->param( $k, ref $v eq 'ARRAY' ? @$v : $v );
+            $cgi->param($key, $fh);
+        } else {
+            $cgi->param($k, ref $v eq 'ARRAY' ? @$v : $v);
         }
     }
     $self->{cgi} = $cgi;
@@ -345,7 +342,7 @@ sub _clear_cache {
 }
 
 sub trans {
-    my ( $self, $message ) = @_;
+    my ($self, $message) = @_;
     MT->translate($message);
 }
 
