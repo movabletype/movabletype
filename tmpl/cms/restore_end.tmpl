@@ -58,11 +58,15 @@
         }).done(function(json) {
             var data = json.result;
             data.progress.slice(progress_pointer).forEach(function(e, i){
-                var div = progress.find(".id" + e.id);
-                if (div.length) {
+                var div = e.id ? progress.find(".id" + e.id) : null;
+                if (div && div.length) {
                     div.text(e.message);
                 } else {
-                    progress.append($("<div/>").addClass("id" + e.id).text(e.message));
+                    var div2 = $("<div/>").text(e.message);
+                    if (e.id) {
+                        div2.addClass("id" + e.id);
+                    }
+                    progress.append(div2);
                 }
             });
             progress_pointer = data.progress.length;
