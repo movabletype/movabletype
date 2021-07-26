@@ -56,10 +56,6 @@ sub combine {
 
 sub progress {
     my ($self, $progress, $append) = @_;
-    if ($progress->[0] eq "\n") {
-        warn caller(0);
-        warn caller(1);
-    }
     if (defined($progress)) {
         die '$progress must be an ARRAY ref' unless (ref $progress && ref $progress eq 'ARRAY');
         my $array = [$progress] unless (ref $progress->[0]);
