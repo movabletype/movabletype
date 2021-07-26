@@ -138,6 +138,9 @@ sub send {
         ( $id ? ( id => $id ) : () )
         );
 
+    $hdrs{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
+
     if ( $xfer eq 'sendmail' ) {
         return $class->_send_mt_sendmail( \%hdrs, $body, $mgr );
     }
@@ -156,8 +159,6 @@ sub send {
 sub _send_mt_debug {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    $hdrs->{To} = $mgr->DebugEmailAddress
-        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
     for my $key ( keys %$hdrs ) {
         my @arr
             = ref( $hdrs->{$key} ) eq 'ARRAY'
@@ -173,8 +174,6 @@ sub _send_mt_debug {
 sub _send_mt_smtp {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    $hdrs->{To} = $mgr->DebugEmailAddress
-        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
 
     # SMTP Configuration
     my $host      = $mgr->SMTPServer;
@@ -342,8 +341,7 @@ my @Sendmail
 sub _send_mt_sendmail {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    $hdrs->{To} = $mgr->DebugEmailAddress
-        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
+
     my $sm_loc;
     for my $loc ( $mgr->SendMailPath, @Sendmail ) {
         next unless $loc;
