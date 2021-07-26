@@ -161,6 +161,8 @@ sub _request_locally {
     }
     my $method = uc($app_params->{request_method} || 'GET');
 
+    $self->_clear_cache;
+
     my @headers;
     if (my $user = $self->{user}) {
         if ($self->{session}) {
