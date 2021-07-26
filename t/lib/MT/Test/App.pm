@@ -8,6 +8,7 @@ use HTTP::Response;
 use URI;
 use URI::QueryParam;
 use Test::More;
+use JSON;
 
 with qw(
     MT::Test::Role::Request
@@ -133,6 +134,18 @@ sub request {
         note $message;
     } elsif (my $error = $self->generic_error) {
         note "ERROR: $error";
+    }
+
+    # json response?
+    if ($self->{content} =~ /\A\s*[\{\[]/) {
+        if (my $json = eval { decode_json($self->{content}) }) {
+            if ($json->{result}{messages} && @{$json->{result}{messages} || []}) {
+                note explain $json->{result}{messages};
+            }
+            if ($json->{error}) {
+                note "ERROR: $json->{error}";
+            }
+        }
     }
 
     $self->{res} = $res;
