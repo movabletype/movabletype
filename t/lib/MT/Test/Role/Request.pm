@@ -118,15 +118,15 @@ sub status_isnt {
 sub content { shift->{content} // '' }
 
 sub content_like {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content =~ /$pattern/, "content contains $pattern";
+    ok $self->content =~ /$pattern/, $message // "content contains $pattern";
 }
 
 sub content_unlike {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content !~ /$pattern/, "content doesn't contain $pattern";
+    ok $self->content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 sub content_doesnt_expose {
