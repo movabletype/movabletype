@@ -98,11 +98,42 @@ sub login {
 sub request {
     my ($self, $params, $is_redirect) = @_;
     $self->{locations} = undef unless $is_redirect;
-    if ($self->{server}) {
-        $self->_request_locally($params);
-    } else {
-        $self->_request_internally($params);
+
+    my $res = $self->{server}
+        ? $self->_request_locally($params)
+        : $self->_request_internally($params);
+
+    $self->{content} = $res->decoded_content // '';
+
+    # redirect?
+    my $location;
+    if ( $res->code =~ /^30/ ) {
+        $location = $res->headers->header('Location');
     }
+    elsif ( $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/ )
+    {
+        $location = $2;
+    }
+    if ($location) {
+        Test::More::note "REDIRECTING TO $location";
+        my $uri    = URI->new($location);
+        my $params = $uri->query_form_hash;
+
+        # avoid processing multiple requests in a second
+        sleep 1;
+
+        push @{ $self->{locations} ||= [] }, $uri;
+        return $self->request($params, 1) unless $self->{no_redirect};
+    }
+
+    if ( my $message = $self->message_text ) {
+        if ( $message =~ /Compilation failed/ ) {
+            BAIL_OUT $message;
+        }
+        note $message;
+    }
+
+    $self->{res} = $res;
 }
 
 sub _request_locally {
@@ -180,36 +211,6 @@ sub _request_locally {
     my $ua  = LWP::UserAgent->new;
     $ua->max_redirect(0);
     my $res = $ua->request($req);
-
-    $self->{content} = $res->decoded_content // '';
-
-    # redirect?
-    my $location;
-    if ($res->code =~ /^30/) {
-        $location = $res->headers->header('Location');
-    } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
-        $location = $2;
-    }
-    if ($location && !$self->{no_redirect}) {
-        Test::More::note "REDIRECTING TO $location";
-        my $uri    = URI->new($location);
-        my $params = $uri->query_form_hash;
-
-        # avoid processing multiple requests in a second
-        sleep 1;
-
-        push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params, 1);
-    }
-
-    if (my $message = $self->message_text) {
-        if ($message =~ /Compilation failed/) {
-            BAIL_OUT $message;
-        }
-        note $message;
-    }
-
-    $self->{res} = $res;
 }
 
 sub _request_internally {
@@ -254,38 +255,6 @@ sub _request_internally {
 
     my $out = delete $app->{__test_output};
     my $res = HTTP::Response->parse($out);
-
-    $self->{content} = $res->decoded_content // '';
-
-    # redirect?
-    my $location;
-    if ( $res->code =~ /^30/ ) {
-        $location = $res->headers->header('Location');
-    }
-    elsif ( $self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/ )
-    {
-        $location = $2;
-    }
-    if ( $location && !$self->{no_redirect} ) {
-        Test::More::note "REDIRECTING TO $location";
-        my $uri    = URI->new($location);
-        my $params = $uri->query_form_hash;
-
-        # avoid processing multiple requests in a second
-        sleep 1;
-
-        push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params, 1);
-    }
-
-    if ( my $message = $self->message_text ) {
-        if ( $message =~ /Compilation failed/ ) {
-            BAIL_OUT $message;
-        }
-        note $message;
-    }
-
-    $self->{res} = $res;
 }
 
 sub locations {
