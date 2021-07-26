@@ -65,14 +65,6 @@ sub send {
             push @{$hdrs{$alias}}, ref $value eq 'ARRAY' ? @$value : $value;
         }
     }
-    foreach my $h ( keys %hdrs ) {
-        if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
-            map {y/\n\r/  /} @{ $hdrs{$h} };
-        }
-        else {
-            $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
-        }
-    }
     my $id = delete $hdrs{id};
 
     my $mgr  = MT->config;
@@ -95,6 +87,7 @@ sub send {
 
             if ( ref $val eq 'ARRAY' ) {
                 foreach (@$val) {
+                    y/\x0d\x0a/  /;
                     if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) ) {
                         if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
@@ -107,6 +100,7 @@ sub send {
                 }
             }
             else {
+                $val =~ y/\x0d\x0a/  /;
                 if ( ( $mail_enc ne 'iso-8859-1' ) || ( $val =~ /[^[:print:]]/ ) ) {
                     if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
                         if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
