@@ -95,8 +95,7 @@ sub send {
 
             if ( ref $val eq 'ARRAY' ) {
                 foreach (@$val) {
-                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
-                    {
+                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) ) {
                         if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
                             if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
                                 $_ = _encode_mime($1, $mail_enc) . ' ' . $2;
@@ -108,9 +107,7 @@ sub send {
                 }
             }
             else {
-                if (   ( $mail_enc ne 'iso-8859-1' )
-                    || ( $val =~ /[^[:print:]]/ ) )
-                {
+                if ( ( $mail_enc ne 'iso-8859-1' ) || ( $val =~ /[^[:print:]]/ ) ) {
                     if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
                         if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
                             $hdrs{$header} = _encode_mime($1, $mail_enc) . ' ' . $2;
@@ -123,21 +120,14 @@ sub send {
         }
     }
     else {
-        $hdrs{Subject}
-            = MT::I18N::default->encode_text_encode( $hdrs{Subject}, undef,
-            $mail_enc );
-        $hdrs{From}
-            = MT::I18N::default->encode_text_encode( $hdrs{From}, undef,
-            $mail_enc );
+        $hdrs{Subject} = MT::I18N::default->encode_text_encode( $hdrs{Subject}, undef, $mail_enc );
+        $hdrs{From}    = MT::I18N::default->encode_text_encode( $hdrs{From}, undef, $mail_enc );
     }
     $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'}
-        = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
+    $hdrs{'Content-Transfer-Encoding'} = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
 
-    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
-        && eval { require MIME::Base64 } )
-    {
+    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m && eval { require MIME::Base64 } ) {
         $body = MIME::Base64::encode_base64($body);
         $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
@@ -162,8 +152,7 @@ sub send {
         return $class->_send_mt_debug( \%hdrs, $body, $mgr );
     }
     else {
-        return $class->error(
-            MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
+        return $class->error(MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ));
     }
 }
 
@@ -222,13 +211,8 @@ sub _send_mt_smtp {
         ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
         : undef;
 
-    return $class->error(
-        MT->translate(
-            "Username and password is required for SMTP authentication."
-        )
-        )
-        if $auth
-        and ( !$user or !$pass );
+    return $class->error(MT->translate("Username and password is required for SMTP authentication."))
+        if $auth and ( !$user or !$pass );
 
     # Check required modules;
     my @modules = ();
@@ -258,7 +242,7 @@ sub _send_mt_smtp {
                         || 'SSLv23:!SSLv3:!SSLv2' ,
                 ( eval { require Mozilla::CA; 1 } )
                 ? (
-                    SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
+                    SSL_ca_file => Mozilla::CA::SSL_ca_file(),
                     )
                 : (),
                 SSL_verifycn_name   => $host,
