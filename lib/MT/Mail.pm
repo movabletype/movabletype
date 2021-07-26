@@ -73,6 +73,11 @@ sub send {
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
 
+    $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
+    if ( !$hdrs{From} ) {
+        return $class->error(MT->translate("System Email Address is not configured."));
+    }
+
     my $mail_enc = uc( $mgr->MailEncoding || $mgr->PublishCharset );
     $mail_enc = lc $mail_enc;
 
@@ -161,12 +166,6 @@ sub send {
     $hdrs{'Content-Transfer-Encoding'}
         = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
     $hdrs{'MIME-Version'} ||= "1.0";
-
-    $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
-    if ( !$hdrs{From} ) {
-        return $class->error(
-            MT->translate("System Email Address is not configured.") );
-    }
 
     if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
         && eval { require MIME::Base64 } )
