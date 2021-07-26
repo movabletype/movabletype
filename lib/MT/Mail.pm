@@ -21,6 +21,28 @@ my %SMTPModules = (
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
+my @KnownFields = qw(
+    id Date From Sender Reply-To To Cc Bcc
+    Message-ID In-Reply-To References Subject X-SMTPAPI
+    Content-Type Content-Transfer-Encoding MIME-Version
+);
+
+my %Alias;
+
+sub _lc {
+    my $field = shift;
+    my $lc_field = lc $field;
+    $lc_field =~ s/\-/_/g;
+    $lc_field;
+}
+
+sub _set_default_alias {
+    my $class = shift;
+    for my $field (@KnownFields) {
+        $Alias{_lc($field)} = $field;
+    }
+}
+
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
@@ -28,7 +50,19 @@ sub send {
     local $hdrs_arg->{id} = $hdrs_arg->{id};
     my $id = delete $hdrs_arg->{id};
 
-    my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
+    $class->_set_default_alias unless %Alias;
+
+    my %hdrs;
+    for my $field (sort keys %$hdrs_arg) {
+        my $alias = $Alias{_lc($field)} ||= $field;
+        my $value = $hdrs_arg->{$field};
+        if ($alias eq $field or !exists $hdrs{$alias}) {
+            $hdrs{$alias} = $value;
+        } else {
+            $hdrs{$alias} = [$hdrs{$alias}] unless ref $hdrs{$alias};
+            push @{$hdrs{$alias}}, ref $value eq 'ARRAY' ? @$value : $value;
+        }
+    }
     foreach my $h ( keys %hdrs ) {
         if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
             map {y/\n\r/  /} @{ $hdrs{$h} };
