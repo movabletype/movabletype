@@ -217,7 +217,7 @@ sub _send_mt_smtp {
             $auth = 1;
         }
     }
-    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : undef;
+    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : '';
     my $ssl_verify_mode
         = $do_ssl
         ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
@@ -246,8 +246,9 @@ sub _send_mt_smtp {
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
+        doSSL   => $do_ssl,
         (   $do_ssl
-            ? ( doSSL           => $do_ssl,
+            ? (
                 SSL_verify_mode => $ssl_verify_mode,
                 SSL_version => MT->config->SSLVersion
                         || MT->config->SMTPSSLVersion
