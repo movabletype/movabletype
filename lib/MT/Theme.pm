@@ -452,7 +452,7 @@ sub validate_versions {
         my $version   = $requires->{$component};
         my $c         = MT->component($component);
         my $r_version = MT::version->parse($version);
-        my $c_version = MT::version->parse($c ? $c->version : '0.0');
+        my $c_version = MT::version->parse($c ? $c->id eq 'core' ? MT->product_version : $c->version : '0.0');
         if ( !$c ) {
             push @errors, sub {
                 MT->translate(
@@ -474,7 +474,7 @@ sub validate_versions {
         my $version   = $optionals->{$component};
         my $c         = MT->component($component);
         my $r_version = MT::version->parse($version);
-        my $c_version = MT::version->parse($c ? $c->version : '0.0');
+        my $c_version = MT::version->parse($c ? $c->id eq 'core' ? MT->product_version : $c->version : '0.0');
         if ( !$c ) {
             push @warnings, sub {
                 MT->translate(

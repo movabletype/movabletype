@@ -46,8 +46,6 @@ MT->instance;
 
 my $theme = MT::Theme->load('ThemeTest');
 
-note "core version: " . MT->component('core')->version;
-note "plugin version: " . MT->component('ThemeTestPlugin')->version;
 my ( $errors, $warnings ) = $theme->validate_versions;
 ok( !scalar @$errors ) or note explain [map {$_->()} @{$errors || []}];
 ok( !scalar @$warnings ) or note explain [map {$_->()} @{$warnings || []}];
