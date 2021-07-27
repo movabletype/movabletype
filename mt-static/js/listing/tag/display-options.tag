@@ -95,7 +95,7 @@
               id={ column.id }
               checked={ column.checked }
               onchange={ toggleColumn }
-              disabled="{ this.store.isLoading }" 
+              disabled={ store.isLoading }
             />
             <label class="custom-control-label" for={ column.id }>
               <raw content={ column.label }></raw>
