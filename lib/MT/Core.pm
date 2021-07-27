@@ -3249,7 +3249,13 @@ sub l10n_class {'MT::L10N'}
 
 sub init_registry {
     my $c = shift;
-    return $c->{registry} = $core_registry;
+    $c->{registry} = $core_registry;
+
+    # map key registry elements into metadata
+    foreach my $prop (qw(version schema_version)) {
+        $c->$prop( $core_registry->{$prop} );
+    }
+    return 1;
 }
 
 # Config handlers for these settings...
