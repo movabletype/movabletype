@@ -22,8 +22,7 @@ $test_env->prepare_fixture('db');
 
 my $author = MT::Author->load(1);
 
-my $raw_pass      = 'test';
-my $raw_utf8_pass = 'テスト';
+my $raw_pass = 'test';
 
 subtest 'crypt password' => sub {
     my $prev_pass = crypt($raw_pass, 'cr');
@@ -39,14 +38,6 @@ subtest 'sha1 password' => sub {
     $author->save;
 
     _test_password($raw_pass, $prev_pass);
-};
-
-subtest 'sha1 utf8 password' => sub {
-    my $prev_pass = '{SHA}s1$' . MT::Util::perl_sha1_digest_hex('s1' . encode_utf8($raw_utf8_pass));
-    $author->column(password => $prev_pass);
-    $author->save;
-
-    _test_password($raw_utf8_pass, $prev_pass);
 };
 
 sub _test_password {
