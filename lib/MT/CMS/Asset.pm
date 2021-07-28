@@ -1380,12 +1380,9 @@ sub _set_start_upload_params {
     $param;
 }
 
-### DEPRECATED: v6.2
+### Not used from Web UI since v6.2, but still used by DataAPI endpoints
 sub _upload_file_compat {
     my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
 
     my (%upload_param) = @_;
     require MT::Image;
