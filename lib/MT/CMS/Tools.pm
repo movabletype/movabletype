@@ -2093,7 +2093,6 @@ sub dialog_restore_upload {
     my $app  = shift;
     my $user = $app->user;
     return $app->permission_denied() if !$user->is_superuser;
-    $app->validate_magic() or return;
 
     my $current            = $app->param('current_file');
     my $last               = $app->param('last');
@@ -2671,13 +2670,12 @@ sub restore_upload_manifest {
         '&', (
             '__mode=dialog_restore_upload',
             'start=1',
-            'magic_token=' . $app->current_magic,
             'files=' . join(',', @$files),
-            'assets=' . scalar(@$assets) > 0 ? encode_url(MT::Util::to_json($assets)) : '',
+            'assets=' . (scalar(@$assets) > 0 ? encode_url(MT::Util::to_json($assets)) : ''),
             'current_file=' . $file_next,
             'last=' . (scalar(@$files) ? 0 : (scalar(@$assets) ? 0 : 1)),
             'schema_version=' . $app->config->SchemaVersion,
-            'overwrite_templates=' . $app->param('overwrite_global_templates') ? 1 : 0,
+            'overwrite_templates=' . ($app->param('overwrite_global_templates') ? 1 : 0),
             'redirect=1',
         ));
 
