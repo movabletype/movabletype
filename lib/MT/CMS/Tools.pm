@@ -1194,6 +1194,7 @@ sub backup_internal {
     my $user = MT->model('author')->load($user_id);
     my $app  = MT::App->new or die MT->errstr;
     $app->user($user);
+    local $MT::mt_inst = $app;
     require MT::BackupRestore::Session;
     my $sess     = MT::BackupRestore::Session->load('backup:' . $app->user->id);
     my $blog_id  = $job_params->{'blog_id'}     || 0;
@@ -1504,6 +1505,7 @@ sub restore_internal {
     my $user = MT->model('author')->load($user_id);
     my $app  = MT::App->new or die MT->errstr;
     $app->user($user);
+    local $MT::mt_inst = $app;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id);
 
