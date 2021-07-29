@@ -45,11 +45,6 @@ sub _set_default_alias {
     }
 }
 
-sub _encode_mime {
-    my ($str, $enc) = @_;
-    MIME::EncWords::encode_mimeword(MT::I18N::default->encode_text_encode($str, undef, $enc), 'b', $enc);
-}
-
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
@@ -75,61 +70,6 @@ sub send {
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
     if ( !$hdrs{From} ) {
         return $class->error(MT->translate("System Email Address is not configured."));
-    }
-
-    # The following a few dozens of lines should eventually be moved into _render_mail
-    # (or into another sub to be called from _render_mail) so that we can add an option
-    # to use a fully-equipped third party library, but not yet because of the mail_filter
-    # callback.
-    my $mail_enc = lc( $mgr->MailEncoding || $mgr->PublishCharset );
-
-    require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
-
-    eval "require MIME::EncWords;";
-    unless ($@) {
-        foreach my $header ( keys %hdrs ) {
-            my $val = $hdrs{$header};
-
-            if ( ref $val eq 'ARRAY' ) {
-                foreach (@$val) {
-                    y/\x0d\x0a/  /;
-                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) ) {
-                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
-                            if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                                $_ = _encode_mime($1, $mail_enc) . ' ' . $2;
-                            }
-                        } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
-                            $_ = _encode_mime($_, $mail_enc);
-                        }
-                    }
-                }
-            }
-            else {
-                $val =~ y/\x0d\x0a/  /;
-                if ( ( $mail_enc ne 'iso-8859-1' ) || ( $val =~ /[^[:print:]]/ ) ) {
-                    if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
-                        if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
-                            $hdrs{$header} = _encode_mime($1, $mail_enc) . ' ' . $2;
-                        }
-                    } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
-                        $hdrs{$header} = _encode_mime($val, $mail_enc);
-                    }
-                }
-            }
-        }
-    }
-    else {
-        $hdrs{Subject} = MT::I18N::default->encode_text_encode( $hdrs{Subject}, undef, $mail_enc );
-        $hdrs{From}    = MT::I18N::default->encode_text_encode( $hdrs{From}, undef, $mail_enc );
-    }
-    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'} = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
-    $hdrs{'MIME-Version'} ||= "1.0";
-
-    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m && eval { require MIME::Base64 } ) {
-        $body = MIME::Base64::encode_base64($body);
-        $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
 
     return 1
@@ -159,10 +99,75 @@ sub send {
     }
 }
 
+sub _encode {
+    my ($class, $hdrs, $body) = @_;
+
+    my $mgr = MT->config;
+    my $mail_enc = lc( $mgr->MailEncoding || $mgr->PublishCharset );
+
+    require MT::I18N::default;
+    $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
+
+    eval "require MIME::EncWords;";
+    unless ($@) {
+        foreach my $header ( keys %$hdrs ) {
+            my $val = $hdrs->{$header};
+
+            if ( ref $val eq 'ARRAY' ) {
+                foreach (@$val) {
+                    y/\x0d\x0a/  /;
+                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) ) {
+                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
+                            if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
+                                $_ = _encode_mime($1, $mail_enc) . ' ' . $2;
+                            }
+                        } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
+                            $_ = _encode_mime($_, $mail_enc);
+                        }
+                    }
+                }
+            }
+            else {
+                $val =~ y/\x0d\x0a/  /;
+                if ( ( $mail_enc ne 'iso-8859-1' ) || ( $val =~ /[^[:print:]]/ ) ) {
+                    if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
+                        if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
+                            $hdrs->{$header} = _encode_mime($1, $mail_enc) . ' ' . $2;
+                        }
+                    } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
+                        $hdrs->{$header} = _encode_mime($val, $mail_enc);
+                    }
+                }
+            }
+        }
+    }
+    else {
+        $hdrs->{Subject} = MT::I18N::default->encode_text_encode( $hdrs->{Subject}, undef, $mail_enc );
+        $hdrs->{From}    = MT::I18N::default->encode_text_encode( $hdrs->{From}, undef, $mail_enc );
+    }
+    $hdrs->{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
+    $hdrs->{'Content-Transfer-Encoding'} = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
+    $hdrs->{'MIME-Version'} ||= "1.0";
+
+    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m && eval { require MIME::Base64 } ) {
+        $body = MIME::Base64::encode_base64($body);
+        $hdrs->{'Content-Transfer-Encoding'} = 'base64';
+    }
+
+    return ($hdrs, $body);
+}
+
+sub _encode_mime {
+    my ($str, $enc) = @_;
+    MIME::EncWords::encode_mimeword(MT::I18N::default->encode_text_encode($str, undef, $enc), 'b', $enc);
+}
+
 sub _render_mail {
     my ($class, $hdrs, $body, $hide_bcc) = @_;
 
     my $crlf = "\x0d\x0a";
+
+    ($hdrs, $body) = $class->_encode($hdrs, $body);
 
     # Setup headers
     my $mail;
