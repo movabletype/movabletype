@@ -425,6 +425,7 @@ sub restore_file {
     my ($blog_ids, $asset_ids) = eval {
         $class->restore_process_single_file($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback);
     };
+    push @$errors, $@ if $@;
 
     MT->run_callbacks('restore', $objects, $deferred, $errors, $callback) unless $@;
 
@@ -545,6 +546,7 @@ sub restore_directory {
                 $schema_version, $overwrite, $callback
             );
         };
+        push @$errors, $@ if $@;
 
         close $fh;
         last if $@;
