@@ -55,7 +55,7 @@ sub send {
     for my $field (sort keys %$hdrs_arg) {
         my $alias = $Alias{_lc($field)} ||= $field;
         my $value = $hdrs_arg->{$field};
-        if ($alias eq $field or !exists $hdrs{$alias}) {
+        if (!exists $hdrs{$alias}) {
             $hdrs{$alias} = $value;
         } else {
             $hdrs{$alias} = [$hdrs{$alias}] unless ref $hdrs{$alias};
