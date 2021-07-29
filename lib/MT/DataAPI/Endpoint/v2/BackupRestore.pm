@@ -50,14 +50,8 @@ sub backup {
 
     # Error.
     return if $app->errstr;
-    if (!$param->{backup_success}) {
-        return $app->error(
-            $app->translate(
-                'An error occurred during the backup process: [_1]',
-                $param->{error}
-            ),
-            500,
-        );
+    if ($param->{error}) {
+        return $app->error($app->translate('An error occurred during the backup process: [_1]', $param->{error}), 500);
     }
 
     # Success.
