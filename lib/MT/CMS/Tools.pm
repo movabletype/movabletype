@@ -1211,12 +1211,10 @@ sub backup_internal {
     my $enc     = $app->charset || 'utf-8';
     my $file    = _backup_filename($sess->sess->start);
 
-    my $param = { return_args => '__mode=start_backup' };
-    $app->{no_print_body}         = 1;
-    $param->{system_overview_nav} = 1         if $blog_ids;
-    $param->{blog_id}             = $blog_id  if $blog_id;
-    $param->{blog_ids}            = $blog_ids if $blog_ids;
-    $param->{nav_backup}          = 1;
+    my $param = {};
+    $app->{no_print_body} = 1;
+    $param->{blog_id}     = $blog_id  if $blog_id;
+    $param->{blog_ids}    = $blog_ids if $blog_ids;
 
     require File::Temp;
     require File::Spec;
@@ -1347,7 +1345,6 @@ sub backup_internal {
                         if ($f->{filename} && !Encode::is_utf8($f->{filename}));
                 }
                 $param->{files_loop} = \@files;
-                $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
                 _backup_finisher($app, $sess, \@fnames, $param);
                 $sess->urls(\@files, 1);
@@ -2692,9 +2689,8 @@ sub restore_upload_manifest {
 
 sub _backup_finisher {
     my ($app, $sess, $fnames, $param) = @_;
-    $fnames                  = [$fnames] unless (ref $fnames);
-    $param->{filename}       = $fnames->[0];
-    $param->{backup_success} = 1 unless $param->{error};
+    $fnames = [$fnames] unless (ref $fnames);
+    $param->{filename} = $fnames->[0];
     $sess->file($_) for @$fnames;
     my $message;
 
