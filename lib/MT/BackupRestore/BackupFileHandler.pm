@@ -141,10 +141,6 @@ sub start_element {
                                 class    => 'system',
                                 category => 'restore',
                             });
-                            $objects->{ "$class#" . $column_data{id} }                 = $obj;
-                            $objects->{ "$class#" . $column_data{id} }->{no_overwrite} = 1;
-                            $self->{current}                                           = $obj;
-                            $self->{loaded}                                            = 1;
                             $self->{skip} += 1;
                         } else {
                             MT->log({
