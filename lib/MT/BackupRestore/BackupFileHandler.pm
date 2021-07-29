@@ -274,9 +274,9 @@ sub start_element {
                     }
 
                     MT::Util::Log->info('   End import   ' . $class);
-                } elsif ('content_type' eq $name || 'cf' eq $name || 'content_field' eq $name) {
+                } elsif ($name =~ /^(content_type|cf|content_field)$/) {
                     $objects->{ "$class#uid:" . $column_data{unique_id} } = $obj = $class->new;
-                } elsif ('cd' eq $name || 'content_data' eq $name) {
+                } elsif ($name =~ /^(cd|content_data)$/) {
                     $obj = $class->new;
                     require MT::ContentType::UniqueID;
                     MT::ContentType::UniqueID::set_unique_id($obj);
@@ -310,7 +310,7 @@ sub start_element {
                             if $name eq 'author' && defined $realcolumn_data{external_id};
                         foreach my $metacol (keys %metacolumns) {
                             next unless exists $column_data{$metacol};
-                            next if ('vclob' eq $metacolumns{$metacol}) || ('vblob' eq $metacolumns{$metacol});
+                            next if $metacolumns{$metacol} =~ /^(vclob|vblob)$/;
                             $obj->$metacol(
                                 $metacolumns{$metacol} =~ /^vchar/
                                 ? _decode($column_data{$metacol})
@@ -423,9 +423,7 @@ sub end_element {
             }
         } else {
             my $old_id = $obj->id;
-            unless ((('author' eq $name) || ('template' eq $name) || ('filter' eq $name) || ('image' eq $name) || ('plugindata' eq $name))
-                && (exists $self->{loaded}))
-            {
+            unless ($name =~ /^(author|template|filter|image|plugindata)$/ && (exists $self->{loaded})) {
                 delete $obj->{column_values}->{id};
                 delete $obj->{changed_cols}->{id};
             }
@@ -537,7 +535,7 @@ sub end_element {
                         ));
                     }
                 }
-            } elsif ('content_type' eq $name || 'cf' eq $name || 'content_field' eq $name) {
+            } elsif ($name =~ /^(content_type|cf|content_field)$/) {
                 require MT::ContentType::UniqueID;
                 MT::ContentType::UniqueID::set_unique_id($obj);
             }
