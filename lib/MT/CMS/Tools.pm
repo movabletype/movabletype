@@ -1557,7 +1557,7 @@ sub restore_internal {
         if (defined $blog_ids) {
             $open_dialog    = 1;
             $param_dir      = $dir;
-            $param_blog_ids = join(',', @$blog_ids);
+            $param_blog_ids = join(',', sort @$blog_ids);
             $sess->asset_ids($asset_ids) if defined $asset_ids;
         } elsif (defined $asset_ids) {
             my %asset_ids = @$asset_ids;
@@ -1587,7 +1587,7 @@ sub restore_internal {
             return $return_error->($@) if $@;
             if (defined $blog_ids) {
                 $open_dialog    = 1;
-                $param_blog_ids = join(',', @$blog_ids);
+                $param_blog_ids = join(',', sort @$blog_ids);
             }
         } else {
             require MT::Util::Archive;
@@ -1631,7 +1631,7 @@ sub restore_internal {
 
             if (defined $blog_ids) {
                 $open_dialog    = 1;
-                $param_blog_ids = join(',', @$blog_ids) if defined $blog_ids;
+                $param_blog_ids = join(',', sort @$blog_ids) if defined $blog_ids;
                 $param_dir      = $dir;
                 $sess->asset_ids($asset_ids) if defined $asset_ids;
             } elsif (defined $asset_ids) {
