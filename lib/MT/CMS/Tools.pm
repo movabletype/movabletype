@@ -1122,7 +1122,7 @@ sub restore_result {
     my $app = shift;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id) || return;
-    return $app->json_result($sess->combine('progress', 'asset_ids', 'dialog_params', 'done'));
+    return $app->json_result($sess->combine('progress', 'asset_ids', 'dialog_params', 'error', 'done'));
 }
 
 sub backup {
@@ -1151,17 +1151,7 @@ sub insert_backup_job {
     my @blog_ids = split ',', $blog_ids;
     my $perms    = $app->permissions or return $app->permission_denied();
 
-    # Get all target blog_id when system administrator choose website.
-    if ($app->user->is_superuser) {
-        if (@blog_ids) {
-            my $blog_class = $app->model('blog');
-            for my $bid (@blog_ids) {
-                my $target = $blog_class->load($bid);
-                next if $target->is_blog;
-                push @blog_ids, map { $_->id } @{ $target->blogs };
-            }
-        }
-    } else {
+    if (!$app->user->is_superuser) {
         return $app->permission_denied() unless $perms->can_do('backup_blog');
 
         # Only System Administrator can do all backup.
@@ -1203,6 +1193,18 @@ sub backup_internal {
 
     require MT::Util::Log;
     MT::Util::Log::init();
+
+    # Get all target blog_id when system administrator choose website.
+    if ($app->user->is_superuser) {
+        if (@blog_ids) {
+            my $blog_class = $app->model('blog');
+            for my $bid (@blog_ids) {
+                my $target = $blog_class->load($bid);
+                next if $target->is_blog;
+                push @blog_ids, map { $_->id } @{ $target->blogs };
+            }
+        }
+    }
 
     my $size = $job_params->{'size_limit'} || 0;
     return $app->errtrans('[_1] is not a number.', encode_html($size)) if $size !~ /^\d+$/;
@@ -1498,10 +1500,12 @@ sub insert_restore_job {
 
 sub restore_internal {
     my ($job_params, $user_id) = @_;
+    require CGI;
     require MT::App;
     my $user = MT->model('author')->load($user_id);
     my $app  = MT::App->new or die MT->errstr;
     $app->user($user);
+    $app->{query} = CGI->new($job_params);
     local $MT::mt_inst = $app;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id);
@@ -1533,7 +1537,7 @@ sub restore_internal {
 
     my $return_error = sub {
         $app->request('__restore_in_progress', undef);
-        $sess->set_error($_[0]);
+        $sess->error($_[0]);
         return 1;
     };
 
@@ -1654,9 +1658,9 @@ sub restore_internal {
         }
     }
 
-    if ($error) {
-        $sess->set_error($error);
-    } elsif ($open_dialog) {
+    $sess->error($error) if $error;
+
+    if ($open_dialog) {
         my @q = (
             '__mode=dialog_adjust_sitepath',
             'blog_ids=' . $param_blog_ids,
@@ -2680,7 +2684,7 @@ sub restore_upload_manifest {
         my $error = $app->translate(
             "Manifest file '[_1]' is too large. Please use import directory for importing.",
             $file_next);
-        $sess->set_error($error);
+        $sess->error($error);
         return $app->json_error($error);
     }
     $sess->dialog_params($dialog_params);
