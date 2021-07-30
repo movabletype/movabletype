@@ -1128,8 +1128,7 @@ sub restore_result {
 sub backup {
     my $app = shift;
 
-    my $job = insert_backup_job($app);
-    return $job unless (ref $job && ref $job eq 'TheSchwartz::Job');
+    my $job = create_backup_job($app, scalar($app->param('background'))) || return;
 
     my $blog_id = $app->param('blog_id') || 0;
     $app->add_breadcrumb(
@@ -1137,11 +1136,16 @@ sub backup {
         $app->uri(mode => 'start_backup', args => { blog_id => $blog_id }));
     $app->add_breadcrumb($app->translate('Export'));
     my $param = {};
-    $app->build_page('include/backup_end.tmpl', $param);
+
+    $app->{no_print_body} = 1;
+    local $| = 1;
+    $app->send_http_header('text/html');
+    $app->print_encode($app->build_page('include/backup_end.tmpl', $param));
+    $job->() if ref($job) eq 'CODE';
 }
 
-sub insert_backup_job {
-    my $app = shift;
+sub create_backup_job {
+    my ($app, $background) = @_;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -1167,15 +1171,19 @@ sub insert_backup_job {
     require MT::BackupRestore::Session;
     MT::BackupRestore::Session->start($sess_name, $app->make_magic_token());
 
-    require MT::TheSchwartz;
-    require TheSchwartz::Job;
-    my $job = TheSchwartz::Job->new;
-    $job->funcname('MT::Worker::BackupRestore');
-    $job->uniqkey($sess_name);
-    $job->priority(5);
-    $job->arg([{ $app->param_hash }, $app->user->id]);
-    MT::TheSchwartz->insert($job);
-    return $job;
+    if ($background) {
+        require MT::TheSchwartz;
+        require TheSchwartz::Job;
+        my $job = TheSchwartz::Job->new;
+        $job->funcname('MT::Worker::BackupRestore');
+        $job->uniqkey($sess_name);
+        $job->priority(5);
+        $job->arg([{ $app->param_hash }, $app->user->id]);
+        MT::TheSchwartz->insert($job);
+        return $job;
+    } else {
+        return sub { backup_internal({$app->param_hash}, $app->user->id) };
+    }
 }
 
 sub backup_internal {

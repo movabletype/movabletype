@@ -83,6 +83,16 @@
       </select>
     </mtapp:setting>
 
+    <mtapp:setting
+        id="background_process"
+        label="<__trans phrase="Options">"
+        show_label="0">
+        <div class="custom-control custom-checkbox">
+            <input name="background" value="1" id="background_process" type="checkbox" class="custom-control-input">
+            <label class="custom-control-label" for="background_process"><__trans phrase="Process on background."></label>
+        </div>
+    </mtapp:setting>
+
     <mt:setvarblock name="action_buttons">
       <button
          type="submit"
