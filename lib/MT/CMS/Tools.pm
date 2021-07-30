@@ -1464,8 +1464,7 @@ sub backup_download {
 sub restore {
     my $app = shift;
 
-    my $job = insert_restore_job($app);
-    return $job unless (ref $job && ref $job eq 'TheSchwartz::Job');
+    my $job = create_restore_job($app, scalar($app->param('background'))) || return;
 
     $app->add_breadcrumb($app->translate('Import Sites'), $app->uri(mode => 'start_restore'));
     $app->add_breadcrumb($app->translate('Import'));
@@ -1473,11 +1472,16 @@ sub restore {
     my $param = { return_args => '__mode=dashboard' };
     $param->{system_overview_nav} = 1;
     $param->{nav_backup}          = 1;
-    $app->build_page('restore_end.tmpl', $param);
+
+    $app->{no_print_body} = 1;
+    local $| = 1;
+    $app->send_http_header('text/html');
+    $app->print_encode($app->build_page('restore_end.tmpl', $param));
+    $job->() if ref($job) eq 'CODE';
 }
 
-sub insert_restore_job {
-    my $app = shift;
+sub create_restore_job {
+    my ($app, $background) = @_;
 
     return $app->permission_denied() unless $app->can_do('restore_blog');
     $app->validate_magic() or return;
@@ -1495,15 +1499,19 @@ sub insert_restore_job {
         copy($fh, "$sess_dir/restore");
     }
 
-    require MT::TheSchwartz;
-    require TheSchwartz::Job;
-    my $job = TheSchwartz::Job->new;
-    $job->funcname('MT::Worker::BackupRestore');
-    $job->uniqkey($sess_name);
-    $job->priority(5);
-    $job->arg([{ $app->param_hash, file => $fh ? "$fh" : '' }, $app->user->id]);
-    MT::TheSchwartz->insert($job);
-    return $job;
+    if ($background) {
+        require MT::TheSchwartz;
+        require TheSchwartz::Job;
+        my $job = TheSchwartz::Job->new;
+        $job->funcname('MT::Worker::BackupRestore');
+        $job->uniqkey($sess_name);
+        $job->priority(5);
+        $job->arg([{ $app->param_hash, file => $fh ? "$fh" : '' }, $app->user->id]);
+        MT::TheSchwartz->insert($job);
+        return $job;
+    } else {
+        return sub { restore_internal({ $app->param_hash, file => $fh ? "$fh" : '' }, $app->user->id) };
+    }
 }
 
 sub restore_internal {
