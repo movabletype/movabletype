@@ -156,7 +156,7 @@ sub api_request_ok {
 
 sub json {
     my $self = shift;
-    return unless $self->{res} && $self->{res}->header('Content-Type') =~ /^application/json;/;
+    return unless $self->{res} && $self->{res}->header('Content-Type') =~ qr{^application/json;};
     return MT::Util::from_json($self->{content});
 }
 
