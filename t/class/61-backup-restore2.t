@@ -30,8 +30,8 @@ use MT::Worker::BackupRestore;
 {
     my $job;
     no warnings 'redefine';
-    my $insert_backup_job = \&MT::CMS::Tools::insert_backup_job;
-    *MT::CMS::Tools::insert_backup_job = sub { $job = $insert_backup_job->(@_) };
+    my $create_backup_job = \&MT::CMS::Tools::create_backup_job;
+    *MT::CMS::Tools::create_backup_job = sub { $job = $create_backup_job->(@_) };
     my $insert_restore_job = \&MT::CMS::Tools::insert_restore_job;
     *MT::CMS::Tools::insert_restore_job = sub { $job = $insert_restore_job->(@_) };
 
@@ -188,7 +188,7 @@ for my $props (@$test_cases) {
         $app->login(MT::Author->load($props->{author_id} || 1));
         $app->post_ok({
             __mode => 'backup', blog_id => $props->{blog_id}, backup_what => $props->{backup_what},
-            backup_archive_format => $props->{backup_archive_format}, size_limit => 0,
+            backup_archive_format => $props->{backup_archive_format}, size_limit => 0, background => 1,
         });
         is($app->page_title, 'Export Sites', 'right title');
 

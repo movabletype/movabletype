@@ -37,15 +37,7 @@ sub backup {
         my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
         local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[3]; $_backup_finisher->(@_) };
 
-        my $job = MT::CMS::Tools::insert_backup_job($app);
-
-        # TODO Implement non-blocking API
-        if (ref $job && ref $job eq 'TheSchwartz::Job') {
-            require MT::TheSchwartz;
-            my $client = MT::TheSchwartz->new();
-            $client->can_do('MT::Worker::BackupRestore');
-            $client->work_once($job);
-        }
+        MT::CMS::Tools::create_backup_job($app)->();
     }
 
     # Error.
