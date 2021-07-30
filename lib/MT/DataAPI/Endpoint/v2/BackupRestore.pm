@@ -170,15 +170,7 @@ sub restore {
         local *MT::App::print_encode              = sub { };
         local *MT::build_page                     = sub { $param = $_[2] };
 
-        my $job = MT::CMS::Tools::insert_restore_job($app);
-
-        # TODO Implement non-blocking API
-        if (ref $job && ref $job eq 'TheSchwartz::Job') {
-            require MT::TheSchwartz;
-            my $client = MT::TheSchwartz->new();
-            $client->can_do('MT::Worker::BackupRestore');
-            $client->work_once($job);
-        }
+        MT::CMS::Tools::create_restore_job($app)->();
     }
 
     # TODO: Implement adjust_sitepath process and upload_asset process..

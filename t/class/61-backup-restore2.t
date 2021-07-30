@@ -32,8 +32,8 @@ use MT::Worker::BackupRestore;
     no warnings 'redefine';
     my $create_backup_job = \&MT::CMS::Tools::create_backup_job;
     *MT::CMS::Tools::create_backup_job = sub { $job = $create_backup_job->(@_) };
-    my $insert_restore_job = \&MT::CMS::Tools::insert_restore_job;
-    *MT::CMS::Tools::insert_restore_job = sub { $job = $insert_restore_job->(@_) };
+    my $create_restore_job = \&MT::CMS::Tools::create_restore_job;
+    *MT::CMS::Tools::create_restore_job = sub { $job = $create_restore_job->(@_) };
 
     my $client = MT::TheSchwartz->new();
     $client->can_do('MT::Worker::BackupRestore');
@@ -212,7 +212,7 @@ for my $props (@$test_cases) {
 
         # Upload is only allowed for super user
         $app->login(MT::Author->load(1));
-        $app->post_ok({ __mode => 'restore', __test_upload => ['file', $path] });
+        $app->post_ok({ __mode => 'restore', background => 1, __test_upload => ['file', $path] });
 
         _run_latest_job();
 
