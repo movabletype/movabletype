@@ -15,6 +15,7 @@ BEGIN {
 use MT;
 use MT::Test;
 use MT::Test::App;
+use MT::Test::Permission;
 use MT::CMS::Tools;
 use Data::Dumper;
 use MT::Author;
@@ -179,6 +180,28 @@ my $test_cases = [
         file_convert                 => sub { get_manifest_from_zip(@_) },
         expected_dialog_param        => qr{__mode=dialog_restore_upload&start=1&files=&assets=&current_file=Movable_Type-(.+)-Export.xml&last=1&schema_version=(.+)&overwrite_templates=0&redirect=1},
     },
+    {
+        name            => 'Backup by non-super user',
+        prepare_fixture => sub {
+            require MT::Role;
+            require MT::Association;
+            $test_env->prepare_fixture('cms/common1');
+            my $aikawa     = MT::Test::Permission->make_author(name => 'aikawa', nickname => 'Ichiro Aikawa');
+            my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
+            my $site       = MT::Blog->load(1);
+            MT::Association->link($aikawa => $site_admin => $site);
+        },
+        author_id                    => 2,
+        blog_id                      => '1',
+        backup_what                  => '1',
+        backup_archive_format        => 'zip',
+        local_filename               => 'test.zip',
+        expected_mime                => qr{^application/zip;},
+        expected_content_disposition => qr{attachment; filename="Movable_Type-(.+)-Export.zip},
+        assert_progress              => 10,
+        expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
+        expect_blog_added            => 4,
+    },
 ];
 
 for my $props (@$test_cases) {
@@ -201,7 +224,7 @@ for my $props (@$test_cases) {
         my $filename = $json->{result}->{urls}->[0]->{filename};
         ok($filename, 'filename is given');
 
-        $app->post_ok({ __mode => 'backup_download', filename => $filename });
+        $app->post_ok({ __mode => 'backup_download', blog_id => $props->{blog_id}, filename => $filename });
         my $res = $app->{res};
         is $res->code, 200, 'right status';
         like $res->header('content-type'),        $props->{expected_mime},                'right content-type';
