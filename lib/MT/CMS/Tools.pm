@@ -1115,14 +1115,17 @@ sub backup_result {
     my $app = shift;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id) || return;
-    return $app->json_result($sess->combine('progress', 'urls', 'done'));
+    return $app->json_result({ progress => $sess->get_offset_progress, urls => $sess->urls, done => $sess->done });
 }
 
 sub restore_result {
     my $app = shift;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id) || return;
-    return $app->json_result($sess->combine('progress', 'asset_ids', 'dialog_params', 'error', 'done'));
+    return $app->json_result({
+        progress => $sess->get_offset_progress, asset_ids => $sess->asset_ids,
+        dialog_params => $sess->dialog_params, error => $sess->error, done => $sess->done
+    });
 }
 
 sub backup {

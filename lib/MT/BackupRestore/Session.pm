@@ -48,17 +48,21 @@ sub sess {
     return $self->{sess};
 }
 
-sub combine {
-    my ($self, @fields) = @_;
-    $self = $self->load;
-    return { map { $_ => $self->sess->get($_) } @fields };
+sub get_offset_progress {
+    my ($self)  = @_;
+    my $all     = $self->get('progress');
+    my $offset  = $self->get('progress_offset') || 0;
+    my $offset2 = scalar(@$all);
+    $self->sess->set('progress_offset', $offset2);
+    $self->sess->save;
+    return [@$all[$offset .. ($offset2 - 1)]];
 }
 
 sub progress {
     my ($self, $progress, $append) = @_;
     if (defined($progress)) {
         die '$progress must be an ARRAY ref' unless (ref $progress && ref $progress eq 'ARRAY');
-        my $array = [$progress] unless (ref $progress->[0]);
+        my $array = (ref $progress->[0]) ? $progress : [$progress];
         $self = $self->load;
         my $loaded = $self->sess->get('progress');
         @$loaded = () unless $append;
