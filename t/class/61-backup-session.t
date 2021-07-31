@@ -20,6 +20,7 @@ my $sess = MT::BackupRestore::Session->start('name', 'id');
 is(ref $sess->sess, 'MT::Session', 'right class');
 
 subtest 'progress' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
     $sess->progress(['msg1'], 1);
     is(@{ $sess->progress }, 1, 'right number');
 
@@ -41,9 +42,29 @@ subtest 'progress' => sub {
     $sess->progress(['msg5', 'id2'], 1);
     $progress = $sess->progress;
     is_deeply($progress, [{ 'message' => 'msg4', id => 'id' }, { 'message' => 'msg5', id => 'id2' }], 'right structure');
+
+    $sess->progress([['msg6'],['msg7']]);
+    $progress = $sess->progress;
+    is_deeply($progress, [{ 'message' => 'msg6' }, { 'message' => 'msg7' }], 'right structure');
+};
+
+subtest 'get_offset_progress' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
+    $sess->progress([['a'], ['b'], ['c']]);
+    is_deeply(
+        $sess->get_offset_progress,
+        [{ message => 'a' }, { message => 'b' }, { message => 'c' }], 'right offset data'
+    );
+    $sess->progress([['d'], ['e'], ['f']], 1);
+    is_deeply(
+        $sess->get_offset_progress,
+        [{ message => 'd' }, { message => 'e' }, { message => 'f' }], 'right offset data'
+    );
+    is_deeply($sess->get_offset_progress, [], 'right offset data');
 };
 
 subtest 'urls' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
     my $urls;
     $sess->urls(['http://example.com/1']);
     $urls = $sess->urls;
@@ -56,6 +77,7 @@ subtest 'urls' => sub {
 };
 
 subtest 'file' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
     $sess->file('1.png');
     is_deeply($sess->file, { '1.png' => 1 }, 'file registered');
     $sess->file('2.png');
@@ -65,6 +87,7 @@ subtest 'file' => sub {
 };
 
 subtest 'asset_ids' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
     my $asset_ids;
     $sess->asset_ids(['asset1']);
     $asset_ids = $sess->asset_ids;
@@ -77,6 +100,7 @@ subtest 'asset_ids' => sub {
 };
 
 subtest 'dir' => sub {
+    my $sess = MT::BackupRestore::Session->start('name', 'id');
     $sess->dir('/path/to/dir1');
     my $dir1 = $sess->dir;
     is($dir1, '/path/to/dir1', 'right path');

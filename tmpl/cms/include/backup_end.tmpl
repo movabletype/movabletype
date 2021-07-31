@@ -60,7 +60,6 @@
 
 <script>
 (function($){
-    var progress_pointer = 0;
     var progress = $(".progress-log");
     var tid = setInterval(function(){
         $.ajax({
@@ -69,7 +68,7 @@
             dataType: 'json'
         }).done(function(json) {
             var data = json.result;
-            data.progress.slice(progress_pointer).forEach(function(e, i){
+            data.progress.forEach(function(e, i){
                 var div = e.id ? progress.find(".id" + e.id) : null;
                 if (div && div.length) {
                     div.text(e.message);
@@ -81,7 +80,6 @@
                     progress.append(div2);
                 }
             });
-            progress_pointer = data.progress.length;
 
             if (data.done == '1') {
                 clearInterval(tid);
