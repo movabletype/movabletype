@@ -43,6 +43,7 @@
             <form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
                 <input type="hidden" name="__mode" value="backup_download" />
                 <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+                <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="js">" />
                 <input type="hidden" name="filename" value="" />
             </form>
             <p id="download_message">
