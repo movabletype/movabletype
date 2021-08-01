@@ -27,8 +27,6 @@ use MT::Test::Fixture;
 use MT::Test::Selenium;
 use Selenium::Waiter;
 
-plan skip_all => "set EXTENDED_TESTING=1 to enable this test" unless $ENV{EXTENDED_TESTING};
-
 $test_env->prepare_fixture('db_data');
 
 my $s      = MT::Test::Selenium->new($test_env);
