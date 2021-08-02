@@ -1246,11 +1246,14 @@ sub backup {
     $app->print_encode(
         $app->build_page( 'include/backup_start.tmpl', $param ) );
 
+    my $progress = sub { _progress( $app, @_ ); };
+
     _backup(
         blog_ids => \@blog_ids,
         size => $size,
         archive => $archive,
         enc => $enc,
+        progress => $progress,
     );
 }
 
@@ -1260,6 +1263,7 @@ sub _backup {
     my $size = $args{size};
     my $archive = $args{archive};
     my $enc = $args{enc};
+    my $progress = $args{progress} || sub { };
 
     require File::Temp;
     require File::Spec;
@@ -1278,7 +1282,6 @@ sub _backup {
     my $printer;
     my $splitter;
     my $finisher;
-    my $progress = sub { _progress( $app, @_ ); };
     my $fh;
     my $fname;
     my $arc_buf;
