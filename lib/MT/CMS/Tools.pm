@@ -1197,6 +1197,7 @@ sub backup {
             archive => $archive,
             enc => $enc,
             user_id => $app->user->id,
+            app_uri => $app->uri,
         );
         require MT::TheSchwartz;
         require TheSchwartz::Job;
