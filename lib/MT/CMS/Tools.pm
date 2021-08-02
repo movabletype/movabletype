@@ -1254,6 +1254,9 @@ sub backup {
         archive => $archive,
         enc => $enc,
         progress => $progress,
+        user => $app->user,
+        app_uri => $app->uri,
+        magic_token => $app->current_magic,
     );
 }
 
@@ -1264,6 +1267,9 @@ sub _backup {
     my $archive = $args{archive};
     my $enc = $args{enc};
     my $progress = $args{progress} || sub { };
+    my $user = $args{user};
+    my $app_uri = $args{app_uri};
+    my $magic_token = $args{magic_token};
 
     require File::Temp;
     require File::Spec;
@@ -1340,9 +1346,9 @@ sub _backup {
         my $filename = File::Spec->catfile( $temp_dir, $file . "-1.xml" );
         $fh = gensym();
         open $fh, ">", $filename or die "Couldn't open $filename: $!";
-        my $url = $app->uri . "?__mode=backup_download&name=$file-1.xml";
-        $url .= "&magic_token=" . $app->current_magic
-            if defined( $app->current_magic );
+        my $url = $app_uri . "?__mode=backup_download&name=$file-1.xml";
+        $url .= "&magic_token=" . $magic_token
+            if defined( $magic_token );
         $url .= "&blog_id=$blog_id" if defined($blog_id);
         push @files,
             {
@@ -1367,10 +1373,10 @@ sub _backup {
             $fh = gensym();
             open $fh, ">", $filename or die "Couldn't open $filename: $!";
             my $url
-                = $app->uri
+                = $app_uri
                 . "?__mode=backup_download&name=$file-$findex.xml";
-            $url .= "&magic_token=" . $app->current_magic
-                if defined( $app->current_magic );
+            $url .= "&magic_token=" . $magic_token
+                if defined( $magic_token );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1425,11 +1431,11 @@ sub _backup {
                     . $id
                     . "' />\n";
                 my $url
-                    = $app->uri
+                    = $app_uri
                     . "?__mode=backup_download&assetname="
                     . MT::Util::encode_url($name);
-                $url .= "&magic_token=" . $app->current_magic
-                    if defined( $app->current_magic );
+                $url .= "&magic_token=" . $magic_token
+                    if defined( $magic_token );
                 $url .= "&blog_id=$blog_id" if defined($blog_id);
                 push @files,
                     {
@@ -1440,9 +1446,9 @@ sub _backup {
             print $fh "</manifest>\n";
             close $fh;
             my $url
-                = $app->uri . "?__mode=backup_download&name=$file.manifest";
-            $url .= "&magic_token=" . $app->current_magic
-                if defined( $app->current_magic );
+                = $app_uri . "?__mode=backup_download&name=$file.manifest";
+            $url .= "&magic_token=" . $magic_token
+                if defined( $magic_token );
             $url .= "&blog_id=$blog_id" if defined($blog_id);
             push @files,
                 {
@@ -1488,8 +1494,8 @@ sub _backup {
 
     my @tsnow    = gmtime(time);
     my $metadata = {
-        backup_by => MT::Util::encode_xml( $app->user->name, 1 ) . '(ID: '
-            . $app->user->id . ')',
+        backup_by => MT::Util::encode_xml( $user->name, 1 ) . '(ID: '
+            . $user->id . ')',
         backup_on => sprintf(
             "%04d-%02d-%02dT%02d:%02d:%02d",
             $tsnow[5] + 1900,
