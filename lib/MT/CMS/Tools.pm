@@ -1315,7 +1315,7 @@ sub _backup {
             $finisher = sub {
                 my ($asset_files) = @_;
                 close $fh;
-                _backup_finisher( $app, $fname, $param );
+                _backup_finisher( $fname, $param, $user );
             };
         }
         else {    # archive/compress files
@@ -1344,7 +1344,7 @@ sub _backup {
                     "$file.manifest"
                 );
                 $arc->close;
-                _backup_finisher( $app, $fname, $param );
+                _backup_finisher( $fname, $param, $user );
             };
         }
     }
@@ -1473,7 +1473,7 @@ sub _backup {
                 $param->{files_loop} = \@files;
                 $param->{tempdir}    = $temp_dir;
                 my @fnames = map { $_->{filename} } @files;
-                _backup_finisher( $app, \@fnames, $param );
+                _backup_finisher( \@fnames, $param, $user );
             }
             else {
                 my ( $fh_arc, $filepath )
@@ -1494,7 +1494,7 @@ sub _backup {
                 for my $f (@files) {
                     unlink File::Spec->catfile( $temp_dir, $f->{filename} );
                 }
-                _backup_finisher( $app, $fname, $param );
+                _backup_finisher( $fname, $param, $user );
             }
         };
     }
@@ -1522,7 +1522,7 @@ sub _backup {
         # Abnormal end
         $param->{error} = $@;
         close $fh;
-        _backup_finisher( $app, $fname, $param );
+        _backup_finisher( $fname, $param, $user );
     }
 
     MT::Util::Log->info('=== End   export.');
@@ -3119,8 +3119,7 @@ sub restore_upload_manifest {
 }
 
 sub _backup_finisher {
-    my $app = shift;
-    my ( $fnames, $param ) = @_;
+    my ( $fnames, $param, $user ) = @_;
     unless ( ref $fnames ) {
         $fnames = [$fnames];
     }
@@ -3140,18 +3139,18 @@ sub _backup_finisher {
     }
     my $message;
     if ( my $blog_id = $param->{blog_id} || $param->{blog_ids} ) {
-        $message = $app->translate(
+        $message = MT->translate(
             "Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'",
-            $blog_id, $app->user->name
+            $blog_id, $user->name
         );
     }
     else {
         $message
-            = $app->translate(
+            = MT->translate(
             "Movable Type system was successfully exported by user '[_1]'",
-            $app->user->name );
+            $user->name );
     }
-    $app->log(
+    MT->log(
         {   message  => $message,
             level    => MT::Log::INFO(),
             class    => 'system',
