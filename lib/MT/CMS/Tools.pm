@@ -1151,11 +1151,6 @@ sub backup {
     my $blog_ids = $app->param('backup_what') || '';
     my @blog_ids = split ',', $blog_ids;
 
-    require MT::Util::Log;
-    MT::Util::Log::init();
-
-    MT::Util::Log->info('=== Start export.');
-
     if ( $user->is_superuser ) {
 
         # Get all target blog_id when system administrator choose website.
@@ -1298,6 +1293,11 @@ sub _backup {
     my $fh;
     my $fname;
     my $arc_buf;
+
+    require MT::Util::Log;
+    MT::Util::Log::init();
+
+    MT::Util::Log->info('=== Start export.');
 
     if ( !( $size || $num_assets ) ) {
         $splitter = sub { };
