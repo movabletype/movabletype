@@ -13,6 +13,15 @@
   </mtapp:statusmsg>
 </mt:if>
 
+<mt:if name="inserted_job">
+  <mtapp:statusmsg
+     id="inserted_job"
+     class="alert"
+     can_close="0">
+    <__trans phrase="Backup job is inserted">
+  </mtapp:statusmsg>
+</mt:if>
+
 <div id="backup-panel">
   <form method="post" action="<mt:var name="script_url">">
     <input type="hidden" name="__mode" value="backup" />

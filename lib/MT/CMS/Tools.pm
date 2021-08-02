@@ -1079,6 +1079,7 @@ sub start_backup {
         $app->add_breadcrumb( $app->translate('Export Sites') );
     }
     $param{system_overview_nav} = 1 unless $blog_id;
+    $param{inserted_job} = 1 if $app->param('inserted_job');
     $param{nav_backup} = 1;
     require MT::Util::Archive;
     my @formats = MT::Util::Archive->available_formats();
@@ -1198,6 +1199,32 @@ sub backup {
         $ts[4] + 1,
         @ts[ 3, 2, 1, 0 ];
     my $file = "Movable_Type-$ts" . '-Export';
+
+    if ($app->param('background')) {
+        my %arg = (
+            blog_ids => \@blog_ids,
+            size => $size,
+            archive => $archive,
+            enc => $enc,
+        );
+        require MT::TheSchwartz;
+        require TheSchwartz::Job;
+        my $job = TheSchwartz::Job->new;
+        $job->funcname('MT::Worker::Backup');
+        $job->run_after(time);
+        $job->priority(5);
+        $job->arg(JSON->new->encode(\%arg));
+        MT::TheSchwartz->insert($job);
+        return $app->redirect(
+            $app->uri(
+                mode => 'start_backup',
+                args => {
+                    blog_id => $blog_id,
+                    inserted_job => 1,
+                },
+            )
+        );
+    }
 
     my $param = { return_args => '__mode=start_backup' };
     $app->{no_print_body} = 1;
