@@ -1245,6 +1245,22 @@ sub backup {
     $app->send_http_header('text/html');
     $app->print_encode(
         $app->build_page( 'include/backup_start.tmpl', $param ) );
+
+    _backup(
+        blog_ids => \@blog_ids,
+        size => $size,
+        archive => $archive,
+        enc => $enc,
+    );
+}
+
+sub _backup {
+    my %args = @_;
+    my @blog_ids = @{$args{blog_ids}};
+    my $size = $args{size};
+    my $archive = $args{archive};
+    my $enc = $args{enc};
+
     require File::Temp;
     require File::Spec;
     use File::Copy;
