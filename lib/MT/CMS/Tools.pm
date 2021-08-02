@@ -1250,6 +1250,7 @@ sub backup {
 
     _backup(
         blog_ids => \@blog_ids,
+        blog_id => $blog_id,
         size => $size,
         archive => $archive,
         enc => $enc,
@@ -1263,6 +1264,7 @@ sub backup {
 sub _backup {
     my %args = @_;
     my @blog_ids = @{$args{blog_ids}};
+    my $blog_id = $args{blog_id};
     my $size = $args{size};
     my $archive = $args{archive};
     my $enc = $args{enc};
