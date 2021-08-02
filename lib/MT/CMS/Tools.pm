@@ -1268,7 +1268,7 @@ sub _backup {
     require File::Temp;
     require File::Spec;
     use File::Copy;
-    my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     $fmgr->mkpath($temp_dir) unless -d $temp_dir;
@@ -1278,7 +1278,7 @@ sub _backup {
         = @blog_ids ? { class => '*', blog_id => [ [0], @blog_ids ] }
         : $blog_id ? { class => '*', blog_id => [ 0, $blog_id ] }
         :            { class => '*' };
-    my $num_assets = $app->model('asset')->count($count_term);
+    my $num_assets = MT->model('asset')->count($count_term);
     my $printer;
     my $splitter;
     my $finisher;
@@ -1404,8 +1404,8 @@ sub _backup {
                     )
                     )
                 {
-                    $app->log(
-                        {   message => $app->translate(
+                    MT->log(
+                        {   message => MT->translate(
                                 'Copying file [_1] to [_2] failed: [_3]',
                                 $asset_files->{$id}->[1],
                                 $tmp, $!
@@ -1497,7 +1497,7 @@ sub _backup {
             @tsnow[ 3, 2, 1, 0 ]
         ),
         backup_what    => join( ',', @blog_ids ),
-        schema_version => $app->config('SchemaVersion'),
+        schema_version => MT->config('SchemaVersion'),
     };
     eval {
         MT::BackupRestore->backup( \@blog_ids, $printer, $splitter, $finisher,
