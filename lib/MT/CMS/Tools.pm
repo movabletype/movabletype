@@ -1189,11 +1189,6 @@ sub backup {
 
     my $archive = $app->param('backup_archive_format');
     my $enc     = $app->charset || 'utf-8';
-    my @ts      = gmtime(time);
-    my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
-        $ts[4] + 1,
-        @ts[ 3, 2, 1, 0 ];
-    my $file = "Movable_Type-$ts" . '-Export';
 
     if ($app->param('background')) {
         my %arg = (
@@ -1272,6 +1267,12 @@ sub _backup {
     my $app_uri = $args{app_uri};
     my $magic_token = $args{magic_token};
     my $param = $args{param};
+
+    my @ts      = gmtime(time);
+    my $ts      = sprintf "%04d-%02d-%02d-%02d-%02d-%02d", $ts[5] + 1900,
+        $ts[4] + 1,
+        @ts[ 3, 2, 1, 0 ];
+    my $file = "Movable_Type-$ts" . '-Export';
 
     require File::Temp;
     require File::Spec;
