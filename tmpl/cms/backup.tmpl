@@ -110,6 +110,25 @@
          class="action primary button btn btn-primary">
         <__trans phrase="Export">
       </button>
+
+      <mt:if name="files_loop">
+        <p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
+        <h2><__trans phrase="Export Files"></h2>
+        <ul id="backup-files">
+        <mt:loop name="files_loop">
+          <li class="list-item">
+          <mt:if name="url">
+            <a href="<mt:var name="url">" target="<__trans phrase="_external_link_target">" title="<__trans phrase="Download This File">">
+              <__trans phrase="Download: [_1]" params="<mt:var name="filename">">
+            </a>
+          <mt:else>
+            <mt:var name="filename">
+          </mt:if>
+          </li>
+        </mt:loop>
+        </ul>
+      </mt:if>
+
     </mt:setvarblock>
     <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
   </form>

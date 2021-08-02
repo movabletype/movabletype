@@ -1080,6 +1080,23 @@ sub start_backup {
     }
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{inserted_job} = 1 if $app->param('inserted_job');
+
+    my @sessions = MT::Session->load({ kind => 'BU' });
+    if (@sessions) {
+        my @files;
+        for my $session (@sessions) {
+            my $name = $session->name;
+            my $url = $app->uri . "?__mode=backup_download&assetname=" . MT::Util::encode_url($name);
+            $url .= "&magic_token=" . $app->current_magic if defined( $app->current_magic );
+            $url .= "&blog_id=$blog_id" if defined($blog_id);
+            push @files, {
+                url => $url,
+                filename => $name,
+            };
+        }
+        $param{files_loop} = \@files;
+    }
+
     $param{nav_backup} = 1;
     require MT::Util::Archive;
     my @formats = MT::Util::Archive->available_formats();
