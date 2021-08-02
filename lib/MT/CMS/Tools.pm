@@ -3129,9 +3129,10 @@ sub _backup_finisher {
         unless $param->{error};
     require MT::Session;
     MT::Session->remove( { kind => 'BU' } );
+    require MT::Util::UniqueID;
     foreach my $fname (@$fnames) {
         my $sess = MT::Session->new;
-        $sess->id( $app->make_magic_token() );
+        $sess->id(MT::Util::UniqueID::create_session_id());
         $sess->kind('BU');    # BU == Backup
         $sess->name($fname);
         $sess->start(time);
