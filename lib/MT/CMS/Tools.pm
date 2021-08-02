@@ -1260,6 +1260,9 @@ sub backup {
         magic_token => $app->current_magic,
         param => $param,
     );
+
+    $app->print_encode(
+        $app->build_page( 'include/backup_end.tmpl', $param ) );
 }
 
 sub _backup {
@@ -3154,8 +3157,6 @@ sub _backup_finisher {
             category => 'restore'
         }
     );
-    $app->print_encode(
-        $app->build_page( 'include/backup_end.tmpl', $param ) );
 }
 
 sub _progress {
