@@ -1258,6 +1258,7 @@ sub backup {
         user => $app->user,
         app_uri => $app->uri,
         magic_token => $app->current_magic,
+        param => $param,
     );
 }
 
@@ -1272,6 +1273,7 @@ sub _backup {
     my $user = $args{user};
     my $app_uri = $args{app_uri};
     my $magic_token = $args{magic_token};
+    my $param = $args{param};
 
     require File::Temp;
     require File::Spec;
