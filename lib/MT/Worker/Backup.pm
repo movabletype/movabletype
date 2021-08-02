@@ -22,6 +22,7 @@ sub work {
     my $mt = MT->instance;
 
     my $param = JSON->new->decode($job->arg);
+    $param->{user} = MT->model('author')->load($param->{user_id});
     $param->{background} = 1;
     MT::CMS::Tools::_backup(%$param);
 
