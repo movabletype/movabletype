@@ -2321,6 +2321,18 @@ sub core_menus {
             },
             view => [qw( system website blog )],
         },
+        'tools:ts_job' => {
+            label     => "Background Job",
+            order     => 700,
+            mode      => 'list',
+            args      => { _type => 'ts_job' },
+            condition => sub {
+                return 0 unless $app->config->ShowTsJob;
+                return 1 if $app->user->is_superuser;
+                return 0;
+            },
+            view => ['system'],
+        },
 
         'category_set:manage' => {
             label      => 'Manage',
