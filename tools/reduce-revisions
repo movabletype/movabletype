@@ -35,7 +35,7 @@ while (my $site = $site_iter->()) {
 
     for my $ds (keys %target) {
 
-        my $model     = MT->model($ds);
+        my $model     = MT->model($ds) or next;
         my $col       = 'max_revisions_' . $ds;
         my $max       = $site->$col || $MT::Revisable::MAX_REVISIONS;
         my $rev_class = MT->model($ds . ':revision');
