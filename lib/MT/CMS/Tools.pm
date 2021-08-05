@@ -8,6 +8,7 @@ package MT::CMS::Tools;
 use strict;
 use warnings;
 use Symbol;
+use File::Copy;
 
 use MT::I18N qw( wrap_text );
 use MT::Util
@@ -1172,7 +1173,9 @@ sub create_backup_job {
     my $sess_name = 'backup:' . $app->user->id;
 
     require MT::BackupRestore::Session;
-    MT::BackupRestore::Session->start($sess_name, $app->make_magic_token());
+    my $sess = MT::BackupRestore::Session->start($sess_name, $app->make_magic_token());
+    $sess->dir(File::Spec->catdir(($app->config('ExportTempDir') || $app->config('TempDir')), $sess_name))
+        or $app->json_error($app->translate('Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.'));
 
     my %additional_params = (
         enc => $app->charset || 'utf-8',
@@ -1230,11 +1233,7 @@ sub backup_internal {
     $param->{blog_ids}    = $blog_ids if $blog_ids;
 
     require File::Spec;
-    use File::Copy;
-    my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
-    require MT::FileMgr;
-    my $fmgr = MT::FileMgr->new('Local');
-    $fmgr->mkpath($temp_dir) unless -d $temp_dir;
+    my $temp_dir = $sess->dir;
 
     require MT::BackupRestore;
     my $count_term =
@@ -1401,12 +1400,12 @@ sub backup_download {
         my $perms = $app->permissions;
         return $app->permission_denied() unless defined($perms) && $perms->can_do('backup_download');
     }
-    my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
 
     $app->{hide_goback_button} = 1;
 
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
+    my $temp_dir = $sess->dir;
 
     my $filename = $app->param('filename') or return $app->errtrans("Specified file was not found.");
     $filename = $sess->check_file($filename) or return $app->errtrans("Specified file was not found.");
