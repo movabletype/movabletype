@@ -103,8 +103,7 @@ sub file {
 sub check_file {
     my ($self, $fname) = @_;
     $self = $self->load;
-    delete $self->sess->get('files')->{$fname} or return;    # only one time available
-    $self->sess->save;
+    return unless $self->sess->get('files')->{$fname};
     return $fname;
 }
 

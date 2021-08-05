@@ -1462,7 +1462,6 @@ sub backup_download {
             class    => 'system',
             category => 'restore'
         });
-        MT::FileMgr::Local->delete($fname);
     } else {
         $app->errtrans('Specified file was not found.');
     }

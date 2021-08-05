@@ -83,7 +83,6 @@ subtest 'file' => sub {
     $sess->file('2.png');
     is_deeply($sess->file, { '1.png' => 1, '2.png' => 1 }, 'right structure');
     is($sess->check_file('1.png'), '1.png', 'file registered');
-    is($sess->check_file('1.png'), undef,   'file unregistered');
 };
 
 subtest 'asset_ids' => sub {
