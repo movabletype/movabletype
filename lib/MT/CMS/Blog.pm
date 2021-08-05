@@ -3266,7 +3266,7 @@ sub clone {
             $base_url = $raw_site_url[0];
         }
         $param->{site_url}        = $base_url;
-        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain} && $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
             my $base_archive_url;

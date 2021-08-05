@@ -401,6 +401,7 @@ use_ok('MT::Theme::Entry');
 use_ok('MT::Theme::Pref');
 use_ok('MT::Theme::StaticFiles');
 use_ok('MT::Theme::TemplateSet');
+use_ok('MT::version');
 
 # Lockout
 use_ok('MT::FailedLogin');
