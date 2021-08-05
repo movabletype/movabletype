@@ -1262,7 +1262,7 @@ sub backup_internal {
                 my ($sess, $asset_files) = @_;
                 close $fh;
                 _backup_finisher($sess, $basename, $param, $user);
-                $sess->urls([{ filename => $basename }], 1);
+                $sess->urls([{ url => _download_url($blog_id, $basename), filename => $basename }], 1);
             };
         } else {    # archive/compress files
             my $arc_buf;
@@ -1283,7 +1283,7 @@ sub backup_internal {
                 );
                 $arc->close;
                 _backup_finisher($sess, $basename, $param, $user);
-                $sess->urls([{ filename => $basename }], 1);
+                $sess->urls([{ url => _download_url($blog_id, $basename), filename => $basename }], 1);
             };
         }
     } else {
@@ -1358,7 +1358,7 @@ sub backup_internal {
                 # for safery, don't unlink before closing $arc here.
                 unlink File::Spec->catfile($temp_dir, $_->{filename}) for @files;
                 _backup_finisher($sess, $basename, $param, $user);
-                $sess->urls([{ filename => $basename }], 1);
+                $sess->urls([{ url => _download_url($blog_id, $basename), filename => $basename }], 1);
             }
         };
     }

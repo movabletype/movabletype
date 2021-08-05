@@ -5001,7 +5001,6 @@ réessayer plus tard.',
 	'Export Files' => 'Exporter les fichiers',
 	'_BACKUP_TEMPDIR_WARNING' => 'Les données demandées ont été sauvegardées avec succès dans le répertoire [_1]. Assurez-vous que vous téléchargez  <strong>puis supprimez</ strong> les fichiers mentionnés ci-dessus à partir de [_1] <strong>immédiatement</ strong> car les fichiers de sauvegarde contiennent des informations sensibles.',
 	q{An error occurred during the export process: [_1]} => q{Une erreur est survenue lors de l'export : [_1]},
-	q{_BACKUP_DOWNLOAD_MESSAGE} => q{Le téléchargement du fichier de sauvegarde démarre automatiquement en quelques secondes. Si ce n'est pas le cas, <a href="javascript:(void)" onclick="submit_form()">cliquez  ici</ a> pour commencer à télécharger manuellement. Notez que vous pouvez télécharger le fichier de sauvegarde une seule fois par session.},
 
 ## tmpl/cms/include/backup_start.tmpl
 	'Exporting Movable Type' => 'Export de Movable Type',

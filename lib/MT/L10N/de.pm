@@ -5000,7 +5000,6 @@ itte versuchen Sie es später erneut.',
 	'Download This File' => 'Diese Datei herunterladen',
 	'Download: [_1]' => 'Herunterladen: [_1]',
 	'Export Files' => 'Dateien exportieren',
-	'_BACKUP_DOWNLOAD_MESSAGE' => 'Der Download der Sicherungsdatei wird in einigen Sekunden automatisch beginnen. Sollte das nicht der Fall sein, klicken Sie <a href="javascript:(void)" onclick="submit_form()">hier</a> um den Download manuell zu starten. Pro Sitzung kann eine Sicherungsdatei nur einmal heruntergeladen werden.',
 	'_BACKUP_TEMPDIR_WARNING' => 'Gewünschte Daten erfolgreich im Ordner [_1] gesichert. Bitte laden Sie die angegebenen Dateien <strong>sofort</strong> aus [_1] herunter und <strong>löschen</strong> Sie sie unmittelbar danach aus dem Ordner, da sie sensible Informationen enthalten.',
 
 ## tmpl/cms/include/backup_start.tmpl

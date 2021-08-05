@@ -39,15 +39,6 @@
                 <ul id="backup-files">
                 </ul>
             </div>
-            <form name="file_download" id="file_download" method="POST" action="<mt:var name="script_url">">
-                <input type="hidden" name="__mode" value="backup_download" />
-                <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-                <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="js">" />
-                <input type="hidden" name="filename" value="" />
-            </form>
-            <p id="download_message">
-                <strong><__trans phrase="_BACKUP_DOWNLOAD_MESSAGE"></strong>
-            </p>
         </div>
         <div class="result error hidden">
             <p>
@@ -84,22 +75,16 @@
                 clearInterval(tid);
                 $("#progressbar").addClass('hidden');
                 $(".result.success").removeClass('hidden');
-                if (data.urls.length == 1 && !data.urls[0].hasOwnProperty('url')) {
-                    $("#download_message").addClass('hidden');
-                    $("#file_download [name=filename]").attr("value", data.urls[0].filename);
-                    $("#file_download").submit();
-                } else {
-                    $(".files").removeClass('hidden');
-                    data.urls.forEach(function(e, i){
-                        var a = $("<a/>").attr({
-                            "target" : "<__trans phrase="_external_link_target" escape="js">",
-                            "href"   : '<mt:var name="script_url" escape="js">?' + e.url,
-                            "title"  : "<__trans phrase="Download This File" escape="js">"
-                        }).text(e.filename);
-                        var li = $("<li/>").append(a).addClass('list-item');
-                        $("#backup-files").append(li);
-                    });
-                }
+                $(".files").removeClass('hidden');
+                data.urls.forEach(function(e, i){
+                    var a = $("<a/>").attr({
+                        "target" : "<__trans phrase="_external_link_target" escape="js">",
+                        "href"   : '<mt:var name="script_url" escape="js">?' + e.url,
+                        "title"  : "<__trans phrase="Download This File" escape="js">"
+                    }).text(e.filename);
+                    var li = $("<li/>").append(a).addClass('list-item');
+                    $("#backup-files").append(li);
+                });
             }
         }).fail(function(jqXHR, textStatus, errorThrown){
             console.error(jqXHR, textStatus, errorThrown);
