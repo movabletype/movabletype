@@ -1223,12 +1223,12 @@ sub backup_internal {
     my $size    = $job_params->{'size_limit'} || 0;
     my $archive = $job_params->{'backup_archive_format'};
     my $file    = _backup_filename($sess->sess->start);
+    my $extensions = {'zip' => '.zip', 'tgz' => '.tar.gz'};
 
     my $param = {};
     $param->{blog_id}     = $blog_id  if $blog_id;
     $param->{blog_ids}    = $blog_ids if $blog_ids;
 
-    require File::Temp;
     require File::Spec;
     use File::Copy;
     my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
@@ -1251,9 +1251,9 @@ sub backup_internal {
         $splitter = sub { };
 
         if (!$archive) {
-            my ($fh, $filepath) = File::Temp::tempfile('xml.XXXXXXXX', DIR => $temp_dir);
-            binmode $fh, ":encoding(utf8)";
-            my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
+            my $basename = "$file.xml";
+            open my $fh, ">:encoding(utf8)", File::Spec->catfile($temp_dir, $basename)
+                or die "Couldn't open $basename: $!";
             $printer = sub {
                 my ($data) = @_;
                 print $fh $data;
@@ -1262,8 +1262,8 @@ sub backup_internal {
             $finisher = sub {
                 my ($sess, $asset_files) = @_;
                 close $fh;
-                _backup_finisher($sess, $fname, $param, $user);
-                $sess->urls([{ filename => $fname }], 1);
+                _backup_finisher($sess, $basename, $param, $user);
+                $sess->urls([{ filename => $basename }], 1);
             };
         } else {    # archive/compress files
             my $arc_buf;
@@ -1275,19 +1275,16 @@ sub backup_internal {
             $finisher = sub {
                 require MT::Util::Archive;
                 my ($sess, $asset_files) = @_;
-                (my $fh, my $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
-                my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
-                close $fh;
-                unlink $filepath;
-                my $arc = MT::Util::Archive->new($archive, $filepath);
+                my $basename = $file. $extensions->{$archive};
+                my $arc = MT::Util::Archive->new($archive, File::Spec->catfile($temp_dir, $basename));
                 $arc->add_string(Encode::encode_utf8($arc_buf), "$file.xml");
                 $arc->add_string(
                     "<manifest xmlns='" . MT::BackupRestore::NS_MOVABLETYPE() . "'><file type='backup' name='$file.xml' /></manifest>",
                     "$file.manifest"
                 );
                 $arc->close;
-                _backup_finisher($sess, $fname, $param, $user);
-                $sess->urls([{ filename => $fname }], 1);
+                _backup_finisher($sess, $basename, $param, $user);
+                $sess->urls([{ filename => $basename }], 1);
             };
         }
     } else {
@@ -1295,9 +1292,7 @@ sub backup_internal {
         my $filename = File::Spec->catfile($temp_dir, $file . "-1.xml");
         my $fh       = gensym();
         open $fh, ">", $filename or die "Couldn't open $filename: $!";
-        my $url = "__mode=backup_download&name=$file-1.xml";
-        $url .= "&blog_id=$blog_id" if defined($blog_id);
-        push @files, { url => $url, filename => $file . "-1.xml" };
+        push @files, { url => _download_url($blog_id, "$file-1.xml"), filename => $file . "-1.xml" };
         $printer = sub {
             require bytes;
             my ($data) = @_;
@@ -1313,9 +1308,7 @@ sub backup_internal {
             my $filename = File::Spec->catfile($temp_dir, $file . "-$findex.xml");
             $fh = gensym();
             open $fh, ">", $filename or die "Couldn't open $filename: $!";
-            my $url = "__mode=backup_download&name=$file-$findex.xml";
-            $url .= "&blog_id=$blog_id" if defined($blog_id);
-            push @files, { url => $url, filename => $file . "-$findex.xml" };
+            push @files, { url => _download_url($blog_id, "$file-$findex.xml"), filename => $file . "-$findex.xml" };
             print $fh $header;
         };
         $finisher = sub {
@@ -1342,15 +1335,11 @@ sub backup_internal {
                 }
                 my $xml_name = $asset_files->{$id}->[2];
                 printf $fh "<file type='asset' name='%s' asset_id='%s' />\n", MT::Util::encode_xml($xml_name, 1, 1), $id;
-                my $url = "__mode=backup_download&assetname=" . MT::Util::encode_url($name);
-                $url .= "&blog_id=$blog_id" if defined($blog_id);
-                push @files, { url => $url, filename => MT::FileMgr::Local::_local($name) };
+                push @files, { url => _download_url($blog_id, $name), filename => MT::FileMgr::Local::_local($name) };
             }
             print $fh "</manifest>\n";
             close $fh;
-            my $url = "__mode=backup_download&name=$file.manifest";
-            $url .= "&blog_id=$blog_id" if defined($blog_id);
-            push @files, { url => $url, filename => "$file.manifest" };
+            push @files, { url => _download_url($blog_id, "$file.manifest"), filename => "$file.manifest" };
             if (!$archive) {
                 for my $f (@files) {
                     $f->{filename} = MT::FileMgr::Local::_syserr($f->{filename})
@@ -1361,19 +1350,16 @@ sub backup_internal {
                 _backup_finisher($sess, \@fnames, $param, $user);
                 $sess->urls(\@files, 1);
             } else {
-                my ($fh_arc, $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
-                my ($vol, $dir, $fname) = File::Spec->splitpath($filepath);
                 require MT::Util::Archive;
-                close $fh_arc;
-                unlink $filepath;
-                my $arc = MT::Util::Archive->new($archive, $filepath);
+                my $basename = $file. $extensions->{$archive};
+                my $arc = MT::Util::Archive->new($archive, File::Spec->catfile($temp_dir, $basename));
                 $arc->add_file($temp_dir, $_->{filename}) for @files;
                 $arc->close;
 
                 # for safery, don't unlink before closing $arc here.
                 unlink File::Spec->catfile($temp_dir, $_->{filename}) for @files;
-                _backup_finisher($sess, $fname, $param, $user);
-                $sess->urls([{ filename => $fname }], 1);
+                _backup_finisher($sess, $basename, $param, $user);
+                $sess->urls([{ filename => $basename }], 1);
             }
         };
     }
@@ -1393,6 +1379,14 @@ sub backup_internal {
     };
 }
 
+sub _download_url {
+    my ($blog_id, $name) = @_;
+    my @params = ('__mode=backup_download');
+    push @params, ('filename=' . MT::Util::encode_url($name));
+    push @params, 'blog_id=' . $blog_id if $blog_id;
+    return join('&', @params);
+}
+
 sub _backup_filename {
     my $time = shift;
     my @ts   = gmtime($time);
@@ -1407,50 +1401,38 @@ sub backup_download {
         my $perms = $app->permissions;
         return $app->permission_denied() unless defined($perms) && $perms->can_do('backup_download');
     }
-    my $filename  = $app->param('filename');
-    my $assetname = $app->param('assetname');
     my $temp_dir  = $app->config('ExportTempDir') || $app->config('TempDir');
-    my $newfilename;
 
     $app->{hide_goback_button} = 1;
 
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id);
 
-    if (my $req_name = ($assetname || $app->param('name'))) {
-        $newfilename = $filename = $sess->check_file($req_name) or return $app->errtrans("Specified file was not found.");
-    } elsif ($filename) {
-        $sess->check_file($filename) or return $app->errtrans("Specified file was not found.");
-        $newfilename = _backup_filename($sess->sess->start);
-    } else {
-        return $app->errtrans("File name is not given.");    # Never reach here
-    }
+    my $filename = $app->param('filename') or return $app->errtrans("Specified file was not found.");
+    $filename = $sess->check_file($filename) or return $app->errtrans("Specified file was not found.");
 
     require File::Spec;
     my $fname = File::Spec->catfile($temp_dir, $filename);
 
     my $contenttype;
-    if (!defined($assetname) && ($filename =~ m/^xml\..+$/i)) {
+    if ($filename =~ m/\.xml$/) {
         my $enc = $app->charset || 'utf-8';
         $contenttype = "text/xml; charset=$enc";
-        $newfilename .= '.xml';
-    } elsif ($filename =~ m/^tgz\..+$/i) {
+    } elsif ($filename =~ m/\.tar\.gz$/) {
         $contenttype = 'application/x-tar-gz';
-        $newfilename .= '.tar.gz';
-    } elsif ($filename =~ m/^zip\..+$/i) {
+    } elsif ($filename =~ m/\.zip$/) {
         $contenttype = 'application/zip';
-        $newfilename .= '.zip';
     } else {
         $contenttype = 'application/octet-stream';
         if ($app->param->user_agent =~ /MSIE/) {
-            $newfilename = Encode::encode('Shift_JIS', $newfilename);
+            $filename = Encode::encode('Shift_JIS', $filename);
         }
     }
 
     if (open(my $fh, "<", MT::FileMgr::Local::_local($fname))) {
         binmode $fh;
         $app->{no_print_body} = 1;
-        $app->set_header("Content-Disposition" => 'attachment; filename="' . $newfilename . '"');
+        $app->set_header("Content-Disposition" => 'attachment; filename="' . $filename . '"');
         $app->send_http_header($contenttype);
         while (read $fh, my ($chunk), 8192) {
             $app->print($chunk);
