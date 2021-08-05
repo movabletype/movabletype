@@ -1253,38 +1253,45 @@ sub _make_upload_destinations {
         path  => '%s/%y/%m/%d',
         };
 
-    if ( $blog->column('archive_path') ) {
-        $class_label = MT->translate('Archive');
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>', $class_label ),
-            path  => '%a',
-            };
-        push @dest_root,
-            {
-            label => $app->translate(
-                '<[_1] Root>/[_2]',
-                $class_label, $user_basename
-            ),
-            path => '%a/%u',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
-            path  => '%a/%y',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
-            path  => '%a/%y/%m',
-            };
-        push @dest_root,
-            {
-            label =>
-                $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
-            path => '%a/%y/%m/%d',
-            };
+    my $archive_flg = { 'archive' => 1, 'disabled' => 0};
+    unless ( $blog->column('archive_path') ) {
+        $archive_flg->{disabled} = 1;
     }
+    $class_label = MT->translate('Archive');
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>', $class_label ),
+        path  => '%a',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate(
+            '<[_1] Root>/[_2]',
+            $class_label, $user_basename
+        ),
+        path => '%a/%u',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+        path  => '%a/%y',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+        path  => '%a/%y/%m',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label =>
+            $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+        path => '%a/%y/%m/%d',
+        %$archive_flg
+        };
 
     if ( $blog->upload_destination ) {
         if ( my @selected
