@@ -1045,7 +1045,7 @@ sub _can_write_temp_dir {
 }
 
 sub start_backup {
-    my $app     = shift;
+    my ($app, $no_print_body) = @_;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
@@ -1061,6 +1061,12 @@ sub start_backup {
     } else {
         $app->add_breadcrumb($app->translate('Export Sites'));
     }
+
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('backup:' . $user->id);
+    $param{session_exists}      = $sess ? 1 : 0;
+    $param{session_done}        = $sess && $sess->done ? 1 : 0;
+    $param{inserted_job}        = 1 if $app->param('inserted_job');
     $param{system_overview_nav} = 1 unless $blog_id;
     $param{nav_backup}          = 1;
     require MT::Util::Archive;
@@ -1080,7 +1086,15 @@ sub start_backup {
     unless ((-d $tmp) && (-w $tmp) && _can_write_temp_dir($tmp)) {
         $param{error} = $app->translate('Temporary directory needs to be writable for export to work correctly.  Please check (Export)TempDir configuration directive.');
     }
-    $app->load_tmpl('backup.tmpl', \%param);
+
+    if ($no_print_body) {
+        $app->{no_print_body} = 1;
+        local $| = 1;
+        $app->send_http_header('text/html');
+        $app->print_encode($app->build_page('backup.tmpl', \%param));
+    } else {
+        $app->load_tmpl('backup.tmpl', \%param);
+    }
 }
 
 sub start_restore {
@@ -1109,13 +1123,15 @@ sub start_restore {
         $param{error} = $app->translate('Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.');
     }
 
-    $app->load_tmpl('restore.tmpl', \%param);
-}
+        $app->load_tmpl('restore.tmpl', \%param);
+    }
 
 sub backup_result {
     my $app = shift;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('backup:' . $app->user->id) || return;
+    my $init_offset = $app->param('init_offset');
+    $sess->set('progress_offset', 0) if $init_offset;
     return $app->json_result({ progress => $sess->get_offset_progress, urls => $sess->urls, done => $sess->done });
 }
 

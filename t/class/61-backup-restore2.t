@@ -213,7 +213,7 @@ for my $props (@$test_cases) {
             __mode => 'backup', blog_id => $props->{blog_id}, backup_what => $props->{backup_what},
             backup_archive_format => $props->{backup_archive_format}, size_limit => 0, background => 1,
         });
-        is($app->page_title, 'Export Sites', 'right title');
+        is($app->page_title, ($props->{blog_id} ? 'Export Site' : 'Export Sites'), 'right title');
 
         _run_latest_job();
 
