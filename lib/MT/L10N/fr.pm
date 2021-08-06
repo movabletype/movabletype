@@ -1232,12 +1232,17 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Catégorie '[_1]' (ID:[_2]) supprimée par '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Catégorie '[_1]' (ID:[_2]) éditée par '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{Catégorie '[_1]' créée par '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Groupe de catégories '[_1]' (ID:[_2]) éditée par '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Groupe de catégories '[_1]' créée par '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Le nom de base de la catégorie '[_1]' entre en conflit avec celui d'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom de base distinct.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Le nom de catégorie '[_1]' est en conflit avec une autre catégorie. Les catégories racines et les sous-catégories qui ont le même parent doivent avoir un nom distinct.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Le nom de la catégorie '[_1]' entre en conflit avec celui d'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom distinct.},
 	q{The name '[_1]' is too long!} => q{Le nom '[_1]' est trop long.},
 	q{Tried to update [_1]([_2]), but the object was not found.} => q{Tentative de mise à jour [_1] ([_2]), mais l'objet est introuvable.},
 	q{[_1] order has been edited by '[_2]'.} => q{L'ordre de [_1] a été édité par '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Groupe de catégories '[_1]' (ID:[_2]) supprimée par '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Totalité des [_1]',

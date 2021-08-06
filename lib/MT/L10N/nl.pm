@@ -1233,11 +1233,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Categorie '[_1]' (ID:[_2]) verwijderd door '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Categorie '[_1]' (ID:[_2]) bewerkt door '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{Categorie '[_1]' aangemaakt door '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Categorieset '[_1]' (ID:[_2]) bewerkt door '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Categorieset '[_1]' aangemaakt door '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Categoriebasisnaam '[_1]' conflicteert met de basisnaam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke basisnaam hebben.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Categorienaam '[_1]' conflicteert met een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Categorienaam '[_1]' conflicteert met de naam van een andere categorie. Hoofdcategorieën en subcategorieën met dezelfde ouder moeten een unieke naam hebben.},
 	q{The name '[_1]' is too long!} => q{De naam '[_1]' is te lang!},
 	q{[_1] order has been edited by '[_2]'.} => q{_1] volgorde werd aangepast door '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Categorieset '[_1]' (ID:[_2]) verwijderd door '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Alle [_1]',

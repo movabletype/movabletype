@@ -1233,11 +1233,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がカテゴリ'[_1]'(ID:[_2])を削除しました。},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{'[_3]'がカテゴリ'[_1]' (ID:[_2])を編集しました。},
 	q{Category '[_1]' created by '[_2]'.} => q{'[_2]'がカテゴリ'[_1]'を作成しました。},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{'[_3]'がカテゴリセット'[_1]' (ID:[_2])を編集しました。},
+	q{Category Set '[_1]' created by '[_2]'.} => q{'[_2]'がカテゴリセット'[_1]'を作成しました。},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリのベースネームは一意でなければなりません。},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{'[_1]'は他のカテゴリと衝突しています。同じ階層にあるカテゴリの名前は一意でなければなりません。},
 	q{The name '[_1]' is too long!} => q{'[_1]'は長すぎます。},
 	q{[_1] order has been edited by '[_2]'.} => q{[_1] の順番を '[_2]' が更新しました。},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がカテゴリセット'[_1]'(ID:[_2])を削除しました。},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'すべての[_1]',

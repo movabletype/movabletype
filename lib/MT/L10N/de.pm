@@ -1233,11 +1233,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
 	q{Category '[_1]' created by '[_2]'.} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Der Kategorie-Basisname &#8222;[_1]&#8220; steht im Konflikt mit dem Basisnamen einer anderen Kategorie: Unterkategorien dürfen nicht den gleichen Basisnamen wie ihre Hauptkategorie haben.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen. Hauptkategorien und Unterkategorien gleichen Ursprungs müssen eindeutige Namen haben.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen: Unterkategorien dürfen nicht wie ihre Hauptkategorie heißen.},
 	q{The name '[_1]' is too long!} => q{Der Name &#8222;[_1]&#8220; ist zu lang!},
 	q{[_1] order has been edited by '[_2]'.} => q{Die [_1]-Reihenfolge wurde von &#8222;[_2]&#8220; geändert.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Alle [_1]',
