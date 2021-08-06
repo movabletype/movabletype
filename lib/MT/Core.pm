@@ -2469,6 +2469,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
