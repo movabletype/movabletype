@@ -119,7 +119,7 @@ sub asset_ids {
             return $self->set('asset_ids', $asset_ids);
         }
     } else {
-        return $self->get('asset_ids');
+        return $self->get('asset_ids') || [];
     }
 }
 

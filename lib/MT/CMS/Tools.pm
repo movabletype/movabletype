@@ -1098,7 +1098,7 @@ sub start_backup {
 }
 
 sub start_restore {
-    my $app     = shift;
+    my ($app, $no_print_body) = @_;
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
@@ -1112,6 +1112,12 @@ sub start_restore {
     $param{system_overview_nav} = 1;
     $param{nav_backup}          = 1;
 
+    require MT::BackupRestore::Session;
+    my $sess = MT::BackupRestore::Session->load('restore:' . $user->id);
+    $param{session_exists}      = $sess ? 1 : 0;
+    $param{session_done}        = $sess && $sess->done ? 1 : 0;
+    $param{inserted_job}        = 1 if $app->param('inserted_job');
+
     eval "require XML::SAX";
     $param{missing_sax} = 1 if $@;
 
@@ -1123,8 +1129,15 @@ sub start_restore {
         $param{error} = $app->translate('Temporary directory needs to be writable for import to work correctly.  Please check (Export)TempDir configuration directive.');
     }
 
+    if ($no_print_body) {
+        $app->{no_print_body} = 1;
+        local $| = 1;
+        $app->send_http_header('text/html');
+        $app->print_encode($app->build_page('restore.tmpl', \%param));
+    } else {
         $app->load_tmpl('restore.tmpl', \%param);
     }
+}
 
 sub backup_result {
     my $app = shift;
@@ -1139,6 +1152,8 @@ sub restore_result {
     my $app = shift;
     require MT::BackupRestore::Session;
     my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id) || return;
+    my $init_offset = $app->param('init_offset');
+    $sess->set('progress_offset', 0) if $init_offset;
     return $app->json_result({
         progress => $sess->get_offset_progress, asset_ids => $sess->asset_ids,
         dialog_params => $sess->dialog_params, error => $sess->error, done => $sess->done
@@ -1151,17 +1166,13 @@ sub backup {
     my $job = create_backup_job($app, scalar($app->param('background'))) || return;
 
     my $blog_id = $app->param('blog_id') || 0;
-    $app->add_breadcrumb(
-        $app->translate($blog_id ? 'Export Site' : 'Export Sites'),
-        $app->uri(mode => 'start_backup', args => { blog_id => $blog_id }));
-    $app->add_breadcrumb($app->translate('Export'));
-    my $param = {};
 
-    $app->{no_print_body} = 1;
-    local $| = 1;
-    $app->send_http_header('text/html');
-    $app->print_encode($app->build_page('include/backup_end.tmpl', $param));
-    $job->() if ref($job) eq 'CODE';
+    if (ref($job) eq 'TheSchwartz::Job') {
+        $app->redirect($app->uri(mode => 'start_backup', args => { blog_id => $blog_id, inserted_job => 1 }));
+    } else {
+        start_backup($app, 1);
+        $job->();
+    }
 }
 
 sub create_backup_job {
@@ -1469,18 +1480,12 @@ sub restore {
 
     my $job = create_restore_job($app, scalar($app->param('background'))) || return;
 
-    $app->add_breadcrumb($app->translate('Import Sites'), $app->uri(mode => 'start_restore'));
-    $app->add_breadcrumb($app->translate('Import'));
-
-    my $param = { return_args => '__mode=dashboard' };
-    $param->{system_overview_nav} = 1;
-    $param->{nav_backup}          = 1;
-
-    $app->{no_print_body} = 1;
-    local $| = 1;
-    $app->send_http_header('text/html');
-    $app->print_encode($app->build_page('restore_end.tmpl', $param));
-    $job->() if ref($job) eq 'CODE';
+    if (ref($job) eq 'TheSchwartz::Job') {
+        $app->redirect($app->uri(mode => 'start_restore', args => { inserted_job => 1 }));
+    } else {
+        start_restore($app, 1);
+        $job->();
+    }
 }
 
 sub create_restore_job {
