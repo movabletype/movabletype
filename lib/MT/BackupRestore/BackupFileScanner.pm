@@ -14,9 +14,8 @@ use MIME::Base64;
 @MT::BackupRestore::BackupFileScanner::ISA = qw(XML::SAX::Base);
 
 sub new {
-    my $class = shift;
-    local $@;
-    return bless {}, $class;
+    my ($class, %param) = @_;
+    return bless \%param, $class;
 }
 
 sub start_document {
@@ -63,7 +62,7 @@ sub end_document {
     unless ( $self->{website_exists} ) {
         my %args;
         my %terms;
-        my $user = MT->instance->user;
+        my $user = $self->{current_user};
         require MT::Permission;
         require MT::Website;
         $args{join} = MT::Permission->join_on( 'blog_id',

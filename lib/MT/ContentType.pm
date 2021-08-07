@@ -542,7 +542,7 @@ sub all_permissions {
 sub _post_save {
     my ( $cb, $obj, $original ) = @_;
 
-    MT->app->reboot;
+    MT->app->reboot if ref(MT->app) eq 'MT::App';
 }
 
 sub _post_remove {
@@ -576,7 +576,7 @@ sub _post_remove {
         $role->save;
     }
 
-    MT->app->reboot;
+    MT->app->reboot if ref(MT->app) eq 'MT::App';
 }
 
 sub generate_object_log_class {

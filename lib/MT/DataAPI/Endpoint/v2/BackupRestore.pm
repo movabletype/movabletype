@@ -27,7 +27,7 @@ sub backup {
 
     my $param;
     {
-        local $app->{no_print_body};
+        local $app->{no_print_body} = 1;
 
         no warnings 'redefine';
         local *MT::App::DataAPI::send_http_header = sub { };
@@ -35,7 +35,7 @@ sub backup {
         local *MT::build_page                     = sub { };
 
         my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
-        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[3]; $_backup_finisher->(@_) };
+        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[2]; $_backup_finisher->(@_), $app->user };
 
         MT::CMS::Tools::create_backup_job($app)->();
     }
@@ -163,7 +163,7 @@ sub restore {
 
     my $param;
     {
-        local $app->{no_print_body};
+        local $app->{no_print_body} = 1;
 
         no warnings 'redefine';
         local *MT::App::DataAPI::send_http_header = sub { };

@@ -169,7 +169,7 @@ my $h = IO::String->new( \$backup_data );
 my ( %objects, %deferred, @errors );
 MT::BackupRestore->restore_process_single_file( $h, \%objects, \%deferred,
     \@errors, MT->config->SchemaVersion,
-    0, sub { print $_[0], "\n"; } );
+    $admin, 0, sub { print $_[0], "\n"; } );
 
 is( scalar( keys %deferred ), 0, 'no deferred objects remain' );
 warn join "\n", @errors if @errors;

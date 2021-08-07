@@ -1588,7 +1588,7 @@ sub rebuild_favorite_sites {
 
     # In restoring, nothing to do.
     my $app = MT->instance;
-    return if $app->request('__restore_in_progress');
+    return if MT->request('__restore_in_progress');
 
     return
         if $user->is_superuser

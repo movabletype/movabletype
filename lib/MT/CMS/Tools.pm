@@ -1174,6 +1174,13 @@ sub create_backup_job {
     require MT::BackupRestore::Session;
     MT::BackupRestore::Session->start($sess_name, $app->make_magic_token());
 
+    my %additional_params = (
+        enc => $app->charset || 'utf-8',
+    );
+    if (my $size = $app->param('size_limit')) {
+        return $app->errtrans('[_1] is not a number.', encode_html($size)) if $size !~ /^\d+$/;
+    }
+
     if ($background) {
         require MT::TheSchwartz;
         require TheSchwartz::Job;
@@ -1181,23 +1188,19 @@ sub create_backup_job {
         $job->funcname('MT::Worker::BackupRestore');
         $job->uniqkey($sess_name);
         $job->priority(5);
-        $job->arg([{ $app->param_hash }, $app->user->id]);
+        $job->arg([{ $app->param_hash, %additional_params }, $app->user->id]);
         MT::TheSchwartz->insert($job);
         return $job;
     } else {
-        return sub { backup_internal({$app->param_hash}, $app->user->id) };
+        return sub { backup_internal({$app->param_hash, %additional_params}, $app->user->id) };
     }
 }
 
 sub backup_internal {
     my ($job_params, $user_id) = @_;
-    require MT::App;
     my $user = MT->model('author')->load($user_id);
-    my $app  = MT::App->new or die MT->errstr;
-    $app->user($user);
-    local $MT::mt_inst = $app;
     require MT::BackupRestore::Session;
-    my $sess     = MT::BackupRestore::Session->load('backup:' . $app->user->id);
+    my $sess     = MT::BackupRestore::Session->load('backup:' . $user_id);
     my $blog_id  = $job_params->{'blog_id'}     || 0;
     my $blog_ids = $job_params->{'backup_what'} || '';
     my @blog_ids = split ',', $blog_ids;
@@ -1206,9 +1209,9 @@ sub backup_internal {
     MT::Util::Log::init();
 
     # Get all target blog_id when system administrator choose website.
-    if ($app->user->is_superuser) {
+    if ($user->is_superuser) {
         if (@blog_ids) {
-            my $blog_class = $app->model('blog');
+            my $blog_class = MT->model('blog');
             for my $bid (@blog_ids) {
                 my $target = $blog_class->load($bid);
                 next if $target->is_blog;
@@ -1217,22 +1220,18 @@ sub backup_internal {
         }
     }
 
-    my $size = $job_params->{'size_limit'} || 0;
-    return $app->errtrans('[_1] is not a number.', encode_html($size)) if $size !~ /^\d+$/;
-
+    my $size    = $job_params->{'size_limit'} || 0;
     my $archive = $job_params->{'backup_archive_format'};
-    my $enc     = $app->charset || 'utf-8';
     my $file    = _backup_filename($sess->sess->start);
 
     my $param = {};
-    $app->{no_print_body} = 1;
     $param->{blog_id}     = $blog_id  if $blog_id;
     $param->{blog_ids}    = $blog_ids if $blog_ids;
 
     require File::Temp;
     require File::Spec;
     use File::Copy;
-    my $temp_dir = $app->config('ExportTempDir') || $app->config('TempDir');
+    my $temp_dir = MT->config('ExportTempDir') || MT->config('TempDir');
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     $fmgr->mkpath($temp_dir) unless -d $temp_dir;
@@ -1242,7 +1241,7 @@ sub backup_internal {
           @blog_ids ? { class => '*', blog_id => [[0], @blog_ids] }
         : $blog_id  ? { class => '*', blog_id => [0, $blog_id] }
         :             { class => '*' };
-    my $num_assets = $app->model('asset')->count($count_term);
+    my $num_assets = MT->model('asset')->count($count_term);
     my $printer;
     my $splitter;
     my $finisher;
@@ -1263,7 +1262,7 @@ sub backup_internal {
             $finisher = sub {
                 my ($sess, $asset_files) = @_;
                 close $fh;
-                _backup_finisher($app, $sess, $fname, $param);
+                _backup_finisher($sess, $fname, $param, $user);
                 $sess->urls([{ filename => $fname }], 1);
             };
         } else {    # archive/compress files
@@ -1287,7 +1286,7 @@ sub backup_internal {
                     "$file.manifest"
                 );
                 $arc->close;
-                _backup_finisher($app, $sess, $fname, $param);
+                _backup_finisher($sess, $fname, $param, $user);
                 $sess->urls([{ filename => $fname }], 1);
             };
         }
@@ -1333,8 +1332,8 @@ sub backup_internal {
                 my $name = $id . '-' . $asset_files->{$id}->[2];
                 my $tmp  = File::Spec->catfile($temp_dir, $name);
                 unless (copy(MT::FileMgr::Local::_local($asset_files->{$id}->[1]), MT::FileMgr::Local::_local($tmp))) {
-                    $app->log({
-                        message  => $app->translate('Copying file [_1] to [_2] failed: [_3]', $asset_files->{$id}->[1], $tmp, $!),
+                    MT->log({
+                        message  => MT->translate('Copying file [_1] to [_2] failed: [_3]', $asset_files->{$id}->[1], $tmp, $!),
                         level    => MT::Log::WARNING(),
                         class    => 'system',
                         category => 'backup'
@@ -1359,7 +1358,7 @@ sub backup_internal {
                 }
                 $param->{files_loop} = \@files;
                 my @fnames = map { $_->{filename} } @files;
-                _backup_finisher($app, $sess, \@fnames, $param);
+                _backup_finisher($sess, \@fnames, $param, $user);
                 $sess->urls(\@files, 1);
             } else {
                 my ($fh_arc, $filepath) = File::Temp::tempfile($archive . '.XXXXXXXX', DIR => $temp_dir);
@@ -1373,7 +1372,7 @@ sub backup_internal {
 
                 # for safery, don't unlink before closing $arc here.
                 unlink File::Spec->catfile($temp_dir, $_->{filename}) for @files;
-                _backup_finisher($app, $sess, $fname, $param);
+                _backup_finisher($sess, $fname, $param, $user);
                 $sess->urls([{ filename => $fname }], 1);
             }
         };
@@ -1384,9 +1383,14 @@ sub backup_internal {
         backup_by      => MT::Util::encode_xml($user->name, 1) . '(ID: ' . $user_id . ')',
         backup_on      => sprintf("%04d-%02d-%02dT%02d:%02d:%02d", $tsnow[5] + 1900, $tsnow[4] + 1, @tsnow[3, 2, 1, 0]),
         backup_what    => join(',', @blog_ids),
-        schema_version => $app->config('SchemaVersion'),
+        schema_version => MT->config('SchemaVersion'),
     };
-    eval { MT::BackupRestore->backup(\@blog_ids, $printer, $splitter, $finisher, $sess, $size * 1024, $enc, $metadata); };
+    eval {
+        MT::BackupRestore->backup(
+            \@blog_ids,         $printer, $splitter, $finisher, $sess, $size * 1024,
+            $job_params->{enc}, $metadata
+        );
+    };
 }
 
 sub _backup_filename {
@@ -1522,12 +1526,9 @@ sub restore_internal {
     require CGI;
     require MT::App;
     my $user = MT->model('author')->load($user_id);
-    my $app  = MT::App->new or die MT->errstr;
-    $app->user($user);
-    $app->{query} = CGI->new($job_params);
-    local $MT::mt_inst = $app;
+    local $MT::BackupRestore::current_user = $user;
     require MT::BackupRestore::Session;
-    my $sess = MT::BackupRestore::Session->load('restore:' . $app->user->id);
+    my $sess = MT::BackupRestore::Session->load('restore:' . $user_id);
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -1538,12 +1539,11 @@ sub restore_internal {
     open($fh, '<', $sess->dir . "/restore") if $sess->dir;
     my $uploaded_filename;
     (undef, undef, $uploaded_filename) = File::Spec->splitpath($job_params->{'file'}) if $job_params->{'file'};
-    $app->mode('start_restore');
     if (defined($uploaded_filename) && ($uploaded_filename =~ /^.+\.manifest$/i)) {
-        return restore_upload_manifest($app, $sess, $fh);
+        return restore_upload_manifest($sess, $fh, $job_params->{'overwrite_global_templates'});
     }
 
-    $app->log({
+    MT->log({
         message => (
             $uploaded_filename
             ? MT->translate('Started importing sites: [_1]', $uploaded_filename)
@@ -1555,22 +1555,24 @@ sub restore_internal {
     });
 
     my $return_error = sub {
-        $app->request('__restore_in_progress', undef);
+        MT->request('__restore_in_progress', undef);
         $sess->error($_[0]);
         return 1;
     };
 
     # Set flag
-    $app->request('__restore_in_progress', 1);
+    MT->request('__restore_in_progress', 1);
 
     require File::Path;
 
     my ($param_dir, $param_blog_ids, $open_dialog, $do_upload);
     my $error = '';
 
+    my $overwrite_template = $job_params->{'overwrite_global_templates'} ? 1 : 0;
+
     if (!$fh) {
-        my $dir = $app->config('ImportPath');
-        my ($blog_ids, $asset_ids) = eval { restore_directory($app, $sess, $dir, \$error) };
+        my $dir = MT->config('ImportPath');
+        my ($blog_ids, $asset_ids) = eval { restore_directory($sess, $dir, \$error, $user, $overwrite_template) };
         return $return_error->($@) if $@;
 
         if (defined $blog_ids) {
@@ -1581,15 +1583,15 @@ sub restore_internal {
         } elsif (defined $asset_ids) {
             my %asset_ids = @$asset_ids;
             my %error_assets;
-            eval { _restore_non_blog_asset($app, $dir, $asset_ids, \%error_assets) };
+            eval { _restore_non_blog_asset($dir, $asset_ids, \%error_assets, sub { $sess->progress(\@_, 1) }) };
             return $return_error->($@) if $@;
             if (%error_assets) {
                 my $data;
                 while (my ($key, $value) = each %error_assets) {
-                    $data .= $app->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
+                    $data .= MT->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
                 }
-                my $message = $app->translate('Some of the actual files for assets could not be imported.');
-                $app->log({
+                my $message = MT->translate('Some of the actual files for assets could not be imported.');
+                MT->log({
                     message  => $message,
                     level    => MT::Log::WARNING(),
                     class    => 'system',
@@ -1602,7 +1604,7 @@ sub restore_internal {
     } else {
         $do_upload = 1;
         if ($uploaded_filename =~ /^.+\.xml$/i) {
-            my $blog_ids = eval { restore_file($app, $sess, $fh, \$error) };
+            my $blog_ids = eval { restore_file($sess, $fh, \$error, $user, $overwrite_template) };
             return $return_error->($@) if $@;
             if (defined $blog_ids) {
                 $open_dialog    = 1;
@@ -1616,7 +1618,7 @@ sub restore_internal {
             } elsif ($uploaded_filename =~ /^.+\.zip$/i) {
                 $arc = MT::Util::Archive->new('zip', $fh);
             } else {
-                $error = $app->translate('Please use xml, tar.gz, zip, or manifest as a file extension.');
+                $error = MT->translate('Please use xml, tar.gz, zip, or manifest as a file extension.');
             }
             if (!$arc or !$arc->is_safe_to_extract) {
                 if (!$error) {
@@ -1626,7 +1628,7 @@ sub restore_internal {
                     } elsif (!$arc->is_safe_to_extract) {
                         $error = MT->translate('Unsafe archive');
                     }
-                    $app->log({
+                    MT->log({
                         message  => $error . ":$uploaded_filename",
                         level    => MT::Log::WARNING(),
                         class    => 'system',
@@ -1645,7 +1647,7 @@ sub restore_internal {
             MT::Util::Log->info('=== End   extract ' . $uploaded_filename);
 
             $arc->close;
-            my ($blog_ids, $asset_ids) = eval { restore_directory($app, $sess, $dir, \$error); };
+            my ($blog_ids, $asset_ids) = eval { restore_directory($sess, $dir, \$error, $user, $overwrite_template) };
             return $return_error->($@) if $@;
 
             if (defined $blog_ids) {
@@ -1656,15 +1658,15 @@ sub restore_internal {
             } elsif (defined $asset_ids) {
                 my %asset_ids = @$asset_ids;
                 my %error_assets;
-                eval { _restore_non_blog_asset($app, $dir, \%asset_ids, \%error_assets) };
+                eval { _restore_non_blog_asset($dir, \%asset_ids, \%error_assets, sub { $sess->progress(\@_, 1) }) };
                 return $return_error->($@) if $@;
                 if (%error_assets) {
                     my $data;
                     while (my ($key, $value) = each %error_assets) {
-                        $data .= $app->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
+                        $data .= MT->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
                     }
-                    my $message = $app->translate('Some of the actual files for assets could not be imported.');
-                    $app->log({
+                    my $message = MT->translate('Some of the actual files for assets could not be imported.');
+                    MT->log({
                         message  => $message,
                         level    => MT::Log::WARNING(),
                         class    => 'system',
@@ -1693,6 +1695,8 @@ sub restore_internal {
     $sess->done(1);
     MT::Util::Log->info('=== End   import.');
 
+    MT::App->new->reboot;
+
     1;
 }
 
@@ -1707,7 +1711,7 @@ sub restore_premature_cancel {
     my $deferred      = $deferred_json ? JSON::from_json($deferred_json) : undef;
     my $param         = { restore_success => 1 };
     if (defined $deferred && (scalar(keys %$deferred))) {
-        _log_dirty_restore($app, $deferred);
+        _log_dirty_restore($deferred);
         my $log_url = $app->uri(mode => 'list', args => { '_type' => 'log' });
         $param->{restore_success} = 0;
         my $message = $app->translate('Some objects were not imported because their parent objects were not imported.');
@@ -1724,15 +1728,15 @@ sub restore_premature_cancel {
 }
 
 sub _restore_non_blog_asset {
-    my ($app, $tmp_dir, $asset_ids, $error_assets) = @_;
+    my ($tmp_dir, $asset_ids, $error_assets, $callback) = @_;
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     for my $new_id (keys %$asset_ids) {
-        my $asset    = $app->model('asset')->load($new_id) || next;
+        my $asset    = MT->model('asset')->load($new_id) || next;
         my $old_id   = $asset_ids->{$new_id};
         my $filename = $old_id . '-' . $asset->file_name;
         my $file     = File::Spec->catfile($tmp_dir, $filename);
-        MT::BackupRestore->restore_asset($file, $asset, $old_id, $fmgr, $error_assets, sub { $app->print_encode(@_); });
+        MT::BackupRestore->restore_asset($file, $asset, $old_id, $fmgr, $error_assets, $callback);
     }
 }
 
@@ -1992,7 +1996,7 @@ sub adjust_sitepath {
         }
     }
     unless ($redirect) {
-        _restore_non_blog_asset($app, $tmp_dir, \%asset_ids, \%error_assets);
+        _restore_non_blog_asset($tmp_dir, \%asset_ids, \%error_assets, sub { $app->print_encode(@_); });
     }
     if (%error_assets) {
         my $data;
@@ -2237,7 +2241,7 @@ sub dialog_restore_upload {
     } else {
         ($blog_ids, $asset_ids) = eval {
             MT::BackupRestore->restore_process_single_file(
-                $fh, $objects, $deferred, \@errors, $schema_version, $overwrite_template,
+                $fh, $objects, $deferred, \@errors, $schema_version, $user, $overwrite_template,
                 sub { _progress($app, @_) });
         };
         $last = 1 if $@;
@@ -2273,7 +2277,7 @@ sub dialog_restore_upload {
     } elsif ($last) {
         $param->{restore_end} = 1;
         if ($param->{is_dirty}) {
-            _log_dirty_restore($app, $deferred);
+            _log_dirty_restore($deferred);
             my $log_url = $app->base . $app->uri(mode => 'list', args => { '_type' => 'log' });
             $param->{error}     = $app->translate('Some objects were not imported because their parent objects were not imported.');
             $param->{error_url} = $log_url;
@@ -2541,33 +2545,31 @@ sub reset_password {
 }
 
 sub restore_file {
-    my $app = shift;
-    my ($sess, $fh, $errormsg) = @_;
-    my $schema_version = $app->config->SchemaVersion;
+    my ($sess, $fh, $errormsg, $user, $overwrite_template) = @_;
+    my $schema_version = MT->config->SchemaVersion;
 
     #my $schema_version =
     #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
-    my $overwrite_template = $app->param('overwrite_global_templates') ? 1 : 0;
 
     require MT::BackupRestore;
     my ($deferred, $blogs) = MT::BackupRestore->restore_file(
         $fh, $errormsg, $schema_version,
-        $overwrite_template, sub { $sess->progress(\@_, 1) });
+        $user, $overwrite_template, sub { $sess->progress(\@_, 1) });
 
     if (!defined($deferred) || scalar(keys %$deferred)) {
-        _log_dirty_restore($app, $deferred);
-        my $log_url = $app->uri(mode => 'list', args => { '_type' => 'log' });
+        _log_dirty_restore($deferred);
+        my $log_url = MT->instance->uri(mode => 'list', args => { '_type' => 'log' });
         $$errormsg .= '; ' if $$errormsg;
-        $$errormsg .= $app->translate(
+        $$errormsg .= MT->translate(
             'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.',
             $log_url
         );
         return $blogs;
     }
     if ($$errormsg) {
-        $app->log({
+        MT->log({
             message  => $$errormsg,
             level    => MT::Log::ERROR(),
             class    => 'system',
@@ -2576,10 +2578,10 @@ sub restore_file {
         return $blogs;
     }
 
-    $app->log({
-        message => $app->translate(
+    MT->log({
+        message => MT->translate(
             "Successfully imported objects to Movable Type system by user '[_1]'",
-            $app->user->name
+            $user->name
         ),
         level    => MT::Log::INFO(),
         class    => 'system',
@@ -2590,34 +2592,31 @@ sub restore_file {
 }
 
 sub restore_directory {
-    my $app = shift;
-    my ($sess, $dir, $error) = @_;
+    my ($sess, $dir, $error, $user, $overwrite_template) = @_;
 
     if (!-d $dir) {
-        $$error = $app->translate('[_1] is not a directory.', $dir);
+        $$error = MT->translate('[_1] is not a directory.', $dir);
         return (undef, undef);
     }
 
-    my $schema_version = $app->config->SchemaVersion;
+    my $schema_version = MT->config->SchemaVersion;
 
     #my $schema_version =
     #  $app->param('ignore_schema_conflict')
     #  ? 'ignore'
     #  : $app->config('SchemaVersion');
 
-    my $overwrite_template = $app->param('overwrite_global_templates') ? 1 : 0;
-
     my @errors;
     my %error_assets;
     require MT::BackupRestore;
     my ($deferred, $blog_ids, $asset_ids) = MT::BackupRestore->restore_directory(
         $dir, \@errors,
-        \%error_assets, $schema_version, $overwrite_template,
+        \%error_assets, $schema_version, $user, $overwrite_template,
         sub { $sess->progress(\@_, 1) });
 
     if (scalar @errors) {
-        $$error = $app->translate('Error occurred during import process.');
-        $app->log({
+        $$error = MT->translate('Error occurred during import process.');
+        MT->log({
             message  => $$error,
             level    => MT::Log::WARNING(),
             class    => 'system',
@@ -2629,10 +2628,10 @@ sub restore_directory {
     if (scalar(keys %error_assets)) {
         my $data;
         while (my ($key, $value) = each %error_assets) {
-            $data .= $app->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
+            $data .= MT->translate('MT::Asset#[_1]: ', $key) . $value . "\n";
         }
-        my $message = $app->translate('Some of files could not be imported.');
-        $app->log({
+        my $message = MT->translate('Some of files could not be imported.');
+        MT->log({
             message  => $message,
             level    => MT::Log::WARNING(),
             class    => 'system',
@@ -2643,9 +2642,9 @@ sub restore_directory {
     }
 
     if (scalar(keys %$deferred)) {
-        _log_dirty_restore($app, $deferred);
-        my $log_url = $app->uri(mode => 'list', args => { '_type' => 'log' });
-        $$error = $app->translate(
+        _log_dirty_restore($deferred);
+        my $log_url = MT->instance->uri(mode => 'list', args => { '_type' => 'log' });
+        $$error = MT->translate(
             'Some objects were not imported because their parent objects were not imported.  Detailed information is in the activity log.',
             $log_url
         );
@@ -2654,11 +2653,8 @@ sub restore_directory {
 
     return ($blog_ids, $asset_ids) if $$error;
 
-    $app->log({
-        message => $app->translate(
-            "Successfully imported objects to Movable Type system by user '[_1]'",
-            $app->user->name
-        ),
+    MT->log({
+        message => MT->translate("Successfully imported objects to Movable Type system by user '[_1]'", $user->name),
         level    => MT::Log::INFO(),
         class    => 'system',
         category => 'restore'
@@ -2667,13 +2663,14 @@ sub restore_directory {
 }
 
 sub restore_upload_manifest {
-    my $app = shift;
-    my ($sess, $fh) = @_;
+    my ($sess, $fh, $overwrite_global_templates) = @_;
 
     require MT::BackupRestore;
     my $backups = MT::BackupRestore->process_manifest($fh);
-    return $app->errtrans("Uploaded file was not a valid Movable Type exported manifest file.")
-        if !defined($backups);
+    if (!defined($backups)) {
+        $sess->error(MT->translate("Uploaded file was not a valid Movable Type exported manifest file."));
+        return;
+    }
 
     my $files  = $backups->{files};
     my $assets = $backups->{assets};
@@ -2694,41 +2691,41 @@ sub restore_upload_manifest {
             'assets=' . (scalar(@$assets) > 0 ? encode_url(MT::Util::to_json($assets)) : ''),
             'current_file=' . $file_next,
             'last=' . (scalar(@$files) ? 0 : (scalar(@$assets) ? 0 : 1)),
-            'schema_version=' . $app->config->SchemaVersion,
-            'overwrite_templates=' . ($app->param('overwrite_global_templates') ? 1 : 0),
+            'schema_version=' . MT->config->SchemaVersion,
+            'overwrite_templates=' . ($overwrite_global_templates ? 1 : 0),
             'redirect=1',
         ));
 
     if (length $dialog_params > 2083) {    # 2083 is Maximum URL length in IE
-        my $error = $app->translate(
+        my $error = MT->translate(
             "Manifest file '[_1]' is too large. Please use import directory for importing.",
             $file_next);
         $sess->error($error);
-        return $app->json_error($error);
+        return;
     }
     $sess->dialog_params($dialog_params);
     $sess->done(1);
 }
 
 sub _backup_finisher {
-    my ($app, $sess, $fnames, $param) = @_;
+    my ($sess, $fnames, $param, $user) = @_;
     $fnames = [$fnames] unless (ref $fnames);
     $param->{filename} = $fnames->[0];
     $sess->file($_) for @$fnames;
     my $message;
 
     if (my $blog_id = $param->{blog_id} || $param->{blog_ids}) {
-        $message = $app->translate(
+        $message = MT->translate(
             "Site(s) (ID:[_1]) was/were successfully exported by user '[_2]'",
-            $blog_id, $app->user->name
+            $blog_id, $user->name
         );
     } else {
-        $message = $app->translate(
+        $message = MT->translate(
             "Movable Type system was successfully exported by user '[_1]'",
-            $app->user->name
+            $user->name
         );
     }
-    $app->log({
+    MT->log({
         message  => $message,
         level    => MT::Log::INFO(),
         class    => 'system',
@@ -2755,7 +2752,6 @@ sub _progress {
 }
 
 sub _log_dirty_restore {
-    my $app = shift;
     my ($deferred) = @_;
     my %deferred_by_class;
     for my $key (keys %$deferred) {
@@ -2767,11 +2763,11 @@ sub _log_dirty_restore {
         }
     }
     while (my ($class_name, $ids) = each %deferred_by_class) {
-        my $message = $app->translate(
+        my $message = MT->translate(
             'Some [_1] were not imported because their parent objects were not imported.',
             $class_name
         );
-        $app->log({
+        MT->log({
             message  => $message,
             level    => MT::Log::WARNING(),
             class    => 'system',

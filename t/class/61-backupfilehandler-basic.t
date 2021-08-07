@@ -38,8 +38,6 @@ subtest 'author skip does not break objects when element is empty' => sub {
         current_user       => (scalar MT::Author->load(1)),
     );
 
-    MT->instance->user(MT->model('author')->load(1));
-
     my $parser = MT::Util::sax_parser();
     $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;
     $parser->{Handler} = $handler;
@@ -90,8 +88,6 @@ subtest 'child elements' => sub {
         overwrite_template => {},
         current_user       => (scalar MT::Author->load(1)),
     );
-
-    MT->instance->user(MT->model('author')->load(1));
 
     my $parser = MT::Util::sax_parser();
     $handler->{is_pp}  = ref($parser) eq 'XML::SAX::PurePerl' ? 1 : 0;

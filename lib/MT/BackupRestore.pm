@@ -416,14 +416,17 @@ sub _loop_through_objects {
 
 sub restore_file {
     my $class = shift;
-    my ($fh, $errormsg, $schema_version, $overwrite, $callback) = @_;
+    my ($fh, $errormsg, $schema_version, $user, $overwrite, $callback) = @_;
 
     my $objects  = {};
     my $deferred = {};
     my $errors   = [];
 
     my ($blog_ids, $asset_ids) = eval {
-        $class->restore_process_single_file($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback);
+        $class->restore_process_single_file(
+            $fh,             $objects, $deferred,  $errors,
+            $schema_version, $user,    $overwrite, $callback
+        );
     };
     push @$errors, $@ if $@;
 
@@ -435,14 +438,14 @@ sub restore_file {
 
 sub restore_process_single_file {
     my $class = shift;
-    my ($fh, $objects, $deferred, $errors, $schema_version, $overwrite, $callback) = @_;
+    my ($fh, $objects, $deferred, $errors, $schema_version, $user, $overwrite, $callback) = @_;
 
     require XML::SAX;
     require MT::Util;
     my $parser = MT::Util::sax_parser();
 
     require MT::BackupRestore::BackupFileScanner;
-    my $scanner = MT::BackupRestore::BackupFileScanner->new();
+    my $scanner = MT::BackupRestore::BackupFileScanner->new(current_user => $user);
     my $pos     = tell($fh);
     $parser->{Handler} = $scanner;
     eval { $parser->parse_file($fh); };
@@ -464,6 +467,7 @@ sub restore_process_single_file {
         errors             => $errors,
         schema_version     => $schema_version,
         overwrite_template => $overwrite,
+        current_user       => $user,
     );
 
     $parser = MT::Util::sax_parser();
@@ -496,7 +500,7 @@ sub restore_process_single_file {
 
 sub restore_directory {
     my $class = shift;
-    my ($dir, $errors, $error_assets, $schema_version, $overwrite, $callback) = @_;
+    my ($dir, $errors, $error_assets, $schema_version, $user, $overwrite, $callback) = @_;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -543,7 +547,7 @@ sub restore_directory {
         my ($tmp_blog_ids, $tmp_asset_ids) = eval {
             __PACKAGE__->restore_process_single_file(
                 $fh,             \%objects,  $deferred, $errors,
-                $schema_version, $overwrite, $callback
+                $schema_version, $user, $overwrite, $callback
             );
         };
         push @$errors, $@ if $@;

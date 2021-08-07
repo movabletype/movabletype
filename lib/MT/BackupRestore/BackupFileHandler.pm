@@ -130,7 +130,7 @@ sub start_element {
 
                     $obj = $class->load({ name => $column_data{name} });
                     if ($obj) {
-                        if (UNIVERSAL::isa(MT->instance, 'MT::App') && ($obj->id == MT->instance->user->id)) {
+                        if ($obj->id == $self->{current_user}->id) {
                             MT->log({
                                 message => MT->translate(
                                     "A user with the same name as the current user ([_1]) was found in the exported file.  Skipping this user record.",
