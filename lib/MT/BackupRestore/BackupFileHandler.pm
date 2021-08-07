@@ -40,7 +40,7 @@ sub start_element {
     my $self = shift;
     my $data = shift;
 
-    return if $self->{skip};
+    $self->{skip}++, return if $self->{skip};
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -143,8 +143,6 @@ sub start_element {
                             });
                             $objects->{ "$class#" . $column_data{id} }                 = $obj;
                             $objects->{ "$class#" . $column_data{id} }->{no_overwrite} = 1;
-                            $self->{current}                                           = $obj;
-                            $self->{loaded}                                            = 1;
                             $self->{skip} += 1;
                         } else {
                             MT->log({
@@ -172,12 +170,12 @@ sub start_element {
                                     'external_id',
                                     $realcolumns{external_id}) if defined $realcolumns{external_id};
                                 $self->{current} = $obj;
+                                $self->{loaded} = 1;
                             } else {
                                 $deferred->{ $class . '#' . $column_data{id} } = 1;
                                 $self->{deferred} = $deferred;
                                 $self->{skip} += 1;
                             }
-                            $self->{loaded} = 1;
                         }
                     }
 
@@ -220,8 +218,6 @@ sub start_element {
                             $obj->restore_parent_ids(\%column_data, $objects);
                             my $old_id = $column_data{id};
                             $objects->{"$class#$old_id"} = $obj;
-                            $self->{current}             = $obj;
-                            $self->{loaded}              = 1;
                             $self->{skip} += 1;
                         }
                         MT::Util::Log->info('   End import   ' . $class);
@@ -361,10 +357,7 @@ sub end_element {
     my $self = shift;
     my $data = shift;
 
-    if ($self->{skip}) {
-        $self->{skip} -= 1;
-        return;
-    }
+    $self->{skip}--, return if $self->{skip};
 
     my $name  = $data->{LocalName};
     my $ns    = $data->{NamespaceURI};
