@@ -140,9 +140,8 @@
                     }
                 });
 
-                $(json.error || data.error ? ".result.error" : ".result.success").removeClass("hidden");
-
                 if (data.done == '1' || json.error || data.error) {
+                    $(json.error || data.error ? ".result.error" : ".result.success").removeClass("hidden");
                     clearInterval(tid);
                     sessCont.find("#progressbar").addClass('hidden');
                     window.RestoredAssetIds = data.asset_ids;
