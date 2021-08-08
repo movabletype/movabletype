@@ -41,9 +41,6 @@ use MT::Worker::BackupRestore;
 
     sub _run_latest_job {
         $client->work_once($job);
-        my $sess = MT::BackupRestore::Session->load($job->uniqkey);
-        note 'Progress: '. Dumper(compact_progress($sess->progress));
-        note 'Error: '. $sess->error if $sess->error;
     }
 }
 
@@ -61,6 +58,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4,5,6&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 6,
+        background                   => 1,
     },
     {
         name                         => 'Parent site context zip roundtrip',
@@ -73,6 +71,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 4,
+        background                   => 1,
     },
     {
         name                         => 'Child site context zip roundtrip',
@@ -85,6 +84,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 4,
+        background                   => 1,
     },
     {
         name                         => 'Child site xml roundtrip',
@@ -97,6 +97,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=&restore_upload=1},
         expect_blog_added            => 4,
+        background                   => 1,
     },
     {
         name                         => 'child manifest via zip multiple roundtrip',
@@ -108,6 +109,7 @@ my $test_cases = [
         expected_content_disposition => qr{attachment; filename="Movable_Type-(.+)-Export.zip},
         file_convert                 => sub { get_manifest_from_zip(@_) },
         expected_dialog_param        => qr{__mode=dialog_restore_upload&start=1&files=&assets=&current_file=Movable_Type-(.+)-Export.xml&last=1&schema_version=(.+)&overwrite_templates=0&redirect=1},
+        background                   => 1,
     },
     {
         name                         => 'system zip single roundtrip',
@@ -120,6 +122,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 4,
+        background                   => 1,
     },
     {
         name                         => 'system zip single parent with child site roundtrip',
@@ -132,6 +135,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4,5&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 5,
+        background                   => 1,
     },
     {
         name                         => 'system zip single and parent site roundtrip',
@@ -144,6 +148,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4,5,6&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 6,
+        background                   => 1,
     },
     {
         name                         => 'system xml multiple roundtrip',
@@ -156,6 +161,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4,5,6&tmp_dir=&restore_upload=1},
         expect_blog_added            => 6,
+        background                   => 1,
     },
     {
         name                         => 'system tgz multiple roundtrip',
@@ -168,6 +174,7 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4,5,6&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 6,
+        background                   => 1,
     },
     {
         name                         => 'system manifest via zip multiple roundtrip',
@@ -179,6 +186,7 @@ my $test_cases = [
         expected_content_disposition => qr{attachment; filename="Movable_Type-(.+)-Export.zip},
         file_convert                 => sub { get_manifest_from_zip(@_) },
         expected_dialog_param        => qr{__mode=dialog_restore_upload&start=1&files=&assets=&current_file=Movable_Type-(.+)-Export.xml&last=1&schema_version=(.+)&overwrite_templates=0&redirect=1},
+        background                   => 1,
     },
     {
         name            => 'Backup by non-super user',
@@ -201,6 +209,20 @@ my $test_cases = [
         assert_progress              => 10,
         expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
         expect_blog_added            => 4,
+        background                   => 1,
+    },
+    {
+        name                         => 'foreground processing',
+        blog_id                      => '1',
+        backup_what                  => '1',
+        backup_archive_format        => 'zip',
+        local_filename               => 'test.zip',
+        expected_mime                => qr{^application/zip;},
+        expected_content_disposition => qr{attachment; filename="Movable_Type-(.+)-Export.zip},
+        assert_progress              => 10,
+        expected_dialog_param        => qr{__mode=dialog_adjust_sitepath&blog_ids=4&tmp_dir=%2Ftmp%2Frestore%3A1&restore_upload=1},
+        expect_blog_added            => 4,
+        background                   => 0,
     },
 ];
 
@@ -210,12 +232,14 @@ for my $props (@$test_cases) {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login(MT::Author->load($props->{author_id} || 1));
         $app->post_ok({
-            __mode => 'backup', blog_id => $props->{blog_id}, backup_what => $props->{backup_what},
-            backup_archive_format => $props->{backup_archive_format}, size_limit => 0, background => 1,
+            __mode                => 'backup', blog_id => $props->{blog_id}, backup_what => $props->{backup_what},
+            backup_archive_format => $props->{backup_archive_format}, size_limit => 0,
+            background            => $props->{background},
         });
         is($app->page_title, ($props->{blog_id} ? 'Export Site' : 'Export Sites'), 'right title');
 
-        _run_latest_job();
+        _run_latest_job() if $props->{background};
+        note_session('backup:' . $app->{user}->id);
 
         $app->get_ok({ __mode => 'backup_result' });
         my $json = MT::Util::from_json($app->{res}->content);
@@ -235,9 +259,10 @@ for my $props (@$test_cases) {
 
         # Upload is only allowed for super user
         $app->login(MT::Author->load(1));
-        $app->post_ok({ __mode => 'restore', background => 1, __test_upload => ['file', $path] });
+        $app->post_ok({ __mode => 'restore', background => $props->{background}, __test_upload => ['file', $path] });
 
-        _run_latest_job();
+        _run_latest_job() if $props->{background};
+        note_session('restore:1');
 
         $app->get_ok({ __mode => 'restore_result' });
         my $res2  = $app->{res};
@@ -275,6 +300,12 @@ sub compact_progress {
         $messages{$id} = $e->{message};
     }
     return [map { $messages{$_} } @keys];
+}
+
+sub note_session {
+    my $sess = MT::BackupRestore::Session->load(shift);
+    note 'Progress: ' . Dumper(compact_progress($sess->progress));
+    note 'Error: ' . $sess->error if $sess->error;
 }
 
 sub write_temp_file {
