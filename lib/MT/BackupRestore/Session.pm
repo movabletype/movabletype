@@ -24,10 +24,6 @@ sub start {
     $sess->kind('BU');
     $sess->name($name);
     $sess->start(time);
-    $sess->set('progress', []);
-    $sess->set('files',    {});
-    $sess->set('urls',     []);
-    $sess->set('done',     0);
     $sess->save;
     return bless { sess => $sess }, $class;
 }
@@ -50,8 +46,8 @@ sub sess {
 
 sub get_offset_progress {
     my ($self)  = @_;
-    my $all     = $self->get('progress');
-    my $offset  = $self->get('progress_offset') || 0;
+    my $all     = $self->get('progress', []);
+    my $offset  = $self->get('progress_offset', 0);
     my $offset2 = scalar(@$all);
     $self->sess->set('progress_offset', $offset2);
     $self->sess->save;
@@ -64,12 +60,12 @@ sub progress {
         die '$progress must be an ARRAY ref' unless (ref $progress && ref $progress eq 'ARRAY');
         my $array = (ref $progress->[0]) ? $progress : [$progress];
         $self = $self->load;
-        my $loaded = $self->sess->get('progress');
+        my $loaded = $self->get('progress', []);
         @$loaded = () unless $append;
         push @{$loaded}, { message => $_->[0], $_->[1] ? (id => $_->[1]) : () } for @$array;
         $self->sess->save;
     } else {
-        return $self->get('progress');
+        return $self->get('progress', []);
     }
 }
 
@@ -79,13 +75,13 @@ sub urls {
         die '$url must be an ARRAY ref' unless (ref $urls && ref $urls eq 'ARRAY');
         if ($append) {
             $self = $self->load;
-            push @{ $self->sess->get('urls') }, @$urls;
+            push @{ $self->get('urls', []) }, @$urls;
             return $self->sess->save;
         } else {
             return $self->set('urls', $urls);
         }
     } else {
-        return $self->get('urls');
+        return $self->get('urls', []);
     }
 }
 
@@ -93,17 +89,17 @@ sub file {
     my ($self, $fname) = @_;
     if (defined($fname)) {
         $self = $self->load;
-        $self->sess->get('files')->{$fname} = 1;
+        $self->get('files', {})->{$fname} = 1;
         return $self->sess->save;
     } else {
-        return $self->get('files');
+        return $self->get('files', {});
     }
 }
 
 sub check_file {
     my ($self, $fname) = @_;
     $self = $self->load;
-    return unless $self->sess->get('files')->{$fname};
+    return unless $self->get('files', {})->{$fname};
     return $fname;
 }
 
@@ -113,13 +109,13 @@ sub asset_ids {
         die '$url must be an ARRAY ref' unless (ref $asset_ids && ref $asset_ids eq 'ARRAY');
         if ($append) {
             $self = $self->load;
-            push @{ $self->sess->get('asset_ids') }, @$asset_ids;
+            push @{ $self->get('asset_ids', []) }, @$asset_ids;
             return $self->sess->save;
         } else {
             return $self->set('asset_ids', $asset_ids);
         }
     } else {
-        return $self->get('asset_ids') || [];
+        return $self->get('asset_ids', []);
     }
 }
 
@@ -131,23 +127,23 @@ sub dir {
         return                                  unless -d $dir && -w $dir;
         return $self->set('dir', $dir);
     } else {
-        return $self->get('dir');
+        return $self->get('dir', '');
     }
 }
 
 sub dialog_params {
     my ($self, $params) = @_;
-    return defined($params) ? $self->set('dialog_params', $params) : $self->get('dialog_params');
+    return defined($params) ? $self->set('dialog_params', $params) : $self->get('dialog_params', '');
 }
 
 sub error {
     my ($self, $error) = @_;
-    return defined($error) ? $self->set('error', $error) : $self->get('error');
+    return defined($error) ? $self->set('error', $error) : $self->get('error', '');
 }
 
 sub done {
     my ($self, $done) = @_;
-    return defined($done) ? $self->set('done', $done) : $self->get('done');
+    return defined($done) ? $self->set('done', $done) : ($self->get('done', 0));
 }
 
 sub set {
@@ -159,8 +155,11 @@ sub set {
 }
 
 sub get {
-    my ($self, $name) = @_;
-    return $self->load->sess->get($name);
+    my ($self, $name, $default) = @_;
+    my $ret = $self->load->sess->get($name);
+    return $ret                                    if defined($ret);
+    return $self->load->sess->set($name, $default) if defined($default);
+    return;
 }
 
 sub purge {
