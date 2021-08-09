@@ -1756,7 +1756,7 @@ sub filtered_list {
 
         $MT::DebugMode && $debug->{section}->('prepare load cols');
         for my $col (@cols) {
-            my $prop = $props->{$col};
+            my $prop = $props->{$col} or next;
             my @result;
             if ( $prop->has('bulk_html') ) {
                 @result = $prop->bulk_html( $objs, $app, \%load_options );
