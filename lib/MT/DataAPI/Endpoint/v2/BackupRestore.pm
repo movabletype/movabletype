@@ -35,7 +35,7 @@ sub backup {
         local *MT::build_page                     = sub { };
 
         my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
-        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[2]; $_backup_finisher->(@_), $app->user };
+        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[2]; $_backup_finisher->(@_) };
 
         MT::CMS::Tools::create_backup_job($app)->();
     }
