@@ -127,8 +127,12 @@ sub request {
         # avoid processing multiple requests in a second
         sleep 1;
 
-        push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params, 1) unless $self->{no_redirect};
+        my $max_redirect = $self->{max_redirect};
+        $max_redirect = 0 if $self->{no_redirect};
+        if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
+            push @{ $self->{locations} ||= [] }, $uri;
+            return $self->request($params, 1);
+        }
     }
 
     if (my $message = $self->message_text) {
