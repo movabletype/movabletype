@@ -41,7 +41,7 @@ sub init {
         *MT::App::print = sub {
             my $app = shift;
             if ($app->{redirect}) {
-                $app->{__test_output} = '';
+                $app->{__test_output} = '' unless $app->{__test_output} =~ /Status:/;
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
