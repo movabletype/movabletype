@@ -446,6 +446,14 @@ sub global_perms {
         my $r = ( $cur_perm =~ /'$perm_name'/i ) ? 1 : 0;
         return $r;
     }
+
+    # only for testing
+    sub reset_permissions {
+        my $pkg = shift;
+        return unless $ENV{TEST_ACTIVE};
+        @Perms = %Perms = ();
+        $pkg->perms();
+    }
 }
 
 sub can_do {
