@@ -1110,6 +1110,18 @@ sub skip_unless_plugin_exists {
     plan skip_all => "$config does not exist" unless -f $config;
 }
 
+sub plugin_exists {
+    my ($self, $name) = @_;
+    my $config = "$MT_HOME/plugins/$name/config.yaml";
+    -f $config ? 1 : 0;
+}
+
+sub addon_exists {
+    my ($self, $name) = @_;
+    my $config = "$MT_HOME/addons/$name/config.yaml";
+    -f $config ? 1 : 0;
+}
+
 sub disable_addon {
     my ($self, $name) = @_;
     my $config   = "$MT_HOME/addons/$name/config.yaml";
