@@ -113,8 +113,8 @@ sub request {
 
     # redirect?
     my $location;
-    if ($res->code =~ /^30/) {
-        $location = $res->headers->header('Location');
+    if ($res->header('Location')) {
+        $location = $res->header('Location');
     } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
