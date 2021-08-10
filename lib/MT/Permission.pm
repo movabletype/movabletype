@@ -394,8 +394,7 @@ sub global_perms {
             @list = @{ $list[0] };
         }
         foreach (@list) {
-            my $ref = $Perms{$_};
-            die "invalid permission" unless $ref;
+            my $ref = $Perms{$_} or next;
             next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
