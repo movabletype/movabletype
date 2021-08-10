@@ -21,7 +21,9 @@
         1
       </a>
     </li>
+  </virtual>
 
+  <virtual if={ store.page - 3 >= 1 }>
     <li class="page-item" aria-hidden="true">
       ...
     </li>
@@ -58,11 +60,13 @@
       </a>
     </li>
 
-  <virtual if={ store.page + 2 <= store.pageMax }>
+  <virtual if={ store.page + 3 <= store.pageMax }>
     <li class="page-item" aria-hidden="true">
       ...
     </li>
+  </virtual>
 
+  <virtual if={ store.page + 2 <= store.pageMax }>
     <li class="page-item first-last">
       <a href="javascript:void(0);"
         class="page-link"
