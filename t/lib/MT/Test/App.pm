@@ -193,6 +193,10 @@ sub _request_locally {
             );
             push @headers, 'Cookie' => CGI::Cookie->new(\%cookie)->as_string;
         }
+        for my $k (sort grep {/^HTTP_./} keys %ENV) {
+            my $f = ($k =~ /^HTTP_(.+)/)[0];
+            push @headers, $f => $ENV{$k};
+        }
     }
 
     require HTTP::Request::Common;
