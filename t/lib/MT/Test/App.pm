@@ -9,6 +9,7 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use JSON;
+use File::Basename;
 
 with qw(
     MT::Test::Role::Request
