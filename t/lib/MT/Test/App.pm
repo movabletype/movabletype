@@ -31,6 +31,7 @@ sub init {
         1, undef,
         sub {
             $_[1]->{__test_output}    = '';
+            $_[1]->{redirect}         = 0;
             $_[1]->{upgrade_required} = 0;
         },
     ) or die(MT->errstr);
@@ -38,6 +39,9 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
+            if ($app->{redirect}) {
+                $app->{__test_output} = '';
+            }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
         };
