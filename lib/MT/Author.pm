@@ -703,7 +703,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . $pass );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
     }
     else {
 

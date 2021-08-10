@@ -69,12 +69,25 @@ sub is_valid_password {
     }
     elsif ( $real_pass =~ m/^{SHA}(.*)\$(.*)/ ) {
         my ( $salt, $value ) = ( $1, $2 );
-        return $value eq MT::Util::perl_sha1_digest_hex( $salt . $pass );
+        if ($value eq MT::Util::perl_sha1_digest_hex( $salt . $pass )) {
+            unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                $author->set_password($pass);
+                $author->save;
+            }
+            return 1;
+        }
+        return;
     }
     else {
-
         # the password is stored using the old hashing method
-        return crypt( $pass, $real_pass ) eq $real_pass;
+        if (crypt( $pass, $real_pass ) eq $real_pass) {
+            unless ( $pass =~ /[^\x20-\x7E]/ ) {
+                $author->set_password($pass);
+                $author->save;
+            }
+            return 1;
+        }
+        return;
     }
 }
 
