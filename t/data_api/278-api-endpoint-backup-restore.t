@@ -168,8 +168,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
-                        $filename );
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir, 'backup:1', $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
             },
@@ -194,8 +193,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
-                        $filename );
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir, 'backup:1', $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
             },
@@ -220,8 +218,7 @@ sub suite {
 
                 for my $url ( @{ $got->{backupFiles} } ) {
                     my ($filename) = $url =~ m/name=([^&]+)/;
-                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir,
-                        $filename );
+                    my $filepath = File::Spec->catfile( MT->config->ExportTempDir, 'backup:1', $filename );
                     ok( -e $filepath, "$filepath exists" );
                 }
             },
@@ -372,4 +369,3 @@ sub suite {
 
     ];
 }
-

@@ -1,69 +1,169 @@
 <mt:setvarblock name="page_title"><__trans phrase="Import from Exported file"></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="restore" value="1">
 
-<mt:setvarblock name="page_content">
-<mt:if name="error">
-  <mtapp:statusmsg
-     id="generic-error"
-     class="danger"
-     can_close="0">
-    <mt:var name="error">
-  </mtapp:statusmsg>
-</mt:if>
-
-<div id="restore-panel">
-<mt:if name="missing_sax">
-  <mtapp:statusmsg
-     id="missing-sax"
-     class="danger"
-     can_close="0">
-    <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
-  </mtapp:statusmsg>
-<mt:else>
-  <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
-    <input type="hidden" name="__mode" value="restore" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-    <mtapp:setting
-       id="file"
-       label="<__trans phrase="Exported File">"
-       help_page="backup_restore"
-       help_section="source_file">
-      <input name="file" class="form-control-file" type="file" />
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="overwrite_global_templates"
-       label="<__trans phrase="Options">"
-       show_label="0">
-      <div class="custom-control custom-checkbox">
-        <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
-        <label class="custom-control-label" for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
-      </div>
-    </mtapp:setting>
-
-    <mt:setvarblock name="action_buttons">
-      <button
-         type="submit"
-         accesskey="i"
-         title="<__trans phrase="Import (i)">"
-         class="restore action primary button btn btn-primary">
-        <__trans phrase="Import">
-      </button>
-    </mt:setvarblock>
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-  </form>
-</mt:if>
-</div>
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.mt-mainContent .hidden {
+    display: none;
+}
+</style>
 </mt:setvarblock>
 
-<mt:setvarblock name="jq_js_include" append="1">
-<mt:if name="open_dialog">
-jQuery.fn.mtModal.open(
-  '<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&<mt:var name="dialog_params">',
-  { large: true }
-);
-</mt:if>
+<mt:setvarblock name="page_content">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="danger"
+            can_close="0">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <mt:if name="inserted_job">
+        <mtapp:statusmsg id="inserted_job" class="alert" can_close="0">
+            <__trans phrase="Import job is inserted">
+        </mtapp:statusmsg>
+    </mt:if>
+
+    <div id="restore-panel">
+        <mt:if name="missing_sax">
+            <mtapp:statusmsg
+                id="missing-sax"
+                class="danger"
+                can_close="0">
+            <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
+            </mtapp:statusmsg>
+        <mt:else>
+            <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+                <input type="hidden" name="__mode" value="restore" />
+                <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+                <mtapp:setting
+                    id="file"
+                    label="<__trans phrase="Exported File">"
+                    help_page="backup_restore"
+                    help_section="source_file">
+                    <input name="file" class="form-control-file" type="file" />
+                </mtapp:setting>
+
+                <mtapp:setting
+                    id="overwrite_global_templates"
+                    label="<__trans phrase="Options">"
+                    show_label="0">
+                    <div class="custom-control custom-checkbox">
+                        <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
+                        <label class="custom-control-label" for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+                    </div>
+                </mtapp:setting>
+
+                <mtapp:setting
+                    id="background_process"
+                    label="<__trans phrase="Options">"
+                    show_label="0">
+                    <div class="custom-control custom-checkbox">
+                        <input name="background" value="1" id="background_process" type="checkbox" class="custom-control-input">
+                        <label class="custom-control-label" for="background_process"><__trans phrase="Process on background."></label>
+                    </div>
+                </mtapp:setting>
+
+                <mt:setvarblock name="action_buttons">
+                    <button
+                        type="submit"
+                        accesskey="i"
+                        title="<__trans phrase="Import (i)">"
+                        class="restore action primary button btn btn-primary">
+                        <__trans phrase="Import">
+                    </button>
+                </mt:setvarblock>
+                <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+            </form>
+        </mt:if>
+    </div>
+
+    <div class="sessionContainer mt-6 hidden">
+        <div class="import-process">
+            <div id="progressbar" class="mt-progress mb-3 hidden">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" data-role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-block">
+                <pre class="pre-scrollable progress-log p-3"><code><__trans phrase="Importing Movable Type"></code></pre>
+            </div>
+        </div>
+
+        <div class="result success hidden">
+            <h2><__trans phrase="All data imported successfully!"></h2>
+            <mt:unless name="restore_upload">
+                <p><__trans phrase="Make sure that you remove the files that you imported from the 'import' folder, so that if/when you run the import process again, those files will not be re-imported."></p>
+            </mt:unless>
+        </div>
+        <div class="result error hidden">
+            <mtapp:statusmsg id="error" class="danger" can_close="0">
+                <__trans phrase="An error occurred during the import process: [_1] Please check activity log for more details." params="">
+            </mtapp:statusmsg>
+        </div>
+    </div>
+    <script>
+    (function($){
+        var session_exists = <mt:var name="session_exists" escape="js">;
+        var session_done   = <mt:var name="session_done" escape="js">;
+        if (!session_exists) {
+            return;
+        }
+        var sessCont = $(".sessionContainer");
+        sessCont.removeClass("hidden");
+        $("#restore-panel form").on("submit", function(){
+            sessCont.addClass("hidden");
+        });
+        var progress = sessCont.find(".progress-log");
+        var init_offset = 1;
+        var tid;
+        var fetchResult = function(){
+            var offset_query = init_offset-- === 1 ? '&init_offset=1' : '';
+            $.ajax({
+                type: 'GET',
+                url: '<mt:var name="script_url" escape="js">?__mode=restore_result' + offset_query,
+                dataType: 'json'
+            }).done(function(json) {
+                var data = json.result;
+                data.progress.forEach(function(e, i){
+                    var div = e.id ? progress.find(".id" + e.id) : null;
+                    if (div && div.length) {
+                        div.text(e.message);
+                    } else {
+                        var div2 = $("<div/>").text(e.message);
+                        if (e.id) {
+                            div2.addClass("id" + e.id);
+                        }
+                        progress.append(div2);
+                    }
+                });
+
+                if (data.done == '1' || json.error || data.error) {
+                    $(json.error || data.error ? ".result.error" : ".result.success").removeClass("hidden");
+                    clearInterval(tid);
+                    sessCont.find("#progressbar").addClass('hidden');
+                    window.RestoredAssetIds = data.asset_ids;
+                    if (data.dialog_params) {
+                        jQuery.fn.mtModal.open(
+                            '<mt:var name="script_url" escape="js">?' + data.dialog_params,
+                            { large: true }
+                        );
+                    }
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                console.error(jqXHR, textStatus, errorThrown);
+            });
+        };
+        if (session_done) {
+            fetchResult();
+        } else {
+            sessCont.find("#progressbar").removeClass('hidden');
+            tid = setInterval(fetchResult, 5000);
+        }
+    })(jQuery);
+    </script>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

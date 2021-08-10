@@ -56,8 +56,6 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
 
     '_BACKUP_TEMPDIR_WARNING' =>
         'Requested data has been exported successfully in the [_1] directory.  Make sure that you download and <strong>then delete</strong> files listed above from [_1] by clicking each link or with the help of an FTP client.',
-    '_BACKUP_DOWNLOAD_MESSAGE' =>
-        'Downloading of the exported file will start automatically in a few seconds.  If for some reason it does not, click <a href="javascript:(void)" onclick="submit_form()">here</a> to start downloading manually.  Please note that you can download the exported file only once for a session.',
     '_USAGE_BOOKMARKLET_1' =>
         'Setting up QuickPost to post to Movable Type allows you to perform one-click posting and publishing without ever entering through the main Movable Type interface.',
     '_USAGE_BOOKMARKLET_2' =>
@@ -315,4 +313,3 @@ Judges whether this language consists of only ASCII codes. Returns 1.
 Please see L<MT/AUTHOR & COPYRIGHT>.
 
 =cut
-

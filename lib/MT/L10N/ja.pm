@@ -5007,7 +5007,6 @@ use vars qw( @ISA %Lexicon );
 	'Download: [_1]' => 'ダウンロード: [_1]',
 	'Export Files' => 'エクスポートファイル',
 	'_BACKUP_TEMPDIR_WARNING' => 'バックアップはディレクトリ[_1]に正常に保存されました。一覧に表示されたリンクをクリックしてファイルごとにダウンロードするか、FTP などでサーバーに直接接続し、[_1] にあるファイルをすべてダウンロード後、該当ディレクトリ内のファイルを削除してください。',
-	q{_BACKUP_DOWNLOAD_MESSAGE} => q{数秒後にバックアップファイルのダウンロードが開始します。ダウンロードが始まらない場合は<a href='#' onclick='submit_form()'>ここ</a>をクリックしてください。},
 
 ## tmpl/cms/include/backup_start.tmpl
 	'Exporting Movable Type' => 'エクスポートを開始',

@@ -1,100 +1,217 @@
 <mt:setvarblock name="page_title"><mt:if name="blog_id"><__trans phrase="Export Site"><mt:else><__trans phrase="Export Sites"></mt:if></mt:setvarblock>
 <mt:setvar name="position_actions_bottom" value="1">
-<mt:setvar name="backup" value="1">
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.mt-mainContent .hidden {
+    display: none;
+}
+</style>
+</mt:setvarblock>
 
 <mt:setvarblock name="page_content">
 
-<mt:if name="error">
-  <mtapp:statusmsg
-     id="generic-error"
-     class="danger"
-     can_close="0">
-    <mt:var name="error">
-  </mtapp:statusmsg>
-</mt:if>
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="danger"
+            can_close="0">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
 
-<div id="backup-panel">
-  <form method="post" action="<mt:var name="script_url">">
-    <input type="hidden" name="__mode" value="backup" />
-    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
-  <mt:if name="blog_id">
-    <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
-    <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="backup_what">" />
-  <mt:else>
-    <input type="hidden" id="blog_id" name="blog_id" value="0" />
-    <mtapp:setting
-       id="backup_what"
-       label="<__trans phrase="What to Export">"
-       help_page="backup_restore"
-       help_section="backup_what">
-      <div>
-        <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
-        <span id="selected_blogs"><__trans phrase="Everything"></span>
-        <span id="selected_blogs_link" style="display: none;"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').style.display='none';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a> |</span>
-        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
-          <__trans phrase="Choose sites...">
-        </a>
-      </div>
-    </mtapp:setting>
-  </mt:if>
+    <mt:if name="inserted_job">
+        <mtapp:statusmsg id="inserted_job" class="alert" can_close="0">
+            <__trans phrase="Export job is inserted">
+        </mtapp:statusmsg>
+    </mt:if>
 
-    <mtapp:setting
-       id="backup_archive_format"
-       label="<__trans phrase="Archive Format">"
-       help_page="backup_restore"
-       help_section="backup_format">
-      <div class="form-group">
-      <mt:loop name="archive_formats">
-        <div class="custom-control custom-radio">
-          <input type="radio" id="<mt:var name="key">" class="custom-control-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
-          <label class="custom-control-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
-        </div>
-        <mt:if name="__last__">
-          <mt:setvar name="format_available">
-        </mt:if>
-      </mt:loop>
-        <div class="custom-control custom-radio">
-          <input type="radio" id="no_archive" class="custom-control-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
-          <label class="custom-control-label" for="no_archive"><__trans phrase="Don't compress"></label>
-        </div>
-      </div>
-    </mtapp:setting>
-
-    <mtapp:setting
-       id="size_limit"
-       label="<__trans phrase="Target File Size">"
-       label_for="size_limit"
-       help_page="backup_restore"
-       help_section="backup_num_size">
-      <select name="size_limit" id="size_limit" class="custom-select form-control">
-        <option value="0" selected="selected"><__trans phrase="No size limit"></option>
-      <mt:if name="OVER_300">
-        <option value="300">300KB</option>
-        <mt:if name="OVER_500">
-        <option value="500">500KB</option>
-          <mt:if name="OVER_1024">
-        <option value="1024">1MB</option>
-            <mt:if name="OVER_2048">
-        <option value="2048">2MB</option>
+    <div id="backup-panel">
+        <form method="post" action="<mt:var name="script_url">">
+            <input type="hidden" name="__mode" value="backup" />
+            <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+            <mt:if name="blog_id">
+                <input type="hidden" id="blog_id" name="blog_id" value="<mt:var name="blog_id">" />
+                <input type="hidden" id="selected_blog_ids" name="backup_what" value="<mt:var name="backup_what">" />
+            <mt:else>
+                <input type="hidden" id="blog_id" name="blog_id" value="0" />
+                <mtapp:setting
+                    id="backup_what"
+                    label="<__trans phrase="What to Export">"
+                    help_page="backup_restore"
+                    help_section="backup_what">
+                    <div>
+                        <input type="hidden" id="selected_blog_ids" name="backup_what" value="" />
+                        <span id="selected_blogs"><__trans phrase="Everything"></span>
+                        <span id="selected_blogs_link" style="display: none;"><a href="javascript:void(0);" onclick="document.getElementById( 'selected_blogs_link').style.display='none';var e=document.getElementById('selected_blogs');e.innerHTML='<__trans phrase="Everything" escape="js">';return false;"><__trans phrase="Reset"></a> |</span>
+                        <a href="<mt:var name="script_url">?__mode=dialog_select_website&amp;multi=1&amp;idfield=selected_blog_ids&amp;namefield=selected_blogs" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+                        <__trans phrase="Choose sites...">
+                        </a>
+                    </div>
+                </mtapp:setting>
             </mt:if>
-          </mt:if>
-        </mt:if>
-      </mt:if>
-      </select>
-    </mtapp:setting>
 
-    <mt:setvarblock name="action_buttons">
-      <button
-         type="submit"
-         accesskey="e"
-         title="<__trans phrase="Export (e)">"
-         class="action primary button btn btn-primary">
-        <__trans phrase="Export">
-      </button>
-    </mt:setvarblock>
-    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
-  </form>
-</div>
+            <mtapp:setting
+                id="backup_archive_format"
+                label="<__trans phrase="Archive Format">"
+                help_page="backup_restore"
+                help_section="backup_format">
+                <div class="form-group">
+                    <mt:loop name="archive_formats">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="<mt:var name="key">" class="custom-control-input" name="backup_archive_format" value="<mt:var name="key">"<mt:if name="__first__"> checked="checked"</mt:if> />
+                            <label class="custom-control-label" for="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></label>
+                        </div>
+                        <mt:if name="__last__">
+                            <mt:setvar name="format_available">
+                        </mt:if>
+                    </mt:loop>
+                    <div class="custom-control custom-radio">
+                        <input type="radio" id="no_archive" class="custom-control-input" name="backup_archive_format" value="0"<mt:unless name="format_available"> checked="checked"</mt:unless> />
+                        <label class="custom-control-label" for="no_archive"><__trans phrase="Don't compress"></label>
+                    </div>
+                </div>
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="size_limit"
+                label="<__trans phrase="Target File Size">"
+                label_for="size_limit"
+                help_page="backup_restore"
+                help_section="backup_num_size">
+                <select name="size_limit" id="size_limit" class="custom-select form-control">
+                    <option value="0" selected="selected"><__trans phrase="No size limit"></option>
+                    <mt:if name="OVER_300">
+                        <option value="300">300KB</option>
+                        <mt:if name="OVER_500">
+                            <option value="500">500KB</option>
+                            <mt:if name="OVER_1024">
+                                <option value="1024">1MB</option>
+                                <mt:if name="OVER_2048">
+                                    <option value="2048">2MB</option>
+                                </mt:if>
+                            </mt:if>
+                        </mt:if>
+                    </mt:if>
+                </select>
+            </mtapp:setting>
+
+            <mtapp:setting
+                id="background_process"
+                label="<__trans phrase="Options">"
+                show_label="0">
+                <div class="custom-control custom-checkbox">
+                    <input name="background" value="1" id="background_process" type="checkbox" class="custom-control-input">
+                    <label class="custom-control-label" for="background_process"><__trans phrase="Process on background."></label>
+                </div>
+            </mtapp:setting>
+
+            <mt:setvarblock name="action_buttons">
+                <button
+                    type="submit"
+                    accesskey="e"
+                    title="<__trans phrase="Export (e)">"
+                    class="action primary button btn btn-primary">
+                    <__trans phrase="Export">
+                </button>
+            </mt:setvarblock>
+            <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+        </form>
+    </div>
+
+    <div class="sessionContainer mt-6 hidden">
+        <div class="backup-status">
+            <div id="progressbar" class="mt-progress mb-3 hidden">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" data-role="progressbar" style="width: 100%;" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
+            </div>
+            <div class="card card-block">
+                <pre class="pre-scrollable progress-log p-3"><code><__trans phrase="Exporting Movable Type"></code></pre>
+            </div>
+        </div>
+
+        <div class="result success hidden">
+            <h2><__trans phrase="All of the data has been exported successfully!"></h2>
+            <div class="files">
+                <p><__trans phrase="_BACKUP_TEMPDIR_WARNING" params="<mt:var name="tempdir">"></p>
+                <h2><__trans phrase="Export Files"></h2>
+                <ul id="backup-files">
+                </ul>
+            </div>
+        </div>
+        <div class="result error hidden">
+            <p>
+                <strong><__trans phrase="An error occurred during the export process: [_1]" params="<mt:var name="error">"></strong>
+            </p>
+        </div>
+    </div>
+    <script>
+    (function($){
+        var session_exists = <mt:var name="session_exists" escape="js">;
+        var session_done   = <mt:var name="session_done" escape="js">;
+        if (!session_exists) {
+            return;
+        }
+        var sessCont = $(".sessionContainer");
+        sessCont.removeClass("hidden");
+        $("#backup-panel form").on("submit", function(){
+            sessCont.addClass("hidden");
+        });
+        var progress = sessCont.find(".progress-log");
+        var init_offset = 1;
+        var tid;
+        var fetchResult = function(){
+            var offset_query = init_offset-- === 1 ? '&init_offset=1' : '';
+            $.ajax({
+                type: 'GET',
+                url: '<mt:var name="script_url" escape="js">?__mode=backup_result' + offset_query,
+                dataType: 'json'
+            }).done(function(json) {
+                var data = json.result;
+                data.progress.forEach(function(e, i){
+                    var div = e.id ? progress.find(".id" + e.id) : null;
+                    if (div && div.length) {
+                        div.text(e.message);
+                    } else {
+                        var div2 = $("<div/>").text(e.message);
+                        if (e.id) {
+                            div2.addClass("id" + e.id);
+                        }
+                        progress.append(div2);
+                    }
+                });
+
+                if (data.done == '1' || json.error || data.error) {
+                    $(json.error || data.error ? ".result.error" : ".result.success").removeClass("hidden");
+                    clearInterval(tid);
+                    sessCont.find("#progressbar").addClass('hidden');
+                    sessCont.find(".result.success").removeClass('hidden');
+                    sessCont.find(".files").removeClass('hidden');
+                    data.urls.forEach(function(e, i){
+                        var a = $("<a/>").attr({
+                            "target" : "<__trans phrase="_external_link_target" escape="js">",
+                            "href"   : '<mt:var name="script_url" escape="js">?' + e.url,
+                            "title"  : "<__trans phrase="Download This File" escape="js">",
+                            "download" : true
+                        }).text(e.filename);
+                        var li = $("<li/>").append(a).addClass('list-item');
+                        sessCont.find("#backup-files").append(li);
+                    });
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown){
+                console.error(jqXHR, textStatus, errorThrown);
+            });
+        };
+        if (session_done) {
+            fetchResult();
+        } else {
+            sessCont.find("#progressbar").removeClass('hidden');
+            tid = setInterval(fetchResult, 5000);
+        }
+    })(jQuery);
+    </script>
 </mt:setvarblock>
 
 <mt:include name="layout/default.tmpl">

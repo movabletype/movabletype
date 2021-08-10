@@ -174,7 +174,7 @@ sub remove {
     else {
         my $ret = $self->SUPER::remove(@_);
         $self->remove_children if $self->id;
-        MT->app->reboot;
+        MT->app->reboot if ref(MT->app) eq 'MT::App';
         return $ret;
     }
 
@@ -211,7 +211,7 @@ sub permission {
 sub _post_save {
     my ( $cb, $obj, $original ) = @_;
 
-    MT->app->reboot;
+    MT->app->reboot if ref(MT->app) eq 'MT::App';
 }
 
 sub _pre_remove {
@@ -235,7 +235,7 @@ sub _pre_remove {
         $role->save;
     }
 
-    MT->app->reboot;
+    MT->app->reboot if ref(MT->app) eq 'MT::App';
 }
 
 sub related_content_type {

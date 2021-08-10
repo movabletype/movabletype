@@ -15,7 +15,7 @@ use MT::Util;
 use MT::CMS::Tools;
 
 sub backup {
-    my ( $app, $endpoint ) = @_;
+    my ($app, $endpoint) = @_;
 
     return
            unless _check_tmp_dir($app)
@@ -27,7 +27,7 @@ sub backup {
 
     my $param;
     {
-        local $app->{no_print_body};
+        local $app->{no_print_body} = 1;
 
         no warnings 'redefine';
         local *MT::App::DataAPI::send_http_header = sub { };
@@ -35,44 +35,33 @@ sub backup {
         local *MT::build_page                     = sub { };
 
         my $_backup_finisher = \&MT::CMS::Tools::_backup_finisher;
-        local *MT::CMS::Tools::_backup_finisher
-            = sub { $param = $_[2]; $_backup_finisher->(@_) };
+        local *MT::CMS::Tools::_backup_finisher = sub { $param = $_[2]; $_backup_finisher->(@_) };
 
-        MT::CMS::Tools::backup($app);
+        MT::CMS::Tools::create_backup_job($app)->();
     }
 
     # Error.
     return if $app->errstr;
-    if ( !$param->{backup_success} ) {
-        return $app->error(
-            $app->translate(
-                'An error occurred during the backup process: [_1]',
-                $param->{error}
-            ),
-            500,
-        );
+    if ($param->{error}) {
+        return $app->error($app->translate('An error occurred during the backup process: [_1]', $param->{error}), 500);
     }
 
     # Success.
-    if (  !$param->{files_loop}
-        && $app->permissions->can_do('backup_download') )
-    {
-        $app->param( 'filename', $param->{filename} );
+    if (!$param->{files_loop} && $app->permissions->can_do('backup_download')) {
+        $app->param('filename', $param->{filename});
         return MT::CMS::Tools::backup_download($app);
-    }
-    else {
+    } else {
         return +{
             status      => 'success',
-            backupFiles => ( $param->{files_loop} )
-            ? [ map { $_->{url} } @{ $param->{files_loop} } ]
-            : [ $app->uri(
+            backupFiles => ($param->{files_loop})
+            ? [map { $_->{url} } @{ $param->{files_loop} }]
+            : [
+                $app->uri(
                     mode => 'backup_download',
                     args => {
                         magic_token => $param->{magic_token},
-                        filename =>
-                            MT::Util::encode_html( $param->{filename} ),
-                        $param->{blog_id} ? ( blog_id => $param->{blog_id} )
-                        : (),
+                        filename    => MT::Util::encode_html($param->{filename}),
+                        $param->{blog_id} ? (blog_id => $param->{blog_id}) : (),
                     },
                 )
             ],
@@ -87,11 +76,9 @@ sub _check_tmp_dir {
     require MT::FileMgr;
     my $fmgr = MT::FileMgr->new('Local');
     $fmgr->mkpath($tmp) unless -d $tmp;
-    unless ( ( -d $tmp ) && ( -w $tmp ) ) {
+    unless ((-d $tmp) && (-w $tmp)) {
         return $app->error(
-            $app->translate(
-                'Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.'
-            ),
+            $app->translate('Temporary directory needs to be writable for backup to work correctly.  Please check (Export)TempDir configuration directive.'),
             409
         );
     }
@@ -102,24 +89,20 @@ sub _check_tmp_dir {
 sub _check_backup_what {
     my ($app) = @_;
 
-    if ( my $blog_id = $app->param('blog_id') ) {
+    if (my $blog_id = $app->param('blog_id')) {
 
         # Set default value to "backup_what" parameter.
-        my $backup_what = join ',',
-            MT::CMS::Tools::_allowed_blog_ids_for_backup( $app, $blog_id );
-        $app->param( 'backup_what', $backup_what );
-    }
-    else {
+        my $backup_what = join ',', MT::CMS::Tools::_allowed_blog_ids_for_backup($app, $blog_id);
+        $app->param('backup_what', $backup_what);
+    } else {
 
         # Check backup_what.
-        if ( my $backup_what = $app->param('backup_what') ) {
+        if (my $backup_what = $app->param('backup_what')) {
             my @blog_ids = split ',', $backup_what;
-            my @blogs = $app->model('blog')->load( { id => \@blog_ids } );
-            if ( scalar @blog_ids != scalar @blogs ) {
+            my @blogs    = $app->model('blog')->load({ id => \@blog_ids });
+            if (scalar @blog_ids != scalar @blogs) {
                 return $app->error(
-                    $app->translate(
-                        'Invalid backup_what: [_1]', $backup_what
-                    ),
+                    $app->translate('Invalid backup_what: [_1]', $backup_what),
                     400
                 );
             }
@@ -133,18 +116,17 @@ sub _check_backup_archive_format {
     my ($app) = @_;
 
     my $backup_archive_format = $app->param('backup_archive_format');
-    if ( !defined $backup_archive_format ) {
+    if (!defined $backup_archive_format) {
 
         # Set default value to "backup_archive_format" parameter.
-        $app->param( 'backup_archive_format', 0 );
-    }
-    else {
+        $app->param('backup_archive_format', 0);
+    } else {
 
         # Check bakcup_archive_format.
         require MT::Util::Archive;
         my @formats = MT::Util::Archive->available_formats();
 
-        unless ( grep { $backup_archive_format eq $_->{key} } @formats ) {
+        unless (grep { $backup_archive_format eq $_->{key} } @formats) {
             return $app->error(
                 $app->translate(
                     'Invalid backup_archive_format: [_1]',
@@ -181,14 +163,14 @@ sub restore {
 
     my $param;
     {
-        local $app->{no_print_body};
+        local $app->{no_print_body} = 1;
 
         no warnings 'redefine';
         local *MT::App::DataAPI::send_http_header = sub { };
         local *MT::App::print_encode              = sub { };
         local *MT::build_page                     = sub { $param = $_[2] };
 
-        MT::CMS::Tools::restore($app);
+        MT::CMS::Tools::create_restore_job($app)->();
     }
 
     # TODO: Implement adjust_sitepath process and upload_asset process..

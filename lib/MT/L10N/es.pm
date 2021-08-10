@@ -4999,7 +4999,6 @@ r, inténtelo más tarde.',
 	'Download This File' => 'Descargar este fichero',
 	'Download: [_1]' => 'Descargar: [_1]',
 	'Export Files' => 'Exportar ficheros',
-	'_BACKUP_DOWNLOAD_MESSAGE' => 'La descarga del fichero de la copia de seguridad comenzará automáticamente dentro de unos segundos. Si por alguna razón no lo hace, haga clic <a href="javascript:(void)" onclick="submit_form()">aquí</a> para comenzar la descarga manualmente. Por favor, tenga en cuenta que solo puede descargar el fichero de la copia de seguridad una vez por sesión.',
 	'_BACKUP_TEMPDIR_WARNING' => 'La copia de seguridad se realizó con éxito en el directorio [_1]. Descargue y <strong>borre luego</strong> los ficheros listados abajo desde [_1] <strong>inmediatamente</strong>, porque los ficheros de la copia de seguridad contiene información sensible.',
 
 ## tmpl/cms/include/backup_start.tmpl

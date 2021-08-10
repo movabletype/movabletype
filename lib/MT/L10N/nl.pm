@@ -5001,7 +5001,6 @@ ter opnieuw te proberen.',
 	'Download: [_1]' => 'Download: [_1]',
 	'Export Files' => 'Exportbestanden',
 	'_BACKUP_TEMPDIR_WARNING' => 'Gevraagde gegevens zijn met succes gebackupt in de map [_1].  Gelieve bovenstaande bestanden te downloaden en vervolgens <strong>onmiddellijk te verwijderen</strong> uit [_1] omdat backupbestanden vertrouwelijke informatie bevatten.',
-	q{_BACKUP_DOWNLOAD_MESSAGE} => q{Het downloaden van het backup-bestand zal over een paar seconden automatisch beginnen.  Als dit niet het geval is om wat voor reden dan ook, klik dan <a href='#' onclick='submit_form()'>hier</a> om de download met de hand in gang te zetten.  Merk op dat u het backupbestand slechts één keer kunt downloaden gedurende een sessie.},
 
 ## tmpl/cms/include/backup_start.tmpl
 	'Exporting Movable Type' => 'Movable Type exporteren',

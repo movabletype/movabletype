@@ -894,7 +894,7 @@ sub _rebuild_permissions {
     return if !$app or $app->isa('MT::App::Upgrader');
 
     # In restoring, nothing to do.
-    return if $app->request('__restore_in_progress');
+    return if MT->request('__restore_in_progress');
 
     # rebuild permissions for this user / blog
     my $user_id = $perm->author_id;

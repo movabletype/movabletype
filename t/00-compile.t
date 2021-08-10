@@ -397,6 +397,8 @@ use_ok('MT::BackupRestore');
 use_ok('MT::BackupRestore::BackupFileHandler');
 use_ok('MT::BackupRestore::ManifestFileHandler');
 use_ok('MT::BackupRestore::BackupFileScanner');
+use_ok('MT::BackupRestore::Session');
+use_ok('MT::BackupRestore::UpgradeModels');
 
 # Cache support
 use_ok('MT::Cache::Negotiate');
@@ -415,6 +417,7 @@ use_ok('MT::Worker::Publish');
 use_ok('MT::Worker::Sync');
 use_ok('MT::Worker::Summarize');
 use_ok('MT::Worker::SummaryWatcher');
+use_ok('MT::Worker::BackupRestore');
 
 # Tag Handlers
 use_ok('MT::Template::Tags::Archive');
