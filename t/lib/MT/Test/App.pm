@@ -9,6 +9,7 @@ use URI;
 use URI::QueryParam;
 use Test::More;
 use JSON;
+use File::Basename;
 
 with qw(
     MT::Test::Role::Request
@@ -31,6 +32,7 @@ sub init {
         1, undef,
         sub {
             $_[1]->{__test_output}    = '';
+            $_[1]->{redirect}         = 0;
             $_[1]->{upgrade_required} = 0;
         },
     ) or die(MT->errstr);
@@ -38,6 +40,9 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
+            if ($app->{redirect}) {
+                $app->{__test_output} = '';
+            }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
         };
@@ -107,10 +112,12 @@ sub request {
 
     $self->{content} = $res->decoded_content // '';
 
+    $self->{html_content} = '';
+
     # redirect?
     my $location;
-    if ($res->code =~ /^30/) {
-        $location = $res->headers->header('Location');
+    if ($res->header('Location')) {
+        $location = $res->header('Location');
     } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
         $location = $2;
     }
@@ -122,8 +129,12 @@ sub request {
         # avoid processing multiple requests in a second
         sleep 1;
 
-        push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params, 1) unless $self->{no_redirect};
+        my $max_redirect = $self->{max_redirect};
+        $max_redirect = 0 if $self->{no_redirect};
+        if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
+            push @{ $self->{locations} ||= [] }, $uri;
+            return $self->request($params, 1);
+        }
     }
 
     if (my $message = $self->message_text) {
