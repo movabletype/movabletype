@@ -112,6 +112,8 @@ sub request {
 
     $self->{content} = $res->decoded_content // '';
 
+    $self->{html_content} = '';
+
     # redirect?
     my $location;
     if ($res->header('Location')) {
