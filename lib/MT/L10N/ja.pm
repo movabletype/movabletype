@@ -1285,7 +1285,7 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{公開終了日は、未来の日時を指定してください。},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{公開終了日は、公開日より未来の日時を指定してください。},
 	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3]が新しい[_1] '[_4]' (ID[_2])を追加しました},
-	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_1]' (ID:[_2])を削除しました},
+	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
 

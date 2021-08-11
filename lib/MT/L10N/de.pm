@@ -1284,7 +1284,7 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss im Format JJJJ-MM-TT SS:MM:SS angegeben werden.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunk, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss in der Zukunft liegen.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.},
-	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
+	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' gelöscht},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' bearbeitet},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
