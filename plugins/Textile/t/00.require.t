@@ -16,6 +16,8 @@ use lib qw( plugins/Textile );
 
 use MT;
 
+no Carp::Always;
+
 $MT::plugin_envelope = 'plugins/Textile';    # Supress warning.
 require_ok('textile2.pl');
 

@@ -15,7 +15,7 @@ BEGIN {
 use MT::Test::DataAPI;
 use MT::Test::Permission;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 use MT::App::DataAPI;
 my $app = MT::App::DataAPI->new;

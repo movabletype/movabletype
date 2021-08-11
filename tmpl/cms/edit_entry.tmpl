@@ -428,7 +428,16 @@
   <mt:unless name="sitepath_configured">
     <input type="hidden" name="status" id="status" value="1" />
     <span><__trans phrase="Unpublished"></span>
-    <span class="alert-warning-inline"><img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" /> <a href="<$mt:var name="script_url"$>?__mode=cfg_archives&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>"><mt:if name="object_type" eq="entry"><__trans phrase="You must configure this blog before you can publish this entry."><mt:else><__trans phrase="You must configure this blog before you can publish this page."></mt:if></a></span>
+    <span class="alert-warning-inline">
+        <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
+        <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;blog_id=<$mt:var name="blog_id"$>">
+            <mt:if name="object_type" eq="entry">
+                <__trans phrase="You must configure this site before you can publish this entry.">
+            <mt:else>
+                <__trans phrase="You must configure this site before you can publish this page.">
+            </mt:if>
+        </a>
+    </span>
   <mt:else>
     <mt:if name="can_publish_post">
     <select name="status" id="status" class="custom-select form-control full" onchange="highlightSwitch(this)">
@@ -795,18 +804,18 @@
   <input type="hidden" name="status" id="status" value="1" />
   <p class="alert-warning-inline">
     <img src="<$mt:var name="static_uri"$>images/status_icons/warning.gif" alt="<__trans phrase="Warning">" width="9" height="9" />
-    <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;id=<$mt:var name="blog_id"$>&amp;blog_id=<$mt:var name="blog_id"$>">
+    <a href="<$mt:var name="script_url"$>?__mode=cfg_prefs&amp;blog_id=<$mt:var name="blog_id"$>">
   <mt:if name="object_type" eq="entry">
-      <__trans phrase="You must configure this blog before you can publish this entry.">
+      <__trans phrase="You must configure this site before you can publish this entry.">
   <mt:else>
-      <__trans phrase="You must configure this blog before you can publish this page.">
+      <__trans phrase="You must configure this site before you can publish this page.">
     </mt:if>
     </a>
   </p>
 </mt:unless>
 </mtapp:widget>
 
-<div id="category-field"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
+<div id="category-field-wrapper"<mt:unless name="disp_prefs_show_category"> style="display: none;"</mt:unless>>
 <mt:if name="object_type" eq="entry">
   <mt:setvarblock name="header_action">
   <a href="javascript:void(0)" class="float-right category-toggle-link toggle-link" id="open-category-selector1" mt:command="open-category-selector" mt:close-el="close-category-selector1" title="<__trans phrase="Add category">">
@@ -1597,7 +1606,7 @@ div.mce-notification-error {
           <div class="tab" mt:command="set-editor-extended" mt:tab="extended">
             <label><a href="javascript:void(0);" tabindex="-1"><__trans phrase="Extended"></a></label>
           </div>
-          <div id="field-convert_breaks" class="form-inline d-none d-md-block">
+          <div id="field-convert_breaks" class="form-inline d-none d-lg-block">
             <__trans phrase="Format:">
             <select name="convert_breaks" id="convert_breaks" class="custom-select form-control">
             <mt:loop name="text_filters">
@@ -1623,7 +1632,7 @@ div.mce-notification-error {
     <mtapp:setting
       id="convert_breaks_for_mobile"
       label="<__trans phrase="Format">"
-      class="d-md-none">
+      class="d-lg-none">
       <select name="convert_breaks_for_mobile" id="convert_breaks_for_mobile" class="custom-select form-control">
       <mt:loop name="text_filters">
         <option value="<$mt:var name="filter_key"$>"<mt:if name="filter_selected"> selected="selected"</mt:if>><$mt:var name="filter_label" escape="html"$></option>

@@ -84,6 +84,7 @@ requires 'Net::IP';
 
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
+    requires 'AnyEvent::SMTP::Server';
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Array::Diff';
     requires 'Carp::Always';
@@ -92,8 +93,10 @@ on 'test' => sub {
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
+    requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
@@ -102,6 +105,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
@@ -128,6 +132,7 @@ on 'test' => sub {
     requires 'Test::LeakTrace';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
+    requires 'Test::MockTime::HiRes';
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Requires';

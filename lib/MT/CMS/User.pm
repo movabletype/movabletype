@@ -586,6 +586,9 @@ sub recover_lockout {
 sub upload_userpic {
     my $app = shift;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+
     $app->validate_magic() or return;
     return $app->errtrans("Invalid request.")
         if $app->param('blog_id');
@@ -1895,7 +1898,7 @@ sub post_delete {
                 "User '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'author',
             category => 'delete'
         }

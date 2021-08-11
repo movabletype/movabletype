@@ -83,16 +83,6 @@ BEGIN {
     }
 }
 
-# Override time and sleep so we can simulate time passing without making
-# test scripts wait for real wall seconds to pass.
-our $CORE_TIME;
-
-BEGIN {
-    *CORE::GLOBAL::time
-        = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub { CORE::sleep(shift) };
-}
-
 # Suppress output when "MailTransfer debug"
 unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
@@ -185,14 +175,6 @@ sub init_cms {
 
     require MT::App::CMS;
     MT->set_instance( MT::App::CMS->new( $cfg ? ( Config => $cfg ) : () ) );
-}
-
-sub init_time {
-    $CORE_TIME = time;
-
-    no warnings 'redefine';
-    *CORE::GLOBAL::time = sub {$CORE_TIME};
-    *CORE::GLOBAL::sleep = sub { $CORE_TIME += shift };
 }
 
 sub init_testdb {
@@ -1617,8 +1599,8 @@ sub _parse_query {
 sub _run_rpt {
     MT::Session->remove( { kind => 'PT' } );
     my $res = `perl -It/lib ./tools/run-periodic-tasks --verbose 2>&1`;
-    if ( $res =~ /Compilation failed|Can't locate/ ) {
-        diag $res;
+    if ( $res =~ /((?:Compilation failed|Can't locate).*)/ ) {
+        diag $1;
         BAIL_OUT;
     }
     $res;

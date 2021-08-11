@@ -226,6 +226,12 @@ sub bulk_update {
                 $app->translate( 'Invalid category_set_id: [_1]', $set_id ) );
             $set->name( scalar $app->param('set_name') );
             $set->save or return $app->json_error( $set->errstr );
+            $app->log({
+                message => $app->translate("Category Set '[_1]' (ID:[_2]) edited by '[_3]'", $set->name, $set->id, $app->user->name),
+                level    => MT::Log::NOTICE(),
+                class    => 'category_set',
+                category => 'edit',
+            });
         }
         else {
             $set = MT->model('category_set')->new;
@@ -235,6 +241,12 @@ sub bulk_update {
                 }
             );
             $set->save or return $app->json_error( $set->errstr );
+            $app->log({
+                message  => $app->translate("Category Set '[_1]' created by '[_2]'.", $set->name, $app->user->name),
+                level    => MT::Log::INFO(),
+                class    => 'category_set',
+                category => 'new',
+            });
             $set_id = $set->id;
             $app->param( 'set_id', $set_id );
         }
@@ -416,7 +428,7 @@ sub bulk_update {
                     $class->class_label,
                     $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $blog->class,
                 category => 'edit',
                 metadata => "[${previous_order}] => [${new_order}]",
@@ -696,7 +708,7 @@ sub post_save {
                     "Category '[_1]' (ID:[_2]) edited by '[_3]'",
                     $obj->label, $obj->id, $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 category => 'edit',
                 metadata => $obj->id,
@@ -773,7 +785,7 @@ sub post_delete {
                 "Category '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'category',
             category => 'delete'
         }

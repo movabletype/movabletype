@@ -613,6 +613,9 @@ sub js_upload_file {
 sub upload_file {
     my $app = shift;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
             unless $perms->can_do('upload');
@@ -961,7 +964,7 @@ sub post_delete {
                 "File '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->file_name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'asset',
             category => 'delete'
         }
@@ -1239,38 +1242,45 @@ sub _make_upload_destinations {
         path  => '%s/%y/%m/%d',
         };
 
-    if ( $blog->column('archive_path') ) {
-        $class_label = MT->translate('Archive');
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>', $class_label ),
-            path  => '%a',
-            };
-        push @dest_root,
-            {
-            label => $app->translate(
-                '<[_1] Root>/[_2]',
-                $class_label, $user_basename
-            ),
-            path => '%a/%u',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
-            path  => '%a/%y',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
-            path  => '%a/%y/%m',
-            };
-        push @dest_root,
-            {
-            label =>
-                $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
-            path => '%a/%y/%m/%d',
-            };
+    my $archive_flg = { 'archive' => 1, 'disabled' => 0};
+    unless ( $blog->column('archive_path') ) {
+        $archive_flg->{disabled} = 1;
     }
+    $class_label = MT->translate('Archive');
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>', $class_label ),
+        path  => '%a',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate(
+            '<[_1] Root>/[_2]',
+            $class_label, $user_basename
+        ),
+        path => '%a/%u',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+        path  => '%a/%y',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+        path  => '%a/%y/%m',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label =>
+            $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+        path => '%a/%y/%m/%d',
+        %$archive_flg
+        };
 
     if ( $blog->upload_destination ) {
         if ( my @selected
@@ -1373,6 +1383,10 @@ sub _set_start_upload_params {
 ### DEPRECATED: v6.2
 sub _upload_file_compat {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+
     my (%upload_param) = @_;
     require MT::Image;
 

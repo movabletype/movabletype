@@ -9,7 +9,7 @@
   "scripts": {
     "build-mt-css": "yarn build-mt-css-compile && yarn build-mt-css-prefix && yarn build-mt-css-minify",
     "build-mt-css-compile": "node-sass --output-style expanded --source-map true --source-map-contents true --precision 6 scss/mt.scss mt-static/css/mt.css",
-    "build-mt-css-minify": "cleancss --level 1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
+    "build-mt-css-minify": "cleancss -O1 --source-map --source-map-inline-sources --output mt-static/css/mt.min.css mt-static/css/mt.css",
     "build-mt-css-prefix": "postcss --config build/postcss.config.js --replace mt-static/css/mt.css",
     "build-riot": "yarn build-riot-listing; yarn build-riot-contenttype",
     "build-riot-listing": "riot mt-static/js/listing/tag mt-static/js/listing/listing.js",
@@ -28,7 +28,7 @@
     "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
     "copy-jquery-json": "cp -rf node_modules/jquery-json/src/jquery.json.* mt-static/jquery/ && cp -rf node_modules/jquery-json/dist/jquery.json.* mt-static/jquery/",
     "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
-    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
+    "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
     "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
     "copy-codemirror": "cp -rf node_modules/codemirror/addon node_modules/codemirror/keymap node_modules/codemirror/lib node_modules/codemirror/mode node_modules/codemirror/theme mt-static/codemirror/",
     "test-riot": "docker run --rm -v $PWD:/mt -w /mt node:8 bash -c \"npm install -g riot-cli && yarn build-riot && yarn build-riot-ss\" && test `git status -s | wc -l` = 0"
@@ -43,26 +43,26 @@
   },
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
-    "autoprefixer": "^7.1.2",
-    "clean-css-cli": "^4.1.6",
-    "node-sass": "^4.5.3",
+    "autoprefixer": "^9.8.6",
+    "clean-css-cli": "^5.3.2",
+    "node-sass": "^6.0.1",
     "postcss-cli": "^7.1.2",
     "postcss-flexbugs-fixes": "^5.0.1"
   },
   "dependencies": {
     "bootstrap": "~4.3.1",
+    "codemirror": "^5.61.1",
     "jquery": "^3.4.1",
     "jquery-json": "^2.6.0",
-    "jquery-migrate": "^3.1.0",
+    "jquery-migrate": "^3.3.2",
     "jquery-ui-touch-punch": "^0.2.3",
-    "jquery-validation": "^1.19.1",
+    "jquery-validation": "^1.19.3",
     "mt-data-api-sdk": "https://github.com/movabletype/mt-data-api-sdk-js.git",
-    "popper.js": "^1.12.1",
+    "popper.js": "^1.16.1",
     "riot": "3.7.4",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.1.6",
-    "tinymce-i18n": "20.4.4",
-    "codemirror": "5.54",
+    "tinymce": "5.8.1",
+    "tinymce-i18n": "20.12.25",
     "xpath": "0.0.32"
   }
 }

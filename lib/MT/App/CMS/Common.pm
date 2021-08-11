@@ -191,6 +191,7 @@ sub init_core_callbacks {
                 "${pfx}CategorySet::can_save",
             "${pkg}delete_permission_filter.category_set" =>
                 "${pfx}CategorySet::can_delete",
+            "${pkg}post_delete.category_set" => "${pfx}CategorySet::post_delete",
 
             # entry callbacks
             $pkg . 'edit.entry'                   => "${pfx}Entry::edit",

@@ -159,25 +159,6 @@ function init() {
 </script>
 </mt:setvarblock>
 
-<mt:setvarblock name="js_inclue" append="1">
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tableselect.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/widget.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
-<script type="text/javascript">
-/* <![CDATA[ */
-var widgetSetTableSelect;
-var widgetTableSelect;
-function init() {
-    // setup
-    widgetSetTableSelect = new TC.TableSelect( "template-listing-table" );
-    widgetSetTableSelect.rowSelect = true;
-    widgetTableSelect = new TC.TableSelect( "widget-listing-table" );
-    widgetTableSelect.rowSelect = true;
-}
-/* ]]> */
-</script>
-</mt:setvarblock>
-
 <mt:setvarblock name="system_msg">
     <mt:if name="saved_deleted">
         <mtapp:statusmsg
@@ -314,7 +295,7 @@ function init() {
       <mt:var name="listing_header">
     </div>
     <mtapp:statusmsg
-       id="zero-state"
+       id="zero-state-widget-set"
        class="info zero-state"
        can_close="0">
       <__trans phrase="No widget sets could be found.">

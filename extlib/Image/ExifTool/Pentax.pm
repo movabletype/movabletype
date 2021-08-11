@@ -58,7 +58,7 @@ use Image::ExifTool::Exif;
 use Image::ExifTool::GPS;
 use Image::ExifTool::HP;
 
-$VERSION = '3.30';
+$VERSION = '3.37';
 
 sub CryptShutterCount($$);
 sub PrintFilter($$$);
@@ -322,6 +322,7 @@ sub DecodeAFPoints($$$$;$);
     '8 21' => 'Sigma 17-50mm F2.8 EX DC OS HSM', #26
     '8 22' => 'Sigma 85mm F1.4 EX DG HSM', #26
     '8 23' => 'Sigma 70-200mm F2.8 APO EX DG OS HSM', #27
+    '8 24' => 'Sigma 17-70mm F2.8-4 DC Macro OS HSM', #27
     '8 25' => 'Sigma 17-50mm F2.8 EX DC HSM', #Exiv2
     '8 27' => 'Sigma 18-200mm F3.5-6.3 II DC HSM', #27
     '8 28' => 'Sigma 18-250mm F3.5-6.3 DC Macro HSM', #27
@@ -338,6 +339,7 @@ sub DecodeAFPoints($$$$;$);
     '8 63' => 'HD PENTAX-D FA 15-30mm F2.8 ED SDM WR', #PH
     '8 64' => 'HD PENTAX-D FA* 50mm F1.4 SDM AW', #27
     '8 65' => 'HD PENTAX-D FA 70-210mm F4 ED SDM WR', #PH
+    '8 66' => 'HD PENTAX-D FA 85mm F1.4 ED SDM AW', #James O'Neill
     '8 196' => 'HD PENTAX-DA* 11-18mm F2.8 ED DC AW', #29
     '8 197' => 'HD PENTAX-DA 55-300mm F4.5-6.3 ED PLM WR RE', #29
     '8 198' => 'smc PENTAX-DA L 18-50mm F4-5.6 DC WR RE', #29
@@ -546,6 +548,8 @@ my %pentaxModelID = (
     0x13222 => 'K-70', #29 (Ricoh)
     0x1322c => 'KP', #29 (Ricoh)
     0x13240 => 'K-1 Mark II', # (Ricoh)
+    0x13254 => 'K-3 Mark III', #IB (Ricoh)
+    0x13290 => 'WG-70', # (Ricoh)
 );
 
 # Pentax city codes - (PH, Optio WP)
@@ -2552,6 +2556,14 @@ my %binaryDataAttrs = (
     },
     # 0x0086 - int8u: 0, 111[Sport,Pet] (Q) - related to Tracking FocusMode?
     # 0x0087 - int8u: 0 (Q)
+    0x0087 => { #PH
+        Name => 'ShutterType',
+        Writable => 'int8u',
+        PrintConv => {
+            0 => 'Normal', # ('Mechanical' if the camera has a mechanical shutter)
+            1 => 'Electronic', # (KP)
+        },
+    },
     0x0088 => { #PH
         Name => 'NeutralDensityFilter',
         Writable => 'int8u',
@@ -2884,13 +2896,20 @@ my %binaryDataAttrs = (
         Writable => 'string',
         Notes => 'left blank by some cameras',
     },
-    0x022a => { #PH (K-5)
+    0x022a => [{ #PH (RICOH models (GR III))
+        Name => 'FilterInfo',
+        Condition => '$$self{Make} =~ /^RICOH/',
+        SubDirectory => {
+            TagTable => 'Image::ExifTool::Pentax::FilterInfo',
+            ByteOrder => 'LittleEndian',
+        },
+    },{ #PH (K-5)
         Name => 'FilterInfo',
         SubDirectory => {
             TagTable => 'Image::ExifTool::Pentax::FilterInfo',
             ByteOrder => 'BigEndian',
         },
-    },
+    }],
     0x022b => { #PH (K-5)
         Name => 'LevelInfo',
         SubDirectory => { TagTable => 'Image::ExifTool::Pentax::LevelInfo' },
@@ -4309,15 +4328,15 @@ my %binaryDataAttrs = (
         Name => 'LC3',
         %lensCode,
     },
-    5 => { # LC4 = abberation correction, near distance data
+    5 => { # LC4 = aberration correction, near distance data
         Name => 'LC4',
         %lensCode,
     },
-    6 => { # LC5 = light color abberation correction data
+    6 => { # LC5 = light color aberration correction data
         Name => 'LC5',
         %lensCode,
     },
-    7 => { # LC6 = open abberation data
+    7 => { # LC6 = open aberration data
         Name => 'LC6',
         %lensCode,
     },
@@ -6273,7 +6292,7 @@ tags, and everyone who helped contribute to the LensType values.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

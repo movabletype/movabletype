@@ -354,7 +354,7 @@ sub post_delete {
                 "Tag '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'tag',
             category => 'delete'
         }

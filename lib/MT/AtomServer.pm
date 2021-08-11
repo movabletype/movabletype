@@ -25,6 +25,9 @@ $XML::Atom::ForceUnicode = 1;
 
 sub init {
     my $app = shift;
+
+    $app->config( 'DeleteFilesAfterRebuild', 0, 0 );
+
     $app->{no_read_body} = 1
         if $app->request_method eq 'POST' || $app->request_method eq 'PUT';
     $app->SUPER::init(@_) or return $app->error("Initialization failed");
@@ -808,7 +811,7 @@ sub edit_post {
                 $app->{user}->name, $app->{user}->id,
                 $entry->id,         $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'entry',
             category => 'edit',
             metadata => $entry->id
@@ -1010,7 +1013,7 @@ sub delete_post {
                 $entry->title, $entry->id, $user->name,
                 $user->id,     $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $entry->class,
             category => 'delete',
         }

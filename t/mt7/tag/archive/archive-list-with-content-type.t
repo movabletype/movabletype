@@ -135,7 +135,7 @@ TMPL
 MT->publisher->rebuild;
 
 my $html = path( $archive_path, 'news/2018/index.html' )->slurp_utf8;
-$html =~ s/\n+/\n/gs;
+$html =~ s/(?:\r?\n)+/\n/gs;
 my $expected = <<"HTML";
 ●content_type なし
 <a href="/nana/archives/news/2018/">2018年</a>

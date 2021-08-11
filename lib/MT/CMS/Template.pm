@@ -223,15 +223,24 @@ sub edit {
                             = $app->translate('Unknown blog');
                     }
                     else {
-                        my $inc_blog_id
-                            = $tag->[1]->{global}
-                            ? 0
-                            : $tag->[1]->{blog_id}
-                            ? [ $tag->[1]->{blog_id}, 0 ]
-                            : $tag->[1]->{parent} ? $obj->blog
-                                ? $obj->blog->website->id
-                                : 0
-                            : [ $obj->blog_id, 0 ];
+                        my $inc_blog_id;
+                        if ($tag->[1]->{global}) {
+                            $inc_blog_id = 0;
+                        } elsif ($tag->[1]->{blog_id}) {
+                            $inc_blog_id = [ $tag->[1]->{blog_id}, 0 ];
+                        } elsif ($tag->[1]->{parent}) {
+                            if ($obj->blog) {
+                                if ($obj->blog->is_blog) {
+                                    $inc_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                                } else {
+                                    $inc_blog_id = $obj->blog_id;
+                                }
+                            } else {
+                                $inc_blog_id = 0; # TODO Adding 0 is wrong when parent is given according to manual
+                            }
+                        } else {
+                            $inc_blog_id = [$obj->blog_id, 0];
+                        }
 
                         my $mod_id
                             = $mod . "::"
@@ -410,15 +419,15 @@ sub edit {
                         = $app->translate('Unknown blog');
                 }
                 else {
-                    my $set_blog_id
-                        = $set->attributes->{blog_id}
-                        ? $set->attributes->{blog_id}
-                        : $set->attributes->{parent} ? $obj->blog
-                            ? $obj->blog->website->id
-                            : $obj->blog_id
-                        : $obj->blog_id;
+                    my $set_blog_id = $set->attributes->{blog_id};
+                    if (!$set_blog_id) {
+                        if ($set->attributes->{parent} && $obj->blog && $obj->blog->is_blog) {
+                            $set_blog_id = $obj->blog->parent_id or next; # skip if data is broken
+                        }
+                        $set_blog_id ||= $obj->blog_id;
+                    }
                     my $wset = MT::Template->load(
-                        {   blog_id => [ $set_blog_id, 0 ],
+                        {   blog_id => [ $set_blog_id, 0 ], # TODO Adding 0 is wrong when parent is given according to manual
                             name    => $name,
                             type    => 'widgetset',
                         },
@@ -981,12 +990,8 @@ sub edit {
  #);
     }
 
-    if ( $param->{type} =~ /\Act(?:_archive)?\z/ ) {
-        $param->{type_is_ct_or_ct_archive}    = 1;
-        $param->{can_create_new_content_type} = 1
-            if $perms->can_do('create_new_content_type');
-        _prepare_content_type_selector( $app, $blog_id, $obj, $param );
-    }
+    $param->{can_create_new_content_type} = 1
+        if $perms->can_do('create_new_content_type');
 
     $app->add_breadcrumb(
         $app->translate('Templates'),
@@ -1008,63 +1013,6 @@ sub edit {
     }
 
     1;
-}
-
-sub _prepare_content_type_selector {
-    my ( $app, $blog_id, $obj, $param ) = @_;
-
-    # Content Type Selector
-    my @content_types
-        = MT->model('content_type')->load( { blog_id => $blog_id } );
-
-    my @ct_selects = ();
-    my $ct_data    = {};
-    my $cf_selects = {};
-    my $cf_data    = {};
-    foreach my $ct (@content_types) {
-
-        # Content Type
-        push @ct_selects,
-            {
-            id       => $ct->id,
-            label    => $ct->name,
-            selected => (
-                       $obj
-                    && $obj->content_type_id
-                    && $obj->content_type_id == $ct->id ? 1 : 0
-            )
-            };
-        $ct_data->{ $ct->id } = {
-            id        => $ct->id,
-            label     => $ct->name,
-            unique_id => $ct->unique_id,
-        };
-
-        # Content Field
-        my $fields = $ct->fields;
-        my @cfs = MT::ContentField->load(
-            { content_type_id => $ct->id, type => { not => 'text_label' } } );
-        foreach my $cf (@cfs) {
-            my ($field) = grep { $_->{id} == $cf->id } @{$fields};
-            my $label = $field->{options}{label};
-            push @{ $cf_selects->{ $ct->id } },
-                { id => $cf->id, label => $cf->name };
-            my $content_field_types = $app->registry('content_field_types');
-            my $type_label = $content_field_types->{ $cf->type }->{label};
-            $type_label = $type_label->()
-                if 'CODE' eq ref $type_label;
-            $cf_data->{ $cf->id } = {
-                id        => $cf->id,
-                label     => $label,
-                unique_id => $cf->unique_id,
-                type      => $type_label,
-            };
-        }
-    }
-    $param->{ct_selects}                  = \@ct_selects;
-    $param->{ct_data}                     = MT::Util::to_json($ct_data);
-    $param->{cf_selects}                  = MT::Util::to_json($cf_selects);
-    $param->{cf_data}                     = MT::Util::to_json($cf_data);
 }
 
 sub list {
@@ -2364,7 +2312,7 @@ sub post_delete {
                 "Template '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'template',
             category => 'delete'
         }

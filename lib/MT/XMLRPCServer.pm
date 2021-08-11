@@ -22,6 +22,8 @@ sub mt_new {
     ## Initialize the MT::Request singleton for this particular request.
     $mt->request->reset();
 
+    $mt->config( 'DeleteFilesAfterRebuild', 0, 0 );
+
     # we need to be UTF-8 here no matter which PublishCharset
     $mt->run_callbacks( 'init_app', $mt, { App => 'xmlrpc' } );
     $mt;
@@ -711,7 +713,7 @@ sub _edit_entry {
                 $author->name, $author->id,
                 $entry->id,    $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $obj_type,
             category => 'edit',
             metadata => $entry->id
@@ -1044,7 +1046,7 @@ sub _delete_entry {
                 $entry->title, $entry->id, $author->name,
                 $author->id,   $entry->class_label
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => $entry->class,
             category => 'delete'
         }

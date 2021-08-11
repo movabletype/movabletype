@@ -880,6 +880,7 @@ sub main {
                     "Movable Type has been upgraded to version [_1].",
                     $app->release_version_id,
                 ),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 category => 'upgrade',
             }

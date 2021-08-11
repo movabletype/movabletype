@@ -907,7 +907,7 @@ sub save_cfg_system_general {
         $app->log(
             {   message =>
                     $app->translate('System Settings Changes Took Place'),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 metadata => $message,
                 category => 'edit',
@@ -2413,7 +2413,7 @@ sub dialog_restore_upload {
     $app->print_encode(
         $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
-    if ( defined $objects_json ) {
+    if ( $objects_json ) {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 

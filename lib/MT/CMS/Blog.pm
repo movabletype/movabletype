@@ -457,10 +457,11 @@ sub edit {
     }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
-        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
-        $domain .= '/' if $domain !~ m!/$!;
-        $param->{website_scheme} = $scheme;
-        $param->{website_domain} = $domain;
+        if (my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!) {
+            $domain .= '/' if $domain !~ m!/$!;
+            $param->{website_scheme} = $scheme;
+            $param->{website_domain} = $domain;
+        }
     }
 
     1;
@@ -791,6 +792,7 @@ sub rebuild_pages {
     my $template_id    = $app->param('template_id');
     my $map_id         = $app->param('templatemap_id');
     my $fs             = $app->param('fs');
+    my $old_date       = $app->param('old_date');
     my $old_categories = $app->param('old_categories');
     my $old_previous   = $app->param('old_previous');
     my $old_next       = $app->param('old_next');
@@ -882,6 +884,7 @@ sub rebuild_pages {
         $app->rebuild_entry(
             Entry             => $entry,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next
@@ -897,6 +900,7 @@ sub rebuild_pages {
         $app->rebuild_content_data(
             ContentData       => $content_data,
             BuildDependencies => 1,
+            OldDate           => $old_date,
             OldCategories     => $old_categories,
             OldPrevious       => $old_previous,
             OldNext           => $old_next,
@@ -1114,6 +1118,7 @@ sub rebuild_pages {
                 or return $app->error(
                 $app->translate( 'Cannot load blog #[_1].', $entry->blog_id )
                 );
+            $app->publisher->remove_marked_files( $blog, 1 );
             if ( MT->has_plugin('Trackback') ) {
                 require Trackback::CMS::Entry;
                 Trackback::CMS::Entry::ping_continuation(
@@ -1137,6 +1142,7 @@ sub rebuild_pages {
             my $blog = MT::Blog->load( $content_data->blog_id )
                 or return $app->errtrans( 'Cannot load blog #[_1].',
                 $content_data->blog_id );
+            $app->publisher->remove_marked_files( $blog, 1 );
             return $app->redirect(
                 $app->uri(
                     mode => 'view',
@@ -1319,7 +1325,7 @@ sub start_rebuild_pages_directly {
         $param{is_entry}   = 1;
         $param{entry_id}   = $entry_id;
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }
@@ -1341,7 +1347,7 @@ sub start_rebuild_pages_directly {
         $param{content_type_id} = $content_data->content_type_id;
 
         for my $col (
-            qw( is_new old_status old_next old_previous old_categories ))
+            qw( is_new old_status old_next old_previous old_categories old_date ))
         {
             $param{$col} = $app->param($col);
         }
@@ -1797,10 +1803,6 @@ sub pre_save {
             }
         }
     }
-    else {
-
-       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
-    }
 
     # Set parent site ID
     my $blog_id = $app->param('blog_id');
@@ -2029,7 +2031,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',
@@ -2219,7 +2221,7 @@ sub post_delete {
                 "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'blog',
             category => 'delete'
         }
@@ -3043,10 +3045,10 @@ sub clone {
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
-        unless $blog->is_blog;
+        unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3192,7 +3194,7 @@ sub clone {
             $base_url = $raw_site_url[0];
         }
         $param->{site_url} = $base_url;
-        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain} && $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
             my $base_archive_url;
@@ -3368,12 +3370,7 @@ HTML
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
-        if ( $subdomain || $path ) {
-            $new_blog->site_url("$subdomain/::/$path");
-        }
-        else {
-            $new_blog->site_url( $param->{'site_url'} );
-        }
+        $new_blog->site_url("$subdomain/::/$path");
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
@@ -3387,12 +3384,7 @@ HTML
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $app->param('archive_url_path');
-            if ( $subdomain || $path ) {
-                $new_blog->archive_url("$subdomain/::/$path");
-            }
-            else {
-                $new_blog->archive_url( $param->{'site_url'} );
-            }
+            $new_blog->archive_url("$subdomain/::/$path");
         }
 
         $new_blog->save();
@@ -3426,7 +3418,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => $app->blog ? 'blog' : 'website',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? $new_blog->parent_id : 0 )
             }
             );
         my $setting_url = $app->uri(
