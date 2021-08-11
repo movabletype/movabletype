@@ -1233,11 +1233,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue editada por '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{La categoría '[_1]' fue creada por '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue editada por '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Conjunto de categorías '[_1]' fue creada por '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Hay un conflicto entre el nombre base de la categoría '[_1]' y el de otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{El nombre de la categría '[_1]' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Hay un conflicto entre el nombre de la categoría '[_1]' y otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The name '[_1]' is too long!} => q{El nombre '[_1]' es demasiado largo.},
 	q{[_1] order has been edited by '[_2]'.} => q{El orden de [_1] fue editado por '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Todos los/las [_1]',
