@@ -15,28 +15,61 @@ BEGIN {
 use MT::Test qw(:db);
 use MT;
 
-my $mt = MT->instance;
+my $mt  = MT->instance;
 my $cfg = $mt->config;
 
-my $domain = 'example.com';
-my $url = 'http://localhost/?q=foo';
+subtest 'invoke read_config_db multiple time' => sub {
+    my $domain = 'example.com';
+    my $url = 'http://localhost/?q=foo';
 
+    note('Initial status');
+    ok($cfg->read_config_db, 'Read all config values from database');
+    is_deeply([$cfg->OutboundTrackbackDomains], [], 'Inial value is empty');
+    ok($cfg->set('OutboundTrackbackDomains', $domain, 1), 'Set value for the with db_flag');
+    is_deeply([$cfg->OutboundTrackbackDomains], [$domain], 'Get saved value');
 
-note('Initial status');
-ok($cfg->read_config_db, 'Read all config values from database');
-is_deeply([$cfg->OutboundTrackbackDomains], [], 'Inial value is empty');
-ok($cfg->set('OutboundTrackbackDomains', $domain, 1), 'Set value for the with db_flag');
-is_deeply([$cfg->OutboundTrackbackDomains], [$domain], 'Get saved value');
+    is_deeply([$cfg->AuthLoginURL], [], 'Inial value is empty');
+    ok($cfg->set('AuthLoginURL', $url, 1), 'Set value for the with db_flag');
+    is_deeply([$cfg->AuthLoginURL], [$url], 'Get saved value');
 
-is_deeply([$cfg->AuthLoginURL], [], 'Inial value is empty');
-ok($cfg->set('AuthLoginURL', $url, 1), 'Set value for the with db_flag');
-is_deeply([$cfg->AuthLoginURL], [$url], 'Get saved value');
+    ok($cfg->save_config, 'Save config to database');
 
-ok($cfg->save_config, 'Save config to database');
+    note('Re-read');
+    ok($cfg->read_config_db, 'Read all config values from database');
+    is_deeply([$cfg->OutboundTrackbackDomains], [$domain], 'Get saved value');
+    is_deeply([$cfg->AuthLoginURL], [$url], 'Get saved value');
+};
 
-note('Re-read');
-ok($cfg->read_config_db, 'Read all config values from database');
-is_deeply([$cfg->OutboundTrackbackDomains], [$domain], 'Get saved value');
-is_deeply([$cfg->AuthLoginURL], [$url], 'Get saved value');
+subtest 'DB/File priority' => sub {
+    $cfg->define({Array => {type => 'ARRAY'}, Hash => {type => 'HASH'}});
+    $cfg->set('Scalar', 'file');
+    $cfg->set('Array', 'file_1');
+    $cfg->set('Array', 'file_2');
+    $cfg->set('Hash', 'b=');
+    $cfg->set('Hash', 'c=file_c');
+    $cfg->set('Hash', 'd=file_d');
+    my $cfg_raw = $mt->model('config')->load(1);
+    $cfg_raw->data(<<EOF);
+Scalar db
+Array db_1
+Array db_2
+Array db_3
+Hash a=db_a
+Hash b=db_b
+Hash c=db_c
+EOF
+    $cfg_raw->save;
+    $cfg->read_config_db;
+    is($cfg->Scalar, 'file');
+    my @array = $cfg->Array;
+    is_deeply(\@array, ['file_1', 'file_2']);
+    my $hash = $cfg->Hash;
+    is ref($hash), 'HASH';
+    is scalar(keys %$hash), '4';
+    is($hash->{a}, 'db_a');
+    is($hash->{b}, '');
+    is($hash->{c}, 'file_c');
+    is($hash->{d}, 'file_d');
+};
 
 done_testing();
