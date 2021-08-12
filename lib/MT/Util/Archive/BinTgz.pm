@@ -91,7 +91,7 @@ sub flush {
 
     require Cwd;
     my $cwd  = Cwd::cwd();
-    my @cmds = ($bin, "-c", "-z", "-f", $file, "-T", $tmpfile);
+    my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
     my $res  = IPC::Run::run(\@cmds, \my $in, \my $out, \my $err);
     chdir $cwd;
     unlink $tmpfile;
