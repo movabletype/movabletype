@@ -110,7 +110,7 @@ sub flush {
 
     my @cmds = ($bin, "-r", $file, '-@');
     IPC::Run::run(\@cmds, \$list, \my $out, \my $err)
-        or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, _err($?, $err)));
+        or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
     if ($file !~ /\.zip\z/ && -e "$file.zip") {
         rename "$file.zip" => $file or return $obj->error(MT->translate('Failed to rename an archive [_1]: [_2]', $file, $!));
@@ -157,7 +157,7 @@ sub files {
     my $file = $obj->{_file};
     my @cmds = ($bin, "-Z", "-1", @opts, $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to list files of [_1]: [_2]', $file, _err($?, $err));
+        or return $obj->error('Failed to list files of [_1]: [_2]', $file, $?);
     return unless defined $out;
     my @lines = split /\n/, $out;
     return @lines unless @opts;
@@ -208,7 +208,7 @@ sub extract {
     my $file = $obj->{_file};
     my @cmds = ($bin, "-d", $path, $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, _err($?, $err));
+        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $?);
     1;
 }
 
@@ -261,8 +261,6 @@ sub add_tree {
     };
     File::Find::find({ wanted => $sub, no_chdir => 1, }, $dir_path);
 }
-
-sub _err { join ': ', grep defined, @_; }
 
 1;
 __END__
