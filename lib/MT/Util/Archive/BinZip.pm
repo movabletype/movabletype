@@ -108,9 +108,13 @@ sub flush {
 
     my $list = join "\n", @{ $obj->{_files} || [] };
 
+    require Cwd;
+    my $cwd = Cwd::cwd;
+    chdir $tmpdir;
     my @cmds = ($bin, "-r", $file, '-@');
-    IPC::Run::run(\@cmds, \$list, \my $out, \my $err)
-        or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
+    my $res = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
+    chdir $cwd;
+    $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
     if ($file !~ /\.zip\z/ && -e "$file.zip") {
         rename "$file.zip" => $file or return $obj->error(MT->translate('Failed to rename an archive [_1]: [_2]', $file, $!));
