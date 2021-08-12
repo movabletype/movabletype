@@ -91,11 +91,11 @@ sub flush {
 
     require Cwd;
     my $cwd  = Cwd::cwd();
-    my @cmds = ($bin, "-c", "-z", "-f", $file, "-T", $tmpfile);
+    my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
     my $res  = IPC::Run::run(\@cmds, \my $in, \my $out, \my $err);
     chdir $cwd;
     unlink $tmpfile;
-    $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, _err($?, $err)));
+    $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
     $obj->{_flushed} = 1;
 }
@@ -139,7 +139,7 @@ sub files {
     my $file = $obj->{_file};
     my @cmds = ($bin, "-t", @flags, "-f", $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to list files of [_1]: [_2]', $file, _err($?, $err));
+        or return $obj->error('Failed to list files of [_1]: [_2]', $file, $?);
     return unless defined $out;
     split /\n/, $out;
 }
@@ -177,7 +177,7 @@ sub extract {
     push @opts, "-z" if $file =~ /gz$/;
     my @cmds = ($bin, @opts, "-C", $path, "-f", $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, _err($?, $err));
+        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $?);
     1;
 }
 
@@ -231,8 +231,6 @@ sub add_tree {
     };
     File::Find::find({ wanted => $sub, no_chdir => 1, }, $dir_path);
 }
-
-sub _err { join ': ', grep defined, @_; }
 
 1;
 __END__
