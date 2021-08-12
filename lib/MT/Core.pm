@@ -2148,7 +2148,7 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
-            'PreferExternalArchiver' => undef,
+            'UseExternalArchiver' => undef,
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
