@@ -214,7 +214,7 @@ __END__
 
 =head1 NAME
 
-MT::Util::Archive::Zip
+MT::Util::Archive::Tgz
 
 =head1 SYNOPSIS
 
