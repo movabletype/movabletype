@@ -27,6 +27,8 @@ sub new {
     return $pkg->error( MT->translate('Registry could not be loaded') )
         unless $class;
 
+    $class =~ s/::(\w+)$/::Bin$1/ if MT->config->PreferExternalArchiver;
+
     my $obj;
     eval "require $class;";
     if ( my $e = $@ ) {
@@ -49,10 +51,13 @@ sub available_formats {
     return {} unless $classes && %$classes;
 
     my @data;
+    my $prefer_bin = MT->config->PreferExternalArchiver ? 1 : 0;
     for my $key ( keys %$classes ) {
         my $class = $classes->{$key}->{class};
+        $class =~ s/::(\w+)$/::Bin$1/ if $prefer_bin;
         eval "require $class;";
         next if $@;
+        next if $prefer_bin && !$class->find_bin;
         my $label = $classes->{$key}->{label};
         if ( 'CODE' eq ref($label) ) {
             $label = $label->();
