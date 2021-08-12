@@ -37,14 +37,14 @@ is($arc, undef, 'Type not registered');
 for my $type (qw( zip tgz )) {
     my $file = $files{$type};
 
-    for my $prefer_bin (0, 1) {
-        MT->config->PreferExternalArchiver($prefer_bin, 1);
+    for my $use_bin (0, 1) {
+        MT->config->UseExternalArchiver($use_bin, 1);
 
         unlink $file if -e $file;
         my $arc = MT::Util::Archive->new($type, $file);
     SKIP: {
-            skip "type $type (bin: $prefer_bin) test: " . MT::Util::Archive->errstr, 1 unless $arc;
-            subtest "type $type (bin: $prefer_bin) test" => sub {
+            skip "type $type (bin: $use_bin) test: " . MT::Util::Archive->errstr, 1 unless $arc;
+            subtest "type $type (bin: $use_bin) test" => sub {
                 ok($arc, "Empty $type archive created");
 
                 is($arc->type, $type, 'Type is ' . $type);
