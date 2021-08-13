@@ -90,7 +90,7 @@ sub flush {
 
     my $tmpdir = $obj->{_tmpdir};
 
-    my $tmpfile = File::Temp::tempnam(MT->config->TempDir, 'mt_archive_list_');
+    my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_list_XXXX');
     open my $fh, '>', $tmpfile;
     print $fh join "\n", @{ $obj->{_files} || [] };
     close $fh;
@@ -100,7 +100,6 @@ sub flush {
     my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
     my $res  = IPC::Run::run(\@cmds, \my $in, \my $out, \my $err);
     chdir $cwd;
-    unlink $tmpfile;
     $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
     $obj->{_flushed} = 1;
