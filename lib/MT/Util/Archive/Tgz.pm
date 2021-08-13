@@ -218,5 +218,5 @@ MT::Util::Archive::Tgz
 
 =head1 SYNOPSIS
 
-Zip compression and extraction package, based on MT::Util::Archive.
+Tar/Gzip compression and extraction package, based on MT::Util::Archive.
 See I<MT::Util::Archive> for more details.
