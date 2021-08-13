@@ -118,10 +118,11 @@ sub flush {
     my $cwd = Cwd::cwd;
     chdir $tmpdir;
     my @cmds = ($bin, "-r", $file, '-@');
-    my $res = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
+    my $res  = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
     chdir $cwd;
     $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
+
     if ($file !~ /\.zip\z/ && -e "$file.zip") {
         rename "$file.zip" => $file or return $obj->error(MT->translate('Failed to rename an archive [_1]: [_2]', $file, $!));
     }
@@ -202,7 +203,8 @@ sub extract {
 
     $path ||= MT->config->TempDir;
 
-    my $bin  = $obj->find_unzip or return;
+    my $bin = $obj->find_unzip or return;
+
     my $file = $obj->{_file};
     my @cmds = ($bin, "-d", $path, $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
