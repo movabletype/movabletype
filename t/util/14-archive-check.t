@@ -7,8 +7,12 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    eval { require File::Which; 1 } or plan skip_all => 'requires File::Which';
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',    ## for now
+        BinTarPath      => File::Which::which('tar')   || '',
+        BinZipPath      => File::Which::which('zip')   || '',
+        BinUnzipPath    => File::Which::which('unzip') || '',
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }

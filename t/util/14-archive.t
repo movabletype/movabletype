@@ -8,7 +8,13 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    eval { require File::Which; 1 } or plan skip_all => 'requires File::Which';
+    $test_env = MT::Test::Env->new(
+        BinTarPath   => File::Which::which('tar')   || '',
+        BinZipPath   => File::Which::which('zip')   || '',
+        BinUnzipPath => File::Which::which('unzip') || '',
+        TempDir      => 'TEST_ROOT/tmp',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
