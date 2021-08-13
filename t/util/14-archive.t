@@ -67,7 +67,7 @@ for my $type (qw( zip tgz )) {
                 ok($ext, 'Archive file read') or note MT::Util::Archive->errstr;
                 $ext->close;
 
-                open my $fh, '<', $file;
+                open my $fh, '<:raw', $file;
                 $ext = MT::Util::Archive->new($type, $fh);
                 ok($ext, 'Archive file read') or note MT::Util::Archive->errstr;
 
@@ -89,16 +89,15 @@ for my $type (qw( zip tgz )) {
                 my $file1 = File::Spec->catfile($tmp, $files[0]);
                 my $file2 = File::Spec->catfile($tmp, $files[1]);
 
-                open my $f1, '<', $file1;
+                open my $f1, '<:raw', $file1;
                 my $content1 = do { local $/; <$f1> };
                 close $f1;
-                open my $f2, '<',
-                    File::Spec->catfile(cwd(), 'mt-config.cgi-original');
+                open my $f2, '<:raw', File::Spec->catfile(cwd(), 'mt-config.cgi-original');
                 my $content2 = do { local $/; <$f2> };
                 close $f2;
                 is($content1, $content2, 'Contents are the same');
 
-                open my $f3, '<', $file2;
+                open my $f3, '<:raw', $file2;
                 my $content3 = do { local $/; <$f3> };
                 close $f3;
                 is($content3, $str, 'Contents are the same');

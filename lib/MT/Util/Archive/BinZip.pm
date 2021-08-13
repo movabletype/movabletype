@@ -237,7 +237,7 @@ sub add_string {
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;
-    open my $fh, '>', $tmpfile;
+    open my $fh, '>:raw', $tmpfile;
     binmode $fh;
     print $fh $string;
     CORE::close $fh;

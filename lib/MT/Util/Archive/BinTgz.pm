@@ -91,7 +91,7 @@ sub flush {
     my $tmpdir = $obj->{_tmpdir};
 
     my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_list_XXXX');
-    open my $fh, '>', $tmpfile;
+    open my $fh, '>:raw', $tmpfile;
     print $fh join "\n", @{ $obj->{_files} || [] };
     close $fh;
 
@@ -202,7 +202,7 @@ sub add_string {
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;
-    open my $fh, '>', $tmpfile;
+    open my $fh, '>:raw', $tmpfile;
     binmode $fh;
     print $fh $string;
     CORE::close $fh;
