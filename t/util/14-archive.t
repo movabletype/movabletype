@@ -173,4 +173,11 @@ for my $type (qw( zip tgz )) {
     }
 }
 
+my $left;
+opendir my $dh, MT->config->TempDir;
+while(my $item = readdir $dh) {
+    $left++ if $item =~ /^mt_/;
+}
+ok !$left, "temporary files should be all gone";
+
 done_testing;
