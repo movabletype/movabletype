@@ -113,61 +113,62 @@ for my $type (qw( zip tgz )) {
 
                 unlink $file1;
                 unlink $file2;
-                unlink $file if $type ne 'tgz';
+
+                if ($type eq 'tgz') {
+                    ## Tar (not tgz) test...
+                    note "testing .tar";
+
+                    # Uncompress gunzip and create tar file
+
+                    open my $file4, '<:raw', $files{'tgz'};
+                    bless $file4, 'IO::File';
+                    require IO::Uncompress::Gunzip;
+                    my $z    = new IO::Uncompress::Gunzip $file4;
+                    my $data = do { local $/; <$z> };
+                    close $z;
+                    close $file4;
+                    open my $fileX, '>:raw', $files{'tgz'} . '.tar';
+                    print $fileX $data;
+                    close $fileX;
+
+                    # Run the tests
+                    my $ext = MT::Util::Archive->new('tgz', $files{'tgz'} . '.tar');
+                    ok($ext, 'Archive file read');
+
+                    my @files = $ext->files;
+                    is(@files, 2, 'Number of files is 2');
+                    is(
+                        $files[0], 'mt-config.cgi-original',
+                        'The name of the file 0 is correct'
+                    );
+                    is($files[1], 'november.txt', 'The name of the file 1 is correct');
+
+                    ok($ext->extract($tmp), 'Extracted successfully');
+                    $ext->close;
+
+                    my $file5 = File::Spec->catfile($tmp, $files[0]);
+                    my $file6 = File::Spec->catfile($tmp, $files[1]);
+
+                    open my $f5, '<:raw', $file5;
+                    my $content5 = do { local $/; <$f5> };
+                    close $f5;
+                    open my $f6, '<:raw', File::Spec->catfile(cwd(), 'mt-config.cgi-original');
+                    my $content6 = do { local $/; <$f6> };
+                    close $f6;
+                    is($content5, $content6, 'Contents are the same');
+
+                    open my $f7, '<:raw', $file6;
+                    my $content7 = do { local $/; <$f7> };
+                    close $f7;
+                    is($content7, $str, 'Contents are the same');
+
+                    unlink $file5;
+                    unlink $file6;
+                    unlink $files{'tgz'};
+                    unlink $files{'tgz'} . '.tar';
+                }
+                unlink $file;
             };
-        }
-
-        if ($type eq 'tgz') {
-            ## Tar (not tgz) test...
-
-            # Uncompress gunzip and create tar file
-
-            open my $file4, '<', $files{'tgz'};
-            bless $file4, 'IO::File';
-            require IO::Uncompress::Gunzip;
-            my $z    = new IO::Uncompress::Gunzip $file4;
-            my $data = do { local $/; <$z> };
-            close $z;
-            close $file4;
-            open my $fileX, '>', $files{'tgz'} . '.tar';
-            print $fileX $data;
-            close $fileX;
-
-            # Run the tests
-            my $ext = MT::Util::Archive->new('tgz', $files{'tgz'} . '.tar');
-            ok($ext, 'Archive file read');
-
-            my @files = $ext->files;
-            is(@files, 2, 'Number of files is 2');
-            is(
-                $files[0], 'mt-config.cgi-original',
-                'The name of the file 0 is correct'
-            );
-            is($files[1], 'november.txt', 'The name of the file 1 is correct');
-
-            ok($ext->extract($tmp), 'Extracted successfully');
-            $ext->close;
-
-            my $file5 = File::Spec->catfile($tmp, $files[0]);
-            my $file6 = File::Spec->catfile($tmp, $files[1]);
-
-            open my $f5, '<', $file5;
-            my $content5 = do { local $/; <$f5> };
-            close $f5;
-            open my $f6, '<', File::Spec->catfile(cwd(), 'mt-config.cgi-original');
-            my $content6 = do { local $/; <$f6> };
-            close $f6;
-            is($content5, $content6, 'Contents are the same');
-
-            open my $f7, '<', $file6;
-            my $content7 = do { local $/; <$f7> };
-            close $f7;
-            is($content7, $str, 'Contents are the same');
-
-            unlink $file5;
-            unlink $file6;
-            unlink $files{'tgz'};
-            unlink $files{'tgz'} . '.tar';
         }
     }
 }
