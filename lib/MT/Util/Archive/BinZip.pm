@@ -12,6 +12,7 @@ use base qw( MT::ErrorHandler );
 
 use constant ARCHIVE_TYPE => 'zip';
 
+use MT::Util::Archive::TempFile;
 use File::Copy     ();
 use File::Temp     ();
 use File::Path     ();
@@ -34,7 +35,12 @@ sub new {
 
     my $obj = {};
     if (ref $file) {
-        $obj->{_fh}   = $file;
+        my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_XXXX');
+        my $pos     = tell $file;
+        seek $file, 0, 0;
+        File::Copy::cp($file, "$tmpfile");
+        seek $file, $pos, 0;
+        $obj->{_file} = $tmpfile;
         $obj->{_mode} = 'r';
     } elsif ((-e $file) && (-r $file)) {
         $obj->{_file} = $file;
@@ -127,9 +133,7 @@ sub close {
 
     $obj->flush or return;
 
-    $obj->{_fh}->close if exists $obj->{_fh};
     $obj->{_file} = undef;
-    $obj->{_fh}   = undef;
     1;
 }
 
@@ -147,16 +151,6 @@ sub is {
 sub files {
     my ($obj, @opts) = @_;
     my $bin = $obj->find_unzip or return;
-
-    if (my $fh = $obj->{_fh}) {
-        my $tmpfh = File::Temp->new(TEMPLATE => 'mt_archive_XXXX', TMPDIR => 1);
-        $obj->{_tmpfh} = $tmpfh;
-        $obj->{_file}  = $tmpfh->filename;
-        my $pos = tell $fh;
-        seek $fh, 0, 0;
-        File::Copy::cp($fh, $tmpfh);
-        seek $fh, $pos, 0;
-    }
 
     my $file = $obj->{_file};
     my @cmds = ($bin, "-Z", "-1", @opts, $file);
