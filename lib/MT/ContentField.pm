@@ -117,22 +117,8 @@ sub unique_id {
     }
 }
 
-sub _exist_same_name {
-    my $self = shift;
-    __PACKAGE__->exist(
-        {   $self->id ? ( id => { not => $self->id } ) : (),
-            content_type_id => $self->content_type_id,
-            name            => $self->name,
-        }
-    );
-}
-
 sub save {
     my $self = shift;
-
-    return $self->error(
-        MT->translate( 'name "[_1]" is already used.', $self->name ) )
-        if $self->_exist_same_name;
 
     if ( !$self->id && !defined $self->unique_id ) {
         MT::ContentType::UniqueID::set_unique_id($self);
