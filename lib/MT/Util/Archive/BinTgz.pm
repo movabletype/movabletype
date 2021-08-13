@@ -141,7 +141,7 @@ sub is_safe_to_extract {
     my $obj = shift;
 
     for my $item ($obj->files("-v")) {
-        my ($mode, $usergroup, $size, $date, $time, $file) = split / +/, $item, 6;
+        my ($file) = $item =~ /\d+:\d+\s+(.+)$/;
         if ($file =~ s/\s*\->.*\z//) {
             return $obj->error(MT->translate("[_1] in the archive is not a regular file", $file));
         }
