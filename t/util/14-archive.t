@@ -50,6 +50,9 @@ for my $type (qw( zip tgz )) {
         my $arc = MT::Util::Archive->new($type, $file);
     SKIP: {
             skip "type $type (bin: $use_bin) test: " . MT::Util::Archive->errstr, 1 unless $arc;
+            if ($use_bin && !$arc->find_bin) {
+                skip "type $type (bin: $use_bin) test: no external $type";
+            }
             subtest "type $type (bin: $use_bin) test" => sub {
                 ok($arc, "Empty $type archive created");
 
