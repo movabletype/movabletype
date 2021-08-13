@@ -12,6 +12,7 @@ use base qw( MT::ErrorHandler );
 
 use constant ARCHIVE_TYPE => 'zip';
 
+use MT::Util::Archive::TempFile;
 use File::Copy     ();
 use File::Temp     ();
 use File::Path     ();
@@ -34,7 +35,12 @@ sub new {
 
     my $obj = {};
     if (ref $file) {
-        $obj->{_fh}   = $file;
+        my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_XXXX');
+        my $pos     = tell $file;
+        seek $file, 0, 0;
+        File::Copy::cp($file, "$tmpfile");
+        seek $file, $pos, 0;
+        $obj->{_file} = $tmpfile;
         $obj->{_mode} = 'r';
     } elsif ((-e $file) && (-r $file)) {
         $obj->{_file} = $file;
@@ -112,10 +118,11 @@ sub flush {
     my $cwd = Cwd::cwd;
     chdir $tmpdir;
     my @cmds = ($bin, "-r", $file, '-@');
-    my $res = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
+    my $res  = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
     chdir $cwd;
     $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
+
     if ($file !~ /\.zip\z/ && -e "$file.zip") {
         rename "$file.zip" => $file or return $obj->error(MT->translate('Failed to rename an archive [_1]: [_2]', $file, $!));
     }
@@ -127,9 +134,7 @@ sub close {
 
     $obj->flush or return;
 
-    $obj->{_fh}->close if exists $obj->{_fh};
     $obj->{_file} = undef;
-    $obj->{_fh}   = undef;
     1;
 }
 
@@ -147,16 +152,6 @@ sub is {
 sub files {
     my ($obj, @opts) = @_;
     my $bin = $obj->find_unzip or return;
-
-    if (my $fh = $obj->{_fh}) {
-        my $tmpfh = File::Temp->new(TEMPLATE => 'mt_archive_XXXX', TMPDIR => 1);
-        $obj->{_tmpfh} = $tmpfh;
-        $obj->{_file}  = $tmpfh->filename;
-        my $pos = tell $fh;
-        seek $fh, 0, 0;
-        File::Copy::cp($fh, $tmpfh);
-        seek $fh, $pos, 0;
-    }
 
     my $file = $obj->{_file};
     my @cmds = ($bin, "-Z", "-1", @opts, $file);
@@ -208,7 +203,8 @@ sub extract {
 
     $path ||= MT->config->TempDir;
 
-    my $bin  = $obj->find_unzip or return;
+    my $bin = $obj->find_unzip or return;
+
     my $file = $obj->{_file};
     my @cmds = ($bin, "-d", $path, $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
@@ -243,7 +239,7 @@ sub add_string {
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;
-    open my $fh, '>', $tmpfile;
+    open my $fh, '>:raw', $tmpfile;
     binmode $fh;
     print $fh $string;
     CORE::close $fh;

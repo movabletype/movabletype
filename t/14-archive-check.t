@@ -7,8 +7,12 @@ use MT::Test::Env;
 
 our $test_env;
 BEGIN {
+    eval { require File::Which; 1 } or plan skip_all => 'requires File::Which';
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',    ## for now
+        BinTarPath      => File::Which::which('tar')   || '',
+        BinZipPath      => File::Which::which('zip')   || '',
+        BinUnzipPath    => File::Which::which('unzip') || '',
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -61,8 +65,7 @@ sub _create_tgz {
     my $archive = File::Spec->catfile($TEST_DIR, "$basename.tgz");
 
     my @files;
-    find { wanted => sub { push @files, $File::Find::name }, no_chdir => 1 },
-        $dir;
+    find { wanted => sub { push @files, $File::Find::name }, no_chdir => 1 }, $dir;
 
     my $archiver = Archive::Tar->new;
     $archiver->add_files(@files);

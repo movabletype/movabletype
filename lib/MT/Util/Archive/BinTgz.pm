@@ -13,6 +13,7 @@ use base qw( MT::ErrorHandler );
 use constant ARCHIVE_TYPE => 'tgz';
 
 use MT::FileMgr::Local;
+use MT::Util::Archive::TempFile;
 use File::Copy     ();
 use File::Temp     ();
 use File::Path     ();
@@ -34,8 +35,13 @@ sub new {
 
     my $obj = {};
     if (ref $file) {
-        $obj->{_fh}   = $file;
+        my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_XXXX');
+        my $pos     = tell $file;
+        seek $file, 0, 0;
+        File::Copy::cp($file, "$tmpfile");
+        seek $file, $pos, 0;
         $obj->{_mode} = 'r';
+        $obj->{_file} = $tmpfile;
     } elsif ((-e $file) && (-r $file)) {
         $obj->{_file} = $file;
         $obj->{_mode} = 'r';
@@ -84,8 +90,8 @@ sub flush {
 
     my $tmpdir = $obj->{_tmpdir};
 
-    my $tmpfile = File::Temp::tempnam(MT->config->TempDir, 'mt_archive_list_');
-    open my $fh, '>', $tmpfile;
+    my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_list_XXXX');
+    open my $fh, '>:raw', $tmpfile;
     print $fh join "\n", @{ $obj->{_files} || [] };
     close $fh;
 
@@ -94,7 +100,6 @@ sub flush {
     my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
     my $res  = IPC::Run::run(\@cmds, \my $in, \my $out, \my $err);
     chdir $cwd;
-    unlink $tmpfile;
     $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
     delete $obj->{_files};
     $obj->{_flushed} = 1;
@@ -105,9 +110,7 @@ sub close {
 
     $obj->flush or return;
 
-    $obj->{_fh}->close if exists $obj->{_fh};
     $obj->{_file} = undef;
-    $obj->{_fh}   = undef;
     1;
 }
 
@@ -126,16 +129,6 @@ sub files {
     my ($obj, @flags) = @_;
     my $bin = $obj->find_bin or return;
 
-    if (my $fh = $obj->{_fh}) {
-        my $tmpfh = File::Temp->new(TEMPLATE => 'mt_archive_XXXX', TMPDIR => 1);
-        $obj->{_tmpfh} = $tmpfh;
-        $obj->{_file}  = $tmpfh->filename;
-        my $pos = tell $fh;
-        seek $fh, 0, 0;
-        File::Copy::cp($fh, $tmpfh);
-        seek $fh, $pos, 0;
-    }
-
     my $file = $obj->{_file};
     my @cmds = ($bin, "-t", @flags, "-f", $file);
     IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
@@ -148,7 +141,7 @@ sub is_safe_to_extract {
     my $obj = shift;
 
     for my $item ($obj->files("-v")) {
-        my ($mode, $usergroup, $size, $date, $time, $file) = split / +/, $item, 6;
+        my ($file) = $item =~ /\d+:\d+\s+(.+)$/;
         if ($file =~ s/\s*\->.*\z//) {
             return $obj->error(MT->translate("[_1] in the archive is not a regular file", $file));
         }
@@ -209,7 +202,7 @@ sub add_string {
     my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
     my $dir     = File::Basename::dirname($tmpfile);
     File::Path::mkpath($dir) unless -d $dir;
-    open my $fh, '>', $tmpfile;
+    open my $fh, '>:raw', $tmpfile;
     binmode $fh;
     print $fh $string;
     CORE::close $fh;
@@ -241,5 +234,5 @@ MT::Util::Archive::BinTgz
 
 =head1 SYNOPSIS
 
-Zip compression and extraction package, based on MT::Util::Archive.
+Tar/Gzip compression and extraction package, based on MT::Util::Archive.
 See I<MT::Util::Archive> for more details.
