@@ -149,10 +149,20 @@ SKIP: {
                 my $text     = $block->text || '';
                 my $extra    = $callback ? $callback->($block) : '';
 
-                my $php_script = php_test_script( $block->blog_id || $blog_id,
-                    $template, $text, $extra );
-
+                require MT::Util::UniqueID;
+                my $log = '/tmp/php-' . MT::Util::UniqueID::create_session_id() . '.log';
+                my $php_script = php_test_script( $block->blog_id || $blog_id, $template, $text, $log, $extra );
                 my $php_result = MT::Test::PHP->run($php_script);
+
+                require File::Copy;
+                my $log2 = $log. '.copy';
+                File::Copy::copy($log, $log2);
+                if (open(my $fh, '<', $log2)) {
+                    if (my $log_content = do { local $/; <$fh> }) {
+                        diag 'PHPErrorLog';
+                        diag($log_content);
+                    }
+                }
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -211,7 +221,7 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $blog_id, $template, $text, $extra ) = @_;
+    my ( $blog_id, $template, $text, $log, $extra ) = @_;
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
@@ -222,6 +232,7 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
+\$log = '$log';
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -236,6 +247,8 @@ include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
+$mt->config('PHPErrorLogFilePath', $log);
+set_error_handler(array(&$mt, 'error_handler'));
 $mt->init_plugins();
 
 $db = $mt->db();
