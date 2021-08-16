@@ -192,7 +192,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         $ret_objs;
         $unique_arr = array();
         if ($objs) {
-            if ( $unique_myself ) {
+            if ( !empty($unique_myself) ) {
                 $pkeys = empty($pkeysArr)
                     ? $db->MetaPrimaryKeys( $this->_table )
                     : $pKeysArr;
@@ -310,7 +310,7 @@ abstract class BaseObject extends ADOdb_Active_Record
                 }
             }
 
-            if (! self::$_meta_info[$obj_type][$meta_name]) {
+            if (empty(self::$_meta_info[$obj_type][$meta_name])) {
                 self::$_meta_info[$obj_type][$meta_name] = $col_name;
             }
 
