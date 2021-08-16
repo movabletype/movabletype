@@ -78,6 +78,7 @@ sub list_props {
                 );
                 my %is_userpic = map { $_->object_id => 1 } @userpics;
                 my @rows;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 for my $obj (@$objs) {
                     my $id = $obj->id;
                     my $label
