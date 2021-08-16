@@ -1525,6 +1525,9 @@ PERMCHECK: {
 sub dialog_select_assoc_type {
     my $app = shift;
 
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
+
     my $blog_id   = $app->param('blog_id');
     my $this_user = $app->user;
 PERMCHECK: {
