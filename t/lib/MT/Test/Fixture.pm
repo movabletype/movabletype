@@ -6,6 +6,7 @@ use Carp;
 use MT::Test::Permission;
 use MT::Serialize;
 use Data::Visitor::Tiny;
+use List::Util qw(uniq);
 
 sub prepare {
     my ( $class, $spec ) = @_;
@@ -35,6 +36,7 @@ sub prepare {
     $class->prepare_category_set( $spec, \%objs );
     $class->prepare_content_type( $spec, \%objs );
     $class->prepare_content_data( $spec, \%objs );
+    $class->prepare_role( $spec, \%objs );
     $class->prepare_template( $spec, \%objs );
 
     \%objs;
@@ -451,6 +453,11 @@ sub prepare_content_type {
             else {
                 %ct_arg     = %$item;
                 @field_spec = @{ delete $ct_arg{fields} || [] };
+                if ( my $blog_name = delete $ct_arg{blog} || delete $ct_arg{website}) {
+                    my $blog = $objs->{blog}{$blog_name} || $objs->{website}{$blog_name}
+                        or croak "unknown blog: $blog_name";
+                    $ct_arg{blog_id} = $blog->id;
+                }
             }
 
             my $blog_id = $ct_arg{blog_id} || $objs->{blog_id}
@@ -668,6 +675,53 @@ sub prepare_content_data {
                 my $cd = MT::Test::Permission->make_content_data(%arg);
                 $objs->{content_data}{ $cd->label } = $cd;
             }
+        }
+    }
+}
+
+sub prepare_role {
+    my ($class, $spec, $objs) = @_;
+    return unless $spec->{role};
+    if (ref $spec->{role} eq 'HASH') {
+        for my $name (keys %{$spec->{role}}) {
+            my @perms;
+            for my $perm (@{$spec->{role}{$name} || []}) {
+                my $reftype = ref $perm;
+                if ($reftype eq 'HASH') {   # for content type
+                    my $ct_name = $perm->{content_type};
+                    my $cf_name = $perm->{content_field};
+                    my $ct_perm = $perm->{permission} || $perm->{perm};
+                    if ($ct_name) {
+                        my $ct = $objs->{content_type}{$ct_name}{content_type}
+                            or croak "unknown content type: $ct_name";
+                        if ($cf_name) {
+                            my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name}
+                                or croak "unknown content field: $ct_name $cf_name";
+                            push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                        } else {
+                            croak "content_type role permission is missing: $name" unless $ct_perm;
+                            push @perms, "$ct_perm:".$ct->unique_id;
+                            if ($ct_perm eq 'manage_content_data') {
+                                push @perms, "create_content_data:".$ct->unique_id;
+                                push @perms, "publish_content_data:".$ct->unique_id;
+                                push @perms, "edit_all_content_data:".$ct->unique_id;
+                                for my $cf_name (keys %{$objs->{content_type}{$ct_name}{content_field} || {}}) {
+                                    my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name};
+                                    push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                                }
+                            }
+                        }
+                    }
+                } elsif (!$reftype) {
+                    push @perms, $perm;
+                } else {
+                    croak "unknown role type: $name $reftype";
+                }
+            }
+            MT::Test::Permission->make_role(
+                name => $name,
+                permissions => join ",", map {qq{'$_'}} uniq @perms,
+            );
         }
     }
 }
