@@ -1295,9 +1295,7 @@ PERMCHECK: {
             panel_multi  => 1,
             has_group    => 1,
         };
-        if (   $type eq 'author'
-            && !$app->param('link_filter') )
-        {
+        if ($type eq 'user') {
             my $author_terms = {
                 status => MT::Author::ACTIVE(),
                 type   => MT::Author::AUTHOR()
