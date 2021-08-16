@@ -1294,9 +1294,6 @@ PERMCHECK: {
         $terms->{status} = MT::Author::ACTIVE();
         $terms->{type}   = MT::Author::AUTHOR();
     }
-    if ( $type && ( $type eq 'site' ) ) {
-        $terms->{class} = [ 'website', 'blog' ];
-    }
 
     my $group = MT->registry( 'object_types', 'group' );
     my $has_group = $group ? 1 : 0;
