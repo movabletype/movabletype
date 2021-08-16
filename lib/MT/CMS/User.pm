@@ -1326,6 +1326,10 @@ PERMCHECK: {
                 $terms->{status} = MT::Author::ACTIVE();
                 $terms->{type}   = MT::Author::AUTHOR();
             }
+            if ($type eq 'group') {
+                require MT::Group;
+                $terms->{status} = MT::Group::ACTIVE();
+            }
             $app->listing(
                 {   terms    => $terms,
                     args     => { sort => 'name' },
