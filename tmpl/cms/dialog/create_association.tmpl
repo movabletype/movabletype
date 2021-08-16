@@ -311,8 +311,8 @@ function init() {
         args = args.replace(/&search=\w+/, '');
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
-    if ( jQuery('#modal-search').length ) {
-      jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
+    if ( jQuery('#modal-search-author').length ) {
+      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
       jQuery('.select_assoc_type').trigger('change');
     }
     else {
