@@ -1288,13 +1288,6 @@ PERMCHECK: {
 
     my $type = $app->param('_type') || '';  # user, author, group
 
-    # Only show active users who are not commenters.
-    my $terms = {};
-    if ( $type && ( $type eq 'author' ) ) {
-        $terms->{status} = MT::Author::ACTIVE();
-        $terms->{type}   = MT::Author::AUTHOR();
-    }
-
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
@@ -1328,6 +1321,11 @@ PERMCHECK: {
             );
         }
         else {
+            my $terms = {};
+            if ($type eq 'author') {
+                $terms->{status} = MT::Author::ACTIVE();
+                $terms->{type}   = MT::Author::AUTHOR();
+            }
             $app->listing(
                 {   terms    => $terms,
                     args     => { sort => 'name' },
