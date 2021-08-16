@@ -1295,17 +1295,14 @@ PERMCHECK: {
         $terms->{type}   = MT::Author::AUTHOR();
     }
 
-    my $group = MT->registry( 'object_types', 'group' );
-    my $has_group = $group ? 1 : 0;
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
             panel_multi  => 1,
-            has_group    => $has_group ? 1 : 0,
+            has_group    => 1,
         };
-        if (   $has_group
-            && $type eq 'author'
+        if (   $type eq 'author'
             && !$app->param('link_filter') )
         {
             my $author_terms = {
@@ -1429,7 +1426,7 @@ PERMCHECK: {
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
-        $params->{has_group}    = $has_group ? 1 : 0;
+        $params->{has_group}    = 1;
 
         for ( my $i = 0; $i <= $#panels; $i++ ) {
             my $source       = $panels[$i];
@@ -1461,7 +1458,7 @@ PERMCHECK: {
                 $terms->{class} = 'website';
             }
 
-            if ( $has_group && $source eq 'author' ) {
+            if ( $source eq 'author' ) {
                 $panel_params->{panel_title}
                     = $app->translate("Select Groups And Users");
                 $panel_params->{items_prompt}
