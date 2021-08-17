@@ -1070,13 +1070,14 @@ sub do_search_replace {
             my $match = 0;
 
             # For cms_pre_save callback and revisioning
-            my $orig_obj = $obj->clone();
+            my $orig_obj;
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
                     my $text = $obj->column($col);
                     $text = '' unless defined $text;
                     if ($do_replace) {
+                        $orig_obj = $obj->clone();
                         if ( $text =~ s!$re!$replace!g ) {
                             $match++;
                             $obj->$col($text);
