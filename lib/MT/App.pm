@@ -2084,6 +2084,17 @@ sub login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
+            # Login invalid (empty password)
+            my $username = defined $app->param('username') ? $app->param('username') : '';
+            $app->log(
+                {   message => $app->translate(
+                        "Failed login attempt by user '[_1]'", $username
+                    ),
+                    level    => MT::Log::SECURITY(),
+                    category => 'login_user',
+                    class    => 'author',
+                }
+            );
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
@@ -2155,7 +2166,7 @@ sub login {
         || $res == MT::Auth::SESSION_EXPIRED() )
     {
 
-        # Login invlaid (password error, etc...)
+        # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
