@@ -2086,15 +2086,15 @@ sub login {
         if ( defined( $app->param('password') ) ) {
             # Login invalid (empty password)
             my $username = defined $app->param('username') ? $app->param('username') : '';
-            $app->log(
-                {   message => $app->translate(
-                        "Failed login attempt by user '[_1]'", $username
-                    ),
-                    level    => MT::Log::SECURITY(),
-                    category => 'login_user',
-                    class    => 'author',
-                }
-            );
+            my $message  = $username
+                         ? $app->translate("Failed login attempt by user '[_1]'", $username)
+                         : $app->translate("Failed login attempt by anonymous user");
+            $app->log({
+                message  => $message,
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            });
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
