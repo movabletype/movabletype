@@ -103,7 +103,6 @@ subtest 'two triggers for content types' => sub {
     $request->{__stash} = {};
     MT::RebuildTrigger->post_content_unpub( $cb, $app, $cd[2] );
     is( $rebuild_count, 6, 'rebuild not invoked' );
-return;
 };
 
 done_testing;
