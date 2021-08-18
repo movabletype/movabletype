@@ -1077,7 +1077,7 @@ sub do_search_replace {
                     my $text = $obj->column($col);
                     $text = '' unless defined $text;
                     if ($do_replace) {
-                        $orig_obj = $obj->clone();
+                        $orig_obj ||= $obj->clone();
                         if ( $text =~ s!$re!$replace!g ) {
                             $match++;
                             $obj->$col($text);
