@@ -438,6 +438,7 @@ PERMCHECK: {
         : 'text/csv'
     );
 
+    my %seen;
     my $csv = "timestamp,ip,weblog,by,message\n";
     while ( my $log = $iter->() ) {
 
@@ -478,6 +479,18 @@ PERMCHECK: {
             push @col, '"' . $name . '"';
         }
         else {
+            push @col, '';
+        }
+        if (my $author_id = $log->author_id) {
+            if ($seen{$author_id}) {
+                push @col, $seen{$author_id};
+            } elsif (my $user = MT->model('author')->load($author_id)) {
+                push @col, $user->name;
+                $seen{$author_id} = $user->name;
+            } else {
+                push @col, '';
+            }
+        } else {
             push @col, '';
         }
         my $msg = $log->message;
