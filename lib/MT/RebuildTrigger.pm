@@ -84,7 +84,7 @@ sub get_config_value {
             push @blog_ids, $rt->blog_id;
         }
         if ($rt->ct_id) {
-            push @{ $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action } ||= [] }, $rt->ct_id for @blog_ids;
+            $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action }{$rt->ct_id} = 1 for @blog_ids;
         } else {
             $data->{ $rt->object_type }{ $rt->event }{$_}{ $rt->action } = 0 for @blog_ids;
         }
@@ -110,8 +110,7 @@ sub post_content_save {
         while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
             next if $id == $blog_id;
             for my $action (keys %$a) {
-                next unless grep {$content->content_type_id} @{$a->{$action}};
-                perform_mb_action($app, $id, $action);
+                perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
             }
         }
 
@@ -120,8 +119,7 @@ sub post_content_save {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_PUBLISH() } })) {
                 next if $id == $blog_id;
                 for my $action (keys %$a) {
-                    next unless grep {$content->content_type_id} @{$a->{$action}};
-                    perform_mb_action($app, $id, $action);
+                    perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
                 }
             }
         }
@@ -143,8 +141,7 @@ sub post_content_pub {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_SAVE() } })) {
                 next if $id == $blog_id;
                 for my $action (keys %$a) {
-                    next unless grep {$content->content_type_id} @{$a->{$action}};
-                    perform_mb_action($app, $id, $action);
+                    perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
                 }
             }
         }
@@ -166,8 +163,7 @@ sub post_content_unpub {
             while (my ($id, $a) = each(%{ $d->{ TYPE_CONTENT_TYPE() }->{ EVENT_UNPUBLISH() } })) {
                 next if $id == $blog_id;
                 for my $action (keys %$a) {
-                    next unless grep {$content->content_type_id} @{$a->{$action}};
-                    perform_mb_action($app, $id, $action);
+                    perform_mb_action($app, $id, $action) if $a->{$action}->{$content->content_type_id};
                 }
             }
         }

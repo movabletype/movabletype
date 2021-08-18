@@ -30,7 +30,7 @@ $test_env->prepare_fixture('db');
 my $site = MT::Test::Permission->make_website(name => 'test website');
 my $child = MT::Test::Permission->make_blog(parent_id => $site->id, name => 'test blog');
 my @cd;
-for my $i (1..2) {
+for my $i (1..3) {
     my $ct = MT::Test::Permission->make_content_type(blog_id => $site->id, name => 'test content type' . $i);
 
     my $cf = MT::Test::Permission->make_content_field(
@@ -47,6 +47,8 @@ for my $i (1..2) {
         content_type_id => $ct->id,      data      => { $cf->id => 'test text' });
 
     push @cd, $cd;
+
+    next if $i == 3;
 
     for my $e (EVENT_SAVE(), EVENT_PUBLISH(), EVENT_UNPUBLISH()) {
         my $rt = MT::RebuildTrigger->new;
@@ -70,6 +72,7 @@ subtest 'two triggers for content types' => sub {
     $app->mock('rebuild_indexes', sub { $rebuild_count++ });
     my $cb = MT::Callback->new;
 
+    $request->{__stash} = {};
     MT::RebuildTrigger->post_content_save( $cb, $app, $cd[0] );
     is( $rebuild_count, 1, 'rebuild invoked for save' );
     $request->{__stash} = {};
@@ -82,6 +85,12 @@ subtest 'two triggers for content types' => sub {
     MT::RebuildTrigger->post_content_pub( $cb, $app, $cd[1] );
     is( $rebuild_count, 4, 'rebuild invoked for pub again' );
     $request->{__stash} = {};
+    MT::RebuildTrigger->post_content_save( $cb, $app, $cd[2] );
+    is( $rebuild_count, 4, 'rebuild not invoked' );
+    $request->{__stash} = {};
+    MT::RebuildTrigger->post_content_pub( $cb, $app, $cd[2] );
+    is( $rebuild_count, 4, 'rebuild not invoked' );
+    $request->{__stash} = {};
 
     $cd[0]->status(MT::ContentStatus::UNPUBLISH());
     $cd[1]->status(MT::ContentStatus::UNPUBLISH());
@@ -91,6 +100,10 @@ subtest 'two triggers for content types' => sub {
     $request->{__stash} = {};
     MT::RebuildTrigger->post_content_unpub( $cb, $app, $cd[1] );
     is( $rebuild_count, 6, 'rebuild invoked for unpub again' );
+    $request->{__stash} = {};
+    MT::RebuildTrigger->post_content_unpub( $cb, $app, $cd[2] );
+    is( $rebuild_count, 6, 'rebuild not invoked' );
+return;
 };
 
 done_testing;
