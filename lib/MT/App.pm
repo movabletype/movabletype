@@ -2085,8 +2085,8 @@ sub login {
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
             # Login invalid (empty password)
-            my $username = defined $app->param('username') ? $app->param('username') : '';
-            my $message  = $username
+            my $username = $app->param('username');
+            my $message  = defined $username && $username ne ''
                          ? $app->translate("Failed login attempt by user '[_1]'", $username)
                          : $app->translate("Failed login attempt by anonymous user");
             $app->log({
