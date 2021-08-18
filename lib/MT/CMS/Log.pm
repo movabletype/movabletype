@@ -439,7 +439,7 @@ PERMCHECK: {
         : 'text/csv'
     );
 
-    my $csv = "timestamp,ip,weblog,message\n";
+    my $csv = "timestamp,ip,weblog,by,message\n";
     while ( my $log = $iter->() ) {
 
         # columns:
