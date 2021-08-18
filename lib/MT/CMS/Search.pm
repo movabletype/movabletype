@@ -1328,7 +1328,7 @@ sub do_search_replace {
                     if ($do_replace) {
                         my $replaced;
                         my $replace_handler;
-                        $orig_obj = $obj->clone();
+                        $orig_obj ||= $obj->clone();
                         if ( my $replace_handler
                             = $field_registry->{replace_handler} )
                         {
