@@ -269,13 +269,13 @@ sub blob {
 
 sub _set_quality {
     my ( $image, $quality ) = @_;
-    my $type = $image->{type} or return 1;
     my $magick = $image->_magick;
+    my $type = $magick->Get('magick') or return 1;
 
     if ( !defined $quality ) {
-        my $lc_type = uc($type);
+        my $lc_type = lc($type);
         $lc_type = 'jpeg' if $lc_type eq 'jpg';
-        my $quality_column = uc($type) . '_quality';
+        my $quality_column = $lc_type . '_quality';
         $quality
             = $image->can($quality_column)
             ? $image->$quality_column
