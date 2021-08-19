@@ -32,6 +32,8 @@ sub new {
 sub init {
     my ( $image, %param ) = @_;
 
+    $image->{param} = \%param;
+
     my $jpeg_quality
         = exists $param{JpegQuality}
         ? $param{JpegQuality}
