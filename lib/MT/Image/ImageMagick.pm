@@ -64,7 +64,8 @@ sub _magick {
 sub _init_image_size {
     my $image = shift;
     return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
-    ( $image->{width}, $image->{height} ) = $image->_magick->Get( 'width', 'height' );
+    my $magick = $image->_magick or return;
+    ( $image->{width}, $image->{height} ) = $magick->Get( 'width', 'height' );
 }
 
 # http://www.imagemagick.org/script/command-line-options.php#quality
@@ -84,7 +85,7 @@ sub png_quality {
 
 my $HasRefType;
 sub _get_first_image {
-    my $magick = shift;
+    my $magick = shift or return;
     if ( !defined $HasRefType ) {
         $HasRefType = eval { require Scalar::Util; 1 } ? 1 : 0;
     }
@@ -100,7 +101,7 @@ sub _get_first_image {
 sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
     eval {
         my ( $orig_x, $orig_y ) = $magick->Get( 'width', 'height' );
@@ -143,7 +144,7 @@ sub crop_rectangle {
     my $image = shift;
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -179,7 +180,7 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image  = shift;
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -194,7 +195,7 @@ sub flipHorizontal {
 
 sub flipVertical {
     my $image  = shift;
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -209,7 +210,7 @@ sub flipVertical {
 sub rotate {
     my $image = shift;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -226,7 +227,7 @@ sub convert {
     my $image  = shift;
     my %param  = @_;
     my $type   = $image->{type} = $param{Type};
-    my $magick = _get_first_image( $image->_magick );
+    my $magick = _get_first_image( $image->_magick ) or return;
     my $blob;
 
     eval {
@@ -252,7 +253,7 @@ sub convert {
 
 sub blob {
     my ( $image, $quality ) = @_;
-    my $magick = $image->_magick;
+    my $magick = $image->_magick or return;
     my $blob;
 
     eval {
@@ -269,7 +270,7 @@ sub blob {
 
 sub _set_quality {
     my ( $image, $quality ) = @_;
-    my $magick = $image->_magick;
+    my $magick = $image->_magick or return;
     my $type = $magick->Get('magick') or return 1;
 
     if ( !defined $quality ) {
