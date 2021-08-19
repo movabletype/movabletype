@@ -26,6 +26,7 @@ sub prepare {
     $class->prepare_author( $spec, \%objs );
     $class->prepare_website( $spec, \%objs );
     $class->prepare_blog( $spec, \%objs );
+    $class->prepare_asset( $spec, \%objs );
     $class->prepare_image( $spec, \%objs );
     $class->prepare_tag( $spec, \%objs );
     $class->prepare_category( $spec, \%objs );
@@ -163,6 +164,63 @@ sub prepare_image {
             }
         }
     }
+}
+
+sub prepare_asset {
+    my ( $class, $spec, $objs ) = @_;
+    return unless $spec->{asset};
+
+    require File::Path;
+
+    my $asset_dir = "$ENV{MT_TEST_ROOT}/assets";
+    File::Path::mkpath($asset_dir) unless -d $asset_dir;
+
+    if (ref $spec->{asset} eq 'ARRAY') {
+        $spec->{asset} = {map { $_ => {} } @{$spec->{asset}}};
+    }
+    if ( ref $spec->{asset} eq 'HASH' ) {
+        for my $name ( sort keys %{ $spec->{asset} } ) {
+            my $item = $spec->{asset}{$name};
+            if ( ref $item eq 'HASH' ) {
+                my $blog_id = $item->{blog_id} || $objs->{blog_id}
+                    or croak "blog_id is required: asset";
+                my $asset_class = delete $item->{class} || _get_asset_class($name);
+                my $file = "$asset_dir/$name";
+                my ($ext) = $name =~ /(\.[^.]*)\z/;
+                if ($asset_class eq 'image' && !$item->{body}) {
+                    require MT::Test::Image;
+                    MT::Test::Image->write(file => $file);
+                } else {
+                    my $body = delete $item->{body} || $name;
+                    open my $fh, '>', $file;
+                    print $fh $body;
+                    close $fh;
+                }
+                my %args = (
+                    class     => $asset_class,
+                    blog_id   => $blog_id,
+                    url       => "%s/assets/$name",
+                    file_path => $file,
+                    file_ext  => $ext,
+                    %$item,
+                );
+
+                if ( my $parent_name = delete $args{parent} ) {
+                    my $parent = $objs->{$asset_class}{$parent_name}
+                        or croak "unknown parent asset: $parent_name";
+                    $args{parent} = $parent->id;
+                }
+                my $asset = MT::Test::Permission->make_asset(%args);
+                $objs->{$asset_class}{$name} = $asset;
+            }
+        }
+    }
+}
+
+sub _get_asset_class {
+    my $name = shift;
+    my ($class) = MT::Asset->handler_for_file($name) =~ /(\w+)$/;
+    lc($class || 'asset');
 }
 
 sub prepare_tag {
