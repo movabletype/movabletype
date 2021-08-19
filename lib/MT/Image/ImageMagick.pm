@@ -264,7 +264,7 @@ sub blob {
         MT->translate( 'Outputting image failed: [_1]', $@ ) )
         if $@;
 
-    return $magick->ImageToBlob;
+    return $blob;
 }
 
 sub _set_quality {
