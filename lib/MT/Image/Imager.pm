@@ -137,23 +137,26 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image = shift;
-    $image->{imager} = $image->_imager->flip( dir => 'h' );
+    my $imager = $image->_imager or return;
+    $image->{imager} = $imager->flip( dir => 'h' );
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
 
 sub flipVertical {
     my $image = shift;
-    $image->{imager} = $image->_imager->flip( dir => 'v' );
+    my $imager = $image->_imager or return;
+    $image->{imager} = $imager->flip( dir => 'v' );
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
 
 sub rotate {
     my $image = shift;
+    my $imager = $image->_imager or return;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
 
-    $image->{imager} = $image->_imager->rotate( right => $degrees );
+    $image->{imager} = $imager->rotate( right => $degrees );
 
     wantarray
         ? ( $image->blob, $w, $h )

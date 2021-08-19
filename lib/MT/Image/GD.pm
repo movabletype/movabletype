@@ -76,7 +76,8 @@ sub _gd {
 sub _init_image_size {
     my $image = shift;
     return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
-    ( $image->{width}, $image->{height} ) = $image->_gd->getBounds();
+    my $gd = $image->_gd or return;
+    ( $image->{width}, $image->{height} ) = $gd->getBounds();
 }
 
 sub _translate_filetype {
@@ -91,6 +92,7 @@ sub _translate_filetype {
 sub blob {
     my ( $image, $quality ) = @_;
     my $type = $image->{type};
+    my $gd   = $image->_gd or return;
 
     if ( !defined $quality ) {
         my $quality_column = "${type}_quality";
@@ -99,10 +101,10 @@ sub blob {
     }
 
     if ( defined $quality ) {
-        $image->_gd->$type($quality);
+        $gd->$type($quality);
     }
     else {
-        $image->_gd->$type;
+        $gd->$type;
     }
 }
 
@@ -140,29 +142,34 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image = shift;
-    $image->_gd->flipHorizontal;
+
+    my $gd = $image->_gd or return;
+    $gd->flipHorizontal;
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
 
 sub flipVertical {
     my $image = shift;
-    $image->_gd->flipVertical;
+
+    my $gd = $image->_gd or return;
+    $gd->flipVertical;
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
 
 sub rotate {
     my $image = shift;
+    my $gd = $image->_gd or return;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
 
     my $method      = "rotate$degrees";
     my $copy_method = "copyRotate$degrees";
-    if ( $image->_gd->can($method) ) {
-        $image->_gd->$method;
+    if ( $gd->can($method) ) {
+        $gd->$method;
     }
-    elsif ( $image->_gd->can($copy_method) ) {
-        $image->{gd} = $image->_gd->$copy_method;
+    elsif ( $gd->can($copy_method) ) {
+        $image->{gd} = $gd->$copy_method;
     }
     else {
         return $image->error(
