@@ -64,9 +64,17 @@ sub _init_image_size {
         or return $image->error(
         MT->translate( "Reading image failed: [_1]", $err ) );
     ( $image->{width}, $image->{height} ) = $out =~ /(\d+)\s+by\s+(\d+)/;
+}
+
+sub _has_alpha {
+    my $image = shift;
+    my $pbm = $image->_find_pbm or return;
+    my $type = $image->{type};
 
     # Preserve alpha channel of PNG image.
     if ( $type eq 'png' ) {
+        return $image->{alpha} if $image->{alpha};
+
         my @alpha_in = (
             "$pbm${type}topnm", '-alpha',
             ( $image->{file} ? $image->{file} : () )
@@ -80,9 +88,10 @@ sub _init_image_size {
                 "Reading alpha channel of image failed: [_1]", $alpha_err
             )
             );
-    }
 
-    $image;
+        return $image->{alpha};
+    }
+    return;
 }
 
 sub _translate_filetype {
@@ -107,7 +116,7 @@ sub scale {
     my $pbm = $image->_find_pbm or return;
 
     # Scale alpha channel.
-    if ( $image->{alpha} ) {
+    if ( $image->_has_alpha ) {
         my @scale_alpha = ( "${pbm}pnmscale", '-width', $w, '-height', $h );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@scale_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
@@ -150,7 +159,7 @@ sub crop_rectangle {
     my $pbm = $image->_find_pbm or return $image->error('Failed to find pbm');
 
     # Crop alpha channel.
-    if ( $image->{alpha} ) {
+    if ( $image->_has_alpha ) {
         my @crop_alpha = ( "${pbm}pnmcut", $x, $y, $width, $height );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@crop_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
@@ -194,7 +203,7 @@ sub flipHorizontal {
     my $pbm = $image->_find_pbm or return;
 
     # Flip horizontal alpha channel.
-    if ( $image->{alpha} ) {
+    if ( $image->_has_alpha ) {
         my @flip_alpha = ( "${pbm}pnmflip", '-lr' );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@flip_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
@@ -229,7 +238,7 @@ sub flipVertical {
     my $pbm = $image->_find_pbm or return;
 
     # Flip vertical alpha channel.
-    if ( $image->{alpha} ) {
+    if ( $image->_has_alpha ) {
         my @flip_alpha = ( "${pbm}pnmflip", '-tb' );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@flip_alpha, \$image->{alpha}, \$alpha, \$alpha_err )
@@ -265,7 +274,7 @@ sub rotate {
     my $pbm = $image->_find_pbm or return;
 
     # Rotate alpha channel.
-    if ( $image->{alpha} ) {
+    if ( $image->_has_alpha ) {
         my @rotate_alpha = ( "${pbm}pnmflip", '-r' . ( 360 - $degrees ) );
         my ( $alpha, $alpha_err );
         IPC::Run::run( \@rotate_alpha, \$image->{alpha}, \$alpha,
@@ -415,7 +424,7 @@ sub _generate_converting_command {
         }
 
         # Set alpha channel data.
-        if ( $type eq 'png' && $image->{alpha} ) {
+        if ( $type eq 'png' && $image->_has_alpha ) {
             require File::Temp;
             require MT::FileMgr;
 
