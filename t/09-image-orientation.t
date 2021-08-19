@@ -79,6 +79,7 @@ for my $driver (@drivers) {
 sub _run {
     my ( $label, $sub, $width, $height, $expected_map ) = @_;
     my $image = MT::Image->new( Data => $original_image_blob, Type => 'png' );
+    $image->_init_image_size;
 
     my ( $blob, $w, $h ) = $sub->($image);
 

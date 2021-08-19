@@ -36,8 +36,17 @@ sub init {
         or return $image->error(
         MT->translate( "Unsupported image file type: [_1]", $param{Type} ) );
 
+    $image;
+}
+
+sub _imager {
+    my $image = shift;
+    return $image->{imager} if $image->{imager};
+
+    my $param = $image->{param};
+
     my $imager = Imager->new;
-    if ( my $file = $param{Filename} ) {
+    if ( my $file = $param->{Filename} ) {
         $imager->read( file => $file, type => $image->{type} )
             or return $image->error(
             MT->translate(
@@ -46,17 +55,23 @@ sub init {
             )
             );
     }
-    elsif ( my $blob = $param{Data} ) {
+    elsif ( my $blob = $param->{Data} ) {
         $imager->read( data => $blob, type => $image->{type} )
             or return $image->error(
             MT->translate( "Reading image failed: [_1]", $imager->errstr ) );
     }
 
     $image->{imager} = $imager;
-    $image->{width}  = $image->{imager}->getwidth;
-    $image->{height} = $image->{imager}->getheight;
+}
 
-    $image;
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+
+    my $imager = $image->_imager;
+    $image->{width}  = $imager->getwidth;
+    $image->{height} = $imager->getheight;
+    return ($image->{width}, $image->{height});
 }
 
 {
@@ -75,7 +90,7 @@ sub init {
 sub blob {
     my ( $image, $quality ) = @_;
     my $blob;
-    my $imager = $image->{imager};
+    my $imager = $image->_imager;
     my $is_jpeg = defined $image->{type} && $image->{type} eq 'jpeg';
     if ( $is_jpeg
         && ( $imager->getchannels == 2 || $imager->getchannels == 4 ) )
@@ -100,7 +115,7 @@ sub scale {
     my $image = shift;
     my ( $w, $h ) = $image->get_dimensions(@_);
 
-    $image->{imager} = $image->{imager}
+    $image->{imager} = $image->_imager
         ->scale( xpixels => $w, ypixels => $h, type => 'nonprop' );
     @$image{qw/width height/} = ( $w, $h );
 
@@ -112,7 +127,7 @@ sub crop_rectangle {
     my %param = @_;
     my ( $width, $height, $x, $y ) = @param{qw( Width Height X Y )};
 
-    $image->{imager} = $image->{imager}
+    $image->{imager} = $image->_imager
         ->crop( left => $x, top => $y, width => $width, height => $height );
     $image->{width}  = $width;
     $image->{height} = $height;
@@ -122,14 +137,14 @@ sub crop_rectangle {
 
 sub flipHorizontal {
     my $image = shift;
-    $image->{imager} = $image->{imager}->flip( dir => 'h' );
+    $image->{imager} = $image->_imager->flip( dir => 'h' );
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
 
 sub flipVertical {
     my $image = shift;
-    $image->{imager} = $image->{imager}->flip( dir => 'v' );
+    $image->{imager} = $image->_imager->flip( dir => 'v' );
 
     wantarray ? ( $image->blob, @$image{qw(width height)} ) : $image->blob;
 }
@@ -138,7 +153,7 @@ sub rotate {
     my $image = shift;
     my ( $degrees, $w, $h ) = $image->get_degrees(@_);
 
-    $image->{imager} = $image->{imager}->rotate( right => $degrees );
+    $image->{imager} = $image->_imager->rotate( right => $degrees );
 
     wantarray
         ? ( $image->blob, $w, $h )
