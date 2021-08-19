@@ -58,26 +58,6 @@ sub _magick {
             MT->translate( "Reading image failed: [_1]", $x ) )
             if $x;
     }
-
-    # Set quality.
-    my $quality;
-    if ( lc( $magick->Get('magick') ) eq 'jpeg' ) {
-        $quality = $image->jpeg_quality;
-    }
-    elsif ( lc( $magick->Get('magick') ) eq 'png' ) {
-        $quality = $image->png_quality;
-    }
-    if ( defined $quality ) {
-        eval {
-            my $err = $magick->Set( quality => $quality );
-            return $image->error(
-                MT->transalte(
-                    'Setting quality parameter [_1] failed: [_2]', $quality,
-                    $err
-                )
-            ) if $err;
-        };
-    }
     $magick;
 }
 
