@@ -50,8 +50,6 @@ sub _magick {
         return $image->error(
             MT->translate( "Reading file '[_1]' failed: [_2]", $file, $x ) )
             if $x;
-        ( $image->{width}, $image->{height} )
-            = $magick->Get( 'width', 'height' );
     }
     elsif ( $param->{Data} ) {
         my $x;
@@ -59,8 +57,6 @@ sub _magick {
         return $image->error(
             MT->translate( "Reading image failed: [_1]", $x ) )
             if $x;
-        ( $image->{width}, $image->{height} )
-            = $magick->Get( 'width', 'height' );
     }
 
     # Set quality.
@@ -83,7 +79,12 @@ sub _magick {
         };
     }
     $magick;
+}
 
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+    ( $image->{width}, $image->{height} ) = $image->_magick->Get( 'width', 'height' );
 }
 
 # http://www.imagemagick.org/script/command-line-options.php#quality

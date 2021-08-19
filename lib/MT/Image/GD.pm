@@ -68,10 +68,15 @@ sub _gd {
             or return $image->error(
             MT->translate( "Reading image failed: [_1]", $@ ) );
     }
-    ( $image->{width}, $image->{height} ) = $image->{gd}->getBounds();
     $image->{gd}->alphaBlending(0);
     $image->{gd}->saveAlpha(1);
     $image->{gd};
+}
+
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+    ( $image->{width}, $image->{height} ) = $image->_gd->getBounds();
 }
 
 sub _translate_filetype {

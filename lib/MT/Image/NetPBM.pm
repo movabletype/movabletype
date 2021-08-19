@@ -46,8 +46,16 @@ sub init {
             )
         );
     }
+    $image;
+}
+
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+
     my ( $out, $err );
     my $pbm = $image->_find_pbm or return;
+    my $type = $image->{type};
 
     my @in = ( "$pbm${type}topnm", ( $image->{file} ? $image->{file} : () ) );
     my @out = ( "${pbm}pnmfile", '-allimages' );

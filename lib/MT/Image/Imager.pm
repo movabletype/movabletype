@@ -62,9 +62,16 @@ sub _imager {
     }
 
     $image->{imager} = $imager;
-    $image->{width}  = $image->{imager}->getwidth;
-    $image->{height} = $image->{imager}->getheight;
+}
 
+sub _init_image_size {
+    my $image = shift;
+    return ($image->{width}, $image->{height}) if defined $image->{width} && defined $image->{height};
+
+    my $imager = $image->_imager;
+    $image->{width}  = $imager->getwidth;
+    $image->{height} = $imager->getheight;
+    return ($image->{width}, $image->{height});
 }
 
 {
