@@ -50,13 +50,13 @@ sub available_formats {
     return {} unless $classes && %$classes;
 
     my @data;
-    my $prefer_bin = MT->config->UseExternalArchiver ? 1 : 0;
+    my $use_bin = MT->config->UseExternalArchiver ? 1 : 0;
     for my $key (keys %$classes) {
         my $class = $classes->{$key}->{class};
-        $class =~ s/::(\w+)$/::Bin$1/ if $prefer_bin;
+        $class =~ s/::(\w+)$/::Bin$1/ if $use_bin;
         eval "require $class;";
         next if $@;
-        next if $prefer_bin && !$class->find_bin;
+        next if $use_bin && !$class->find_bin;
         my $label = $classes->{$key}->{label};
         if ('CODE' eq ref($label)) {
             $label = $label->();
