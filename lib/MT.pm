@@ -2996,6 +2996,7 @@ sub core_commenter_authenticators {
             logo              => 'images/comment/signin_hatena.png',
             logo_small        => 'images/comment/hatena_logo.png',
             order             => 21,
+            disable           => 1,
         },
     };
 }
