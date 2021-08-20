@@ -428,8 +428,7 @@ sub _asset_from_url {
     $asset->file_ext($ext_copy);
     $asset->blog_id(0);
 
-    my $original = $asset->clone;
-    my $url      = $local_relative;
+    my $url = $local_relative;
     $url =~ s!\\!/!g;
     $asset->url($url);
     $asset->image_width($w);
