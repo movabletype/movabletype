@@ -18,10 +18,10 @@ use File::Temp     ();
 use File::Path     ();
 use File::Basename ();
 use Encode;
+use IPC::Run3 ();
 
 our $BinZipPath;
 our $BinUnzipPath;
-our $HasIPCRun;
 
 sub new {
     my $pkg = shift;
@@ -30,8 +30,6 @@ sub new {
     $type =~ s/^bin//;
     return $pkg->error(MT->translate('Type must be zip'))
         unless $type eq ARCHIVE_TYPE;
-
-    return unless $pkg->_has_ipc_run;
 
     my $obj = {};
     if (ref $file) {
@@ -54,17 +52,6 @@ sub new {
     $obj;
 }
 
-sub _has_ipc_run {
-    my $class = shift;
-    return $HasIPCRun if defined $HasIPCRun;
-    eval { require IPC::Run };
-    if (my $err = $@) {
-        $HasIPCRun = 0;
-        return $class->error(MT->translate("Cannot load IPC::Run: [_1]", $err));
-    }
-    return $HasIPCRun = 1;
-}
-
 sub find_bin {
     my $self = shift;
     if (ref $self) {
@@ -82,7 +69,6 @@ sub find_bin {
 sub find_zip {
     my $class = shift;
     return $BinZipPath if defined $BinZipPath;
-    return unless $class->_has_ipc_run;
     for my $path (MT->config->BinZipPath, '/usr/local/bin/zip', '/usr/bin/zip') {
         next unless $path;
         return $BinZipPath = $path if -e $path;
@@ -93,7 +79,6 @@ sub find_zip {
 sub find_unzip {
     my $class = shift;
     return $BinUnzipPath if defined $BinUnzipPath;
-    return unless $class->_has_ipc_run;
     for my $path (MT->config->BinUnzipPath, '/usr/local/bin/unzip', '/usr/bin/unzip') {
         next unless $path;
         return $BinUnzipPath = $path if -e $path;
@@ -118,9 +103,10 @@ sub flush {
     my $cwd = Cwd::cwd;
     chdir $tmpdir;
     my @cmds = ($bin, "-r", $file, '-@');
-    my $res  = IPC::Run::run(\@cmds, \$list, \my $out, \my $err);
+    eval { IPC::Run3::run3(\@cmds, \$list) };
+    my $error = $@;
     chdir $cwd;
-    $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
+    return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $error)) if $error;
     delete $obj->{_files};
 
     if ($file !~ /\.zip\z/ && -e "$file.zip") {
@@ -155,8 +141,9 @@ sub files {
 
     my $file = $obj->{_file};
     my @cmds = ($bin, "-Z", "-1", @opts, $file);
-    IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to list files of [_1]: [_2]', $file, $?);
+    my $out;
+    eval { IPC::Run3::run3(\@cmds, undef, \$out) };
+    return $obj->error('Failed to list files of [_1]: [_2]', $file, $@) if $@;
     return unless defined $out;
     my @lines = split /\n/, $out;
     return @lines unless @opts;
@@ -207,8 +194,8 @@ sub extract {
 
     my $file = $obj->{_file};
     my @cmds = ($bin, "-d", $path, $file);
-    IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $?);
+    eval { IPC::Run3::run3(\@cmds) };
+    return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $@) if $@;
     1;
 }
 

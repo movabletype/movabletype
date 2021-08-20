@@ -50,13 +50,18 @@ sub available_formats {
     return {} unless $classes && %$classes;
 
     my @data;
-    my $prefer_bin = MT->config->UseExternalArchiver ? 1 : 0;
-    for my $key (keys %$classes) {
+    my $use_bin = MT->config->UseExternalArchiver ? 1 : 0;
+    for my $key (sort keys %$classes) {
         my $class = $classes->{$key}->{class};
-        $class =~ s/::(\w+)$/::Bin$1/ if $prefer_bin;
+        $class =~ s/::(\w+)$/::Bin$1/ if $use_bin;
+        my $error;
         eval "require $class;";
-        next if $@;
-        next if $prefer_bin && !$class->find_bin;
+        if ($@) {
+            ($error = $@) =~ s/ at .+? line \d+$//s;
+            $error = MT->translate("Cannot load [_1]: [_2]", $class, $error);
+        } elsif ($use_bin && !$class->find_bin) {
+            $error = $class->errstr;
+        }
         my $label = $classes->{$key}->{label};
         if ('CODE' eq ref($label)) {
             $label = $label->();
@@ -66,6 +71,7 @@ sub available_formats {
             key   => $key,
             label => $label,
             class => $class,
+            error => $error,
             };
     }
     @data;
