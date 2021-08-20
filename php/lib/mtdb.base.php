@@ -3373,7 +3373,7 @@ abstract class MTDatabase {
         require_once('class.mt_entry.php');
         $entry = new Entry;
         $entries = $entry->Find($where);
-        if (!empty($results)) {
+        if (!empty($entries)) {
             foreach ($entries as $e) {
                 $this->_ping_count_cache[$e->id] = $e->ping_count;
             }
