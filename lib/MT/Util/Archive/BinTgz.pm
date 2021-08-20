@@ -19,9 +19,9 @@ use File::Temp     ();
 use File::Path     ();
 use File::Basename ();
 use Encode;
+use IPC::Run3 ();
 
 our $BinTarPath;
-our $HasIPCRun;
 
 sub new {
     my $pkg = shift;
@@ -30,8 +30,6 @@ sub new {
     $type =~ s/^bin//;
     return $pkg->error(MT->translate('Type must be tgz.'))
         unless $type eq ARCHIVE_TYPE;
-
-    return unless $pkg->_has_ipc_run;
 
     my $obj = {};
     if (ref $file) {
@@ -54,21 +52,9 @@ sub new {
     $obj;
 }
 
-sub _has_ipc_run {
-    my $class = shift;
-    return $HasIPCRun if defined $HasIPCRun;
-    eval { require IPC::Run };
-    if (my $err = $@) {
-        $HasIPCRun = 0;
-        return $class->error(MT->translate("Cannot load IPC::Run: [_1]", $err));
-    }
-    return $HasIPCRun = 1;
-}
-
 sub find_bin {
     my $class = shift;
     return $BinTarPath if defined $BinTarPath;
-    return unless $class->_has_ipc_run;
     for my $path (MT->config->BinTarPath, '/usr/local/bin/tar', '/usr/bin/tar', '/bin/tar') {
         next unless $path;
         return $BinTarPath = $path if -e $path;
@@ -98,9 +84,10 @@ sub flush {
     require Cwd;
     my $cwd  = Cwd::cwd();
     my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
-    my $res  = IPC::Run::run(\@cmds, \my $in, \my $out, \my $err);
+    eval { IPC::Run3::run3(\@cmds) };
+    my $error = $@;
     chdir $cwd;
-    $res or return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $?));
+    return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $error)) if $error;
     delete $obj->{_files};
     $obj->{_flushed} = 1;
 }
@@ -131,8 +118,9 @@ sub files {
 
     my $file = $obj->{_file};
     my @cmds = ($bin, "-t", @flags, "-f", $file);
-    IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to list files of [_1]: [_2]', $file, $?);
+    my $out;
+    eval { IPC::Run3::run3(\@cmds, undef, \$out) };
+    return $obj->error('Failed to list files of [_1]: [_2]', $file, $@) if $@;
     return unless defined $out;
     split /\n/, $out;
 }
@@ -169,8 +157,8 @@ sub extract {
     my @opts = ("-x");
     push @opts, "-z" if $file =~ /gz$/;
     my @cmds = ($bin, @opts, "-C", $path, "-f", $file);
-    IPC::Run::run(\@cmds, \my $in, \my $out, \my $err)
-        or return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $?);
+    eval { IPC::Run3::run3(\@cmds) };
+    return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $@) if $@;
     1;
 }
 
