@@ -511,6 +511,7 @@ use vars qw( @ISA %Lexicon );
 	q{Email Address is invalid.} => q{L'adresse e-mail est invalide.},
 	q{Email Address is required for password reset.} => q{L'adresse e-mail est requise pour la réinitialisation du mot de passe},
 	q{Error sending mail: [_1]} => q{Erreur de l'envoi de l'e-mail : [_1]},
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Tentative de connexion par un utilisateur désactivé '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New

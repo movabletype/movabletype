@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Waarschuwingen en logberichten',
 	'You did not have permission for this action.' => 'U had geen permissie voor deze actie',
 	'[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Mislukte aanmeldpoding door gedeactiveerde gebruiker '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
