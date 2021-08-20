@@ -51,7 +51,7 @@ sub available_formats {
 
     my @data;
     my $use_bin = MT->config->UseExternalArchiver ? 1 : 0;
-    for my $key (keys %$classes) {
+    for my $key (sort keys %$classes) {
         my $class = $classes->{$key}->{class};
         $class =~ s/::(\w+)$/::Bin$1/ if $use_bin;
         eval "require $class;";
