@@ -511,6 +511,8 @@ class ADODB_mssqlnative extends ADOConnection {
 				ADOConnection::outp('No userid or password supplied, attempting connection with Windows Authentication');
 		}
 
+		if ( $this->is_utf )
+			$connectionInfo['CharacterSet'] = 'UTF-8';
 
 		/*
 		* Now merge in the passed connection parameters setting
