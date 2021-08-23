@@ -1233,7 +1233,6 @@ PERMCHECK: {
         return $app->permission_denied();
     }
 
-    my $type = $app->param('_type') || '';
     my ( $user, $role );
     if ( $author_id && $author_id ne 'PSEUDO' ) {
         $user = MT::Author->load($author_id);
@@ -1340,29 +1339,16 @@ PERMCHECK: {
         $param->{object_loop} = \@new_object_loop;
     };
 
-    # Only show active users who are not commenters.
-    my $terms = {};
-    if ( $type && ( $type eq 'author' ) ) {
-        $terms->{status} = MT::Author::ACTIVE();
-        $terms->{type}   = MT::Author::AUTHOR();
-    }
-    if ( $type && ( $type eq 'site' ) ) {
-        $terms->{class} = [ 'website', 'blog' ];
-    }
+    my $type = $app->param('_type') || '';  # user, author, group
 
-    my $group = MT->registry( 'object_types', 'group' );
-    my $has_group = $group ? 1 : 0;
     if ( $app->param('search') || $app->param('json') ) {
         my $params = {
             panel_type   => $type,
             list_noncron => 1,
             panel_multi  => 1,
-            has_group    => $has_group ? 1 : 0,
+            has_group    => 1,
         };
-        if (   $has_group
-            && $type eq 'author'
-            && !$app->param('link_filter') )
-        {
+        if ($type eq 'user') {
             my $author_terms = {
                 status => MT::Author::ACTIVE(),
                 type   => MT::Author::AUTHOR()
@@ -1386,6 +1372,15 @@ PERMCHECK: {
             );
         }
         else {
+            my $terms = {};
+            if ($type eq 'author') {
+                $terms->{status} = MT::Author::ACTIVE();
+                $terms->{type}   = MT::Author::AUTHOR();
+            }
+            if ($type eq 'group') {
+                require MT::Group;
+                $terms->{status} = MT::Group::ACTIVE();
+            }
             $app->listing(
                 {   terms    => $terms,
                     args     => { sort => 'name' },
@@ -1484,7 +1479,7 @@ PERMCHECK: {
         $params->{blog_id}      = $blog_id;
         $params->{dialog_title} = $app->translate("Grant Permissions");
         $params->{panel_loop}   = [];
-        $params->{has_group}    = $has_group ? 1 : 0;
+        $params->{has_group}    = 1;
 
         for ( my $i = 0; $i <= $#panels; $i++ ) {
             my $source       = $panels[$i];
@@ -1516,7 +1511,7 @@ PERMCHECK: {
                 $terms->{class} = 'website';
             }
 
-            if ( $has_group && $source eq 'author' ) {
+            if ( $source eq 'author' ) {
                 $panel_params->{panel_title}
                     = $app->translate("Select Groups And Users");
                 $panel_params->{items_prompt}
@@ -1582,6 +1577,9 @@ PERMCHECK: {
 
 sub dialog_select_assoc_type {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.9');
 
     my $blog_id   = $app->param('blog_id');
     my $this_user = $app->user;

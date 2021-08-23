@@ -421,6 +421,18 @@ sub save {
         $field_list = [];
     }
 
+    # Duplication check (just in case; this check should have been done before saving using JS)
+    my %seen_field_names;
+    for my $field (@$field_list) {
+        my $name = $field->{options}{label};
+        if ( $seen_field_names{$name}++ ) {
+            $param{error}
+                = $app->translate( 'Field \'[_1]\' must be unique in this content type.', $name );
+            $app->mode('view');
+            return $app->forward( "view", \%param );
+        }
+    }
+
     # Prepare save field data
     my @field_objects       = ();
     my $cf_class            = MT->model('content_field');

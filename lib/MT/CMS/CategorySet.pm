@@ -84,4 +84,15 @@ sub can_delete {
     return $author->permissions($blog_id)->can_do('delete_category_set');
 }
 
+sub post_delete {
+    my ($eh, $app, $set) = @_;
+
+    $app->log({
+        message  => $app->translate("Category Set '[_1]' (ID:[_2]) deleted by '[_3]'", $set->name, $set->id, $app->user->name),
+        level    => MT::Log::NOTICE(),
+        class    => 'category_set',
+        category => 'delete'
+    });
+}
+
 1;

@@ -154,4 +154,37 @@ sub api_request_ok {
     return JSON::decode_json($res->decoded_content);
 }
 
+sub json {
+    my $self = shift;
+    return unless $self->{res} && $self->{res}->header('Content-Type') =~ qr{^application/json;};
+    return MT::Util::from_json($self->{content});
+}
+
+sub html_content {
+    my $self = shift;
+    my $content = $self->content;
+    $content =~ s/\n(\s*\n)+/\n/gs;
+    require HTML::Filter::Callbacks;
+    my $filter = HTML::Filter::Callbacks->new;
+    $filter->add_callbacks(
+        script => {
+            start => sub { shift->remove_text_and_tag },
+            end   => sub { shift->remove_text_and_tag },
+        },
+    );
+    $self->{html_content} = $filter->process($content);
+}
+
+sub html_content_like {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content =~ /$pattern/, $message // "content contains $pattern";
+}
+
+sub html_content_unlike {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content !~ /$pattern/, $message // "content doesn't contain $pattern";
+}
+
 1;
