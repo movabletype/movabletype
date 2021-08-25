@@ -443,7 +443,7 @@ PERMCHECK: {
     while ( my $log = $iter->() ) {
 
         # columns:
-        # date, ip address, weblog, log message
+        # date, ip address, weblog, by, log message
         my @col;
         my $ts = $log->created_on;
         if ($blog_view) {
