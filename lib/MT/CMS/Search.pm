@@ -668,6 +668,14 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+
+    $app->validate_param({
+        _type           => [qw/OBJTYPE/],
+        blog_id         => [qw/ID/],
+        content_type_id => [qw/ID/],
+        entry_type      => [qw/OBJTYPE/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id');
 
@@ -1526,7 +1534,7 @@ sub do_search_replace {
         $app->log(
             {   message  => $message,
                 blog_id  => ( $obj->can('blog_id') ? $obj->blog_id : 0 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $type,
                 category => 'edit',
                 metadata => $obj->id

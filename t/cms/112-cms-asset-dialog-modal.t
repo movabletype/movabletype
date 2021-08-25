@@ -17,7 +17,7 @@ plan tests => 1;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt    = MT->instance;
 my $admin = $mt->model('author')->load(1);

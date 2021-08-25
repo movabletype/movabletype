@@ -16,7 +16,7 @@ use MT;
 
 use MT::Test;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->instance or die MT->errstr;
 isa_ok($mt, 'MT');
@@ -24,6 +24,7 @@ isa_ok($mt, 'MT');
 
 my $blog = MT->model('blog')->load(1);
 $blog->include_cache(1);
+$blog->site_path($test_env->root);
 $blog->save;
 
 my $include = MT->model('template')->new;

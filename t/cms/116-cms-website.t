@@ -20,28 +20,12 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::Fixture::Cms::Common1;
 
 MT::Test->init_app;
 
 ### Make test data
-$test_env->prepare_fixture(
-    sub {
-        MT::Test->init_db;
-
-        # Website
-        my $website
-            = MT::Test::Permission->make_website( name => 'my website', );
-
-        # Blog
-        my $blog = MT::Test::Permission->make_blog(
-            parent_id => $website->id,
-            name      => 'my blog',
-        );
-
-        # Author
-        my $admin = MT->model('author')->load(1);
-    }
-);
+$test_env->prepare_fixture('cms/common1');
 
 my $website = MT::Website->load( { name => 'my website' } );
 my $blog = MT::Blog->load( { name => 'my blog' } );
@@ -469,4 +453,3 @@ SKIP: {
 };
 
 done_testing();
-

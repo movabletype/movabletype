@@ -67,7 +67,7 @@ sub archive_group_iter {
     my $tsend = $ctx->{current_timestamp_end};
 
     my $content_type_id = $ctx->stash('content_type')->id;
-    my $map             = $obj->_get_preferred_map(
+    my $map             = $obj->get_preferred_map(
         {   blog_id         => $blog->id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),

@@ -22,7 +22,7 @@ use MT::Entry;
 use MT::App::CMS;
 use MT::Permission;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->new;
 die "Couldn't create MT (" . MT->errstr. ")" unless $mt;

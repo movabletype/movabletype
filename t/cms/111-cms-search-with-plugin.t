@@ -41,7 +41,7 @@ PM
 use MT::Test;
 use MT::Test::App;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $admin = MT::Author->load(1);
 my $blog_id = 1;

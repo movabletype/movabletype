@@ -1324,7 +1324,7 @@ use vars qw( @ISA %Lexicon );
 	'The support directory is not writable.' => 'Support map is niet beschrijfbaar',
 	'Unknown Content Type' => 'Onbekend inhoudstype',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'U verwijdert best de regel "SSLVerifyNone 1" uit mt-config.cgi.',
-	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Een toolkit om afbeeldingen te bewerken, iets wat meestal via de ImageDriver configuratie-directief wordt ingesteld, is niet aanwezig op uw server of verkeerd geconfigureerd.  Zo'n toolkit is nodig om gebruikersafbeeldingen te kunnen herschalen e.d.  Gelieve Image::Magick, NetPBM, GD, of Imager te installeren op de server en stel dan de ImageDriver directief overeenkomstig in.},
+	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Een toolkit om afbeeldingen te bewerken, iets wat meestal via de ImageDriver configuratie-directief wordt ingesteld, is niet aanwezig op uw server of verkeerd geconfigureerd.  Zo'n toolkit is nodig om gebruikersafbeeldingen te kunnen herschalen e.d.  Gelieve Graphics::Magick, Image::Magick, NetPBM, GD, of Imager te installeren op de server en stel dan de ImageDriver directief overeenkomstig in.},
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{Movable Type was niet in staat om te schrijven in de 'support' map.  Gelieve een map aan te maken in deze locatie: [_1] en er genoeg permissies aan toe te kennen zodat de webserver er in kan schrijven.},
 	q{The System Email Address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events. Please confirm your <a href="[_1]">settings.</a>} => q{Het systeem email adres wordt gebruikt in de 'From:' header van elke mail verzonden door Movable Type.  Mails kunnen verstuurd worden om wachtwoorden terug te vinden, reageerders te registreren, te informeren over nieuwe reacties of trackbacks, in geval van het blokkeren van een gebruiker of IP en in een paar andere gevallen.  Gelieve uw <a href="[_1]">instellingen</a> te bevestigen.},
 
@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'een bericht/pagina opslaat',
 	'unpublishes a content' => 'publicatie inhoud ongedaan maakt',
 	'unpublishes an entry/page' => 'een bericht/pagina ontpubliceert',
+	'Format Error: Trigger data include illegal characters.' => 'Formaatfout: Triggergegevens bevatten illegale tekens.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => q{Door komma's gescheiden waarden bevat een verkeerd aantal velden.},
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]" veld is vereist',
@@ -1887,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Inhoudsgegevens # [_1] niet gevonden.',
 	'Create Content Data' => 'Inhoudsgegevens aanmaken',
 	'Edit All Content Data' => 'Alle inhoudsgegevens bewerken',
+	'Manage All Content Data' => 'Alle inhoudsgegevens beheren',
 	'Manage Content Data' => 'Inhoudsgegevens beheren',
 	'Publish Content Data' => 'Inhoudsgegevens publiceren',
 	'Tags with [_1]' => 'Tags met [_1]',
@@ -2368,6 +2371,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Boodschap',
 	'Metadata' => 'Metadata',
 	'Not debug' => 'Debug niet',
+	'Notice' => 'Belangrijke informatie',
 	'Page # [_1] not found.' => 'Pagina # [_1] niet gevonden.',
 	'Security or error' => 'Beveiliging of fout',
 	'Security' => 'Beveiliging',
@@ -2446,6 +2450,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'Dit zijn verschillende objecttypes, er worden twee [_1] verwacht',
 	'Unknown method [_1]' => 'Onbekende methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Foute RevisioningDriver configuratie '[_1]': [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschadigde revisies van [_2] (id: [_3]) zijn verwijderd.',
+	'*Deleted due to data breakage*' => '*Verwijderd wegens gegevensbreuk*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Kan de site beheren',
@@ -2901,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Bezig objectcategoriën opnieuw op te bouwen...',
 	'Rebuilding object tags...' => 'Bezig objecttags opnieuw op te bouwen...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Standaard dashboard widgets terugzetten...',
 	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...',
 	'add administer_site permission for Blog Administrator...' => 'voeg admininister_site permissie toe aan Blog Administrator...',
@@ -3980,7 +3989,7 @@ ter opnieuw te proberen.',
 	'Exclude sites/child sites' => 'Exclusief sites/subsites',
 	'Include sites/child sites' => 'Inclusief sites/subsites',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlog tag standaard argumenten',
-	'Rebuild Trigger settings has been saved.' => 'Instellingen rebuild trigger opgeslagen.',
+	'Rebuild Trigger settings have been saved.' => 'Instellingen rebuild trigger opgeslagen.',
 	'Rebuild Triggers' => 'Rebuild-triggers',
 	'Site/Child Site' => 'Site/subsite',
 	'Use system default' => 'Standaard systeeminstelling gebruiken',
@@ -4167,7 +4176,6 @@ ter opnieuw te proberen.',
 	'Dashboard' => 'Dashboard',
 	'Select a Widget...' => 'Selecteer een widget...',
 	'System Overview' => 'Systeemoverzicht',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'U heeft geprobeerd een optie te gebruiken waar u niet voldoende rechten voor heeft.  Als u gelooft dat u deze boodschap onterecht te zien krijgt, contacteer dan uw systeembeheerder.',
 	'Your Dashboard has been updated.' => 'Uw dashboard is bijgewerkt.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4247,6 +4255,7 @@ ter opnieuw te proberen.',
 	'Create and Insert' => 'Aanmaken en invoegen',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'Er bestaan geen sites in deze installatie.[_1]Maak een site aan</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'Er bestaan geen groepen in deze installatie.[_1]Maak een groep aan</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Er bestaan geen rollen in deze installatie.[_1]Maak een rol aan</a>',
@@ -4476,7 +4485,6 @@ ter opnieuw te proberen.',
 	'Comment Text' => 'Tekst reactie',
 	'Commenter Status' => 'Status reageerder',
 	'Delete this comment (x)' => 'Deze reactie verwijderen (x)',
-	'Details' => 'Details',
 	'Manage Comments' => 'Reacties beheren',
 	'No url in profile' => 'Geen URL in profiel',
 	'Reply to this comment' => 'Antwoorden op deze reactie',
@@ -4859,6 +4867,28 @@ ter opnieuw te proberen.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Niet geselecteerd',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

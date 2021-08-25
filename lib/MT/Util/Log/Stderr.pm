@@ -66,6 +66,11 @@ sub info {
     print STDERR maybe_colored("$msg\n", "green");
 }
 
+sub notice {
+    my ( $class, $msg ) = @_;
+    print STDERR maybe_colored("$msg\n", "green");
+}
+
 sub warn {
     my ( $class, $msg ) = @_;
     print STDERR maybe_colored("$msg\n", "yellow");

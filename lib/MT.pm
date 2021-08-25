@@ -34,14 +34,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.7', '7.0049' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.8', '7.0050' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.7.2',              '__PRODUCT_VERSION_ID__',
+        '7.8.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -59,11 +59,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.4903';
+        $RELEASE_VERSION_ID = 'r.5001';
     }
 
     $DebugMode = 0;
@@ -392,6 +392,7 @@ sub log {
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'

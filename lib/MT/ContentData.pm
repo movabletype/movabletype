@@ -1521,19 +1521,23 @@ sub archive_file {
     my $blog = $self->blog or return '';
     $at ||= 'ContentType';    # should check $blog->archive_type here
 
-    # Load category
-    my $obj_category = MT->model('objectcategory')->load(
-        {   object_ds  => 'content_data',
-            object_id  => $self->id,
-            is_primary => 1
-        }
-    );
-    my $cat
-        = $obj_category
-        ? MT->model('category')->load( $obj_category->category_id )
-        : '';
+    my $map = MT->publisher->archiver($at)->get_preferred_map({
+        blog_id         => $blog->id,
+        content_type_id => $self->content_type_id,
+    });
 
-    my $file = MT::Util::archive_file_for( $self, $blog, $at, $cat );
+    # Load category
+    my $cat;
+    if ($map && $map->cat_field_id) {
+        my $obj_category = MT->model('objectcategory')->load({
+            object_ds  => 'content_data',
+            object_id  => $self->id,
+            is_primary => 1,
+            cf_id      => $map->cat_field_id,
+        });
+        $cat = $obj_category ? MT->model('category')->load($obj_category->category_id) : '';
+    }
+    my $file = MT::Util::archive_file_for($self, $blog, $at, $cat, $map);
     $file = '' unless defined $file;
     return $file;
 }
@@ -1630,6 +1634,7 @@ sub preview_data {
             ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
+        my $escaped_field_data = MT::Util::encode_html($field_data);
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
@@ -1637,7 +1642,7 @@ sub preview_data {
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
         $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
     }
     $data;
 }

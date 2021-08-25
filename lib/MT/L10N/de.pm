@@ -1312,7 +1312,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{Der Name '[_1]' wird bereits verwendet.},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Auf Ihrem System ist keine Bildquelle vorhanden oder aber fehlerhaft konfiguiert. Eine Bildquelle ist zur korrekten Funktion der Benutzerbild-Funktionen erforderlich. Installieren Sie Image::Magick, NetPBM oder Imager und konfiguieren Sie die ImageDriver-Direktive entsprechend.',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Auf Ihrem System ist keine Bildquelle vorhanden oder aber fehlerhaft konfiguiert. Eine Bildquelle ist zur korrekten Funktion der Benutzerbild-Funktionen erforderlich. Installieren Sie Graphics::Magick, Image::Magick, NetPBM oder Imager und konfiguieren Sie die ImageDriver-Direktive entsprechend.',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL-Zertifikate können bestätigt werden, die Funktion ist aber deaktiviert.',
 	'Cannot verify SSL certificate.' => 'SSL-Zertifikat kann nicht überprüft werden.',
 	'Error: This child site does not have a parent site.' => 'Fehler: Diese Untersite hat keine übergeordnete Site.',
@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'ein Eintrag/eine Seite gespeichert wird',
 	'unpublishes a content' => 'veröffentlicht einen Inhalt nicht mehr',
 	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird',
+	'Format Error: Trigger data include illegal characters.' => 'Format Fehler: Triggerdaten enthalten unzulässige Zeichen.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Format Fehler: Durch Kommas getrennte Werte enthalten eine falsche Anzahl von Feldern.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Feld "[_1]" erforderlich.',
@@ -1887,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Inhaltsdaten # [_1] nicht gefunden.',
 	'Create Content Data' => 'Inhaltsdaten anlegen',
 	'Edit All Content Data' => 'Alle Inhaltsdaten bearbeiten',
+	'Manage All Content Data' => 'Alle inhaltsdaten verwalten',
 	'Manage Content Data' => 'Inhaltsdaten verwalten',
 	'Publish Content Data' => 'Inhaltsdaten veröffentlichen',
 	'Tags with [_1]' => 'Tags mit [_1]',
@@ -2368,6 +2371,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Mitteilung',
 	'Metadata' => 'Metadaten',
 	'Not debug' => 'Kein Debug',
+	'Notice' => 'Signifikanter Information',
 	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
 	'Security or error' => 'Sicherheit oder Fehler',
 	'Security' => 'Sicherheit',
@@ -2446,6 +2450,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'Objektarten stimmen nicht überein, erwarte zwei [_1]',
 	'Unknown method [_1]' => 'Unbekannte Methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Fehlerhaftes RevisioningDriver-Parameter &#8222;[_1]&#8220;: [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschädigte Revisionen von [_2] (id: [_3]) wurden gelöscht.',
+	'*Deleted due to data breakage*' => '*Wegen Datenbruch gelöscht*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Kann die Site verwalten.',
@@ -2901,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Baue Objekt-Kategorien neu auf ...',
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
 	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
 	'add administer_site permission for Blog Administrator...' => 'Weise Blog-Administrator administer-site-Berechtigung zu...',
@@ -3981,7 +3990,7 @@ itte versuchen Sie es später erneut.',
 	'Exclude sites/child sites' => 'Sites/Untersites ausschließen',
 	'Include sites/child sites' => 'Sites/Untersites einschließen',
 	'MTMultiBlog tag default arguments' => 'MultiBlog- Standardargumente',
-	'Rebuild Trigger settings has been saved.' => 'Auslöser-Einstellungen gespeichert.',
+	'Rebuild Trigger settings have been saved.' => 'Auslöser-Einstellungen gespeichert.',
 	'Rebuild Triggers' => 'Auslöser für Neuaufbau',
 	'Site/Child Site' => 'Site/Untersite',
 	'Use system default' => 'System-Voreinstellung verwenden',
@@ -4167,7 +4176,6 @@ itte versuchen Sie es später erneut.',
 	'Dashboard' => 'Übersichtsseite',
 	'Select a Widget...' => 'Widget wählen...',
 	'System Overview' => 'Systemübersicht',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Sie haben für die gewünschte Funktion keine Berechtigung. Bei Fragen wenden Sie sich bitte an Ihren Systemadministrator.',
 	'Your Dashboard has been updated.' => 'Übersichtsseite aktualisiert.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4247,6 +4255,7 @@ itte versuchen Sie es später erneut.',
 	'Create and Insert' => 'Anlegen und einfügen',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'In dieser MT-Installation ist kein Site vorhanden. [_1]Site anlegen</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'In dieser MT-Installation ist kein Blog vorhanden. [_1]Blog anlegen</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'In dieser MT-Installation ist keine Gruppe vorhanden. [_1]Gruppe anlegen</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'In dieser MT-Installation ist keine Rolle vorhanden. [_1]Rolle anlegen</a>',
@@ -4476,7 +4485,6 @@ itte versuchen Sie es später erneut.',
 	'Comment Text' => 'Kommentartext',
 	'Commenter Status' => 'Kommentarautoren-Status',
 	'Delete this comment (x)' => 'Diesen Kommentar löschen (x)',
-	'Details' => 'Details',
 	'Manage Comments' => 'Kommentare verwalten',
 	'No url in profile' => 'Keine URL im Profil',
 	'Reply to this comment' => 'Kommentar beantworten',
@@ -4859,6 +4867,28 @@ itte versuchen Sie es später erneut.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Nicht ausgewählt',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

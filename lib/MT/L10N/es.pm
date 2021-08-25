@@ -1312,7 +1312,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{El nombre '[_1]' ya está en uso.},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'No se ha configurado correctamente, o no está disponible en el sistema, ningún paquete de procesamiento de imágenes, generalmente especificado por la directiva de configuración ImageDriver. Se necesita un paquete gráfico para el correcto funcionamiento de la gestión de avatares. Por favor, instale Image::Magick, NetPBM, GD, o Imager, y configure la directiva ImageDriver adecuadamente.',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'No se ha configurado correctamente, o no está disponible en el sistema, ningún paquete de procesamiento de imágenes, generalmente especificado por la directiva de configuración ImageDriver. Se necesita un paquete gráfico para el correcto funcionamiento de la gestión de avatares. Por favor, instale Graphics::Magick, Image::Magick, NetPBM, GD, o Imager, y configure la directiva ImageDriver adecuadamente.',
 	'Can verify SSL certificate, but verification is disabled.' => 'Se puede verificar el certificado SSL, pero la comprobación está desactivada.',
 	'Cannot verify SSL certificate.' => 'No se pudo verificar el certificado SSL.',
 	'Error: This child site does not have a parent site.' => 'Error: This child site does not have a parent site.',
@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'guarda una entrada/página',
 	'unpublishes a content' => 'despublicar un contenido',
 	'unpublishes an entry/page' => 'despublica una entrada/página',
+	'Format Error: Trigger data include illegal characters.' => 'Error de formato: Los datos de activación incluyen caracteres ilegales.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Error de formato: Los valores separados por comas contienen un número incorrecto de campos.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'El campo "[_1]" es necesario.',
@@ -1887,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Datos de contenido # [_1] no encontrados.',
 	'Create Content Data' => 'Crear datos de contenido',
 	'Edit All Content Data' => 'Editar todos los datos de contenido',
+	'Manage All Content Data' => 'Administrar todos los datos de contenido',
 	'Manage Content Data' => 'Administrar datos de contenido',
 	'Publish Content Data' => 'Publicar datos de contenido',
 	'Tags with [_1]' => 'Etiquetas con [_1]',
@@ -2368,6 +2371,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Mensaje',
 	'Metadata' => 'Metadatos',
 	'Not debug' => 'No depuración',
+	'Notice' => 'Información importante',
 	'Page # [_1] not found.' => 'Página nº [_1] no encontrada.',
 	'Security or error' => 'Seguridad o error',
 	'Security' => 'Seguridad',
@@ -2446,6 +2450,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
 	'Unknown method [_1]' => 'Método desconocido [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Configuración de RevisioningDriver errónea '[_1]': [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => 'Se han eliminado [_1] revisiones dañadas de [_2] (id: [_3]).',
+	'*Deleted due to data breakage*' => '*Eliminada debido a la rotura de datos*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Puede administrar el sitio.',
@@ -2901,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Reconstruyendo categorías de objetos',
 	'Rebuilding object tags...' => 'Reconstruyendo etiquetas de objetos...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Reinicio del panel de control predefinido de widgets...',
 	'Truncating values of value_varchar column...' => 'Acortando los valores de la columna value_varchar...',
 	'add administer_site permission for Blog Administrator...' => 'añadir permiso administer_site para el administrador del blog...',
@@ -3980,7 +3989,7 @@ r, inténtelo más tarde.',
 	'Exclude sites/child sites' => 'Excluir sitios/sitios hijos',
 	'Include sites/child sites' => 'Incluir sitios/sitios hijos',
 	'MTMultiBlog tag default arguments' => 'Argumentos predefinidos de la etiqueta MTMultiBlog',
-	'Rebuild Trigger settings has been saved.' => 'Se ha guardado la configuración del inductor de reconstrucción.',
+	'Rebuild Trigger settings have been saved.' => 'Se ha guardado la configuración del inductor de reconstrucción.',
 	'Rebuild Triggers' => 'Eventos de republicación',
 	'Site/Child Site' => 'Sitio/Sitio hijo',
 	'Use system default' => 'Utilizar valor predefinido del sistema',
@@ -4166,7 +4175,6 @@ r, inténtelo más tarde.',
 	'Dashboard' => 'Panel de Control',
 	'Select a Widget...' => 'Seleccione un widget...',
 	'System Overview' => 'Resumen del sistema',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Ha intentado usar una característica para la que no tiene permisos. Si cree que está viendo este mensaje por error, contacte con sus administrador del sistema.',
 	'Your Dashboard has been updated.' => 'Se ha actualizado el Panel de Control.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4246,6 +4254,7 @@ r, inténtelo más tarde.',
 	'Create and Insert' => 'Crear e insertar',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'Ningún sitio existe en esta instalación. [_1]Crear un sitio</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Ningún blog existe en esta instalación. [_1]Crear un blog</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'Ningún grupo existe en esta instalación. [_1]Crear un grupo</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Ningún rol existe en esta instalación. [_1]Crear un rol</a>',
@@ -4475,7 +4484,6 @@ r, inténtelo más tarde.',
 	'Comment Text' => 'Comentario',
 	'Commenter Status' => 'Estado comentarista',
 	'Delete this comment (x)' => 'Borrar este comentario (x)',
-	'Details' => 'Detalles',
 	'Manage Comments' => 'Administrar comentarios',
 	'No url in profile' => 'Sin URL en el perfil',
 	'Reply to this comment' => 'Responder al comentario',
@@ -4858,6 +4866,28 @@ r, inténtelo más tarde.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'No seleccionado',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

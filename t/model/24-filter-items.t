@@ -19,7 +19,7 @@ use MT::Test;
 use MT;
 use MT::Filter;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $mt = MT->new();
 

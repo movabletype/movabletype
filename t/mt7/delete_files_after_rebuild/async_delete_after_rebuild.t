@@ -133,7 +133,7 @@ sub diff_should_be {
         @delta      = @added;
 
         # all the added files should have their FileInfo
-        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@added } );
+        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => [map {File::Spec->canonpath($_)} @added] } );
         is scalar @infos => scalar @added, "all the added files have their FileInfo";
     }
     else {
@@ -143,7 +143,7 @@ sub diff_should_be {
         @delta      = ();
 
         # all the deleted files should not have their FileInfo
-        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => \@deleted } );
+        my @infos = MT::FileInfo->load( { blog_id => $blog_id, file_path => [map {File::Spec->canonpath($_)} @deleted] } );
         ok !@infos, "all the deleted files do not have their FileInfo"
             or note explain [ map { $_->file_path } @infos ];
     }

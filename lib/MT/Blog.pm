@@ -65,7 +65,7 @@ __PACKAGE__->install_properties(
             'autodiscover_links'       => 'boolean',
             'sanitize_spec'            => 'string(255)',
             'cc_license'               => 'string(255)',
-            'is_dynamic'               => 'boolean',
+            'is_dynamic'               => 'boolean', # DEPRECATED
             'remote_auth_token'        => 'string(50)',
             'children_modified_on'     => 'datetime',
             'custom_dynamic_templates' => 'string(25)',
@@ -694,20 +694,10 @@ sub site_url {
 
     if (@_) {
         my $url = $_[0];
-        $url .= '/' unless $url =~ m{/$};
-        return $blog->column( 'site_url', $url );
-    }
-    elsif ( $blog->is_dynamic ) {
-        my $cfg  = MT->config;
-        my $path = $cfg->CGIPath;
-        if ( $path =~ m!^/! ) {
-
-            # relative path, prepend blog domain
-            my ($blog_domain) = $blog->archive_url =~ m|(.+://[^/]+)|;
-            $path = $blog_domain . $path;
+        if (defined $url) {
+            $url .= '/' unless $url =~ m{/$};
         }
-        $path .= '/' unless $path =~ m{/$};
-        return $path;
+        return $blog->column( 'site_url', $url );
     }
     else {
         my $url = '';
@@ -763,10 +753,11 @@ sub site_path {
 
     if (@_) {
         my ($new_site_path) = @_;
-        my $sep = quotemeta MT::Util::dir_separator;
-        $sep = qr![\\/]! if $^O eq 'MSWin32';
-        $new_site_path =~ s/$sep*$//;
-
+        if (defined $new_site_path) {
+            my $sep = quotemeta MT::Util::dir_separator;
+            $sep = qr![\\/]! if $^O eq 'MSWin32';
+            $new_site_path =~ s/$sep*$//;
+        }
         $blog->column( 'site_path', $new_site_path );
     }
     else {
@@ -808,9 +799,6 @@ sub archive_url {
         my $url = $_[0];
         $url .= '/' if $url ne "" && $url !~ m{/$};
         $blog->column( 'archive_url', $url ) || $blog->site_url;
-    }
-    elsif ( $blog->is_dynamic ) {
-        return $blog->site_url;
     }
     else {
         my $url = $blog->site_url;
@@ -2009,7 +1997,7 @@ IF the blog is CC license, this property holds the variation. for example
 
 =item * is_dynamic
 
-Specify if this blog is published dynamically or statically
+DEPRECATED. Specify if this blog is published dynamically or statically
 
 =item * remote_auth_token
 

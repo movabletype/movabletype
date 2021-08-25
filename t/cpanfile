@@ -92,6 +92,7 @@ on 'test' => sub {
     requires 'Date::Parse';
     requires 'DateTime';
     requires 'DateTime::TimeZone';
+    requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
     requires 'HTML::Form';
@@ -128,6 +129,7 @@ on 'test' => sub {
     requires 'Test::LeakTrace';
     requires 'Test::MockModule';
     requires 'Test::MockObject';
+    requires 'Test::MockTime::HiRes';
     requires 'Test::Perl::Critic';
     requires 'Test::Pod::Coverage';
     requires 'Test::Requires';

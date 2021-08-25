@@ -1312,7 +1312,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'ImageDriverに設定された画像処理ツールが存在しないかまたは正しく設定されていないため、Movable Typeのユーザー画像機能を利用できません。この機能を利用するには、Graphics::Magick、Image::Magick、NetPBM、GD、Imagerのいずれかをインストールする必要があります。',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL 証明書の検証を行う準備ができていますが、環境変数で SSL 証明書の検証が無効に設定されています。',
 	'Cannot verify SSL certificate.' => 'SSL 証明書の検証ができません。',
 	'Error: This child site does not have a parent site.' => '親サイトが存在しません。',
@@ -1441,6 +1441,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => '記事とウェブページの保存時',
 	'unpublishes a content' => 'コンテンツデータの公開取りやめ時',
 	'unpublishes an entry/page' => '記事とウェブページの公開取りやめ時',
+	'Format Error: Trigger data include illegal characters.' => 'フォーマットエラー: トリガーデータが不正な文字を含んでいます。',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'フォーマットエラー: CSVのフィールド数が正しくありません。',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => '"[_1]"フィールドは入力必須です。',
@@ -1887,6 +1889,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'コンテンツデータ (ID: [_1])が見つかりません。',
 	'Create Content Data' => 'コンテンツデータの作成',
 	'Edit All Content Data' => 'すべてのコンテンツデータの編集',
+	'Manage All Content Data' => 'すべてのコンテンツデータの管理',
 	'Manage Content Data' => 'コンテンツデータの管理',
 	'Publish Content Data' => 'コンテンツデータの公開',
 	'Tags with [_1]' => '[_1]のタグ',
@@ -2368,6 +2371,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'ログ',
 	'Metadata' => 'メタデータ',
 	'Not debug' => 'デバッグを含まない',
+	'Notice' => '有意な情報',
 	'Page # [_1] not found.' => 'ID:[_1]のウェブページが見つかりませんでした。',
 	'Security or error' => 'セキュリティまたはエラー',
 	'Security' => 'セキュリティ',
@@ -2446,6 +2450,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{リビジョンドライバー([_1])の設定が正しくありません: [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
+	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'サイトを管理できます',
@@ -2901,6 +2907,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
+	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
+	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
 	'Reset default dashboard widgets...' => 'ダッシュボードウィジェットを初期化しています...',
 	'Truncating values of value_varchar column...' => 'コンテンツデータの varchar カラムのインデックスを再構築しています...',
 	'add administer_site permission for Blog Administrator...' => 'ブログ管理者にサイトの管理権限を付与しています...',
@@ -3267,6 +3276,12 @@ use vars qw( @ISA %Lexicon );
 	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
 	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
+	'Cut column' => '列の切り取り',
+	'Copy column' => '列のコピー',
+	'Paste column before' => '列の前に貼り付け',
+	'Paste column after' => '列の後に貼り付け',
+	'Horizontal align' => '横配置',
+	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
@@ -3980,7 +3995,7 @@ use vars qw( @ISA %Lexicon );
 	'Exclude sites/child sites' => '除外するサイト',
 	'Include sites/child sites' => '含めるサイト',
 	'MTMultiBlog tag default arguments' => 'MTMultiBlogタグの既定の属性:',
-	'Rebuild Trigger settings has been saved.' => '再構築トリガーの設定を保存しました',
+	'Rebuild Trigger settings have been saved.' => '再構築トリガーの設定を保存しました',
 	'Rebuild Triggers' => '再構築トリガー',
 	'Site/Child Site' => 'サイト',
 	'Use system default' => 'システムの既定値を使用',
@@ -4090,6 +4105,7 @@ use vars qw( @ISA %Lexicon );
 	'Note: This option is currently ignored because outbound notification pings are disabled system-wide.' => '備考: システム外部ping通知がシステムレベルで無効のため、このオプションは現在無効となっています。',
 	'Notify ping services of [_1] updates' => 'サイト更新pingサービス通知',
 	'Others:' => 'その他:',
+	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 
 ## tmpl/cms/content_data/select_list.tmpl
 	'No Content Type.' => 'コンテンツタイプがありません',
@@ -4166,7 +4182,6 @@ use vars qw( @ISA %Lexicon );
 	'Dashboard' => 'ダッシュボード',
 	'Select a Widget...' => 'ウィジェットの選択...',
 	'System Overview' => 'システム',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'アクセス権がありません。システム管理者に連絡してください。',
 	'Your Dashboard has been updated.' => 'ダッシュボードを更新しました。',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4246,6 +4261,7 @@ use vars qw( @ISA %Lexicon );
 	'Create and Insert' => '作成して挿入',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'サイトがありません。[_1]サイトを作成する</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'ブログがありません。[_1]ブログを作成する</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'グループがありません。[_1]グループを作成する</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',
@@ -4475,7 +4491,6 @@ use vars qw( @ISA %Lexicon );
 	'Comment Text' => '本文',
 	'Commenter Status' => 'コメント投稿者の状態',
 	'Delete this comment (x)' => 'コメントを削除 (x)',
-	'Details' => '詳細',
 	'Manage Comments' => 'コメントの管理',
 	'No url in profile' => '(URL がありません)',
 	'Reply to this comment' => 'コメントに返信',
@@ -4577,9 +4592,9 @@ use vars qw( @ISA %Lexicon );
 	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => '警告: 出力ファイル名を手動で設定すると、他のコンテンツデータと衝突を起こす可能性があります。',
 	'You have successfully recovered your saved content data.' => 'コンテンツデータを元に戻しました。',
-	'You must configure this blog before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
-	'You must configure this blog before you can publish this entry.' => '記事を公開する前にブログの設定を行ってください。',
-	'You must configure this blog before you can publish this page.' => 'ページを公開する前にブログの設定を行ってください。',
+	'You must configure this site before you can publish this content data.' => 'コンテンツデータを公開する前にサイトの設定を行ってください。',
+	'You must configure this site before you can publish this entry.' => '記事を公開する前にサイトの設定を行ってください。',
+	'You must configure this site before you can publish this page.' => 'ページを公開する前にサイトの設定を行ってください。',
 	q{Warning: Changing this content data's basename may break inbound links.} => q{警告: このコンテンツデータの出力ファイル名の変更は、内部のリンク切れの原因となります。},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4858,6 +4873,28 @@ use vars qw( @ISA %Lexicon );
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => '未選択',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '結合できるセルはすべて選択してください',
+	'Cell is not selected' => 'セルが選択されていません',
+	'Only one cell should be selected' => '1つのセルのみ選択してください',
+	'Source' => 'ソース表示',
+	'align center' => '中央揃え',
+	'align left' => '左揃え',
+	'align right' => '右揃え',
+	'change to td' => 'tdに変更',
+	'change to th' => 'thに変更',
+	'insert column on the left' => '左に列を挿入',
+	'insert column on the right' => '右に列を挿入',
+	'insert row above' => '上に行を挿入',
+	'insert row below' => '下に行を挿入',
+	'merge cell' => 'セルを結合する',
+	'remove column' => '列を削除する',
+	'remove row' => '行を削除する',
+	'split cell' => 'セルを分割する',
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{左上のセルの値のみが保存されます。続行しますか?},
+	q{You can't paste here} => q{ここに貼り付けることはできません},
+	q{You can't split the cell anymore} => q{このセルはこれ以上分割できません},
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

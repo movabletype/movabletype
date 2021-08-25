@@ -342,10 +342,11 @@ sub edit {
     }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
-        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
-        $domain .= '/' if $domain !~ m!/$!;
-        $param->{website_scheme} = $scheme;
-        $param->{website_domain} = $domain;
+        if (my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!) {
+            $domain .= '/' if $domain !~ m!/$!;
+            $param->{website_scheme} = $scheme;
+            $param->{website_domain} = $domain;
+        }
     }
 
     1;
@@ -389,7 +390,7 @@ sub post_delete {
                 "Website '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'website',
             category => 'delete'
         }
@@ -538,6 +539,13 @@ sub dialog_select_website {
 sub dialog_move_blogs {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID MULTI/],
+        json        => [qw/MAYBE_STRING/],
+        return_args => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->{hide_goback_button} = 1;
 
     my $blog_id = $app->param('blog_id');
@@ -593,6 +601,11 @@ sub move_blogs {
     return unless $app->validate_magic;
     return $app->error( $app->translate('Permission denied.') )
         unless $app->can_do('move_blogs');
+
+    $app->validate_param({
+        blog_ids => [qw/IDS/],
+        ids      => [qw/ID/],
+    }) or return;
 
     my $website_class = $app->model('website');
     my $ids           = $app->param('ids');
@@ -749,7 +762,7 @@ sub cms_pre_load_filtered_list {
             push @$blog_ids, $perm->blog_id;
         }
         elsif ( $website && $website->class eq 'blog' ) {
-            push @$blog_ids, $website->website->id;
+            push @$blog_ids, $website->parent_id if $website->parent_id;
         }
     }
 

@@ -55,7 +55,7 @@ if ( $charset eq 'utf8mb4' ) {
         exit;
     }
 }
-elsif ( $charset ne 'utf8' ) {
+elsif ( $charset ne 'utf8' && $charset ne 'utf8mb3' ) {
     die "Unsupported character set: $charset\n";
 }
 

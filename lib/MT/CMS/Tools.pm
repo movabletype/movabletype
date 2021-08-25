@@ -907,7 +907,7 @@ sub save_cfg_system_general {
         $app->log(
             {   message =>
                     $app->translate('System Settings Changes Took Place'),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 metadata => $message,
                 category => 'edit',
@@ -1143,6 +1143,14 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_archive_format => [qw/MAYBE_STRING/],
+        backup_what           => [qw/IDS/],
+        blog_id               => [qw/ID/],
+        size_limit            => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $user    = $app->user;
     my $blog_id = $app->param('blog_id') || 0;
     my $perms   = $app->permissions
@@ -2410,7 +2418,7 @@ sub dialog_restore_upload {
     $app->print_encode(
         $app->build_page( 'dialog/restore_start.tmpl', $param ) );
 
-    if ( defined $objects_json ) {
+    if ( $objects_json ) {
         my $objects_tmp = JSON::from_json($objects_json);
         my %class2ids;
 
@@ -2588,6 +2596,15 @@ sub dialog_adjust_sitepath {
     return $app->permission_denied()
         if !$user->is_superuser;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        asset_ids      => [qw/MAYBE_IDS/],
+        blog_ids       => [qw/IDS/],
+        current_file   => [qw/MAYBE_STRING/],
+        error          => [qw/MAYBE_STRING/],
+        restore_upload => [qw/MAYBE_STRING/],
+        tmp_dir        => [qw/MAYBE_STRING/],
+    }) or return;
 
     my $tmp_dir    = $app->param('tmp_dir');
     my $error      = $app->param('error') || q();

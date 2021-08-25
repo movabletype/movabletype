@@ -31,14 +31,14 @@ sub init {
         sub {
             $_[1]->{__test_output}    = '';
             $_[1]->{upgrade_required} = 0;
-        }
-    ) or die( MT->errstr );
+        },
+    ) or die(MT->errstr);
     {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
             $app->{__test_output} ||= '';
-            $app->{__test_output} .= join( '', @_ );
+            $app->{__test_output} .= join('', @_);
         };
     }
     $Initialized{$app_class} = 1;
@@ -54,20 +54,166 @@ sub new {
         $args{app_class} = "MT::App::$args{app_class}";
     }
 
-    $class->init( $args{app_class} );
+    if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+        $args{server} = $class->launch_server($args{app_class});
+    } else {
+        $class->init($args{app_class});
+    }
 
     bless \%args, $class;
 }
 
-sub base_url { 'http://localhost' }
+sub launch_server {
+    my ($class, $app_class) = @_;
+    require Test::TCP;
+    my %mapping = (
+        'MT::App::DataAPI'             => 'mt-data-api.cgi',
+        'MT::App::Search'              => 'mt-search.cgi',
+        'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
+    );
+    my $script = join "/", $ENV{MT_HOME}, $mapping{$app_class} || "mt.cgi";
+    my $sep    = $^O eq 'MSWin32' ? ';' : ':';
+    Test::TCP->new(
+        code => sub {
+            my $port = shift;
+            exec "plackup", "-I", "$ENV{MT_HOME}/lib", -"I", "$ENV{MT_HOME}/extlib", "-MPlack::App::WrapCGI", "--port", $port,
+                "-e", "\$ENV{PERL5LIB} = '$ENV{PERL5LIB}$sep$ENV{MT_HOME}/t/lib'; Plack::App::WrapCGI->new(script => '$script', execute => 1)->to_app";
+        },
+    );
+}
+
+sub base_url {
+    my $self = shift;
+    my $port = $self->{server} ? ":" . $self->{server}->port : "";
+    return "http://localhost$port";
+}
 
 sub login {
     my ( $self, $user ) = @_;
     $self->{user} = $user;
+    delete $self->{session};
+    delete $self->{access_token};
 }
 
 sub request {
-    my ( $self, $params ) = @_;
+    my ($self, $params, $is_redirect) = @_;
+    $self->{locations} = undef unless $is_redirect;
+    if ($self->{server}) {
+        $self->_request_locally($params);
+    } else {
+        $self->_request_internally($params);
+    }
+}
+
+sub _request_locally {
+    my ($self, $params) = @_;
+
+    my $app_params = $self->_app_params($params);
+    my $url        = URI->new($self->base_url);
+    if ($app_params->{__path_info}) {
+        $url->path($app_params->{__path_info});
+    }
+    my $method = uc($app_params->{request_method} || 'GET');
+
+    my @headers;
+    if (my $user = $self->{user}) {
+        if ($self->{session}) {
+            require MT::Session;
+            my $sess = MT::Session->load($self->{session}) or delete $self->{session};
+            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
+        }
+        if (!$self->{session}) {
+            require MT::App;
+            my $sess = MT::App::make_session($user, 1);
+            $self->{session}       = $sess->id;
+            $params->{magic_token} = $sess->get('magic_token') if $method eq 'POST';
+            if ($self->{app_class} eq 'MT::App::DataAPI') {
+                require MT::AccessToken;
+                require MT::Util::UniqueID;
+                my $token = MT::Util::UniqueID::create_magic_token();
+                MT::AccessToken->new(id => $token, session_id => $sess->id, start => time)->save;
+                $self->{access_token} = $token;
+            }
+        }
+        if ($self->{app_class} eq 'MT::App::DataAPI') {
+            push @headers, 'X-MT-Authorization' => "MTAuth accessToken=" . $self->{access_token};
+        } else {
+            require CGI::Cookie;
+            my %cookie = (
+                -name    => 'mt_user',
+                -value   => Encode::encode_utf8(join '::', $user->name, $self->{session}, 1),
+                -expires => '+10y',
+            );
+            push @headers, 'Cookie' => CGI::Cookie->new(\%cookie)->as_string;
+        }
+    }
+
+    require HTTP::Request::Common;
+    my $req;
+    if ($method eq 'GET') {
+        $url->query_form_hash($params);
+        $req = HTTP::Request::Common::GET($url, @headers);
+    } elsif ($method eq 'POST') {
+        if (my $upload = delete $params->{__test_upload}) {
+            my ($key, $src) = @$upload;
+            $params->{$key} = [$src];
+            $req = HTTP::Request::Common::POST($url, @headers, Content_Type => 'form-data', Content => [%$params]);
+        } else {
+            $req = HTTP::Request::Common::POST($url, [%$params], @headers);
+        }
+    } elsif ($method eq 'PUT') {
+        if (my $upload = delete $params->{__test_upload}) {
+            my ($key, $src) = @$upload;
+            $params->{$key} = [$src];
+            $req = HTTP::Request::Common::PUT($url, @headers, Content_Type => 'form-data', Content => [%$params]);
+        } else {
+            $req = HTTP::Request::Common::PUT($url, [%$params], @headers);
+        }
+    } elsif ($method eq 'DELETE') {
+        $url->query_form_hash($params);
+        $req = HTTP::Request::Common::DELETE($url, @headers);
+    } else {
+        Carp::confess "$method is not supported";
+    }
+
+    require LWP::UserAgent;
+    my $ua  = LWP::UserAgent->new;
+    $ua->max_redirect(0);
+    my $res = $ua->request($req);
+
+    $self->{content} = $res->decoded_content // '';
+
+    # redirect?
+    my $location;
+    if ($res->code =~ /^30/) {
+        $location = $res->headers->header('Location');
+    } elsif ($self->{content} =~ /window\.location\s*=\s*(['"])(\S+)\1/) {
+        $location = $2;
+    }
+    if ($location && !$self->{no_redirect}) {
+        Test::More::note "REDIRECTING TO $location";
+        my $uri    = URI->new($location);
+        my $params = $uri->query_form_hash;
+
+        # avoid processing multiple requests in a second
+        sleep 1;
+
+        push @{ $self->{locations} ||= [] }, $uri;
+        return $self->request($params, 1);
+    }
+
+    if (my $message = $self->message_text) {
+        if ($message =~ /Compilation failed/) {
+            BAIL_OUT $message;
+        }
+        note $message;
+    }
+
+    $self->{res} = $res;
+}
+
+sub _request_internally {
+    my ($self, $params) = @_;
     local $ENV{HTTP_HOST} = 'localhost';    ## for app->base
     CGI::initialize_globals();
     $self->_clear_cache;
@@ -129,7 +275,7 @@ sub request {
         sleep 1;
 
         push @{ $self->{locations} ||= [] }, $uri;
-        return $self->request($params);
+        return $self->request($params, 1);
     }
 
     if ( my $message = $self->message_text ) {
