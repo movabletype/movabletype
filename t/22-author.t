@@ -13,8 +13,6 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-plan tests => 76;
-
 use MT;
 use MT::Author;
 
@@ -140,10 +138,18 @@ isa_ok( $mt, 'MT' );
     my $author = MT::Author->new();
     $author->name('dummy');
     $author->column( 'password', '6En93Q4gNHIu6' );
+    ok( $author->column('password') !~ m/^\$6\$/,
+        'password is not stored as SHA-512'
+    );
     ok( !$author->is_valid_password('wrong'), 'wrong is invalid' );
     ok( $author->is_valid_password('xxxxx'),  'recognize valid password' );
-    ok( $author->column('password') !~ m/^\$6\$/,
+    ok( $author->column('password') =~ m/^\$6\$/,
         'password is now stored as SHA-512'
+    );
+
+    $author->column( 'password', '6En93Q4gNHIu6' );
+    ok( $author->column('password') !~ m/^\$6\$/,
+        'password is not stored as SHA-512'
     );
     $author->set_password('xxxxx');
     ok( $author->column('password') =~ m/^\$6\$/,
@@ -192,3 +198,4 @@ isa_ok( $mt, 'MT' );
     ok( !$perm->(), 'Delete manage_plugins permission.' );
 }
 
+done_testing;
