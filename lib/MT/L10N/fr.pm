@@ -2903,6 +2903,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Reconstruction de MT::Permission records (suppression de edit_categories)...',
 	'Rebuilding content field permissions...' => 'Reconstruction des permissions de champs de contenu...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Réinitialisation des widgets du tableau de bord...',
 	'Truncating values of value_varchar column...' => 'Tronquage des valeurs de la colonne value_varchar...',
 	'add administer_site permission for Blog Administrator...' => 'ajouter une permission administer_site pour Administrateur de blog...',

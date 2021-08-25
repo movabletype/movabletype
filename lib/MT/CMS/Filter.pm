@@ -11,6 +11,17 @@ use MT::Util;
 
 sub save {
     my $app         = shift;
+
+    $app->validate_param({
+        blog_id           => [qw/ID/],
+        datasource        => [qw/MAYBE_STRING/],
+        fid               => [qw/ID/],
+        items             => [qw/MAYBE_STRING/],
+        label             => [qw/MAYBE_STRING/],
+        list              => [qw/MAYBE_STRING/],
+        not_encode_result => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     my $fid         = $app->param('fid');
     my $author_id   = $app->user->id;
     my $blog_id     = $app->param('blog_id') || 0;
@@ -121,6 +132,15 @@ sub delete {
     my $app = shift;
     $app->validate_magic
         or return $app->json_error( $app->translate('Invalid request') );
+
+    $app->validate_param({
+        blog_id           => [qw/ID/],
+        datasource        => [qw/MAYBE_STRING/],
+        id                => [qw/ID/],
+        list              => [qw/MAYBE_STRING/],
+        not_encode_result => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     my $id           = $app->param('id');
     my $filter_class = MT->model('filter');
     my $filter       = $filter_class->load($id)
@@ -158,6 +178,13 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
+
+    $app->validate_param({
+        all_selected => [qw/MAYBE_STRING/],
+        id           => [qw/IDS MULTI/],
+        xhr          => [qw/MAYBE_STRING/],
+    }) or return;
+
     return $app->permission_denied
         unless $app->can_do('delete_any_filters');
     return $app->errtrans('Invalid request')
