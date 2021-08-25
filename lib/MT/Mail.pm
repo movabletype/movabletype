@@ -158,6 +158,7 @@ sub _encode {
 
 sub _encode_mime {
     my ($str, $enc) = @_;
+    return $str if $str =~ /\A=\?[^\?]+\?/;
     MIME::EncWords::encode_mimeword(MT::I18N::default->encode_text_encode($str, undef, $enc), 'b', $enc);
 }
 
