@@ -421,7 +421,6 @@ PERMCHECK: {
     my $blog_class = $app->model('blog');
     my $iter       = $log_class->load_iter( \%terms,
         { 'sort' => 'created_on', 'direction' => 'ascend' } );
-    my %blogs;
 
     my $file = '';
     $file = dirify( $blog->name ) . '-' if $blog;
@@ -470,7 +469,7 @@ PERMCHECK: {
         push @col, $log->ip || '';
         my $blog;
         if ( $log->blog_id ) {
-            $blog = $blogs{ $log->blog_id }
+            $blog = $seen{blogs}{ $log->blog_id }
                 ||= $blog_class->load( $log->blog_id );
         }
         if ($blog) {
@@ -483,11 +482,11 @@ PERMCHECK: {
             push @col, '';
         }
         if (my $author_id = $log->author_id) {
-            if ($seen{$author_id}) {
-                push @col, $seen{$author_id};
+            if ($seen{authors}{$author_id}) {
+                push @col, $seen{authors}{$author_id};
             } elsif (my $user = MT->model('author')->load($author_id)) {
                 push @col, $user->name;
-                $seen{$author_id} = $user->name;
+                $seen{authors}{$author_id} = $user->name;
             } else {
                 push @col, '';
             }
