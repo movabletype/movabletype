@@ -14,6 +14,15 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        _type                     => [qw/OBJTYPE/],
+        id                        => [qw/ID/],
+        asset_id                  => [qw/ID/],
+        category_id               => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        include_asset_ids         => [qw/IDS/],
+    }) or return;
+
     my $q     = $app->param;
     my $type  = $q->param('_type');
     my $perms = $app->permissions
@@ -1479,6 +1488,14 @@ sub save {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        _type                     => [qw/OBJTYPE/],
+        blog_id                   => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        id                        => [qw/ID/],
+        include_asset_ids         => [qw/IDS/],
+    }) or return;
+
     $app->remove_preview_file;
 
     if ( $app->param('is_power_edit') ) {
@@ -2399,6 +2416,11 @@ sub send_pings {
 
 sub pinged_urls {
     my $app   = shift;
+
+    $app->validate_param({
+        entry_id => [qw/ID/],
+    }) or return;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     my %param;
@@ -2495,12 +2517,22 @@ sub save_entry_prefs {
 
 sub publish_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::RELEASE(), $app->param('id') );
 }
 
 sub draft_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::HOLD(), $app->param('id') );
 }
@@ -2508,6 +2540,13 @@ sub draft_entries {
 sub open_batch_editor {
     my $app = shift;
     my ($param) = @_;
+
+    $app->validate_param({
+        _type   => [qw/OBJTYPE/],
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
+
     $param ||= {};
     my @ids = $app->param('id')
         or return "Invalid request.";
@@ -3213,6 +3252,12 @@ sub ping_continuation {
 sub delete {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        blog_id       => [qw/ID/],
+        id            => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Blog;
     my $q = $app->param;
 

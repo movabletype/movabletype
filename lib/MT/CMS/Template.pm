@@ -1097,6 +1097,12 @@ sub list {
 
 sub preview {
     my $app     = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
     my $blog    = $app->blog;
@@ -1678,6 +1684,12 @@ sub _populate_archive_loop {
 sub delete_map {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        id          => [qw/ID/],
+        template_id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
         unless $app->can_do('edit_templates');
@@ -1708,6 +1720,11 @@ sub delete_map {
 
 sub add_map {
     my $app = shift;
+
+    $app->validate_param({
+        blog_id     => [qw/ID/],
+        template_id => [qw/ID/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->error( $app->translate('No permissions') )
@@ -2155,6 +2172,11 @@ sub refresh_all_templates {
     my ($app) = @_;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Util::Log;
     MT::Util::Log::init();
 
@@ -2519,6 +2541,11 @@ BLOG: for my $blog_id (@id) {
 sub refresh_individual_templates {
     my ($app) = @_;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Util;
 
     my $user = $app->user;
@@ -2680,6 +2707,10 @@ sub refresh_individual_templates {
 sub clone_templates {
     my ($app) = @_;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $user = $app->user;
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
     return $app->permission_denied()
@@ -2726,6 +2757,10 @@ sub publish_templates_from_search {
     my $blog = $app->blog;
     require MT::Blog;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     my $templates
         = MT->model('template')->lookup_multi( [ $app->param('id') ] );
     my @at_ids;
@@ -2757,6 +2792,10 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_index_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -2792,6 +2831,11 @@ TEMPLATE: for my $tmpl (@$templates) {
 sub publish_archive_templates {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/IDS MULTI/],
+    }) or return;
 
     # permission check
     my $perms = $app->blog ? $app->permissions : $app->user->permissions;
@@ -2880,6 +2924,11 @@ sub save_widget {
     my $app = shift;
     my $q   = $app->param;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $author = $app->user;
 
@@ -2950,6 +2999,11 @@ sub save_widget {
 sub edit_widget {
     my $app = shift;
     my (%opt) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
 
     my $q       = $app->param();
     my $id      = scalar( $q->param('id') ) || $opt{id};
@@ -3166,6 +3220,12 @@ sub list_widget {
 
 sub delete_widget {
     my $app  = shift;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
+
     my $q    = $app->param;
     my $type = $q->param('_type');
 

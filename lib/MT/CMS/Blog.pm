@@ -1385,6 +1385,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -3083,6 +3088,11 @@ sub clone {
     my $app     = shift;
     my ($param) = {};
     my $user    = $app->user;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
 
     $app->validate_magic() or return;
 

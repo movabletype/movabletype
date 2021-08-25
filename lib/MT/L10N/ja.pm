@@ -3550,6 +3550,9 @@ _4]'から削除しました。},
 	'Migrating the record for recently accessed blogs...' => '最近利用したブログのデータを移行しています...',
 	'Rebuilding permission records...' => '権限を再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
+	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
+	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
 	'Reordering dashboard widgets...' => 'ダッシュボードウィジェットの並び順を設定しています...',
 
 ## lib/MT/Util.pm

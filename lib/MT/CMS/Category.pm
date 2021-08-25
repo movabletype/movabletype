@@ -12,6 +12,12 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        id    => [qw/ID/],
+        _type => [qw/OBJTYPE/],
+        type  => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog = $app->blog;
 
     if ($id) {
@@ -152,6 +158,11 @@ sub save {
 sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id    => [qw/ID/],
+        datasource => [qw/OBJTYPE/],
+    }) or return;
 
     my $model = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {

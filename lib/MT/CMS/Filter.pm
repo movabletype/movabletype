@@ -11,6 +11,12 @@ use MT::Util;
 
 sub save {
     my $app       = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        fid     => [qw/ID/],
+    }) or return $app->json_error($app->errstr);
+
     my $q         = $app->param;
     my $fid       = $q->param('fid');
     my $author_id = $app->user->id;
@@ -121,6 +127,12 @@ sub delete {
     my $app = shift;
     $app->validate_magic
         or return $app->json_error( $app->translate('Invalid request') );
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return $app->json_error($app->errstr);
+
     my $q            = $app->param;
     my $id           = $q->param('id');
     my $filter_class = MT->model('filter');
@@ -158,6 +170,11 @@ sub delete {
 
 sub delete_filters {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/IDS MULTI/],
+    }) or return;
+
     return $app->permission_denied
         unless $app->can_do('delete_any_filters');
     return $app->errtrans('Invalid request')

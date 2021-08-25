@@ -13,6 +13,11 @@ use MT::Util
 sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $user  = $app->user;
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -166,6 +171,10 @@ sub edit {
 
 sub dialog_list_asset {
     my $app = shift;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+    }) or return;
 
     # Backward compatibility
     return dialog_asset_modal( $app, @_ )
@@ -374,6 +383,11 @@ sub asset_userpic {
     my ($param) = @_;
 
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        id      => [qw/ID/],
+        user_id => [qw/ID/],
+    }) or return;
 
     my ( $id, $asset );
     if ( $asset = $param->{asset} ) {
@@ -2729,6 +2743,11 @@ sub _check_thumbnail_dir {
 sub dialog_edit_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     my $blog_id = $app->param('blog_id');
@@ -2849,6 +2868,11 @@ sub dialog_edit_asset {
 sub js_save_asset {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     $app->validate_magic()
         or return $app->error(
         $app->json_error( $app->translate("Invalid Request.") ) );
@@ -2906,6 +2930,11 @@ sub js_save_asset {
 
 sub dialog_edit_image {
     my ($app) = @_;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
 
     my $asset;
 
@@ -3000,6 +3029,10 @@ sub thumbnail_image {
 
 sub transform_image {
     my ($app) = @_;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
 
     if ( !$app->validate_magic ) {
         return;
@@ -3143,6 +3176,11 @@ sub dialog_insert_options {
     my $app    = shift;
     my (%args) = @_;
     my $assets = $args{assets};
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/IDS/],
+    }) or return;
 
     # Validate magic token
     $app->validate_magic() or return;
