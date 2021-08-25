@@ -481,15 +481,21 @@ PERMCHECK: {
         else {
             push @col, '';
         }
+        my $author_name;
         if (my $author_id = $log->author_id) {
-            if ($seen{authors}{$author_id}) {
-                push @col, $seen{authors}{$author_id};
+            if (defined $seen{authors}{$author_id}) {
+                $author_name = $seen{authors}{$author_id};
             } elsif (my $user = MT->model('author')->load($author_id)) {
-                push @col, $user->name;
-                $seen{authors}{$author_id} = $user->name;
+                $author_name = $user->name;
+                $seen{authors}{$author_id} = $author_name;
             } else {
-                push @col, '';
+                $author_name = MT->translate('*User deleted*');
             }
+        }
+        if (defined $author_name && $author_name ne '') {
+            $author_name =~ s/"/\\"/gs;
+            $author_name =~ s/[\r\n]+/ /gs;
+            push @col, '"' . $author_name . '"';
         } else {
             push @col, '';
         }
