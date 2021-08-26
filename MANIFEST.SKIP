@@ -278,7 +278,8 @@ build-language-stamp
 ^package-lock.json
 ^package.json
 ^node_modules/
-^\.node-version
+\.node-version$
+\.php_cs\.dist$
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion
