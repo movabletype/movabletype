@@ -127,16 +127,16 @@ function multiblog_block_wrapper(&$args, $content, &$_smarty_tpl, &$repeat) {
         }
 
         # Load multiblog access control list
-        $incl = $args['include_sites']
-             || $args['include_blogs']
-             || $args['include_websites']
-             || $args['blog_id']
-             || $args['blog_ids']
+        $incl = !empty($args['include_sites'])
+             || !empty($args['include_blogs'])
+             || !empty($args['include_websites'])
+             || !empty($args['blog_id'])
+             || !empty($args['blog_ids'])
              || $tag == 'mtblogs'
              || $tag == 'mtwebsites';
-        $excl = $args['exclude_sites']
-             || $args['exclude_blogs']
-             || $args['exclude_websites'];
+        $excl = !empty($args['exclude_sites'])
+             || !empty($args['exclude_blogs'])
+             || !empty($args['exclude_websites']);
         if ( $incl || $excl ) {
             $acl = multiblog_load_acl($ctx);
             if ( !empty($acl) && !empty($acl['allow']) )

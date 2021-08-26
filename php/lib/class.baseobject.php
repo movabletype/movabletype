@@ -365,7 +365,7 @@ abstract class BaseObject extends ADOdb_Active_Record
             if ($children) {
                 foreach ($children as &$child) {
                     $k = $child->$foreign_key;
-                    if (! $meta_hash[$k]) {
+                    if (empty($meta_hash[$k])) {
                         $meta_hash[$k] = array();
                     }
                     $meta_hash[$k][] = $child;
@@ -381,6 +381,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         unset($obj_hash);
 
 
+        $obj_type = null;
         foreach ($objs as &$obj) {
             if (! $obj_type) {
                 $obj_type = $obj->object_type();

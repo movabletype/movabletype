@@ -29,7 +29,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
                  isset($args['author']) ))
                 $ctx->__stash['entries'] = null;
         }
-        if ($ctx->__stash['entries']) {
+        if (!empty($ctx->__stash['entries'])) {
             if (isset($args['id']) ||
                 isset($args['recently_commented_on']) ||
                 isset($args['include_subcategories']) ||
@@ -47,7 +47,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $lastn = $args['lastn'];
+        $lastn = !empty($args['lastn']) ? $args['lastn'] : null;
         $ctx->stash('_entries_lastn', $lastn);
         $ctx->stash('__out', false);
     } else {
@@ -139,7 +139,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         return $ret;
     }
 
-    $ctx->stash('_entries_glue', $args['glue']);
+    $ctx->stash('_entries_glue', isset($args['glue']) ? $args['glue'] : null);
     if (($lastn > count($entries)) || ($lastn == -1)) {
         $lastn = count($entries);
         $ctx->stash('_entries_lastn', $lastn);
