@@ -271,6 +271,7 @@ themes/broken_blog_theme
 \.git\b
 \.gitignore
 \.gitmodules
+\.mailmap$
 ,v$
 
 # Hidden, temp and backup files.
