@@ -329,11 +329,16 @@ sub _send_mt_smtp {
     my $hdr;
     foreach my $k ( keys %$hdrs ) {
         next if ( $k =~ /^(To|Bcc|Cc)$/ );
-        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
+        my $value = $hdrs->{$k};
+        if (ref $value eq 'ARRAY') {   # From, Reply-To
+            $hdr .= "$k: " . join( ",\r\n ", @$value ) . "\r\n";
+        } else {
+            $hdr .= "$k: " . $value . "\r\n";
+        }
     }
 
-    # Sending mail
-    $smtp->mail( $hdrs->{From} );
+    # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
+    $smtp->mail( ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From} );
 
     foreach my $h (qw( To Bcc Cc )) {
         if ( defined $hdrs->{$h} ) {
