@@ -13,8 +13,6 @@ use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
-use MT::Util qw(is_valid_email);
-
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (
@@ -23,53 +21,126 @@ my %SMTPModules = (
     SSLorTLS => [ 'IO::Socket::SSL', 'Net::SSLeay' ],
 );
 
-my @KnownFields = qw(
-    id Date From Sender Reply-To To Cc Bcc
-    Message-ID In-Reply-To References Subject X-SMTPAPI
-    Content-Type Content-Transfer-Encoding MIME-Version
-);
-
-my %Alias;
-
-sub _lc {
-    my $field = shift;
-    my $lc_field = lc $field;
-    $lc_field =~ s/\-/_/g;
-    $lc_field;
-}
-
-sub _set_default_alias {
-    my $class = shift;
-    for my $field (@KnownFields) {
-        $Alias{_lc($field)} = $field;
-    }
-}
-
 sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
 
-    $class->_set_default_alias unless %Alias;
+    local $hdrs_arg->{id} = $hdrs_arg->{id};
+    my $id = delete $hdrs_arg->{id};
 
-    my %hdrs;
-    for my $field (sort keys %$hdrs_arg) {
-        my $alias = $Alias{_lc($field)} ||= $field;
-        my $value = $hdrs_arg->{$field};
-        if (!exists $hdrs{$alias}) {
-            $hdrs{$alias} = $value;
-        } else {
-            $hdrs{$alias} = [$hdrs{$alias}] unless ref $hdrs{$alias};
-            push @{$hdrs{$alias}}, ref $value eq 'ARRAY' ? @$value : $value;
+    my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
+    foreach my $h ( keys %hdrs ) {
+        if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
+            map {y/\n\r/  /} @{ $hdrs{$h} };
+        }
+        else {
+            $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
         }
     }
-    my $id = delete $hdrs{id};
 
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
 
+    my $mail_enc = uc( $mgr->MailEncoding || $mgr->PublishCharset );
+    $mail_enc = lc $mail_enc;
+
+    require MT::I18N::default;
+    $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
+
+    eval "require MIME::EncWords;";
+    unless ($@) {
+        foreach my $header ( keys %hdrs ) {
+            my $val = $hdrs{$header};
+
+            if ( ref $val eq 'ARRAY' ) {
+                foreach (@$val) {
+                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
+                    {
+                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
+                            if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
+                                $_ = MIME::EncWords::encode_mimeword(
+                                    MT::I18N::default->encode_text_encode(
+                                        $1, undef, $mail_enc
+                                    ),
+                                    'b',
+                                    $mail_enc
+                                    )
+                                    . ' '
+                                    . $2;
+                            }
+                        }
+                        elsif ( $header
+                            !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
+                            )
+                        {
+                            $_ = MIME::EncWords::encode_mimeword(
+                                MT::I18N::default->encode_text_encode(
+                                    $_, undef, $mail_enc
+                                ),
+                                'b',
+                                $mail_enc
+                            );
+                        }
+                    }
+                }
+            }
+            else {
+                if (   ( $mail_enc ne 'iso-8859-1' )
+                    || ( $val =~ /[^[:print:]]/ ) )
+                {
+                    if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
+                        if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
+                            $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                                MT::I18N::default->encode_text_encode(
+                                    $1, undef, $mail_enc
+                                ),
+                                'b',
+                                $mail_enc
+                                )
+                                . ' '
+                                . $2;
+                        }
+                    }
+                    elsif ( $header
+                        !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i
+                        )
+                    {
+                        $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                            MT::I18N::default->encode_text_encode(
+                                $val, undef, $mail_enc
+                            ),
+                            'b',
+                            $mail_enc
+                        );
+                    }
+                }
+            }
+        }
+    }
+    else {
+        $hdrs{Subject}
+            = MT::I18N::default->encode_text_encode( $hdrs{Subject}, undef,
+            $mail_enc );
+        $hdrs{From}
+            = MT::I18N::default->encode_text_encode( $hdrs{From}, undef,
+            $mail_enc );
+    }
+    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
+    $hdrs{'Content-Transfer-Encoding'}
+        = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
+    $hdrs{'MIME-Version'} ||= "1.0";
+
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
     if ( !$hdrs{From} ) {
-        return $class->error(MT->translate("System Email Address is not configured."));
+        return $class->error(
+            MT->translate("System Email Address is not configured.") );
+    }
+
+    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
+        && eval { require MIME::Base64 } )
+    {
+        $body = MIME::Base64::encode_base64($body);
+        $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
 
     return 1
@@ -82,9 +153,6 @@ sub send {
         ( $id ? ( id => $id ) : () )
         );
 
-    $hdrs{To} = $mgr->DebugEmailAddress
-        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
-
     if ( $xfer eq 'sendmail' ) {
         return $class->_send_mt_sendmail( \%hdrs, $body, $mgr );
     }
@@ -95,112 +163,35 @@ sub send {
         return $class->_send_mt_debug( \%hdrs, $body, $mgr );
     }
     else {
-        return $class->error(MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ));
+        return $class->error(
+            MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
     }
 }
 
-sub _encode {
-    my ($class, $hdrs, $body) = @_;
-
-    my $mgr = MT->config;
-    my $mail_enc = lc( $mgr->MailEncoding || $mgr->PublishCharset );
-
-    require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
-
-    eval "require MIME::EncWords;";
-    unless ($@) {
-        foreach my $header ( keys %$hdrs ) {
-            my $val = $hdrs->{$header};
-
-            if ( ref $val eq 'ARRAY' ) {
-                foreach (@$val) {
-                    y/\x0d\x0a/  /;
-                    if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) ) {
-                        if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
-                            if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                                $_ = _encode_mime($1, $mail_enc) . ' ' . $2;
-                            }
-                        } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
-                            $_ = _encode_mime($_, $mail_enc);
-                        }
-                    }
-                }
-            }
-            else {
-                $val =~ y/\x0d\x0a/  /;
-                if ( ( $mail_enc ne 'iso-8859-1' ) || ( $val =~ /[^[:print:]]/ ) ) {
-                    if ( $header =~ m/^(From|To|Reply|B?cc)/i ) {
-                        if ( $val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/ ) {
-                            $hdrs->{$header} = _encode_mime($1, $mail_enc) . ' ' . $2;
-                        }
-                    } elsif ( $header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i ) {
-                        $hdrs->{$header} = _encode_mime($val, $mail_enc);
-                    }
-                }
-            }
-        }
-    }
-    else {
-        $hdrs->{Subject} = MT::I18N::default->encode_text_encode( $hdrs->{Subject}, undef, $mail_enc );
-        $hdrs->{From}    = MT::I18N::default->encode_text_encode( $hdrs->{From}, undef, $mail_enc );
-    }
-    $hdrs->{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs->{'Content-Transfer-Encoding'} = ( ($mail_enc) !~ m/utf-?8/ ) ? '7bit' : '8bit';
-    $hdrs->{'MIME-Version'} ||= "1.0";
-
-    if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m && eval { require MIME::Base64 } ) {
-        $body = MIME::Base64::encode_base64($body);
-        $hdrs->{'Content-Transfer-Encoding'} = 'base64';
-    }
-
-    return ($hdrs, $body);
-}
-
-sub _encode_mime {
-    my ($str, $enc) = @_;
-    MIME::EncWords::encode_mimeword(MT::I18N::default->encode_text_encode($str, undef, $enc), 'b', $enc);
-}
-
-sub _render_mail {
-    my ($class, $hdrs, $body, $hide_bcc) = @_;
-
-    my $crlf = "\x0d\x0a";
-
-    ($hdrs, $body) = $class->_encode($hdrs, $body);
-
-    # Setup headers
-    my $mail;
-    foreach my $k ( keys %$hdrs ) {
-        next if ( $k =~ /^(To|Bcc|Cc)$/ );
-        $mail .= "$k: " . $hdrs->{$k} . $crlf;
-    }
-
-    my @recipients;
-    foreach my $h (qw( To Bcc Cc )) {
-        if ( defined $hdrs->{$h} ) {
-            my $addrs = $hdrs->{$h};
-            $addrs = [$addrs] unless 'ARRAY' eq ref $addrs;
-            push @recipients, @$addrs;
-            $mail .= "$h: " . join( ",$crlf ", @$addrs ) . $crlf unless $h eq 'Bcc' && $hide_bcc;
-        }
-    }
-    $mail .= $crlf;
-    $mail .= $body;
-    return wantarray ? ($mail, @recipients) : $mail;
-}
+use MT::Util qw(is_valid_email);
 
 sub _send_mt_debug {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    my $mail = $class->_render_mail($hdrs, $body);
-    print STDERR $mail;
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
+    for my $key ( keys %$hdrs ) {
+        my @arr
+            = ref( $hdrs->{$key} ) eq 'ARRAY'
+            ? @{ $hdrs->{$key} }
+            : ( $hdrs->{$key} );
+        print STDERR map "$key: $_\n", @arr;
+    }
+    print STDERR "\n";
+    print STDERR $body;
     1;
 }
 
 sub _send_mt_smtp {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
 
     # SMTP Configuration
     my $host      = $mgr->SMTPServer;
@@ -226,14 +217,19 @@ sub _send_mt_smtp {
             $auth = 1;
         }
     }
-    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : '';
+    my $do_ssl = ( $ssl || $tls ) ? $mgr->SMTPAuth : undef;
     my $ssl_verify_mode
         = $do_ssl
         ? ( ( $mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone ) ? 0 : 1 )
         : undef;
 
-    return $class->error(MT->translate("Username and password is required for SMTP authentication."))
-        if $auth and ( !$user or !$pass );
+    return $class->error(
+        MT->translate(
+            "Username and password is required for SMTP authentication."
+        )
+        )
+        if $auth
+        and ( !$user or !$pass );
 
     # Check required modules;
     my @modules = ();
@@ -255,16 +251,15 @@ sub _send_mt_smtp {
         Port    => $port,
         Timeout => $mgr->SMTPTimeout,
         Hello   => $localhost,
-        doSSL   => $do_ssl,
         (   $do_ssl
-            ? (
+            ? ( doSSL           => $do_ssl,
                 SSL_verify_mode => $ssl_verify_mode,
                 SSL_version => MT->config->SSLVersion
                         || MT->config->SMTPSSLVersion
                         || 'SSLv23:!SSLv3:!SSLv2' ,
                 ( eval { require Mozilla::CA; 1 } )
                 ? (
-                    SSL_ca_file => Mozilla::CA::SSL_ca_file(),
+                    SSL_ca_file         => Mozilla::CA::SSL_ca_file(),
                     )
                 : (),
                 SSL_verifycn_name   => $host,
@@ -312,21 +307,48 @@ sub _send_mt_smtp {
     }
 
     # Set sender header if smtp user id is valid email
-    # TODO: RFC: If the originator of the message can be indicated
-    # by a single mailbox and the author and transmitter are identical, the
-    # "Sender:" field SHOULD NOT be used.
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
-    my ($mail, @recipients) = $class->_render_mail($hdrs, $body, 'hide_bcc');
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        next if ( $k =~ /^(To|Bcc|Cc)$/ );
+        $hdr .= "$k: " . $hdrs->{$k} . "\r\n";
+    }
 
     # Sending mail
     $smtp->mail( $hdrs->{From} );
-    $smtp->recipient($_) for @recipients;
+
+    foreach my $h (qw( To Bcc Cc )) {
+        if ( defined $hdrs->{$h} ) {
+            my $addr = $hdrs->{$h};
+            $addr = [$addr] unless 'ARRAY' eq ref $addr;
+            foreach my $a (@$addr) {
+                $smtp->recipient($a);
+            }
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
+        }
+    }
+
+    my $_check_smtp_err;
+    {
+        $_check_smtp_err = sub {
+
+     # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
+            return unless $smtp->can('status');
+
+            # status 4xx or 5xx is not send message.
+            die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
+        };
+    }
 
     eval {
         $smtp->data();
-        $smtp->datasend($mail);
-        die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
+        $smtp->datasend($hdr);
+        $_check_smtp_err->();
+        $smtp->datasend("\n");
+        $smtp->datasend($body);
+        $_check_smtp_err->();
         $smtp->dataend();
         $smtp->quit;
     };
@@ -342,7 +364,8 @@ my @Sendmail
 sub _send_mt_sendmail {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-
+    $hdrs->{To} = $mgr->DebugEmailAddress
+        if ( is_valid_email( $mgr->DebugEmailAddress || '' ) );
     my $sm_loc;
     for my $loc ( $mgr->SendMailPath, @Sendmail ) {
         next unless $loc;
@@ -355,7 +378,7 @@ sub _send_mt_sendmail {
         )
     ) unless $sm_loc;
     local $SIG{PIPE} = {};
-    my $pid = open my $PIPE, '|-';
+    my $pid = open my $MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if ( !$pid ) {
@@ -363,10 +386,16 @@ sub _send_mt_sendmail {
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }
-
-    my $mail = $class->_render_mail($hdrs, $body);
-    print $PIPE $mail;
-    close $PIPE;
+    for my $key ( keys %$hdrs ) {
+        my @arr
+            = ref( $hdrs->{$key} ) eq 'ARRAY'
+            ? @{ $hdrs->{$key} }
+            : ( $hdrs->{$key} );
+        print $MAIL map "$key: $_\n", @arr;
+    }
+    print $MAIL "\n";
+    print $MAIL $body;
+    close $MAIL;
     1;
 }
 
