@@ -84,6 +84,7 @@ requires 'Net::IP';
 
 on 'test' => sub {
     requires 'Acme::RandomEmoji';
+    requires 'AnyEvent::SMTP::Server';
     requires 'App::Prove::Plugin::MySQLPool';
     requires 'Array::Diff';
     requires 'Carp::Always';
