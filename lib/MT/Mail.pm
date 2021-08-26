@@ -309,47 +309,14 @@ sub _send_mt_smtp {
     # Set sender header if smtp user id is valid email
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
-    # dedupe for SendGrid (cf. CLOUD-73)
-    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
-    my %canonical_map  = map {_lc($_) => $_} @unique_headers;
-    for my $k (sort {$a cmp $b} keys %$hdrs) {
-        my $lc_k    = _lc($k);
-        my $canon_k = $canonical_map{$lc_k};
-        if ($canon_k && $canon_k ne $k) {
-            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
-                my $addr = delete $hdrs->{$k};
-                push @{$hdrs->{$canon_k} ||= []}, ref $addr eq 'ARRAY' ? @$addr : $addr;
-            } else {
-                $hdrs->{$canon_k} = delete $hdrs->{$k};
-            }
-        }
-    }
-
-    # Setup headers
-    my $hdr;
-    foreach my $k ( keys %$hdrs ) {
-        next if ( $k =~ /^(To|Bcc|Cc)$/ );
-        my $value = $hdrs->{$k};
-        if (ref $value eq 'ARRAY') {   # From, Reply-To
-            $hdr .= "$k: " . join( ",\r\n ", @$value ) . "\r\n";
-        } else {
-            $hdr .= "$k: " . $value . "\r\n";
-        }
-    }
+    $class->_dedupe_headers($hdrs);
 
     # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
     $smtp->mail( ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From} );
 
-    foreach my $h (qw( To Bcc Cc )) {
-        if ( defined $hdrs->{$h} ) {
-            my $addr = $hdrs->{$h};
-            $addr = [$addr] unless 'ARRAY' eq ref $addr;
-            foreach my $a (@$addr) {
-                $smtp->recipient($a);
-            }
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" if $h ne 'Bcc';
-        }
-    }
+    my ($hdr, @recipients) = $class->_render_headers($hdrs, 'hide_bcc');
+
+    $smtp->recipient($_) for @recipients;
 
     my $_check_smtp_err;
     {
@@ -386,6 +353,53 @@ sub _lc {
     $lc_field;
 }
 
+sub _dedupe_headers {
+    my ($class, $hdrs) = @_;
+
+    # dedupe for SendGrid (cf. CLOUD-73)
+    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
+    my %canonical_map  = map {_lc($_) => $_} @unique_headers;
+    for my $k (sort {$a cmp $b} keys %$hdrs) {
+        my $lc_k    = _lc($k);
+        my $canon_k = $canonical_map{$lc_k};
+        if ($canon_k && $canon_k ne $k) {
+            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
+                my $addr = delete $hdrs->{$k};
+                push @{$hdrs->{$canon_k} ||= []}, ref $addr eq 'ARRAY' ? @$addr : $addr;
+            } else {
+                $hdrs->{$canon_k} = delete $hdrs->{$k};
+            }
+        }
+    }
+}
+
+sub _render_headers {
+    my ($class, $hdrs, $hide_bcc) = @_;
+
+    # Setup headers
+    my $hdr;
+    foreach my $k ( keys %$hdrs ) {
+        next if ( $k =~ /^(To|Bcc|Cc)$/ );
+        my $value = $hdrs->{$k};
+        if (ref $value eq 'ARRAY') {   # From, Reply-To
+            $hdr .= "$k: " . join( ",\r\n ", @$value ) . "\r\n";
+        } else {
+            $hdr .= "$k: " . $value . "\r\n";
+        }
+    }
+
+    my @recipients;
+    foreach my $h (qw( To Bcc Cc )) {
+        if ( defined $hdrs->{$h} ) {
+            my $addr = $hdrs->{$h};
+            $addr = [$addr] unless 'ARRAY' eq ref $addr;
+            push @recipients, @$addr;
+            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
+        }
+    }
+    return wantarray ? ($hdr, @recipients) : $hdr;
+}
+
 my @Sendmail
     = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
@@ -414,13 +428,12 @@ sub _send_mt_sendmail {
             or return $class->error(
             MT->translate( "Exec of sendmail failed: [_1]", "$!" ) );
     }
-    for my $key ( keys %$hdrs ) {
-        my @arr
-            = ref( $hdrs->{$key} ) eq 'ARRAY'
-            ? @{ $hdrs->{$key} }
-            : ( $hdrs->{$key} );
-        print $MAIL map "$key: $_\n", @arr;
-    }
+
+    $class->_dedupe_headers($hdrs);
+
+    my $hdr = $class->_render_header($hdrs);
+
+    print $MAIL $hdr;
     print $MAIL "\n";
     print $MAIL $body;
     close $MAIL;
