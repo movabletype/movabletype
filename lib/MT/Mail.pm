@@ -309,6 +309,22 @@ sub _send_mt_smtp {
     # Set sender header if smtp user id is valid email
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
+    # dedupe for SendGrid (cf. CLOUD-73)
+    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
+    my %canonical_map  = map {_lc($_) => $_} @unique_headers;
+    for my $k (sort {$a cmp $b} keys %$hdrs) {
+        my $lc_k    = _lc($k);
+        my $canon_k = $canonical_map{$lc_k};
+        if ($canon_k && $canon_k ne $k) {
+            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
+                my $addr = delete $hdrs->{$k};
+                push @{$hdrs->{$canon_k} ||= []}, ref $addr eq 'ARRAY' ? @$addr : $addr;
+            } else {
+                $hdrs->{$canon_k} = delete $hdrs->{$k};
+            }
+        }
+    }
+
     # Setup headers
     my $hdr;
     foreach my $k ( keys %$hdrs ) {
@@ -356,6 +372,13 @@ sub _send_mt_smtp {
         return $class->error($@);
     }
     1;
+}
+
+sub _lc {
+    my $field = shift;
+    my $lc_field = lc $field;
+    $lc_field =~ s/\-/_/g;
+    $lc_field;
 }
 
 my @Sendmail
