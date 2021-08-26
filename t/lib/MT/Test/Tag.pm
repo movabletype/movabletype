@@ -12,6 +12,7 @@ use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
+use File::Spec;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -150,18 +151,13 @@ SKIP: {
                 my $extra    = $callback ? $callback->($block) : '';
 
                 require MT::Util::UniqueID;
-                my $log = '/tmp/php-' . MT::Util::UniqueID::create_session_id() . '.log';
+                my $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $php_script = php_test_script( $block->blog_id || $blog_id, $template, $text, $log, $extra );
                 my $php_result = MT::Test::PHP->run($php_script);
 
-                require File::Copy;
-                my $log2 = $log. '.copy';
-                File::Copy::copy($log, $log2);
-                if (open(my $fh, '<', $log2)) {
-                    if (my $log_content = do { local $/; <$fh> }) {
-                        diag 'PHPErrorLog';
-                        diag($log_content);
-                    }
+                my $php_error = '';
+                if (open(my $fh, '<', $log)) {
+                    $php_error = do { local $/; <$fh> };
                 }
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
@@ -207,6 +203,7 @@ SKIP: {
                     ),
                     $name
                 );
+                note("PHPErrorLog: $name\n". $php_error) if $php_error;
             }
         }
     }
@@ -248,7 +245,7 @@ include_once($MT_HOME . '/php/lib/MTUtil.php');
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
 $mt->config('PHPErrorLogFilePath', $log);
-set_error_handler(array(&$mt, 'error_handler'));
+
 $mt->init_plugins();
 
 $db = $mt->db();
@@ -266,9 +263,13 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) {
-    print($error_msg."\n");
-}, E_USER_ERROR );
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) use ($mt) {
+    if ($errno & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else {
+        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
+    }
+});
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);
