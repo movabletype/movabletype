@@ -294,6 +294,12 @@ sub delete_group {
 sub view_group {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         if $app->param('blog_id');
 
@@ -441,6 +447,7 @@ sub build_group_table {
 # Handler for removing a member from a group, doesn't remove a group
 sub remove_group {
     my $app       = shift;
+
     my $user      = $app->user;
     my $author_id = $app->param('author_id');
     my @id        = $app->multi_param('id');

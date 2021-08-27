@@ -2251,6 +2251,7 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

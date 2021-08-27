@@ -2913,6 +2913,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Baue Objekt-Kategorien neu auf ...',
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
 	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
 	'add administer_site permission for Blog Administrator...' => 'Weise Blog-Administrator administer-site-Berechtigung zu...',

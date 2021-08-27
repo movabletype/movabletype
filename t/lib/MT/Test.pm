@@ -1656,4 +1656,6 @@ sub has_php {
     $HasPHP;
 }
 
+sub validate_param { return [] }
+
 1;
