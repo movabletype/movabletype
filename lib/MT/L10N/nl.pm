@@ -4246,21 +4246,6 @@ use vars qw( @ISA %Lexicon );
 	'Classic Website' => 'Klassieke website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Maak een blogportaal dat de inhoud van verschillende blogs samenbrengt in één website.',
 
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Gerelateerde inhoud',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Voorbeeld reactie bekijken',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Inschrijven',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Een collectie stijlen die compatibel zijn met het Pico thema.',
-	'Pico Styles' => 'Pico stijlen',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico is een microblogthema, ontworpen om eenvoudig veel updates aan te kunnen.  Om meer focus te richten op de inhoud staan de 'zijkolommen' onderaan de lijst met berichten.},
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Nieuw mediabestand uploaden',
 

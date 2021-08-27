@@ -4269,21 +4269,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Classic Website' => 'Klassische Website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Für Portale, die die Inhalte mehrerer Blogs in einer gemeinsamen Website anzeigen.',
 
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Verwandte Einträge',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Kommentarvorschau',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Abonnieren',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Mit Pro-Themen kompatible Designs',
-	'Pico Styles' => 'Pico-Designs',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico ist das Microblogging-Thema, das speziell auf einfache und häufige Aktualisierungen ausgelegt ist. Zur Betonung der aktuellen Inhalte werden die Seitenleisten unterhalb der Einträge angezeigt.},
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Neues Asset hochladen',
 
