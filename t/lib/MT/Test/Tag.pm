@@ -264,7 +264,7 @@ PHP
 
     $test_script .= <<'PHP';
 set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_vars) use ($mt) {
-    if ($errno & E_USER_ERROR) {
+    if ($error_no & E_USER_ERROR) {
         print($error_msg."\n");
     } else {
         return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
