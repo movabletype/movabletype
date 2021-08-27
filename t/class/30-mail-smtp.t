@@ -105,6 +105,21 @@ subtest 'different froms and reply-toes with <>' => sub {
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
 };
 
+subtest 'different froms and reply-toes with the same address' => sub {
+    eval {
+        MT::Mail->send({
+                From       => 'test@localhost.localdomain',
+                from       => 'test@localhost.localdomain',
+                To         => 'test@localhost.localdomain',
+                'Reply-to' => 'test@localhost.localdomain',
+                'Reply-To' => 'test@localhost.localdomain',
+            },
+            'mail body'
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+};
+
 $server->stop;
 
 done_testing();

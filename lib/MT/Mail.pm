@@ -368,7 +368,8 @@ sub _dedupe_headers {
                 my $addr = delete $hdrs->{$k};
                 my @addrs = ref $hdrs->{$canon_k} eq 'ARRAY' ? @{$hdrs->{$canon_k}} : ($hdrs->{$canon_k});
                 push @addrs, ref $addr eq 'ARRAY' ? @$addr : $addr;
-                $hdrs->{$canon_k} = \@addrs;
+                my %seen;
+                $hdrs->{$canon_k} = [grep {!$seen{$_}++} @addrs];
             } else {
                 $hdrs->{$canon_k} = delete $hdrs->{$k};
             }
