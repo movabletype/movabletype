@@ -75,6 +75,36 @@ subtest 'different froms and reply-toes' => sub {
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
 };
 
+subtest 'different froms and reply-toes in scalar' => sub {
+    eval {
+        MT::Mail->send({
+                From       => 'test@localhost.localdomain',
+                from       => 'test@localhost.localdomain',
+                To         => 'test@localhost.localdomain',
+                'Reply-to' => 'test@localhost.localdomain',
+                'Reply-To' => 'test2@localhost.localdomain',
+            },
+            'mail body'
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+};
+
+subtest 'different froms and reply-toes with <>' => sub {
+    eval {
+        MT::Mail->send({
+                From       => 'test@localhost.localdomain',
+                from       => 'test@localhost.localdomain',
+                To         => 'test@localhost.localdomain',
+                'Reply-to' => '<test@localhost.localdomain>',
+                'Reply-To' => '<test2@localhost.localdomain>',
+            },
+            'mail body'
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+};
+
 $server->stop;
 
 done_testing();

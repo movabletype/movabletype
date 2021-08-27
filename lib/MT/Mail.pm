@@ -366,7 +366,9 @@ sub _dedupe_headers {
         if ($canon_k && $canon_k ne $k) {
             if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
                 my $addr = delete $hdrs->{$k};
-                push @{$hdrs->{$canon_k} ||= []}, ref $addr eq 'ARRAY' ? @$addr : $addr;
+                my @addrs = ref $hdrs->{$canon_k} eq 'ARRAY' ? @{$hdrs->{$canon_k}} : ($hdrs->{$canon_k});
+                push @addrs, ref $addr eq 'ARRAY' ? @$addr : $addr;
+                $hdrs->{$canon_k} = \@addrs;
             } else {
                 $hdrs->{$canon_k} = delete $hdrs->{$k};
             }
