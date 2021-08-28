@@ -795,7 +795,7 @@ abstract class MTDatabase {
             }
         }
 
-        if ($args['limit'] > 0) {
+        if (isset($args['limit']) && $args['limit'] > 0) {
             $args['lastn'] = $args['limit'];
         } elseif (!isset($args['days']) && !isset($args['lastn'])) {
 #            if ($days = $blog['blog_days_on_index']) {
