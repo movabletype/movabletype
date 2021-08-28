@@ -858,7 +858,7 @@ abstract class MTDatabase {
                 $fields[$m[1]] = $v;
 
         # automatically include offset if in request
-        if ($args['offset'] == 'auto') {
+        if (isset($args['offset']) && $args['offset'] == 'auto') {
             $args['offset'] = 0;
             if ($args['limit'] || $args['lastn']) {
                 if (intval($_REQUEST['offset']) > 0) {
@@ -867,7 +867,7 @@ abstract class MTDatabase {
             }
         }
 
-        if ($args['limit'] > 0) {
+        if (isset($args['limit']) && $args['limit'] > 0) {
             $args['lastn'] = $args['limit'];
         } elseif (!isset($args['days']) && !isset($args['lastn'])) {
 #            if ($days = $blog['blog_days_on_index']) {
