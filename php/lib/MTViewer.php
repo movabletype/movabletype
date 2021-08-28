@@ -349,8 +349,7 @@ class MTViewer extends SmartyBC {
     }
 
     function smarty_block_else($args, $content, &$ctx, &$repeat) {
-        if (isset($ctx->__stash['elseif_content'])
-            or $ctx->__stash['conditional']) {
+        if (isset($ctx->__stash['elseif_content']) or !empty($ctx->__stash['conditional'])) {
             $repeat = false;
             return '';
         }
@@ -377,13 +376,13 @@ class MTViewer extends SmartyBC {
             $args['elseif'] = 1;
             if (!isset($content)) {
                 $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['conditional']) {
+                if (!empty($ctx->__stash['conditional'])) {
                     $ctx->stash('elseif_conditional', 1);
                     unset($ctx->__stash['conditional']);
                 }
             } else {
                 // $out = smarty_block_mtif($args, $content, $ctx, $repeat);
-                if ($ctx->__stash['elseif_conditional']) {
+                if (!empty($ctx->__stash['elseif_conditional'])) {
                     $ctx->stash('elseif_content', $content);
                     $ctx->stash('conditional', 1);
                 }
@@ -391,10 +390,10 @@ class MTViewer extends SmartyBC {
             return '';
         }
         if (!isset($content)) {
-            if ($ctx->__stash['conditional'])
+            if (!empty($ctx->__stash['conditional']))
                 $repeat = false;
         } else {
-            $else_content = $ctx->__stash['else_content'];
+            $else_content = isset($ctx->__stash['else_content']) ? $ctx->__stash['else_content'] : '';
             $else_content .= $content;
             $ctx->stash('else_content', $else_content);
         }
@@ -860,7 +859,7 @@ EOT;
                 $fn = array($this, 'function_wrapper');
             }
         }
-        $old_handler = $this->_handlers[$tag];
+        $old_handler = isset($this->_handlers[$tag]) ? $this->_handlers[$tag] : null;
         $this->_handlers[$tag] = array( $fn, $type );
         if ($old_handler) {
             $fn = $old_handler[0];
@@ -998,7 +997,7 @@ EOT;
             if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
             }
-            $_smarty_tpl->tpl_vars[$value] = $ctx->__stash[$value];
+            $_smarty_tpl->tpl_vars[$value] = isset($ctx->__stash[$value]) ? $ctx->__stash[$value] : null;
         }
 
 
@@ -1016,7 +1015,7 @@ EOT;
             if ($tag == 'else') {
                 return $content;
             }
-            return $result;
+            return (isset($result) ? $result : null);
         }
 
     }

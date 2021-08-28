@@ -11,7 +11,7 @@ class CacheMemory extends BaseCache {
 
     public function get ($key, $ttl = null) {
         $ret = $this->get_multi(array($key), $ttl);
-        return $ret[0];
+        return isset($ret[0]) ? $ret[0] : null;
     }
 
     public function get_multi ($keys, $ttl = null) {
