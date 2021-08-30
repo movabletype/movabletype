@@ -234,6 +234,7 @@ sub save_file {
     open my $fh, '>', $file or die "$file: $!";
     binmode $fh;
     print $fh $body;
+    $file;
 }
 
 sub image_drivers {
