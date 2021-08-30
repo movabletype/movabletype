@@ -31,7 +31,7 @@ print STDERR "MAIL: \$mail\\n" if \$ENV{TEST_VERBOSE};
 open my \$fh, '>', "$ENV{MT_TEST_ROOT}/mail";
 print \$fh \$mail, "\\n";
 SENDMAIL
-    chmod 0777, $sendmail;
+    chmod 0755, $sendmail;
 }
 
 no Carp::Always;
