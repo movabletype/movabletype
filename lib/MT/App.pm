@@ -789,6 +789,10 @@ sub print {
 sub print_encode {
     my $app = shift;
     my $enc = $app->charset || 'UTF-8';
+    my $restype = $app->{response_content_type} || '';
+    if ($restype =~ m!/json$!) {
+        $enc = 'UTF-8';
+    }
     $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
