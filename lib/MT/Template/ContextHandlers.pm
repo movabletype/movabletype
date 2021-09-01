@@ -4220,9 +4220,9 @@ B<Example:> Passing Parameters to a Template Module
 
             if ($local_blog->is_blog) {
                 $blog_id = $local_blog->parent_id or return; # skip if data is broken
+            } else {
+                $blog_id = $local_blog->id;
             }
-            $blog_id ||= $local_blog->id;
-
         }
 
         ## Don't know why but hash key has to be encoded
