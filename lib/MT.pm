@@ -39,7 +39,7 @@ BEGIN {
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '6.8.0',              '__PRODUCT_VERSION_ID__',
+        '6.8.1',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__'
         );
 
@@ -56,7 +56,7 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 0;
+        $RELEASE_NUMBER = 1;
     }
 
     $DebugMode = 0;
@@ -2996,6 +2996,7 @@ sub core_commenter_authenticators {
             logo              => 'images/comment/signin_hatena.png',
             logo_small        => 'images/comment/hatena_logo.png',
             order             => 21,
+            disable           => 1,
         },
     };
 }

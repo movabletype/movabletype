@@ -132,6 +132,8 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+use_ok('MT::ParamValidator');
+
 SKIP: {
 
     if ( eval { require Net::FTPSSL } ) {
