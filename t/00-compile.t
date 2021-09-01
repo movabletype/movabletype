@@ -253,6 +253,9 @@ use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
+use_ok('MT::Util::Archive::BinTgz');
+use_ok('MT::Util::Archive::BinZip');
+use_ok('MT::Util::Archive::TempFile');
 SKIP: {
     if ( eval { require Archive::Tar } ) {
         use_ok('MT::Util::Archive::Tgz');

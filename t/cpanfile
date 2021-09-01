@@ -96,6 +96,7 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'File::Which';
     requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
