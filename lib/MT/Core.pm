@@ -2251,6 +2251,7 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
             'UseExternalArchiver' => undef,
             'BinTarPath' => undef,
             'BinZipPath' => undef,

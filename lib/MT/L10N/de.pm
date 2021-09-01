@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Warnungen und Logmeldungen',
 	'You did not have permission for this action.' => 'Zu dieser Aktion sind Sie nicht berechtigt.',
 	'[_1] contains an invalid character: [_2]' => '[_1] enthält ein ungültiges Zeichen: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Fehlgeschlagener Anmeldeversuch von deaktiviertem Benutzer '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1233,11 +1234,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
 	q{Category '[_1]' created by '[_2]'.} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Der Kategorie-Basisname &#8222;[_1]&#8220; steht im Konflikt mit dem Basisnamen einer anderen Kategorie: Unterkategorien dürfen nicht den gleichen Basisnamen wie ihre Hauptkategorie haben.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen. Hauptkategorien und Unterkategorien gleichen Ursprungs müssen eindeutige Namen haben.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen: Unterkategorien dürfen nicht wie ihre Hauptkategorie heißen.},
 	q{The name '[_1]' is too long!} => q{Der Name &#8222;[_1]&#8220; ist zu lang!},
 	q{[_1] order has been edited by '[_2]'.} => q{Die [_1]-Reihenfolge wurde von &#8222;[_2]&#8220; geändert.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Alle [_1]',
@@ -1284,7 +1290,7 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss im Format JJJJ-MM-TT SS:MM:SS angegeben werden.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunk, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss in der Zukunft liegen.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.},
-	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
+	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' gelöscht},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' bearbeitet},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
@@ -2907,6 +2913,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Baue Objekt-Kategorien neu auf ...',
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
 	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
 	'add administer_site permission for Blog Administrator...' => 'Weise Blog-Administrator administer-site-Berechtigung zu...',
