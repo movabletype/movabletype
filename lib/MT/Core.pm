@@ -2149,6 +2149,10 @@ BEGIN {
 
             'UseTraditionalTransformer' => undef,
             'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
