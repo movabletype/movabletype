@@ -106,6 +106,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
