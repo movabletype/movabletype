@@ -54,6 +54,19 @@ $asset->created_by($author->id);
 $asset->add_tags('image', '@first', 'a');
 $asset->save or die "Couldn't save asset: " . $asset->errstr;
 
+my $no_tag_asset = MT::Asset::Image->new;
+$no_tag_asset->blog_id($website->id);
+$no_tag_asset->url($website->site_url . 'no_tag.jpg');
+$no_tag_asset->file_path(File::Spec->catfile($image_path));
+$no_tag_asset->file_name('no_tag.jpg');
+$no_tag_asset->file_ext('jpg');
+$no_tag_asset->image_width(640);
+$no_tag_asset->image_height(480);
+$no_tag_asset->mime_type('image/jpeg');
+$no_tag_asset->label('Image photo');
+$no_tag_asset->created_by($author->id);
+$no_tag_asset->save or die "Couldn't save no_tag_asset: " . $no_tag_asset->errstr;
+
 my $removed_asset = MT::Asset::Image->new;
 $removed_asset->blog_id($website->id);
 $removed_asset->url($website->site_url . 'removed.jpg');
@@ -95,7 +108,7 @@ my $entry = MT::Test::Permission->make_entry(
     blog_id   => $website->id,
     author_id => $author->id,
 );
-for my $a ($asset, $file_asset) {
+for my $a ($asset, $no_tag_asset, $file_asset) {
     MT::Test::Permission->make_objectasset(
         blog_id   => $website->id,
         object_id => $entry->id,
@@ -106,7 +119,7 @@ my $page = MT::Test::Permission->make_page(
     blog_id   => $website->id,
     author_id => $author->id,
 );
-for my $a ($asset, $file_asset) {
+for my $a ($asset, $no_tag_asset, $file_asset) {
     MT::Test::Permission->make_objectasset(
         blog_id   => $website->id,
         object_id => $page->id,
@@ -241,6 +254,15 @@ http://example.com/blog/test.txt
 not found
 
 === MTAssets[tag] : Multiple tags
+--- template
+<MTAssets tag="pdf OR a" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+--- should_not_be_called_object_tag_load
+
+=== MTAssets[tag] : Multiple tags (a public tag OR a private tag)
 --- SKIP_PHP
 --- template
 <MTAssets tag="pdf OR @first" sort_by="id" sort_order="ascend">
@@ -261,13 +283,27 @@ http://example.com/blog/test.pdf
 --- should_not_be_called_object_tag_load
 
 === MTAssets[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
-<MTAssets tag="image OR @first">
+<MTAssets tag="image OR a">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.jpg
 --- should_not_be_called_object_tag_load
+
+=== MTAssets[tag] : AND condition
+--- template
+<MTAssets tag="image AND a">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTAssets[tag] : AND condition (a public tag AND a private tag)
+--- SKIP_PHP
+--- template
+<MTAssets tag="image AND @first">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
 
 === MTEntryAssets
 --- template
@@ -277,6 +313,7 @@ http://example.com/blog/test.jpg
 </MTEntries>
 --- expected
 http://example.com/blog/test.jpg
+http://example.com/blog/no_tag.jpg
 http://example.com/blog/test.pdf
 
 === MTEntryAssets[tag] : Single tag
@@ -289,7 +326,6 @@ http://example.com/blog/test.pdf
 http://example.com/blog/test.jpg
 
 === MTEntryAssets[tag] : Multiple tags
---- SKIP_PHP
 --- template
 <MTEntries id="ENTRY_ID">
 <MTEntryAssets tag="image OR pdf" sort_by="id" sort_order="ascend">
@@ -311,10 +347,9 @@ http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 
 === MTEntryAssets[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
 <MTEntries id="ENTRY_ID">
-<MTEntryAssets tag="image OR @first">
+<MTEntryAssets tag="image OR a">
 <$MTAssetURL$></MTEntryAssets>
 </MTEntries>
 --- expected
@@ -328,6 +363,7 @@ http://example.com/blog/test.jpg
 </MTPages>
 --- expected
 http://example.com/blog/test.jpg
+http://example.com/blog/no_tag.jpg
 http://example.com/blog/test.pdf
 
 === MTPageAssets[tag] : Single tag
@@ -340,7 +376,6 @@ http://example.com/blog/test.pdf
 http://example.com/blog/test.jpg
 
 === MTPageAssets[tag] : Multiple tags
---- SKIP_PHP
 --- template
 <MTPages id="PAGE_ID">
 <MTPageAssets tag="image OR pdf" sort_by="id" sort_order="ascend">
@@ -362,10 +397,9 @@ http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 
 === MTPageAssets[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
 <MTPages id="PAGE_ID">
-<MTPageAssets tag="image OR @first">
+<MTPageAssets tag="image OR a">
 <$MTAssetURL$></MTPageAssets>
 </MTPages>
 --- expected
