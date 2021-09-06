@@ -287,8 +287,6 @@ sub edit {
         $app->add_breadcrumb( $app->translate('Create Content Type') );
     }
 
-    $param->{debug_riot} = 1 if MT->config->PublishCharset !~ /^utf-?8$/i;
-
     $app->build_page( $app->load_tmpl('edit_content_type.tmpl'), $param );
 }
 

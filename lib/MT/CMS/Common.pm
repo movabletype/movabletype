@@ -1460,8 +1460,6 @@ sub list {
         $app->load_content_actions( ( $type . $subtype ), \%param );
     }
 
-    $param{debug_riot} = 1 if MT->config->PublishCharset !~ /^utf-?8$/i;
-
     push @{ $param{debug_panels} },
         {
         name      => 'CommonListing',
