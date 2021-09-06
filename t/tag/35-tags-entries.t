@@ -122,6 +122,15 @@ a OR b
 --- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Multiple tags
+--- template
+<MTEntries tag="bar OR a" sort_by="id" sort_order="ascend">
+<$MTEntryTitle$></MTEntries>
+--- expected
+foo
+bar
+--- should_not_be_called_object_tag_load
+
+=== MTEntries[tag] : Multiple tags (a public tag OR a private tag)
 --- SKIP_PHP
 --- template
 <MTEntries tag="bar OR @private" sort_by="id" sort_order="ascend">
@@ -142,7 +151,6 @@ bar
 --- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
 <MTEntries tag="foo OR @private">
 <$MTEntryTitle$></MTEntries>
@@ -207,7 +215,6 @@ foo
 --- should_not_be_called_object_tag_load
 
 === MTEntriesWithSubCategories
---- SKIP_PHP
 --- template
 <MTEntriesWithSubCategories category="foo" tag="foo OR bar">
 <$MTEntryTitle$></MTEntriesWithSubCategories>
