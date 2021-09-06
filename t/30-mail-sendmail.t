@@ -40,6 +40,7 @@ use MT;
 use MT::Mail;
 use IO::String;
 use MIME::Head;
+use MT::Util ();
 
 MT->instance;
 
@@ -132,6 +133,34 @@ subtest 'different froms and reply-toes with the same address' => sub {
     validate_headers();
 };
 
+subtest 'only uncanonical reply-to' => sub {
+    eval {
+        MT::Mail->send({
+                From       => 'test@localhost.localdomain',
+                To         => 'test@localhost.localdomain',
+                'Reply-to' => 'test@localhost.localdomain',
+            },
+            'mail body'
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    validate_headers();
+};
+
+subtest 'only uncanonical to' => sub {
+    eval {
+        MT::Mail->send({
+                From       => 'test@localhost.localdomain',
+                TO         => 'test@localhost.localdomain',
+                'Reply-To' => 'test@localhost.localdomain',
+            },
+            'mail body'
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    validate_headers();
+};
+
 done_testing();
 
 sub validate_headers {
@@ -150,6 +179,20 @@ sub validate_headers {
         } else {
             ok $count <= 1, "has $count $tag";
         }
+        if ($count and $tag =~ /^(?:From|Sender|Reply-To|To|Cc|Bcc)$/) {
+            my $value = $header->unfold($tag)->get($tag);
+            $value =~ s/(?:\015|\012)+\z//gs;
+            note "[$tag] $value";
+            my @addresses = split /,\s*/, $value;
+            my @invalid = grep {!defined $_ or $_ eq '' or !_is_valid_email($_)} @addresses;
+            ok !@invalid, "no invalid $tag" or note explain \@invalid;
+        }
     }
     unlink $file;
+}
+
+sub _is_valid_email {
+    my $address = shift;
+    $address =~ s/^<|>$//gs;
+    MT::Util::is_valid_email($address);
 }
