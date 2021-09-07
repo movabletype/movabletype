@@ -113,13 +113,15 @@ foo
 --- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Contains "OR" in tag name
---- SKIP_PHP
 --- template
 <MTEntries tag="a OR b">
 <$MTEntryTitle$></MTEntries>
 --- expected
 a OR b
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28118
 
 === MTEntries[tag] : Multiple tags
 --- template
@@ -131,7 +133,6 @@ bar
 --- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Multiple tags (a public tag OR a private tag)
---- SKIP_PHP
 --- template
 <MTEntries tag="bar OR @private" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
@@ -139,9 +140,11 @@ bar
 foo
 bar
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
 
 === MTEntries[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTEntries tag="bar, @private" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
@@ -149,6 +152,9 @@ bar
 foo
 bar
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTEntries[tag] : Multiple tags of same asset
 --- template
