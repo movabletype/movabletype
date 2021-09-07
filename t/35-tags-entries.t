@@ -53,6 +53,11 @@ for my $param (
         categories => [],
     },
     {
+        title => 'quux',
+        tags  => [],
+        categories => [map { $categories{$_ } } qw(foo)],
+    },
+    {
         title => 'a OR b',
         tags  => ['a OR b'],
         categories => [map { $categories{$_ } } 'a OR b'],
@@ -72,14 +77,6 @@ filters {
     expected => [qw( chomp )],
 };
 
-require MT::ObjectTag;
-{
-    no warnings 'once';
-    *MT::ObjectTag::load = sub {
-        fail "Should not be called MT::ObjectTag::load. We should only use JOIN statement.";
-    };
-}
-
 require MT::Placement;
 {
     no warnings 'once';
@@ -88,7 +85,19 @@ require MT::Placement;
     };
 }
 
-MT::Test::Tag->run_perl_tests($blog_id);
+MT::Test::Tag->run_perl_tests($blog_id, sub {
+    my ($ctx, $block) = @_;
+
+    if (defined($block->should_not_be_called_object_tag_load)) {
+        require MT::ObjectTag;
+        *MT::ObjectTag::load = sub {
+            fail "Should not be called MT::ObjectTag::load. We should only use JOIN statement.";
+        };
+    }
+    else {
+        undef *MT::ObjectTag::load;
+    }
+});
 MT::Test::Tag->run_php_tests($blog_id);
 
 done_testing;
@@ -101,14 +110,18 @@ __END__
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
+--- should_not_be_called_object_tag_load
 
 === MTEntries[tag] : Contains "OR" in tag name
---- SKIP_PHP
 --- template
 <MTEntries tag="a OR b">
 <$MTEntryTitle$></MTEntries>
 --- expected
 a OR b
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28118
 
 === MTEntries[tag] : Unknown tag
 --- SKIP_PHP
@@ -119,41 +132,57 @@ a OR b
 not found
 
 === MTEntries[tag] : Multiple tags
---- SKIP_PHP
+--- template
+<MTEntries tag="bar OR a" sort_by="id" sort_order="ascend">
+<$MTEntryTitle$></MTEntries>
+--- expected
+foo
+bar
+--- should_not_be_called_object_tag_load
+
+=== MTEntries[tag] : Multiple tags (a public tag OR a private tag)
 --- template
 <MTEntries tag="bar OR @private" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
 bar
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
 
 === MTEntries[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTEntries tag="bar, @private" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
 bar
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTEntries[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
 <MTEntries tag="foo OR @private">
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
+--- should_not_be_called_object_tag_load
 
 === MTEntries[category] : Single category
 --- template
-<MTEntries category="foo">
+<MTEntries category="foo" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
+quux
 
 === MTEntries[category] : Contains "OR" in category name
 --- template
-<MTEntries category="a OR b">
+<MTEntries category="a OR b" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
 --- expected
 a OR b
@@ -165,10 +194,44 @@ a OR b
 --- expected
 foo
 bar
+quux
 
-=== MTEntries[tag] : Multiple categories of same entry
+=== MTEntries[category] : Multiple categories of same entry
 --- template
-<MTEntries category="foo OR hoge">
+<MTEntries category="foo OR hoge" sort_by="id" sort_order="ascend">
 <$MTEntryTitle$></MTEntries>
 --- expected
 foo
+quux
+
+=== MTEntriesWithSubCategories
+--- template
+<MTEntriesWithSubCategories category="foo" sort_by="id" sort_order="ascend">
+<$MTEntryTitle$></MTEntriesWithSubCategories>
+--- expected
+foo
+quux
+--- should_not_be_called_object_tag_load
+
+=== MTEntriesWithSubCategories
+--- template
+<MTEntriesWithSubCategories category="foo" tag="foo">
+<$MTEntryTitle$></MTEntriesWithSubCategories>
+--- expected
+foo
+--- should_not_be_called_object_tag_load
+
+=== MTEntriesWithSubCategories
+--- template
+<MTEntriesWithSubCategories category="foo" tag="bar">
+<$MTEntryTitle$></MTEntriesWithSubCategories>
+--- expected
+--- should_not_be_called_object_tag_load
+
+=== MTEntriesWithSubCategories
+--- template
+<MTEntriesWithSubCategories category="foo" tag="foo OR bar">
+<$MTEntryTitle$></MTEntriesWithSubCategories>
+--- expected
+foo
+--- should_not_be_called_object_tag_load

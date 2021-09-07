@@ -63,13 +63,12 @@ sub send_mail {
     MT::Mail->send( $hdrs_arg, $body );
     close $write;
 
-    while ( ( my $line = <$read> ) ne "\x0d\x0a" ) {
-        $line =~ s/\x0d\x0a\z//s;
+    while ( ( my $line = <$read> ) ne "\n" ) {
+        chomp $line;
         my ( $key, $value ) = split /: /, $line, 2;
         $headers{$key} = $value;
     }
     $mail_body = join '', <$read>;
-    $mail_body =~ s/\x0d\x0a/\n/gs;
 
     close $read;
     *STDERR = $save_stderr;

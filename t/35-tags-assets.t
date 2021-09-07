@@ -16,6 +16,7 @@ use MT::Test::Tag;
 use MT::Test;
 use MT::Test::Fixture;
 use MT::Test::Image;
+use MT::Test::Permission;
 use Mock::MonkeyPatch;
 
 $test_env->prepare_fixture('db');
@@ -52,6 +53,19 @@ $asset->label('Image photo');
 $asset->created_by($author->id);
 $asset->add_tags('image', '@first', 'a');
 $asset->save or die "Couldn't save asset: " . $asset->errstr;
+
+my $no_tag_asset = MT::Asset::Image->new;
+$no_tag_asset->blog_id($website->id);
+$no_tag_asset->url($website->site_url . 'no_tag.jpg');
+$no_tag_asset->file_path(File::Spec->catfile($image_path));
+$no_tag_asset->file_name('no_tag.jpg');
+$no_tag_asset->file_ext('jpg');
+$no_tag_asset->image_width(640);
+$no_tag_asset->image_height(480);
+$no_tag_asset->mime_type('image/jpeg');
+$no_tag_asset->label('Image photo');
+$no_tag_asset->created_by($author->id);
+$no_tag_asset->save or die "Couldn't save no_tag_asset: " . $no_tag_asset->errstr;
 
 my $removed_asset = MT::Asset::Image->new;
 $removed_asset->blog_id($website->id);
@@ -90,6 +104,29 @@ $text_asset->created_by($author->id);
 $text_asset->add_tags('text', 'a OR b');
 $text_asset->save or die "Couldn't save asset: " . $text_asset->errstr;
 
+my $entry = MT::Test::Permission->make_entry(
+    blog_id   => $website->id,
+    author_id => $author->id,
+);
+for my $a ($asset, $no_tag_asset, $file_asset) {
+    MT::Test::Permission->make_objectasset(
+        blog_id   => $website->id,
+        object_id => $entry->id,
+        asset_id  => $a->id,
+    );
+}
+my $page = MT::Test::Permission->make_page(
+    blog_id   => $website->id,
+    author_id => $author->id,
+);
+for my $a ($asset, $no_tag_asset, $file_asset) {
+    MT::Test::Permission->make_objectasset(
+        blog_id   => $website->id,
+        object_id => $page->id,
+        asset_id  => $a->id,
+    );
+}
+
 my ($year, $month) = unpack('A4A2', $asset->created_on);
 
 ok !$test_env->files(MT->config->AssetCacheDir), "nothing exists under the asset cache dir yet";
@@ -104,6 +141,8 @@ my %vars = (
     EXISTING_ASSET_ID => $asset->id,
     REMOVED_ASSET_ID  => $removed_asset->id,
     FILE_ASSET_ID     => $file_asset->id,
+    ENTRY_ID          => $entry->id,
+    PAGE_ID           => $page->id,
     YEAR              => $year,
     MONTH             => $month,
 );
@@ -130,15 +169,19 @@ my $guard = Mock::MonkeyPatch->patch(
         Mock::MonkeyPatch::ORIGINAL(@_);
     },
 );
-require MT::ObjectTag;
-{
-    no warnings 'once';
-    *MT::ObjectTag::load = sub {
-        fail "Should not be called MT::ObjectTag::load. We should only use JOIN statement.";
-    };
-}
 
-MT::Test::Tag->run_perl_tests($website->id);
+MT::Test::Tag->run_perl_tests($website->id, sub {
+    my ($ctx, $block) = @_;
+    if (defined($block->should_not_be_called_object_tag_load)) {
+        require MT::ObjectTag;
+        *MT::ObjectTag::load = sub {
+            fail "Should not be called MT::ObjectTag::load. We should only use JOIN statement.";
+        };
+    }
+    else {
+        undef *MT::ObjectTag::load;
+    }
+});
 MT::Test::Tag->run_php_tests($website->id);
 
 done_testing;
@@ -191,14 +234,18 @@ http://example.com/blog/test.pdf: blank
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.jpg
+--- should_not_be_called_object_tag_load
 
 === MTAssets[tag] : Contains "OR" in tag name
---- SKIP_PHP
 --- template
 <MTAssets tag="a OR b">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.txt
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28118
 
 === MTAssets[tag] : Unknown tag
 --- SKIP_PHP
@@ -209,27 +256,163 @@ http://example.com/blog/test.txt
 not found
 
 === MTAssets[tag] : Multiple tags
---- SKIP_PHP
+--- template
+<MTAssets tag="pdf OR a" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+--- should_not_be_called_object_tag_load
+
+=== MTAssets[tag] : Multiple tags (a public tag OR a private tag)
 --- template
 <MTAssets tag="pdf OR @first" sort_by="id" sort_order="ascend">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
 
 === MTAssets[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTAssets tag="pdf, @first" sort_by="id" sort_order="ascend">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
+--- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTAssets[tag] : Multiple tags of same asset
---- SKIP_PHP
 --- template
-<MTAssets tag="image OR @first">
+<MTAssets tag="image OR a">
 <$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+--- should_not_be_called_object_tag_load
+
+=== MTAssets[tag] : AND condition
+--- template
+<MTAssets tag="image AND a">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTAssets[tag] : AND condition (a public tag AND a private tag)
+--- template
+<MTAssets tag="image AND @first">
+<$MTAssetURL$></MTAssets>
+--- expected
+http://example.com/blog/test.jpg
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
+
+=== MTEntryAssets
+--- template
+<MTEntries id="ENTRY_ID">
+<MTEntryAssets sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTEntryAssets>
+</MTEntries>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/no_tag.jpg
+http://example.com/blog/test.pdf
+
+=== MTEntryAssets[tag] : Single tag
+--- template
+<MTEntries id="ENTRY_ID">
+<MTEntryAssets tag="@first">
+<$MTAssetURL$></MTEntryAssets>
+</MTEntries>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTEntryAssets[tag] : Multiple tags
+--- template
+<MTEntries id="ENTRY_ID">
+<MTEntryAssets tag="image OR pdf" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTEntryAssets>
+</MTEntries>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+
+=== MTEntryAssets[tag] : Multiple tags (comma separated)
+--- template
+<MTEntries id="ENTRY_ID">
+<MTEntryAssets tag="image, pdf" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTEntryAssets>
+</MTEntries>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
+
+=== MTEntryAssets[tag] : Multiple tags of same asset
+--- template
+<MTEntries id="ENTRY_ID">
+<MTEntryAssets tag="image OR a">
+<$MTAssetURL$></MTEntryAssets>
+</MTEntries>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTPageAssets
+--- template
+<MTPages id="PAGE_ID">
+<MTPageAssets sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTPageAssets>
+</MTPages>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/no_tag.jpg
+http://example.com/blog/test.pdf
+
+=== MTPageAssets[tag] : Single tag
+--- template
+<MTPages id="PAGE_ID">
+<MTPageAssets tag="@first">
+<$MTAssetURL$></MTPageAssets>
+</MTPages>
+--- expected
+http://example.com/blog/test.jpg
+
+=== MTPageAssets[tag] : Multiple tags
+--- template
+<MTPages id="PAGE_ID">
+<MTPageAssets tag="image OR pdf" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTPageAssets>
+</MTPages>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+
+=== MTPageAssets[tag] : Multiple tags (comma separated)
+--- template
+<MTPages id="PAGE_ID">
+<MTPageAssets tag="image, pdf" sort_by="id" sort_order="ascend">
+<$MTAssetURL$></MTPageAssets>
+</MTPages>
+--- expected
+http://example.com/blog/test.jpg
+http://example.com/blog/test.pdf
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
+
+=== MTPageAssets[tag] : Multiple tags of same asset
+--- template
+<MTPages id="PAGE_ID">
+<MTPageAssets tag="image OR a">
+<$MTAssetURL$></MTPageAssets>
+</MTPages>
 --- expected
 http://example.com/blog/test.jpg
