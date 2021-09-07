@@ -2805,6 +2805,7 @@ use vars qw( @ISA %Lexicon );
 	'A paramter "[_1]" is required.' => 'Een "[_1]" parameter is vereist.',
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
+	'log' => 'Log',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]',
@@ -3628,6 +3629,7 @@ use vars qw( @ISA %Lexicon );
 	q{Parameter '[_1]' is required} => q{Parameter '[_1]' is vereist},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{Tijdelijk bestand '[_1]' van naam veranderen mislukt: [_2]},
 	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
+	'unpublish' => 'Publicatie ongedaan maken',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'Blogs',

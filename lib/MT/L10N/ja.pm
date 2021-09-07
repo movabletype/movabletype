@@ -2804,6 +2804,7 @@ _4]'から削除しました。},
 	'A paramter "[_1]" is required.' => 'パラメータ "[_1]"は必須です。',
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
+	'log' => 'ログ',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => '不正なタグ名です: [_1]',
@@ -3627,6 +3628,7 @@ _4]'から削除しました。},
 	q{Parameter '[_1]' is required} => q{'[_1]'をパラメータに指定してください。},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{テンポラリファイル'[_1]'の名前を変更できませんでした: [_2]},
 	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
+	'unpublish' => '公開終了',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'ブログ数',
