@@ -237,13 +237,15 @@ http://example.com/blog/test.jpg
 --- should_not_be_called_object_tag_load
 
 === MTAssets[tag] : Contains "OR" in tag name
---- SKIP_PHP
 --- template
 <MTAssets tag="a OR b">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.txt
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28118
 
 === MTAssets[tag] : Multiple tags
 --- template
@@ -255,7 +257,6 @@ http://example.com/blog/test.pdf
 --- should_not_be_called_object_tag_load
 
 === MTAssets[tag] : Multiple tags (a public tag OR a private tag)
---- SKIP_PHP
 --- template
 <MTAssets tag="pdf OR @first" sort_by="id" sort_order="ascend">
 <$MTAssetURL$></MTAssets>
@@ -263,9 +264,11 @@ http://example.com/blog/test.pdf
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
 
 === MTAssets[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTAssets tag="pdf, @first" sort_by="id" sort_order="ascend">
 <$MTAssetURL$></MTAssets>
@@ -273,6 +276,9 @@ http://example.com/blog/test.pdf
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 --- should_not_be_called_object_tag_load
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTAssets[tag] : Multiple tags of same asset
 --- template
@@ -290,12 +296,14 @@ http://example.com/blog/test.jpg
 http://example.com/blog/test.jpg
 
 === MTAssets[tag] : AND condition (a public tag AND a private tag)
---- SKIP_PHP
 --- template
 <MTAssets tag="image AND @first">
 <$MTAssetURL$></MTAssets>
 --- expected
 http://example.com/blog/test.jpg
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28120
 
 === MTEntryAssets
 --- template
@@ -328,7 +336,6 @@ http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 
 === MTEntryAssets[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTEntries id="ENTRY_ID">
 <MTEntryAssets tag="image, pdf" sort_by="id" sort_order="ascend">
@@ -337,6 +344,9 @@ http://example.com/blog/test.pdf
 --- expected
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTEntryAssets[tag] : Multiple tags of same asset
 --- template
@@ -378,7 +388,6 @@ http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
 
 === MTPageAssets[tag] : Multiple tags (comma separated)
---- SKIP_PHP
 --- template
 <MTPages id="PAGE_ID">
 <MTPageAssets tag="image, pdf" sort_by="id" sort_order="ascend">
@@ -387,6 +396,9 @@ http://example.com/blog/test.pdf
 --- expected
 http://example.com/blog/test.jpg
 http://example.com/blog/test.pdf
+--- expected_php_todo
+--- FIXME
+https://movabletype.atlassian.net/browse/MTC-28119
 
 === MTPageAssets[tag] : Multiple tags of same asset
 --- template
