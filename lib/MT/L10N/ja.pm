@@ -2071,8 +2071,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid textFormat: [_1]' => '不正なテキストフォーマットです: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Auth.pm
-	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]]' (ID: [_2])がサインインを試みましたが失敗しました。},
-	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]]' (ID: [_2])が Data API でサインインしました。},
+	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]' (ID: [_2])がサインインを試みましたが失敗しました。},
+	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]' (ID: [_2])が Data API でサインインしました。},
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
 	'Invalid dateFrom parameter: [_1]' => 'dateFrom パラメータに無効な値が指定されました: [_1]',

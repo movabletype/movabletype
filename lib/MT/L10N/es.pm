@@ -3142,7 +3142,7 @@ use vars qw( @ISA %Lexicon );
 	'You can only act upon a minimum of [_1] [_2].' => 'Solo puede actuar sobre un mínimo de [_1] [_2].',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'act upon' => 'actuar sobre',
-	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]]'?},
+	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]'?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'100 rows' => '100 filas',
