@@ -546,6 +546,7 @@ sub js_upload_file {
                 }
             );
         },
+        js => 1,
     );
     return unless $asset;
 
@@ -2100,7 +2101,7 @@ sub _upload_file {
     $basename
         = Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $app->charset,
+        : Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
         File::Basename::basename($basename) );
 
     # Change to real file extension
