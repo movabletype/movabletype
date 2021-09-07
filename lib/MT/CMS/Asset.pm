@@ -554,6 +554,7 @@ sub js_upload_file {
                 }
             );
         },
+        js => 1,
     );
     return unless $asset;
 
@@ -1391,12 +1392,9 @@ sub _set_start_upload_params {
     $param;
 }
 
-### DEPRECATED: v6.2
+### Not used from Web UI since v6.2, but still used by DataAPI endpoints
 sub _upload_file_compat {
     my $app = shift;
-
-    require MT::Util::Deprecated;
-    MT::Util::Deprecated::warning(since => '7.8');
 
     my (%upload_param) = @_;
     require MT::Image;
@@ -2028,7 +2026,7 @@ sub _upload_file {
     $basename
         = Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $app->charset,
+        : Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
         File::Basename::basename($basename) );
 
     # Change to real file extension

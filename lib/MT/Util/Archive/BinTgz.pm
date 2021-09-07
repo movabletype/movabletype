@@ -4,63 +4,62 @@
 #
 # $Id$
 
-package MT::Util::Archive::Tgz;
+package MT::Util::Archive::BinTgz;
 
 use strict;
 use warnings;
-
 use base qw( MT::ErrorHandler );
-use Archive::Tar;
-use IO::Compress::Gzip;
-use IO::Uncompress::Gunzip;
 
 use constant ARCHIVE_TYPE => 'tgz';
 
 use MT::FileMgr::Local;
+use MT::Util::Archive::TempFile;
+use File::Copy     ();
+use File::Temp     ();
+use File::Path     ();
+use File::Basename ();
 use Encode;
+use IPC::Run3 ();
+
+our $BinTarPath;
 
 sub new {
     my $pkg = shift;
     my ($type, $file) = @_;
 
+    $type =~ s/^bin//;
     return $pkg->error(MT->translate('Type must be tgz.'))
         unless $type eq ARCHIVE_TYPE;
 
     my $obj = {};
     if (ref $file) {
-        bless $file, 'IO::File';
-        my $z = new IO::Uncompress::Gunzip $file;
-        unless ($z) {
-            $z = $file;
-        }
-        my $tar;
-        eval { $tar = Archive::Tar->new($z); };
-        return $pkg->error(MT->translate('Could not read from filehandle.'))
-            unless $tar;
-        $obj->{_arc}  = $tar;
+        my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_XXXX');
+        my $pos     = tell $file;
+        seek $file, 0, 0;
+        File::Copy::cp($file, "$tmpfile");
+        seek $file, $pos, 0;
         $obj->{_mode} = 'r';
+        $obj->{_file} = $tmpfile;
     } elsif ((-e $file) && (-r $file)) {
-        my $z;
-        if ($file =~ /\.t?gz$/i) {
-            open my $fh, '<:raw', $file or die "Couldn't open $file: $!";
-            bless $fh, 'IO::File';
-            $z = new IO::Uncompress::Gunzip $fh
-                or return $pkg->error($@);
-        } else {
-            open $z, '<:raw', $file or die "Couldn't open $file: $!";
-        }
-        my $tar = Archive::Tar->new($z)
-            or return $pkg->error(MT->translate('File [_1] is not a tgz file.', $file));
-        $obj->{_arc}  = $tar;
         $obj->{_file} = $file;
         $obj->{_mode} = 'r';
     } elsif (!(-e $file)) {
-        $obj->{_arc}  = Archive::Tar->new();
-        $obj->{_file} = $file;
-        $obj->{_mode} = 'w';
+        $obj->{_file}   = $file;
+        $obj->{_mode}   = 'w';
+        $obj->{_tmpdir} = File::Temp->newdir(TEMPLATE => 'mt_archive_XXXX', DIR => MT->config->TempDir);
     }
     bless $obj, $pkg;
     $obj;
+}
+
+sub find_bin {
+    my $class = shift;
+    return $BinTarPath if defined $BinTarPath;
+    for my $path (MT->config->BinTarPath, '/usr/local/bin/tar', '/usr/bin/tar', '/bin/tar') {
+        next unless $path;
+        return $BinTarPath = $path if -e $path;
+    }
+    return $class->error(MT->translate('Cannot find external archiver: [_1]', 'tar'));
 }
 
 sub flush {
@@ -73,24 +72,32 @@ sub flush {
     return $obj->error(MT->translate('File [_1] exists; could not overwrite.', $file))
         if -e $file;
 
-    open my $fh, '>:raw', $file or die "Couldn't open $file: $!";
-    bless $fh, 'IO::File';
-    my $z = IO::Compress::Gzip->new($fh);
-    $obj->{_arc}->write($z);
-    $obj->{_fh}      = $z;
+    my $bin = $obj->find_bin or return;
+
+    my $tmpdir = $obj->{_tmpdir};
+
+    my $tmpfile = MT::Util::Archive::TempFile->new('mt_archive_list_XXXX');
+    open my $fh, '>:raw', $tmpfile;
+    print $fh join "\n", @{ $obj->{_files} || [] };
+    close $fh;
+
+    require Cwd;
+    my $cwd  = Cwd::cwd();
+    my @cmds = ($bin, "-c", "-z", "-f", $file, "-C", "$tmpdir", "-T", $tmpfile);
+    eval { IPC::Run3::run3(\@cmds) };
+    my $error = $@;
+    chdir $cwd;
+    return $obj->error(MT->translate('Failed to create an archive [_1]: [_2]', $file, $error)) if $error;
+    delete $obj->{_files};
     $obj->{_flushed} = 1;
 }
 
 sub close {
     my $obj = shift;
 
-    $obj->flush;
+    $obj->flush or return;
 
-    $obj->{_fh}->close
-        if exists $obj->{_fh};
-    $obj->{_arc}  = undef;
     $obj->{_file} = undef;
-    $obj->{_fh}   = undef;
     1;
 }
 
@@ -106,16 +113,24 @@ sub is {
 }
 
 sub files {
-    my $obj = shift;
-    $obj->{_arc}->list_files;
+    my ($obj, @flags) = @_;
+    my $bin = $obj->find_bin or return;
+
+    my $file = $obj->{_file};
+    my @cmds = ($bin, "-t", @flags, "-f", $file);
+    my $out;
+    eval { IPC::Run3::run3(\@cmds, undef, \$out) };
+    return $obj->error('Failed to list files of [_1]: [_2]', $file, $@) if $@;
+    return unless defined $out;
+    split /\n/, $out;
 }
 
 sub is_safe_to_extract {
     my $obj = shift;
 
-    for my $archive_tar_file ($obj->{_arc}->get_files) {
-        my $file = $archive_tar_file->full_path;
-        if (!$archive_tar_file->is_file && !$archive_tar_file->is_dir) {
+    for my $item ($obj->files("-v")) {
+        my ($file) = $item =~ /\d+:\d+\s+(.+)$/;
+        if ($file =~ s/\s*\->.*\z//) {
             return $obj->error(MT->translate("[_1] in the archive is not a regular file", $file));
         }
         if (File::Spec->file_name_is_absolute($file)) {
@@ -136,11 +151,14 @@ sub extract {
         if 'w' eq $obj->{_mode};
 
     $path ||= MT->config->TempDir;
-    for my $file ($obj->files) {
-        my $file_enc = Encode::is_utf8($file) ? $file : Encode::decode_utf8($file);
-        my $f        = File::Spec->catfile($path, $file_enc);
-        $obj->{_arc}->extract_file($file, MT::FileMgr::Local::_local($f));
-    }
+
+    my $bin  = $obj->find_bin or return;
+    my $file = $obj->{_file};
+    my @opts = ("-x");
+    push @opts, "-z" if $file =~ /gz$/;
+    my @cmds = ($bin, @opts, "-C", $path, "-f", $file);
+    eval { IPC::Run3::run3(\@cmds) };
+    return $obj->error('Failed to extract [_1]: [_2]', $obj->{_file}, $@) if $@;
     1;
 }
 
@@ -154,10 +172,12 @@ sub add_file {
         if !Encode::is_utf8($encoded_path);
     $encoded_path = Encode::encode_utf8($encoded_path)
         if Encode::is_utf8($encoded_path);
-    my $filename  = File::Spec->catfile($path, $file_path);
-    my $arc       = $obj->{_arc};
-    my @arc_files = $arc->add_files($filename);
-    $arc_files[0]->rename($encoded_path);
+    my $filename = File::Spec->catfile($path,           $file_path);
+    my $tmpfile  = File::Spec->catfile($obj->{_tmpdir}, $file_path);
+    my $dir      = File::Basename::dirname($tmpfile);
+    File::Path::mkpath($dir) unless -d $dir;
+    File::Copy::cp($filename, $tmpfile);
+    push @{ $obj->{_files} ||= [] }, $file_path;
 }
 
 sub add_string {
@@ -167,8 +187,14 @@ sub add_string {
         if 'r' eq $obj->{_mode};
     return $obj->error(MT->translate('Both data and file name must be specified.'))
         unless $string && $file_name;
-
-    $obj->{_arc}->add_data($file_name, $string);
+    my $tmpfile = File::Spec->catfile($obj->{_tmpdir}, $file_name);
+    my $dir     = File::Basename::dirname($tmpfile);
+    File::Path::mkpath($dir) unless -d $dir;
+    open my $fh, '>:raw', $tmpfile;
+    binmode $fh;
+    print $fh $string;
+    CORE::close $fh;
+    push @{ $obj->{_files} ||= [] }, $file_name;
 }
 
 sub add_tree {
@@ -176,21 +202,15 @@ sub add_tree {
     my ($dir_path) = @_;
     return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
-    my $arc = $obj->{_arc};
     require File::Find;
     require File::Spec;
-    require Cwd;
-    my $oldcwd = File::Spec->rel2abs(Cwd::getcwd());
-    chdir $dir_path;
-    $arc->setcwd($dir_path);
     my $sub = sub {
         my $file = $File::Find::name;
         return if -d $file;
         my $rel = File::Spec->abs2rel($file, $dir_path);
-        $arc->add_files($rel);
+        $obj->add_file($dir_path, $rel);
     };
     File::Find::find({ wanted => $sub, no_chdir => 1, }, $dir_path);
-    chdir $oldcwd;
 }
 
 1;
@@ -198,7 +218,7 @@ __END__
 
 =head1 NAME
 
-MT::Util::Archive::Tgz
+MT::Util::Archive::BinTgz
 
 =head1 SYNOPSIS
 
