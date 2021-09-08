@@ -1122,16 +1122,24 @@ sub build_asset_table {
     }
     return [] unless $iter;
 
+    my @objs;
+    while ( my $obj = $iter->() ) {
+        push @objs, $obj;
+        last if $limit and @objs > $limit;
+    }
+    return [] unless @objs;
+
+    require MT::Meta::Proxy;
+    MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+
     my @data;
     my $hasher = build_asset_hasher($app);
-    while ( my $obj = $iter->() ) {
+    for my $obj (@objs) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
         $row->{object} = $obj;
         push @data, $row;
-        last if $limit and @data > $limit;
     }
-    return [] unless @data;
 
     $param->{template_table}[0]              = {%$list_pref};
     $param->{template_table}[0]{object_loop} = \@data;
