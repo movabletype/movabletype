@@ -238,8 +238,10 @@ sub dialog_list_asset {
 
     my $hasher = build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120
+        PreviewWidth     => 120,
+        PreviewHeight    => 120,
+        DynamicThumbnail => 1,
+        NoTags           => 1,
     );
 
     if ($class_filter) {
@@ -977,8 +979,9 @@ sub build_asset_hasher {
     my $app = shift;
     my (%param) = @_;
     my ($default_thumb_width,   $default_thumb_height,
-        $default_preview_width, $default_preview_height
-    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight )};
+        $default_preview_width, $default_preview_height,
+        $dynamic_thumbnail,     $no_tags,
+    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight DynamicThumbnail NoTags )};
 
     require File::Basename;
     require JSON;
@@ -994,7 +997,7 @@ sub build_asset_hasher {
         $row->{asset_type}        = $obj->class_type;
         $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path;    # has to be called to calculate
-        my $meta      = $obj->metadata;
+        my $meta      = $obj->metadata(no_tags => $no_tags);
 
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
@@ -1027,12 +1030,29 @@ sub build_asset_hasher {
             || $row->{file_name}
             || $app->translate('Untitled');
 
-        if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
+        my $height = $thumb_height || $default_thumb_height || 45;
+        my $width  = $thumb_width  || $default_thumb_width  || 45;
+        my $square = $height == 45 && $width == 45;
+        if ($dynamic_thumbnail && $obj->class_type eq 'image') {
             $row->{has_thumbnail}  = 1;
             $row->{can_edit_image} = 1;
-            my $height = $thumb_height || $default_thumb_height || 45;
-            my $width  = $thumb_width  || $default_thumb_width  || 45;
-            my $square = $height == 45 && $width == 45;
+            if ( $default_preview_width && $default_preview_height ) {
+                @$meta{qw( preview_width preview_height )} = ($default_preview_width, $default_preview_height);
+                require URI;
+                my $url = URI->new($app->base . $app->mt_uri);
+                $url->query_form({
+                    __mode  => 'thumbnail_image',
+                    id      => $obj->id,
+                    blog_id => $obj->blog_id,
+                    width   => $default_preview_width,
+                    height  => $default_preview_height,
+                });
+                $meta->{preview_url} = $url->as_string;
+            }
+        }
+        elsif ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
+            $row->{has_thumbnail}  = 1;
+            $row->{can_edit_image} = 1;
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
                 = $obj->thumbnail_url(
                 Height => $height,
