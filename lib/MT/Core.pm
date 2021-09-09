@@ -2251,6 +2251,9 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+
+            # new Asset Modal
+            'AssetModalVersion' => { default => 1 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
