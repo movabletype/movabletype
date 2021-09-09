@@ -755,9 +755,8 @@ sub type_list {
 }
 
 sub metadata {
-    my $asset = shift;
-    return {
-        MT->translate("Tags")        => MT::Tag->join( ',', $asset->tags ),
+    my ($asset, %opts) = @_;
+    my %metadata = (
         MT->translate("Description") => $asset->description,
         MT->translate("Name")        => $asset->label,
         url                          => $asset->url,
@@ -769,7 +768,11 @@ sub metadata {
         mime_type                    => $asset->mime_type,
 
         # duration => $asset->duration,
-    };
+    );
+    if (!$opts{no_tags}) {
+        $metadata{ MT->translate("Tags") } = MT::Tag->join( ',', $asset->tags );
+    }
+    return \%metadata;
 }
 
 sub has_thumbnail {
