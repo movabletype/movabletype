@@ -115,6 +115,7 @@ sub list_props {
                         if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
+                            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
                             my ( $orig_width, $orig_height )
                                 = ( $obj->image_width, $obj->image_height );
                             my ( $thumbnail_url, $thumbnail_width,
@@ -125,7 +126,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Width  => $thumb_size,
                                     Square => 1,
@@ -136,7 +137,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Width => $thumb_size,
                                     Ts    => 1
                                     );
@@ -145,7 +146,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Ts     => 1
                                     );
