@@ -125,6 +125,53 @@ sub thumbnail_path {
     $asset->_make_cache_path( $param{Path} );
 }
 
+sub _get_size_from_param {
+    my ($asset, $param) = @_;
+
+    my ( $i_h, $i_w ) = ( $asset->image_height, $asset->image_width );
+    return undef unless $i_h && $i_w;
+
+    # Pretend the image is already square, for calculation purposes.
+    my $auto_size = 1;
+    if ( $param->{Square} ) {
+        require MT::Image;
+        my %square
+            = MT::Image->inscribe_square( Width => $i_w, Height => $i_h );
+        ( $i_h, $i_w ) = @square{qw( Size Size )};
+        if ( $param->{Width} && !$param->{Height} ) {
+            $param->{Height} = $param->{Width};
+        }
+        elsif ( !$param->{Width} && $param->{Height} ) {
+            $param->{Width} = $param->{Height};
+        }
+        $auto_size = 0;
+    }
+    if ( my $scale = $param->{Scale} ) {
+        $param->{Width}  = int( ( $i_w * $scale ) / 100 );
+        $param->{Height} = int( ( $i_h * $scale ) / 100 );
+        $auto_size     = 0;
+    }
+    if ( !exists $param->{Width} && !exists $param->{Height} ) {
+        $param->{Width}  = $i_w;
+        $param->{Height} = $i_h;
+        $auto_size     = 0;
+    }
+
+    # find the longest dimension of the image:
+    my ( $n_h, $n_w, $scaled )
+        = _get_dimension( $i_h, $i_w, $param->{Height}, $param->{Width} );
+    if ( $auto_size && $scaled eq 'h' ) {
+        delete $param->{Width} if exists $param->{Width};
+    }
+    elsif ( $auto_size && $scaled eq 'w' ) {
+        delete $param->{Height} if exists $param->{Height};
+    }
+
+    my $changed = (($n_w == $i_w) && ($n_h == $i_h)) ? 0 : 1;
+
+    return ($n_w, $n_h, $changed);
+}
+
 sub thumbnail_file {
     my $asset = shift;
     my (%param) = @_;
@@ -140,44 +187,8 @@ sub thumbnail_file {
 
     require MT::Util;
     my $asset_cache_path = $asset->_make_cache_path( $param{Path} );
-    my ( $i_h, $i_w ) = ( $asset->image_height, $asset->image_width );
-    return undef unless $i_h && $i_w;
 
-    # Pretend the image is already square, for calculation purposes.
-    my $auto_size = 1;
-    if ( $param{Square} ) {
-        require MT::Image;
-        my %square
-            = MT::Image->inscribe_square( Width => $i_w, Height => $i_h );
-        ( $i_h, $i_w ) = @square{qw( Size Size )};
-        if ( $param{Width} && !$param{Height} ) {
-            $param{Height} = $param{Width};
-        }
-        elsif ( !$param{Width} && $param{Height} ) {
-            $param{Width} = $param{Height};
-        }
-        $auto_size = 0;
-    }
-    if ( my $scale = $param{Scale} ) {
-        $param{Width}  = int( ( $i_w * $scale ) / 100 );
-        $param{Height} = int( ( $i_h * $scale ) / 100 );
-        $auto_size     = 0;
-    }
-    if ( !exists $param{Width} && !exists $param{Height} ) {
-        $param{Width}  = $i_w;
-        $param{Height} = $i_h;
-        $auto_size     = 0;
-    }
-
-    # find the longest dimension of the image:
-    my ( $n_h, $n_w, $scaled )
-        = _get_dimension( $i_h, $i_w, $param{Height}, $param{Width} );
-    if ( $auto_size && $scaled eq 'h' ) {
-        delete $param{Width} if exists $param{Width};
-    }
-    elsif ( $auto_size && $scaled eq 'w' ) {
-        delete $param{Height} if exists $param{Height};
-    }
+    my ($n_w, $n_h, $size_changed) = $asset->_get_size_from_param(\%param);
 
     my $file = $asset->thumbnail_filename(%param) or return;
     my $thumbnail = File::Spec->catfile( $asset_cache_path, $file );
@@ -205,9 +216,7 @@ sub thumbnail_file {
     # stale or non-existent thumbnail. let's create one!
     return undef unless $fmgr->can_write($asset_cache_path);
 
-    my $data;
-    if (   ( $n_w == $i_w )
-        && ( $n_h == $i_h )
+    if (   !$size_changed
         && !$param{Square}
         && !$param{Type} )
     {
