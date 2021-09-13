@@ -3,21 +3,20 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 $test_env->prepare_fixture(sub {
@@ -49,11 +48,10 @@ $test_env->prepare_fixture(sub {
 
     # Asset
     my $website_asset = MT::Test::Permission->make_asset(
-        class   => 'image',
-        blog_id => $website->id,
-        url     => 'http://narnia.na/nana/images/test.jpg',
-        file_path =>
-            File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+        class        => 'image',
+        blog_id      => $website->id,
+        url          => 'http://narnia.na/nana/images/test.jpg',
+        file_path    => File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
         file_name    => 'test.jpg',
         file_ext     => 'jpg',
         image_width  => 640,
@@ -66,103 +64,73 @@ $test_env->prepare_fixture(sub {
     $website_asset->save;
 });
 
-my $website = MT::Website->load( { name => 'my website' } );
+my $website = MT::Website->load({ name => 'my website' });
 
 my $admin = MT->model('author')->load(1);
-
-# Run tests
-my ( $app, $out );
 
 note 'Test in website scope';
 subtest 'Test in website scope' => sub {
 
     note 'Build in filter check';
     subtest 'Built in filter check' => sub {
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'list',
-                _type       => 'tag',
-                blog_id     => $website->id,
-            },
-        );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: list" );
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list',
+            _type   => 'tag',
+            blog_id => $website->id,
+        });
 
-        like(
-            $out,
+        $app->content_like(
             qr/Tags with Entries/,
             'System filter "Tags with Entries" exists'
         );
 
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'filtered_list',
-                datasource       => 'tag',
-                blog_id          => $website->id,
-                columns          => 'name',
-                fid              => '_allpass',
-            },
-        );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: filtered_list" );
+        $app->post_ok({
+            __mode     => 'filtered_list',
+            datasource => 'tag',
+            blog_id    => $website->id,
+            columns    => 'name',
+            fid        => '_allpass',
+        });
 
         my @tags = qw( @entry @page @asset );
         foreach my $t (@tags) {
-            like( $out, qr/$t/, "Got \"$t\" in website" );
+            $app->content_like(qr/$t/, "Got \"$t\" in website");
         }
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'filtered_list',
-                datasource       => 'tag',
-                blog_id          => $website->id,
-                columns          => 'name',
-                fid              => 'entry',
-                items =>
-                    "[{\"type\":\"for_entry\",\"args\":{\"value\":\"\",\"label\":\"\"}}]",
-            },
-        );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: filtered_list" );
+        $app->post_ok({
+            __mode     => 'filtered_list',
+            datasource => 'tag',
+            blog_id    => $website->id,
+            columns    => 'name',
+            fid        => 'entry',
+            items      => "[{\"type\":\"for_entry\",\"args\":{\"value\":\"\",\"label\":\"\"}}]",
+        });
 
-        like( $out, qr/\@entry/, "Got \"\@entry\" in website" );
-        unlike( $out, qr/\@page/,  "Did not get \"\@page\" in website" );
-        unlike( $out, qr/\@asset/, "Did not get \"\@asset\" in website" );
-
-        done_testing();
+        $app->content_like(qr/\@entry/, "Got \"\@entry\" in website");
+        $app->content_unlike(qr/\@page/,  "Did not get \"\@page\" in website");
+        $app->content_unlike(qr/\@asset/, "Did not get \"\@asset\" in website");
     };
 
     note 'Display options check';
     subtest 'Display options check' => sub {
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'list',
-                _type       => 'tag',
-                blog_id     => $website->id,
-            },
-        );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: list" );
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'list',
+            _type   => 'tag',
+            blog_id => $website->id,
+        });
 
-        my $checkbox = quotemeta(
-            '<label for="custom-prefs-entry_count">Entries</label>');
+        my $checkbox = quotemeta('<label for="custom-prefs-entry_count">Entries</label>');
         $checkbox = qr/$checkbox/;
-SKIP: {
-        skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
-        like( $out, $checkbox, 'Has "Entries" setting in Display Options' );
-}
-
-        done_testing();
+    SKIP: {
+            skip "new UI", 1 unless $ENV{MT_TEST_NEW_UI};
+            $app->content_like($checkbox, 'Has "Entries" setting in Display Options');
+        }
     };
-
-    done_testing();
 };
 
 done_testing();

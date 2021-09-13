@@ -17,8 +17,7 @@ use MT;
 use MT::Object;
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 $test_env->prepare_fixture('db');
 
@@ -32,19 +31,18 @@ subtest 'No error occurs on site dashboard (MTC-26619)' => sub {
         content_type_id => 100,
         status          => 2,
     );
-    $content_data->column( 'unique_id',    'dummy' );
-    $content_data->column( 'ct_unique_id', 'dummy' );
+    $content_data->column('unique_id',    'dummy');
+    $content_data->column('ct_unique_id', 'dummy');
     MT::Object::save($content_data) or die;
 
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'dashboard',
-            blog_id     => $blog_id,
-        },
-    );
-    my $out = delete $app->{__test_output};
-    ok( $out !~ /An error occurred/ );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'dashboard',
+        blog_id => $blog_id,
+    });
+    ok !$app->generic_error;
+
 };
 
 done_testing;

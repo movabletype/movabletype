@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -12,8 +12,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 use MT::Author;
 
@@ -34,8 +33,8 @@ $test_env->prepare_fixture(sub {
         type            => 'single_line_text',
     );
 
-    my $field_data = [
-        {   id        => $cf->id,
+    my $field_data = [{
+            id        => $cf->id,
             order     => 1,
             type      => $cf->type,
             options   => { label => $cf->name, },
@@ -46,22 +45,21 @@ $test_env->prepare_fixture(sub {
     $ct->save or die $ct->errstr;
 });
 
-my $ct = MT::ContentType->load( { name => 'test content type' } );
+my $ct = MT::ContentType->load({ name => 'test content type' });
 
-my $admin   = MT::Author->load(1);
-my $app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $admin,
-        __request_method => 'POST',
-        __mode           => 'view',
-        blog_id          => $ct->blog_id,
-        id               => $ct->id,
-        _type            => 'content_type',
-    },
+my $admin = MT::Author->load(1);
+my $app   = MT::Test::App->new('MT::App::CMS');
+$app->login($admin);
+$app->post_ok({
+    __mode  => 'view',
+    blog_id => $ct->blog_id,
+    id      => $ct->id,
+    _type   => 'content_type',
+});
+ok(
+    !$app->generic_error,
+    'No error occurs on edit_content_type screen'
 );
-my $out = delete $app->{__test_output};
-ok( $out !~ /An error occurred/,
-    'No error occurs on edit_content_type screen' );
 
 done_testing;
 

@@ -12,13 +12,12 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
-use MT::Test qw( :app :db );
+use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
-MT::Test->init_db;
+$test_env->prepare_fixture('db');
 
 # Website
 my $website = MT::Test::Permission->make_website();
@@ -26,9 +25,8 @@ my $website = MT::Test::Permission->make_website();
 my $second_website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
-my $second_blog
-    = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $blog        = MT::Test::Permission->make_blog(parent_id => $website->id,);
+my $second_blog = MT::Test::Permission->make_blog(parent_id => $website->id,);
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
@@ -64,654 +62,427 @@ my $create_post = MT::Test::Permission->make_role(
     permissions => "'create_post'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
-my $site_admin
-    = MT::Role->load( { name => MT->translate('Site Administrator') } );
+my $designer   = MT::Role->load({ name => MT->translate('Designer') });
+my $site_admin = MT::Role->load({ name => MT->translate('Site Administrator') });
 
 require MT::Association;
-MT::Association->link( $aikawa   => $site_admin => $blog );
-MT::Association->link( $ichikawa => $site_admin => $website );
-MT::Association->link( $ukawa    => $site_admin => $second_blog );
-MT::Association->link( $egawa    => $site_admin => $second_website );
-MT::Association->link( $ogawa    => $designer   => $blog );
+MT::Association->link($aikawa   => $site_admin => $blog);
+MT::Association->link($ichikawa => $site_admin => $website);
+MT::Association->link($ukawa    => $site_admin => $second_blog);
+MT::Association->link($egawa    => $site_admin => $second_website);
+MT::Association->link($ogawa    => $designer   => $blog);
 
 $aikawa->can_manage_users_groups(1);
 $aikawa->save();
 
 # Group
-my $grp = MT::Test::Permission->make_group( name => 'Group A', );
-
-# Run
-my ( $app, $out );
+my $grp = MT::Test::Permission->make_group(name => 'Group A',);
 
 subtest 'mode = add_group' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'add_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
-    ok( $out !~ m!permission=1!i, "add_group by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'add_group',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("add_group by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'add_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
-    ok( $out !~ m!permission=1!i, "add_group by can_manage_user_group user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'add_group',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("add_group by can_manage_user_group user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'add_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_group" );
-    ok( $out =~ m!permission=1!i, "add_group by non permitted user" );
-
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'add_group',
+        blog_id => 0,
+    });
+    $app->has_permission_error("add_group by non permitted user");
 };
 
 subtest 'mode = add_member' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'add_member',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
-    ok( $out !~ m!permission=1!i, "add_member by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'add_member',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("add_member by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'add_member',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
-    ok( $out !~ m!permission=1!i, "add_member by can_manage_user_group user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'add_member',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("add_member by can_manage_user_group user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'add_member',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: add_member" );
-    ok( $out =~ m!permission=1!i, "add_member by non permitted user" );
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'add_member',
+        blog_id => 0,
+    });
+    $app->has_permission_error("add_member by non permitted user");
 };
 
 subtest 'mode = delete_group' => sub {
-    $grp = MT::Test::Permission->make_group( name => 'Group B', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete_group',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
-    ok( $out !~ m!permission=1!i, "delete_group by admin" );
+    my $grp = MT::Test::Permission->make_group(name => 'Group B',);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'delete_group',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("delete_group by admin");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group C', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete_group',
-            blog_id          => 0,
-            id               => $grp->id,
-            _type            => 'group',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
-    ok( $out !~ m!permission=1!i, "delete_group by can_manage_user_group user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group C',);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'delete_group',
+        blog_id => 0,
+        id      => $grp->id,
+        _type   => 'group',
+    });
+    $app->has_no_permission_error("delete_group by can_manage_user_group user");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group D', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'delete_group',
-            blog_id          => 0,
-            id               => $grp->id,
-            _type            => 'group',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete_group" );
-    ok( $out =~ m!permission=1!i, "delete_group by non permitted user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group D',);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'delete_group',
+        blog_id => 0,
+        id      => $grp->id,
+        _type   => 'group',
+    });
+    $app->has_permission_error("delete_group by non permitted user");
 };
 
 subtest 'mode = dialog_grant_role' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
-    ok( $out !~ m!permission=1!i, "dialog_grant_role by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("dialog_grant_role by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_grant_role" );
-    ok( $out !~ m!permission=1!i,
-        "dialog_grant_role by permitted user (blog)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("dialog_grant_role by permitted user (blog)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_grant_role" );
-    ok( $out !~ m!permission=1!i,
-        "dialog_grant_role by permitted user (website)" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => $website->id,
+    });
+    $app->has_no_permission_error("dialog_grant_role by permitted user (website)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_grant_role" );
-    ok( $out =~ m!permission=1!i,
-        "dialog_grant_role by non permitted user (blog)" );
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_permission_error("dialog_grant_role by non permitted user (blog)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_grant_role" );
-    ok( $out =~ m!permission=1!i,
-        "dialog_grant_role by non permitted user (website)" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => $website->id,
+    });
+    $app->has_permission_error("dialog_grant_role by non permitted user (website)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dialog_grant_role" );
-    ok( $out !~ m!permission=1!i,
-        "dialog_grant_role by can_manage_user_group user (system)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("dialog_grant_role by can_manage_user_group user (system)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'dialog_grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: dialog_grant_role" );
-    ok( $out =~ m!permission=1!i, "dialog_grant_role by other permission" );
+    $app->login($ogawa);
+    $app->post_ok({
+        __mode  => 'dialog_grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_permission_error("dialog_grant_role by other permission");
 };
 
 subtest 'mode = view_group' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'view_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
-    ok( $out !~ m!permission=1!i, "view_group by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'view_group',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("view_group by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
-    ok( $out !~ m!permission=1!i, "view_group by can_manage_user_group user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'view_group',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("view_group by can_manage_user_group user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'view_group',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_group" );
-    ok( $out =~ m!permission=1!i, "view_group by non permitted user" );
-
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'view_group',
+        blog_id => 0,
+    });
+    $app->has_permission_error("view_group by non permitted user");
 };
 
 subtest 'mode = grant_role' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
-    ok( $out !~ m!permission=1!i, "grant_role by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("grant_role by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
-    ok( $out !~ m!permission=1!i, "grant_role by permitted user (blog)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("grant_role by permitted user (blog)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
-    ok( $out !~ m!permission=1!i, "grant_role by permitted user (website)" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => $website->id,
+    });
+    $app->has_no_permission_error("grant_role by permitted user (website)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
-    ok( $out =~ m!permission=1!i, "grant_role by non permitted user (blog)" );
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_permission_error("grant_role by non permitted user (blog)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $egawa,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: grant_role" );
-    ok( $out =~ m!permission=1!i,
-        "grant_role by non permitted user (website)" );
+    $app->login($egawa);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => $website->id,
+    });
+    $app->has_permission_error("grant_role by non permitted user (website)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ogawa,
-            __request_method => 'POST',
-            __mode           => 'grant_role',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: grant_role" );
-    ok( $out =~ m!permission=1!i, "grant_role by other permission" );
+    $app->login($ogawa);
+    $app->post_ok({
+        __mode  => 'grant_role',
+        blog_id => $blog->id,
+    });
+    $app->has_permission_error("grant_role by other permission");
 };
 
 subtest 'mode = list_group_member' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'group_member',
-            blog_id          => 0,
-            group_id         => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
-    ok( $out !~ m!permission=1!i, "list_group_member by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode   => 'list',
+        _type    => 'group_member',
+        blog_id  => 0,
+        group_id => $grp->id,
+    });
+    $app->has_no_permission_error("list_group_member by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'group_member',
-            blog_id          => 0,
-            group_id         => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
-    ok( $out !~ m!permission=1!i, "list_group_member by can_manage_user_group user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode   => 'list',
+        _type    => 'group_member',
+        blog_id  => 0,
+        group_id => $grp->id,
+    });
+    $app->has_no_permission_error("list_group_member by can_manage_user_group user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'group_member',
-            blog_id          => 0,
-            group_id         => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: list_group_member" );
-    ok( $out =~ m!permission=1!i, "list_group_member by non permitted user" );
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode   => 'list',
+        _type    => 'group_member',
+        blog_id  => 0,
+        group_id => $grp->id,
+    });
+    $app->has_permission_error("list_group_member by non permitted user");
 };
 
 subtest 'mode = remove_group' => sub {
-    $grp = MT::Test::Permission->make_group( name => 'Group E', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'remove_group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
-    ok( $out !~ m!permission=1!i, "remove_group by admin" );
+    my $grp = MT::Test::Permission->make_group(name => 'Group E',);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'remove_group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("remove_group by admin");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group F', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'remove_group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
-    ok( $out !~ m!permission=1!i, "remove_group by can_manage_user_group user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group F',);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'remove_group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("remove_group by can_manage_user_group user");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group G', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'remove_group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_group" );
-    ok( $out =~ m!permission=1!i, "remove_group by non permitted user" );
-
+    $grp = MT::Test::Permission->make_group(name => 'Group G',);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'remove_group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_permission_error("remove_group by non permitted user");
 };
 
 subtest 'mode = remove_member' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'remove_member',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
-    ok( $out !~ m!permission=1!i, "remove_member by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'remove_member',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("remove_member by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'remove_member',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
-    ok( $out !~ m!permission=1!i, "remove_member by can_manage_user_group user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'remove_member',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("remove_member by can_manage_user_group user");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'remove_member',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: remove_member" );
-    ok( $out =~ m!permission=1!i, "remove_member by non permitted user" );
-
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'remove_member',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_permission_error("remove_member by non permitted user");
 };
 
 subtest 'mode = view_role' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'view_role',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_role" );
-    ok( $out !~ m!permission=1!i, "view_role by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'view_role',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("view_role by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'view_role',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: view_role" );
-    ok( $out =~ m!permission=1!i, "view_role by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'view_role',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_permission_error("view_role by non permitted user");
 };
 
 subtest 'mode = delete' => sub {
-    $grp = MT::Test::Permission->make_group( name => 'Group H', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => 0,
-            id               => $grp->id,
-            _type            => 'group',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by admin" );
+    my $grp = MT::Test::Permission->make_group(name => 'Group H',);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => 0,
+        id      => $grp->id,
+        _type   => 'group',
+    });
+    $app->has_no_permission_error("delete by admin");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group I', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => 0,
-            id               => $grp->id,
-            _type            => 'group',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out !~ m!permission=1!i, "delete by can_manage_user_group user" );
-    
-    $grp = MT::Test::Permission->make_group( name => 'Group J', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            blog_id          => 0,
-            id               => $grp->id,
-            _type            => 'group',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: delete" );
-    ok( $out =~ m!permission=1!i, "delete by non permitted user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group I',);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => 0,
+        id      => $grp->id,
+        _type   => 'group',
+    });
+    $app->has_no_permission_error("delete by can_manage_user_group user");
+
+    $grp = MT::Test::Permission->make_group(name => 'Group J',);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        blog_id => 0,
+        id      => $grp->id,
+        _type   => 'group',
+    });
+    $app->has_permission_error("delete by non permitted user");
 };
 
 subtest 'mode = edit' => sub {
-    $grp = MT::Test::Permission->make_group( name => 'Group K', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out !~ m!permission=1!i, "edit by admin" );
+    my $grp = MT::Test::Permission->make_group(name => 'Group K',);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'edit',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("edit by admin");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group L', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out !~ m!permission=1!i, "edit by can_manage_user_group user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group L',);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("edit by can_manage_user_group user");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group M', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: edit" );
-    ok( $out =~ m!permission=1!i, "edit by non permitted user" );
-
+    $grp = MT::Test::Permission->make_group(name => 'Group M',);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_permission_error("edit by non permitted user");
 };
 
 subtest 'mode = save' => sub {
-    $grp = MT::Test::Permission->make_group( name => 'Group N', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save by admin" );
+    my $grp = MT::Test::Permission->make_group(name => 'Group N',);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'save',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("save by admin");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group O', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save by can_manage_user_group user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group O',);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'save',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_no_permission_error("save by can_manage_user_group user");
 
-    $grp = MT::Test::Permission->make_group( name => 'Group P', );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ukawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'group',
-            blog_id          => 0,
-            id               => $grp->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save by non permitted user" );
+    $grp = MT::Test::Permission->make_group(name => 'Group P',);
+    $app->login($ukawa);
+    $app->post_ok({
+        __mode  => 'save',
+        _type   => 'group',
+        blog_id => 0,
+        id      => $grp->id,
+    });
+    $app->has_permission_error("save by non permitted user");
 };
 
 done_testing();
