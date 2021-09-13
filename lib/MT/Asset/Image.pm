@@ -125,6 +125,29 @@ sub thumbnail_path {
     $asset->_make_cache_path( $param{Path} );
 }
 
+sub maybe_dynamic_thumbnail_url {
+    my ($asset, %param) = @_;
+    my $mt_url = delete $param{BaseURL};
+    my ($width, $height, $size_changed) = $asset->_get_size_from_param(\%param);
+    if ($asset->thumbnail_file(%param, NoCreate => 1)) {
+        return $asset->thumbnail_url(%param);
+    } else {
+        my %args = (
+            id      => $asset->id,
+            blog_id => $asset->blog_id,
+            width   => $width,
+            height  => $height,
+        );
+        $args{square} = 1 if $param{Square};
+        $args{ts} = $asset->modified_on if $asset->modified_on;
+        my $url = MT->app->mt_uri(
+            mode => 'thumbnail_image',
+            args => \%args,
+        );
+        return ($url, $width, $height);
+    }
+}
+
 sub _get_size_from_param {
     my ($asset, $param) = @_;
 

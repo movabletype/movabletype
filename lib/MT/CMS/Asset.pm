@@ -236,7 +236,6 @@ sub dialog_list_asset {
         $app,
         PreviewWidth     => 120,
         PreviewHeight    => 120,
-        DynamicThumbnail => 1,
         NoTags           => 1,
     );
 
@@ -996,8 +995,8 @@ sub build_asset_hasher {
     my (%param) = @_;
     my ($default_thumb_width,   $default_thumb_height,
         $default_preview_width, $default_preview_height,
-        $dynamic_thumbnail,     $no_tags,
-    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight DynamicThumbnail NoTags )};
+        $no_tags,
+    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
     require JSON;
@@ -1048,32 +1047,15 @@ sub build_asset_hasher {
             || $row->{file_name}
             || $app->translate('Untitled');
 
-        my $height = $thumb_height || $default_thumb_height || $default_thumbnail_size;
-        my $width  = $thumb_width  || $default_thumb_width  || $default_thumbnail_size;
-        if ($dynamic_thumbnail && $obj->class_type eq 'image') {
+        if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail}  = 1;
             $row->{can_edit_image} = 1;
-            if ( $default_preview_width && $default_preview_height ) {
-                @$meta{qw( preview_width preview_height )} = ($default_preview_width, $default_preview_height);
-                require URI;
-                my $url = URI->new($app->base . $app->mt_uri);
-                $url->query_form({
-                    __mode  => 'thumbnail_image',
-                    id      => $obj->id,
-                    blog_id => $obj->blog_id,
-                    width   => $default_preview_width,
-                    height  => $default_preview_height,
-                });
-                $meta->{preview_url} = $url->as_string;
-            }
-        }
-        elsif ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
-            $row->{has_thumbnail}  = 1;
-            $row->{can_edit_image} = 1;
-            my $square = $height == $default_thumbnail_size
-                && $width == $default_thumbnail_size;
+            my $height = $thumb_height || $default_thumb_height || $default_thumbnail_size;
+            my $width  = $thumb_width  || $default_thumb_width  || $default_thumbnail_size;
+            my $square = $height == $default_thumbnail_size && $width == $default_thumbnail_size;
+            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
-                = $obj->thumbnail_url(
+                = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
                 Square => $square
@@ -1086,7 +1068,7 @@ sub build_asset_hasher {
 
             if ( $default_preview_width && $default_preview_height ) {
                 @$meta{qw( preview_url preview_width preview_height )}
-                    = $obj->thumbnail_url(
+                    = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
                     );
