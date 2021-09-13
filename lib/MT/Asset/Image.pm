@@ -235,6 +235,7 @@ sub thumbnail_file {
         }
         return ( $thumbnail, $n_w, $n_h ) if $already_exists;
     }
+    return if $param{NoCreate};
 
     # stale or non-existent thumbnail. let's create one!
     return undef unless $fmgr->can_write($asset_cache_path);
