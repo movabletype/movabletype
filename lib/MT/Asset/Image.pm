@@ -112,9 +112,11 @@ sub image_width {
 sub has_thumbnail {
     my $asset = shift;
 
+    return unless -f $asset->file_path;
+
     require MT::Image;
     my $image = MT::Image->new(
-        ( ref $asset ? ( Filename => $asset->file_path ) : () ) );
+        ( ref $asset ? ( Type => $asset->file_ext ) : () ) );
     $image ? 1 : 0;
 }
 
