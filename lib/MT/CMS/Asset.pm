@@ -1131,7 +1131,7 @@ sub build_asset_table {
     return [] unless $iter;
 
     my @data;
-    my $hasher = build_asset_hasher($app);
+    my $hasher = build_asset_hasher($app, NoTags => 1);
     while ( my $obj = $iter->() ) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
