@@ -2929,6 +2929,7 @@ sub thumbnail_image {
     # Thumbnail size on "Edit Image" screen is 240.
     my $width  = $app->param('width')  || 400;
     my $height = $app->param('height') || 400;
+    my $square = $app->param('square');
 
     my $asset;
 
@@ -2947,7 +2948,7 @@ sub thumbnail_image {
     }
 
     my ($thumbnail)
-        = $asset->thumbnail_file( Width => $width, Height => $height )
+        = $asset->thumbnail_file( Width => $width, Height => $height, Square => $square )
         or return $app->error( $asset->errstr );
 
     require MT::FileMgr;
