@@ -238,8 +238,9 @@ sub dialog_list_asset {
 
     my $hasher = build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120
+        PreviewWidth     => 120,
+        PreviewHeight    => 120,
+        NoTags           => 1,
     );
 
     if ($class_filter) {
@@ -977,8 +978,9 @@ sub build_asset_hasher {
     my $app = shift;
     my (%param) = @_;
     my ($default_thumb_width,   $default_thumb_height,
-        $default_preview_width, $default_preview_height
-    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight )};
+        $default_preview_width, $default_preview_height,
+        $no_tags,
+    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
     require JSON;
@@ -994,7 +996,7 @@ sub build_asset_hasher {
         $row->{asset_type}        = $obj->class_type;
         $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path;    # has to be called to calculate
-        my $meta      = $obj->metadata;
+        my $meta      = $obj->metadata(no_tags => $no_tags);
 
         require MT::FileMgr;
         my $fmgr = MT::FileMgr->new('Local');
@@ -1033,8 +1035,9 @@ sub build_asset_hasher {
             my $height = $thumb_height || $default_thumb_height || 45;
             my $width  = $thumb_width  || $default_thumb_width  || 45;
             my $square = $height == 45 && $width == 45;
+            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
-                = $obj->thumbnail_url(
+                = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
                 Square => $square
@@ -1047,7 +1050,7 @@ sub build_asset_hasher {
 
             if ( $default_preview_width && $default_preview_height ) {
                 @$meta{qw( preview_url preview_width preview_height )}
-                    = $obj->thumbnail_url(
+                    = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
                     );
@@ -1120,7 +1123,7 @@ sub build_asset_table {
     MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
 
     my @data;
-    my $hasher = build_asset_hasher($app);
+    my $hasher = build_asset_hasher($app, NoTags => 1);
     for my $obj (@objs) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
@@ -3006,6 +3009,7 @@ sub thumbnail_image {
     # Thumbnail size on "Edit Image" screen is 240.
     my $width  = $app->param('width')  || 500;
     my $height = $app->param('height') || 500;
+    my $square = $app->param('square');
 
     my $asset;
 
@@ -3024,7 +3028,7 @@ sub thumbnail_image {
     }
 
     my ($thumbnail)
-        = $asset->thumbnail_file( Width => $width, Height => $height )
+        = $asset->thumbnail_file( Width => $width, Height => $height, Square => $square )
         or return $app->error( $asset->errstr );
 
     require MT::FileMgr;
