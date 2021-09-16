@@ -167,7 +167,7 @@ themes/broken_blog_theme
 
 #?language=ja ^plugins/zemanta
 
-^schemas
+^schemas/
 \bknown-issues
 ^t/
 .*/t/
