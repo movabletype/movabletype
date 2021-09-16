@@ -14,9 +14,17 @@ BEGIN {
 use MT::Test;
 use MT::Test::App;
 use MT::App::Wizard;
+use File::Copy qw/cp/;
 
 subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
     my $app = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
+    my $home_cfg = File::Spec->catfile($ENV{MT_HOME}, 'mt-config.cgi');
+    my $remove;
+    if (!-e $home_cfg) {
+        cp($test_env->config_file => $home_cfg) or die $!;
+        $remove = 1;
+    }
+
     my $res = $app->get_ok({
         __mode => 'retry',
         step   => 'configure',
@@ -27,6 +35,10 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
     my $title = $app->page_title;
     is($title => "Configuration File Exists", 'Title is "Configuration File Exists"');
     isnt($title => "Database Configuration", 'Title is not "Database Configuration"');
+
+    if ($remove && -e $home_cfg) {
+        unlink $home_cfg
+    }
 };
 
 done_testing;
