@@ -16,12 +16,14 @@ use MT::Test::App;
 use MT::App::Wizard;
 
 subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
-    my $app = MT::Test::App->new('MT::App::Wizard');
+    my $app = MT::Test::App->new(app_class => 'MT::App::Wizard', no_redirect => 1);
     my $res = $app->get_ok({
         __mode => 'retry',
         step   => 'configure',
     });
 
+    my $cfg = File::Spec->catfile($app->_app->{mt_dir}, 'mt-config.cgi');
+    ok -f $cfg, "mt-config.cgi exists: $cfg";
     my $title = $app->page_title;
     is($title => "Configuration File Exists", 'Title is "Configuration File Exists"');
     isnt($title => "Database Configuration", 'Title is not "Database Configuration"');
