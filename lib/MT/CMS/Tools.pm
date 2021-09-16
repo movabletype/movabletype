@@ -316,6 +316,7 @@ sub new_password {
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
             $user->password_reset_return_to(undef);
+            $user->modified_by($user->id);
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
