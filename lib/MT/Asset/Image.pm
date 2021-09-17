@@ -242,14 +242,14 @@ sub thumbnail_file {
     # stale or non-existent thumbnail. let's create one!
     return undef unless $fmgr->can_write($asset_cache_path);
 
+    my $data;
     if (   !$size_changed
         && !$param{Square}
         && !$param{Type} )
     {
-        # no need to update
+        $data = $fmgr->get_data( $file_path, 'upload' );
     }
     else {
-        my $data;
 
         # create a thumbnail for this file
         require MT::Image;
@@ -273,12 +273,11 @@ sub thumbnail_file {
                 MT->translate( "Error converting image: [_1]", $img->errstr )
                 );
         }
-
-        $fmgr->put_data( $data, $thumbnail, 'upload' )
-            or return $asset->error(
-            MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
-            );
     }
+    $fmgr->put_data( $data, $thumbnail, 'upload' )
+        or return $asset->error(
+        MT->translate( "Error creating thumbnail file: [_1]", $fmgr->errstr )
+        );
 
     # Remove metadata from thumbnail file.
     require MT::Image;
