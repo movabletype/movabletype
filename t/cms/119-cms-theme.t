@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -16,8 +16,7 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Fixture::Cms::Common1;
 use YAML::Tiny;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 
@@ -25,63 +24,57 @@ MT::Test->init_app;
 my $data;
 {
     local $/ = undef;
-    $data = ( YAML::Tiny::Load(<DATA>) )[0];
+    $data = (YAML::Tiny::Load(<DATA>))[0];
 }
 MT->instance;
 MT->component('core')->registry->{themes} = $data;
 
 $test_env->prepare_fixture('cms/common1');
 
-my $website = MT::Website->load( { name => 'my website' } );
-my $blog    = MT::Blog->load( { name => 'my blog' } );
+my $website = MT::Website->load({ name => 'my website' });
+my $blog    = MT::Blog->load({ name => 'my blog' });
 my $admin   = MT->model('author')->load(1);
 
 # Run tests
 subtest 'Check visibility' => sub {
     plan 'skip_all';
 
-    my @suite = (
-        {   scope   => 'System',
+    my @suite = ({
+            scope   => 'System',
             blog_id => 0,
-            like    => [ 'Themes in Use', 'Available Themes', ],
+            like    => ['Themes in Use', 'Available Themes',],
         },
-        {   scope   => 'Website',
+        {
+            scope   => 'Website',
             blog_id => $website->id,
-            like    => [ 'Current Theme', 'Available Themes', ],
+            like    => ['Current Theme', 'Available Themes',],
         },
-        {   scope   => 'Blog',
+        {
+            scope   => 'Blog',
             blog_id => $blog->id,
-            like    => [ 'Current Theme', 'Available Themes', ],
+            like    => ['Current Theme', 'Available Themes',],
         },
     );
 
     foreach my $data (@suite) {
         subtest 'Scope: ' . $data->{scope} => sub {
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user => $admin,
-                    __mode      => 'list_theme',
-                    blog_id     => $data->{blog_id},
-                },
-            );
-            my $out = delete $app->{__test_output};
+            my $app = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->get_ok({
+                __mode  => 'list_theme',
+                blog_id => $data->{blog_id},
+            });
 
-            if ( $data->{like} ) {
-                if ( ref( $data->{like} ) && ref( $data->{like} ) eq 'ARRAY' )
-                {
-                    foreach my $like ( @{ $data->{like} } ) {
-                        my $like_quotemeta
-                            = quotemeta( '<h2 class="theme-group-name">'
-                                . $like
-                                . '</h2>' );
-                        ok( $out =~ m/$like_quotemeta/, $like );
+            if ($data->{like}) {
+                if (ref($data->{like}) && ref($data->{like}) eq 'ARRAY') {
+                    foreach my $like (@{ $data->{like} }) {
+                        my $like_quotemeta = quotemeta('<h2 class="theme-group-name">' . $like . '</h2>');
+                        $app->content_like(qr/$like_quotemeta/, $like);
                     }
-                }
-                else {
-                    my $like = '<h2 class="theme-group-name">'
-                        . $data->{like} . '</h2>';
+                } else {
+                    my $like           = '<h2 class="theme-group-name">' . $data->{like} . '</h2>';
                     my $like_quotemeta = quotemeta $like;
-                    ok( $out =~ m/$like_quotemeta/, $like );
+                    $app->content_like(qr/$like_quotemeta/, $like);
                 }
             }
         };
@@ -90,26 +83,24 @@ subtest 'Check visibility' => sub {
 };
 
 subtest 'Check applying a blog theme' => sub {
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'apply_theme',
-            blog_id     => $website->id,
-            theme_id    => 'MyBlogTheme',
-        },
-    );
-    my $out = delete $app->{__test_output};
-    unlike(
-        $out,
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode   => 'apply_theme',
+        blog_id  => $website->id,
+        theme_id => 'MyBlogTheme',
+    });
+    $app->content_unlike(
         qr/(redirect|permission=1)|An error occurr?ed/,
         'Has no error.'
     );
-    ok( $out =~ /Status: 302 Found/ && $out =~ /applied=1/,
-        'Theme has been applied.' );
+    ok($app->last_location->query_param('applied'), 'Theme has been applied.');
 
-    $website = $app->model('website')->load( $website->id );
-    is( $website->theme_id, 'MyBlogTheme',
-        'Website\'s theme has correct theme_id.' );
+    $website = MT->model('website')->load($website->id);
+    is(
+        $website->theme_id, 'MyBlogTheme',
+        'Website\'s theme has correct theme_id.'
+    );
 };
 
 done_testing;

@@ -40,8 +40,8 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
-            if ($app->{redirect}) {
-                $app->{__test_output} = '' unless $app->{__test_output} =~ /Status:/;
+            if ($app->{redirect} && $_[0] =~ /Status:/) {
+                $app->{__test_output} = '';
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
@@ -130,10 +130,9 @@ sub request {
         sleep 1;
 
         my $max_redirect = $self->{max_redirect};
-        $max_redirect = 0 if $self->{no_redirect};
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
-            return $self->request($params, 1);
+            return $self->request($params, 1) unless $self->{no_redirect};
         }
     }
 
