@@ -240,6 +240,7 @@ sub thumbnail_file {
     # stale or non-existent thumbnail. let's create one!
     return undef unless $fmgr->can_write($asset_cache_path);
 
+    my $data;
     if (   !$size_changed
         && !$param{Square}
         && !$param{Type} )
