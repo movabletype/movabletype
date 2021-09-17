@@ -323,6 +323,13 @@ sub new_password {
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
 
+            $app->log({
+                message  => $app->translate(q{The password for the user '[_1]' has been recovered.}, $user->name),
+                level    => MT::Log::NOTICE(),
+                class    => 'system',
+                category => 'password-recovery',
+            });
+
             if ( ref $app eq 'MT::App::CMS' && !$redirect ) {
                 $app->login;
                 return $app->return_to_dashboard( redirect => 1 );
