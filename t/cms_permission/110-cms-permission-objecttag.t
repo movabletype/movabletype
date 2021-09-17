@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -17,147 +17,110 @@ BEGIN {
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Fixture::CmsPermission::Common1;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 $test_env->prepare_fixture('cms_permission/common1');
 
-my $blog = MT::Blog->load( { name => 'my blog' } );
+my $blog = MT::Blog->load({ name => 'my blog' });
 
-my $aikawa = MT::Author->load( { name => 'aikawa' } );
+my $aikawa = MT::Author->load({ name => 'aikawa' });
 
 my $admin = MT::Author->load(1);
 
-# Run
-my ( $app, $out );
+# XXX: The following tests are to make sure objecttag items are not exposed by the listing framework
+# Everything should be invalid or unknown
 
 subtest 'mode = list' => sub {
-    my $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: list" );
-    ok( $out =~ m!Unknown Action!i, "list by admin" );
+    my $ot  = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'list',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+    });
+    ok($app->generic_error =~ m!Unknown Action!i, "list by admin");
 
-    $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'list',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                       "Request: list" );
-    ok( $out =~ m!Unknown Action!i, "list by non permitted user" );
+    $ot = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'list',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+    });
+    ok($app->generic_error =~ m!Unknown Action!i, "list by non permitted user");
 };
 
 subtest 'mode = save' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            object_id        => 1,
-            object_ds        => 'entry',
-            tag_id           => 1,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode    => 'save',
+        _type     => 'objecttag',
+        blog_id   => $blog->id,
+        object_id => 1,
+        object_ds => 'entry',
+        tag_id    => 1,
+    });
+    $app->has_invalid_request("save by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            object_id        => 1,
-            object_ds        => 'entry',
-            tag_id           => 1,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: save" );
-    ok( $out =~ m!Invalid Request!i, "save by non permitted user" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode    => 'save',
+        _type     => 'objecttag',
+        blog_id   => $blog->id,
+        object_id => 1,
+        object_ds => 'entry',
+        tag_id    => 1,
+    });
+    $app->has_invalid_request("save by non permitted user");
 };
 
 subtest 'mode = edit' => sub {
-    my $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            id               => $ot->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by admin" );
+    my $ot  = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'edit',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+        id      => $ot->id,
+    });
+    $app->has_invalid_request("edit by admin");
 
-    $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'edit',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            id               => $ot->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: edit" );
-    ok( $out =~ m!Invalid Request!i, "edit by non permitted user" );
+    $ot = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'edit',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+        id      => $ot->id,
+    });
+    $app->has_invalid_request("edit by non permitted user");
 };
 
 subtest 'mode = delete' => sub {
-    my $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            id               => $ot->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid Request!i, "delete by admin" );
+    my $ot  = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'delete',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+        id      => $ot->id,
+    });
+    $app->has_invalid_request("delete by admin");
 
-    $ot = MT::Test::Permission->make_objecttag( blog_id => $blog->id );
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'delete',
-            _type            => 'objecttag',
-            blog_id          => $blog->id,
-            id               => $ot->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                        "Request: delete" );
-    ok( $out =~ m!Invalid Request!i, "delete by non permitted user" );
+    $ot = MT::Test::Permission->make_objecttag(blog_id => $blog->id);
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'delete',
+        _type   => 'objecttag',
+        blog_id => $blog->id,
+        id      => $ot->id,
+    });
+    $app->has_invalid_request("delete by non permitted user");
 };
 
 done_testing();

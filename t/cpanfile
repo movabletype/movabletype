@@ -116,7 +116,6 @@ on 'test' => sub {
     requires 'PHP::Serialization';
     requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
-    requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
     requires 'SQL::Maker';
