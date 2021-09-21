@@ -38,7 +38,7 @@ for my $type (qw/ category folder /) {
 
             my $app = MT::Test::App->new('MT::App::CMS');
             $app->login($user);
-            my $res = $app->get_ok({
+            my $res = $app->post_ok({
                 __mode  => 'js_add_category',
                 _type   => $type,
                 blog_id => $blog->id,
@@ -67,7 +67,7 @@ for my $type (qw/ category folder /) {
 
             my $app = MT::Test::App->new('MT::App::CMS');
             $app->login($user);
-            my $res = $app->get_ok({
+            my $res = $app->post_ok({
                 __mode  => 'js_add_category',
                 _type   => $type,
                 blog_id => $blog->id,
