@@ -43,12 +43,12 @@ ok($eval_error);
 like($eval_error, qr/Invalid request/i, "Failed as expected");
 
 # write the file and make sure no funny characters are there
-open OUT, ">test_import.txt";
+open my $OUT, ">", "test_import.txt";
 foreach my $line (split "\n", $good_out) {
     chomp $line;
-    print OUT "$line\n";
+    print $OUT "$line\n";
 }
-close OUT;
+close $OUT;
 
 # we are going to use the existing blog, so make sure all entries and comments are removed
 my @entries = MT::Entry->load({ blog_id => $blog->id });
@@ -66,8 +66,8 @@ ok(MT::Comment->count({ blog_id => $blog->id }) == 0, "Got rid of all comments")
 # use the file as the input to the import script
 my $impt = MT::Import->new;
 my $ie   = MT::ImportExport->new;
-open IN, "<test_import.txt" or die "COULD NOT OPEN FILE";
-close IN;
+open my $IN, "<", "test_import.txt" or die "COULD NOT OPEN FILE";
+close $IN;
 my $iter = $impt->_get_stream_iterator('test_import.txt', sub { my ($string) = @_; print STDERR "[cb_iterator] $string\n"; 1 });
 
 my %param = ();
