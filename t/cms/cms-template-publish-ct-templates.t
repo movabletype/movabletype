@@ -144,7 +144,7 @@ my $map_ct_yearly_ct3 = MT::Test::Permission->make_templatemap(
 subtest 'ct1' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode  => 'publish_ct_templates',
         type    => 'template',
         blog_id => $website->id,
@@ -181,7 +181,7 @@ subtest 'ct1' => sub {
 subtest 'ct2' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode  => 'publish_ct_templates',
         type    => 'template',
         blog_id => $website->id,
@@ -226,7 +226,7 @@ subtest 'ct2' => sub {
 subtest 'ct3' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode  => 'publish_ct_templates',
         type    => 'template',
         blog_id => $website->id,
@@ -274,7 +274,7 @@ subtest 'ct3' => sub {
 subtest 'ct1 and ct2' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode  => 'publish_ct_templates',
         type    => 'template',
         blog_id => $website->id,

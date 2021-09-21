@@ -169,7 +169,7 @@ subtest 'Manage Users screen' => sub {
             not_enabled => 1,
         });
         my $url_activity_log = $app->_app->uri . '?__mode=list&_type=log&blog_id=0';
-        $msg = quotemeta "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
+        $msg = quotemeta "Some (1) of the selected user(s) could not be re-enabled because they had some invalid parameter(s).";
         $app->content_like(qr/$msg/, 'There is a system message: could not be re-enabled one user.');
 
         $app->get_ok({
@@ -178,7 +178,7 @@ subtest 'Manage Users screen' => sub {
             blog_id     => 0,
             not_enabled => 5,
         });
-        $msg = quotemeta "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s). Please check the <a href='$url_activity_log' class=\"alert-link\">activity log</a> for more details.";
+        $msg = quotemeta "Some (5) of the selected user(s) could not be re-enabled because they had some invalid parameter(s).";
         $app->content_like(qr/$msg/, 'There is a system message: could not be re-enabled five user.');
     };
 

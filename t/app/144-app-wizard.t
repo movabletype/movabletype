@@ -32,9 +32,14 @@ subtest 'MT::App::Wizard behavior when mt-config.cgi exists' => sub {
 
     my $cfg = File::Spec->catfile($app->_app->{mt_dir}, 'mt-config.cgi');
     ok -f $cfg, "mt-config.cgi exists: $cfg";
-    my $title = $app->page_title;
-    is($title => "Configuration File Exists", 'Title is "Configuration File Exists"');
-    isnt($title => "Database Configuration", 'Title is not "Database Configuration"');
+    if ($ENV{MT_TEST_RUN_APP_AS_CGI}) {
+        like $app->last_location => qr/mt-upgrade\.cgi/, "redirected to mt-upgrade";
+        is $app->last_location->query_param('__mode') => 'install', "and the mode is install";
+    } else {
+        my $title = $app->page_title;
+        is($title => "Configuration File Exists", 'Title is "Configuration File Exists"');
+        isnt($title => "Database Configuration", 'Title is not "Database Configuration"');
+    }
 
     if ($remove && -e $home_cfg) {
         unlink $home_cfg

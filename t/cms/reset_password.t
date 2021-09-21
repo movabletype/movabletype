@@ -6,10 +6,12 @@ use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
+use MT::Test::AnyEventSMTPServer;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
         DefaultLanguage => 'en_US',    ## for now
+        MT::Test::AnyEventSMTPServer->smtp_config(),
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -23,14 +25,9 @@ my $admin = MT::Author->load(1);
 $admin->email('test@localhost.localdomain');
 $admin->save;
 
-{
-    my $mail_sent;
-    no warnings 'redefine';
-    local *MT::Mail::_send_mt_debug = sub {
-        my ($class, $hdrs, $body, $mgr) = @_;
-        $mail_sent = $body;
-    };
+my $server = MT::Test::AnyEventSMTPServer->new;
 
+{
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->post_ok({
         __mode => 'recover',
@@ -38,6 +35,7 @@ $admin->save;
     });
     $app->content_like(qr/An email with a link to reset your password has been sent/, "email sent");
 
+    my $mail_sent = $server->last_sent_mail;
     like $mail_sent => qr/A request was made to change your Movable Type password./, 'link to reset';
     my ($url) = $mail_sent =~ m!(/cgi-bin/mt.cgi?\S+)!;
     my $uri = URI->new($url);

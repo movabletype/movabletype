@@ -7,6 +7,7 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
+    plan skip_all => 'Not for external CGI mode' if $ENV{MT_TEST_RUN_APP_AS_CGI};
     eval { require Test::MockModule }
         or plan skip_all => 'Test::MockModule is not installed';
 }
