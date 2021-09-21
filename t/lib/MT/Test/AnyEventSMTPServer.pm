@@ -6,6 +6,7 @@ use Test::More;
 use Test::TCP;
 use Test::More;
 use MIME::Head;
+use Path::Tiny;
 use IO::String;
 
 BEGIN {
@@ -44,6 +45,17 @@ sub new {
             AnyEvent->condvar->recv;
         }
     );
+
+    my $server_port = $server->port;
+    my $config_file = path($ENV{MT_CONFIG});
+    my $config = $config_file->slurp;
+    unless ($config =~ s/SMTPPort \d+/SMTPPort $server_port/) {
+        $config .= "\nSMTPPort $server_port\n";
+    }
+    $config_file->spew($config);
+
+    MT->config(SMTPPort => $server_port);
+
     bless { server => $server }, $class;
 }
 
