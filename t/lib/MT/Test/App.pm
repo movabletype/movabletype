@@ -290,7 +290,7 @@ sub _request_internally {
 
 sub _app {
     my $self = shift;
-    $self->{_app} || $self->{app_class}->instance;
+    $self->{_app} || MT->app;
 }
 
 sub locations {
