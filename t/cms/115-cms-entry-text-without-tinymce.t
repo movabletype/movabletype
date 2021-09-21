@@ -124,9 +124,15 @@ for my $type (qw(entry page)) {
                 ($data->{config} ? (config => $data->{config}) : ()),
             });
             subtest $p => sub {
-                local $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $data->{config}{GlobalSanitizeSpec}
-                    if exists $data->{config}
-                    && exists $data->{config}{GlobalSanitizeSpec};
+                my $org_spec = $app->config->GlobalSanitizeSpec;
+                local $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $org_spec;
+                if (exists $data->{config} && exists $data->{config}{GlobalSanitizeSpec}) {
+                    my $data_spec = $data->{config}{GlobalSanitizeSpec};
+                    $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $data_spec;
+                    $test_env->update_config(GlobalSanitizeSpec => $data_spec);
+                } else {
+                    $test_env->update_config(GlobalSanitizeSpec => $org_spec);
+                }
 
                 my $app = MT::Test::App->new('MT::App::CMS');
                 $app->login($user);

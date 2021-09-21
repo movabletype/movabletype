@@ -211,6 +211,7 @@ subtest 'Test cfg_prefs mode' => sub {
 
             if ($type eq 'blog') {
                 MT->config->BaseSitePath('dummy');
+                $test_env->update_config(BaseSitePath => 'dummy');
 
                 $app->get_ok({
                         __mode  => 'cfg_prefs',
