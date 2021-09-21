@@ -99,8 +99,6 @@ my $ct_without_archive = MT->model('content_type')->load({ name => 'ct without c
 my $ct_with_archive    = MT->model('content_type')->load({ name => 'ct with ct archive' });
 my $content_type       = MT->model('content_type')->load({ name => 'test ct' });
 
-my ($headers, $body, $json);
-
 subtest 'preview without content_type archive' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
