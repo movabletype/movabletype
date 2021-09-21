@@ -6,7 +6,7 @@
         <div class="col">
           <select id="asset_type" name="asset_type" class="custom-select form-control asset_type">
             <option>{ trans('All Types') }</option>
-            <option each={ opts.types } value={ key } selected={ opts.filter == 'class' && opts.filter_val == key }>{ label }</option>
+            <option each={ opts.types } value={ type } selected={ opts.filter == 'class' && opts.filter_val == type }>{ label }</option>
           </select>
         </div>
       </div>
