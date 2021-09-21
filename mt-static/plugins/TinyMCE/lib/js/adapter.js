@@ -20,6 +20,7 @@
             theme: "modern",
             skin: 'lightgray',
             menubar: false,
+            branding: false,
             forced_root_block: 'p',
             resize: true,
 
