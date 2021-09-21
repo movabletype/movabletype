@@ -13,6 +13,18 @@ BEGIN {
         or plan skip_all => "requires AnyEvent::SMTP::Server";
 }
 
+sub smtp_config {
+    my ($class, %env) = @_;
+    return (
+        MailTransfer      => 'smtp',
+        SMTPServer        => 'localhost',
+        SMTPAuth          => 0,
+        SMTPSSLVerifyNone => 1,
+        SMTPOptions       => {Debug => $ENV{TEST_VERBOSE} ? 1 : 0},
+        %env,
+    );
+}
+
 sub new {
     my ( $class, %args ) = @_;
 
