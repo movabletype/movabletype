@@ -132,7 +132,7 @@ my $admin   = MT->model('author')->load(1);
 subtest 'Check applying a blog theme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode   => 'apply_theme',
         blog_id  => $website->id,
         theme_id => 'MyBlogTheme',

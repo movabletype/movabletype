@@ -33,11 +33,11 @@ my $user = MT::Author->load(2);
 # export entries from a valid blog
 my $app = MT::Test::App->new('MT::App::CMS');
 $app->login($user);
-$app->get_ok({ __mode => 'export', blog_id => $blog->id });
+$app->post_ok({ __mode => 'export', blog_id => $blog->id });
 my $good_out = $app->content;
 
 # export entries for an invalid blog
-eval { $app->get_ok({ __mode => 'export', blog_id => 1000 }); };
+my $res = eval { $app->post_ok({ __mode => 'export', blog_id => 1000 }); };
 my $eval_error = $@;
 ok($eval_error);
 like($eval_error, qr/Invalid request/i, "Failed as expected");

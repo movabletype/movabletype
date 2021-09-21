@@ -102,7 +102,7 @@ my $content_type       = MT->model('content_type')->load({ name => 'test ct' });
 subtest 'preview without content_type archive' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
-    $app->get_ok({
+    $app->post_ok({
         __mode          => 'preview_content_data',
         _type           => 'content_data',
         blog_id         => $ct_without_archive->blog_id,
@@ -115,7 +115,7 @@ subtest 'preview without content_type archive' => sub {
 subtest 'preview with content_type archive' => sub {
     my $app = MT::Test::App->new(app_class => 'MT::App::CMS', no_redirect => 1);
     $app->login($admin);
-    my $res = $app->get_ok({
+    my $res = $app->post_ok({
         __mode          => 'preview_content_data',
         _type           => 'content_data',
         blog_id         => $ct_with_archive->blog_id,
