@@ -8,26 +8,120 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new;
+    $test_env = MT::Test::Env->new(
+        ThemesDirectory => 'TEST_ROOT/themes',
+    );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    $test_env->save_file('themes/MyWebsiteTheme/theme.yaml', <<'YAML');
+id: my_website_theme
+name: my_website_theme
+label: My Website Theme
+class: website
+thumbnail: my_thumbnail.png
+elements:
+    template_sGet:
+        component: core
+        importer: template_set
+        label: Template set
+        require: 1
+        data:
+            label: MyTheme
+            base_path: t/theme_templates
+            templates:
+                index:
+                    main_index:
+                        label: Main Index
+                        outfile: index.html
+                        rebuild_me: 1
+    core_configs:
+        component: core
+        importer: default_prefs
+        label: core configs
+        require: 0
+        data:
+            allow_comment_html: 0
+            allow_pings: 0
+    default_categories:
+        component: core
+        importer: default_categories
+        require: 1
+        data:
+            foo:
+                label: another_foo
+            xxx:
+                label: moge
+                description: category description.
+                children:
+                    yyy:
+                        label: foobar
+                        description: some other category.
+YAML
+
+    $test_env->save_file('themes/MyBlogTheme/theme.yaml', <<'YAML');
+id: my_blog_theme
+name: my_blog_theme
+label: My Blog Theme
+class: blog
+thumbnail: my_thumbnail.png
+elements:
+    template_sGet:
+        component: core
+        importer: template_set
+        label: Template set
+        require: 1
+        data:
+            label: MyTheme
+            base_path: t/theme_templates
+            templates:
+                index:
+                    main_index:
+                        label: Main Index
+                        outfile: index.html
+                        rebuild_me: 1
+    core_configs:
+        component: core
+        importer: default_prefs
+        label: core configs
+        require: 0
+        data:
+            allow_comment_html: 0
+            allow_pings: 0
+    default_categories:
+        component: core
+        importer: default_categories
+        require: 1
+        data:
+            foo:
+                label: another_foo
+            xxx:
+                label: moge
+                description: category description.
+                children:
+                    yyy:
+                        label: foobar
+                        description: some other category.
+YAML
+
+    $test_env->save_file('themes/very_old_theme/theme.yaml', <<'YAML');
+id: old_theme
+name: OLD Theme
+label: Old theme
+required_components:
+    core: 1.0
+optional_components:
+    commercial: 2.0
+YAML
 }
 
 use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Fixture::Cms::Common1;
-use YAML::Tiny;
 use MT::Test::App;
 
 ### Make test data
 
-## building test themes.
-my $data;
-{
-    local $/ = undef;
-    $data = (YAML::Tiny::Load(<DATA>))[0];
-}
 MT->instance;
-MT->component('core')->registry->{themes} = $data;
 
 $test_env->prepare_fixture('cms/common1');
 
@@ -104,99 +198,3 @@ subtest 'Check applying a blog theme' => sub {
 };
 
 done_testing;
-
-__DATA__
-MyWebsiteTheme:
-    id: my_website_theme
-    name: my_website_theme
-    label: My Website Theme
-    class: website
-    thumbnail: my_thumbnail.png
-    elements:
-        template_sGet:
-            component: core
-            importer: template_set
-            label: Template set
-            require: 1
-            data:
-                label: MyTheme
-                base_path: t/theme_templates
-                templates:
-                    index:
-                        main_index:
-                            label: Main Index
-                            outfile: index.html
-                            rebuild_me: 1
-        core_configs:
-            component: core
-            importer: default_prefs
-            label: core configs
-            require: 0
-            data:
-                allow_comment_html: 0
-                allow_pings: 0
-        default_categories:
-            component: core
-            importer: default_categories
-            require: 1
-            data:
-                foo:
-                    label: another_foo
-                xxx:
-                    label: moge
-                    description: category description.
-                    children:
-                        yyy:
-                            label: foobar
-                            description: some other category.
-MyBlogTheme:
-    id: my_blog_theme
-    name: my_blog_theme
-    label: My Blog Theme
-    class: blog
-    thumbnail: my_thumbnail.png
-    elements:
-        template_sGet:
-            component: core
-            importer: template_set
-            label: Template set
-            require: 1
-            data:
-                label: MyTheme
-                base_path: t/theme_templates
-                templates:
-                    index:
-                        main_index:
-                            label: Main Index
-                            outfile: index.html
-                            rebuild_me: 1
-        core_configs:
-            component: core
-            importer: default_prefs
-            label: core configs
-            require: 0
-            data:
-                allow_comment_html: 0
-                allow_pings: 0
-        default_categories:
-            component: core
-            importer: default_categories
-            require: 1
-            data:
-                foo:
-                    label: another_foo
-                xxx:
-                    label: moge
-                    description: category description.
-                    children:
-                        yyy:
-                            label: foobar
-                            description: some other category.
-very_old_theme:
-    id: old_theme
-    name: OLD Theme
-    label: Old theme
-    required_components:
-        core: 1.0
-    optional_components:
-        commercial: 2.0
