@@ -76,6 +76,7 @@ sub launch_server {
         'MT::App::DataAPI'             => 'mt-data-api.cgi',
         'MT::App::Search'              => 'mt-search.cgi',
         'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
+        'MT::App::Upgrader'            => 'mt-upgrade.cgi',
     );
     my $script = join "/", $ENV{MT_HOME}, $mapping{$app_class} || "mt.cgi";
     my $sep    = $^O eq 'MSWin32' ? ';' : ':';
