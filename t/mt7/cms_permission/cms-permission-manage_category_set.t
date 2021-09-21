@@ -51,7 +51,7 @@ $test_env->prepare_fixture(sub {
     );
     my $category = MT::Test::Permission->make_category(
         label           => 'test category',
-        category_set_id => $category_set2->id
+        category_set_id => $category_set2->id,
     );
 });
 
@@ -66,7 +66,10 @@ require MT::Role;
 my $manage_category_set_role = MT::Role->load({ name => MT->translate('Manage Category Set') });
 
 require MT::CategorySet;
-my $category_set = MT::CategorySet->load({ name => 'test category set' });
+my $category_set  = MT::CategorySet->load({ name => 'test category set' });
+my $category_set2 = MT::CategorySet->load({ name => 'test category set2' });
+
+my $category = MT::Category->load({ label => 'test category', category_set_id => $category_set2->id });
 
 subtest 'mode = list' => sub {
     MT::Association->link($user => $manage_category_set_role => $site);
@@ -119,12 +122,14 @@ subtest 'mode = save' => sub {
         __mode          => 'bulk_update_category',
         datasource      => 'category',
         is_category_set => 1,
-        set_name        => 'category_set',
+        set_name        => 'category_set2',
+        set_id          => $category_set2->id,
         blog_id         => $site->id,
+        checksum        => '5dce82de72cde1d23637a9288ca36f0a',
         objects         => JSON::to_json([{
-            id       => 1,
+            id       => $category->id,
             parent   => 0,
-            label    => 'test_category',
+            label    => 'test category',
             basename => 'test_category'
         }]),
     });
@@ -137,12 +142,14 @@ subtest 'mode = save' => sub {
         datasource      => 'category',
         is_category_set => 1,
         set_name        => 'category_set2',
+        set_id          => $category_set2->id,
         blog_id         => $site->id,
+        checksum        => '5dce82de72cde1d23637a9288ca36f0a',
         objects         => JSON::to_json([{
-            id       => 2,
+            id       => $category->id,
             parent   => 0,
-            label    => 'test_category2',
-            basename => 'test_category2'
+            label    => 'test category',
+            basename => 'test_category'
         }]),
     });
     $app->has_permission_error("save by non permitted user");
