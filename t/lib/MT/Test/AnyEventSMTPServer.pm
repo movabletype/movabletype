@@ -84,8 +84,20 @@ sub _data_validate {
         }
     }
     fail "found perl references" if $data =~ /(?:SCALAR|ARRAY|HASH|CODE)\(/s;
+    my $file = _last_mail_file();
+    if (open my $fh, '>', $file) {
+        print $fh $data;
+        close $fh;
+    }
     note $data;
+    return 1;
 }
+
+sub last_sent_mail {
+    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+}
+
+sub _last_mail_file { "$ENV{MT_TEST_ROOT}/.mail" }
 
 sub stop {
     my $self = shift;
