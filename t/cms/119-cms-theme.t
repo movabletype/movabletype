@@ -129,53 +129,6 @@ my $website = MT::Website->load({ name => 'my website' });
 my $blog    = MT::Blog->load({ name => 'my blog' });
 my $admin   = MT->model('author')->load(1);
 
-# Run tests
-subtest 'Check visibility' => sub {
-    plan 'skip_all';
-
-    my @suite = ({
-            scope   => 'System',
-            blog_id => 0,
-            like    => ['Themes in Use', 'Available Themes',],
-        },
-        {
-            scope   => 'Website',
-            blog_id => $website->id,
-            like    => ['Current Theme', 'Available Themes',],
-        },
-        {
-            scope   => 'Blog',
-            blog_id => $blog->id,
-            like    => ['Current Theme', 'Available Themes',],
-        },
-    );
-
-    foreach my $data (@suite) {
-        subtest 'Scope: ' . $data->{scope} => sub {
-            my $app = MT::Test::App->new('MT::App::CMS');
-            $app->login($admin);
-            $app->get_ok({
-                __mode  => 'list_theme',
-                blog_id => $data->{blog_id},
-            });
-
-            if ($data->{like}) {
-                if (ref($data->{like}) && ref($data->{like}) eq 'ARRAY') {
-                    foreach my $like (@{ $data->{like} }) {
-                        my $like_quotemeta = quotemeta('<h2 class="theme-group-name">' . $like . '</h2>');
-                        $app->content_like(qr/$like_quotemeta/, $like);
-                    }
-                } else {
-                    my $like           = '<h2 class="theme-group-name">' . $data->{like} . '</h2>';
-                    my $like_quotemeta = quotemeta $like;
-                    $app->content_like(qr/$like_quotemeta/, $like);
-                }
-            }
-        };
-    }
-
-};
-
 subtest 'Check applying a blog theme' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
     $app->login($admin);
