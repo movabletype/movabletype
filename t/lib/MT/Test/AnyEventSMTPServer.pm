@@ -6,6 +6,7 @@ use Test::More;
 use Test::TCP;
 use Test::More;
 use MIME::Head;
+use IO::String;
 
 BEGIN {
     plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
