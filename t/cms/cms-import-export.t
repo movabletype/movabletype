@@ -38,9 +38,8 @@ my $good_out = $app->content;
 
 # export entries for an invalid blog
 my $res = eval { $app->post_ok({ __mode => 'export', blog_id => 1000 }); };
-my $eval_error = $@;
-ok($eval_error);
-like($eval_error, qr/Invalid request/i, "Failed as expected");
+my $error = $@ || $app->generic_error;
+like($error, qr/Invalid request/i, "Failed as expected");
 
 # write the file and make sure no funny characters are there
 open my $OUT, ">", "test_import.txt";
