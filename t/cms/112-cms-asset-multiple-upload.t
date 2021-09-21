@@ -74,10 +74,8 @@ subtest 'Uploaded asset (テスト.jpg)' => sub {
 sub upload_asset {
     my $file = shift;
 
-    if ($^O eq 'MSWin32') {
-        require Encode;
-        $file = Encode::encode(cp932 => $file);
-    }
+    require Encode;
+    $file = Encode::encode($^O eq 'MSWin32' ? 'cp932' : 'utf-8' => $file);
 
     my $test_image = $test_env->path($file);
     MT::Test::Image->write(file => $test_image);
