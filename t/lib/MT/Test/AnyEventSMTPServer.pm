@@ -2,11 +2,16 @@ package MT::Test::AnyEventSMTPServer;
 
 use strict;
 use warnings;
-use AnyEvent::SMTP::Server;
 use Test::More;
 use Test::TCP;
 use Test::More;
 use MIME::Head;
+
+BEGIN {
+    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+    eval { require AnyEvent::SMTP::Server; 1 }
+        or plan skip_all => "requires AnyEvent::SMTP::Server";
+}
 
 sub new {
     my ( $class, %args ) = @_;
