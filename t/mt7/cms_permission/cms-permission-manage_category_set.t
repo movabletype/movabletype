@@ -10,6 +10,8 @@ our $test_env;
 use JSON;
 
 BEGIN {
+    plan skip_all => 'FIXME: Not for external CGI server just for now' if $ENV{MT_TEST_RUN_APP_AS_CGI};
+
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
