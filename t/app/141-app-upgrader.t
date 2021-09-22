@@ -18,6 +18,15 @@ use MT::Test qw( :app :newdb );
 use MT::Test::Permission;
 use MT::Test::Upgrade;
 use MT::Theme;
+use Mock::MonkeyPatch;
+
+my $reboot_count = 0;
+my $reboot_guard = Mock::MonkeyPatch->patch(
+    'MT::App::do_reboot' => sub {
+        my $app = shift;
+        $reboot_count++ if $app->{do_reboot};
+        delete $app->{do_reboot};
+    });
 
 $test_env->fix_mysql_create_table_sql;
 
@@ -81,6 +90,8 @@ subtest 'Upgrade from MT4 to MT7' => sub {
     $config->data($new_data);
     $config->save or die $config->errstr;
 
+    $reboot_count = 0; # reset counter
+
     $app = _run_app(
         'MT::App::Upgrader',
         {   __request_method => 'POST',
@@ -121,6 +132,7 @@ subtest 'Upgrade from MT4 to MT7' => sub {
 
     }
 
+    is $reboot_count,         1, 'Reboot app only once.';
     is( MT::Website->count(), 3, 'There are three websites.' );
     is( MT::Blog->count(),    0, 'There is no blog.' );
 

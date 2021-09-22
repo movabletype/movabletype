@@ -47,6 +47,13 @@ sub core_methods {
     };
 }
 
+# avoid automatic reboot
+sub reboot { }
+# force reboot
+sub _force_reboot {
+    $_[0]->SUPER::reboot();
+}
+
 sub needs_upgrade {
     my $app = shift;
 
@@ -634,7 +641,7 @@ sub finish {
         $inst->flush_all;
     }
 
-    $app->reboot();
+    $app->_force_reboot;
 
     if ( $app->{author} ) {
         require MT::Author;
