@@ -3023,7 +3023,7 @@ sub thumbnail_image {
     }
 
     # Check permission.
-    if ( !can_view( undef, $app, $id ) ) {
+    if ( !$app->can_do('view_thumbnail_image') ) {
         return $app->permission_denied;
     }
 
