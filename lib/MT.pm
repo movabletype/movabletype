@@ -2478,6 +2478,10 @@ sub get_next_sched_post_for_user {
     return $next_sched_utc;
 }
 
+sub reboot {
+    $_[0]->run_callbacks('reboot');
+}
+
 our $Commenter_Auth;
 
 sub init_commenter_authenticators {
