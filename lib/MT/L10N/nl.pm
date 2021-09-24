@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{indexsjabloon '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Categorieset',
 	'Category Set' => 'Categorieset',
 	'Create Category Set' => 'Categoriesete aanmaken',
 	'Create [_1]' => '[_1] aanmaken',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Inhoudstype',
 	'Cannot load content field data (ID: [_1])' => 'Kan gegevens inhoudsveld niet laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Kan inhoudstype niet laden #[_1]',
 	'Content Type Boilerplates' => 'Standaardteksten inhoudstypes',
@@ -2056,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
+	'log' => 'Log',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]',
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Hetzelfde archiefbestand bestaat al. U moet de basisnaam of het archiefpad wijzigen. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
+	'unpublish' => 'Publicatie ongedaan maken',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Aantal subsites',
