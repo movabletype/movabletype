@@ -3107,48 +3107,7 @@ sub do_reboot {
     return unless $app->{do_reboot};
     delete $app->{do_reboot};
 
-    if ( $ENV{FAST_CGI} ) {
-        require MT::Touch;
-        MT::Touch->touch( 0, 'config' );
-
-        if ( my $watchfile = MT->config->IISFastCGIMonitoringFilePath ) {
-            require MT::FileMgr;
-            my $fmgr = MT::FileMgr->new('Local');
-            my $res = $fmgr->put_data( '', $watchfile );
-            if ( !defined($res) ) {
-                $app->log(
-                    $app->translate(
-                        "Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]",
-                        $watchfile,
-                        $fmgr->errstr,
-                    )
-                );
-                return 1;
-            }
-        }
-    }
-    if ( my $pidfile = MT->config->PIDFilePath ) {
-        require MT::FileMgr;
-        my $fmgr = MT::FileMgr->new('Local');
-        my $pid;
-        unless ( $pid = $fmgr->get_data($pidfile) ) {
-            $app->log(
-                $app->translate(
-                    "Failed to open pid file [_1]: [_2]", $pidfile,
-                    $fmgr->errstr,
-                )
-            );
-            return 1;
-        }
-        chomp $pid;
-        unless ( kill 'HUP', int($pid) ) {
-            $app->log(
-                $app->translate( "Failed to send reboot signal: [_1]", $!, )
-            );
-            return 1;
-        }
-    }
-    1;
+    $app->run_callbacks('reboot');
 }
 
 sub run {

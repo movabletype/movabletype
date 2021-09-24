@@ -1226,6 +1226,7 @@ sub init_debug_mode {
                     sub { MT->publisher->queue_build_file_filter(@_) },
                 'cms_upload_file' => \&core_upload_file_to_sync,
                 'api_upload_file' => \&core_upload_file_to_sync,
+                'reboot'          => \&core_reboot,
                 'post_init' =>
                     '$Core::MT::Summary::Triggers::post_init_add_triggers',
             }
@@ -1242,6 +1243,55 @@ sub init_debug_mode {
 sub core_upload_file_to_sync {
     my ( $cb, %args ) = @_;
     MT->upload_file_to_sync(%args);
+}
+
+sub core_reboot {
+    my $app = MT->instance;
+
+    require MT::Touch;
+    MT::Touch->touch( 0, 'config' );
+
+    if ( my $watchfile = MT->config->IISFastCGIMonitoringFilePath ) {
+        require MT::FileMgr;
+        my $fmgr = MT::FileMgr->new('Local');
+        my $res = $fmgr->put_data( '', $watchfile );
+        if ( !defined($res) ) {
+            $app->log(
+                $app->translate(
+                    "Failed to open monitoring file that specified by IISFastCGIMonitoringFilePath directive '[_1]': [_2]",
+                    $watchfile,
+                    $fmgr->errstr,
+                )
+            );
+            return 1;
+        }
+    }
+
+    if ( my @pidfiles = MT->config->PIDFilePath ) {
+        for my $pidfile (@pidfiles) {
+            require MT::FileMgr;
+            my $fmgr = MT::FileMgr->new('Local');
+            my $pid;
+            unless ( $pid = $fmgr->get_data($pidfile) ) {
+                $app->log(
+                    $app->translate(
+                        "Failed to open pid file [_1]: [_2]", $pidfile,
+                        $fmgr->errstr,
+                    )
+                );
+                return 1;
+            }
+            chomp $pid;
+            unless ( kill 'HUP', int($pid) ) {
+                $app->log(
+                    $app->translate( "Failed to send reboot signal: [_1]", $!, )
+                );
+                return 1;
+            }
+        }
+    }
+
+    1;
 }
 
 sub upload_file_to_sync {
