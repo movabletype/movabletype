@@ -46,9 +46,6 @@ __PACKAGE__->install_properties(
     }
 );
 
-__PACKAGE__->add_callback( 'post_save', 5, MT->component('core'),
-    \&_post_save );
-
 __PACKAGE__->add_callback( 'pre_remove', 5, MT->component('core'),
     \&_pre_remove );
 
@@ -156,15 +153,12 @@ sub remove {
             }
             $content_field->remove();
         }
+        return 1;
     }
     else {
-        my $ret = $self->SUPER::remove(@_);
         $self->remove_children if $self->id;
-        MT->app->reboot;
-        return $ret;
+        return $self->SUPER::remove(@_);
     }
-
-    1;
 }
 
 sub content_type {
@@ -194,12 +188,6 @@ sub permission {
     };
 }
 
-sub _post_save {
-    my ( $cb, $obj, $original ) = @_;
-
-    MT->app->reboot;
-}
-
 sub _pre_remove {
     my ( $cb, $obj, $original ) = @_;
 
@@ -220,8 +208,6 @@ sub _pre_remove {
         $role->set_these_permissions(@permissions);
         $role->save;
     }
-
-    MT->app->reboot;
 }
 
 sub related_content_type {

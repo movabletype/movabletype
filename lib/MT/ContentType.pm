@@ -40,9 +40,6 @@ __PACKAGE__->install_properties(
     }
 );
 
-__PACKAGE__->add_callback( 'post_save', 5, MT->component('core'),
-    \&_post_save );
-
 __PACKAGE__->add_callback( 'post_remove', 5, MT->component('core'),
     \&_post_remove );
 
@@ -539,12 +536,6 @@ sub all_permissions {
     return \%all_permission;
 }
 
-sub _post_save {
-    my ( $cb, $obj, $original ) = @_;
-
-    MT->app->reboot;
-}
-
 sub _post_remove {
     my ( $cb, $obj, $original ) = @_;
 
@@ -575,8 +566,6 @@ sub _post_remove {
         $role->set_these_permissions(@permissions);
         $role->save;
     }
-
-    MT->app->reboot;
 }
 
 sub generate_object_log_class {

@@ -1136,6 +1136,12 @@ sub init {
     $mt->init_schema();
     $mt->init_permissions();
 
+    for my $events (@{$mt->registry('reboot_events')}) {
+        for my $e (@$events) {
+            MT->add_callback($e, 5, $mt, sub { MT->app->reboot });
+        }
+    }
+
     # Load MT::Log so constants are available
     require MT::Log;
 

@@ -1042,8 +1042,6 @@ sub run_callbacks {
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
-        MT->add_callback( 'MT::Config::post_save', 0, $app,
-            sub { $app->reboot } );
         MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
         $callbacks_added = 1;
     }

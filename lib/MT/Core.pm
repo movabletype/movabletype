@@ -2371,6 +2371,13 @@ BEGIN {
         web_services    => undef,
         stats_providers => undef,
         archive_types   => \&load_archive_types,
+        reboot_events   => [qw(
+            MT::Config::post_save
+            MT::ContentType::post_save
+            MT::ContentType::post_remove
+            MT::ContentData::post_save
+            MT::ContentData::post_remove
+        )],
         tags            => \&load_core_tags,
         text_filters    => {
             '__default__' => {
