@@ -65,6 +65,7 @@ for my $rec (@Img) {
             ok( eval 'MT::Image::' . $driver . '->load_driver()',
                 'Also can load driver via class method'
             );
+            $img->_init_image_size;
             is( $img->{width}, $img_width,
                 "$driver says $img_filename is $img_width px wide" );
             is( $img->{height}, $img_height,
@@ -162,6 +163,7 @@ for my $rec (@Img) {
 
             isa_ok( $img, 'MT::Image::' . $driver );
             note( MT::Image->errstr ) if MT::Image->errstr;
+            $img->_init_image_size;
             is( $img->{width}, $img_width,
                 "$driver says $img_filename from blob is $img_width px wide"
             );
