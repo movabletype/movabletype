@@ -2818,6 +2818,7 @@ use vars qw( @ISA %Lexicon );
 	'A paramter "[_1]" is required.' => 'Se requiere un parámetro "[_1]".',
 	'author_id (ID:[_1]) is invalid.' => 'author_id (Id:[_1]) no válido.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
+	'log' => 'Histórico',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nombre de etiqueta no válido: [_1]',
@@ -3641,6 +3642,7 @@ use vars qw( @ISA %Lexicon );
 	q{Parameter '[_1]' is required} => q{El parámetro '[_1]' es necesario},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{Fallo renombrando el fichero temporal '[_1]': [_2]},
 	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
+	'unpublish' => 'Despublicar',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'Blogs',

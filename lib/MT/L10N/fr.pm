@@ -2819,6 +2819,7 @@ use vars qw( @ISA %Lexicon );
 	'A paramter "[_1]" is required.' => 'Un paramètre "[_1]" est requis.',
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) est invalide.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) supprimé par '[_2]'},
+	'log' => 'Journal',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nom de tag invalide : [_1]',
@@ -3642,6 +3643,7 @@ use vars qw( @ISA %Lexicon );
 	q{Template '[_1]' does not have an Output File.} => q{Le gabarit '[_1]' n'a pas de fichier de sortie.},
 	q{The same archive file exists. You should change the basename or the archive path. ([_1])} => q{Le même fichier d'archive existe déjà. Vous devez changer le nom de base ou le chemin de l'archive. ([_1])},
 	q{You did not set your blog publishing path} => q{Vous n'avez pas spécifié le chemin de publication de votre blog},
+	'unpublish' => 'Dé-publier',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'Nombre de blogs',

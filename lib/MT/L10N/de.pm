@@ -2828,6 +2828,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'A paramter "[_1]" is required.' => 'Parameter "[_1]" erforderlich.',
 	'author_id (ID:[_1]) is invalid.' => 'Ungültige author_id: [_1]',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) gelöscht von '[_2]'},
+	'log' => 'Log',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Befehls-Name ungültig: [_1]',
@@ -3651,6 +3652,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	q{Parameter '[_1]' is required} => q{Parameter &#8222;[_1]&#8220; erforderlich},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{Temporäre Datei &#8222;[_1]&#8220; konnte nicht umbenannt werden: [_2]},
 	q{Template '[_1]' does not have an Output File.} => q{Vorlage &#8222;[_1]&#8220; hat keine Ausgabedatei.},
+	'unpublish' => 'Nicht mehr veröffentlichen',
 
 ## lib/MT/Website.pm
 	'__BLOG_COUNT' => 'Blogs',
