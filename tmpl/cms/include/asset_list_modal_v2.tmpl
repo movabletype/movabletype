@@ -141,5 +141,12 @@
 </div>
 </mt:setvarblock>
 
+<mt:setvarblock name="css_include" append="1">
+<style>
+.modal-body {
+  max-height: 100% !important;
+}
+</style>
+</mt:setvarblock>
 <mt:include name="layout/modal.tmpl">
 <mt:var name="layout">

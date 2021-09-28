@@ -33,7 +33,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="{opts.user_id ? 'col-12' : 'col-8'} row">
+      <div class={opts.user_id || opts.content_field_id ? 'col-12 row' : 'col-8 row'}>
         <div class="mt-asset col-3" each={ filterdAssets } data-is="asset"></div>
       </div>
       <div class="col-4 overflow-hidden" if={!opts.user_id && !opts.content_field_id}>
@@ -374,6 +374,7 @@
       this.uploadFiles(e.target.files)
     }
     jQuery(() => {
+      window.parent.jQuery('.mt-modal .modal-content').css('padding-bottom', '800px')
       jQuery('.modal-body').css({'position': 'relative'})
       function resize_upload_overlay() {
         jQuery('.upload-overlay-container').width(jQuery(window).width())
