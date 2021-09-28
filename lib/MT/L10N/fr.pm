@@ -4262,21 +4262,6 @@ use vars qw( @ISA %Lexicon );
 	'Classic Website' => 'Site web classique',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crée un portail de blogs qui agrège les contenus de plusieurs blogs sur un site web.',
 
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Contenu lié',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Aperçu du commentaire',
-
-## themes/pico/templates/navigation.mtml
-	q{Subscribe} => q{S'abonner},
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Une collection de styles compatible avec les thèmes Pico.',
-	'Pico Styles' => 'Styles Pico',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico est un thème de microblogging conçu pour gérer simplement des mises à jour fréquentes. Pour mettre en avant votre contenu, nous avons déplacé les colonnes latérales sous la liste de vos notes.},
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Télécharger un nouvel élément',
 

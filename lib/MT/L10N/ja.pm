@@ -4248,21 +4248,6 @@ _4]'から削除しました。},
 	'Classic Website' => 'クラシックウェブサイト',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
 
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => '関連コンテンツ',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'コメントの確認',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => '購読',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
-	'Pico Styles' => 'Picoスタイル',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。},
-
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => '新規アイテムのアップロード',
 
