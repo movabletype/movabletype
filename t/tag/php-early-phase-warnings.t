@@ -11,6 +11,8 @@ BEGIN {
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
+$ENV{EXTENDED_TESTING} or plan skip_all => 'set EXTENDED_TESTING=1 to enable this test';
+
 use MT::Test::PHP;
 
 $test_env->prepare_fixture('db');
