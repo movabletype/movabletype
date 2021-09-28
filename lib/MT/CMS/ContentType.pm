@@ -424,10 +424,14 @@ sub save {
     # Duplication check (just in case; this check should have been done before saving using JS)
     my %seen_field_names;
     for my $field (@$field_list) {
-        my $name = $field->{options}{label};
-        if ( $seen_field_names{$name}++ ) {
-            $param{error}
-                = $app->translate( 'Field \'[_1]\' must be unique in this content type.', $name );
+        my $name    = $field->{options}{label};
+        my $lc_name = lc $name;
+        if ( $seen_field_names{$lc_name}++ ) {
+            if ($name ne $lc_name) {
+                $param{error} = $app->translate( 'Field \'[_1]\' and \'[_2]\' must not coexist within the same content type.', $name, $lc_name );
+            } else {
+                $param{error} = $app->translate( 'Field \'[_1]\' must be unique in this content type.', $name );
+            }
             $app->mode('view');
             return $app->forward( "view", \%param );
         }
