@@ -7,7 +7,7 @@ use Encode;
 use File::Temp 'tempfile';
 
 sub run {
-    my ( $class, $script ) = @_;
+    my ( $class, $script, $stderr ) = @_;
 
     my $dir = $ENV{MT_TEST_ROOT} || '.';
 
@@ -35,9 +35,7 @@ INI
     }
 
 
-    IPC::Run3::run3 [ 'php', @args ],
-        \$script, \my $result, undef,
-        { binmode_stdin => 1 } or die $?;
+    IPC::Run3::run3 [ 'php', @args ], \$script, \my $result, $stderr, { binmode_stdin => 1 } or die $?;
     $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
     Encode::decode_utf8($result);
 
