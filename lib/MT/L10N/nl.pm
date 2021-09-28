@@ -1317,6 +1317,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{Inhoudstype '[_1]' (ID:[_2]) toegevoegd door gebruiker '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Inhoudstype '[_1]' (ID:[_2]) verwijderd door '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{Inhoudstype '[_1]' (ID:[_2]) bewerkt door gebruiker '[_3]'},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{}, # Translate - New
+	q{Field '[_1]' must be unique in this content type.} => q{}, # Translate - New
 	q{Name '[_1]' is already used.} => q{Naam '[_1]' is reeds in gebruik.},
 
 ## lib/MT/CMS/Dashboard.pm
