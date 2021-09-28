@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Mensajes de alerta y registro',
 	'You did not have permission for this action.' => 'No tenía permisos para realizar esta acción.',
 	'[_1] contains an invalid character: [_2]' => '[_1] contiene un caracter no válido: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Inicio de sesión fallido por usuario deshabilitado '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1220,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{plantilla índice '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Conjunto de categorías',
 	'Category Set' => 'Conjunto de categorías',
 	'Create Category Set' => 'Crear conjunto de categorías',
 	'Create [_1]' => 'Crear [_1]',
@@ -1233,11 +1235,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue editada por '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{La categoría '[_1]' fue creada por '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue editada por '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Conjunto de categorías '[_1]' fue creada por '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Hay un conflicto entre el nombre base de la categoría '[_1]' y el de otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{El nombre de la categría '[_1]' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Hay un conflicto entre el nombre de la categoría '[_1]' y otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The name '[_1]' is too long!} => q{El nombre '[_1]' es demasiado largo.},
 	q{[_1] order has been edited by '[_2]'.} => q{El orden de [_1] fue editado por '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Todos los/las [_1]',
@@ -1290,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) editado y su estado cambió de [_3] a [_4] por el usuario '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Tipo de contenido',
 	'Cannot load content field data (ID: [_1])' => 'No se pudo cargar el contenido del campo (ID: [_1])',
 	'Cannot load content type #[_1]' => 'No se pudo cargar el tipo de contenido #[_1]',
 	'Content Type Boilerplates' => 'Modelos de tipos de contenido',
@@ -2050,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (Id:[_1]) no válido.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
+	'log' => 'Histórico',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nombre de etiqueta no válido: [_1]',
@@ -2907,6 +2916,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Reconstruyendo categorías de objetos',
 	'Rebuilding object tags...' => 'Reconstruyendo etiquetas de objetos...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Reinicio del panel de control predefinido de widgets...',
 	'Truncating values of value_varchar column...' => 'Acortando los valores de la columna value_varchar...',
 	'add administer_site permission for Blog Administrator...' => 'añadir permiso administer_site para el administrador del blog...',
@@ -2977,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Ya existe el fichero del mismo archivo. Debe modificar el título o la ruta. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
+	'unpublish' => 'Despublicar',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Cuenta de sitios hijos',
@@ -3129,7 +3142,7 @@ use vars qw( @ISA %Lexicon );
 	'You can only act upon a minimum of [_1] [_2].' => 'Solo puede actuar sobre un mínimo de [_1] [_2].',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'act upon' => 'actuar sobre',
-	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]]'?},
+	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]'?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'100 rows' => '100 filas',

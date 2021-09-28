@@ -1634,6 +1634,7 @@ sub preview_data {
             ? $preview_handler->( $f, $self->data->{ $f->{id} }, $self )
             : $self->data->{ $f->{id} };
         $field_data = '' unless defined $field_data && $field_data ne '';
+        my $escaped_field_data = MT::Util::encode_html($field_data);
 
         my $field_label = ( $f->{options} || +{} )->{label}
             || MT->translate('(No label)');
@@ -1641,7 +1642,7 @@ sub preview_data {
         my $escaped_field_label = MT::Util::encode_html($field_label);
 
         $data
-            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$field_data</div></div>};
+            .= qq{<div class="mb-3"><div><b>$escaped_field_label:</b></div><div class="ml-5">$escaped_field_data</div></div>};
     }
     $data;
 }

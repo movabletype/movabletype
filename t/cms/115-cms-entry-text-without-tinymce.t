@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 BEGIN {
@@ -14,14 +14,14 @@ BEGIN {
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        PluginSwitch => [ 'TinyMCE5=0', 'TinyMCE=0' ],
+        PluginSwitch => ['TinyMCE5=0', 'TinyMCE=0'],
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
 
 use MT::Test;
-
-MT::Test->init_app;
+use MT::Test::App;
+use JSON;
 
 $test_env->prepare_fixture('db_data');
 
@@ -30,7 +30,7 @@ my $user = $app->model('author')->load(1);
 my $blog = $app->model('blog')->load(1);
 
 my $mock_app = Test::MockModule->new('MT::App');
-$mock_app->mock( 'validate_magic', 0 );
+$mock_app->mock('validate_magic', 0);
 
 {
     my $entry = $app->model('entry')->load(1);
@@ -38,8 +38,7 @@ $mock_app->mock( 'validate_magic', 0 );
     $entry->save or die;
 }
 
-my @suite = (
-    {
+my @suite = ({
         param => {
             text => 'Archetype Editor is used',
         },
@@ -67,14 +66,14 @@ my @suite = (
         param => {
             text => 'Set the text via param <img src="src_via_param" />',
         },
-        like => qr/Set the text via param/,
+        like   => qr/Set the text via param/,
         unlike => qr/src_via_param/,
     },
     {
         param => {
             text_more => 'Set the text more via param <img src="src_via_param" />',
         },
-        like => qr/Set the text more via param/,
+        like   => qr/Set the text more via param/,
         unlike => qr/src_via_param/,
     },
     {
@@ -115,43 +114,43 @@ my @suite = (
     },
 );
 
+my $json_encoder = JSON->new->canonical;
+
 for my $type (qw(entry page)) {
     subtest '_type:' . $type => sub {
         for my $data (@suite) {
-            my $p = MT::Util::to_json(
-                {   param => $data->{param},
-                    ( $data->{config} ? ( config => $data->{config} ) : () )
-                }, { canonical => 1 },
-            );
+            my $p = $json_encoder->encode({
+                param => $data->{param},
+                ($data->{config} ? (config => $data->{config}) : ()),
+            });
             subtest $p => sub {
-                local $app->config->{__var}{ lc('GlobalSanitizeSpec') }
-                    = $data->{config}{GlobalSanitizeSpec}
-                    if exists $data->{config}
-                    && exists $data->{config}{GlobalSanitizeSpec};
-
-                my $app = _run_app(
-                    'MT::App::CMS',
-                    {   __test_user => $user,
-                        __mode      => 'view',
-                        blog_id     => $blog->id,
-                        _type       => 'entry',
-                        %{ $data->{param} },
-                    }
-                );
-
-                my $out = delete $app->{__test_output};
-                if ( $data->{like} ) {
-                    like( $out, $data->{like}, 'contains' );
-                }
-                if ( $data->{unlike} ) {
-                    unlike( $out, $data->{unlike}, 'not contains' );
+                my $org_spec = $app->config->GlobalSanitizeSpec;
+                local $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $org_spec;
+                if (exists $data->{config} && exists $data->{config}{GlobalSanitizeSpec}) {
+                    my $data_spec = $data->{config}{GlobalSanitizeSpec};
+                    $app->config->{__var}{ lc('GlobalSanitizeSpec') } = $data_spec;
+                    $test_env->update_config(GlobalSanitizeSpec => $data_spec);
+                } else {
+                    $test_env->update_config(GlobalSanitizeSpec => $org_spec);
                 }
 
-                done_testing();
+                my $app = MT::Test::App->new('MT::App::CMS');
+                $app->login($user);
+                $app->get_ok({
+                    __mode  => 'view',
+                    blog_id => $blog->id,
+                    _type   => 'entry',
+                    %{ $data->{param} },
+                });
+
+                if ($data->{like}) {
+                    $app->content_like($data->{like}, 'contains');
+                }
+                if ($data->{unlike}) {
+                    $app->content_unlike($data->{unlike}, 'not contains');
+                }
             };
         }
-
-        done_testing();
     };
 }
 

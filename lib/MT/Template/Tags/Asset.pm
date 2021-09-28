@@ -189,6 +189,7 @@ sub _hdlr_assets {
     # Adds a tag filter to the filters list.
     if ( my $tag_arg = $args->{tags} || $args->{tag} ) {
         my $status = $ctx->set_tag_filter_context({
+            objects     => $assets,
             tag_arg     => $tag_arg,
             blog_terms  => \%blog_terms,
             blog_args   => \%blog_args,

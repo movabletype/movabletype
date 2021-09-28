@@ -2251,7 +2251,11 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
-
+            'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
             # new Asset Modal
             'AssetModalVersion' => { default => 1 },
         },
@@ -2587,6 +2591,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
@@ -2901,6 +2906,7 @@ sub load_core_permissions {
                 'edit_entry_authored_on'                => 1,
                 'edit_entry_unpublished_on'             => 1,
                 'save_edit_prefs'                       => 1,
+                'view_thumbnail_image'                  => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2931,6 +2937,7 @@ sub load_core_permissions {
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
                 'save_edit_prefs'                  => 1,
+                'view_thumbnail_image'             => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2946,6 +2953,7 @@ sub load_core_permissions {
                 'delete_asset_file'                => 1,
                 'edit_assets'                      => 1,
                 'open_asset_edit_screen'           => 1,
+                'view_thumbnail_image'             => 1,
                 'remove_tags_from_assets'          => 1,
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
@@ -3081,6 +3089,7 @@ sub load_core_permissions {
                 'access_to_insert_asset_list'             => 1,
                 'manage_content_data'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'blog.manage_pages' => {
@@ -3116,6 +3125,7 @@ sub load_core_permissions {
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
                 'save_edit_prefs'                 => 1,
+                'view_thumbnail_image'            => 1,
             }
         },
         'blog.manage_users' => {
@@ -3438,6 +3448,7 @@ sub load_core_permissions {
                 'access_to_website_list'                  => 1,
                 'access_to_blog_list'                     => 1,
                 'use_tools:search'                        => 1,
+                'view_thumbnail_image'                    => 1,
             },
         },
         'system.manage_content_types' => {

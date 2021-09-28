@@ -235,6 +235,7 @@ sub save_file {
     open my $fh, '>', $file or die "$file: $!";
     binmode $fh;
     print $fh $body;
+    $file;
 }
 
 sub image_drivers {
@@ -1108,6 +1109,18 @@ sub skip_unless_plugin_exists {
     my ($self, $name) = @_;
     my $config = "$MT_HOME/plugins/$name/config.yaml";
     plan skip_all => "$config does not exist" unless -f $config;
+}
+
+sub plugin_exists {
+    my ($self, $name) = @_;
+    my $config = "$MT_HOME/plugins/$name/config.yaml";
+    -f $config ? 1 : 0;
+}
+
+sub addon_exists {
+    my ($self, $name) = @_;
+    my $config = "$MT_HOME/addons/$name/config.yaml";
+    -f $config ? 1 : 0;
 }
 
 sub disable_addon {

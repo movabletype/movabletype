@@ -567,8 +567,10 @@ sub _bulk_author_name_html {
         }
         my $lc_auth_label = lc $auth_label;
 
-        my $name = MT::Util::encode_html( $obj->name )
-            || '(' . MT->translate('Registered User') . ')';
+        my $name = MT::Util::encode_html( $obj->name );
+        if (!defined $name or $name eq '') {
+            $name = '(' . MT->translate('Registered User') . ')';
+        }
         my $email = MT::Util::encode_html( $obj->email );
         my $url   = MT::Util::encode_html( $obj->url );
         my $out   = qq{
@@ -703,7 +705,7 @@ sub set_password {
         $crypt_sha
             = '$6$'
             . $salt . '$'
-            . MT::Util::Digest::SHA::sha512_base64( $salt . $pass );
+            . MT::Util::Digest::SHA::sha512_base64( $salt . Encode::encode_utf8($pass) );
     }
     else {
 
