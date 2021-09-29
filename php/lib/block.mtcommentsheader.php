@@ -6,6 +6,6 @@
 # $Id$
 
 function smarty_block_mtcommentsheader($args, $content, &$ctx, &$repeat) {
-    return $ctx->_hdlr_if($args, $content, $ctx, $repeat, 0);
+    return '';
 }
 ?>
