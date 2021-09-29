@@ -12,6 +12,7 @@ use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
+use File::Spec;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -110,10 +111,16 @@ sub run_perl_tests {
                 local $TODO = "may fail"
                     if $expected_method =~ /^expected_todo/;
 
-                is( $result,
-                    _filter_vars( $block->$expected_method ),
-                    $test_name_prefix . $block->name
-                );
+                my $got    = $result;
+                my $tester = $block->$expected_method;
+                $tester = _filter_vars($tester) unless ref($tester);
+                my $name   = $test_name_prefix . $block->name;
+
+                if ( ref($tester) && ref($tester) eq 'Regexp' ) {
+                    like( $got, $tester, $name );
+                } else {
+                    is( $got, $tester, $name );
+                }
             }
         }
     }
@@ -184,8 +191,8 @@ SKIP: {
                 }
                 my $expected = $block->$expected_method;
                 $expected = '' unless defined $expected;
-                $expected =~ s/\\r/\\n/g;
-                $expected =~ s/\r/\n/g;
+                $expected =~ s/\\r/\\n/g unless (ref($expected));
+                $expected =~ s/\r/\n/g unless (ref($expected));
 
                 # for Smarty 3.1.32+
                 $php_result =~ s/\n//gs;
@@ -194,13 +201,15 @@ SKIP: {
                 local $TODO = "may fail"
                     if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $name = $test_name_prefix . $block->name . ' - dynamic';
-                is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
-                    _filter_vars(
-                        MT::I18N::encode_text( $expected, undef, 'utf-8' )
-                    ),
-                    $name
-                );
+                my $got    = MT::I18N::encode_text($php_result, undef, 'utf-8');
+                my $tester = ref($expected) ? $expected : _filter_vars(MT::I18N::encode_text($expected, undef, 'utf-8'));
+                my $name   = $test_name_prefix . $block->name . ' - dynamic';
+
+                if ( ref($tester) && ref($tester) eq 'Regexp' ) {
+                    like( $got, $tester, $name );
+                } else {
+                    is( $got, $tester, $name );
+                }
             }
         }
     }
@@ -270,5 +279,12 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 ?>
 PHP
 }
+
+package MT::Test::Tag::Filter;
+use strict;
+use warnings;
+use Test::Base::Filter -base;
+
+sub regexify { qr{$_[0]} }
 
 1;
