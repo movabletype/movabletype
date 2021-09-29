@@ -27,6 +27,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 use MT::Association;
 use MT::Placement;
 use MT::Util;
@@ -239,6 +240,25 @@ my $blog_entry = MT::Entry->load( { title => 'Child Blog Entry by Ukawa' } );
 
 # Run tests
 my ( $app, $out );
+
+
+subtest 'Filtered list with unknown column' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $app->login($admin);
+    $app->post_ok({
+        __test_user      => $admin,
+        __request_method => 'POST',
+        __mode           => 'filtered_list',
+        datasource       => 'entry',
+        blog_id          => $website->id,
+        columns          => 'title,unknown',
+        fid              => '_allpass',
+    });
+    my $json = $app->json;
+    ok($json->{result}, 'json is returned');
+    is($json->{error}, undef, 'no error');
+};
 
 note 'Test in website scope';
 subtest 'Test in website scope' => sub {

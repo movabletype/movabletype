@@ -457,10 +457,11 @@ sub edit {
     }
     if ( exists $param->{website_url} ) {
         my $website_url = $param->{website_url};
-        my ( $scheme, $domain ) = $website_url =~ m!^(\w+)://(.+)$!;
-        $domain .= '/' if $domain !~ m!/$!;
-        $param->{website_scheme} = $scheme;
-        $param->{website_domain} = $domain;
+        if (my ($scheme, $domain) = $website_url =~ m!^(\w+)://(.+)$!) {
+            $domain .= '/' if $domain !~ m!/$!;
+            $param->{website_scheme} = $scheme;
+            $param->{website_domain} = $domain;
+        }
     }
 
     1;
@@ -1451,6 +1452,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -1802,10 +1808,6 @@ sub pre_save {
             }
         }
     }
-    else {
-
-       #$obj->is_dynamic(0) unless defined $app->{query}->param('is_dynamic');
-    }
 
     # Set parent site ID
     my $blog_id = $app->param('blog_id');
@@ -2034,7 +2036,7 @@ sub post_save {
                     "Saved [_1] Changes", $obj->class_label
                 ),
                 metadata => $meta_message,
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 blog_id  => $obj->id,
                 category => 'edit',
@@ -2224,7 +2226,7 @@ sub post_delete {
                 "Blog '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'blog',
             category => 'delete'
         }
@@ -3023,6 +3025,29 @@ sub clone {
     my ($param) = {};
     my $user    = $app->user;
 
+    $app->validate_param({
+        archive_path          => [qw/MAYBE_STRING/],
+        archive_path_absolute => [qw/MAYBE_STRING/],
+        archive_url           => [qw/MAYBE_STRING/],
+        archive_url_path      => [qw/MAYBE_STRING/],
+        archive_url_subdomain => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID/],
+        clone                 => [qw/MAYBE_STRING/],
+        enable_archive_paths  => [qw/MAYBE_STRING/],
+        id                    => [qw/ID MULTI/],
+        new_blog_name         => [qw/MAYBE_STRING/],
+        site_path             => [qw/MAYBE_STRING/],
+        site_path_absolute    => [qw/MAYBE_STRING/],
+        site_url              => [qw/MAYBE_STRING/],
+        site_url_path         => [qw/MAYBE_STRING/],
+        site_url_subdomain    => [qw/MAYBE_STRING/],
+        use_absolute          => [qw/MAYBE_STRING/],
+        use_absolute_archive  => [qw/MAYBE_STRING/],
+        use_archive_subdomain => [qw/MAYBE_STRING/],
+        use_subdomain         => [qw/MAYBE_STRING/],
+        verify                => [qw/MAYBE_STRING/],
+    }) or return;
+
     $app->validate_magic() or return;
 
     $app->{hide_goback_button} = 1;
@@ -3048,10 +3073,10 @@ sub clone {
     my $blog       = $blog_class->load($blog_id)
         or return $app->error( $app->translate("Invalid blog_id") );
     return $app->error( $app->translate("This action cannot clone website.") )
-        unless $blog->is_blog;
+        unless $blog->is_blog && $blog->parent_id;
 
     return $app->permission_denied()
-        unless $app->user->permissions( $blog->website->id )
+        unless $app->user->permissions( $blog->parent_id )
         ->can_do('clone_blog');
 
     $param->{'id'}            = $blog->id;
@@ -3197,7 +3222,7 @@ sub clone {
             $base_url = $raw_site_url[0];
         }
         $param->{site_url} = $base_url;
-        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain} && $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
             my $base_archive_url;
@@ -3373,12 +3398,7 @@ HTML
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
-        if ( $subdomain || $path ) {
-            $new_blog->site_url("$subdomain/::/$path");
-        }
-        else {
-            $new_blog->site_url( $param->{'site_url'} );
-        }
+        $new_blog->site_url("$subdomain/::/$path");
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
@@ -3392,12 +3412,7 @@ HTML
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $app->param('archive_url_path');
-            if ( $subdomain || $path ) {
-                $new_blog->archive_url("$subdomain/::/$path");
-            }
-            else {
-                $new_blog->archive_url( $param->{'site_url'} );
-            }
+            $new_blog->archive_url("$subdomain/::/$path");
         }
 
         $new_blog->save();
@@ -3431,7 +3446,7 @@ HTML
             mode => 'list',
             args => {
                 '_type' => $app->blog ? 'blog' : 'website',
-                blog_id => ( $app->blog ? $new_blog->website->id : 0 )
+                blog_id => ( $app->blog ? $new_blog->parent_id : 0 )
             }
             );
         my $setting_url = $app->uri(

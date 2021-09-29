@@ -4,12 +4,41 @@
  * For LGPL see License.txt in the project root for license information.
  * For commercial licenses see https://www.tiny.cloud/
  *
- * Version: 5.7.0 (2021-02-10)
+ * Version: 5.8.1 (2021-05-20)
  */
 (function () {
     'use strict';
 
     var global = tinymce.util.Tools.resolve('tinymce.PluginManager');
+
+    var typeOf = function (x) {
+      var t = typeof x;
+      if (x === null) {
+        return 'null';
+      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
+        return 'array';
+      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
+        return 'string';
+      } else {
+        return t;
+      }
+    };
+    var isType = function (type) {
+      return function (value) {
+        return typeOf(value) === type;
+      };
+    };
+    var isSimpleType = function (type) {
+      return function (value) {
+        return typeof value === type;
+      };
+    };
+    var isString = isType('string');
+    var isObject = isType('object');
+    var isArray = isType('array');
+    var isBoolean = isSimpleType('boolean');
+    var isFunction = isSimpleType('function');
+    var isNumber = isSimpleType('number');
 
     var noop = function () {
     };
@@ -131,34 +160,6 @@
       none: none,
       from: from
     };
-
-    var typeOf = function (x) {
-      var t = typeof x;
-      if (x === null) {
-        return 'null';
-      } else if (t === 'object' && (Array.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'Array')) {
-        return 'array';
-      } else if (t === 'object' && (String.prototype.isPrototypeOf(x) || x.constructor && x.constructor.name === 'String')) {
-        return 'string';
-      } else {
-        return t;
-      }
-    };
-    var isType = function (type) {
-      return function (value) {
-        return typeOf(value) === type;
-      };
-    };
-    var isSimpleType = function (type) {
-      return function (value) {
-        return typeof value === type;
-      };
-    };
-    var isString = isType('string');
-    var isArray = isType('array');
-    var isBoolean = isSimpleType('boolean');
-    var isFunction = isSimpleType('function');
-    var isNumber = isSimpleType('number');
 
     var nativeSlice = Array.prototype.slice;
     var nativePush = Array.prototype.push;
@@ -392,6 +393,18 @@
 
     var contains = function (str, substr) {
       return str.indexOf(substr) !== -1;
+    };
+    var blank = function (r) {
+      return function (s) {
+        return s.replace(r, '');
+      };
+    };
+    var trim = blank(/^\s+|\s+$/g);
+    var isNotEmpty = function (s) {
+      return s.length > 0;
+    };
+    var isEmpty = function (s) {
+      return !isNotEmpty(s);
     };
 
     var normalVersionRegex = /.*?version\/\ ?([0-9]+)\.([0-9]+).*/;
@@ -876,7 +889,7 @@
       }
       return dom.isBlock(node.nextSibling) && !isBr(node.previousSibling);
     };
-    var isEmpty = function (dom, elm, keepBookmarks) {
+    var isEmpty$1 = function (dom, elm, keepBookmarks) {
       var empty = dom.isEmpty(elm);
       if (keepBookmarks && dom.select('span[data-mce-type=bookmark]', elm).length > 0) {
         return false;
@@ -975,11 +988,11 @@
         DOM.insertAfter(fragment, ul);
       }
       DOM.insertAfter(newBlock, ul);
-      if (isEmpty(editor.dom, li.parentNode)) {
+      if (isEmpty$1(editor.dom, li.parentNode)) {
         removeAndKeepBookmarks(li.parentNode);
       }
       DOM.remove(li);
-      if (isEmpty(editor.dom, ul)) {
+      if (isEmpty$1(editor.dom, ul)) {
         DOM.remove(ul);
       }
     };
@@ -1629,9 +1642,6 @@
       return sibStyle === detailStyle;
     };
     var applyList = function (editor, listName, detail) {
-      if (detail === void 0) {
-        detail = {};
-      }
       var rng = editor.selection.getRng();
       var listItemName = 'LI';
       var root = getClosestListRootElm(editor, editor.selection.getStart(true));
@@ -1757,10 +1767,10 @@
         fireListEvent(editor, listToggleActionFromListName(listName), parentList);
       }
     };
-    var toggleList = function (editor, listName, detail) {
+    var toggleList = function (editor, listName, _detail) {
       var parentList = getParentList(editor);
       var selectedSubLists = getSelectedSubLists(editor);
-      detail = detail ? detail : {};
+      var detail = isObject(_detail) ? _detail : {};
       if (selectedSubLists.length > 0) {
         toggleMultipleLists(editor, parentList, selectedSubLists, listName, detail);
       } else {
@@ -1776,7 +1786,7 @@
         sibling = parentNode.previousSibling;
         if (sibling && sibling.nodeName === 'LI') {
           sibling.appendChild(ul);
-          if (isEmpty(dom, parentNode)) {
+          if (isEmpty$1(dom, parentNode)) {
             DOM$2.remove(parentNode);
           }
         } else {
@@ -1837,7 +1847,7 @@
       var node;
       var targetElm = hasOnlyOneBlockChild(dom, toElm) ? toElm.firstChild : toElm;
       unwrapSingleBlockChild(dom, fromElm);
-      if (!isEmpty(dom, fromElm, true)) {
+      if (!isEmpty$1(dom, fromElm, true)) {
         while (node = fromElm.firstChild) {
           targetElm.appendChild(node);
         }
@@ -1861,7 +1871,7 @@
       if (node && isBr(node) && fromElm.hasChildNodes()) {
         dom.remove(node);
       }
-      if (isEmpty(dom, toElm, true)) {
+      if (isEmpty$1(dom, toElm, true)) {
         dom.$(toElm).empty();
       }
       moveChildren(dom, fromElm, toElm);
@@ -1872,7 +1882,7 @@
       var nestedLists = contains ? dom.getParents(fromElm, isListNode, toElm) : [];
       dom.remove(fromElm);
       each(nestedLists, function (list) {
-        if (isEmpty(dom, list) && list !== dom.getRoot()) {
+        if (isEmpty$1(dom, list) && list !== dom.getRoot()) {
           dom.remove(list);
         }
       });
@@ -1905,7 +1915,7 @@
       var li = dom.getParent(selection.getStart(), 'LI', root);
       if (li) {
         var ul = li.parentNode;
-        if (ul === editor.getBody() && isEmpty(dom, ul)) {
+        if (ul === editor.getBody() && isEmpty$1(dom, ul)) {
           return true;
         }
         var rng_1 = normalizeRange(selection.getRng());
@@ -2002,8 +2012,102 @@
       };
     };
 
+    var updateList$1 = function (editor, update) {
+      var parentList = getParentList(editor);
+      editor.undoManager.transact(function () {
+        if (isObject(update.styles)) {
+          editor.dom.setStyles(parentList, update.styles);
+        }
+        if (isObject(update.attrs)) {
+          each$1(update.attrs, function (v, k) {
+            return editor.dom.setAttrib(parentList, k, v);
+          });
+        }
+      });
+    };
+
+    var parseAlphabeticBase26 = function (str) {
+      var chars = reverse(trim(str).split(''));
+      var values = map(chars, function (char, i) {
+        var charValue = char.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0) + 1;
+        return Math.pow(26, i) * charValue;
+      });
+      return foldl(values, function (sum, v) {
+        return sum + v;
+      }, 0);
+    };
+    var composeAlphabeticBase26 = function (value) {
+      value--;
+      if (value < 0) {
+        return '';
+      } else {
+        var remainder = value % 26;
+        var quotient = Math.floor(value / 26);
+        var rest = composeAlphabeticBase26(quotient);
+        var char = String.fromCharCode('A'.charCodeAt(0) + remainder);
+        return rest + char;
+      }
+    };
+    var isUppercase = function (str) {
+      return /^[A-Z]+$/.test(str);
+    };
+    var isLowercase = function (str) {
+      return /^[a-z]+$/.test(str);
+    };
+    var isNumeric = function (str) {
+      return /^[0-9]+$/.test(str);
+    };
+    var deduceListType = function (start) {
+      if (isNumeric(start)) {
+        return 2;
+      } else if (isUppercase(start)) {
+        return 0;
+      } else if (isLowercase(start)) {
+        return 1;
+      } else if (isEmpty(start)) {
+        return 3;
+      } else {
+        return 4;
+      }
+    };
+    var parseStartValue = function (start) {
+      switch (deduceListType(start)) {
+      case 2:
+        return Optional.some({
+          listStyleType: Optional.none(),
+          start: start
+        });
+      case 0:
+        return Optional.some({
+          listStyleType: Optional.some('upper-alpha'),
+          start: parseAlphabeticBase26(start).toString()
+        });
+      case 1:
+        return Optional.some({
+          listStyleType: Optional.some('lower-alpha'),
+          start: parseAlphabeticBase26(start).toString()
+        });
+      case 3:
+        return Optional.some({
+          listStyleType: Optional.none(),
+          start: ''
+        });
+      case 4:
+        return Optional.none();
+      }
+    };
+    var parseDetail = function (detail) {
+      var start = parseInt(detail.start, 10);
+      if (detail.listStyleType.is('upper-alpha')) {
+        return composeAlphabeticBase26(start);
+      } else if (detail.listStyleType.is('lower-alpha')) {
+        return composeAlphabeticBase26(start).toLowerCase();
+      } else {
+        return detail.start;
+      }
+    };
+
     var open = function (editor) {
-      var dom = editor.dom;
       var currentList = getParentList(editor);
       if (!isOlNode(currentList)) {
         return;
@@ -2019,7 +2123,12 @@
               inputMode: 'numeric'
             }]
         },
-        initialData: { start: dom.getAttrib(currentList, 'start') || '1' },
+        initialData: {
+          start: parseDetail({
+            start: editor.dom.getAttrib(currentList, 'start', '1'),
+            listStyleType: Optional.some(editor.dom.getStyle(currentList, 'list-style-type'))
+          })
+        },
         buttons: [
           {
             type: 'cancel',
@@ -2035,8 +2144,11 @@
         ],
         onSubmit: function (api) {
           var data = api.getData();
-          editor.undoManager.transact(function () {
-            dom.setAttrib(getParentList(editor), 'start', data.start === '1' ? '' : data.start);
+          parseStartValue(data.start).each(function (detail) {
+            editor.execCommand('mceListUpdate', false, {
+              attrs: { start: detail.start === '1' ? '' : detail.start },
+              styles: { 'list-style-type': detail.listStyleType.getOr('') }
+            });
           });
           api.close();
         }
@@ -2045,9 +2157,14 @@
 
     var queryListCommandState = function (editor, listName) {
       return function () {
-        var parentList = editor.dom.getParent(editor.selection.getStart(), 'UL,OL,DL');
+        var parentList = getParentList(editor);
         return parentList && parentList.nodeName === listName;
       };
+    };
+    var registerDialog = function (editor) {
+      editor.addCommand('mceListProps', function () {
+        open(editor);
+      });
     };
     var register = function (editor) {
       editor.on('BeforeExecCommand', function (e) {
@@ -2070,8 +2187,11 @@
       editor.addCommand('RemoveList', function () {
         flattenListSelection(editor);
       });
-      editor.addCommand('mceListProps', function () {
-        open(editor);
+      registerDialog(editor);
+      editor.addCommand('mceListUpdate', function (ui, detail) {
+        if (isObject(detail)) {
+          updateList$1(editor, detail);
+        }
       });
       editor.addQueryStateHandler('InsertUnorderedList', queryListCommandState(editor, 'UL'));
       editor.addQueryStateHandler('InsertOrderedList', queryListCommandState(editor, 'OL'));
@@ -2130,7 +2250,7 @@
         text: 'List properties...',
         icon: 'ordered-list',
         onAction: function () {
-          return open(editor);
+          return editor.execCommand('mceListProps');
         },
         onSetup: function (api) {
           return listState(editor, 'OL', function (active) {
@@ -2152,6 +2272,8 @@
         if (editor.hasPlugin('rtc', true) === false) {
           setup$1(editor);
           register(editor);
+        } else {
+          registerDialog(editor);
         }
         register$1(editor);
         register$2(editor);

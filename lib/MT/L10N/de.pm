@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Warnungen und Logmeldungen',
 	'You did not have permission for this action.' => 'Zu dieser Aktion sind Sie nicht berechtigt.',
 	'[_1] contains an invalid character: [_2]' => '[_1] enthält ein ungültiges Zeichen: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Fehlgeschlagener Anmeldeversuch von deaktiviertem Benutzer '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1233,11 +1234,16 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
 	q{Category '[_1]' created by '[_2]'.} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Der Kategorie-Basisname &#8222;[_1]&#8220; steht im Konflikt mit dem Basisnamen einer anderen Kategorie: Unterkategorien dürfen nicht den gleichen Basisnamen wie ihre Hauptkategorie haben.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen. Hauptkategorien und Unterkategorien gleichen Ursprungs müssen eindeutige Namen haben.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Der Kategoriename &#8222;[_1]&#8220; steht im Konflikt mit einem anderen Kategorienamen: Unterkategorien dürfen nicht wie ihre Hauptkategorie heißen.},
 	q{The name '[_1]' is too long!} => q{Der Name &#8222;[_1]&#8220; ist zu lang!},
 	q{[_1] order has been edited by '[_2]'.} => q{Die [_1]-Reihenfolge wurde von &#8222;[_2]&#8220; geändert.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie-Set &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Alle [_1]',
@@ -1284,7 +1290,7 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss im Format JJJJ-MM-TT SS:MM:SS angegeben werden.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunk, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss in der Zukunft liegen.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.},
-	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
+	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' gelöscht},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' bearbeitet},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
@@ -1312,7 +1318,7 @@ use vars qw( @ISA %Lexicon );
 	q{Name '[_1]' is already used.} => q{Der Name '[_1]' wird bereits verwendet.},
 
 ## lib/MT/CMS/Dashboard.pm
-	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Auf Ihrem System ist keine Bildquelle vorhanden oder aber fehlerhaft konfiguiert. Eine Bildquelle ist zur korrekten Funktion der Benutzerbild-Funktionen erforderlich. Installieren Sie Image::Magick, NetPBM oder Imager und konfiguieren Sie die ImageDriver-Direktive entsprechend.',
+	'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.' => 'Auf Ihrem System ist keine Bildquelle vorhanden oder aber fehlerhaft konfiguiert. Eine Bildquelle ist zur korrekten Funktion der Benutzerbild-Funktionen erforderlich. Installieren Sie Graphics::Magick, Image::Magick, NetPBM oder Imager und konfiguieren Sie die ImageDriver-Direktive entsprechend.',
 	'Can verify SSL certificate, but verification is disabled.' => 'SSL-Zertifikate können bestätigt werden, die Funktion ist aber deaktiviert.',
 	'Cannot verify SSL certificate.' => 'SSL-Zertifikat kann nicht überprüft werden.',
 	'Error: This child site does not have a parent site.' => 'Fehler: Diese Untersite hat keine übergeordnete Site.',
@@ -1441,6 +1447,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'ein Eintrag/eine Seite gespeichert wird',
 	'unpublishes a content' => 'veröffentlicht einen Inhalt nicht mehr',
 	'unpublishes an entry/page' => 'ein Eintrag/eine Seite nicht mehr veröffentlicht wird',
+	'Format Error: Trigger data include illegal characters.' => 'Format Fehler: Triggerdaten enthalten unzulässige Zeichen.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Format Fehler: Durch Kommas getrennte Werte enthalten eine falsche Anzahl von Feldern.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Feld "[_1]" erforderlich.',
@@ -1869,7 +1877,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => 'Bei der zeitgeplanten Zurückziehung von Inhalten ist ein Fehler aufgetreten: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'Konnte Kategorie nicht laden. (ID: [_1])',
 	'Scheduled publishing.' => 'Zeitgeplante Veröffentlichtung.',
-	'You did not set your blog publishing path' => 'Veröffentlichungspfade nicht gesetzt',
+	'You did not set your site publishing path' => 'Veröffentlichungspfade nicht gesetzt',
 	'[_1] archive type requires [_2] parameter' => 'Für den Archivtyp [_1] ist das Parameter [_2] erforderlich.',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{Fehler bei der Veröffentlichung von [_1] &#8222;[_2]&#8220;: [_3]},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{Fehler bei Veröffentlichung des Archivs &#8222;[_1]&#8220;: [_2]},
@@ -1887,6 +1895,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Inhaltsdaten # [_1] nicht gefunden.',
 	'Create Content Data' => 'Inhaltsdaten anlegen',
 	'Edit All Content Data' => 'Alle Inhaltsdaten bearbeiten',
+	'Manage All Content Data' => 'Alle inhaltsdaten verwalten',
 	'Manage Content Data' => 'Inhaltsdaten verwalten',
 	'Publish Content Data' => 'Inhaltsdaten veröffentlichen',
 	'Tags with [_1]' => 'Tags mit [_1]',
@@ -2368,6 +2377,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Mitteilung',
 	'Metadata' => 'Metadaten',
 	'Not debug' => 'Kein Debug',
+	'Notice' => 'Signifikanter Information',
 	'Page # [_1] not found.' => 'Seite #[_1] nicht gefunden.',
 	'Security or error' => 'Sicherheit oder Fehler',
 	'Security' => 'Sicherheit',
@@ -2446,6 +2456,8 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'Objektarten stimmen nicht überein, erwarte zwei [_1]',
 	'Unknown method [_1]' => 'Unbekannte Methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Fehlerhaftes RevisioningDriver-Parameter &#8222;[_1]&#8220;: [_2]},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschädigte Revisionen von [_2] (id: [_3]) wurden gelöscht.',
+	'*Deleted due to data breakage*' => '*Wegen Datenbruch gelöscht*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Kann die Site verwalten.',
@@ -2901,6 +2913,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Baue Objekt-Kategorien neu auf ...',
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
 	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
 	'add administer_site permission for Blog Administrator...' => 'Weise Blog-Administrator administer-site-Berechtigung zu...',
@@ -3007,6 +3022,66 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid entry ID '[_1]'} => q{Ungültige Eintrags-ID '[_1]'},
 	q{Requested permalink '[_1]' is not available for this page} => q{Der gewünschte Permalink &#8222;[_1]&#8220; ist für diese Seite nicht verfügbar.},
 	q{Value for 'mt_[_1]' must be either 0 or 1 (was '[_2]')} => q{&#8222;mt_[_1]&#8220; kann nur 0 oder 1 sein (war &#8222;[_2]&#8220;)},
+
+## mt-check.cgi
+	'(Probably) running under cgiwrap or suexec' => '(Wahrscheinlich) ausgeführt unter cgiwrap oder suexec',
+	'Archive::Tar is required in order to manipulate files during backup and restore operations.' => 'Archive::Tar ist für Dateioperationen beim Erstellen und Einspielen von Backups erforderlich.',
+	'Archive::Zip is required in order to manipulate files during backup and restore operations.' => 'Archive::Zip ist für Dateioperationen beim Erstellen und Einspielen von Backups erforderlich.',
+	'CGI::Cookie is required for cookie authentication.' => 'CGI::Cookie ist zur Nutzung der Cookie-Authentifizierung erforderlich.',
+	'Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.' => 'Cache::File ist erforderlich, wenn sich Kommentarautoren über eine OpenID bei Yahoo! Japan authentifizieren können sollen.',
+	'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.' => 'Cache::Memcached und ein auf dem Movable-Type-Server laufender memcached-Server sind zur Zwischenspeicherung von Objekten im Arbeitsspeicher erforderlich.',
+	'Checking for' => 'Überprüfe',
+	'Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.' => 'Die Installation von Crypt::DSA ist optional. Dieses Modul beschleunigt den Anmeldevorgang für Kommentarautoren.',
+	'Current working directory:' => 'Aktuelles Arbeitsverzeichnis:',
+	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI und DBD::Pg sind zur Nutzung von Movable Type mit einer PostgreSQL-Datenbank erforderlich.',
+	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI und DBD::SQLite sind zur Nutzung von Movable Type mit einer SQLite-Datenbank erforderlich.',
+	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI und DBD::SQLite2 sind zur Nutzung von Movable Type mit einer SQLite 2.x-Datenbank erforderlich.',
+	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI und DBD::mysql sind zur Nutzung von Movable Type mit einer MySQL-Datenbank erforderlich.',
+	'DBI is required to store data in database.' => 'DBI ist zur Nutzung von Datenbanken erforderlich.',
+	'Data Storage' => 'Datenbank',
+	'Details' => 'Details',
+	'Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.' => 'Digest::SHA1 und seine Abhängigkeiten sind zur Authentifizierung mittels OpenID (einschließlich LiveJournal) erforderlich.',
+	'File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.' => 'Die Installation von File::Temp ist optional. Dieses Modul ist erforderlich, wenn Sie beim Hochladen von Dateien vorhandene Dateien überschreiben können möchten.',
+	'IO::Compress::Gzip is required in order to compress files during backup operations.' => 'IO::Compress::Gzip ist zum Packen von Backup-Dateien erforderlich.',
+	'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.' => 'IO::Uncompress::Gzip ist zum Entpacken von Backup-Dateien erforderlich.',
+	'IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.' => 'Die Installation von IPC::Run ist optional. Es ist erforderlich, wenn Sie NetPBM zur Erzeugung von Vorschaubildern verwenden möchten.',
+	'Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).' => 'Image::Size ist zum Hochladen von Dateien erforderlich (um die Größe hochgeladener Bilder bestimmen zu können)',
+	'Installed' => 'Installiert',
+	'MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.' => 'MIME::Base64 ist zur Registrierung von Kommentarautoren und zum Versenden von Mails über SMTP-Server erforderlich.',
+	'MT home directory:' => 'MT-Wurzelverzeichnis:',
+	'Movable Type System Check Successful' => 'Der Movable Type-Systemcheck war erfolgreich!',
+	'Movable Type System Check' => 'Movable Type Systemüberprüfung',
+	'Movable Type version:' => 'Movable Type-Version:',
+	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP ist für den Versand von E-Mails über SMTP-Server erforderlich.',
+	'Operating system:' => 'Betriebssystem;',
+	'Perl include path:' => 'Perl-Include-Pfad:',
+	'Perl version:' => 'Perl-Version:',
+	'Please consult the installation instructions for help in installing [_1].' => 'Bitte beachten Sie bei der Installation von [_1] die Installationshinweise.',
+	'SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.' => 'Die Installation von SOAP::Lite ist optional. Dieses Modul ist zur Nutzung des XML-RPC-Servers von Movable Type erforderlich.',
+	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Die Installation von Storable ist optional. Es wird von einigen Movable-Type-Plugins von Drittanbietern benötigt.',
+	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'Die auf Ihrem Server installierte Version von DBD::mysql ist nicht mit Movable Type kompatibel. Bitte installieren Sie die aktuelle Version.',
+	'The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)' => 'Die MT-Systemüberprüfung ist deaktiviert, wenn bereits eine gültige Konfigurationdabei mt-config.cgi vorhanden ist.',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1] ist korrekt installiert, benötigt aber ein aktuelleres DBI-Modul. Bitte beachten Sie die obigen Hinweise zu diesem Modul.',
+	'The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.' => 'Die folgenden Module sind <strong>optional</strong>. Sie brauchen zusätzlich nur dann installiert zu werden, wenn Sie die von ihnen bereitgestellten Funktionen nutzen möchten.',
+	'The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.' => 'Die folgenden Module sind zur Abindung der Datenbank an Movable Type erforderlich. Zur Nutzung des Systems müssen DBI und das Modul für den jeweiligen Datenbank-Typ installiert sein.',
+	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'Die auf Ihrem Server installierte Perl-Version [_1] ist älter als die mindestens erforderliche Version [_2]. Bitte aktualisieren Sie Ihre Installation daher auf Perl [_2] oder neuer.',
+	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'Dieses Modul und seine Abhängigkeiten sind zum Betrieb von Movable Type unter psgi erforderlich.',
+	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Dieses Modul ist für mt-search.cgi erforderlich, wenn Sie Perl älter als 5.8 einsetzen.',
+	'This module required for action streams.' => '', # Translate - New
+	'Web server:' => 'Webserver:',
+	'XML::Atom is required in order to use the Atom API.' => 'XML::Atom ist zur Nutzung der Atom-API erforderlich.',
+	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAX und seine Abhängigkeiten sind zum Einspielen von Backups erforderlich.',
+	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Sie haben für die gewünschte Funktion keine Berechtigung. Bei Fragen wenden Sie sich bitte an Ihren Systemadministrator.',
+	'Your server does not have [_1] installed, or [_1] requires another module that is not installed.' => 'Auf Ihrem Server ist [_1] selbst oder ein von [_1] erforderliches Modul nicht installiert.',
+	'Your server has [_1] installed (version [_2]).' => 'Auf Ihrem Server ist [_1] in der Version [_2] installiert.',
+	'Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.' => 'Alle erforderlichen Module sind auf Ihrem Server installiert. Beginnen Sie jetzt mit der Installation von Movable Type.',
+	'[_1] [_2] Modules' => '[_1] [_2]-Modue',
+	'[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.' => '[_1] ist optional. Es handelt sich um eine bessere, kleinere und schnellere Alternative zu YAML::Tiny.',
+	'[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.' => 'Die Installation von [_1] ist optional. Es ist eines der Module, das zur automatischen Erzeugung von Vorschaubildern verwendet werden kann. ',
+	'[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation' => '[_1] ist optional. Es gehört zu den Modulen, die zum Einspielen von Sicherungskopien erforderlich sind.',
+	'unknown' => 'unbekannt',
+	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Das Skript mt-check.cgi führt eine Überprüfung Ihrer Systemkonfiguration durch und stellt fest, ob alle zum Betrieb von Movable Type erforderlichen Komponenten vorhanden sind.},
+	q{You're ready to go!} => q{Sie können sofort anfangen!},
 
 ## mt-static/addons/Sync.pack/js/cms.js
 	'Continue' => 'Weiter',
@@ -3921,7 +3996,7 @@ itte versuchen Sie es später erneut.',
 	'Exclude sites/child sites' => 'Sites/Untersites ausschließen',
 	'Include sites/child sites' => 'Sites/Untersites einschließen',
 	'MTMultiBlog tag default arguments' => 'MultiBlog- Standardargumente',
-	'Rebuild Trigger settings has been saved.' => 'Auslöser-Einstellungen gespeichert.',
+	'Rebuild Trigger settings have been saved.' => 'Auslöser-Einstellungen gespeichert.',
 	'Rebuild Triggers' => 'Auslöser für Neuaufbau',
 	'Site/Child Site' => 'Site/Untersite',
 	'Use system default' => 'System-Voreinstellung verwenden',
@@ -4107,7 +4182,6 @@ itte versuchen Sie es später erneut.',
 	'Dashboard' => 'Übersichtsseite',
 	'Select a Widget...' => 'Widget wählen...',
 	'System Overview' => 'Systemübersicht',
-	'You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.' => 'Sie haben für die gewünschte Funktion keine Berechtigung. Bei Fragen wenden Sie sich bitte an Ihren Systemadministrator.',
 	'Your Dashboard has been updated.' => 'Übersichtsseite aktualisiert.',
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
@@ -4187,6 +4261,7 @@ itte versuchen Sie es später erneut.',
 	'Create and Insert' => 'Anlegen und einfügen',
 
 ## tmpl/cms/dialog/create_association.tmpl
+	'No sites exist in this installation. [_1]Create a site</a>' => 'In dieser MT-Installation ist kein Site vorhanden. [_1]Site anlegen</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'In dieser MT-Installation ist kein Blog vorhanden. [_1]Blog anlegen</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'In dieser MT-Installation ist keine Gruppe vorhanden. [_1]Gruppe anlegen</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'In dieser MT-Installation ist keine Rolle vorhanden. [_1]Rolle anlegen</a>',
@@ -4416,7 +4491,6 @@ itte versuchen Sie es später erneut.',
 	'Comment Text' => 'Kommentartext',
 	'Commenter Status' => 'Kommentarautoren-Status',
 	'Delete this comment (x)' => 'Diesen Kommentar löschen (x)',
-	'Details' => 'Details',
 	'Manage Comments' => 'Kommentare verwalten',
 	'No url in profile' => 'Keine URL im Profil',
 	'Reply to this comment' => 'Kommentar beantworten',
@@ -4799,6 +4873,28 @@ itte versuchen Sie es später erneut.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Nicht ausgewählt',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

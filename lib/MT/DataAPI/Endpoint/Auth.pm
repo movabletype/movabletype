@@ -195,15 +195,15 @@ sub _authentication {
         $response = { oneTimeToken => $ott->id, };
     }
 
-    $app->log(
-        $app->translate(
+    $app->log({
+        message  => $app->translate(
             "User '[_1]' (ID:[_2]) logged in successfully via data api.",
             $author->name, $author->id
         ),
         level    => MT::Log::INFO(),
         class    => 'author',
         category => 'login_user',
-    );
+    });
 
     $response;
 }

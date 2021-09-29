@@ -114,7 +114,6 @@ sub rebuild {
             )
             );
     }
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -698,7 +697,6 @@ sub rebuild_entry {
             )
             );
     }
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -976,7 +974,6 @@ sub rebuild_archives {
     my $blog  = $param{Blog}
         or return $mt->error(
         MT->translate( "Parameter '[_1]' is required", 'Blog' ) );
-    return 1 if $blog->is_dynamic;
 
     require MT::Util::Log;
     MT::Util::Log::init();
@@ -1203,7 +1200,7 @@ sub _rebuild_entry_archive_type {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my ( $start, $end );
@@ -1813,7 +1810,6 @@ sub rebuild_indexes {
         MT->translate("Blog, BlogID or Template param must be specified.") )
         unless $blog;
 
-    return 1 if $blog->is_dynamic;
     my $iter;
     if ($tmpl) {
         my $i = 0;
@@ -1831,7 +1827,7 @@ sub rebuild_indexes {
     local *FH;
     my $site_root = $blog->site_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $site_root;
     my $fmgr = $blog->file_mgr;
     while ( my $tmpl = $iter->() ) {
@@ -2170,7 +2166,7 @@ sub rebuild_entry_from_fileinfo {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $pub->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my %cond;
@@ -2576,11 +2572,6 @@ sub _delete_archive_file {
             return $file;
         }
 
-        if ( $blog->is_dynamic ) {
-            require MT::TemplateMap;
-            $map = MT::TemplateMap->new;
-            $map->file_template( $archiver->dynamic_template );
-        }
         unless ($map) {
             my $cache_map = MT::Request->instance->cache('maps');
             unless ($cache_map) {

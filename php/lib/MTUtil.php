@@ -977,6 +977,23 @@ function decode_html($str, $quote_style = ENT_QUOTES) {
     return (strtr($str, array_flip($trans_table)));
 }
 
+function get_content_type_context(&$ctx, $args) {
+    $blog         = $ctx->stash('blog');
+    $content_type = $ctx->stash('content_type');
+    $blog_id      = ($args['blog_id'] || $blog->id || '');
+    if ($str = $args['content_type']) {
+        ## If $str points to $content_type, just return it
+        if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
+            ($str === $content_type->unique_id) || ($str === $content_type->name && $content_type->blog_id === $blog_id))) {
+            return $content_type;
+        }
+        $ct2 = $ctx->mt->db()->fetch_content_types(array('blog_id' => $blog_id, 'content_type' => $str));
+        return $ct2 ? $ct2[0] : null;
+    }
+
+    return $content_type;
+}
+
 function get_category_context(&$ctx, $class = 'category', $error_avoid = FALSE) {
     # Get our hands on the category for the current context
     # Either in MTCategories, a Category Archive Template

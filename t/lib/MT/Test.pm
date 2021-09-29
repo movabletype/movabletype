@@ -83,16 +83,6 @@ BEGIN {
     }
 }
 
-# Override time and sleep so we can simulate time passing without making
-# test scripts wait for real wall seconds to pass.
-our $CORE_TIME;
-
-BEGIN {
-    *CORE::GLOBAL::time
-        = sub { my ($a) = @_; $a ? CORE::time + $_[0] : CORE::time };
-    *CORE::GLOBAL::sleep = sub { CORE::sleep(shift) };
-}
-
 # Suppress output when "MailTransfer debug"
 unless ( $ENV{MT_TEST_MAIL} ) {
     no warnings 'redefine';
@@ -185,14 +175,6 @@ sub init_cms {
 
     require MT::App::CMS;
     MT->set_instance( MT::App::CMS->new( $cfg ? ( Config => $cfg ) : () ) );
-}
-
-sub init_time {
-    $CORE_TIME = time;
-
-    no warnings 'redefine';
-    *CORE::GLOBAL::time = sub {$CORE_TIME};
-    *CORE::GLOBAL::sleep = sub { $CORE_TIME += shift };
 }
 
 sub init_testdb {
@@ -1673,5 +1655,7 @@ sub has_php {
     }
     $HasPHP;
 }
+
+sub validate_param { return [] }
 
 1;

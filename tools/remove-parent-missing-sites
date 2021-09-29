@@ -1,0 +1,57 @@
+#!/usr/bin/perl -w
+use strict;
+use warnings;
+use utf8;
+use FindBin;
+use lib ("$FindBin::Bin/../lib", "$FindBin::Bin/../extlib");
+use Getopt::Long;
+use MT::Bootstrap;
+use MT;
+binmode STDOUT, ":utf8";
+binmode STDERR, ":utf8";
+
+GetOptions(
+    'd|delete' => \my ($delete),
+    "help|?"   => sub { usage(); exit },
+);
+
+my $mt = MT->new;
+
+my $site_iter = MT::Blog->load_iter({ class => 'blog', 'parent_id' => undef });
+my $removed   = 0;
+my $detected  = 0;
+
+print "============================================================\n";
+print "Searching for parent missing sites.\n";
+print "============================================================\n";
+
+while (my $site = $site_iter->()) {
+    $detected++;
+    my $target_str = sprintf(qq{Child site "%s"(id:%d)\n}, $site->name, $site->id);
+    print $target_str;
+    if ($delete) {
+        $site->remove();
+        MT->log({
+            message => sprintf('%s is deleted due to missing parent.', $target_str),
+            level   => MT::Log::INFO(),
+        });
+        $removed++;
+    }
+}
+
+if ($delete) {
+    printf("%d sites are detected and deleted.", $detected);
+} else {
+    printf("%d sites are detected.", $detected);
+}
+print "\n";
+
+sub usage {
+    print STDERR << "EOT";
+usage: $0
+
+These options are available:
+
+-d, --delete            Delete on detecting revision amount excession.
+EOT
+}

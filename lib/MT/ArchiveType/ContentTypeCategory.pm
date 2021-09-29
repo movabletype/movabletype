@@ -144,7 +144,7 @@ sub archive_group_iter {
     );
 
     my $content_type_id = $ctx->stash('content_type')->id;
-    my $map             = $obj->_get_preferred_map(
+    my $map             = $obj->get_preferred_map(
         {   blog_id         => $blog_id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),
@@ -215,7 +215,7 @@ sub archive_group_contents {
     my $limit = $param->{limit};
     $limit = 0 if defined $limit && $limit eq 'none';
     my $c = $ctx->stash('archive_category') || $ctx->stash('category');
-    my $map = $obj->_get_preferred_map(
+    my $map = $obj->get_preferred_map(
         {   blog_id         => $ctx->stash('blog')->id,
             content_type_id => $content_type_id,
             map             => $ctx->stash('template_map'),
@@ -254,7 +254,14 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
-    return 1 if $params{Blog}->publish_empty_archive;
+    if ($params{Blog}->publish_empty_archive and $params{ContentData}) {
+        my $cat_id = $params{Category}->id;
+        my $target_category_ids = $obj->target_category_ids($params{ContentData}, $params{TemplateMap});
+        for my $id (@$target_category_ids) {
+            return 1 if $id == $cat_id;
+        }
+        return 0;
+    }
 
     MT::ArchiveType::archive_contents_count( $obj, \%params );
 }

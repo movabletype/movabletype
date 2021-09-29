@@ -108,24 +108,22 @@ class Category extends BaseObject
         }
 
         if ($content_type_id) {
-            $content_type_filter = 'and cf_idx_content_type_id = ' . $content_type_id;
-        } else {
-            $content_type_filter = '';
+            $where = $where. ' and cd_content_type_id = ' . $content_type_id;
         }
 
         if ($content_field_id) {
-            $content_field_filter = 'and cf_idx_content_field_id = ' . $content_field_id;
+            $content_field_filter = 'and objectcategory_cf_id = ' . $content_field_id;
         } else {
             $content_field_filter = '';
         }
 
         $join = array();
-        $join['mt_cf_idx'] =
+        $join['mt_objectcategory'] =
             array(
-                'condition' => "cf_idx_content_data_id = cd_id
-                                $content_type_filter
+                'condition' => "cd_id = objectcategory_object_id
                                 $content_field_filter
-                                and cf_idx_value_integer = $cat_id"
+                                and objectcategory_object_ds = 'content_data'
+                                and objectcategory_category_id = $cat_id"
             );
 
         require_once("class.mt_content_data.php");

@@ -19,33 +19,30 @@ use Encode;
 
 sub new {
     my $pkg = shift;
-    my ( $type, $file ) = @_;
+    my ($type, $file) = @_;
 
-    return $pkg->error( MT->translate('Type must be zip') )
+    return $pkg->error(MT->translate('Type must be zip'))
         unless $type eq ARCHIVE_TYPE;
 
     my $zip = Archive::Zip->new;
     my $obj = { _flushed => 0, _arc => $zip };
-    if ( ref $file ) {
+    if (ref $file) {
         bless $file, 'IO::File';
         my $status = $zip->readFromFileHandle($file);
-        return $pkg->error( MT->translate('Could not read from filehandle.') )
+        return $pkg->error(MT->translate('Could not read from filehandle.'))
             if Archive::Zip::AZ_OK() != $status;
         $obj->{_fh}   = $file;
         $obj->{_mode} = 'r';
-    }
-    elsif ( ( -e $file ) && ( -r $file ) ) {
-        open my $fh, '<', $file or die "Couldn't open $file: $!";
+    } elsif ((-e $file) && (-r $file)) {
+        open my $fh, '<:raw', $file or die "Couldn't open $file: $!";
         bless $fh, 'IO::File';
         my $status = $zip->readFromFileHandle($fh);
-        return $pkg->error(
-            MT->translate( 'File [_1] is not a zip file.', $file ) )
+        return $pkg->error(MT->translate('File [_1] is not a zip file.', $file))
             if Archive::Zip::AZ_OK() != $status;
         $obj->{_file} = $file;
         $obj->{_fh}   = $fh;
         $obj->{_mode} = 'r';
-    }
-    elsif ( !( -e $file ) ) {
+    } elsif (!(-e $file)) {
         $obj->{_file} = $file;
         $obj->{_mode} = 'w';
     }
@@ -60,11 +57,10 @@ sub flush {
     return undef if $obj->{_flushed};
 
     my $file = $obj->{_file};
-    return $obj->error(
-        MT->translate( 'File [_1] exists; could not overwrite.', $file ) )
+    return $obj->error(MT->translate('File [_1] exists; could not overwrite.', $file))
         if -e $file;
 
-    open my $fh, '>', $file or die "Couldn't open $file: $!";
+    open my $fh, '>:raw', $file or die "Couldn't open $file: $!";
     bless $fh, 'IO::File';
     $obj->{_fh} = $fh;
     $obj->{_arc}->writeToFileHandle($fh);
@@ -102,26 +98,17 @@ sub files {
 sub is_safe_to_extract {
     my $obj = shift;
 
-    for my $member ( $obj->{_arc}->members ) {
+    for my $member ($obj->{_arc}->members) {
         my $file = $member->fileName;
-        if ( $member->isSymbolicLink ) {
-            return $obj->error(
-                MT->translate(
-                    "[_1] in the archive is not a regular file", $file
-                )
-            );
+        if ($member->isSymbolicLink) {
+            return $obj->error(MT->translate("[_1] in the archive is not a regular file", $file));
         }
-        if ( File::Spec->file_name_is_absolute($file) ) {
-            return $obj->error(
-                MT->translate(
-                    "[_1] in the archive is an absolute path", $file
-                )
-            );
+        if (File::Spec->file_name_is_absolute($file)) {
+            return $obj->error(MT->translate("[_1] in the archive is an absolute path", $file));
         }
-        my ( $vol, $dirs, $basename ) = File::Spec->splitpath($file);
-        if ( grep { $_ eq '..' } File::Spec->splitdir($dirs) ) {
-            return $obj->error(
-                MT->translate( "[_1] in the archive contains ..", $file ) );
+        my ($vol, $dirs, $basename) = File::Spec->splitpath($file);
+        if (grep { $_ eq '..' } File::Spec->splitdir($dirs)) {
+            return $obj->error(MT->translate("[_1] in the archive contains ..", $file));
         }
     }
     1;
@@ -130,48 +117,47 @@ sub is_safe_to_extract {
 sub extract {
     my $obj = shift;
     my ($path) = @_;
-    return $obj->error( MT->translate('Cannot extract from the object') )
+    return $obj->error(MT->translate('Cannot extract from the object'))
         if 'w' eq $obj->{_mode};
 
     $path ||= MT->config->TempDir;
-    for my $file ( $obj->files ) {
-        my $file_enc = Encode::decode( 'Shift_JIS', $file );
-        my $f = File::Spec->catfile( $path, $file_enc );
-        $obj->{_arc}->extractMember( $file, MT::FileMgr::Local::_local($f) );
+    for my $file ($obj->files) {
+        my $file_enc = Encode::decode('Shift_JIS', $file);
+        my $f        = File::Spec->catfile($path, $file_enc);
+        $obj->{_arc}->extractMember($file, MT::FileMgr::Local::_local($f));
     }
     1;
 }
 
 sub add_file {
     my $obj = shift;
-    my ( $path, $file_path ) = @_;
-    return $obj->error( MT->translate('Cannot write to the object') )
+    my ($path, $file_path) = @_;
+    return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
-    my $filename = File::Spec->catfile( $path, $file_path );
-    $file_path = Encode::encode( 'Shift_JIS', $file_path )
+    my $filename = File::Spec->catfile($path, $file_path);
+    $file_path = Encode::encode('Shift_JIS', $file_path)
         if Encode::is_utf8($file_path);
-    $obj->{_arc}->addFile( $filename, $file_path );
+    $obj->{_arc}->addFile($filename, $file_path);
 }
 
 sub add_string {
     my $obj = shift;
-    my ( $string, $file_name ) = @_;
-    return $obj->error( MT->translate('Cannot write to the object') )
+    my ($string, $file_name) = @_;
+    return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
-    return $obj->error(
-        MT->translate('Both data and file name must be specified.') )
+    return $obj->error(MT->translate('Both data and file name must be specified.'))
         unless $string && $file_name;
-    $file_name = Encode::encode( 'Shift_JIS', $file_name )
+    $file_name = Encode::encode('Shift_JIS', $file_name)
         if Encode::is_utf8($file_name);
-    $obj->{_arc}->addString( $string, $file_name );
+    $obj->{_arc}->addString($string, $file_name);
 }
 
 sub add_tree {
     my $obj = shift;
     my ($dir_path) = @_;
-    return $obj->error( MT->translate('Cannot write to the object') )
+    return $obj->error(MT->translate('Cannot write to the object'))
         if 'r' eq $obj->{_mode};
-    $obj->{_arc}->addTree( $dir_path, '' );
+    $obj->{_arc}->addTree($dir_path, '');
 }
 
 1;

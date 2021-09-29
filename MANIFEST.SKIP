@@ -353,6 +353,7 @@ build-language-stamp
 ^package.json
 ^node_modules/
 ^\.node-version
+^\.php_cs\.dist
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

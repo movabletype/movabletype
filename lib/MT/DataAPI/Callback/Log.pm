@@ -68,7 +68,7 @@ sub post_delete {
                 "Log (ID:[_1]) deleted by '[_2]'", $obj->id,
                 $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'log',
             category => 'delete'
         }

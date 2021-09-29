@@ -51,6 +51,12 @@ sub info {
     $logger->info($msg);
 }
 
+sub notice {
+    my ( $class, $msg ) = @_;
+    my $logger = Log::Log4perl->get_logger();
+    $logger->info($msg);
+}
+
 sub warn {
     my ( $class, $msg ) = @_;
     my $logger = Log::Log4perl->get_logger();

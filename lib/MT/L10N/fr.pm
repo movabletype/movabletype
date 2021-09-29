@@ -511,6 +511,7 @@ use vars qw( @ISA %Lexicon );
 	q{Email Address is invalid.} => q{L'adresse e-mail est invalide.},
 	q{Email Address is required for password reset.} => q{L'adresse e-mail est requise pour la réinitialisation du mot de passe},
 	q{Error sending mail: [_1]} => q{Erreur de l'envoi de l'e-mail : [_1]},
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Tentative de connexion par un utilisateur désactivé '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1232,12 +1233,17 @@ use vars qw( @ISA %Lexicon );
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Catégorie '[_1]' (ID:[_2]) supprimée par '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Catégorie '[_1]' (ID:[_2]) éditée par '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{Catégorie '[_1]' créée par '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Groupe de catégories '[_1]' (ID:[_2]) éditée par '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Groupe de catégories '[_1]' créée par '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Le nom de base de la catégorie '[_1]' entre en conflit avec celui d'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom de base distinct.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Le nom de catégorie '[_1]' est en conflit avec une autre catégorie. Les catégories racines et les sous-catégories qui ont le même parent doivent avoir un nom distinct.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Le nom de la catégorie '[_1]' entre en conflit avec celui d'une autre. Les catégories principales et celles secondaires du même parent doivent avoir un nom distinct.},
 	q{The name '[_1]' is too long!} => q{Le nom '[_1]' est trop long.},
 	q{Tried to update [_1]([_2]), but the object was not found.} => q{Tentative de mise à jour [_1] ([_2]), mais l'objet est introuvable.},
 	q{[_1] order has been edited by '[_2]'.} => q{L'ordre de [_1] a été édité par '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Groupe de catégories '[_1]' (ID:[_2]) supprimée par '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Totalité des [_1]',
@@ -1320,7 +1326,7 @@ use vars qw( @ISA %Lexicon );
 	'System' => 'Système',
 	'Unknown Content Type' => 'Type de contenu inconnu.',
 	'You should remove "SSLVerifyNone 1" in mt-config.cgi.' => 'Vous devriez supprimer "SSLVerifyNone 1" dans mt-config.cgi.',
-	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Un outil de traitement d'image, souvent spécifié par la directive de configuration ImageDriver, n'est pas présent sur votre serveur ou n'est pas configuré correctement. Un outil doit être installé pour permettre l'utilisation correcte de la fonctionnalité des images d'utilsateurs. Veuillez installer Image::Magick, NetPBM, GD ou Imager, puis spécifiez la directive de configuration ImageDriver.},
+	q{An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.} => q{Un outil de traitement d'image, souvent spécifié par la directive de configuration ImageDriver, n'est pas présent sur votre serveur ou n'est pas configuré correctement. Un outil doit être installé pour permettre l'utilisation correcte de la fonctionnalité des images d'utilsateurs. Veuillez installer Graphics::Magick, Image::Magick, NetPBM, GD ou Imager, puis spécifiez la directive de configuration ImageDriver.},
 	q{Error: This child site does not have a parent site.} => q{Erreur : ce site enfant n'a pas de site parent.},
 	q{ImageDriver is not configured.} => q{ImageDriver n'est pas configuré.},
 	q{Movable Type was unable to write to its 'support' directory. Please create a directory at this location: [_1], and assign permissions that will allow the web server write access to it.} => q{Movable Type n'a pas pu écrire dans son répertoire 'support'. Merci de créer un répertoire à cet endroit : [_1], et de lui ajouter des droits qui permettent au serveur web d'écrire dedans.},
@@ -1441,6 +1447,8 @@ use vars qw( @ISA %Lexicon );
 	'saves an entry/page' => 'une note/page est sauvegardée',
 	'unpublishes a content' => 'Dé-publie le contenu',
 	'unpublishes an entry/page' => 'une note/page est dépubliée',
+	'Format Error: Trigger data include illegal characters.' => 'Erreur de format: Les données de déclenchement incluent des caractères illégaux.',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Erreur de format: Les valeurs séparées par des virgules contiennent un nombre incorrect de champs.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'Le champ "[_1]" est requis.',
@@ -1879,7 +1887,7 @@ use vars qw( @ISA %Lexicon );
 	q{Parameter '[_1]' is required} => q{Le paramètre '[_1]' est requis},
 	q{Renaming tempfile '[_1]' failed: [_2]} => q{Le renommage de tempfile '[_1]' a échoué : [_2]},
 	q{Writing to '[_1]' failed: [_2]} => q{L'écriture sur '[_1]' a échoué : [_2]},
-	q{You did not set your blog publishing path} => q{Vous n'avez pas spécifié le chemin de publication de votre blog},
+	q{You did not set your site publishing path} => q{Vous n'avez pas spécifié le chemin de publication de votre blog},
 	q{[_1] archive type requires [_2] parameter} => q{Le type d'archive [_1] requiert un paramètre [_2]},
 
 ## lib/MT/ContentType.pm
@@ -1887,6 +1895,7 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Donnée de contenu # [_1] introuvable.',
 	'Create Content Data' => 'Créer une donnée de contenu',
 	'Edit All Content Data' => 'Éditer les données de contenu',
+	'Manage All Content Data' => 'Gérer toutes les données de contenu',
 	'Manage Content Data' => 'Gérer les données de contenu',
 	'Publish Content Data' => 'Publier des données de contenu',
 	'Tags with [_1]' => 'Tags avec [_1]',
@@ -2368,6 +2377,7 @@ use vars qw( @ISA %Lexicon );
 	'Message' => 'Message',
 	'Metadata' => 'Métadonnées',
 	'Not debug' => 'Non debug',
+	'Notice' => 'Information importante',
 	'Page # [_1] not found.' => 'Page #[_1] introuvable.',
 	'Security or error' => 'Sécurité ou erreur',
 	'Security' => 'Sécurité',
@@ -2446,6 +2456,8 @@ use vars qw( @ISA %Lexicon );
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Mauvaise configuration du pilote de révision '[_1]' : [_2]},
 	q{Did not get two [_1]} => q{N'a pas obtenu deux [_1]},
 	q{There are not the same types of objects, expecting two [_1]} => q{Ce ne sont pas les mêmes types d'objets, deux [_1] sont attendus},
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] révisions corrompues de [_2] (id: [_3]) ont été supprimées.',
+	'*Deleted due to data breakage*' => q{*Supprimé en raison d'une rupture de données*},
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Peut administrer le site',
@@ -2891,6 +2903,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding MT::Permission records (remove edit_categories)...' => 'Reconstruction de MT::Permission records (suppression de edit_categories)...',
 	'Rebuilding content field permissions...' => 'Reconstruction des permissions de champs de contenu...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Réinitialisation des widgets du tableau de bord...',
 	'Truncating values of value_varchar column...' => 'Tronquage des valeurs de la colonne value_varchar...',
 	'add administer_site permission for Blog Administrator...' => 'ajouter une permission administer_site pour Administrateur de blog...',
@@ -3007,6 +3022,66 @@ use vars qw( @ISA %Lexicon );
 	q{Requested permalink '[_1]' is not available for this page} => q{Le lien permanent requis '[_1]' n'est pas disponible pour cette page},
 	q{Template methods are not implemented, due to differences between the Blogger API and the Movable Type API.} => q{Les méthodes de gabarit ne sont pas implémentées en raison d'une différence entre l'API Blogger et l'API Movable Type.},
 	q{Value for 'mt_[_1]' must be either 0 or 1 (was '[_2]')} => q{La valeur pour 'mt_[_1]' doit être 0 ou 1 (était '[_2]')},
+
+## mt-check.cgi
+	'(Probably) running under cgiwrap or suexec' => 'Exécuté (probablement) sous cgiwrap ou suexec',
+	'Archive::Tar is required in order to manipulate files during backup and restore operations.' => 'Archive::Tar est nécessaire pour manipuler les fichiers lors des opérations de sauvegarde et de restauration.',
+	'Archive::Zip is required in order to manipulate files during backup and restore operations.' => 'Archive::Zip est nécessaire pour manipuler les fichiers lors des opérations de sauvegarde et de restauration.',
+	'Cache::Memcached and a memcached server are required to use in-memory object caching on the servers where Movable Type is deployed.' => 'Cache::Memcached et un serveur memcached sont nécessaires pour utiliser le cache mémoire des objets sur les serveurs où Movable Type est déployé.',
+	'Checking for' => 'Vérification des',
+	'Current working directory:' => 'Répertoire de travail courant :',
+	'DBI and DBD::Pg are required if you want to use the PostgreSQL database backend.' => 'DBI et DBD::Pg sont nécessaires si vous voulez utiliser une base de données PostgreSQL.',
+	'DBI and DBD::SQLite are required if you want to use the SQLite database backend.' => 'DBI et DBD::SQLite sont nécessaires si vous voulez utiliser une base de données SQLite.',
+	'DBI and DBD::SQLite2 are required if you want to use the SQLite 2.x database backend.' => 'DBI et DBD::SQLite2 sont nécessaires si vous voulez utiliser une base de données SQLite 2.x.',
+	'DBI and DBD::mysql are required if you want to use the MySQL database backend.' => 'DBI et DBD::mysql sont nécessaires si vous voulez utiliser une base de données MySQL.',
+	'DBI is required to store data in database.' => 'DBI est nécessaire pour enregistrer les données en base de données.',
+	'Data Storage' => 'Stockage des données',
+	'Details' => 'Détails',
+	'IO::Compress::Gzip is required in order to compress files during backup operations.' => 'IO::Compress::Gzip est nécessaire pour comprimer les fichiers lors des opérations de sauvegarde.',
+	'IO::Uncompress::Gunzip is required in order to decompress files during restore operation.' => 'IO::Uncompress::Gunzip est nécessaire pour décomprimer les fichiers lors des opérations de restauration.',
+	'Installed' => 'Installé',
+	'Movable Type System Check Successful' => 'Vérification du système Movable Type terminée avec succès.',
+	'Movable Type System Check' => 'Vérification du système Movable Type',
+	'Movable Type version:' => 'Version de Movable Type :',
+	'Net::SMTP is required in order to send mail via an SMTP Server.' => 'Net::SMTP est nécessaire pour envoyer des e-mails via un serveur SMTP.',
+	'Perl version:' => 'Version de Perl :',
+	'Storable is optional; It is required by certain Movable Type plugins available from third-party developers.' => 'Storable est optionnel, ce module est requis par certains plugins de développeurs tiers.',
+	'The DBD::mysql version you have installed is known to be incompatible with Movable Type. Please install the most current release available.' => 'La version installée de DBD::mysql est connue pour être incompatible avec Movable Type. Veuillez installer la dernière version disponible.',
+	'The MT-Check report is disabled when Movable Type has a valid configuration file (mt-config.cgi)' => 'Le rapport MT-Check est désactivé lorsque Movable Type a un fichier de configuration (mt-config.cgi) valide',
+	'The [_1] is installed properly, but requires an updated DBI module. Please see the note above regarding the DBI module requirements.' => '[_1] est installé correctement mais nécessite une version plus récente de DBI. Veuillez vous reporter à la note précédente concernant les pré-requis du module DBI.',
+	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'La version de Perl installée sur votre serveur ([_1]) est inférieure au minimum requis ([_2]). Veuillez mettre à jour vers, au moins, Perl [_2].',
+	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'Ce module et ses dépendances sont nécessaires pour faire fonctionner Movable Type en mode PSGI.',
+	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Ce module est requis par mt-search.cgi si vous faites fonctionner Movable Type avec une version de Perl antérieure à 5.8.',
+	'This module required for action streams.' => '', # Translate - New
+	'Web server:' => 'Serveur web :',
+	'Your server has [_1] installed (version [_2]).' => 'Votre serveur possède [_1] (version [_2]).',
+	'[_1] [_2] Modules' => '[_1] modules [_2]',
+	'unknown' => 'inconnu',
+	q{CGI::Cookie is required for cookie authentication.} => q{CGI::Cookie est nécessaire pour l'authentification via un cookie.},
+	q{Cache::File is required if you would like to be able to allow commenters to authenticate via OpenID using Yahoo! Japan.} => q{Cache::File est requis si vous souhaitez autoriser les commentateurs à s'authentifier via OpenID depuis Yahoo! Japon.},
+	q{Crypt::DSA is optional; If it is installed, comment registration sign-ins will be accelerated.} => q{Crypt::DSA est optionnel. S'il est installé, les créations de comptes d'auteurs de commemtaires seront plus rapides.},
+	q{Digest::SHA1 and its dependencies are required in order to allow commenters to be authenticated by OpenID providers including LiveJournal.} => q{Digest::SHA1 et ses dépendances sont requises afin de permettre aux auteurs de commentaire d'être identifiés en utilisant les fournisseurs OpenID, comme LiveJournal.},
+	q{File::Temp is optional; It is needed if you would like to be able to overwrite existing files when you upload.} => q{File::Temp est optionnel. Il est nécessaire si vous souhaitez être capable de ré-écrire certains fichiers lors d'envois.},
+	q{IPC::Run is optional; It is needed if you would like to use NetPBM as the image processor for Movable Type.} => q{IPC::Run est optionnel, c'est l'une des librairies graphiques permettant de créer des vignettes des images téléchargées.},
+	q{Image::Size is required for file uploads (to determine the size of uploaded images in many different formats).} => q{Image::Size est nécessaire pour l'envoi de fichiers (afin de déterminer la taille des images envoyées dans différents formats).},
+	q{MIME::Base64 is required in order to enable comment registration and in order to send mail via an SMTP Server.} => q{MIME::Base64 est nécessaire pour autoriser l'enregistrement des commentaires et envoyer des e-mails via un serveur SMTP.},
+	q{MT home directory:} => q{Répertoire d'accueil MT :},
+	q{Operating system:} => q{Système d'exploitation :},
+	q{Perl include path:} => q{Chemin d'inclusion Perl :},
+	q{Please consult the installation instructions for help in installing [_1].} => q{Veuillez consulter les instructions d'installation pour obtenir de l'aide pour installer [_1].},
+	q{SOAP::Lite is optional; It is needed if you want to use the MT XML-RPC server implementation.} => q{SOAP::Lite est optionnel. Il est nécessaire si vous souhaitez utiliser l'implementation serveur MT XML-RPC.},
+	q{The following modules are <strong>optional</strong>. If your server does not have these modules installed, you only need to install them if you require the functionality that they provide.} => q{Les modules suivants sont <strong>optionnels</strong>. Si votre serveur ne dispose pas de ces modules, vous n'avez besoin de les installer que si vous avez besoin de leurs fonctionnalités.},
+	q{The following modules are required by databases that can be used with Movable Type. Your server must have DBI and at least one of these related modules installed for the application to work properly.} => q{Les modules suivants sont requis par les bases de données utilisables par Movable Type. DBI et au moins l'un des modules idoines doivent être installés sur votre serveur pour que l'application fonctionne.},
+	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Le script mt-check.cgi vous fournit des informations sur la configuration de votre système et détermine si vous avez tous les composants nécessaires pour exécuter Movable Type.},
+	q{XML::Atom is required in order to use the Atom API.} => q{XML::Atom est nécessaire afin d'utiliser l'API Atom.},
+	q{XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.} => q{XML::SAX et ses dépendances sont nécessaires pour restaurer un fichier créé lors d'une opération de sauvegarde.},
+	q{You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.} => q{Vous avez tenté d'accéder à une fonctionnalité à laquelle vous n'avez pas droit. Si vous pensez que cette erreur n'est pas normale contactez votre administrateur système.},
+	q{You're ready to go!} => q{Vous êtes prêt à continuer !},
+	q{Your server does not have [_1] installed, or [_1] requires another module that is not installed.} => q{Votre serveur n'a pas [_1] d'installé ou [_1] nécessite un autre module qui n'est pas installé.},
+	q{Your server has all of the required modules installed; you do not need to perform any additional module installations. Continue with the installation instructions.} => q{Votre serveur dispose de tous les modules requis, vous n'avez pas besoin d'installer autre chose. Continuez avec les instructions d'installation.},
+	q{[_1] is optional; It is a better, fast and lightweight alternative to YAML::Tiny for YAML file handling.} => q{[_1] est optionnel. C'est une meilleure alternative, plus rapide et plus légère, à YAML::Tiny pour le traitement des fichiers YAML.},
+	q{[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.} => q{[_1] est optionnel, c'est l'une des librairies graphiques permettant de créer des vignettes des images téléchargées.},
+	q{[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation} => q{[_1] est optionnel. C'est l'un des modules requis pour restaurer une sauvegarde créée par une opération de sauvegarde.},
 
 ## mt-static/addons/Sync.pack/js/cms.js
 	'Continue' => 'Continuer',
@@ -3919,7 +3994,7 @@ réessayer plus tard.',
 	'Exclude sites/child sites' => 'Exclure des sites / sites enfants',
 	'Include sites/child sites' => 'Inclure des sites / sites enfants',
 	'MTMultiBlog tag default arguments' => 'Arguments par défaut de la balise MTMultiBlog',
-	'Rebuild Trigger settings has been saved.' => 'Les paramètres du déclencheur de republication ont été sauvegardés.',
+	'Rebuild Trigger settings have been saved.' => 'Les paramètres du déclencheur de republication ont été sauvegardés.',
 	'Rebuild Triggers' => 'Événements de republication',
 	'Site/Child Site' => 'Site / site enfant',
 	'Use system default' => 'Utiliser la règle par défaut du système',
@@ -4107,7 +4182,6 @@ réessayer plus tard.',
 	'Select a Widget...' => 'Sélectionner un widget...',
 	'Your Dashboard has been updated.' => 'Votre tableau de bord a été mis à jour.',
 	q{System Overview} => q{Vue d'ensemble},
-	q{You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.} => q{Vous avez tenté d'accéder à une fonctionnalité à laquelle vous n'avez pas droit. Si vous pensez que cette erreur n'est pas normale contactez votre administrateur système.},
 
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Back (b)' => 'Retour (b)',
@@ -4187,6 +4261,7 @@ réessayer plus tard.',
 
 ## tmpl/cms/dialog/create_association.tmpl
 	'all' => 'toutes',
+	q{No sites exist in this installation. [_1]Create a site</a>} => q{Aucun site n'existe dans cette installation. [_1]Créer un site</a>},
 	q{No blogs exist in this installation. [_1]Create a blog</a>} => q{Aucun blog n'existe dans cette installation. [_1]Créer un blog</a>},
 	q{No groups exist in this installation. [_1]Create a group</a>} => q{Aucun groupe n'existe dans cette installation. [_1]Créer un groupe</a>},
 	q{No roles exist in this installation. [_1]Create a role</a>} => q{Aucun rôle n'existe dans cette installation. [_1]Créer un rôle</a>},
@@ -4415,7 +4490,6 @@ réessayer plus tard.',
 	'Comment Text' => 'Texte du commentaire',
 	'Commenter Status' => 'Status du commentateur',
 	'Delete this comment (x)' => 'Supprimer ce commentaire (x)',
-	'Details' => 'Détails',
 	'Manage Comments' => 'Gérer les commentaires',
 	'Reply to this comment' => 'Répondre à ce commentaire',
 	'Reported as Spam' => 'Notifié comme spam',
@@ -4798,6 +4872,28 @@ réessayer plus tard.',
 
 ## tmpl/cms/field_html/field_html_select_box.tmpl
 	'Not Selected' => 'Non sélectionné',
+
+## tmpl/cms/field_html/field_html_table.tmpl
+	'All possible cells should be selected so to merge cells into one' => '', # Translate - New
+	'Cell is not selected' => '', # Translate - New
+	'Only one cell should be selected' => '', # Translate - New
+	'Source' => '', # Translate - New
+	'align center' => '', # Translate - New
+	'align left' => '', # Translate - New
+	'align right' => '', # Translate - New
+	'change to td' => '', # Translate - New
+	'change to th' => '', # Translate - New
+	'insert column on the left' => '', # Translate - New
+	'insert column on the right' => '', # Translate - New
+	'insert row above' => '', # Translate - New
+	'insert row below' => '', # Translate - New
+	'merge cell' => '', # Translate - New
+	'remove column' => '', # Translate - New
+	'remove row' => '', # Translate - New
+	'split cell' => '', # Translate - New
+	q{The top left cell's value of the selected range will only be saved. Are you sure you want to continue?} => q{}, # Translate - New
+	q{You can't paste here} => q{}, # Translate - New
+	q{You can't split the cell anymore} => q{}, # Translate - New
 
 ## tmpl/cms/import.tmpl
 	'<mt:var name="display_name" escape="html">' => '<mt:var name="display_name" escape="html">',

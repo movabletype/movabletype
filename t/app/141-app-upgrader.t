@@ -302,4 +302,144 @@ subtest 'Upgrade from MT6 to MT7' => sub {
 
 };
 
+subtest 'MultiBlogMigrationPartial' => sub {
+    my $model = MT->model('rebuild_trigger');
+    # ri:2:entry_save:0|ri:2:entry_save:0|ri:2:entry_save:0
+
+    subtest 'unserialize single' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:2:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOG );
+        is( $rt->action,         MT::RebuildTrigger::ACTION_RI );
+        is( $rt->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE );
+        is( $rt->target_blog_id, 2 );
+        is( $rt->event,          MT::RebuildTrigger::EVENT_SAVE );
+    };
+
+    subtest 'unserialize single target=0' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:0:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single target=_blogs_in_website' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_blogs_in_website:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single target=_all' => sub {
+        my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize('ri:_all:entry_save');
+        is( ref $rt,             $model, 'right class' );
+        is( $rt->target,         MT::RebuildTrigger::TARGET_ALL );
+        is( $rt->target_blog_id, 0 );
+    };
+
+    subtest 'unserialize single error' => sub {
+        my @wrong_inputs = (
+            'xx:2:entry_save',
+            'ri::entry_save',
+            'ri:x:entry_save',
+            'ri:1_:entry_save',
+            'ri:2:XXXX_save',
+            'ri:2:entry_XXXX',
+            "ri:2:entry_XXXX\n",
+            "\nri:2:entry_XXXX",
+        );
+        for (@wrong_inputs) {
+            my $rt = MT::Upgrade::v7::_v7_migrate_rebuild_trigger_unserialize($_);
+            is(ref $rt, '', 'error');
+            is($rt, undef,      'error');
+        }
+    };
+};
+
+subtest 'MultiBlogMigration' => sub {
+    MT::Test->init_db;
+
+    my $parent1 = MT::Test::Permission->make_blog(parent_id => 0);
+    my $parent2 = MT::Test::Permission->make_blog(parent_id => 0);
+    my $child1  = MT::Test::Permission->make_blog(parent_id => $parent1->id);
+    my $child2  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
+    my $child3  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
+    my $child4  = MT::Test::Permission->make_blog(parent_id => $parent2->id);
+
+    my $pd0 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration');
+    $pd0->data({ default_access_allowed => 0 });
+    $pd0->save;
+
+    my %test_data = (default_mtmulitblog_blogs => 1, default_mtmultiblog_action => 2, blog_content_accessible => 3);
+
+    my $pd1 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $parent2->id);
+    $pd1->data(\%test_data);
+    $pd1->save;
+    my $pd2 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child2->id);
+    $pd2->data({
+        %test_data,
+        rebuild_triggers => join('|', 'ri:_all:entry_save', 'ri:123:entry_unpub', 'rip:_blogs_in_website:comment_pub'),
+    });
+    $pd2->save;
+
+    my $pd3 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child3->id);
+    $pd3->data(\'1');    # broken data emulation
+    $pd3->save;
+
+    my $pd4 = MT::PluginData->new('plugin' => 'MultiBlog', 'key' => 'configuration:blog:' . $child4->id);
+    $pd4->data({
+        %test_data,
+        rebuild_triggers => 'ri:_all:entry_xxxx',
+    });
+    $pd4->save;
+
+    is(MT->config('DefaultAccessAllowed'), 1);
+    is(MT::RebuildTrigger->count,          0);
+
+    MT::Test::Upgrade->upgrade(from => 6.0010);
+
+    my ($last_log1, $last_log2) = MT::Log->load({}, { sort => 'id', direction => 'descend', limit => 2 });
+    is($last_log1->blog_id, $child4->id);
+    like($last_log1->message, qr/Some MultiBlog/);
+    is($last_log2->blog_id, $child3->id);
+    like($last_log2->message, qr/MultiBlog/);
+
+    is(MT->config('DefaultAccessAllowed'),                    0);
+    is(MT::Blog->load($parent1->id)->default_mt_sites_sites,  undef);
+    is(MT::Blog->load($parent1->id)->default_mt_sites_action, undef);
+    is(MT::Blog->load($parent1->id)->blog_content_accessible, undef);
+    is(MT::Blog->load($parent2->id)->default_mt_sites_sites,  1);
+    is(MT::Blog->load($parent2->id)->default_mt_sites_action, 2);
+    is(MT::Blog->load($parent2->id)->blog_content_accessible, 3);
+    is(MT::Blog->load($child1->id)->default_mt_sites_sites,   undef);
+    is(MT::Blog->load($child1->id)->default_mt_sites_action,  undef);
+    is(MT::Blog->load($child1->id)->blog_content_accessible,  undef);
+    is(MT::Blog->load($child2->id)->default_mt_sites_sites,   1);
+    is(MT::Blog->load($child2->id)->default_mt_sites_action,  2);
+    is(MT::Blog->load($child2->id)->blog_content_accessible,  3);
+    is(MT::Blog->load($child3->id)->default_mt_sites_sites,   undef);
+    is(MT::Blog->load($child3->id)->default_mt_sites_action,  undef);
+    is(MT::Blog->load($child3->id)->blog_content_accessible,  undef);
+    is(MT::RebuildTrigger->count,                             3);
+
+    my @triggers = MT::RebuildTrigger->load();
+    is($triggers[0]->target,         MT::RebuildTrigger::TARGET_ALL);
+    is($triggers[0]->action,         MT::RebuildTrigger::ACTION_RI);
+    is($triggers[0]->blog_id,        5);
+    is($triggers[0]->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE);
+    is($triggers[0]->target_blog_id, 0);
+    is($triggers[0]->event,          MT::RebuildTrigger::EVENT_SAVE);
+    is($triggers[1]->target,         MT::RebuildTrigger::TARGET_BLOG);
+    is($triggers[1]->action,         MT::RebuildTrigger::ACTION_RI);
+    is($triggers[1]->blog_id,        5);
+    is($triggers[1]->object_type,    MT::RebuildTrigger::TYPE_ENTRY_OR_PAGE);
+    is($triggers[1]->target_blog_id, 123);
+    is($triggers[1]->event,          MT::RebuildTrigger::EVENT_UNPUBLISH);
+    is($triggers[2]->target,         MT::RebuildTrigger::TARGET_BLOGS_IN_WEBSITE);
+    is($triggers[2]->action,         MT::RebuildTrigger::ACTION_RIP);
+    is($triggers[2]->blog_id,        5);
+    is($triggers[2]->object_type,    MT::RebuildTrigger::TYPE_COMMENT);
+    is($triggers[2]->target_blog_id, 0);
+    is($triggers[2]->event,          MT::RebuildTrigger::EVENT_PUBLISH);
+};
+
 done_testing;

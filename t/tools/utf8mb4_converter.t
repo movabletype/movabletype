@@ -93,4 +93,17 @@ subtest 'ignore utf8mb4' => sub {
     ok my $count = MT::Entry->count, "entries exist";
 };
 
+subtest 'force' => sub {
+    my %connect_info = _connect_info();
+    my $db           = $connect_info{db};
+
+    my ( $out, $err ) = run( %connect_info, verbose => 1, force => 1 );
+
+    ok $out =~ /character set is already utf8mb4, but/, "already utf8mb4, but we will convert";
+    ok $out =~ /Altered .* 'mt_test'/, "altered database"   or note $out;
+    ok $out =~ /Altered 'mt_ts_job'/,  "altered last table" or note $out;
+
+    ok my $count = MT::Entry->count, "entries exist";
+};
+
 done_testing;

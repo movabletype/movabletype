@@ -115,11 +115,11 @@ my $version = $cgi->param("version");
 my $sess_id = $cgi->param('session_id');
 $version ||= '__PRODUCT_VERSION_ID__';
 if ( $version eq '__PRODUCT_VERSION' . '_ID__' ) {
-    $version = '7.6.1';
+    $version = '7.8.0';
 }
 my $release_version = '__RELEASE_VERSION_ID__';
 if ( $release_version eq '__RELEASE' . '_VERSION_ID__' ) {
-    $release_version = 'r.4707';
+    $release_version = 'r.5001';
 }
 
 my ( $mt, $LH );
@@ -829,14 +829,11 @@ print_encode( trans_templ(<<INFO) );
 <h2 id="system-info"><__trans phrase="System Information"></h2>
 $perl_ver_check
 INFO
-if ($version) {
+if ($release_version) {
 
-    # sanitize down to letters numbers dashes and period
-    $version =~ s/[^a-zA-Z0-9\-\.]//g;
-    $version = $cgi->escapeHTML($version);
     print_encode( trans_templ(<<INFO) );
 <ul class="list-unstyled version">
-    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version ($version)</code></li>
+    <li><strong><__trans phrase="Movable Type version:"></strong> <code>$release_version</code></li>
 </ul>
 INFO
 }

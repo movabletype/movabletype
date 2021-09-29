@@ -862,6 +862,15 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub set_referrer_policy {
+    my $app = shift;
+
+    my $policy = $app->config->ReferrerPolicy;
+    return unless $policy;
+
+    $app->set_header( 'Referrer-Policy', $policy );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -2075,6 +2084,17 @@ sub login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
+            # Login invalid (empty password)
+            my $username = $app->param('username');
+            my $message  = defined $username && $username ne ''
+                         ? $app->translate("Failed login attempt by user '[_1]'", $username)
+                         : $app->translate("Failed login attempt by anonymous user");
+            $app->log({
+                message  => $message,
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            });
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
@@ -2146,7 +2166,7 @@ sub login {
         || $res == MT::Auth::SESSION_EXPIRED() )
     {
 
-        # Login invlaid (password error, etc...)
+        # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
@@ -2288,15 +2308,15 @@ sub login {
 
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message  => $app->translate(
                     "User '[_1]' (ID:[_2]) logged in successfully",
                     $author->name, $author->id
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'author',
                 category => 'login_user',
-            );
+            });
 
             ## magic_token = the user is trying to post something
             ## (after a long pause, or because of CSRF)
@@ -2980,6 +3000,7 @@ sub show_error {
     }
     $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
+    $param->{local_lang_id} = $app->current_language || 'en_us';
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );
     my $out = $tmpl->output;
@@ -3142,6 +3163,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->set_referrer_policy;
 
     my ($body);
 
@@ -3992,6 +4014,32 @@ sub param_hash {
     %result;
 }
 
+sub validate_param {
+    my ($app, $rules) = @_;
+    return 1 if $app->config->DisableValidateParam;
+
+    require MT::ParamValidator;
+    unless ($MT::ParamValidator::Initialized) {
+        my $handlers = $app->registry('param_validator') || {};
+        for my $name (keys %$handlers) {
+            next unless $name && $name =~ /^[A-Za-z][A-Za-z0-9_]*$/;
+            my $code = $app->handler_to_coderef($handlers->{$name});
+            MT::ParamValidator->set_handler($name => $code);
+        }
+        $MT::ParamValidator::Initialized = 1;
+    }
+    my $validator = MT::ParamValidator->new($rules) or return $app->error(MT::ParamValidator->errstr);
+    my $res = $validator->validate_param($app);
+    if (!$res) {
+        if ($MT::DebugMode) {
+            return $app->error($validator->errstr);
+        } else {
+            return $app->error(MT->translate("Invalid request."));
+        }
+    }
+    return $res;
+}
+
 ## Path/server/script-name determination methods
 
 sub query_string {
@@ -4147,7 +4195,11 @@ sub app_path {
     $app->{__path} = $path;
 }
 
-sub envelope {''}
+sub envelope {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+    '';
+}
 
 sub script {
     my $app = shift;
@@ -4411,6 +4463,7 @@ sub log {
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'

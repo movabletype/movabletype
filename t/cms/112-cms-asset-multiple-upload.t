@@ -32,10 +32,13 @@ use MT::Test::Image;
 
 MT::Test->init_app;
 
-$test_env->prepare_fixture('db_data');
+$test_env->prepare_fixture('db');
 
 my $admin   = MT->model('author')->load(1);
 my $blog_id = 1;
+my $site = MT::Website->load($blog_id);
+$site->site_path($test_env->root . "/site");
+$site->save;
 
 no Carp::Always;
 

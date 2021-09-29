@@ -2220,6 +2220,7 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'XXSSProtection'    => undef,
+            'ReferrerPolicy'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
@@ -2250,6 +2251,11 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2583,6 +2589,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
@@ -3052,7 +3059,7 @@ sub load_core_permissions {
         },
         'blog.manage_content_data' => {
             group            => 'auth_pub',
-            label            => 'Manage Content Data',
+            label            => 'Manage All Content Data',
             order            => 700,
             permitted_action => {
                 'access_to_content_data_list'             => 1,
@@ -3403,7 +3410,7 @@ sub load_core_permissions {
         },
         'system.manage_content_data' => {
             group        => 'sys_admin',
-            label        => 'Manage Content Data',
+            label        => 'Manage All Content Data',
             order        => 900,
             inherit_from => [
                 'system.sign_in_cms', 'blog.manage_content_data',
