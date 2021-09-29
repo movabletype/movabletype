@@ -609,6 +609,13 @@ sub can_search_replace {
 
 sub search_replace {
     my $app     = shift;
+
+    $app->validate_param({
+        _type      => [qw/OBJTYPE/],
+        blog_id    => [qw/ID/],
+        entry_type => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog_id = $app->param('blog_id');
 
     return $app->permission_denied()
@@ -1070,13 +1077,14 @@ sub do_search_replace {
             my $match = 0;
 
             # For cms_pre_save callback and revisioning
-            my $orig_obj = $obj->clone();
+            my $orig_obj;
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
                     my $text = $obj->column($col);
                     $text = '' unless defined $text;
                     if ($do_replace) {
+                        $orig_obj ||= $obj->clone();
                         if ( $text =~ s!$re!$replace!g ) {
                             $match++;
                             $obj->$col($text);
@@ -1181,7 +1189,7 @@ sub do_search_replace {
         $app->log(
             {   message  => $message,
                 blog_id  => ( $obj->can('blog_id') ? $obj->blog_id : 0 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $type,
                 category => 'edit',
                 metadata => $obj->id

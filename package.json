@@ -7,14 +7,23 @@
     "lib": "lib"
   },
   "dependencies": {
-    "codemirror": "5.54",
+    "codemirror": "^5.61.1",
+    "jquery": "^3.6.0",
+    "jquery-json": "^2.6.0",
+    "jquery-migrate": "^3.3.2",
+    "jquery-validation": "^1.19.3",
     "svg4everybody": "^2.1.9",
-    "tinymce": "5.7.0",
+    "tinymce": "5.8.1",
     "tinymce-i18n": "20.12.25"
   },
   "devDependencies": {},
   "scripts": {
     "copy": "npm run copy-tinymce; npm run copy-tinymce-language; npm run copy-svg4everybody;",
+    "copy-jquery": "yarn copy-jquery-core && yarn copy-jquery-migrate && yarn copy-jquery-json && yarn copy-jquery-validation",
+    "copy-jquery-core": "cp -rf node_modules/jquery/dist/jquery.js mt-static/jquery/ && cp -rf node_modules/jquery/dist/jquery.min.* mt-static/jquery/",
+    "copy-jquery-migrate": "cp -rf node_modules/jquery-migrate/dist/jquery-migrate.* mt-static/jquery/",
+    "copy-jquery-validation": "cp -rf node_modules/jquery-validation/dist/jquery.validate.* mt-static/jquery/",
+    "copy-jquery-json": "cp -rf node_modules/jquery-json/src/jquery.json.* mt-static/jquery/ && cp -rf node_modules/jquery-json/dist/jquery.json.* mt-static/jquery/",
     "copy-tinymce": "cp -rf node_modules/tinymce/*.js node_modules/tinymce/themes node_modules/tinymce/skins node_modules/tinymce/plugins node_modules/tinymce/icons node_modules/tinymce/license.txt mt-static/plugins/TinyMCE5/tiny_mce/",
     "copy-tinymce-language": "rm -rf mt-static/plugins/TinyMCE5/tiny_mce/langs; mkdir mt-static/plugins/TinyMCE5/tiny_mce/langs; cp -rf node_modules/tinymce-i18N/langs5/* mt-static/plugins/TinyMCE5/tiny_mce/langs/",
     "test": "echo \"Error: no test specified\" && exit 1",

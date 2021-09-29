@@ -186,6 +186,11 @@ sub edit {
 sub edit_role {
     my $app = shift;
 
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID/],
+    }) or return;
+
     return $app->return_to_dashboard( redirect => 1 )
         if $app->param('blog_id');
 
@@ -342,6 +347,11 @@ sub can_delete_role {
 
 sub save_role {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     my $q   = $app->param;
     $app->validate_magic() or return;
     $app->can_do('save_role') or return $app->permission_denied();
@@ -397,6 +407,11 @@ sub disable {
 
 sub set_object_status {
     my ( $app, $new_status ) = @_;
+
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID MULTI/],
+    }) or return;
 
     $app->validate_magic() or return;
     return $app->permission_denied()
@@ -491,6 +506,10 @@ sub set_object_status {
 sub unlock {
     my ($app) = @_;
 
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Lockout;
 
     $app->validate_magic() or return;
@@ -523,6 +542,11 @@ sub unlock {
 
 sub recover_lockout {
     my $app     = shift;
+
+    $app->validate_param({
+        user_id => [qw/ID/],
+    }) or return;
+
     my $user_id = $app->param('user_id');
     my $token   = $app->param('token');
 
@@ -742,6 +766,11 @@ sub save_cfg_system_users {
     return $app->permission_denied()
         unless $app->user->is_superuser();
 
+    $app->validate_param({
+        new_user_default_website_id => [qw/ID/],
+        notify_user_id              => [qw/IDS/],
+    }) or return;
+
     my $theme_id = $app->param('new_user_theme_id') || '';
     if ($theme_id) {
         require MT::Theme;
@@ -840,6 +869,11 @@ sub save_cfg_system_users {
 sub remove_user_assoc {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+    }) or return;
 
     my $user = $app->user;
     return $app->permission_denied()
@@ -1429,6 +1463,11 @@ PERMCHECK: {
 sub remove_userpic {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        user_id => [qw/ID/],
+    }) or return;
+
     my $q       = $app->param;
     my $user_id = $q->param('user_id');
     my $user    = $app->model('author')->load($user_id)
@@ -1781,7 +1820,7 @@ sub post_delete {
                 "User '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->name, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'author',
             category => 'delete'
         }

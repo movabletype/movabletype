@@ -38,7 +38,6 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         language: $('html').attr('lang'),
         
         menubar: false,
-        branding: false,
         icons: 'mt',
         icons_url: StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/icons.js',
 
@@ -366,9 +365,9 @@ $.extend(MT.Editor.TinyMCE.prototype, MT.Editor.prototype, {
                 adapter.$editorTextarea.height('auto');
             }
             else {
-                adapter.$editorIframe.height(height);
                 var wrapper = adapter.$editorIframe.parents('.tox-tinymce');
-                wrapper.height(parseInt(height) + wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height());
+                wrapper.height(parseInt(height));
+                adapter.$editorIframe.height(parseInt(height) - (wrapper.find('.tox-editor-header').height() + wrapper.find('.tox-statusbar').height()) );
             }
         };
         var Cookie = tinymce.plugins.MovableType.Cookie;

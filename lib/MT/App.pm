@@ -550,8 +550,14 @@ sub listing {
             ? $iter_method
             : ( $class->$iter_method( $terms, $args )
                 or return $app->error( $class->errstr ) );
-        my @data;
+        my @objs;
         while ( my $obj = $iter->() ) {
+            push @objs, $obj;
+            last if ( scalar @objs == $limit ) && ( !$no_limit );
+        }
+
+        my @data;
+        for my $obj (@objs) {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
@@ -562,7 +568,6 @@ sub listing {
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
-            last if ( scalar @data == $limit ) && ( !$no_limit );
         }
 
         $param->{object_loop} = \@data;
@@ -720,6 +725,15 @@ sub set_x_xss_protection_header {
     $app->set_header( 'X-XSS-Protection', $xss_protection );
 }
 
+sub set_referrer_policy {
+    my $app = shift;
+
+    my $policy = $app->config->ReferrerPolicy;
+    return unless $policy;
+
+    $app->set_header( 'Referrer-Policy', $policy );
+}
+
 sub send_http_header {
     my $app = shift;
     my ($type) = @_;
@@ -780,6 +794,10 @@ sub print {
 sub print_encode {
     my $app = shift;
     my $enc = $app->charset || 'UTF-8';
+    my $restype = $app->{response_content_type} || '';
+    if ($restype =~ m!/json$!) {
+        $enc = 'UTF-8';
+    }
     $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
@@ -2274,15 +2292,15 @@ sub login {
 
             $app->start_session( $author, $ctx->{permanent} ? 1 : 0 );
             $app->request( 'fresh_login', 1 );
-            $app->log(
-                $app->translate(
+            $app->log({
+                message  => $app->translate(
                     "User '[_1]' (ID:[_2]) logged in successfully",
                     $author->name, $author->id
                 ),
                 level    => MT::Log::INFO(),
                 class    => 'author',
                 category => 'login_user',
-            );
+            });
 
             ## magic_token = the user is trying to post something
             ## (after a long pause, or because of CSRF)
@@ -2968,6 +2986,7 @@ sub show_error {
     }
     $param->{hide_goback_button} = $app->{hide_goback_button} || 0;
     local $param->{error} = $error;
+    $param->{local_lang_id} = $app->current_language || 'en_us';
     $tmpl->param($param);
     $app->run_callbacks( 'template_param.error', $app, $tmpl->param, $tmpl );
     my $out = $tmpl->output;
@@ -3126,6 +3145,7 @@ sub run {
 
     $app->set_x_frame_options_header;
     $app->set_x_xss_protection_header;
+    $app->set_referrer_policy;
 
     my ($body);
 
@@ -3965,6 +3985,32 @@ sub param_hash {
     %result;
 }
 
+sub validate_param {
+    my ($app, $rules) = @_;
+    return 1 if $app->config->DisableValidateParam;
+
+    require MT::ParamValidator;
+    unless ($MT::ParamValidator::Initialized) {
+        my $handlers = $app->registry('param_validator') || {};
+        for my $name (keys %$handlers) {
+            next unless $name && $name =~ /^[A-Za-z][A-Za-z0-9_]*$/;
+            my $code = $app->handler_to_coderef($handlers->{$name});
+            MT::ParamValidator->set_handler($name => $code);
+        }
+        $MT::ParamValidator::Initialized = 1;
+    }
+    my $validator = MT::ParamValidator->new($rules) or return $app->error(MT::ParamValidator->errstr);
+    my $res = $validator->validate_param($app);
+    if (!$res) {
+        if ($MT::DebugMode) {
+            return $app->error($validator->errstr);
+        } else {
+            return $app->error(MT->translate("Invalid request."));
+        }
+    }
+    return $res;
+}
+
 ## Path/server/script-name determination methods
 
 sub query_string {
@@ -4370,6 +4416,7 @@ sub log {
     my $method
         = $log->level == MT::Log::DEBUG()    ? 'debug'
         : $log->level == MT::Log::INFO()     ? 'info'
+        : $log->level == MT::Log::NOTICE()   ? 'notice'
         : $log->level == MT::Log::WARNING()  ? 'warn'
         : $log->level == MT::Log::ERROR()    ? 'error'
         : $log->level == MT::Log::SECURITY() ? 'error'

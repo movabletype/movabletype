@@ -132,6 +132,8 @@ use_ok('MT::DefaultTemplates');
 use_ok('MT::FileMgr');
 use_ok('MT::FileMgr::Local');
 use_ok('MT::FileMgr::FTP');
+use_ok('MT::ParamValidator');
+
 SKIP: {
 
     if ( eval { require Net::FTPSSL } ) {
@@ -181,6 +183,9 @@ use_ok('MT::ListProperty');
 
 use_ok('MT::Util');
 use_ok('MT::Util::Archive');
+use_ok('MT::Util::Archive::BinTgz');
+use_ok('MT::Util::Archive::BinZip');
+use_ok('MT::Util::Archive::TempFile');
 SKIP: {
     if ( eval { require Archive::Tar } ) {
         use_ok('MT::Util::Archive::Tgz');
@@ -399,6 +404,7 @@ use_ok('MT::Theme::Entry');
 use_ok('MT::Theme::Pref');
 use_ok('MT::Theme::StaticFiles');
 use_ok('MT::Theme::TemplateSet');
+use_ok('MT::version');
 
 # Lockout
 use_ok('MT::FailedLogin');

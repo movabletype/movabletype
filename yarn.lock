@@ -2,10 +2,30 @@
 # yarn lockfile v1
 
 
-codemirror@5.54:
-  version "5.54.0"
-  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.54.0.tgz#82b6adf662b29eeb7b867fe7839d49e25e4a0b38"
-  integrity sha512-Pgf3surv4zvw+KaW3doUU7pGjF0BPU8/sj7eglWJjzni46U/DDW8pu3nZY0QgQKUcICDXRkq8jZmq0y6KhxM3Q==
+codemirror@^5.61.1:
+  version "5.61.1"
+  resolved "https://registry.yarnpkg.com/codemirror/-/codemirror-5.61.1.tgz#ccfc8a43b8fcfb8b12e8e75b5ffde48d541406e0"
+  integrity sha512-+D1NZjAucuzE93vJGbAaXzvoBHwp9nJZWWWF9utjv25+5AZUiah6CIlfb4ikG4MoDsFsCG8niiJH5++OO2LgIQ==
+
+jquery-json@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/jquery-json/-/jquery-json-2.6.0.tgz#14e60ba6586f9e59505a30b69399c20bd7d5d98c"
+  integrity sha1-FOYLplhvnllQWjC2k5nCC9fV2Yw=
+
+jquery-migrate@^3.3.2:
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/jquery-migrate/-/jquery-migrate-3.3.2.tgz#7829ee24de3054d0d2f42dd093390d8a7b7af01a"
+  integrity sha512-L3gYhr7yEtLUSAeqXSicVa0vRD4aGwjw/bWY8YzrO2o/qDY1BaMyP3oB3bZf5Auy3Hu9ynliio0CTyDWCBPVDw==
+
+jquery-validation@^1.19.3:
+  version "1.19.3"
+  resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.3.tgz#50b350eba8b02bcfd119ba15f199487b7eb64086"
+  integrity sha512-iXxCS5W7STthSTMFX/NDZfWHBLbJ1behVK3eAgHXAV8/0vRa9M4tiqHvJMr39VGWHMGdlkhrtrkBuaL2UlE8yw==
+
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
 
 svg4everybody@^2.1.9:
   version "2.1.9"
@@ -17,7 +37,7 @@ tinymce-i18n@20.12.25:
   resolved "https://registry.yarnpkg.com/tinymce-i18n/-/tinymce-i18n-20.12.25.tgz#479d2c69613ec2324aeadb4478c9da2d8d4e0bb8"
   integrity sha512-MOVCgGbkZ2ZVvb9B38Mbdhwam1oZOBXDkxmzcHX3W7c3RCB8r4VG9DS8+4BcsoCCgfUg1JXwh2Hk+7aXcYXkkg==
 
-tinymce@5.7.0:
-  version "5.7.0"
-  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.7.0.tgz#bc565877e4041db83848a330dfa7916993110cba"
-  integrity sha512-WikgMpJbqYPaucV3lfstCj+Y4NquZlK61gyuJ2eqDUBlSU+4fFh6rpwnelVTxuvtEyJsAVOl8HZmbzBfDJiLsQ==
+tinymce@5.8.1:
+  version "5.8.1"
+  resolved "https://registry.yarnpkg.com/tinymce/-/tinymce-5.8.1.tgz#f6ace70e47cf6b5b0a63f52cf38e4ae04a35ba58"
+  integrity sha512-1zGXdZplWQafstlC7sri0ttCgMagsiXDc9N3I8JNrPOsWAeTfq4AAJWZoxsQBYn8gYcuPu/WzMKG5SoJjxI1VA==

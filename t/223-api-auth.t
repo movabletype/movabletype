@@ -26,6 +26,7 @@ $author->save or die $author->errstr;
 
 use MT::DataAPI::Endpoint::Auth;
 use MT::AccessToken;
+use JSON;
 
 {
     ( my $base = __FILE__ ) =~ s/\.t$/.d/;

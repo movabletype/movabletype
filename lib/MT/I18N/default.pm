@@ -33,7 +33,7 @@ sub NEWS_URL()     {'http://www.sixapart.com/movabletype/news/'}
 sub FEEDBACK_URL() {'http://www.movabletype.org/feedback.html'}
 
 sub NEWSBOX_URL() {
-    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html';
+    'https://movabletype.org/app/widget.html';
 }
 sub LEARNINGNEWS_URL()     {''}
 sub CATEGORY_NAME_NODASH() {0}

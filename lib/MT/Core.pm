@@ -1935,10 +1935,7 @@ BEGIN {
             },
             'NewsURL' =>
                 { default => 'http://www.sixapart.com/movabletype/news/', },
-            'NewsboxURL' => {
-                default =>
-                    'http://www.sixapart.com/movabletype/news/mt4_news_widget.html',
-            },
+            'NewsboxURL' => { default => 'https://movabletype.org/app/widget.html', },
             'FeedbackURL' =>
                 { default => 'http://www.movabletype.org/feedback.html', },
 
@@ -2137,6 +2134,7 @@ BEGIN {
             'RestrictedPSGIApp' => { type    => 'ARRAY' },
             'XFrameOptions'     => { default => 'SAMEORIGIN' },
             'XXSSProtection'    => undef,
+            'ReferrerPolicy'    => undef,
             'DynamicCacheTTL'   => { default => 0 },
 
             # Activity logging
@@ -2150,6 +2148,11 @@ BEGIN {
             'DefaultClassParamFilter' => { default => 'all' },
 
             'UseTraditionalTransformer' => undef,
+            'DisableValidateParam'      => undef,
+            'UseExternalArchiver' => undef,
+            'BinTarPath' => undef,
+            'BinZipPath' => undef,
+            'BinUnzipPath' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2471,6 +2474,7 @@ sub load_core_tasks {
                 $job->uniqkey(1);
                 $job->priority(4);
                 MT::TheSchwartz->insert($job);
+                return;
             },
         },
         'JunkExpiration' => {
@@ -2770,6 +2774,7 @@ sub load_core_permissions {
                 'edit_entry_authored_on'                  => 1,
                 'edit_entry_unpublished_on'               => 1,
                 'save_edit_prefs'                         => 1,
+                'view_thumbnail_image'                    => 1,
             }
         },
         'blog.edit_all_posts' => {
@@ -2804,6 +2809,7 @@ sub load_core_permissions {
                 'insert_asset'                     => 1,
                 'access_to_insert_asset_list'      => 1,
                 'save_edit_prefs'                  => 1,
+                'view_thumbnail_image'             => 1,
             }
         },
         'blog.edit_assets' => {
@@ -2819,6 +2825,7 @@ sub load_core_permissions {
                 'delete_asset_file'                => 1,
                 'edit_assets'                      => 1,
                 'open_asset_edit_screen'           => 1,
+                'view_thumbnail_image'             => 1,
                 'remove_tags_from_assets'          => 1,
                 'remove_tags_from_assets_via_list' => 1,
                 'save_asset'                       => 1,
@@ -2996,6 +3003,7 @@ sub load_core_permissions {
                 'edit_page_authored_on'           => 1,
                 'edit_page_unpublished_on'        => 1,
                 'save_edit_prefs'                 => 1,
+                'view_thumbnail_image'            => 1,
             }
         },
         'blog.manage_users' => {

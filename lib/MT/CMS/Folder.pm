@@ -103,7 +103,7 @@ sub post_save {
                     "Folder '[_1]' (ID:[_2]) edited by '[_3]'",
                     $obj->label, $obj->id, $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 category => 'edit',
                 metadata => $obj->id,
@@ -131,7 +131,7 @@ sub post_delete {
                 "Folder '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'folder',
             category => 'delete'
         }

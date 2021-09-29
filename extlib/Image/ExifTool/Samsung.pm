@@ -11,7 +11,7 @@
 #               4) Jaroslav Stepanek via rt.cpan.org
 #               5) Nick Livchits private communication
 #               6) Sreerag Raghavan private communication (SM-C200)
-#               IB) Iliah Borg private communcation (LibRaw)
+#               IB) Iliah Borg private communication (LibRaw)
 #               NJ) Niels Kristian Bech Jensen private communication
 #------------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ use vars qw($VERSION %samsungLensTypes);
 use Image::ExifTool qw(:DataAccess :Utils);
 use Image::ExifTool::Exif;
 
-$VERSION = '1.48';
+$VERSION = '1.49';
 
 sub WriteSTMN($$$);
 sub ProcessINFO($$$);
@@ -940,6 +940,7 @@ my %formatMinMax = (
 %Image::ExifTool::Samsung::Trailer = (
     GROUPS => { 0 => 'MakerNotes', 2 => 'Other' },
     VARS => { NO_ID => 1, HEX_ID => 0 },
+    PRIORITY => 0, # (first one takes priority so DepthMapWidth/Height match first DepthMapData)
     NOTES => q{
         Tags extracted from the trailer of JPEG images written when using certain
         features (such as "Sound & Shot" or "Shot & More") from Samsung models such
@@ -960,6 +961,8 @@ my %formatMinMax = (
    # 0x08e0-name - seen 'Panorama_Shot_Info'
    # 0x08e0 - string, seen 'PanoramaShot'
    # 0x08e1-name - seen 'Motion_Panorama_Info'
+   # 0x0910-name - seen 'Front_Cam_Selfie_Info'
+   # 0x0910 - string, seen 'Front_Cam_Selfie_Info'
    # 0x09e0-name - seen 'Burst_Shot_Info'
    # 0x09e0 - string, seen '489489125'
    # 0x0a01-name - seen 'Image_UTC_Data'
@@ -974,7 +977,7 @@ my %formatMinMax = (
     '0x0a30-name' => 'EmbeddedVideoType', # ("MotionPhoto_Data")
     '0x0a30' => { Name => 'EmbeddedVideoFile', Groups => { 2 => 'Video' }, Binary => 1 }, #forum7161
    # 0x0aa1-name - seen 'MCC_Data'
-   # 0x0aa1 - seen '234','222'
+   # 0x0aa1 - seen '234','222','429'
    # 0x0ab0-name - seen 'DualShot_Meta_Info'
     '0x0ab1-name' => 'DepthMapName', # seen 'DualShot_DepthMap_1' (SM-N950U)
     '0x0ab1' => { Name => 'DepthMapData', Binary => 1 },
@@ -1445,7 +1448,7 @@ Samsung maker notes in EXIF information.
 
 =head1 AUTHOR
 
-Copyright 2003-2020, Phil Harvey (philharvey66 at gmail.com)
+Copyright 2003-2021, Phil Harvey (philharvey66 at gmail.com)
 
 This library is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

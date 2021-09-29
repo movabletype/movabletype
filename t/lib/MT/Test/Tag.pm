@@ -142,7 +142,7 @@ SKIP: {
             my $block = shift;
         SKIP: {
                 skip $block->skip, 1 if $block->skip;
-                skip 'skip php test', 1 if $block->skip_php;
+                skip 'skip php test', 1 if defined($block->skip_php // $block->SKIP_PHP);
 
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );

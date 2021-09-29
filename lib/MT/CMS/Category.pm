@@ -12,6 +12,12 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        id    => [qw/ID/],
+        _type => [qw/OBJTYPE/],
+        type  => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog = $app->blog;
 
     if ($id) {
@@ -152,6 +158,11 @@ sub save {
 sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        blog_id    => [qw/ID/],
+        datasource => [qw/OBJTYPE/],
+    }) or return;
 
     my $model = $app->param('datasource') || 'category';
     if ( 'category' eq $model ) {
@@ -319,7 +330,7 @@ sub bulk_update {
                     $class->class_label,
                     $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $blog->class,
                 category => 'edit',
                 metadata => "[${previous_order}] => [${new_order}]",
@@ -618,7 +629,7 @@ sub post_save {
                     "Category '[_1]' (ID:[_2]) edited by '[_3]'",
                     $obj->label, $obj->id, $app->user->name
                 ),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => $obj->class,
                 category => 'edit',
                 metadata => $obj->id,
@@ -695,7 +706,7 @@ sub post_delete {
                 "Category '[_1]' (ID:[_2]) deleted by '[_3]'",
                 $obj->label, $obj->id, $app->user->name
             ),
-            level    => MT::Log::INFO(),
+            level    => MT::Log::NOTICE(),
             class    => 'category',
             category => 'delete'
         }

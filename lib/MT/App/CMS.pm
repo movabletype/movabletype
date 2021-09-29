@@ -3234,7 +3234,7 @@ sub build_blog_selector {
         $terms{class} = 'website';
         my $not_ids;
         push @$not_ids, @fav_websites;
-        push @$not_ids, $blog->website->id if $blog && $blog->is_blog;
+        push @$not_ids, $blog->parent_id if $blog && $blog->is_blog && $blog->parent_id;
         $terms{id} = { not => $not_ids } if scalar @$not_ids;
         $args{limit} = $max_load
             - ( scalar @fav_websites );    # Don't load over 3 ~ 4 websites.
@@ -3337,9 +3337,10 @@ sub build_blog_selector {
                 my $fav_data;
                 $fav_data->{fav_blog_id}     = $b->id;
                 $fav_data->{fav_blog_name}   = $b->name;
-                $fav_data->{fav_parent_name} = $b->website->name
-                    if $b->website;
-                $fav_data->{fav_parent_id} = $b->website->id if $b->website;
+
+                my $parent = $b->website || next;    # fatally broken
+                $fav_data->{fav_parent_id}   = $parent->id;
+                $fav_data->{fav_parent_name} = $parent->name;
 
                 push @blog_data, \%$fav_data;
             }
@@ -5170,7 +5171,7 @@ sub pre_run {
         if ( $user && $user->is_superuser ) {
             $message->{detail}
                 = $app->translate(
-                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
+                'An image processing toolkit, often specified by the ImageDriver configuration directive, is not present on your server or is configured incorrectly. A toolkit must be installed to ensure proper operation of the userpics feature. Please install Graphics::Magick, Image::Magick, NetPBM, GD, or Imager, then set the ImageDriver configuration directive accordingly.'
                 );
         }
         else {

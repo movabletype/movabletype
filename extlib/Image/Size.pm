@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# This file copyright (c) 2012 by Randy J. Ray, all rights reserved
+# This file copyright (c) 2015 by Randy J. Ray, all rights reserved
 #
 # Copying and distribution are permitted under the terms of the Artistic
 # License 2.0 (http://www.opensource.org/licenses/artistic-license-2.0.php) or
@@ -23,27 +23,25 @@ require 5.006001;
 # These are the Perl::Critic policies that are being turned off globally:
 ## no critic(RequireBriefOpen)
 ## no critic(ProhibitAutomaticExportation)
-## no critic(ProhibitExplicitISA)
 
 use strict;
 use warnings;
 use bytes;
 use vars qw(
-    @ISA @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION $NO_CACHE %CACHE
+    @EXPORT @EXPORT_OK %EXPORT_TAGS $VERSION $NO_CACHE %CACHE
     $GIF_BEHAVIOR @TYPE_MAP %PCD_MAP $PCD_SCALE $READ_IN $LAST_POS
 );
 
-use Exporter;
+use Exporter 'import';
 
 BEGIN
 {
-    @ISA         = qw(Exporter);
     @EXPORT      = qw(imgsize);
     @EXPORT_OK   = qw(imgsize html_imgsize attr_imgsize
                       %CACHE $NO_CACHE $PCD_SCALE $GIF_BEHAVIOR);
     %EXPORT_TAGS = ('all' => [ @EXPORT_OK ]);
 
-    $VERSION = '3.231';
+    $VERSION = '3.300';
     $VERSION = eval $VERSION; ## no critic(ProhibitStringyEval)
 
     # Default behavior for GIFs is to return the "screen" size
@@ -72,6 +70,9 @@ $NO_CACHE = 0;
     qr{^CWS}                     => \&swfmxsize,
     qr{^\x8aMNG\x0d\x0a\x1a\x0a} => \&mngsize,
     qr{^\x01\x00\x00\x00}        => \&emfsize,
+    qr{^RIFF(?s:....)WEBP}       => \&webpsize,
+    qr{^\x00\x00\x01\x00}        => \&icosize,
+    qr{^\x00\x00\x02\x00}        => \&cursize,
 );
 # Kodak photo-CDs are weird. Don't ask me why, you really don't want details.
 %PCD_MAP = ( 'base/16' => [ 192,  128  ],
@@ -131,7 +132,7 @@ sub imgsize ## no critic(ProhibitExcessComplexity)
 
     my ($handle, $header);
     my ($x, $y, $id, $mtime, @list);
-    # These only used if $stream is an existant open FH
+    # These only used if $stream is an existing open FH
     my ($save_pos, $need_restore) = (0, 0);
     # This is for when $stream is a locally-opened file
     my $need_close = 0;
@@ -156,7 +157,7 @@ sub imgsize ## no critic(ProhibitExcessComplexity)
         $save_pos = tell $handle;
         $need_restore = 1;
 
-        # First alteration (didn't wait long, did I?) to the existant handle:
+        # First alteration (didn't wait long, did I?) to the existing handle:
         #
         # assist dain-bramaged operating systems -- SWD
         # SWD: I'm a bit uncomfortable with changing the mode on a file
@@ -234,7 +235,7 @@ sub imgsize ## no critic(ProhibitExcessComplexity)
         $CACHE{$stream} = join q{,}, $mtime, $x, $y, $id;
     }
 
-    # If we were passed an existant file handle, we need to restore the
+    # If we were passed an existing file handle, we need to restore the
     # old filepos:
     if ($need_restore)
     {
@@ -325,7 +326,7 @@ sub html_imgsize
 
     # Use lowercase and quotes so that it works with xhtml.
     return ((defined $args[0]) ?
-            sprintf('width="%d" height="%d"', @args) :
+            sprintf('width="%d" height="%d"', @args[0,1]) :
             undef);
 }
 
@@ -365,12 +366,9 @@ sub _bin2int
 ###########################################################################
 # Subroutine gets the size of the specified GIF
 ###########################################################################
-sub gifsize
+sub gifsize ## no critic(ProhibitExcessComplexity)
 {
     my $stream = shift;
-
-    # We use bitwise-and here:
-    ## no critic(ProhibitBitwiseOperators)
 
     my ($cmapsize, $buf, $sh, $sw, $x, $y, $type);
 
@@ -641,7 +639,11 @@ sub jpegsize
         elsif ((ord($code) >= $SIZE_FIRST) && (ord($code) <= $SIZE_LAST))
         {
             # Segments that contain size info
-            ($y, $x) = unpack 'xnn', $READ_IN->($stream, 5);
+            $length = 5;
+            my $buf = $READ_IN->($stream, $length);
+            # unpack dies on truncated data
+            last if (length($buf) < $length);
+            ($y, $x) = unpack 'xnn', $buf;
             $id = 'JPG';
             last;
         }
@@ -792,7 +794,15 @@ sub bmpsize
     my $buffer;
 
     $buffer = $READ_IN->($stream, 26);
-    ($x, $y) = unpack 'x18VV', $buffer;
+    my $header_size = unpack 'x14V', $buffer;
+    if ($header_size == 12)
+    {
+        ($x, $y) = unpack 'x18vv', $buffer;     # old OS/2 header
+    }
+    else
+    {
+        ($x, $y) = unpack 'x18VV', $buffer;     # modern Windows header
+    }
     if (defined $x and defined $y)
     {
         $id = 'BMP';
@@ -841,9 +851,6 @@ sub swfsize
 sub pcdsize
 {
     my $stream = shift;
-
-    # We use bitwise-and here:
-    ## no critic(ProhibitBitwiseOperators)
 
     my ($x, $y, $id) = (undef, undef, 'Unable to determine size of PCD data');
     my $buffer = $READ_IN->($stream, 0xf00);
@@ -901,7 +908,7 @@ sub emfsize
     my $buffer = $READ_IN->($image, 24);
 
     my ($topleft_x, $topleft_y, $bottomright_x, $bottomright_y) =
-        unpack 'x8V!4', $buffer;
+        unpack 'x8V4', $buffer;
 
     # The four values describe a box *around* the image, not *of* the image.
     # In other words, the dimensions are not inclusive.
@@ -911,9 +918,64 @@ sub emfsize
     return ($x, $y, 'EMF');
 }
 
+# WEBP files, see https://developers.google.com/speed/webp/docs/riff_container
+# Added by Baldur Kristinsson, github.com/bk
+sub webpsize {
+    my $img = shift;
+
+    # There are 26 bytes of lead-in, before the width and height info:
+    # 1. WEBP container
+    #    - 'RIFF', 4 bytes
+    #    - filesize, 4 bytes
+    #    - 'WEBP', 4 bytes
+    # 2. VP8 frame
+    #    - 'VP8', 3 bytes
+    #    - frame meta, 8 bytes
+    #    - marker, 3 bytes
+    my $buf = $READ_IN->($img, 4, 26);
+    my ($raw_w, $raw_h) = unpack 'SS', $buf;
+    my $b14 = 2**14 - 1;
+
+    # The width and height values contain a 2-bit scaling factor,
+    # which is left-shifted by 14 bits. We ignore this, since it seems
+    # not to be relevant for our purposes. WEBP images in actual use
+    # all seem to have a scaling factor of 0, anyway. (The meaning
+    # of the scaling factor is as follows: 0=no upscale, 1=upscale by 5/4,
+    # 2=upscale by 5/3, 3=upscale by 2).
+    #
+    # my $wscale = $raw_w >> 14;
+    # my $hscale = $raw_h >> 14;
+    my $x = $raw_w & $b14;
+    my $y = $raw_h & $b14;
+
+    return ($x, $y, 'WEBP');
+}
+
+# ICO files, originally contributed by Thomas Walloschke <thw@cpan.org>,
+# see https://rt.cpan.org/Public/Bug/Display.html?id=46279
+# (revised by Baldur Kristinsson, github.com/bk)
+sub icosize {
+    my $img = shift;
+    my ($x, $y) = unpack 'CC', $READ_IN->($img, 2, 6);
+    if ($x == 0) { $x = 256; }
+    if ($y == 0) { $y = 256; }
+    return ($x, $y, 'ICO');
+}
+
+# CUR files, originally contributed by Thomas Walloschke <thw@cpan.org>,
+# see https://rt.cpan.org/Public/Bug/Display.html?id=46279
+# (revised by Baldur Kristinsson, github.com/bk)
+sub cursize {
+    my ($x, $y, $ico) = icosize(shift);
+    return ($x, $y, 'CUR');
+}
+
+
 1;
 
 __END__
+
+=encoding utf8
 
 =head1 NAME
 
@@ -1057,6 +1119,12 @@ Image::Size natively understands and sizes data in the following formats:
 
 =item EMF (Windows Enhanced Metafile Format)
 
+=item WEBP
+
+=item ICO (Microsoft icon format)
+
+=item CUR (Microsoft mouse cursor format)
+
 =back
 
 Additionally, if the B<Image::Magick> module is present, the file types
@@ -1075,7 +1143,7 @@ parameter reported by B<Image::Magick>, so it may not meet the 2-3 letter
 abbreviation format.  For example, a WBMP file might be reported as
 'Wireless Bitmap (level 0) image' in this case.
 
-=head2 Information Cacheing and C<$NO_CACHE>
+=head2 Information Caching and C<$NO_CACHE>
 
 When a filename is passed to any of the sizing routines, the default behavior
 of the library is to cache the resulting information. The modification-time of
@@ -1084,7 +1152,7 @@ updated. This was originally added due to the fact that a number of CGI
 applications were using this library to generate attributes for pages that
 often used the same graphical element many times over.
 
-However, the cacheing can lead to problems when the files are generated
+However, the caching can lead to problems when the files are generated
 dynamically, at a rate that exceeds the resolution of the modification-time
 value on the filesystem. Thus, the optionally-importable control variable
 C<$NO_CACHE> has been introduced. If this value is anything that evaluates to a
@@ -1158,7 +1226,7 @@ image file.
 =head2 Controlling Behavior with GIF Images
 
 GIF images present a sort of unusual situation when it comes to reading size.
-Because GIFs can be a series of sub-images to be isplayed as an animated
+Because GIFs can be a series of sub-images to be played as an animated
 sequence, what part does the user want to get the size for?
 
 When dealing with GIF files, the user may control the behavior by setting the
@@ -1168,7 +1236,7 @@ GIF-handling code:
 
 =over 4
 
-=item 0
+=item Z<>0
 
 This is the default value. When this value is chosen, the returned dimensions
 are those of the "screen". The "screen" is the display area that the GIF
@@ -1179,7 +1247,7 @@ cropped to fit within the box.
 This is also the fastest method for sizing the GIF, as it reads the least
 amount of data from the image stream.
 
-=item 1
+=item Z<>1
 
 If this value is set, then the size of the first sub-image within the GIF is
 returned. For plain (non-animated) GIF files, this would be the same as the
@@ -1188,7 +1256,7 @@ screen (though it doesn't have to be, strictly-speaking).
 When the first image descriptor block is read, the code immediately returns,
 making this only slightly-less efficient than the previous setting.
 
-=item 2
+=item Z<>2
 
 If this value is chosen, then the code loops through all the sub-images of the
 animated GIF, and returns the dimensions of the largest of them.
@@ -1297,7 +1365,7 @@ including any stages that would re-write the URL or otherwise modify it.
 =head1 DIAGNOSTICS
 
 The base routine, C<imgsize>, returns B<undef> as the first value in its list
-when an error has occured. The third element contains a descriptive
+when an error has occurred. The third element contains a descriptive
 error message.
 
 The other two routines simply return B<undef> in the case of error.
@@ -1308,7 +1376,7 @@ Caching of size data can only be done on inputs that are file names. Open
 file handles and scalar references cannot be reliably transformed into a
 unique key for the table of cache data. Buffers could be cached using the
 MD5 module, and perhaps in the future I will make that an option. I do not,
-however, wish to lengthen the dependancy list by another item at this time.
+however, wish to lengthen the dependency list by another item at this time.
 
 As B<Image::Magick> operates on file names, not handles, the use of it is
 restricted to cases where the input to C<imgsize> is provided as file name.
@@ -1342,7 +1410,7 @@ supplied the PSD (PhotoShop) code, a bug was identified by Alex Weslowski
 was adapted from a script made available by Phil Greenspun, as guided to my
 attention by Matt Mueller I<mueller@wetafx.co.nz>. A thorough read of the
 documentation and source by Philip Newton I<Philip.Newton@datenrevision.de>
-found several typos and a small buglet. Ville Skyttä I<(ville.skytta@iki.fi)>
+found several typos and a small buglet. Ville Skyttï¿½ I<(ville.skytta@iki.fi)>
 provided the MNG and the Image::Magick fallback code. Craig MacKenna
 I<(mackenna@animalhead.com)> suggested making the cache available so that it
 could be used with shared memory, and helped test my change before release.
@@ -1380,6 +1448,10 @@ L<http://search.cpan.org/dist/Image-Size>
 L<http://github.com/rjray/image-size>
 
 =back
+
+=head1 REPOSITORY
+
+L<https://github.com/rjray/image-size>
 
 =head1 LICENSE AND COPYRIGHT
 

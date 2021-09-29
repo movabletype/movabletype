@@ -129,6 +129,14 @@ TC.attachLoadEvent(init);
             <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');">">
         </mtapp:statusmsg>
     </mt:if>
+    <mt:if name="missing_website">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No websites exist in this installation. [_1]Create a website</a>" params="<a href="javascript:void(0)" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=view&amp;_type=website&amp;blog_id=0');">">
+        </mtapp:statusmsg>
+    </mt:if>
     <mt:if name="missing_blog">
         <mtapp:statusmsg
             id="generic-info"

@@ -362,6 +362,20 @@ sub new_password {
     return $tmpl;
 }
 
+MT->add_callback(validate_request_params_itemset_action => 5, 'MT', \&_validate_action_params);
+
+sub _validate_action_params {
+    my ($cb, $app) = @_;
+    my $type = $app->param('_type') or return;
+    if ($type =~ /\A(?:blog)\z/) {
+        for my $id (map {split /,/, $_} $app->param('id')) {
+            next unless defined $id;
+            return unless $id =~ /\A[0-9]+\z/;
+        }
+    }
+    return 1;
+}
+
 sub do_list_action {
     my $app = shift;
 
@@ -909,7 +923,7 @@ sub save_cfg_system_general {
         $app->log(
             {   message =>
                     $app->translate('System Settings Changes Took Place'),
-                level    => MT::Log::INFO(),
+                level    => MT::Log::NOTICE(),
                 class    => 'system',
                 metadata => $message,
                 category => 'edit',
@@ -1148,6 +1162,12 @@ sub start_restore {
 
 sub backup {
     my $app     = shift;
+
+    $app->validate_param({
+        backup_what => [qw/IDS/],
+        blog_id     => [qw/ID/],
+    }) or return;
+
     my $user    = $app->user;
     my $q       = $app->param;
     my $blog_id = $q->param('blog_id');
@@ -2586,6 +2606,12 @@ sub dialog_restore_upload {
 
 sub dialog_adjust_sitepath {
     my $app  = shift;
+
+    $app->validate_param({
+        asset_ids => [qw/MAYBE_IDS/],
+        blog_ids  => [qw/IDS/],
+    }) or return;
+
     my $user = $app->user;
     return $app->permission_denied()
         if !$user->is_superuser;

@@ -66,7 +66,7 @@ before_script:
 
 script:
   - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi
-  - if [ -n "$USE_SELENIUM" ]; then TEST_IMAGE=movabletype/test:$TEST_IMAGE_NAME docker-compose -f t/selenium/docker-compose.yml run test ; fi
+  - if [ -n "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "$TEST_COMMAND" ; fi
 
 notifications:
   slack:
