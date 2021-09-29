@@ -1217,7 +1217,6 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{Indexvorlage &#8222;[_1]&#8220;},
 
 ## lib/MT/CMS/Category.pm
-	'category_set' => 'Kategorie-Set',
 	'Category Set' => 'Kategorie-Set',
 	'Create Category Set' => 'Kategorie-Set anlegen',
 	'Create [_1]' => '[_1] anlegen',
@@ -1228,6 +1227,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '[_1] muss einen Namen erhalten!',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Konnte [_1] ([_2]) nicht aktualisieren: Objekt nicht gefunden.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Ihre Änderungen wurden übernommen ([_1] hinzugefügt, [_2] bearbeitet, [_3] gelöscht). <a href="#" onclick="[_4]" class="mt-rebuild">Veröffentlichen Sie Ihre Site</a>, um die Änderungen wirksam werden zu lassen.',
+	'category_set' => 'Kategorie-Set',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) gelöscht von &#8222;[_3]&#8220;},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) bearbeitet von &#8222;[_3]&#8220;},
 	q{Category '[_1]' created by '[_2]'.} => q{Kategorie &#8222;[_1]&#8220; (ID:[_2]) angelegt von &#8222;[_2]&#8220;},
@@ -1294,7 +1294,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
 
 ## lib/MT/CMS/ContentType.pm
-	'content_type' => 'Inhaltstyp',
 	'Cannot load content field data (ID: [_1])' => 'Kann Inhaltsfelder-Daten nicht laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Inhaltstyp #[_1] konnte nicht geladen werden',
 	'Content Type Boilerplates' => 'Inhaltstyp-Bausteine',
@@ -1306,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'Inhaltsfelder gelöscht: ([_1])',
 	'The content type name is required.' => 'Bitte geben Sie den Namen des Inhaltstyps ein.',
 	'The content type name must be shorter than 255 characters.' => 'Der Name des Inhaltstyps darf höchstens 255 Zeichen lang sein.',
+	'content_type' => 'Inhaltstyp',
 	q{A content field '[_1]' ([_2]) was added} => q{Inhaltsfeld '[_1]' ([_2]) hinzugefügt},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{Einstellung von Inhaltsfeld '[_1]'([_2]) geändert},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{Die Beschreibung des '[_1]'-Inhaltfelds darf höchstens 255 Zeichen lang sein.},
@@ -2044,8 +2044,8 @@ use vars qw( @ISA %Lexicon );
 	'A parameter "[_1]" is invalid.' => 'Parameter "[_1]" ist ungültig.',
 
 ## lib/MT/DataAPI/Callback/Log.pm
-	'log' => 'Log',
 	'author_id (ID:[_1]) is invalid.' => 'Ungültige author_id: [_1]',
+	'log' => 'Log',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) gelöscht von '[_2]'},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
@@ -3002,8 +3002,8 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => 'Fehler beim Zurückziehen älterer Einträge: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Blog-, BlogID- oder Template-Parameter erforderlich.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Diese Archivdatei existiert bereits. Ändern Sie entweder den Basisnamen oder den Archivpfad. ([_1])',
-	q{Template '[_1]' does not have an Output File.} => q{Vorlage &#8222;[_1]&#8220; hat keine Ausgabedatei.},
 	'unpublish' => 'Nicht mehr veröffentlichen',
+	q{Template '[_1]' does not have an Output File.} => q{Vorlage &#8222;[_1]&#8220; hat keine Ausgabedatei.},
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Anzahl Untersites',

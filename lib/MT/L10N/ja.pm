@@ -1217,7 +1217,6 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{インデックステンプレート「[_1]」},
 
 ## lib/MT/CMS/Category.pm
-	'category_set' => 'カテゴリセット',
 	'Category Set' => 'カテゴリセット',
 	'Create Category Set' => 'カテゴリセットの作成',
 	'Create [_1]' => '新しい[_1]',
@@ -1228,6 +1227,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '[_1]には名前が必要です。',
 	'Tried to update [_1]([_2]), but the object was not found.' => '[_1]([_2])が見つからないため、更新ができません。',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => '変更を保存しました。(追加:[_1]件, 更新:[_2]件, 削除:[_3]件) 変更を有効にするには<a href="#" onclick="[_4]" class="mt-rebuild">再構築</a>をしてください。',
+	'category_set' => 'カテゴリセット',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{'[_3]'がカテゴリ'[_1]'(ID:[_2])を削除しました。},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{'[_3]'がカテゴリ'[_1]' (ID:[_2])を編集しました。},
 	q{Category '[_1]' created by '[_2]'.} => q{'[_2]'がカテゴリ'[_1]'を作成しました。},
@@ -1294,7 +1294,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
 
 ## lib/MT/CMS/ContentType.pm
-	'content_type' => 'コンテンツタイプ',
 	'Cannot load content field data (ID: [_1])' => 'コンテンツフィールド (ID: [_1]) をロードできません',
 	'Cannot load content type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'Content Type Boilerplates' => 'コンテンツタイプのひな形',
@@ -1306,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'いくつかのコンテンツフィールドが削除されました: [_1]',
 	'The content type name is required.' => 'コンテンツタイプ名は必須です。',
 	'The content type name must be shorter than 255 characters.' => 'コンテンツタイプ名は255文字までです。',
+	'content_type' => 'コンテンツタイプ',
 	q{A content field '[_1]' ([_2]) was added} => q{コンテンツフィールド '[_1]'が追加されました},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{コンテンツフィールド '[_1]'の設定が変更されました},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{コンテンツフィールド '[_1]'の説明は255文字までです。},
@@ -2045,8 +2045,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
-	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
 	'log' => 'ログ',
+	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => '不正なタグ名です: [_1]',
@@ -3002,8 +3002,8 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => '公開終了日を過ぎた記事の処理中にエラーが発生しました: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID, またはTemplateのいずれかを指定してください。',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => '同名のファイルがすでに存在します。ファイル名またはアーカイブパスを変更してください([_1])。',
-	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
 	'unpublish' => '公開終了',
+	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
 
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',

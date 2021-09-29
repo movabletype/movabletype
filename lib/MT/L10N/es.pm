@@ -1217,7 +1217,6 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{plantilla índice '[_1]'},
 
 ## lib/MT/CMS/Category.pm
-	'category_set' => 'Conjunto de categorías',
 	'Category Set' => 'Conjunto de categorías',
 	'Create Category Set' => 'Crear conjunto de categorías',
 	'Create [_1]' => 'Crear [_1]',
@@ -1228,6 +1227,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '¡Debe dar un nombre a [_1]!',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Se intentó actualizar [_1]([_2]), pero el objeto no se encontró.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Se han realizado los cambios ([_1] añadido, [_2] editado y [_3] borrado). <a href="#" onclick="[_4]" class="mt-rebuild">Publique el sitio</a> para que los cambios tomen efecto.',
+	'category_set' => 'Conjunto de categorías',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue editada por '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{La categoría '[_1]' fue creada por '[_2]'.},
@@ -1294,7 +1294,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) editado y su estado cambió de [_3] a [_4] por el usuario '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
-	'content_type' => 'Tipo de contenido',
 	'Cannot load content field data (ID: [_1])' => 'No se pudo cargar el contenido del campo (ID: [_1])',
 	'Cannot load content type #[_1]' => 'No se pudo cargar el tipo de contenido #[_1]',
 	'Content Type Boilerplates' => 'Modelos de tipos de contenido',
@@ -1306,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'Some content fields were deleted: ([_1])',
 	'The content type name is required.' => 'Se necesita el nombre de tipo de contenido.',
 	'The content type name must be shorter than 255 characters.' => 'El nombre del tipo de contenido debe contener menos de 255 caracteres.',
+	'content_type' => 'Tipo de contenido',
 	q{A content field '[_1]' ([_2]) was added} => q{El campo d  '[_1]' ([_2]) was added},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{A content field options of '[_1]' ([_2]) was changed},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{La descripción del campo de contenido de '[_1]' debe contener menos de 255 caracteres.},
@@ -2045,8 +2045,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (Id:[_1]) no válido.',
-	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
 	'log' => 'Histórico',
+	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nombre de etiqueta no válido: [_1]',
@@ -3002,8 +3002,8 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => 'Ocurrió un error durante la despublicación de las entradas antiguas: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Ya existe el fichero del mismo archivo. Debe modificar el título o la ruta. ([_1])',
-	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
 	'unpublish' => 'Despublicar',
+	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Cuenta de sitios hijos',

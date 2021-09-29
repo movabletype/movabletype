@@ -1217,7 +1217,6 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{indexsjabloon '[_1]'},
 
 ## lib/MT/CMS/Category.pm
-	'category_set' => 'Categorieset',
 	'Category Set' => 'Categorieset',
 	'Create Category Set' => 'Categoriesete aanmaken',
 	'Create [_1]' => '[_1] aanmaken',
@@ -1228,6 +1227,7 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => 'De [_1] moet nog een naam krijgen!',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Probeerde [_1]([_2]) bij te werken, maar het object werd niet gevonden.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Uw wijzigingen werden aangebracht ([_1] toegevoegd, [_2] aangepast en [_3] verwijderd). <a href="#" onclick="[_4]" class="mt-rebuild">Publiceer uw site</a> om deze wijzigingen zichtbaar te maken.',
+	'category_set' => 'Categorieset',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Categorie '[_1]' (ID:[_2]) verwijderd door '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{Categorie '[_1]' (ID:[_2]) bewerkt door '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{Categorie '[_1]' aangemaakt door '[_2]'.},
@@ -1294,7 +1294,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
-	'content_type' => 'Inhoudstype',
 	'Cannot load content field data (ID: [_1])' => 'Kan gegevens inhoudsveld niet laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Kan inhoudstype niet laden #[_1]',
 	'Content Type Boilerplates' => 'Standaardteksten inhoudstypes',
@@ -1306,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'Een aantal inhoudsvelden werden verwijderd: ([_1])',
 	'The content type name is required.' => 'Naam vereist voor inhoudstype',
 	'The content type name must be shorter than 255 characters.' => 'De naam voor het inhoudstype moet korter zijn dan 255 karakters.',
+	'content_type' => 'Inhoudstype',
 	q{A content field '[_1]' ([_2]) was added} => q{Een inhoudsveld '[_1]' ([_2]) werd toegevoegd},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{Opties van inhoudsveld '[_1]' ([_2]) werden angepast},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{Een beschrijving voor inhoudsvel van '[_1]' moet korter zijn dan 255 karakters.},
@@ -2045,8 +2045,8 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
-	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
 	'log' => 'Log',
+	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]',
@@ -3002,8 +3002,8 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => 'Er deed zich een fout voor bij het ongedaan maken van de publicatie van oude berichten: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Hetzelfde archiefbestand bestaat al. U moet de basisnaam of het archiefpad wijzigen. ([_1])',
-	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
 	'unpublish' => 'Publicatie ongedaan maken',
+	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Aantal subsites',
