@@ -170,27 +170,6 @@ nonempty
 --- expected
 nonzero
 
-=== test 18
---- SKIP
---- template
-<MTCommenterNameThunk>
---- expected
-<script type='text/javascript'>var commenter_name = getCookie('commenter_name')</script>
-
-=== test 19
---- SKIP
---- template
-<MTCommenterName>
---- expected
-
-
-=== test 20
---- SKIP
---- template
-<MTCommenterEmail>
---- expected
-
-
 === test 21
 --- template
 <MTBlogs><MTBlogID></MTBlogs>
@@ -262,13 +241,6 @@ narnia.na
 <MTBlogs><MTBlogEntryCount></MTBlogs>
 --- expected
 6
-
-=== test 33
---- SKIP
---- template
-<MTBlogs><MTBlogCommentCount></MTBlogs>
---- expected
-9
 
 === test 34
 --- SKIP
@@ -510,35 +482,6 @@ http://chuckd.com/
 --- expected
 1
 
-=== test 68
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryTrackbackLink></MTEntries>
---- expected
-http://narnia.na/cgi-bin/mt-tb.cgi/1
-
-=== test 69
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryTrackbackData></MTEntries>
---- expected
-<!--
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/">
-<rdf:Description
-    rdf:about="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
-    trackback:ping="http://narnia.na/cgi-bin/mt-tb.cgi/1"
-    dc:title="A Rainy Day"
-    dc:identifier="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
-    dc:subject=""
-    dc:description="A story of a stroll."
-    dc:creator="Chucky Dee"
-    dc:date="1978-01-31T07:45:00-03:30" />
-</rdf:RDF>
--->
-
-
 === test 70
 --- template
 <MTEntries lastn="1"><MTEntryLink archive_type="Individual"></MTEntries>
@@ -590,20 +533,6 @@ http://narnia.na/cgi-bin/mt-comments.cgi?__mode=handle_sign_in&amp;static=0&amp;
 <MTEntries lastn="1"></MTEntries>
 --- expected
 
-
-=== test 78
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentAuthor></MTComments>
---- expected
-John Doe
-
-=== test 79
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryTrackbackCount></MTEntries>
---- expected
-1
 
 === test 80
 --- template
@@ -764,13 +693,6 @@ barsubcat
 --- expected
 
 
-=== test 106
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryTrackbackID></MTEntries>
---- expected
-1
-
 === test 107
 --- template
 <MTEntries lastn="1"><MTEntryBasename></MTEntries>
@@ -784,132 +706,6 @@ a_rainy_day
 --- expected
 CURRENT_WORKING_DIRECTORY
 
-=== test 109
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentBody></MTComments>
---- expected
-<p>Comment for entry 5, visible</p>
-
-=== test 110
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentDate></MTComments>
---- expected
-September 12, 2004  6:28 PM
-
-=== test 111
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentID></MTComments>
---- expected
-2
-
-=== test 112
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentEntryID></MTComments>
---- expected
-5
-
-=== test 113
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentIP></MTComments>
---- expected
-127.0.0.1
-
-=== test 114
---- SKIP
---- template
-<MTComments lastn="3"><MTCommentAuthorLink>,</MTComments>
---- expected
-<a title="http://chuckd.com/" href="http://chuckd.com/">Chucky Dee</a>,Comment 3,John Doe,
-
-=== test 115
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentEmail></MTComments>
---- expected
-johnd@doe.com
-
-=== test 116
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentAuthorIdentity></MTComments>
---- expected
-<img alt="" src="http://narnia.na/mt-static/images/comment/typepad_logo.png" width="16" height="16" />
-
-=== test 117
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentURL></MTComments>
---- expected
-http://john.doe.com/
-
-=== test 118
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentOrderNumber></MTComments>
---- expected
-1
-
-=== test 119
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentEntry><MTEntryTitle></MTCommentEntry></MTComments>
---- expected
-Verse 2
-
-=== test 120
---- SKIP
---- template
-<MTPings lastn="1"><MTPingDate></MTPings>
---- expected
-April  5, 2005 12:00 AM
-
-=== test 121
---- SKIP
---- template
-<MTPings lastn="1"><MTPingID></MTPings>
---- expected
-1
-
-=== test 122
---- SKIP
---- template
-<MTPings lastn="1"><MTPingTitle></MTPings>
---- expected
-Foo
-
-=== test 123
---- SKIP
---- template
-<MTPings lastn="1"><MTPingURL></MTPings>
---- expected
-http://example.com/
-
-=== test 124
---- SKIP
---- template
-<MTPings lastn="1"><MTPingExcerpt></MTPings>
---- expected
-Bar
-
-=== test 125
---- SKIP
---- template
-<MTPings lastn="1"><MTPingIP></MTPings>
---- expected
-127.0.0.1
-
-=== test 126
---- SKIP
---- template
-<MTPings lastn="1"><MTPingBlogName></MTPings>
---- expected
-Example Blog
-
 === test 127
 --- template
 [<MTCategories><MTCategoryLabel>: <MTCategoryCount>; </MTCategories>]
@@ -921,13 +717,6 @@ Example Blog
 [<MTCategories><MTCategoryArchiveLink>; </MTCategories>]
 --- expected
 [http://narnia.na/nana/archives/foo/; http://narnia.na/nana/archives/foo/subfoo/; ]
-
-=== test 129
---- SKIP
---- template
-<MTCategories show_empty="1"><MTCategoryLabel>: <MTCategoryTrackbackLink> </MTCategories>
---- expected
-bar: http://narnia.na/cgi-bin/mt-tb.cgi/2 foo:  subfoo:  
 
 === test 130
 --- template
@@ -989,20 +778,6 @@ Verse 4;Verse 3;
 --- expected
 Verse 4;
 
-=== test 140
---- SKIP
---- template
-<MTPings lastn="1"><MTPingDate></MTPings>
---- expected
-April  5, 2005 12:00 AM
-
-=== test 141
---- SKIP
---- template
-<MTEntries lastn="1"><MTPingsSent><MTPingsSentURL>; </MTPingsSent></MTEntries>
---- expected
-http://technorati.com/; 
-
 === test 142
 --- template
 disabled
@@ -1057,120 +832,11 @@ a rainy day
 --- expected
 [January 1978-1; January 1965-1; January 1964-1; January 1963-1; January 1962-1; January 1961-1; ]
 
-=== test 151
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryCommentCount></MTEntries>
---- expected
-3
-
-=== test 152
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentBody sanitize=" "></MTComments>
---- expected
-Comment for entry 5, visible
-
-=== test 153
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentID></MTComments>
---- expected
-2
-
 === test 154
 --- template
 <MTBlogLanguage locale="1">
 --- expected
 en_US
-
-=== test 155
---- SKIP
---- template
-<MTEntries lastn="1"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-active
-
-=== test 156
---- SKIP
---- template
-<MTEntries lastn="1"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-accepted
-
-=== test 157
---- SKIP
---- template
-<MTEntries lastn="1" offset="1"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-active
-
-=== test 158
---- SKIP
---- template
-<MTEntries lastn="1" offset="1"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-accepted
-
-=== test 159
---- SKIP
---- template
-<MTEntries lastn="1" offset="2"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-active
-
-=== test 160
---- SKIP
---- template
-<MTEntries lastn="1" offset="2"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-accepted
-
-=== test 161
---- SKIP
---- template
-<MTEntries lastn="1" offset="3"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-active
-
-=== test 162
---- SKIP
---- template
-<MTEntries lastn="1" offset="3"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-accepted
-
-=== test 163
---- SKIP
---- template
-<MTEntries lastn="1" offset="4"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-active
-
-=== test 164
---- template
-<MTEntries lastn="1" offset="4"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-
-
-=== test 165
---- template
-<MTEntries lastn="1" offset="5"><MTIfCommentsActive>active</MTIfCommentsActive></MTEntries>
---- expected
-
-
-=== test 166
---- template
-<MTEntries lastn="1" offset="5"><MTIfCommentsAccepted>accepted</MTIfCommentsAccepted></MTEntries>
---- expected
-
-
-=== test 167
---- SKIP
---- template
-<MTEntries lastn="10"><MTEntryID> <MTEntryCommentCount>; </MTEntries>
---- expected
-1 3; 8 1; 7 0; 6 3; 5 1; 4 0; 
 
 === test 168
 --- template
@@ -1182,13 +848,6 @@ no
 --- SKIP
 --- template
 <MTIfRegistrationRequired>yes<MTElse>no</MTElse></MTIfRegistrationRequired>
---- expected
-yes
-
-=== test 170
---- SKIP
---- template
-<MTBlogIfCommentsOpen>yes<MTElse>no</MTElse></MTBlogIfCommentsOpen>
 --- expected
 yes
 
@@ -1278,13 +937,6 @@ http://narnia.na/cgi-bin/mt-search.cgi?IncludeBlogs=1&amp;tag=grandpa&amp;limit=
 <MTIfTypeKeyToken>tokened</MTIfTypeKeyToken>
 --- expected
 tokened
-
-=== test 185
---- SKIP
---- template
-<MTIfCommentsModerated>moderated</MTIfCommentsModerated>
---- expected
-moderated
 
 === test 186
 --- SKIP
@@ -1401,68 +1053,12 @@ Archive Index-http://narnia.na/nana/archives.html-index;Feed - Recent Entries-ht
 --- expected
 
 
-=== test 205
---- SKIP
---- template
-<MTIfAllowCommentHTML>comment html allowed</MTIfAllowCommentHTML>
---- expected
-comment html allowed
-
-=== test 206
---- SKIP
---- template
-<MTIfCommentsAllowed>comments allowed</MTIfCommentsAllowed>
---- expected
-comments allowed
-
-=== test 207
---- SKIP
---- template
-<MTEntries lastn='1'><MTIfPingsActive>pings active</MTIfPingsActive></MTEntries>
---- expected
-pings active
-
-=== test 208
---- SKIP
---- template
-<MTEntries lastn='1'><MTIfPingsAccepted>pings accepted</MTIfPingsAccepted></MTEntries>
---- expected
-pings accepted
-
-=== test 209
---- SKIP
---- template
-<MTEntries lastn='1'><MTIfPingsAllowed>pings allowed</MTIfPingsAllowed></MTEntries>
---- expected
-pings allowed
-
 === test 210
 --- SKIP
 --- template
 <MTIfDynamicComments>dynamic comments<MTElse>static comments</MTElse></MTIfDynamicComments>
 --- expected
 static comments
-
-=== test 211
---- SKIP
---- template
-<MTEntries lastn='1'><MTEntryIfAllowComments>entry allows comments</MTEntryIfAllowComments></MTEntries>
---- expected
-entry allows comments
-
-=== test 212
---- SKIP
---- template
-<MTEntries lastn='1'><MTEntryIfCommentsOpen>entry comments open</MTEntryIfCommentsOpen></MTEntries>
---- expected
-entry comments open
-
-=== test 213
---- SKIP
---- template
-<MTEntries lastn='1'><MTEntryIfAllowPings>entry allows pings</MTEntryIfAllowPings></MTEntries>
---- expected
-entry allows pings
 
 === test 214
 --- template
@@ -1517,20 +1113,6 @@ January 31, 1978 11:59 PMJanuary 31, 1965 11:59 PMJanuary 31, 1964 11:59 PMJanua
 <MTArchiveList archive_type='Weekly'><MTArchiveDateEnd></MTArchiveList>
 --- expected
 February  4, 1978 11:59 PMFebruary  6, 1965 11:59 PMFebruary  1, 1964 11:59 PMFebruary  2, 1963 11:59 PMFebruary  3, 1962 11:59 PMFebruary  4, 1961 11:59 PM
-
-=== test 223
---- SKIP
---- template
-<MTComments lastn='3'><MTFeedbackScore>,</MTComments>
---- expected
-0,0,1.5,
-
-=== test 224
---- SKIP
---- template
-<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTCommenterIfTrusted>trusted<MTElse>untrusted</MTElse></MTCommenterIfTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>
---- expected
-Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted
 
 === test 225
 --- template
@@ -2037,27 +1619,6 @@ anemones 4,grandpa 6,rain 2,strolling 6,verse 1
 --- expected
 [alpha; beta; gamma; ]
 
-=== test 309
---- SKIP
---- template
-<MTComments><MTIfCommentParent><p><MTCommentParent><MTCommentAuthor></MTCommentParent></p></MTIfCommentParent></MTComments>
---- expected
-<p>Comment 11</p><p>v14GrUH 4 cheep</p>
-
-=== test 310
---- SKIP
---- template
-<MTComments sort_by='id' sort_order='ascend'><MTIfCommentReplies>,<MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>
---- expected
-,<ul><li>11</li></ul>,<ul><li>12</li></ul>
-
-=== test 311
---- SKIP
---- template
-<MTComments sort_by='id' sort_order='ascend'><MTIfCommentReplies>,<MTCommentReplies><MTCommentsHeader><ul></MTCommentsHeader><li><MTCommentID><MTCommentRepliesRecurse></li><MTCommentsFooter></ul></MTCommentsFooter></MTCommentReplies></MTIfCommentReplies></MTComments>
---- expected
-,<ul><li>11<ul><li>12</li></ul></li></ul>,<ul><li>12</li></ul>
-
 === test 312
 --- template
 <MTPages><MTPageID>;</MTPages>
@@ -2250,20 +1811,6 @@ download;info;nightly;
 --- expected
 download;info;download/nightly;
 
-=== test 344
---- SKIP
---- template
-<MTComments><MTCommentEntry><MTEntryClass>;</MTCommentEntry></MTComments>
---- expected
-page;entry;entry;entry;entry;entry;entry;entry;entry;
-
-=== test 345
---- SKIP
---- template
-<MTPings><MTPingEntry><MTEntryClass>;</MTPingEntry></MTPings>
---- expected
-page;entry;
-
 === test 346
 --- template
 <MTArchiveList archive_type='Individual' sort_order='ascend'><$MTArchiveDate format='%Y.%m.%d.%H.%M.%S'$>;</MTArchiveList>
@@ -2325,13 +1872,6 @@ Watching the River Flow
 --- expected
 EntryMonthlyWeeklyDailyCategoryPageAuthor
 
-=== test 356
---- SKIP
---- template
-<MTEntries><$MTEntryID$>:<MTComments><MTIfCommenterIsAuthor><MTIfCommenterIsEntryAuthor>2<MTElse>1</MTIfCommenterIsEntryAuthor><MTElse>0</MTIfCommenterIsAuthor>;</MTComments></MTEntries>
---- expected
-1:0;0;0;8:0;7:6:2;1;0;5:0;4:
-
 === test 357
 --- template
 <MTPages id='20'><$MTPageMore$></MTPages>
@@ -2361,13 +1901,6 @@ Image photo
 <MTAuthors><$MTAuthorAuthType$>:<$MTAuthorAuthIconURL$>;</MTAuthors>
 --- expected
 MT:http://narnia.na/mt-static/images/logo-mark.svg;MT:http://narnia.na/mt-static/images/logo-mark.svg;
-
-=== test 362
---- SKIP
---- template
-<MTComments><$MTCommenterAuthType$>:<$MTCommenterAuthIconURL$>;</MTComments>
---- expected
-:;:;:;:;:;MT:http://narnia.na/mt-static/images/logo-mark.svg;MT:http://narnia.na/mt-static/images/logo-mark.svg;:;TypeKey:http://narnia.na/mt-static/images/comment/typepad_logo.png;
 
 === test 363
 --- template
@@ -2915,101 +2448,11 @@ true
 --- expected
 http://www.sixapart.com/
 
-=== test 452
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentIfModerated>Moderated<MTElse>NotModerated</MTCommentIfModerated></MTComments>
---- expected
-NotModerated
-
-=== test 453
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentLink></MTComments>
---- expected
-http://narnia.na/nana/archives/1962/01/verse-2.html#comment-2
-
-=== test 454
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentName></MTComments>
---- expected
-John Doe
-
-=== test 455
---- template
-<MTComments lastn="1"><MTCommentParentID></MTComments>
---- expected
-
-
-=== test 456
---- template
-<MTComments lastn="1"><MTCommentRank></MTComments>
---- expected
-
-
-=== test 457
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentReplyToLink></MTComments>
---- expected
-<a title="Reply" href="javascript:void(0);" onclick="mtReplyCommentOnClick(2, 'John Doe')">Reply</a>
-
-=== test 458
---- template
-<MTComments lastn="1"><MTCommentScore></MTComments>
---- expected
-
-
-=== test 459
---- template
-<MTComments lastn="1"><MTCommentScoreAVG></MTComments>
---- expected
-
-
-=== test 460
---- template
-<MTComments lastn="1"><MTCommentScoreCount></MTComments>
---- expected
-
-
-=== test 461
---- template
-<MTComments lastn="1"><MTCommentScoreHigh></MTComments>
---- expected
-
-
-=== test 462
---- template
-<MTComments lastn="1"><MTCommentScoreLow></MTComments>
---- expected
-
-
 === test 463
 --- template
 <MTCategories><MTCategoryBasename></MTCategories>
 --- expected
 foosubfoo
-
-=== test 464
---- SKIP
---- template
-<MTCategories><MTCategoryCommentCount></MTCategories>
---- expected
-30
-
-=== test 465
---- template
-<MTCategories><MTCategoryIfAllowPings>Allow<MTElse>NotAllow</MTCategoryIfAllowPings></MTCategories>
---- expected
-NotAllowNotAllow
-
-=== test 466
---- SKIP
---- template
-<MTCategories><MTCategoryTrackbackCount></MTCategories>
---- expected
-00
 
 === test 467
 --- template
@@ -3023,63 +2466,12 @@ foo
 --- expected
 foo-subfoo
 
-=== test 469
---- SKIP
---- template
-<MTComments lastn="1"><MTCommentBlogID></MTComments>
---- expected
-1
-
-=== test 470
---- SKIP
---- template
-<MTComments lastn="1"><MTCommenterID></MTComments>
---- expected
-4
-
-=== test 471
---- template
-<MTComments lastn="1"><MTCommenterURL></MTComments>
---- expected
-
-
-=== test 472
---- SKIP
---- template
-<MTComments lastn="1"><MTCommenterUsername></MTComments>
---- expected
-John Doe
-
-=== test 473
---- template
-<MTComments lastn="1"><MTCommenterUserpic></MTComments>
---- expected
-
-
-=== test 474
---- template
-<MTComments lastn="1"><MTCommenterUserpicAsset></MTCommenterUserpicAsset></MTComments>
---- expected
-
-
-=== test 475
---- template
-<MTComments lastn="1"><MTCommenterUserpicURL></MTComments>
---- expected
-
-
 === test 476
 --- template
 <MTBlogs><MTBlogCategoryCount></MTBlogs>
 --- expected
 3
 
-=== test 477
---- SKIP
---- template
-<MTBlogs><MTBlogPingCount></MTBlogs>
---- expected
-2
 
 === test 478
 --- template
@@ -3235,12 +2627,6 @@ mt_blog_user
 --- expected
 14400
 
-=== test 503
---- SKIP
---- template
-<MTWebsiteCommentCount>
---- expected
-1
 
 === test 504
 --- template
@@ -3248,25 +2634,11 @@ mt_blog_user
 --- expected
 narnia.na
 
-=== test 505
---- SKIP
---- template
-<MTWebsiteIfCommentsOpen>Opened</MTWebsiteIfCommentsOpen>
---- expected
-Opened
-
 === test 506
 --- template
 <MTWebsitePageCount>
 --- expected
 1
-
-=== test 507
---- SKIP
---- template
-<MTWebsitePingCount>
---- expected
-0
 
 === test 508
 --- template
@@ -3322,49 +2694,6 @@ download
 <MTFolders><MTHasParentFolder><MTFolderLabel></MTHasParentFolder></MTFolders>
 --- expected
 nightly
-
-=== test 517
---- template
-<MTPings lastn='1'><MTPingRank></MTPings>
---- expected
-
-
-=== test 518
---- template
-<MTPings lastn='1'><MTPingScore></MTPings>
---- expected
-
-
-=== test 519
---- template
-<MTPings lastn='1'><MTPingScoreavg></MTPings>
---- expected
-
-
-=== test 520
---- template
-<MTPings lastn='1'><MTPingScorecount></MTPings>
---- expected
-
-
-=== test 521
---- template
-<MTPings lastn='1'><MTPingScorehigh></MTPings>
---- expected
-
-
-=== test 522
---- template
-<MTPings lastn='1'><MTPingScorelow></MTPings>
---- expected
-
-
-=== test 523
---- SKIP
---- template
-<MTPings><MTPingsHeader><ul></MTPingsHeader><li><MTPingTitle></li><MTPingsFooter></ul></MTPingsFooter></MTPings>
---- expected
-<ul><li>Trackbacking to a page</li><li>Foo</li></ul>
 
 === test 524
 --- template
@@ -3476,20 +2805,6 @@ HasAuthor:Inside
 --- expected
 HasBlog
 
-=== test 542
---- SKIP
---- template
-<MTIfCommenterRegistrationAllowed>Allowed</MTIfCommenterRegistrationAllowed>
---- expected
-Allowed
-
-=== test 543
---- SKIP
---- template
-<MTComments lastn='3' glue=','><MTIfNonEmpty tag='CommenterName'><MTCommenterName>: <MTIfCommenterTrusted>trusted<MTElse>untrusted</MTElse></MTIfCommenterTrusted><MTElse><MTCommentAuthor></MTIfNonEmpty></MTComments>
---- expected
-Chucky Dee: trusted,Comment 3: untrusted,John Doe: trusted
-
 === test 544
 --- template
 <MTIfExternalUserManagement>External</MTIfExternalUserManagement>
@@ -3513,19 +2828,6 @@ download
 <MTIfImageSupport>Supported</MTIfImageSupport>
 --- expected
 Supported
-
-=== test 548
---- SKIP
---- template
-<MTIfPingsModerated>Moderated</MTIfPingsModerated>
---- expected
-Moderated
-
-=== test 549
---- template
-<MTIfRequireCommentEmails>Requied</MTIfRequireCommentEmails>
---- expected
-
 
 === test 550
 --- template
@@ -3957,28 +3259,6 @@ false
 --- expected
 3 days ago
 
-=== test 617
---- SKIP
---- template
-<MTEntries lastn="1"><MTEntryTrackbackData></MTEntries>
---- expected
-<!--
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-         xmlns:trackback="http://madskills.com/public/xml/rss/module/trackback/"
-         xmlns:dc="http://purl.org/dc/elements/1.1/">
-<rdf:Description
-    rdf:about="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
-    trackback:ping="http://narnia.na/cgi-bin/mt-tb.cgi/1"
-    dc:title="A Rainy Day"
-    dc:identifier="http://narnia.na/nana/archives/1978/01/a-rainy-day.html"
-    dc:subject=""
-    dc:description="A story of a stroll."
-    dc:creator="Chucky Dee"
-    dc:date="1978-01-31T07:45:00-03:30" />
-</rdf:RDF>
--->
-
-
 === test 618
 --- template
 <MTEntries id="6"><$MTIf tag="EntryCategories"$>true<MTElse>false</MTIf></MTEntries>
@@ -4309,34 +3589,6 @@ http://creativecommons.org/images/public/somerights20.gif
 --- expected
 .html
 
-=== test 673
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1'>
---- expected
-9
-
-=== test 674
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1' blog_ids='2'>
---- expected
-1
-
-=== test 675
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1' include_blogs='2'>
---- expected
-1
-
-=== test 676
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1' include_websites='2'>
---- expected
-9
-
 === test 677
 --- template
 <MTWebsitePageCount site_ids='1'>
@@ -4360,34 +3612,6 @@ http://creativecommons.org/images/public/somerights20.gif
 <MTWebsitePageCount site_ids='1' include_websites='2'>
 --- expected
 4
-
-=== test 681
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1'>
---- expected
-2
-
-=== test 682
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1' blog_ids='2'>
---- expected
-0
-
-=== test 683
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1' include_blogs='2'>
---- expected
-0
-
-=== test 684
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1' include_websites='2'>
---- expected
-2
 
 === test 685
 --- template
@@ -4879,55 +4103,6 @@ barfoo
 <MTArchiveList archive_type="Individual"><mt:EntryID>:<MTCategoryNext><MTCategoryLabel></MTCategoryNext>;</MTArchiveList>
 --- expected
 1:;8:;7:;6:;5:;4:;
-
-=== test 766
---- SKIP
---- template
-<$mt:setvar name="cnt" value="0"$><MTComments top="1"><$mt:setvar name="cnt" op="++"$></MTComments><$mt:var name="cnt"$>
---- expected
-7
-
-=== test 767
---- SKIP
---- template
-<MTEntries id="1"><MTEntryCommentCount top="1"></MTEntries>
---- expected
-1
-
-=== test 768
---- SKIP
---- template
-<MTEntries id="6"><MTEntryCommentCount top="1"></MTEntries>
---- expected
-3
-
-=== test 769
---- SKIP
---- template
-<MTEntries id="6"><MTEntryCategories type="primary"><MTCategoryID>:<MTCategoryCommentCount top="1"></MTEntryCategories></MTEntries>
---- expected
-1:3
-
-=== test 770
---- SKIP
---- template
-<MTEntries id="7"><MTEntryCategories type="primary"><MTCategoryID>:<MTCategoryCommentCount top="1"></MTEntryCategories></MTEntries>
---- expected
-3:0
-
-=== test 771
---- SKIP
---- template
-<MTBlogs blog_ids="1"><MTBlogCommentCount top="1"></MTBlogs>
---- expected
-7
-
-=== test 772
---- SKIP
---- template
-<MTWebsites site_ids="2"><MTWebsiteCommentCount top="1"></MTWebsites>
---- expected
-1
 
 === test 773
 --- template
@@ -5435,25 +4610,11 @@ has Awesome
 --- expected
 doesn't have NotExists
 
-=== test 857
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1' include_sites='2'>
---- expected
-1
-
 === test 858
 --- template
 <MTWebsitePageCount site_ids='1' include_sites='2'>
 --- expected
 1
-
-=== test 859
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1' include_sites='2'>
---- expected
-0
 
 === test 860
 --- template
@@ -5508,20 +4669,6 @@ entry
 <MTAssets include_sites="1" limit="1"><mt:AssetThumbnailURL></MTAssets>
 --- expected
 http://narnia.na/nana/assets_c/CURRENT_YEAR/CURRENT_MONTH/test-thumb-640x480-1.jpg
-
-=== test 869
---- SKIP
---- template
-<MTWebsiteCommentCount site_ids='1' include_sites='2'>
---- expected
-9
-
-=== test 870
---- SKIP
---- template
-<MTWebsitePingCount site_ids='1' include_sites='2'>
---- expected
-2
 
 === test 871
 --- template
