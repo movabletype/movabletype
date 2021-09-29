@@ -12,6 +12,7 @@ use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
+use File::Spec;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -149,10 +150,15 @@ SKIP: {
                 my $text     = $block->text || '';
                 my $extra    = $callback ? $callback->($block) : '';
 
-                my $php_script = php_test_script( $block->blog_id || $blog_id,
-                    $template, $text, $extra );
-
+                require MT::Util::UniqueID;
+                my $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+                my $php_script = php_test_script( $block->blog_id || $blog_id, $template, $text, $log, $extra );
                 my $php_result = MT::Test::PHP->run($php_script);
+
+                my $php_error = '';
+                if (open(my $fh, '<', $log)) {
+                    $php_error = do { local $/; <$fh> };
+                }
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -201,6 +207,7 @@ SKIP: {
                     ),
                     $name
                 );
+                note("PHPErrorLog: $name\n". $php_error) if $php_error;
             }
         }
     }
@@ -215,7 +222,7 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $blog_id, $template, $text, $extra ) = @_;
+    my ( $blog_id, $template, $text, $log, $extra ) = @_;
     $text ||= '';
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
@@ -226,6 +233,7 @@ sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
 \$MT_HOME   = '@{[ $ENV{MT_HOME} ? $ENV{MT_HOME} : '.' ]}';
 \$MT_CONFIG = '@{[ MT->instance->find_config ]}';
 \$blog_id   = '$blog_id';
+\$log = '$log';
 \$tmpl = <<<__TMPL__
 $template
 __TMPL__
@@ -240,6 +248,8 @@ include_once($MT_HOME . '/php/mt.php');
 include_once($MT_HOME . '/php/lib/MTUtil.php');
 
 $mt = MT::get_instance($blog_id, $MT_CONFIG);
+$mt->config('PHPErrorLogFilePath', $log);
+
 $mt->init_plugins();
 
 $db = $mt->db();
@@ -257,9 +267,13 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line) {
-    print($error_msg."\n");
-}, E_USER_ERROR );
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line) use ($mt) {
+    if ($error_no & E_USER_ERROR) {
+        print($error_msg."\n");
+    } else {
+        return $mt->error_handler($error_no, $error_msg, $error_file, $error_line);
+    }
+});
 
 if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
     $ctx->_eval('?>' . $_var_compiled);
