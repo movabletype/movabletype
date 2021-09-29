@@ -172,13 +172,10 @@ sub set_internal {
             }
         }
         elsif ( $type eq 'HASH' ) {
-            my $hash = $mgr->{$set}{$var};
-            $hash = $mgr->default($var) unless defined $hash;
             if ( ref $val eq 'HASH' ) {
                 $mgr->{$set}{$var} = $val;
             }
             else {
-                $hash ||= {};
                 ( my ($key), $val ) = split /=/, $val;
                 $mgr->{$set}{$var}{$key} = $val;
             }

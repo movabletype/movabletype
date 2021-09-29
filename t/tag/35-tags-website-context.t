@@ -21,8 +21,7 @@ plan tests => 2 * blocks;
 use MT;
 use MT::PublishOption;
 use MT::Test;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 my $app    = MT->instance;
 my $config = $app->config;
@@ -106,15 +105,13 @@ $test_env->prepare_fixture(sub {
         $w->save or die $w->errstr;
 
         # apply theme
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'apply_theme',
-                blog_id          => $w->id,
-                theme_id         => 'classic_website',
-            },
-        );
+        my $test_app = MT::Test::App->new('CMS');
+        $test_app->login($admin);
+        $test_app->post({
+            __mode   => 'apply_theme',
+            blog_id  => $w->id,
+            theme_id => 'classic_website',
+        });
 
         # Create categories
         my $cat1 = MT::Category->new;

@@ -16,8 +16,7 @@ BEGIN {
 use MT;
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 $test_env->prepare_fixture('db');
 
@@ -72,70 +71,64 @@ my $cf_category2 = MT::Test::Permission->make_content_field(
     name               => 'test category field',
     type               => 'categories',
 );
-$content_type1->fields(
-    [   {   id        => $cf_category1->id,
-            name      => $cf_category1->name,
-            options   => { label => $cf_category1->name, },
-            order     => 1,
-            type      => $cf_category1->type,
-            unique_id => $cf_category1->unique_id,
-        },
-    ]
-);
-$content_type2->fields(
-    [   {   id        => $cf_category2->id,
-            name      => $cf_category2->name,
-            options   => { label => $cf_category2->name, },
-            order     => 1,
-            type      => $cf_category2->type,
-            unique_id => $cf_category2->unique_id,
-        },
-    ]
-);
+$content_type1->fields([{
+        id        => $cf_category1->id,
+        name      => $cf_category1->name,
+        options   => { label => $cf_category1->name, },
+        order     => 1,
+        type      => $cf_category1->type,
+        unique_id => $cf_category1->unique_id,
+    },
+]);
+$content_type2->fields([{
+        id        => $cf_category2->id,
+        name      => $cf_category2->name,
+        options   => { label => $cf_category2->name, },
+        order     => 1,
+        type      => $cf_category2->type,
+        unique_id => $cf_category2->unique_id,
+    },
+]);
 $content_type1->save or die $content_type1->errstr;
 $content_type2->save or die $content_type2->errstr;
 
-my ( $app, $out );
-
 subtest 'category_set' => sub {
     local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            'blog_id'        => $blog->id,
-            '__mode'         => 'filtered_list',
-            'datasource'     => 'category_set',
-            'columns'        => 'name',
-            'items' =>
-                '"[{\\"type\\":\\"content_type_name\\",\\"args\\":{\\"string\\":\\"first\\",\\"option\\":\\"contains\\"}}]"'
-        }
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        'blog_id'    => $blog->id,
+        '__mode'     => 'filtered_list',
+        'datasource' => 'category_set',
+        'columns'    => 'name',
+        'items'      => '"[{\\"type\\":\\"content_type_name\\",\\"args\\":{\\"string\\":\\"first\\",\\"option\\":\\"contains\\"}}]"'
+    });
+    $app->has_no_permission_error("filtered_list method succeeded");
+    $app->content_like(
+        qr!first test category set!i,
+        "conteins filter by a name of a content type succeeded"
     );
-    $out = delete $app->{__test_output};
-    ok( $out && $out !~ m!permission=1!i, "filtered_list method succeeded" );
-    ok( $out =~ m!first test category set!i,
-        "conteins filter by a name of a content type succeeded" );
-    ok( $out !~ m!second test category set!i,
-        "conteins filter by a name of a content type succeeded" );
+    $app->content_unlike(
+        qr!second test category set!i,
+        "conteins filter by a name of a content type succeeded"
+    );
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            'blog_id'        => $blog->id,
-            '__mode'         => 'filtered_list',
-            'datasource'     => 'category_set',
-            'columns'        => 'name',
-            'items' =>
-                '"[{\\"type\\":\\"content_type_name\\",\\"args\\":{\\"string\\":\\"first\\",\\"option\\":\\"not_contains\\"}}]"'
-        }
+    $app->post_ok({
+        'blog_id'    => $blog->id,
+        '__mode'     => 'filtered_list',
+        'datasource' => 'category_set',
+        'columns'    => 'name',
+        'items'      => '"[{\\"type\\":\\"content_type_name\\",\\"args\\":{\\"string\\":\\"first\\",\\"option\\":\\"not_contains\\"}}]"'
+    });
+    $app->has_no_permission_error("filtered_list method succeeded");
+    $app->content_unlike(
+        qr!first test category set!i,
+        "not_contains filter by a name of a content type succeeded"
     );
-    $out = delete $app->{__test_output};
-    ok( $out && $out !~ m!permission=1!i, "filtered_list method succeeded" );
-    ok( $out !~ m!first test category set!i,
-        "not_contains filter by a name of a content type succeeded" );
-    ok( $out =~ m!second test category set!i,
-        "not_contains filter by a name of a content type succeeded" );
+    $app->content_like(
+        qr!second test category set!i,
+        "not_contains filter by a name of a content type succeeded"
+    );
 };
 
 done_testing();

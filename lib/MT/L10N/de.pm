@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{Indexvorlage &#8222;[_1]&#8220;},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Kategorie-Set',
 	'Category Set' => 'Kategorie-Set',
 	'Create Category Set' => 'Kategorie-Set anlegen',
 	'Create [_1]' => '[_1] anlegen',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Inhaltstyp',
 	'Cannot load content field data (ID: [_1])' => 'Kann Inhaltsfelder-Daten nicht laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Inhaltstyp #[_1] konnte nicht geladen werden',
 	'Content Type Boilerplates' => 'Inhaltstyp-Bausteine',
@@ -2054,6 +2056,7 @@ use vars qw( @ISA %Lexicon );
 	'A parameter "[_1]" is invalid.' => 'Parameter "[_1]" ist ungültig.',
 
 ## lib/MT/DataAPI/Callback/Log.pm
+	'log' => 'Log',
 	'author_id (ID:[_1]) is invalid.' => 'Ungültige author_id: [_1]',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) gelöscht von '[_2]'},
 
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog-, BlogID- oder Template-Parameter erforderlich.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Diese Archivdatei existiert bereits. Ändern Sie entweder den Basisnamen oder den Archivpfad. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{Vorlage &#8222;[_1]&#8220; hat keine Ausgabedatei.},
+	'unpublish' => 'Nicht mehr veröffentlichen',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Anzahl Untersites',
@@ -3675,24 +3679,6 @@ itte versuchen Sie es später erneut.',
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Klassische Website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Für Portale, die die Inhalte mehrerer Blogs in einer gemeinsamen Website anzeigen.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Verwandte Einträge',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Kommentarvorschau',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'Startseite',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Abonnieren',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Mit Pro-Themen kompatible Designs',
-	'Pico Styles' => 'Pico-Designs',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico ist das Microblogging-Thema, das speziell auf einfache und häufige Aktualisierungen ausgelegt ist. Zur Betonung der aktuellen Inhalte werden die Seitenleisten unterhalb der Einträge angezeigt.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Neues Asset hochladen',

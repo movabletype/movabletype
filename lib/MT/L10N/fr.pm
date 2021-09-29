@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{gabarit d'index '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Groupe de catégories',
 	'Category Set' => 'Groupe de catégories',
 	'Create Category Set' => 'Créer un groupe de catégories',
 	'Create [_1]' => 'Créer [_1]',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) édité et son status changé de [_3] à [_4] par l'utilisateur '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Type de contenu',
 	'Cannot load content field data (ID: [_1])' => 'Impossible de charger les données du champ de contenu (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Impossible de charger le type de contenu #[_1]',
 	'Content Type Boilerplates' => 'Modèles de type de contenu',
@@ -2056,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) est invalide.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) supprimé par '[_2]'},
+	'log' => 'Journal',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nom de tag invalide : [_1]',
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	q{An error occurred while unpublishing past entries: [_1]} => q{Une erreur s'est produite lors de la dépublication de notes passées : [_1]},
 	q{Template '[_1]' does not have an Output File.} => q{Le gabarit '[_1]' n'a pas de fichier de sortie.},
 	q{The same archive file exists. You should change the basename or the archive path. ([_1])} => q{Le même fichier d'archive existe déjà. Vous devez changer le nom de base ou le chemin de l'archive. ([_1])},
+	'unpublish' => 'Dé-publier',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Nombre de sites enfants',
@@ -3674,24 +3678,6 @@ réessayer plus tard.',
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Site web classique',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crée un portail de blogs qui agrège les contenus de plusieurs blogs sur un site web.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Contenu lié',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Aperçu du commentaire',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'Accueil',
-
-## themes/pico/templates/navigation.mtml
-	q{Subscribe} => q{S'abonner},
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Une collection de styles compatible avec les thèmes Pico.',
-	'Pico Styles' => 'Styles Pico',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico est un thème de microblogging conçu pour gérer simplement des mises à jour fréquentes. Pour mettre en avant votre contenu, nous avons déplacé les colonnes latérales sous la liste de vos notes.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Télécharger un nouvel élément',

@@ -36,6 +36,8 @@ sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
     ok !$res->is_error, "get succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
     $res;
 }
 
@@ -50,6 +52,8 @@ sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
     ok !$res->is_error, "post succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
     $res;
 }
 

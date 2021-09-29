@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{indexsjabloon '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Categorieset',
 	'Category Set' => 'Categorieset',
 	'Create Category Set' => 'Categoriesete aanmaken',
 	'Create [_1]' => '[_1] aanmaken',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Inhoudstype',
 	'Cannot load content field data (ID: [_1])' => 'Kan gegevens inhoudsveld niet laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Kan inhoudstype niet laden #[_1]',
 	'Content Type Boilerplates' => 'Standaardteksten inhoudstypes',
@@ -2056,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
+	'log' => 'Log',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]',
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Hetzelfde archiefbestand bestaat al. U moet de basisnaam of het archiefpad wijzigen. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
+	'unpublish' => 'Publicatie ongedaan maken',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Aantal subsites',
@@ -3674,24 +3678,6 @@ ter opnieuw te proberen.',
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Klassieke website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Maak een blogportaal dat de inhoud van verschillende blogs samenbrengt in één website.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Gerelateerde inhoud',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Voorbeeld reactie bekijken',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'Hoofdpagina',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Inschrijven',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Een collectie stijlen die compatibel zijn met het Pico thema.',
-	'Pico Styles' => 'Pico stijlen',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico is een microblogthema, ontworpen om eenvoudig veel updates aan te kunnen.  Om meer focus te richten op de inhoud staan de 'zijkolommen' onderaan de lijst met berichten.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Nieuw mediabestand uploaden',

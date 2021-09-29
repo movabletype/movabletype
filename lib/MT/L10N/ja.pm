@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{インデックステンプレート「[_1]」},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'カテゴリセット',
 	'Category Set' => 'カテゴリセット',
 	'Create Category Set' => 'カテゴリセットの作成',
 	'Create [_1]' => '新しい[_1]',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'コンテンツタイプ',
 	'Cannot load content field data (ID: [_1])' => 'コンテンツフィールド (ID: [_1]) をロードできません',
 	'Cannot load content type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'Content Type Boilerplates' => 'コンテンツタイプのひな形',
@@ -2056,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
+	'log' => 'ログ',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => '不正なタグ名です: [_1]',
@@ -2068,8 +2071,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid textFormat: [_1]' => '不正なテキストフォーマットです: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Auth.pm
-	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]]' (ID: [_2])がサインインを試みましたが失敗しました。},
-	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]]' (ID: [_2])が Data API でサインインしました。},
+	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]' (ID: [_2])がサインインを試みましたが失敗しました。},
+	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]' (ID: [_2])が Data API でサインインしました。},
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
 	'Invalid dateFrom parameter: [_1]' => 'dateFrom パラメータに無効な値が指定されました: [_1]',
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID, またはTemplateのいずれかを指定してください。',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => '同名のファイルがすでに存在します。ファイル名またはアーカイブパスを変更してください([_1])。',
 	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
+	'unpublish' => '公開終了',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
@@ -3680,24 +3684,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'クラシックウェブサイト',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'ウェブサイトに存在するブログのコンテンツを表示するブログポータルを作成します。',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => '関連コンテンツ',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'コメントの確認',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'ホーム',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => '購読',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Picoテーマと互換のあるスタイルです。',
-	'Pico Styles' => 'Picoスタイル',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Picoはマイクロブログを作成するのに適した、テキストや写真といったコンテンツを引き立てるシンプルなデザインのテーマです。アーカイブリストなどの関連コンテンツは、メインコンテンツの下に配置されます。},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => '新規アセットのアップロード',

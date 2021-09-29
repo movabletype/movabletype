@@ -246,7 +246,8 @@ themes/broken_blog_theme
 
 #?language=ja ^plugins/zemanta
 
-^schemas
+^schemas/
+^scss/
 \bknown-issues
 ^t/
 .*/t/
@@ -271,6 +272,7 @@ themes/broken_blog_theme
 \.git\b
 \.gitignore
 \.gitmodules
+\.mailmap$
 ,v$
 
 # Hidden, temp and backup files.
@@ -352,8 +354,8 @@ build-language-stamp
 ^package-lock.json
 ^package.json
 ^node_modules/
-^\.node-version
-^\.php_cs\.dist
+\.node-version$
+\.php_cs\.dist$
 
 ^mt-static/plugins/Motion
 ^mt-static/jquery/themes/Motion

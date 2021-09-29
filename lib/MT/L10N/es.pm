@@ -1221,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{plantilla índice '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Conjunto de categorías',
 	'Category Set' => 'Conjunto de categorías',
 	'Create Category Set' => 'Crear conjunto de categorías',
 	'Create [_1]' => 'Crear [_1]',
@@ -1296,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) editado y su estado cambió de [_3] a [_4] por el usuario '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Tipo de contenido',
 	'Cannot load content field data (ID: [_1])' => 'No se pudo cargar el contenido del campo (ID: [_1])',
 	'Cannot load content type #[_1]' => 'No se pudo cargar el tipo de contenido #[_1]',
 	'Content Type Boilerplates' => 'Modelos de tipos de contenido',
@@ -2056,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (Id:[_1]) no válido.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
+	'log' => 'Histórico',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Nombre de etiqueta no válido: [_1]',
@@ -2986,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Ya existe el fichero del mismo archivo. Debe modificar el título o la ruta. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
+	'unpublish' => 'Despublicar',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Cuenta de sitios hijos',
@@ -3138,7 +3142,7 @@ use vars qw( @ISA %Lexicon );
 	'You can only act upon a minimum of [_1] [_2].' => 'Solo puede actuar sobre un mínimo de [_1] [_2].',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'act upon' => 'actuar sobre',
-	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]]'?},
+	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]'?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'100 rows' => '100 filas',
@@ -3674,24 +3678,6 @@ r, inténtelo más tarde.',
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Sitio web clásico',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crear un portal que agrega contenidos de otros blogs en un sitio web.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Contenido relacionado',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Prever comentario',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'Inicio',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Suscribirse',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Colección de estilos compatible con los temas Pico.',
-	'Pico Styles' => 'Estilos Pico',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico es un tema para microblogs, diseñado con la simplicidad en mente, para mostrar actualizaciones frecuentes. Hemos movido las barras laterales debajo de la lista de entradas para destacar el contenido.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Transferir nuevo fichero multimedia',
