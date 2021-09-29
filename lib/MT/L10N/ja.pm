@@ -1277,6 +1277,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'テンプレートをロードできませんでした。',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'メールを送信できませんでした。MailTransferの設定を見直してください: [_1]',
+	'Synchronization error notification' => '',
+	'Synchronization start notification' => '',
+	'Synchronization success notification' => '',
 	q{Cannot find author for id '[_1]'} => q{ID:[_1]のユーザーが見つかりませんでした。},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
@@ -1311,15 +1314,22 @@ use vars qw( @ISA %Lexicon );
 	'Destination Name' => '',
 	'Download Sync Log (CSV)' => '',
 	'Error' => 'エラー',
+	'FTP Server' => 'FTPサーバー',
 	'FTP' => 'FTP',
 	'Finish Date' => '',
 	'Finish Time' => '',
 	'Message' => 'ログ',
+	'Notify To' => '',
 	'Parallel' => '即時',
+	'Port' => 'FTPサーバーのポート',
+	'Rsync Additional Options' => '',
+	'Rsync Destination' => 'rsync 先のディレクトリ',
 	'Rsync' => 'rsync',
 	'Scheduled' => '日時指定',
 	'Showing only ID: [_1]' => 'ID:[_1]のログ',
+	'Site Path' => 'サイトパス',
 	'Start Date' => '',
+	'Start Directory' => '開始ディレクトリ',
 	'Start Time' => '',
 	'Success' => '完了',
 	'Suspended' => '',
@@ -1339,6 +1349,9 @@ use vars qw( @ISA %Lexicon );
 	'Sync Status' => '配信状況',
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	', Error: [_1]' => '',
+	'Date: [_1], Blog: [_2]' => '',
+	'Date: [_1], Website: [_2]' => '',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => '外部サーバー([_2])へのサーバー配信([_1])が失敗しました。',
 	'Failed to insert a new job for ([_1])' => '',
 	'Sync setting # [_1] not found.' => 'ID:[_1]のサーバー配信設定が見つかりませんでした。',
@@ -1352,22 +1365,25 @@ use vars qw( @ISA %Lexicon );
 	q{Failed to save sync list. (ID:'[_1]')} => q{同期リストの保存に失敗しました。},
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => 'サーバ配信設定 ([_1])の複製',
 	'Deleting sync file list failed "[_1]": [_2]' => '[_1]の配信ファイルリスト削除に失敗しました: [_2]',
+	'Immediate sync job for [_1] is registered by [_2]' => '',
 	'Permission denied: [_1]' => '権限がありません: [_1]',
 	'Save failed: [_1]' => '保存できませんでした: [_1]',
 	'Saving sync settings failed: [_1]' => 'サーバー配信の設定を保存できませんでした',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => '[_2] が、[_1]の過去の配信ファイルリストを削除しました。',
 	'The sync setting with the same name already exists.' => '同名のサーバー配信設定がすでに存在します。',
+	'[_1] (copy)' => '[_1] (複製)',
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{FTPサーバー '[_1]' への接続中にエラーが発生しました: [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{FTPサーバーのカレントディレクトリが取得できませんでした。},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{FTPサーバーからディレクトリの一覧が取得できませんでした},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{FTPサーバー '[_1]' のカレントディレクトリが取得できませんでした: [_2]},
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{FTPサーバー '[_1]' からディレクトリの一覧が取得できませんでした: [_2]},
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{サーバー配信の設定を保存できません。FTPサーバーからの応答がありません。},
+	q{Queued items for destination '[_1]' is removed by [_2].} => q{},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{[_3] が、サーバー配の信設定 '[_1]' (ID: [_2]) を削除しました。},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{[_3] が、サーバー配信の設定 '[_1]' (ID: [_2]) を保存しました。},
 	q{Synchronization log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log for website '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log reset by '[_1]'} => q{},
+	q{Synchronization status information for destination '[_1]' is removed by [_2].} => q{},
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => '登録されているサーバー配信のジョブを削除しています...',
@@ -1377,19 +1393,23 @@ use vars qw( @ISA %Lexicon );
 	'A duplicate destination name exists.' => '',
 	'Add destination' => '配信先を追加する',
 	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => '',
+	'Are you sure you want to clear synchronization queue of this destination?' => '',
+	'Are you sure you want to clear synchronization status of this destination?' => '',
 	'Are you sure you want to clear the previous synchronization file list?' => '',
 	'Are you sure you want to register immediate sync job?' => '即時配信の実行をスケジュールに登録します。よろしいですか？',
 	'Are you sure you want to remove this settings?' => 'この設定を削除しますか？',
+	'Clear synchronization queue' => '',
+	'Clear synchronization status' => '',
 	'Clear the previous synchronization file list' => '',
 	'Contents Sync Settings' => 'サーバー配信設定',
 	'Contents sync settings has been saved.' => 'サーバー配信の設定を保存しました。',
 	'Copy this sync setting' => 'このサーバー配信設定を複製する',
 	'Deleting...' => '',
+	'Destination ID' => '',
 	'Destination name should be shorter than [_1] characters.' => '',
 	'Destinations' => '配信先',
 	'Do not send .htaccess and .htpasswd file' => '.htaccess や .htpasswd ファイルを送信しない',
 	'Enable SSL' => 'SSLで接続する',
-	'FTP Server' => 'FTPサーバー',
 	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '即時配信をスケジュール登録しました。配信処理は、次回のスケジュールタスクでサーバー側で処理されます。',
 	'Invalid date.' => '無効な日付フォーマットです。',
 	'Invalid time.' => '無効な時刻指定です。',
@@ -1397,16 +1417,14 @@ use vars qw( @ISA %Lexicon );
 	'OK' => 'OK',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => '一つ以上のテンプレートがダイナミックパブリッシングに設定されています。ダイナミックパブリッシングは、配信先サーバー上で正しく動作しない場合があります。',
 	'Please select a sync type.' => '配信方法を指定してください。',
-	'Port' => 'FTPサーバーのポート',
 	'Receive only error notification' => '配信に失敗したときだけ受け取る。',
 	'Recipient for Notification' => '通知先メールアドレス',
 	'Register immediate sync job' => '即時配信する',
-	'Rsync Additional Options' => '',
-	'Rsync Destination' => 'rsync 先のディレクトリ',
+	'Remove queued items to abort synchronization.' => '',
+	'Remove synchronization status information.' => '',
 	'SSL is not available.' => '',
 	'SSL' => 'SSL',
 	'Save changes to these settings (s)' => '設定を保存 (s)',
-	'Start Directory' => '開始ディレクトリ',
 	'Sync Date' => 'サーバー配信日時',
 	'Sync Type *' => '配信方法 *',
 	'Sync all files' => 'すべてのファイルを同期する',
@@ -1417,15 +1435,19 @@ use vars qw( @ISA %Lexicon );
 	'The previous synchronization file list has been cleared.' => '',
 	'The sync date must be in the future.' => 'サーバー配信日時は、未来の日時を指定してください。',
 	'The sync settings has been copied but not saved yet.' => 'サーバー配信設定が複製されましたが、まだ設定は保存されていません。',
+	'This destination has been synchronized before.' => '',
+	'This destination has never been synchronized.' => '',
+	'This destination is queued to be synchronized.' => '',
+	'This destination will be fully synchronized next time.' => '',
 	'View sync log' => '',
 	'You must make one or more destination settings.' => 'サーバー配信先が設定されていません。',
 	'htaccess' => 'htaccess',
+	q{Queued items for destination '[_1]' has been removed} => q{},
+	q{Sync status information for destination '[_1]' has been removed} => q{},
 
 ## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
 	'Executer' => '',
 	'Site' => '',
-	'Synchronization error notification' => '',
-	'Synchronization success notification' => '',
 
 ## default_templates/archive_index.mtml
 	'Banner Footer' => 'バナーフッター',
@@ -2297,6 +2319,7 @@ use vars qw( @ISA %Lexicon );
 	'The website root directory must be within [_1].' => 'ウェブサイトパスは、[_1]以下のディレクトリを指定してください。',
 	'Unknown list type' => '不明なタイプです。',
 	'[_1] Feed' => '[_1]のフィード',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
 	q{'[_1]' edited the global template '[_2]'} => q{[_1]がグローバルテンプレート([_2])を編集しました},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{[_1]がブログ([_3])のテンプレート([_2])を編集しました},
 
@@ -3123,6 +3146,23 @@ _4]'から削除しました。},
 	'Unpublished Pages' => '公開終了にされているウェブページ',
 	q{Pages in folder: [_1]} => q{フォルダ '[_1]'に含まれるページ},
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '不正な検証規則です: [_1]',
+	'Unknown validation rule: [_1]' => '未知の検証規則です: [_1]',
+	q{'[_1]' has multiple values} => q{'[_1]' に複数の値があります},
+	q{'[_1]' is required} => q{'[_1]' が必要です},
+	q{'[_1]' requires a valid ID} => q{'[_1]' には有効なIDが必要です},
+	q{'[_1]' requires a valid email} => q{'[_1]' には有効なメールアドレスが必要です},
+	q{'[_1]' requires a valid integer} => q{'[_1]' には有効な整数が必要です},
+	q{'[_1]' requires a valid number} => q{'[_1]' には有効な数値が必要です},
+	q{'[_1]' requires a valid objtype} => q{'[_1]' には有効なオブジェクト種別が必要です},
+	q{'[_1]' requires a valid string} => q{'[_1]' には有効な文字列が必要です},
+	q{'[_1]' requires a valid text} => q{'[_1]' には有効なテキストが必要です},
+	q{'[_1]' requires a valid word} => q{'[_1]' には有効な単語が必要です},
+	q{'[_1]' requires a valid xdigit value} => q{'[_1]' には有効な16進数が必要です},
+	q{'[_1]' requires valid (concatenated) IDs} => q{'[_1]' には有効なID(を連結したもの)が必要です},
+	q{'[_1]' requires valid (concatenated) words} => q{'[_1]' には有効な単語(を連結したもの)が必要です},
+
 ## lib/MT/Placement.pm
 	'Category Placement' => 'カテゴリの関連付け',
 
@@ -3143,8 +3183,6 @@ _4]'から削除しました。},
 	'There are not the same types of objects, expecting two [_1]' => '同じ種類のオブジェクトではありません。両者とも[_2]である必要があります。',
 	'Unknown method [_1]' => '不正な比較メソッド([_1])です。',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{リビジョンドライバー([_1])の設定が正しくありません: [_2]},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_2](id:[_3])の壊れたリビジョン[_1]件が削除されました。',
-	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
 
 ## lib/MT/Role.pm
 	'Blog Administrator' => 'ブログ管理者',
@@ -3237,6 +3275,7 @@ _4]'から削除しました。},
 ## lib/MT/Template/Context.pm
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'include_blogs属性とexclude_blogs属性に同じブログIDが指定されています。',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{exclude_blogs属性には'[_1]'を設定できません。},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{[_2]属性でエラーがありました: [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{[_1]をウェブサイトに属していないブログのコンテキストで利用しようとしています。},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{[_1]をコンテキスト外で利用しようとしています。MTAuthorsコンテナタグの外部で使っていませんか?},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{[_1]をコメントのコンテキスト外で利用しようとしました。MTCommentsコンテナの外部に配置していませんか?},
@@ -3302,7 +3341,6 @@ _4]'から削除しました。},
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score"を指定するときはnamespaceも指定しなければなりません。',
 	q{No such user '[_1]'} => q{ユーザー([_1])が見つかりません。},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{[_2]属性でエラーがありました: [_1]},
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => '[_1]をユーザーのコンテキスト外部で利用しようとしました。',
@@ -3582,21 +3620,28 @@ _4]'から削除しました。},
 	'Registry could not be loaded' => 'レジストリをロードできませんでした。',
 	'Type must be specified' => '種類を指定してください。',
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'データとファイルの両方を指定してください。',
 	'Cannot extract from the object' => '解凍できません。',
+	'Cannot find external archiver: [_1]' => '外部アーカイバが見つかりません: [_1]',
 	'Cannot write to the object' => '書き込みできません。',
-	'Could not read from filehandle.' => 'ファイルを読みだせませんでした。',
+	'Failed to create an archive [_1]: [_2]' => 'アーカイブ [_1] を作成できません: [_2]',
 	'File [_1] exists; could not overwrite.' => '[_1]が既に存在します。上書きできません。',
-	'File [_1] is not a tgz file.' => '[_1]はTGZファイルではありません。',
 	'Type must be tgz.' => 'TGZが指定されていません。',
 	'[_1] in the archive contains ..' => 'アーカイブに含まれるファイル[_1]に相対パス指定が含まれています',
 	'[_1] in the archive is an absolute path' => 'アーカイブに含まれるファイル[_1]に絶対パスが含まれています',
 	'[_1] in the archive is not a regular file' => 'アーカイブに含まれるファイル[_1]にシンボリックリンクが含まれています',
 
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => 'アーカイブ [_1] をリネームできません: [_2]',
+	'Type must be zip' => 'ZIPが指定されていません。',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'ファイルを読みだせませんでした。',
+	'File [_1] is not a tgz file.' => '[_1]はTGZファイルではありません。',
+
 ## lib/MT/Util/Archive/Zip.pm
 	'File [_1] is not a zip file.' => '[_1]はZIPファイルではありません。',
-	'Type must be zip' => 'ZIPが指定されていません。',
 
 ## lib/MT/Util/Captcha.pm
 	'Captcha' => 'Captcha',
@@ -3712,7 +3757,7 @@ _4]'から削除しました。},
 	'The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2]). Please upgrade to at least Perl [_2].' => 'お使いのシステムにインストールされている Perl [_1] は、Movable Type でサポートされている最低限のバージョン[_2]を満たしていません。Perlをアップグレードしてください。',
 	'This module and its dependencies are required in order to operate Movable Type under psgi.' => 'PSGI環境下でmt.psgiを実行する場合に必要となります。',
 	'This module is required by mt-search.cgi, if you are running Movable Type using a version of Perl older than Perl 5.8.' => 'Perl 5.8以下の環境で、mt-search.cgiを利用するときに必要です。',
-	'This module required for action streams.' => '', # Translate - New
+	'This module required for action streams.' => 'アクションストリームに必要です',
 	'Web server:' => 'ウェブサーバー',
 	'XML::Atom is required in order to use the Atom API.' => 'XML::Atomのインストールは必須ではありません。Atom APIを利用する場合に必要となります。',
 	'XML::SAX and its dependencies are required to restore a backup created in a backup/restore operation.' => 'XML::SAXは復元の機能を利用する場合に必要となります。',
@@ -3810,12 +3855,6 @@ _4]'から削除しました。},
 	'Undo (Ctrl+Z)' => '元に戻す (Ctrl+Z)',
 	'Unlink' => 'リンクを解除',
 	'Unordered List' => '番号なしリスト',
-	'Cut column' => '列の切り取り',
-	'Copy column' => '列のコピー',
-	'Paste column before' => '列の前に貼り付け',
-	'Paste column after' => '列の後に貼り付け',
-	'Horizontal align' => '横配置',
-	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt/langs/core.js
 	'Class Name' => 'クラス名',
@@ -3849,6 +3888,14 @@ _4]'から削除しました。},
 
 ## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
 	'value' => 'value',
+
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '列のコピー',
+	'Cut column' => '列の切り取り',
+	'Horizontal align' => '横配置',
+	'Paste column after' => '列の後に貼り付け',
+	'Paste column before' => '列の前に貼り付け',
+	'Vertical align' => '縦配置',
 
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => 'HTML',
@@ -3884,6 +3931,30 @@ _4]'から削除しました。},
 
 ## php/mt.php
 	'Page not found - [_1]' => '[_1]が見つかりませんでした。',
+
+## plugins/FacebookCommenters/config.yaml
+	'Facebook' => 'Facebook',
+	'Provides commenter registration through Facebook Connect.' => 'Facebookコネクトを利用したコメント投稿者の登録機能を提供します。',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Authentication failure: [_1], reason:[_2]' => '認証に失敗しました: [_1], 理由:[_2]',
+	'Could not verify this app with Facebook: [_1]' => 'Facebookでこのアプリケーションを確認できません: [_1]',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => 'Facebook Commentersを利用するには、IO::Socket::SSLがインストールされている必要があります。',
+	'Failed to create a session.' => 'コメンターセッションの作成に失敗しました。',
+	'Failed to created commenter.' => 'コメンターの作成に失敗しました。',
+	'Please enter your Facebook App key and secret.' => 'FacebookアプリケーションキーとFacebookアプリケーションシークレットを入力してください。',
+	'Set up Facebook Commenters plugin' => 'Facebook Commentersプラグイン設定',
+	'The login could not be confirmed because of no/invalid blog_id' => 'サイトIDが正しくないため、サインインできません。',
+
+## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
+	'Create Facebook App' => 'Facebookアプリ作成',
+	'Edit Facebook App' => 'Facebookアプリ編集',
+	'Facebook App ID' => 'Facebookアプリケーションキー',
+	'Facebook Application Secret' => 'Facebookアプリケーションシークレット',
+	'OAuth Redirect URL of Facebook Login' => 'OAuth リダイレクトURL',
+	'Please set this URL to "Valid OAuth redirect URIs" field of Facebook Login.' => 'このURLを "Valid OAuth redirect URIs" に設定してください。',
+	'The key for the Facebook application associated with your blog.' => 'ブログ関連付用Facebookアプリケーションキー',
+	'The secret for the Facebook application associated with your blog.' => 'ブログ関連付用Facebookアプリケーションシークレット',
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => '定型文を管理します。',
@@ -3948,6 +4019,7 @@ _4]'から削除しました。},
 	'Client ID of the OAuth2 application' => 'クライアント ID',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client IDあるいはClient secretが更新されていますが、プロファイルを選択し直していません。設定を保存してもよろしいですか？',
 	'Client secret of the OAuth2 application' => 'クライアント シークレット',
+	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 	'Google Analytics profile' => '使用するGoogle Analyticsのプロファイル',
 	'Google Analytics' => 'Google Analytics',
 	'OAuth2 settings' => 'OAuth2の設定',
@@ -4015,6 +4087,48 @@ _4]'から削除しました。},
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で許可されます。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを制限できます。',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'ブログをまたがったアグリゲーションが既定で不許可になります。個別のブログレベルでのMultiBlogの設定で他のブログからのコンテンツへのアクセスを許可することもできます。',
 	'Default system aggregation policy' => '既定のアグリゲーションポリシー',
+
+## plugins/SmartphoneOption/config.yaml
+	'Android' => 'Android',
+	'Desktop' => 'PC',
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => 'iPhone, iPad, Android などのタッチ操作に適したMovable Typeのユーザーインターフェースを提供します。プラグインを有効にして、端末からアクセスしてください。',
+	'iPad' => 'iPad',
+	'iPhone' => 'iPhone',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'Mobile Dashboard' => 'モバイルダッシュボード',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => 'この機能は、お使いのブラウザに対応していません。',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => 'お使いのブラウザは、コードのハイライト表示に対応していません。',
+	'This function is not supported by [_1].' => 'この機能は、[_1]に対応していません。',
+	'This function is not supported by your browser.' => 'この機能は、お使いのブラウザに対応していません。',
+	'[_1] View' => '[_1]表示',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Publish (s)' => '再構築 (s)',
+	'Re-Edit (e)' => '再編集する (e)',
+	'Re-Edit' => '再編集する',
+	'Rich Text(HTML mode)' => 'リッチテキスト(HTMLモード)',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => 'すべて',
+	'Filters which you created from PC.' => 'PCで作成したフィルタが表示されます',
+	'_DISPLAY_OPTIONS_SHOW' => '表示数',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => '[_1]の検索',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'Revision: <strong>[_1]</strong>' => '更新履歴: <strong>[_1]</strong>',
+	'Smartphone Main' => 'Smartphone Main',
+	'Smartphone Sub' => 'Smartphone Sub',
+	'Unpublish' => '公開取り消し',
+	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
+	'View revisions' => '更新履歴を表示',
+	'to [_1]' => 'to [_1]',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'Continue (s)' => '次へ (s)',
+	'No boilerplate could be found.' => '定型文が見つかりません。',
 
 ## plugins/StyleCatcher/config.yaml
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Movable Type 4のデフォルトテンプレートと互換性のあるスタイルです。',
@@ -4107,6 +4221,60 @@ _4]'から削除しました。},
 	'Failed.' => '失敗',
 	'Moving storage of Widget Manager [_2]...' => 'ウィジェット管理[_2]の格納場所を移動しています。...',
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager version 1.1; このプラグインは、古いバージョンのWidget ManagerのデータをMovable Typeのコアへ統合してアップグレードするために提供されています。アップグレード以外の機能はありません。最新のMovable Typeへアップグレードし終わった後は、このプラグインを削除してください。',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードが使用されます。[_2]のHTTPステータスが返されました。',
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '[_1]の実行中にエラーが発生しました。以前のバージョンのフィードはありません。[_2]のHTTPステータスが返されました。',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'MT[_1] was not used in the proper context.' => 'MT[_1]を適切なコンテキスト外で使用しています。',
+	q{'[_1]' is a required argument of [_2]} => q{'[_1]' は[_2]の引数を必要とします},
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Create a Feed Widget' => 'フィードウィジェットを作成',
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => 'Feeds.App Liteからブログ上のフィードを更新（再構築）できます。Movable Typeでフィードをさらに活用するには<a href="http://code.appnel.com/feeds-app" target="_blank">Feeds.App</a>にアップグレードします。',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'10' => '10',
+	'3' => '3',
+	'5' => '5',
+	'Configure feed widget settings' => 'フィードウィジェットを設定する',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => 'Widgetのタイトルを入力してください。このタイトルは、公開されているブログでWidgetが使用されたときにもフィードのタイトルとして表示されます。',
+	'Feeds.App Lite Widget Creator' => 'Feeds.App Lite ウィジェット作成ツール',
+	'Select the maximum number of entries to display.' => '表示するブログ記事の最大数を選択します。',
+	'[_1] Feed Widget' => '[_1]フィードウィジェット',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'A widget named <strong>[_1]</strong> has been created.' => 'フィードウィジェット「[_1]」を作成しました。',
+	'Create Another' => '続けて作成する',
+	'Finish (s)' => '完了 (s)',
+	'Finish' => '完了',
+	'No feeds could be discovered using [_1]' => '[_1]でフィードが見つかりませんでした。',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{[_1]の実行中にエラーが発生しました。<a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">ここ</a>をクリックし、詳細を確認のうえ、再度実行してください。},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、<a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a>か以下のMTIncludeタグを使ってブログに挿入できます。},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{<a href="javascript:void(0)" onclick="closeDialog('[_2]')">[_1]を編集</a>できます。また、以下のMTIncludeタグを使ってブログに挿入できます。},
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => 'フィードが複数見つかりました。',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '利用するフィードを選択してください。<strong>Feeds.App Liteはテキストで構成されたRSS 1.0、RSS 2.0、Atomの各形式をサポートしています</strong>。',
+	'URI' => 'URI',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'Create a widget from a feed' => 'フィードからウィジェットを作成する',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => 'フィードのURLを入力するか、フィードを配信しているサイトのURLを入力してください。',
+	'Feed or Site URL' => 'フィードまたはサイトのURL',
+	'You must enter a feed or site URL to proceed' => 'フィードまたはサイトのURLを入力してください。',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => 'ログインに失敗しました。',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => 'mixiのアカウントを使ってMovable Typeにサインインし、コメントできるようにします。',
+	'mixi' => 'ミクシィ',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => 'すでにmixiのIDを登録してあります。ブログに関連付けるmixiのIDを変えたい場合は、<a href="[_1]"ここをクリックしてmixiにログイン</a>してください。マイミクだけでなくすべてのmixiユーザーからのコメントを受け付けたいときは、初期化ボタンをクリックして設定を消去してください。',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => 'マイミクからのみコメントを受け付ける設定にするには、<a href="[_1]">ここをクリックしてまずmixiにログイン</a>してください。',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'ドメインのIPアドレス「[_2]」と送信元「[_1]」のIPアドレス「[_3]」が合致しません',
@@ -4693,7 +4861,6 @@ _4]'から削除しました。},
 	'Others:' => 'その他:',
 	'Web Services Settings' => 'Webサービス設定',
 	'When this website is updated, Movable Type will automatically notify the selected sites.' => 'ウェブサイトを更すると、選択したサイトに自動通知します。',
-	'Google Analytics 4 (GA4) is not supported.' => 'Google Analytics 4（GA4) には対応していません',
 
 ## tmpl/cms/dashboard.tmpl
 	'Add' => '追加',
@@ -4705,11 +4872,9 @@ _4]'から削除しました。},
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Back (b)' => '戻る (b)',
 	'Confirm Publishing Configuration' => '公開設定',
-	'Continue (s)' => '次へ (s)',
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => '新しいブログのアーカイブURLを入力してください。例: http://www.example.com/blog/archives/',
 	'Parent Website' => '上位ウェブサイト',
 	'Please choose parent website.' => '上位ウェブサイトを選択してください。',
-	'Site Path' => 'サイトパス',
 	'You must select a parent website.' => '上位ウェブサイトを選択してください。',
 	'You must set a valid Site URL.' => '有効なサイトURLを指定してください。',
 	'You must set a valid local site path.' => '有効なサイトパスを指定してください。',
@@ -4749,8 +4914,6 @@ _4]'から削除しました。},
 	'Create a new entry using this uploaded file.' => 'アップロードしたファイルを使って記事を作成する',
 	'Create entry using this uploaded file' => 'アップロードしたファイルを使って記事を作成する',
 	'File Options' => 'ファイルオプション',
-	'Finish (s)' => '完了 (s)',
-	'Finish' => '完了',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => '画像を記事/ページに表示',
@@ -4785,9 +4948,9 @@ _4]'から削除しました。},
 	'Your reply:' => '返信',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	'No websites exist in this installation. [_1]Create a website</a>' => 'ウェブサイトがありません。[_1]ウェブサイトを作成する</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'ブログがありません。[_1]ブログを作成する</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'ロールがありません。[_1]ロールを作成する</a>',
+	'No websites exist in this installation. [_1]Create a website</a>' => 'ウェブサイトがありません。[_1]ウェブサイトを作成する</a>',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Apply' => '適用',
@@ -5101,7 +5264,6 @@ _4]'から削除しました。},
 	'Reset defaults' => '既定値にリセット',
 	'Reset display options to blog defaults' => '表示オプションをブログの既定値にリセット',
 	'Restored revision (Date:[_1]).  The current status is: [_2]' => '更新履歴(日付: [_1])に戻しました。ステータス: [_2]',
-	'Revision: <strong>[_1]</strong>' => '更新履歴: <strong>[_1]</strong>',
 	'Save this [_1]' => 'この[_1]を保存する',
 	'Schedule' => '保存',
 	'Share' => '共有',
@@ -5120,14 +5282,13 @@ _4]'から削除しました。},
 	'View Entry' => '記事を見る',
 	'View Page' => 'ウェブページを表示',
 	'View Previously Sent TrackBacks' => '送信済みのトラックバックを見る',
-	'View revisions of this [_1]' => '[_1]の更新履歴を表示',
-	'View revisions' => '更新履歴を表示',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => '警告: 出力ファイル名を手動で設定すると、他の記事と衝突を起こす可能性があります。',
 	'You have successfully deleted the checked TrackBack(s).' => '選択したトラックバックを削除しました。',
 	'You have successfully deleted the checked comment(s).' => '選択したコメントを削除しました。',
 	'You have successfully recovered your saved entry.' => '記事を元に戻しました。',
 	'You have successfully recovered your saved page.' => 'ウェブページを元に戻しました。',
 	'You have unsaved changes to this entry that will be lost.' => '保存されていない記事への変更は失われます。',
+	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
 	'You must configure this blog before you can publish this entry.' => '記事を公開する前にブログの設定を行ってください。',
 	'You must configure this blog before you can publish this page.' => 'ページを公開する前にブログの設定を行ってください。',
 	'Your changes to the comment have been saved.' => 'コメントの変更を保存しました。',
@@ -5481,7 +5642,6 @@ _4]'から削除しました。},
 	'Expanded' => '詳細',
 	'Save display options' => '表示オプションを保存',
 	'[quant,_1,row,rows]' => '[quant,_1,行,行]',
-	'_DISPLAY_OPTIONS_SHOW' => '表示数',
 
 ## tmpl/cms/include/entry_table.tmpl
 	'<a href="[_1]">Create an entry</a> now.' => '<a href="[_1]">記事を作成</a>する。',
@@ -5515,7 +5675,6 @@ _4]'から削除しました。},
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'ヘルプ',
 	'Search (q)' => '検索 (q)',
-	'Search [_1]' => '[_1]の検索',
 	'Select an action' => 'アクションを選択',
 	'View Site' => 'サイトの表示',
 	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'システムからのメッセージが[quant,_1,件,件]あります。',
@@ -5570,6 +5729,7 @@ _4]'から削除しました。},
 	'View the [_1] for this TrackBack' => 'トラックバックされた[_1]を見る',
 
 ## tmpl/cms/include/revision_table.tmpl
+	'*Deleted due to data breakage*' => '*データの破損のため削除されました*',
 	'No revisions could be found.' => '変更履歴がありません。',
 	'Note' => 'メモ',
 	'Saved By' => '保存したユーザー',
@@ -5842,7 +6002,6 @@ _4]'から削除しました。},
 	'Index Template: [_1]' => 'インデックステンプレート: [_1]',
 	'Only Indexes' => 'インデックスのみ',
 	'Only [_1] Archives' => '[_1]アーカイブのみ',
-	'Publish (s)' => '再構築 (s)',
 	'Publish <em>[_1]</em>' => '[_1]の再構築',
 	'Publish [_1]' => '[_1]の再構築',
 	'_REBUILD_PUBLISH' => '再構築',
@@ -6178,7 +6337,6 @@ _4]'から削除しました。},
 	'More like this' => '他にも...',
 	'On this day' => 'この日付から',
 	'On this entry' => 'この記事に対する',
-	'Unpublish' => '公開取り消し',
 
 ## tmpl/feeds/feed_entry.tmpl
 	'From this author' => 'このユーザーから',
