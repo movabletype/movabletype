@@ -137,10 +137,7 @@ subtest 'Check applying a blog theme' => sub {
         blog_id  => $website->id,
         theme_id => 'MyBlogTheme',
     });
-    $app->content_unlike(
-        qr/(redirect|permission=1)|An error occurr?ed/,
-        'Has no error.'
-    );
+    $app->has_no_permission_error;
     ok($app->last_location->query_param('applied'), 'Theme has been applied.');
 
     $website = MT->model('website')->load($website->id);
