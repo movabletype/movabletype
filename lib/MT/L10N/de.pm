@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Warnungen und Logmeldungen',
 	'You did not have permission for this action.' => 'Zu dieser Aktion sind Sie nicht berechtigt.',
 	'[_1] contains an invalid character: [_2]' => '[_1] enthält ein ungültiges Zeichen: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Fehlgeschlagener Anmeldeversuch von deaktiviertem Benutzer '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1220,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{Indexvorlage &#8222;[_1]&#8220;},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Kategorie-Set',
 	'Category Set' => 'Kategorie-Set',
 	'Create Category Set' => 'Kategorie-Set anlegen',
 	'Create [_1]' => '[_1] anlegen',
@@ -1289,12 +1291,13 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates must be in the format YYYY-MM-DD HH:MM:SS.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss im Format JJJJ-MM-TT SS:MM:SS angegeben werden.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunk, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss in der Zukunft liegen.},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{Datum &#8222;[_1]&#8220; ungültig. Der Zeitpunkt, ab dem der Eintrag nicht mehr veröffentlicht werden soll, muss nach dem Zeitpunkt der Veröffentlichung liegen.},
-	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
+	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
 	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' gelöscht},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_1] '[_4]' (ID:[_2]) von Benutzer '[_3]' bearbeitet},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' von Benutzer '[_5]' bearbeitet und Status von [_3] in [_4] geändert},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Inhaltstyp',
 	'Cannot load content field data (ID: [_1])' => 'Kann Inhaltsfelder-Daten nicht laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Inhaltstyp #[_1] konnte nicht geladen werden',
 	'Content Type Boilerplates' => 'Inhaltstyp-Bausteine',
@@ -2053,6 +2056,7 @@ use vars qw( @ISA %Lexicon );
 	'A parameter "[_1]" is invalid.' => 'Parameter "[_1]" ist ungültig.',
 
 ## lib/MT/DataAPI/Callback/Log.pm
+	'log' => 'Log',
 	'author_id (ID:[_1]) is invalid.' => 'Ungültige author_id: [_1]',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) gelöscht von '[_2]'},
 
@@ -2912,6 +2916,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Baue Objekt-Kategorien neu auf ...',
 	'Rebuilding object tags...' => 'Baue Objekt-Tags neu auf...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Setze Standard-Dashboard-Widgets zurück...',
 	'Truncating values of value_varchar column...' => 'Kürze value_varchar-Spalte...',
 	'add administer_site permission for Blog Administrator...' => 'Weise Blog-Administrator administer-site-Berechtigung zu...',
@@ -2982,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog-, BlogID- oder Template-Parameter erforderlich.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Diese Archivdatei existiert bereits. Ändern Sie entweder den Basisnamen oder den Archivpfad. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{Vorlage &#8222;[_1]&#8220; hat keine Ausgabedatei.},
+	'unpublish' => 'Nicht mehr veröffentlichen',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Anzahl Untersites',

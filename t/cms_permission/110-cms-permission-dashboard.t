@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -14,8 +14,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 
@@ -30,7 +29,7 @@ $test_env->prepare_fixture(sub {
     # Blog
     my $blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
-        name => 'first blog',
+        name      => 'first blog',
     );
     my $second_blog = MT::Test::Permission->make_blog(
         parent_id => $website->id,
@@ -38,12 +37,12 @@ $test_env->prepare_fixture(sub {
 
     # Author
     my $aikawa = MT::Test::Permission->make_author(
-        name => 'aikawa',
+        name     => 'aikawa',
         nickname => 'Ichiro Aikawa',
     );
 
     my $ichikawa = MT::Test::Permission->make_author(
-        name => 'ichikawa',
+        name     => 'ichikawa',
         nickname => 'Jiro Ichikawa',
     );
 
@@ -51,93 +50,61 @@ $test_env->prepare_fixture(sub {
 
     # Role
     require MT::Role;
-    my $designer = MT::Role->load( { name => MT->translate( 'Designer' ) } );
+    my $designer = MT::Role->load({ name => MT->translate('Designer') });
 
     require MT::Association;
-    MT::Association->link( $aikawa => $designer => $blog );
-    MT::Association->link( $ichikawa => $designer => $second_blog );
+    MT::Association->link($aikawa   => $designer => $blog);
+    MT::Association->link($ichikawa => $designer => $second_blog);
 });
 
 my $admin    = MT::Author->load(1);
-my $website  = MT::Website->load( { name => 'my website' } );
-my $blog     = MT::Blog->load( { name => 'first blog' } );
-my $aikawa   = MT::Author->load( { name => 'aikawa' } );
-my $ichikawa = MT::Author->load( { name => 'ichikawa' } );
-
-# Run
-my ( $app, $out );
+my $website  = MT::Website->load({ name => 'my website' });
+my $blog     = MT::Blog->load({ name => 'first blog' });
+my $aikawa   = MT::Author->load({ name => 'aikawa' });
+my $ichikawa = MT::Author->load({ name => 'ichikawa' });
 
 subtest 'mode = dashboard' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by admin" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'dashboard',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("dashboard by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $admin,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-            blog_id          => 0,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by admin" );
+    $app->login($admin);
+    $app->post_ok({
+        __mode  => 'dashboard',
+        blog_id => 0,
+    });
+    $app->has_no_permission_error("dashboard by admin");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by permitted user (blog)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'dashboard',
+        blog_id => $blog->id,
+    });
+    $app->has_no_permission_error("dashboard by permitted user (blog)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-            blog_id          => $website->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by permitted user (parent website)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode  => 'dashboard',
+        blog_id => $website->id,
+    });
+    $app->has_no_permission_error("dashboard by permitted user (parent website)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $aikawa,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out !~ m!permission=1!i, "dashboard by permitted user (user)" );
+    $app->login($aikawa);
+    $app->post_ok({
+        __mode => 'dashboard',
+    });
+    $app->has_no_permission_error("dashboard by permitted user (user)");
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $ichikawa,
-            __request_method => 'POST',
-            __mode           => 'dashboard',
-            blog_id          => $blog->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, "Request: dashboard" );
-    ok( $out =~ m!permission=1!i, "dashboard by other blog" );
+    $app->login($ichikawa);
+    $app->post_ok({
+        __mode  => 'dashboard',
+        blog_id => $blog->id,
+    });
+    $app->has_permission_error("dashboard by other blog");
 };
 
 done_testing();

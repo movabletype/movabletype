@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => 'Waarschuwingen en logberichten',
 	'You did not have permission for this action.' => 'U had geen permissie voor deze actie',
 	'[_1] contains an invalid character: [_2]' => '[_1] bevat een ongeldig karakter: [_2]',
+	q{Failed login attempt by anonymous user} => q{}, # Translate - New
 	q{Failed login attempt by deleted user '[_1]'} => q{}, # Translate - New
 	q{Failed login attempt by disabled user '[_1]'} => q{Mislukte aanmeldpoding door gedeactiveerde gebruiker '[_1]'},
 	q{Failed login attempt by locked-out user '[_1]'} => q{}, # Translate - New
@@ -1220,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{indexsjabloon '[_1]'},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'Categorieset',
 	'Category Set' => 'Categorieset',
 	'Create Category Set' => 'Categoriesete aanmaken',
 	'Create [_1]' => '[_1] aanmaken',
@@ -1295,6 +1297,7 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_1] '[_6]' (ID:[_2]) bewerkt en status aangepast van [_3] naar [_4] door gebruiker '[_5]'},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'Inhoudstype',
 	'Cannot load content field data (ID: [_1])' => 'Kan gegevens inhoudsveld niet laden (ID: [_1])',
 	'Cannot load content type #[_1]' => 'Kan inhoudstype niet laden #[_1]',
 	'Content Type Boilerplates' => 'Standaardteksten inhoudstypes',
@@ -2055,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1]) is ongeldig.',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Log (ID:[_1]) verwijderd door '[_2]'},
+	'log' => 'Log',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => 'Ongeldige tagnaam: [_1]',
@@ -2912,6 +2916,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'Bezig objectcategoriën opnieuw op te bouwen...',
 	'Rebuilding object tags...' => 'Bezig objecttags opnieuw op te bouwen...',
 	'Remove SQLSetNames...' => '', # Translate - New
+	'Reorder DEBUG level' => '', # Translate - New
+	'Reorder SECURITY level' => '', # Translate - New
+	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Standaard dashboard widgets terugzetten...',
 	'Truncating values of value_varchar column...' => 'Bezig waarden van value_varchar kolom in te korten...',
 	'add administer_site permission for Blog Administrator...' => 'voeg admininister_site permissie toe aan Blog Administrator...',
@@ -2982,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID of Template parameter moet opgegeven zijn.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Hetzelfde archiefbestand bestaat al. U moet de basisnaam of het archiefpad wijzigen. ([_1])',
 	q{Template '[_1]' does not have an Output File.} => q{Sjabloon '[_1]' heeft geen uitvoerbestand.},
+	'unpublish' => 'Publicatie ongedaan maken',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => 'Aantal subsites',

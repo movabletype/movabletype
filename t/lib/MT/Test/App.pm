@@ -40,8 +40,8 @@ sub init {
         no warnings 'redefine';
         *MT::App::print = sub {
             my $app = shift;
-            if ($app->{redirect}) {
-                $app->{__test_output} = '' unless $app->{__test_output} =~ /Status:/;
+            if ($app->{redirect} && $_[0] =~ /Status:/) {
+                $app->{__test_output} = '';
             }
             $app->{__test_output} ||= '';
             $app->{__test_output} .= join('', @_);
@@ -76,6 +76,7 @@ sub launch_server {
         'MT::App::DataAPI'             => 'mt-data-api.cgi',
         'MT::App::Search'              => 'mt-search.cgi',
         'MT::App::Search::ContentData' => 'mt-cdsearch.cgi',
+        'MT::App::Upgrader'            => 'mt-upgrade.cgi',
     );
     my $script = join "/", $ENV{MT_HOME}, $mapping{$app_class} || "mt.cgi";
     my $sep    = $^O eq 'MSWin32' ? ';' : ':';
@@ -129,11 +130,10 @@ sub request {
         # avoid processing multiple requests in a second
         sleep 1;
 
-        my $max_redirect = $self->{max_redirect};
-        $max_redirect = 0 if $self->{no_redirect};
+        my $max_redirect = $self->{max_redirect} || 10;
         if (!defined $max_redirect or $max_redirect > @{$self->{locations} || []}) {
             push @{ $self->{locations} ||= [] }, $uri;
-            return $self->request($params, 1);
+            return $self->request($params, 1) unless $self->{no_redirect};
         }
     }
 
@@ -290,7 +290,7 @@ sub _request_internally {
 
 sub _app {
     my $self = shift;
-    $self->{_app} || $self->{app_class}->instance;
+    $self->{_app} || MT->app;
 }
 
 sub locations {

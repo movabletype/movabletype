@@ -491,19 +491,19 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-clean-css-cli@^5.3.2:
-  version "5.3.2"
-  resolved "https://registry.yarnpkg.com/clean-css-cli/-/clean-css-cli-5.3.2.tgz#fe3613c97f61a5c0c306f31bf36c7d15e755a319"
-  integrity sha512-NZY3lWHeeb9idk/0f37yDLeb3Y8UUiuuRCYKVVioqFJU83f3uuJUz7qIIYBgAWARv56D0MLOkwqQcq5fTtK6vQ==
+clean-css-cli@^5.3.3:
+  version "5.3.3"
+  resolved "https://registry.yarnpkg.com/clean-css-cli/-/clean-css-cli-5.3.3.tgz#2ce11038240de9cc276d5a9585f3b15b80f17453"
+  integrity sha512-Reo/w25/3J2uRL4EFHvo92Tv97uhefyHranTpxXNqQ7iIRB8oxRNVlXC+Xcq8RWO2LjSyOofrb7AU6I6oXpPpA==
   dependencies:
-    clean-css "^5.1.4"
+    clean-css "^5.1.5"
     commander "7.x"
     glob "^7.1.6"
 
-clean-css@^5.1.4:
-  version "5.1.4"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.1.4.tgz#d191c98347f9fc36b301f99bb827898151175782"
-  integrity sha512-e6JAuR0T2ahg7fOSv98Nxqh7mHWOac5TaCSgrr61h/6mkPLwlxX38hzob4h6IKj/UHlrrLXvAEjWqXlvi8r8lQ==
+clean-css@^5.1.5:
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.1.5.tgz#3b0af240dcfc9a3779a08c2332df3ebd4474f232"
+  integrity sha512-9dr/cU/LjMpU57PXlSvDkVRh0rPxJBXiBtD0+SgYt8ahTCsXtfKjCkNYgIoTC6mBg8CFr5EKhW3DKCaGMUbUfQ==
   dependencies:
     source-map "~0.6.0"
 
@@ -1547,10 +1547,10 @@ jquery-validation@^1.19.3:
   resolved "https://registry.yarnpkg.com/jquery-validation/-/jquery-validation-1.19.3.tgz#50b350eba8b02bcfd119ba15f199487b7eb64086"
   integrity sha512-iXxCS5W7STthSTMFX/NDZfWHBLbJ1behVK3eAgHXAV8/0vRa9M4tiqHvJMr39VGWHMGdlkhrtrkBuaL2UlE8yw==
 
-jquery@^3.4.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.5.1.tgz#d7b4d08e1bfdb86ad2f1a3d039ea17304717abb5"
-  integrity sha512-XwIBPqcMn57FxfT+Go5pzySnm4KWkT1Tv7gjrpT1srtf8Weynl6R273VJ5GjkRb51IzMp5nbaPjJXMWeju2MKg==
+jquery@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.6.0.tgz#c72a09f15c1bdce142f49dbf1170bdf8adac2470"
+  integrity sha512-JVzAR/AjBvVt2BmYhxRCSYysDsPcssdmTFnzyLEts9qNwmjmu4JTAMYubEfwVOSwpQ1I1sKKFcxhZCI2buerfw==
 
 js-base64@^2.1.8:
   version "2.6.4"

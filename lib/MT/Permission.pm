@@ -400,8 +400,7 @@ sub global_perms {
             @list = @{ $list[0] };
         }
         foreach (@list) {
-            my $ref = $Perms{$_};
-            die "invalid permission" unless $ref;
+            my $ref = $Perms{$_} or next;
             next if $pkg->_check_if( $perms, $column, $_ );
             my $val = $perms->$column || '';
             $val .= ',' if $val ne '';
@@ -446,6 +445,14 @@ sub global_perms {
         return 0 unless $cur_perm;
         my $r = ( $cur_perm =~ /'$perm_name'/i ) ? 1 : 0;
         return $r;
+    }
+
+    # only for testing
+    sub reset_permissions {
+        my $pkg = shift;
+        return unless $ENV{TEST_ACTIVE};
+        @Perms = %Perms = ();
+        $pkg->perms();
     }
 }
 

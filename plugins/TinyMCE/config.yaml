@@ -27,8 +27,6 @@ callbacks:
             my $cfg = MT->config;
             $cfg->PluginSwitch( 'TinyMCE=0', 1 );
             $cfg->PluginSwitch( 'FormattedTextForTinyMCE=0', 1 );
-            my $schema_ver = $cfg->PluginSchemaVersion || {};
-            $schema_ver->{tinymce} = 1;
-            $cfg->PluginSchemaVersion( $schema_ver );
+            $cfg->PluginSchemaVersion('tinymce=1', 1);
             $cfg->save_config;
         }

@@ -2,11 +2,30 @@ package MT::Test::AnyEventSMTPServer;
 
 use strict;
 use warnings;
-use AnyEvent::SMTP::Server;
 use Test::More;
 use Test::TCP;
 use Test::More;
 use MIME::Head;
+use Path::Tiny;
+use IO::String;
+
+BEGIN {
+    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+    eval { require AnyEvent::SMTP::Server; 1 }
+        or plan skip_all => "requires AnyEvent::SMTP::Server";
+}
+
+sub smtp_config {
+    my ($class, %env) = @_;
+    return (
+        MailTransfer      => 'smtp',
+        SMTPServer        => 'localhost',
+        SMTPAuth          => 0,
+        SMTPSSLVerifyNone => 1,
+        SMTPOptions       => {Debug => $ENV{TEST_VERBOSE} ? 1 : 0},
+        %env,
+    );
+}
 
 sub new {
     my ( $class, %args ) = @_;
@@ -26,6 +45,17 @@ sub new {
             AnyEvent->condvar->recv;
         }
     );
+
+    my $server_port = $server->port;
+    my $config_file = path($ENV{MT_CONFIG});
+    my $config = $config_file->slurp;
+    unless ($config =~ s/SMTPPort \d+/SMTPPort $server_port/) {
+        $config .= "\nSMTPPort $server_port\n";
+    }
+    $config_file->spew($config);
+
+    MT->config(SMTPPort => $server_port);
+
     bless { server => $server }, $class;
 }
 
@@ -54,8 +84,20 @@ sub _data_validate {
         }
     }
     fail "found perl references" if $data =~ /(?:SCALAR|ARRAY|HASH|CODE)\(/s;
+    my $file = _last_mail_file();
+    if (open my $fh, '>', $file) {
+        print $fh $data;
+        close $fh;
+    }
     note $data;
+    return 1;
 }
+
+sub last_sent_mail {
+    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+}
+
+sub _last_mail_file { "$ENV{MT_TEST_ROOT}/.mail" }
 
 sub stop {
     my $self = shift;

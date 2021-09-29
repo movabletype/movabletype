@@ -272,7 +272,7 @@ function init() {
         var target = jQuery(this).val();
         var search = jQuery('.search-input');
         if(target == 'both' && search.val() == ''){
-            args += '&_type=author';
+            args += '&_type=user';
             panel.searchField.value = "";
             jQuery(panel.searchReset).hide();
             history.pushState(args, '', CMSScriptURI + '?' + args);
@@ -292,7 +292,7 @@ function init() {
             args += '&search=' + escape(search.val());
         }
         if(target == 'both'){
-            args += '&_type=author';
+            args += '&_type=user';
         } else if(target == 'author'){
             args += '&_type=author&link_filter=1';
         }else if(target == 'group'){
@@ -311,8 +311,8 @@ function init() {
         args = args.replace(/&search=\w+/, '');
         history.pushState(args, '', CMSScriptURI + '?' + args);
     });
-    if ( jQuery('#modal-search').length ) {
-      jQuery('#modal-search').prepend(jQuery('.select_assoc_type'));
+    if ( jQuery('#modal-search-author').length ) {
+      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
       jQuery('.select_assoc_type').trigger('change');
     }
     else {

@@ -523,6 +523,7 @@ use vars qw( @ISA %Lexicon );
 	'Warnings and Log Messages' => '警告とメッセージ',
 	'You did not have permission for this action.' => '権限がありません。',
 	'[_1] contains an invalid character: [_2]' => '[_1]には不正な文字が含まれています: [_2]',
+	q{Failed login attempt by anonymous user} => q{無名のユーザーがサインインしようとしました。},
 	q{Failed login attempt by deleted user '[_1]'} => q{削除済みのユーザー「[_1]」がサインインしようとしました。},
 	q{Failed login attempt by disabled user '[_1]'} => q{無効なユーザー [_1] がサインインしようとしました。},
 	q{Failed login attempt by locked-out user '[_1]'} => q{ロックされたユーザー「[_1]」がサインインしようとしました。},
@@ -1220,6 +1221,7 @@ use vars qw( @ISA %Lexicon );
 	q{index template '[_1]'} => q{インデックステンプレート「[_1]」},
 
 ## lib/MT/CMS/Category.pm
+	'category_set' => 'カテゴリセット',
 	'Category Set' => 'カテゴリセット',
 	'Create Category Set' => 'カテゴリセットの作成',
 	'Create [_1]' => '新しい[_1]',
@@ -1290,11 +1292,12 @@ use vars qw( @ISA %Lexicon );
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be dates in the future.} => q{公開終了日は、未来の日時を指定してください。},
 	q{Invalid date '[_1]'; 'Unpublished on' dates should be later than the corresponding 'Published on' date.} => q{公開終了日は、公開日より未来の日時を指定してください。},
 	q{New [_1] '[_4]' (ID:[_2]) added by user '[_3]'} => q{[_3]が新しい[_1] '[_4]' (ID[_2])を追加しました},
-	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_1]' (ID:[_2])を削除しました},
+	q{[_1] '[_4]' (ID:[_2]) deleted by '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を削除しました},
 	q{[_1] '[_4]' (ID:[_2]) edited by user '[_3]'} => q{[_3]が[_1] '[_4]' (ID:[_2])を変更しました},
 	q{[_1] '[_6]' (ID:[_2]) edited and its status changed from [_3] to [_4] by user '[_5]'} => q{[_5]が[_1] '[_6]' (ID:[_2]) の公開状態を[_3]から[_4]に変更しました},
 
 ## lib/MT/CMS/ContentType.pm
+	'content_type' => 'コンテンツタイプ',
 	'Cannot load content field data (ID: [_1])' => 'コンテンツフィールド (ID: [_1]) をロードできません',
 	'Cannot load content type #[_1]' => 'コンテンツタイプ (ID: [_1]) をロードできません',
 	'Content Type Boilerplates' => 'コンテンツタイプのひな形',
@@ -1581,7 +1584,7 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout interval' => '同一IPアドレスからの試行間隔',
 	'IP address lockout limit' => '同一IPアドレスからの試行回数',
 	'Image quality(JPEG) is [_1]' => 'JPEG 画像の品質は [_1] です',
-	'Image quality(PNG) is [_1]' => 'PNG 画像の品質は [_1] です',
+	'Image quality(PNG) is [_1]' => 'PNG 画像の圧縮レベルは [_1] です',
 	'Importing a file failed: ' => 'ファイルからインポートできませんでした。',
 	'Invalid SitePath.  The SitePath should be valid and absolute, not relative' => 'サイトパス制限には正しい絶対パスを指定してください。',
 	'Invalid author_id' => 'ユーザーのIDが不正です。',
@@ -2055,6 +2058,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (ID:[_1])は不正です。',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{'[_2]'がログ (ID:[_1])を削除しました。},
+	'log' => 'ログ',
 
 ## lib/MT/DataAPI/Callback/Tag.pm
 	'Invalid tag name: [_1]' => '不正なタグ名です: [_1]',
@@ -2067,8 +2071,8 @@ use vars qw( @ISA %Lexicon );
 	'Invalid textFormat: [_1]' => '不正なテキストフォーマットです: [_1]',
 
 ## lib/MT/DataAPI/Endpoint/Auth.pm
-	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]]' (ID: [_2])がサインインを試みましたが失敗しました。},
-	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]]' (ID: [_2])が Data API でサインインしました。},
+	q{Failed login attempt by user who does not have sign in permission via data api. '[_1]' (ID:[_2])} => q{Data API でのサインイン権限を有しないユーザー '[_1]' (ID: [_2])がサインインを試みましたが失敗しました。},
+	q{User '[_1]' (ID:[_2]) logged in successfully via data api.} => q{ユーザー '[_1]' (ID: [_2])が Data API でサインインしました。},
 
 ## lib/MT/DataAPI/Endpoint/Common.pm
 	'Invalid dateFrom parameter: [_1]' => 'dateFrom パラメータに無効な値が指定されました: [_1]',
@@ -2912,6 +2916,9 @@ use vars qw( @ISA %Lexicon );
 	'Rebuilding object categories...' => 'カテゴリの関連付けを再構築しています...',
 	'Rebuilding object tags...' => 'タグの関連付けを再構築しています...',
 	'Remove SQLSetNames...' => 'SQLSetNames をデータベースから削除しています...',
+	'Reorder DEBUG level' => 'DEBUGレベルの値を変更しています',
+	'Reorder SECURITY level' => 'SECURITYレベルの値を変更しています',
+	'Reorder WARNING level' => 'WARNINGレベルの値を変更しています',
 	'Reset default dashboard widgets...' => 'ダッシュボードウィジェットを初期化しています...',
 	'Truncating values of value_varchar column...' => 'コンテンツデータの varchar カラムのインデックスを再構築しています...',
 	'add administer_site permission for Blog Administrator...' => 'ブログ管理者にサイトの管理権限を付与しています...',
@@ -2982,6 +2989,7 @@ use vars qw( @ISA %Lexicon );
 	'Blog, BlogID or Template param must be specified.' => 'Blog, BlogID, またはTemplateのいずれかを指定してください。',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => '同名のファイルがすでに存在します。ファイル名またはアーカイブパスを変更してください([_1])。',
 	q{Template '[_1]' does not have an Output File.} => q{テンプレート'[_1]'には出力ファイルの設定がありません。},
+	'unpublish' => '公開終了',
 
 ## lib/MT/Website.pm
 	'Child Site Count' => '子サイト数',
@@ -4038,10 +4046,10 @@ use vars qw( @ISA %Lexicon );
 	'IP address lockout policy' => 'IPアドレスのロック方針',
 	'Image Quality Settings' => '画像品質の設定',
 	'Image quality of uploaded JPEG image and its thumbnail. This value can be set an integer value between 0 and 100. Default value is 85.' => 'アップロードされた JPEG 画像や、生成されるサムネイル画像の品質を 0 から 100 の数値で指定します。初期値は 85 です。',
-	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の品質を 0 から 9 の数値で設定します。初期値は 7 です。',
+	'Image quality of uploaded PNG image and its thumbnail. This value can be set an integer value between 0 and 9. Default value is 7.' => 'アップロードされた PNG 画像や、生成されるサムネイル画像の圧縮レベルを 0 から 9 の数値で設定します。初期値は 7 です。',
 	'Image quality(JPEG)' => 'JPEG 画像の品質',
-	'Image quality(PNG)' => 'PNG 画像の品質',
-	'Imager does not support ImageQualityPng.' => 'イメージドライバーとして Imager を利用する場合、PNG 画像の品質を設定できません。',
+	'Image quality(PNG)' => 'PNG 画像の圧縮レベル',
+	'Imager does not support ImageQualityPng.' => 'イメージドライバーとして Imager を利用する場合、PNG 画像の圧縮レベルを設定できません。',
 	'Lockout Settings' => 'アカウントロックの設定',
 	'Log Path' => 'ログパス',
 	'Logging Threshold' => 'ログ閾値',
