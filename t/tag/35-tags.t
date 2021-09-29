@@ -5589,3 +5589,22 @@ Test <a href=/foo/foo.php>FOO:FOO</a>bBar String
 --- expected
 Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 
+=== test 882
+--- template
+<mt:Calendar><mt:CalendarIfToday><strong></mt:CalendarIfToday></mt:Calendar>
+--- expected
+<strong>
+
+=== test 883
+--- template
+left <mt:Include file="PATH"> right
+--- expected_error
+File inclusion is disabled by "AllowFileInclude" config directive.
+--- expected_php_error
+left File include is disabled by "AllowFileInclude" config directive. right
+
+=== test 884
+--- template
+<MTPages no_folder="1"><MTPageID>;</MTPages>
+--- expected
+20;
