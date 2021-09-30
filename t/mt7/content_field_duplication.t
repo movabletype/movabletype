@@ -55,6 +55,57 @@ subtest 'duplication in the same content type setting' => sub {
     like $app->message_text => qr/(Field 'field3' must be unique in this content type.|Saving content field failed: name "field3" is already used.)/, "found duplication";
 };
 
+subtest 'duplication in the same content type setting, with different cases' => sub {
+    my $app = MT::Test::App->new;
+    $app->login($admin);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'content_type',
+        blog_id     => $site->id,
+        return_args => '__mode=view&blog_id=1&_type=content_type',
+        name        => 'ct2',
+        data        => JSON::encode_json([
+            { type => 'single_line_text', options => { label => 'field3', description => '' }, order => 1 },
+            { type => 'single_line_text', options => { label => 'Field3', description => '' }, order => 2 },
+        ]),
+    });
+    like $app->message_text => qr/(Field 'Field3' and 'field3' must not coexist within the same content type.|Saving content field failed: name "field3" is already used.)/i, "found duplication";
+};
+
+subtest 'duplication in the same content type setting, with different cases (2)' => sub {
+    my $app = MT::Test::App->new;
+    $app->login($admin);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'content_type',
+        blog_id     => $site->id,
+        return_args => '__mode=view&blog_id=1&_type=content_type',
+        name        => 'ct2',
+        data        => JSON::encode_json([
+            { type => 'single_line_text', options => { label => 'FieldA', description => '' }, order => 1 },
+            { type => 'single_line_text', options => { label => 'FIELDA', description => '' }, order => 2 },
+        ]),
+    });
+    like $app->message_text => qr/Field 'FieldA' and 'FIELDA' must not coexist within the same content type./, "found duplication";
+};
+
+subtest 'duplication in the same content type setting, with different cases' => sub {
+    my $app = MT::Test::App->new;
+    $app->login($admin);
+    $app->post_ok({
+        __mode      => 'save',
+        _type       => 'content_type',
+        blog_id     => $site->id,
+        return_args => '__mode=view&blog_id=1&_type=content_type',
+        name        => 'ct2',
+        data        => JSON::encode_json([
+            { type => 'single_line_text', options => { label => 'FieldA', description => '' }, order => 1 },
+            { type => 'single_line_text', options => { label => 'fielda', description => '' }, order => 2 },
+        ]),
+    });
+    like $app->message_text => qr/Field 'FieldA' and 'fielda' must not coexist within the same content type./, "found duplication";
+};
+
 subtest 'duplication with a broken content type field (SUPPORT-18)' => sub {
     my $field3 = MT->model('content_field')->load({ name => 'field3' });
     if (!$field3) {
