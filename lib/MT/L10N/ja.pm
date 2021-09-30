@@ -4840,6 +4840,9 @@ _4]'から削除しました。},
 	'Display [_1] in entry/page' => '[_1]を記事/ページに表示',
 	'Insert Options' => '挿入オプション',
 
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => 'ユーザー「[_1]」のパスワードが再設定されました。',
+
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',
 	'Are you sure you wish to continue?' => '続けてもよろしいですか?',

@@ -4862,6 +4862,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Display [_1] in entry/page' => '[_1] im Eintrag/auf der Seite anzeigen',
 	'Insert Options' => 'Einfüge-Optionen',
 
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
+
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'Alle Vorlagen statisch über die Veröffentlichungs-Warteschlange veröffentlichen.',
 	'Are you sure you wish to continue?' => 'Wirklich fortsetzen?',

@@ -4840,6 +4840,9 @@ use vars qw( @ISA %Lexicon );
 	'Display [_1] in entry/page' => 'Weergeven van [_1] in bericht/pagina.',
 	'Insert Options' => 'Invoegopties',
 
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
+
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'Alle sjablonen statisch publiceren via de publicatiewachtrij',
 	'Are you sure you wish to continue?' => 'Bent u zeker dat verder u wenst te gaan?',
