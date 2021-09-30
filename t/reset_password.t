@@ -23,7 +23,7 @@ $admin->email('test@localhost.localdomain');
 $admin->save;
 
 # Run test.
-my ($app, $out, $uri);
+my ($out, $uri);
 
 subtest 'Send recovery email.' => sub {
     my $mail_sent;
@@ -33,7 +33,7 @@ subtest 'Send recovery email.' => sub {
         $mail_sent = $body;
     };
 
-    $app = _run_app(
+    my $app = _run_app(
         'MT::App::CMS',
         {
             __mode => 'recover',
@@ -49,8 +49,8 @@ subtest 'Send recovery email.' => sub {
     $uri = URI->new($url);
 };
 
-subtest 'Recovery failure,' => sub {
-    $app = _run_app(
+subtest 'Recovery failure.' => sub {
+    my $app = _run_app(
         'MT::App::CMS',
         {
             __request_method => 'POST',
@@ -85,9 +85,7 @@ subtest 'Recovery failure,' => sub {
     );
     $out = delete $app->{__test_output};
     like $out => qr/Password should be longer than 8 characters/, 'short password error';
-};
 
-subtest 'Successful recovery,' => sub {
     my ($s, $m, $h, $d, $mo, $y) = gmtime(time);
     my $mod_time = sprintf(
         "%04d%02d%02d%02d%02d%02d",
@@ -109,7 +107,7 @@ subtest 'Successful recovery,' => sub {
     like $out => qr!Location: /cgi-bin/mt.cgi!, 'now redirect to dashboard';
 
     $admin = MT->model('author')->load(1);
-    ok($mod_time != $admin->modified_on, 'modified_on is updated.');
+    ok($mod_time ne $admin->modified_on, 'modified_on is updated.');
 };
 
 done_testing;
