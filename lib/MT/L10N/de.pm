@@ -4323,6 +4323,7 @@ itte versuchen Sie es später erneut.',
 	'Confirm New Password' => 'Neues Passwort bestätigen',
 	'Enter the new password.' => 'Neues Passwort eingeben',
 	'New Password' => 'Neues Passwort',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'Alle Vorlagen im Hintergrund statisch veröffentlichen.',
