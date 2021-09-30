@@ -78,6 +78,7 @@ sub list_props {
                 );
                 my %is_userpic = map { $_->object_id => 1 } @userpics;
                 my @rows;
+                MT::Meta::Proxy->bulk_load_meta_objects($objs);
                 for my $obj (@$objs) {
                     my $id = $obj->id;
                     my $label
@@ -120,6 +121,7 @@ sub list_props {
                         if (   $obj->has_thumbnail
                             && $obj->can_create_thumbnail )
                         {
+                            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
                             my ( $orig_width, $orig_height )
                                 = ( $obj->image_width, $obj->image_height );
                             my ( $thumbnail_url, $thumbnail_width,
@@ -130,7 +132,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Width  => $thumb_size,
                                     Square => 1,
@@ -141,7 +143,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Width => $thumb_size,
                                     Ts    => 1
                                     );
@@ -150,7 +152,7 @@ sub list_props {
                                 (   $thumbnail_url, $thumbnail_width,
                                     $thumbnail_height
                                     )
-                                    = $obj->thumbnail_url(
+                                    = $obj->$thumbnail_method(
                                     Height => $thumb_size,
                                     Ts     => 1
                                     );
@@ -865,7 +867,7 @@ sub remove_cached_files {
             if ($fmgr) {
                 my $basename = $asset->file_name;
                 my $ext      = '.' . $asset->file_ext;
-                $basename =~ s/$ext$//;
+                $basename =~ s/\Q$ext$//;
                 my $cache_glob = File::Spec->catfile( $cache_dir,
                     $basename . '-thumb-*-' . $asset->id . $ext );
                 my @files = glob($cache_glob);
@@ -952,9 +954,8 @@ sub type_list {
 }
 
 sub metadata {
-    my $asset = shift;
-    return {
-        MT->translate("Tags")        => MT::Tag->join( ',', $asset->tags ),
+    my ($asset, %opts) = @_;
+    my %metadata = (
         MT->translate("Description") => $asset->description,
         MT->translate("Name")        => $asset->label,
         url                          => $asset->url,
@@ -966,7 +967,11 @@ sub metadata {
         mime_type                    => $asset->mime_type,
 
         # duration => $asset->duration,
-    };
+    );
+    if (!$opts{no_tags}) {
+        $metadata{ MT->translate("Tags") } = MT::Tag->join( ',', $asset->tags );
+    }
+    return \%metadata;
 }
 
 sub has_thumbnail {

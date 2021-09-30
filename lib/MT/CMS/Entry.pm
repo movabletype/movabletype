@@ -15,6 +15,45 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        _type                     => [qw/OBJTYPE/],
+        allow_comments            => [qw/MAYBE_STRING/],
+        allow_pings               => [qw/MAYBE_STRING/],
+        asset_id                  => [qw/ID/],
+        authored_on_date          => [qw/MAYBE_STRING/],
+        authored_on_day           => [qw/MAYBE_STRING/],
+        authored_on_hour          => [qw/MAYBE_STRING/],
+        authored_on_minute        => [qw/MAYBE_STRING/],
+        authored_on_month         => [qw/MAYBE_STRING/],
+        authored_on_second        => [qw/MAYBE_STRING/],
+        authored_on_time          => [qw/MAYBE_STRING/],
+        authored_on_year          => [qw/MAYBE_STRING/],
+        basename                  => [qw/MAYBE_STRING/],
+        category_id               => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        convert_breaks            => [qw/MAYBE_STRING/],
+        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
+        dirty                     => [qw/MAYBE_STRING/],
+        id                        => [qw/ID/],
+        include_asset_ids         => [qw/IDS/],
+        mobile_view               => [qw/MAYBE_STRING/],
+        no_snapshot               => [qw/MAYBE_STRING/],
+        ping_errors               => [qw/MAYBE_STRING/],
+        r                         => [qw/MAYBE_STRING/],
+        reedit                    => [qw/MAYBE_STRING/],
+        save_revision             => [qw/MAYBE_STRING/],
+        status                    => [qw/MAYBE_STRING/],
+        tags                      => [qw/MAYBE_STRING/],
+        unpublished_on_date       => [qw/MAYBE_STRING/],
+        unpublished_on_day        => [qw/MAYBE_STRING/],
+        unpublished_on_hour       => [qw/MAYBE_STRING/],
+        unpublished_on_minute     => [qw/MAYBE_STRING/],
+        unpublished_on_month      => [qw/MAYBE_STRING/],
+        unpublished_on_second     => [qw/MAYBE_STRING/],
+        unpublished_on_time       => [qw/MAYBE_STRING/],
+        unpublished_on_year       => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $type  = $app->param('_type');
     my $perms = $app->permissions
         or return $app->permission_denied();
@@ -358,12 +397,12 @@ sub edit {
                 if ($asset) {
                     my $asset_1;
                     if ( $asset->class eq 'image' ) {
+                        my ($thumb_url) = $asset->thumbnail_url( Width => 100 );
                         $asset_1 = {
                             asset_id   => $asset->id,
                             asset_name => $asset->file_name,
                             asset_type => $asset->class,
-                            asset_thumb =>
-                                $asset->thumbnail_url( Width => 100 ),
+                            asset_thumb => $thumb_url,
                             asset_blog_id => $asset->blog_id,
                         };
                     }
@@ -405,10 +444,11 @@ sub edit {
             foreach my $asset (@assets) {
                 my $asset_1;
                 if ( $asset->class eq 'image' ) {
+                    my ($thumb_url) = $asset->thumbnail_url( Width => 100 );
                     $asset_1 = {
                         asset_id    => $asset->id,
                         asset_name  => $asset->file_name,
-                        asset_thumb => $asset->thumbnail_url( Width => 100 ),
+                        asset_thumb => $thumb_url,
                         asset_type  => $asset->class,
                         asset_blog_id => $asset->blog_id,
                     };
@@ -1172,6 +1212,43 @@ sub cfg_entry {
 sub save {
     my $app = shift;
     $app->validate_magic or return;
+
+    $app->validate_param({
+        _autosave                 => [qw/MAYBE_STRING/],
+        _type                     => [qw/OBJTYPE/],
+        allow_comments            => [qw/MAYBE_STRING/],
+        allow_pings               => [qw/MAYBE_STRING/],
+        authored_on_date          => [qw/MAYBE_STRING/],
+        authored_on_day           => [qw/MAYBE_STRING/],
+        authored_on_hour          => [qw/MAYBE_STRING/],
+        authored_on_minute        => [qw/MAYBE_STRING/],
+        authored_on_month         => [qw/MAYBE_STRING/],
+        authored_on_second        => [qw/MAYBE_STRING/],
+        authored_on_time          => [qw/MAYBE_STRING/],
+        authored_on_year          => [qw/MAYBE_STRING/],
+        basename                  => [qw/MAYBE_STRING/],
+        basename_manual           => [qw/MAYBE_STRING/],
+        blog_id                   => [qw/ID/],
+        category_ids              => [qw/MAYBE_IDS/],    # may contain -1?
+        class                     => [qw/MAYBE_STRING/],
+        convert_breaks_for_mobile => [qw/MAYBE_STRING/],
+        id                        => [qw/ID/],
+        include_asset_ids         => [qw/IDS/],
+        is_power_edit             => [qw/MAYBE_STRING/],
+        mobile_view               => [qw/MAYBE_STRING/],
+        return_args               => [qw/MAYBE_STRING/],
+        scheduled                 => [qw/MAYBE_STRING/],
+        status                    => [qw/MAYBE_STRING/],
+        unpublished_on_date       => [qw/MAYBE_STRING/],
+        unpublished_on_day        => [qw/MAYBE_STRING/],
+        unpublished_on_hour       => [qw/MAYBE_STRING/],
+        unpublished_on_minute     => [qw/MAYBE_STRING/],
+        unpublished_on_month      => [qw/MAYBE_STRING/],
+        unpublished_on_second     => [qw/MAYBE_STRING/],
+        unpublished_on_time       => [qw/MAYBE_STRING/],
+        unpublished_on_year       => [qw/MAYBE_STRING/],
+        week_number               => [qw/MAYBE_STRING/],
+    }) or return;
 
     $app->remove_preview_file;
 
@@ -1997,6 +2074,11 @@ PERMCHECK: {
 
 sub pinged_urls {
     my $app   = shift;
+
+    $app->validate_param({
+        entry_id => [qw/ID/],
+    }) or return;
+
     my $perms = $app->permissions
         or return $app->error( $app->translate("No permissions") );
     my %param;
@@ -2093,6 +2175,11 @@ sub save_entry_prefs {
 
 sub publish_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::RELEASE(),
         $app->multi_param('id') );
@@ -2100,6 +2187,11 @@ sub publish_entries {
 
 sub draft_entries {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID MULTI/],
+    }) or return;
+
     require MT::Entry;
     update_entry_status( $app, MT::Entry::HOLD(), $app->multi_param('id') );
 }
@@ -2107,6 +2199,14 @@ sub draft_entries {
 sub open_batch_editor {
     my $app = shift;
     my ($param) = @_;
+
+    $app->validate_param({
+        _type   => [qw/OBJTYPE/],
+        blog_id => [qw/ID/],
+        id      => [qw/ID MULTI/],
+        saved   => [qw/MAYBE_STRING/],
+    }) or return;
+
     $param ||= {};
     my @ids = $app->multi_param('id')
         or return "Invalid request.";
@@ -2783,6 +2883,14 @@ sub _finish_rebuild {
 sub delete {
     my $app = shift;
     $app->validate_magic() or return;
+
+    $app->validate_param({
+        all_selected  => [qw/MAYBE_STRING/],
+        blog_id       => [qw/ID/],
+        id            => [qw/ID MULTI/],
+        is_power_edit => [qw/MAYBE_STRING/],
+    }) or return;
+
     require MT::Blog;
 
     my $blog;

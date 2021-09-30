@@ -12,6 +12,13 @@ sub edit {
     my $cb = shift;
     my ( $app, $id, $obj, $param ) = @_;
 
+    $app->validate_param({
+        _type => [qw/OBJTYPE/],
+        id    => [qw/ID/],
+        tab   => [qw/MAYBE_STRING/],
+        type  => [qw/OBJTYPE/],
+    }) or return;
+
     my $blog = $app->blog;
 
     if ($id) {
@@ -174,6 +181,16 @@ sub bulk_update {
     my $app = shift;
     $app->validate_magic or return;
 
+    $app->validate_param({
+        blog_id         => [qw/ID/],
+        checksum        => [qw/MAYBE_STRING/],
+        datasource      => [qw/OBJTYPE/],
+        is_category_set => [qw/MAYBE_STRING/],
+        objects         => [qw/MAYBE_STRING/],
+        set_id          => [qw/ID/],
+        set_name        => [qw/MAYBE_STRING/],
+    }) or return;
+
     my $is_category_set = $app->param('is_category_set');
     my $set_id          = $app->param('set_id');
     my $model           = $app->param('datasource') || 'category';
@@ -229,7 +246,7 @@ sub bulk_update {
             $app->log({
                 message => $app->translate("Category Set '[_1]' (ID:[_2]) edited by '[_3]'", $set->name, $set->id, $app->user->name),
                 level    => MT::Log::NOTICE(),
-                class    => 'category_set',
+                class    => 'category_set',    ## trans('category_set')
                 category => 'edit',
             });
         }
@@ -471,6 +488,16 @@ sub js_add_category {
     unless ( $app->validate_magic ) {
         return $app->json_error( $app->translate("Invalid request.") );
     }
+
+    $app->validate_param({
+        _type           => [qw/OBJTYPE/],
+        basename        => [qw/MAYBE_STRING/],
+        blog_id         => [qw/ID/],
+        category_set_id => [qw/ID/],
+        label           => [qw/MAYBE_STRING/],
+        parent          => [qw/MAYBE_STRING/],
+    }) or return $app->json_error($app->errstr);
+
     my $user            = $app->user;
     my $blog_id         = $app->param('blog_id');
     my $type            = $app->param('_type') || 'category';
@@ -902,6 +929,7 @@ sub template_param_list {
 
 sub pre_load_filtered_list {
     my ( $cb, $app, $filter, $opts, $cols ) = @_;
+
     delete $opts->{limit};
     delete $opts->{offset};
     delete $opts->{sort_order};

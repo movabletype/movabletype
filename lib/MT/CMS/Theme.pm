@@ -612,7 +612,7 @@ sub do_export {
         my $arc = MT::Util::Archive->new( $arctype, $arcfile )
             or die "Cannot load archiver : " . MT::Util::Archive->errstr;
         $arc->add_tree($tmproot);
-        $arc->close;
+        $arc->close or return $app->error($arc->errstr);
         my $newfilename = $theme_id;
         $newfilename .= $theme_version if $theme_version;
         $newfilename .= '.' . $arc_info->{extension};

@@ -1452,6 +1452,11 @@ sub rebuild_confirm {
 
 sub save_favorite_blogs {
     my $app = shift;
+
+    $app->validate_param({
+        id => [qw/ID/],
+    }) or return;
+
     $app->validate_magic() or return;
     my $fav = $app->param('id');
     return unless int($fav) > 0;
@@ -3019,6 +3024,29 @@ sub clone {
     my $app     = shift;
     my ($param) = {};
     my $user    = $app->user;
+
+    $app->validate_param({
+        archive_path          => [qw/MAYBE_STRING/],
+        archive_path_absolute => [qw/MAYBE_STRING/],
+        archive_url           => [qw/MAYBE_STRING/],
+        archive_url_path      => [qw/MAYBE_STRING/],
+        archive_url_subdomain => [qw/MAYBE_STRING/],
+        blog_id               => [qw/ID/],
+        clone                 => [qw/MAYBE_STRING/],
+        enable_archive_paths  => [qw/MAYBE_STRING/],
+        id                    => [qw/ID MULTI/],
+        new_blog_name         => [qw/MAYBE_STRING/],
+        site_path             => [qw/MAYBE_STRING/],
+        site_path_absolute    => [qw/MAYBE_STRING/],
+        site_url              => [qw/MAYBE_STRING/],
+        site_url_path         => [qw/MAYBE_STRING/],
+        site_url_subdomain    => [qw/MAYBE_STRING/],
+        use_absolute          => [qw/MAYBE_STRING/],
+        use_absolute_archive  => [qw/MAYBE_STRING/],
+        use_archive_subdomain => [qw/MAYBE_STRING/],
+        use_subdomain         => [qw/MAYBE_STRING/],
+        verify                => [qw/MAYBE_STRING/],
+    }) or return;
 
     $app->validate_magic() or return;
 
