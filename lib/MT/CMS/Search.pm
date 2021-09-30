@@ -1313,7 +1313,7 @@ sub do_search_replace {
             my $match = 0;
 
             # For cms_pre_save callback and revisioning
-            my $orig_obj = $obj->clone();
+            my $orig_obj;
             unless ($show_all) {
                 for my $col (@cols) {
                     next if $do_replace && !$replace_cols{$col};
@@ -1336,6 +1336,7 @@ sub do_search_replace {
                     if ($do_replace) {
                         my $replaced;
                         my $replace_handler;
+                        $orig_obj ||= $obj->clone();
                         if ( my $replace_handler
                             = $field_registry->{replace_handler} )
                         {

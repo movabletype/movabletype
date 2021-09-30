@@ -248,33 +248,33 @@ sub suite {
 
         # apply_theme_to_site - normal tests
         {    # Website.
-            path  => '/v2/sites/2/themes/pico/apply',
+            path  => '/v2/sites/2/themes/mont-blanc/apply',
             setup => sub {
                 my $site = MT->model('blog')->load(2);
-                die if $site->theme_id eq 'pico';
+                die if $site->theme_id eq 'mont-blanc';
             },
             method   => 'POST',
             complete => sub {
                 my $site = MT->model('blog')->load(2);
-                is( $site->theme_id, 'pico', 'Changed into pico.' );
+                is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
             },
         },
         {    # Blog.
-            path  => '/v2/sites/1/themes/pico/apply',
+            path  => '/v2/sites/1/themes/mont-blanc/apply',
             setup => sub {
                 my $site = MT->model('blog')->load(1);
-                die if $site->theme_id eq 'pico';
+                die if $site->theme_id eq 'mont-blanc';
             },
             method   => 'POST',
             complete => sub {
                 my $site = MT->model('blog')->load(1);
-                is( $site->theme_id, 'pico', 'Changed into pico.' );
+                is( $site->theme_id, 'mont-blanc', 'Changed into mont-blanc.' );
             },
         },
 
         # apply_theme_to_site - irregular tests
         {    # system scope.
-            path   => '/v2/sites/0/themes/pico/apply',
+            path   => '/v2/sites/0/themes/mont-blanc/apply',
             method => 'POST',
             code   => 404,
             result => sub {
@@ -286,7 +286,7 @@ sub suite {
             },
         },
         {    # Non-existent site.
-            path   => '/v2/sites/10/themes/pico/apply',
+            path   => '/v2/sites/10/themes/mont-blanc/apply',
             method => 'POST',
             code   => 404,
             result => sub {
@@ -334,14 +334,14 @@ sub suite {
             },
         },
         {    # Not logged in.
-            path      => '/v2/sites/2/themes/pico/apply',
+            path      => '/v2/sites/2/themes/mont-blanc/apply',
             method    => 'POST',
             author_id => 0,
             code      => 401,
             error     => 'Unauthorized',
         },
         {    # No permissions.
-            path         => '/v2/sites/2/themes/pico/apply',
+            path         => '/v2/sites/2/themes/mont-blanc/apply',
             method       => 'POST',
             restrictions => {
                 0 => [qw/ apply_theme /],
