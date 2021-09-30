@@ -69,7 +69,7 @@ sub post_delete {
                 $app->user->name
             ),
             level    => MT::Log::NOTICE(),
-            class    => 'log',
+            class    => 'log',    ## trans('log')
             category => 'delete'
         }
     );
