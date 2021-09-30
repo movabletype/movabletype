@@ -3789,9 +3789,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.} => q{[_1] est optionnel, c'est l'une des librairies graphiques permettant de créer des vignettes des images téléchargées.},
 	q{[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation} => q{[_1] est optionnel. C'est l'un des modules requis pour restaurer une sauvegarde créée par une opération de sauvegarde.},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	q{You have unsaved changes to this page that will be lost.} => q{Certains de vos changements dans cette page n'ont pas été enregistrés, ils seront perdus.},
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'URL incorrecte',
 	'Invalid date format' => 'Format de date incorrect',
