@@ -550,8 +550,14 @@ sub listing {
             ? $iter_method
             : ( $class->$iter_method( $terms, $args )
                 or return $app->error( $class->errstr ) );
-        my @data;
+        my @objs;
         while ( my $obj = $iter->() ) {
+            push @objs, $obj;
+            last if ( scalar @objs == $limit ) && ( !$no_limit );
+        }
+
+        my @data;
+        for my $obj (@objs) {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
@@ -562,7 +568,6 @@ sub listing {
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
-            last if ( scalar @data == $limit ) && ( !$no_limit );
         }
 
         $param->{object_loop} = \@data;

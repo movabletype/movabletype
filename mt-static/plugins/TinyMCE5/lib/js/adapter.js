@@ -38,7 +38,6 @@ $.extend(MT.Editor.TinyMCE, MT.Editor, {
         language: $('html').attr('lang'),
         
         menubar: false,
-        branding: false,
         icons: 'mt',
         icons_url: StaticURI + 'plugins/TinyMCE5/lib/js/tinymce/icons.js',
 
