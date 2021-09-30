@@ -3788,9 +3788,6 @@ use vars qw( @ISA %Lexicon );
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{El script mt-check.cgi le ofrece información sobre la configuración del sistema y determina si posee todos los componentes necesarios para ejecutar Movable Type.},
 	q{You're ready to go!} => q{¡Ya está preparado!},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	'You have unsaved changes to this page that will be lost.' => 'Tiene cambios no guardados en esta página que se perderán.',
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'URL no válida',
 	'Invalid date format' => 'Formato de fecha no válido',

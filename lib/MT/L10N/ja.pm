@@ -3775,9 +3775,6 @@ _4]'から削除しました。},
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{mt-check.cgiはシステムの構成を確認し、Movable Typeを実行するために必要なコンポーネントがそろっていることを確認するためのスクリプトです。},
 	q{You're ready to go!} => q{Movable Typeを利用できます。},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	'You have unsaved changes to this page that will be lost.' => '保存されていない変更は失われます。',
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'URLのフォーマットが正しくありません',
 	'Invalid date format' => '日付の入力フォーマットが正しくありません',

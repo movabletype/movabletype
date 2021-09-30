@@ -3798,9 +3798,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Das Skript mt-check.cgi führt eine Überprüfung Ihrer Systemkonfiguration durch und stellt fest, ob alle zum Betrieb von Movable Type erforderlichen Komponenten vorhanden sind.},
 	q{You're ready to go!} => q{Sie können sofort anfangen!},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	'You have unsaved changes to this page that will be lost.' => 'Es liegen nicht gespeicherte Seitenänderungen vor, die verloren gehen werden.',
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'Ungültige Web-Adresse (URL)',
 	'Invalid date format' => 'Ungültiges Datumsformat',
