@@ -246,7 +246,7 @@ sub bulk_update {
             $app->log({
                 message => $app->translate("Category Set '[_1]' (ID:[_2]) edited by '[_3]'", $set->name, $set->id, $app->user->name),
                 level    => MT::Log::NOTICE(),
-                class    => 'category_set',
+                class    => 'category_set',    ## trans('category_set')
                 category => 'edit',
             });
         }
