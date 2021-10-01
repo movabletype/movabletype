@@ -318,9 +318,17 @@ sub new_password {
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
             $user->password_reset_return_to(undef);
+            $user->modified_by($user->id);
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
+
+            $app->log({
+                message  => $app->translate(q{The password for the user '[_1]' has been recovered.}, $user->name),
+                level    => MT::Log::NOTICE(),
+                class    => 'system',
+                category => 'password-recovery',
+            });
 
             if ( ref $app eq 'MT::App::CMS' && !$redirect ) {
                 $app->login;

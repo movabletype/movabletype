@@ -4331,6 +4331,7 @@ r, inténtelo más tarde.',
 	'Confirm New Password' => 'Confirmar nueva contraseña',
 	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'New Password' => 'Nueva contraseña',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'Todas las plantillas publicadas estáticamente via Cola de publicación',

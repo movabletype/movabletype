@@ -4331,6 +4331,7 @@ réessayer plus tard.',
 	'Confirm New Password' => 'Confirmer le nouveau mot de passe',
 	'Enter the new password.' => 'Saisissez le nouveau mot de passe.',
 	'New Password' => 'Nouveau mot de passe',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Are you sure you wish to continue?' => 'Voulez-vous vraiment continuer ?',

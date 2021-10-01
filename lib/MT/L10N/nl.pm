@@ -4332,6 +4332,7 @@ ter opnieuw te proberen.',
 	'Confirm New Password' => 'Nieuw wachtwoord bevestigen',
 	'Enter the new password.' => 'Vul het nieuwe wachtwoord in',
 	'New Password' => 'Nieuw wachtwoord',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'Alle sjablonen worden statisch gepubliceerd via de publicatiewachtrij.',

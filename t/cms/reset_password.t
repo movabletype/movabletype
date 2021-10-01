@@ -25,10 +25,13 @@ my $admin = MT::Author->load(1);
 $admin->email('test@localhost.localdomain');
 $admin->save;
 
+# Run test.
+my $uri;
 my $server = MT::Test::AnyEventSMTPServer->new;
 
-{
+subtest 'Send recovery email.' => sub {
     my $app = MT::Test::App->new('MT::App::CMS');
+
     $app->post_ok({
         __mode => 'recover',
         email  => $admin->email,
@@ -38,7 +41,11 @@ my $server = MT::Test::AnyEventSMTPServer->new;
     my $mail_sent = $server->last_sent_mail;
     like $mail_sent => qr/A request was made to change your Movable Type password./, 'link to reset';
     my ($url) = $mail_sent =~ m!(/cgi-bin/mt.cgi?\S+)!;
-    my $uri = URI->new($url);
+    $uri = URI->new($url);
+};
+
+subtest 'Recover password.' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
 
     $app->post_ok({
         $uri->query_form,
@@ -61,12 +68,23 @@ my $server = MT::Test::AnyEventSMTPServer->new;
     });
     $app->content_like(qr/Password should be longer than 8 characters/, 'short password error');
 
+    my ($s, $m, $h, $d, $mo, $y) = gmtime(time);
+    my $mod_time = sprintf(
+        "%04d%02d%02d%02d%02d%02d",
+        1900 + $y, $mo + 1, $d, $h, $m - 1, $s
+    );
+    $admin->modified_on($mod_time);
+    $admin->save();
+
     $app->post_ok({
         $uri->query_form,
         password       => '12345678',
         password_again => '12345678',
     });
     like $app->header_title => qr/Sign in/, 'now redirect to sign in';
-}
+
+    $admin = MT->model('author')->load(1);
+    ok($mod_time ne $admin->modified_on, 'modified_on is updated.');
+};
 
 done_testing;
