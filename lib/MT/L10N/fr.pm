@@ -5008,6 +5008,9 @@ use vars qw( @ISA %Lexicon );
 	'Display [_1] in entry/page' => 'Afficher [_1] dans la note/page',
 	q{Insert Options} => q{Options d'insertion},
 
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
+
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Are you sure you wish to continue?' => 'Voulez-vous vraiment continuer ?',
 	'Background Publishing' => 'Publication en arrière-plan',

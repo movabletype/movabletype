@@ -5006,6 +5006,9 @@ use vars qw( @ISA %Lexicon );
 	'Display [_1] in entry/page' => 'Mostrar [_1] en la entrada/página',
 	'Insert Options' => 'Configuración de inserción',
 
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
+
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'Todas las plantillas publicadas con la cola de publicación.',
 	'Are you sure you wish to continue?' => '¿Está seguro de que desea continuar?',
