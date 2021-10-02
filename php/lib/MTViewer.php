@@ -984,8 +984,8 @@ EOT;
 
     }
 
-    function function_wrapper($args, &$_smarty_tpl){
-        $ctx =& $_smarty_tpl->smarty;
+    function function_wrapper($args, $_smarty_tpl){
+        $ctx = $_smarty_tpl->smarty;
         $tag = $ctx->this_tag();
 
         $tag = preg_replace('/^mt:?/i', '', strtolower($tag));
