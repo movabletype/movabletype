@@ -32,7 +32,7 @@ class smarty_compiler_defun extends Smarty_Internal_CompileBase {
 
     public function compile($args, Smarty_Internal_TemplateCompilerBase $compiler, $parameter = null) { 
         $attrs = $this->getAttributes($compiler, $args);
-        $func_key = '"' . md5('php-5') . '[[' . md5(uniqid('sucks')) . '";'; 
+        $func_key = '"' . md5('php-5') . '[[' . md5(uniqid()) . '";'; 
         array_push($compiler->_tag_stack, array('defun', $attrs, $args, $func_key)); 
 
         $func_name = _dequote($attrs['name']); 
