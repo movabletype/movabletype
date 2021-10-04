@@ -897,13 +897,21 @@ sub run_callbacks {
         my $app = shift;
         $app->SUPER::init_callbacks(@_);
         return if $callbacks_added;
+
+        my $call_with_current_app = sub {
+            my $method_name = shift;
+            my $current_app = MT->instance;
+            return unless $current_app->isa('MT::App');
+            $current_app->$method_name;
+        };
         MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
         MT->add_callback( 'MT::Config::post_save', 0, $app,
-            sub { $app->reboot } );
-        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+            sub { $call_with_current_app->('reboot') } );
+        MT->add_callback( 'pre_build', 9, $app,
+            sub { $call_with_current_app->('touch_blogs') } );
         MT->add_callback( 'new_user_provisioning', 5, $app,
             \&_cb_user_provisioning );
         $callbacks_added = 1;
