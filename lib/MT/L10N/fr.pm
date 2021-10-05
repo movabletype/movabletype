@@ -1293,8 +1293,11 @@ use vars qw( @ISA %Lexicon );
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'Impossible de charger le gabarit',
+	'Synchronization start notification' => '',
+	'Synchronization success notification' => 'Notification de succès de la synchronisation',
 	q{Cannot find author for id '[_1]'} => q{Impossible de trouver un auteur pour l'id '[_1]'},
 	q{Error sending mail ([_1]); try another MailTransfer setting?} => q{Erreur d'envoi d'e-mail ([_1]). Tentez avec un autre paramètre MailTransfer.},
+	q{Synchronization error notification} => q{Notification d'échec de la synchronisation},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
 	'  tried [_1] times but failed. ([_2]): [_3]' => '',
@@ -1328,14 +1331,21 @@ use vars qw( @ISA %Lexicon );
 	'Destination Name' => 'Nom de destination',
 	'Download Sync Log (CSV)' => 'Télécharger le log de synchronisation (CSV)',
 	'Error' => 'Erreur',
+	'FTP Server' => 'Serveur FTP',
 	'FTP' => 'FTP',
 	'Finish Date' => 'Date de fin',
 	'Finish Time' => 'Horaire de fin',
 	'Message' => 'Message',
+	'Notify To' => '',
 	'Parallel' => 'Parallèle',
+	'Port' => 'Port',
+	'Rsync Additional Options' => 'Options rsync aditionnelles',
+	'Rsync Destination' => 'Répertoire de destination',
 	'Rsync' => 'Rsync',
 	'Scheduled' => 'Planifiée',
+	'Site Path' => 'Chemin du site',
 	'Start Date' => 'Date de démarrage',
+	'Start Directory' => 'Répertoire de départ',
 	'Start Time' => 'Horaire de démarrage',
 	'Success' => 'Succès',
 	'Suspended' => '',
@@ -1356,6 +1366,9 @@ use vars qw( @ISA %Lexicon );
 	'Sync Status' => '', # Translate - New
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	', Error: [_1]' => '',
+	'Date: [_1], Blog: [_2]' => '',
+	'Date: [_1], Website: [_2]' => '',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Impossible de synchroniser ([_1]) avec un serveur externe ([_2]).',
 	'Failed to insert a new job for ([_1])' => '',
 	'Sync setting # [_1] not found.' => 'Paramètre de synchronisation # [_1] introuvable.',
@@ -1369,22 +1382,25 @@ use vars qw( @ISA %Lexicon );
 	q{Synchronization has successfully finished.} => q{La synchronisation s'est correctement terminée.},
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => '[_1] copié',
 	'Deleting sync file list failed "[_1]": [_2]' => 'La suppression de la liste des fichiers à synchroniser a échoué "[_1]" : [_2]',
+	'Immediate sync job for [_1] is registered by [_2]' => '',
 	'Permission denied: [_1]' => 'Autorisation refusée : [_1]',
 	'Save failed: [_1]' => 'Échec de la sauvegarde : [_1]',
 	'Saving sync settings failed: [_1]' => 'La sauvegarde des paramètres de synchronisation a échoué : [_1]',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'La précédente liste des fichiers à synchroniser a été supprimée. [_1] par [_2].',
 	'The sync setting with the same name already exists.' => 'Un paramètre de synchronisation avec le même nom existe déjà.',
+	'[_1] (copy)' => '', # Translate - New
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{Une erreur est survenue lors de la connexion avec le serveur FTP '[_1]' : [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{Une erreur est survenue lors de la tentative de récupération du répertoire courant depuis '[_1]'},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{Une erreur est survenue lors de la tentative de récupération de la liste des répertoires depuis '[_1]'},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{}, # Translate - New
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{}, # Translate - New
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{}, # Translate - New
+	q{Queued items for destination '[_1]' is removed by [_2].} => q{},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{Paramètre de synchronisation '[_1]' (ID : [_2]) supprimé par [_3].},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{Paramètre de synchronisation '[_1]' (ID : [_2]) édité par [_3].},
 	q{Synchronization log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log for website '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log reset by '[_1]'} => q{Log de synchronisation réinitialisé par '[_1]'},
+	q{Synchronization status information for destination '[_1]' is removed by [_2].} => q{},
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Suppression des tâches de synchronisation de contenu...',
@@ -1393,19 +1409,23 @@ use vars qw( @ISA %Lexicon );
 	'@' => '@',
 	'A duplicate destination name exists.' => 'Le nom de destination existe déjà.',
 	'Add destination' => 'Ajouter une destination',
+	'Are you sure you want to clear synchronization queue of this destination?' => '',
+	'Are you sure you want to clear synchronization status of this destination?' => '',
 	'Are you sure you want to clear the previous synchronization file list?' => 'Vouslez-vous vraiment supprimer la précédente liste des fichiers à synchroniser ?',
 	'Are you sure you want to register immediate sync job?' => '',
 	'Are you sure you want to remove this settings?' => 'Voulez-vous vraiment supprimer ces paramètres ?',
+	'Clear synchronization queue' => '',
+	'Clear synchronization status' => '',
 	'Clear the previous synchronization file list' => 'Vider la précédente liste des fichiers à synchroniser',
 	'Contents Sync Settings' => 'Paramètres de synchronisation des contenus',
 	'Contents sync settings has been saved.' => 'Les paramètres de synchronisation ont été sauvegardés.',
 	'Copy this sync setting' => 'Copier ce paramètre de synchronisation',
 	'Deleting...' => 'Suppression…',
+	'Destination ID' => '',
 	'Destination name should be shorter than [_1] characters.' => 'Le nom de destination devrait faire moins de [_1] caractères.',
 	'Destinations' => 'Destinations',
 	'Do not send .htaccess and .htpasswd file' => 'Ne pas envoyer les fichiers .htaccess et .htpasswd',
 	'Enable SSL' => 'Activer SSL',
-	'FTP Server' => 'Serveur FTP',
 	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '',
 	'Invalid date.' => 'Date invalide.',
 	'Invalid time.' => 'Temps invalide.',
@@ -1413,15 +1433,13 @@ use vars qw( @ISA %Lexicon );
 	'OK' => 'OK',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Un ou plusieurs gabarits sont en publication dynamique. La publication dynamique peut ne pas fonctionner correctement sur le serveur distant.',
 	'Please select a sync type.' => 'Sélectionnez un type de synchronisation.',
-	'Port' => 'Port',
 	'Recipient for Notification' => 'Destinataire des notifications',
 	'Register immediate sync job' => '',
-	'Rsync Additional Options' => 'Options rsync aditionnelles',
-	'Rsync Destination' => 'Répertoire de destination',
+	'Remove queued items to abort synchronization.' => '',
+	'Remove synchronization status information.' => '',
 	'SSL is not available.' => '',
 	'SSL' => 'SSL',
 	'Save changes to these settings (s)' => 'Enregistrer les modifications de ces paramètres (s)',
-	'Start Directory' => 'Répertoire de départ',
 	'Sync Date' => 'Date de synchronisation',
 	'Sync Type *' => 'Type de synchronisation *',
 	'Sync all files' => 'Synchroniser tous les fichiers',
@@ -1432,17 +1450,21 @@ use vars qw( @ISA %Lexicon );
 	'The previous synchronization file list has been cleared.' => 'La précédente liste des fichiers à synchroniser a été vidée.',
 	'The sync date must be in the future.' => 'La date de synchronisation doit être dans le futur.',
 	'The sync settings has been copied but not saved yet.' => 'Les paramètres de synchronisation ont été copiés mais pas encore sauvegardés.',
+	'This destination has been synchronized before.' => '',
+	'This destination has never been synchronized.' => '',
+	'This destination is queued to be synchronized.' => '',
+	'This destination will be fully synchronized next time.' => '',
 	'View sync log' => 'Voir le log de synchronisation',
 	'You must make one or more destination settings.' => 'Vous devez créer au moins une destination.',
 	'htaccess' => 'htaccess',
 	q{After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.} => q{Après qu'une synchronisation a été effectuée, un e-mail de notification sera envoyé à l'utilisateur qui l'a déclenchée, et à l'administrateur système (par défaut) ou le destinataire spécifié ci-dessus.},
+	q{Queued items for destination '[_1]' has been removed} => q{},
 	q{Receive only error notification} => q{Ne recevoir que les notifications d'erreur.},
+	q{Sync status information for destination '[_1]' has been removed} => q{},
 
 ## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
 	'Executer' => 'Éxecuter',
 	'Site' => '',
-	'Synchronization success notification' => 'Notification de succès de la synchronisation',
-	q{Synchronization error notification} => q{Notification d'échec de la synchronisation},
 
 ## default_templates/archive_index.mtml
 	'Banner Footer' => 'Bloc du pied de page',
@@ -2313,6 +2335,7 @@ use vars qw( @ISA %Lexicon );
 	'The website root directory must be within [_1].' => 'Le répertoire racine du site doit être dans [_1].',
 	'Unknown list type' => 'Type de liste inconnu',
 	'[_1] Feed' => 'Flux [_1]',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] révisions corrompues de [_2] (id: [_3]) ont été supprimées.',
 	q{'[_1]' edited the global template '[_2]'} => q{'[_1]' a édité le gabarit global '[_2]'},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{'[_1]' a édité le gabarit '[_2]' du blog '[_3]'},
 	q{Saving snapshot failed: [_1]} => q{L'enregistrement de l'instantané a échoué : [_1]},
@@ -3138,6 +3161,23 @@ use vars qw( @ISA %Lexicon );
 	'Scheduled Pages' => 'Pages planifiées pour publication',
 	'Unpublished Pages' => 'Pages non publiées',
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '', # Translate - New
+	'Unknown validation rule: [_1]' => '', # Translate - New
+	q{'[_1]' has multiple values} => q{}, # Translate - New
+	q{'[_1]' is required} => q{}, # Translate - New
+	q{'[_1]' requires a valid ID} => q{}, # Translate - New
+	q{'[_1]' requires a valid email} => q{}, # Translate - New
+	q{'[_1]' requires a valid integer} => q{}, # Translate - New
+	q{'[_1]' requires a valid number} => q{}, # Translate - New
+	q{'[_1]' requires a valid objtype} => q{}, # Translate - New
+	q{'[_1]' requires a valid string} => q{}, # Translate - New
+	q{'[_1]' requires a valid text} => q{}, # Translate - New
+	q{'[_1]' requires a valid word} => q{}, # Translate - New
+	q{'[_1]' requires a valid xdigit value} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) IDs} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) words} => q{}, # Translate - New
+
 ## lib/MT/Placement.pm
 	'Category Placement' => 'Gestion des catégories',
 
@@ -3158,8 +3198,6 @@ use vars qw( @ISA %Lexicon );
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Mauvaise configuration du pilote de révision '[_1]' : [_2]},
 	q{Did not get two [_1]} => q{N'a pas obtenu deux [_1]},
 	q{There are not the same types of objects, expecting two [_1]} => q{Ce ne sont pas les mêmes types d'objets, deux [_1] sont attendus},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] révisions corrompues de [_2] (id: [_3]) ont été supprimées.',
-	'*Deleted due to data breakage*' => q{*Supprimé en raison d'une rupture de données*},
 
 ## lib/MT/Role.pm
 	'Blog Administrator' => 'Administrateur du blog',
@@ -3252,6 +3290,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Context.pm
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Lorsque les mêmes IDs de blog sont listés simultanément dans les attributs include_blogs et exclude_blogs, ces blogs sont exclus.',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{L'attribut exclude_blogs ne peut pas prendre '[_1]' pour valeur.},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{Vous avez une erreur dans votre attribut '[_2]' : [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{Vous avez utilisé une balise '[_1]' dans le  contexte d'un blog sans site web parent. L'enregistrement de ce blog est peut-être endommagé.},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{Vous avez utilisé une balise '[_1]' en dehors d'un contexte auteur. Peut-être l'avez-vous placée par erreur en dehors d'un bloc 'MTAuthors' ?},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{Vous avez utilisé une balise '[_1]' en dehors d'un contexte de commentaire. Peut-être l'avez-vous placée par erreur en dehors d'un bloc 'MTComments' ?},
@@ -3316,7 +3355,6 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/Template/Tags/Asset.pm
 	q{No such user '[_1]'} => q{L'utilisateur '[_1]' n'existe pas},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{Vous avez une erreur dans votre attribut '[_2]' : [_1]},
 	q{sort_by="score" must be used in combination with namespace.} => q{sort_by="score" doit être utilisé en combinaison avec l'espace de nom.},
 
 ## lib/MT/Template/Tags/Author.pm
@@ -3597,20 +3635,27 @@ use vars qw( @ISA %Lexicon );
 	'Type must be specified' => 'Le type doit être spécifié',
 	q{Registry could not be loaded} => q{Le registre n'a pu être chargé},
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'Les données et le fichier doivent être spécifiés.',
-	'Could not read from filehandle.' => 'Impossible de lire le fichier.',
+	'Cannot find external archiver: [_1]' => '', # Translate - New
+	'Failed to create an archive [_1]: [_2]' => '', # Translate - New
 	'Type must be tgz.' => 'Le type doit être tgz.',
 	q{Cannot extract from the object} => q{Impossible d'extraire l'objet},
 	q{Cannot write to the object} => q{Impossible d'écrire l'objet},
 	q{File [_1] exists; could not overwrite.} => q{Le fichier [_1] existe, impossible de l'écraser.},
-	q{File [_1] is not a tgz file.} => q{Le fichier [_1] n'est pas un fichier tgz.},
 	q{[_1] in the archive contains ..} => q{[_1] dans l'archive contient },
 	q{[_1] in the archive is an absolute path} => q{[_1] dans l'archive est un chemin absolu},
 	q{[_1] in the archive is not a regular file} => q{[_1] dans l'archive n'est pas un fichier valide},
 
-## lib/MT/Util/Archive/Zip.pm
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => '', # Translate - New
 	'Type must be zip' => 'Le type doit être zip',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'Impossible de lire le fichier.',
+	q{File [_1] is not a tgz file.} => q{Le fichier [_1] n'est pas un fichier tgz.},
+
+## lib/MT/Util/Archive/Zip.pm
 	q{File [_1] is not a zip file.} => q{Le fichier [_1] n'est pas un fichier zip.},
 
 ## lib/MT/Util/Captcha.pm
@@ -3744,9 +3789,6 @@ use vars qw( @ISA %Lexicon );
 	q{[_1] is optional; It is one of the image processors that you can use to create thumbnails of uploaded images.} => q{[_1] est optionnel, c'est l'une des librairies graphiques permettant de créer des vignettes des images téléchargées.},
 	q{[_1] is optional; It is one of the modules required to restore a backup created in a backup/restore operation} => q{[_1] est optionnel. C'est l'un des modules requis pour restaurer une sauvegarde créée par une opération de sauvegarde.},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	q{You have unsaved changes to this page that will be lost.} => q{Certains de vos changements dans cette page n'ont pas été enregistrés, ils seront perdus.},
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'URL incorrecte',
 	'Invalid date format' => 'Format de date incorrect',
@@ -3864,6 +3906,14 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
 	'value' => 'valeur',
 
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '', # Translate - New
+	'Cut column' => '', # Translate - New
+	'Horizontal align' => '', # Translate - New
+	'Paste column after' => '', # Translate - New
+	'Paste column before' => '', # Translate - New
+	'Vertical align' => '', # Translate - New
+
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => '', # Translate - New
 
@@ -3898,6 +3948,30 @@ use vars qw( @ISA %Lexicon );
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Page non trouvée - [_1]',
+
+## plugins/FacebookCommenters/config.yaml
+	'Facebook' => '',
+	'Provides commenter registration through Facebook Connect.' => '',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Authentication failure: [_1], reason:[_2]' => '',
+	'Could not verify this app with Facebook: [_1]' => '',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => '',
+	'Failed to create a session.' => '',
+	'Failed to created commenter.' => '',
+	'Please enter your Facebook App key and secret.' => '',
+	'Set up Facebook Commenters plugin' => '',
+	'The login could not be confirmed because of no/invalid blog_id' => '', # Translate - New
+
+## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
+	'Create Facebook App' => '',
+	'Edit Facebook App' => '',
+	'Facebook App ID' => '',
+	'Facebook Application Secret' => '',
+	'OAuth Redirect URL of Facebook Login' => '',
+	'Please set this URL to "Valid OAuth redirect URIs" field of Facebook Login.' => '',
+	'The key for the Facebook application associated with your blog.' => '',
+	'The secret for the Facebook application associated with your blog.' => '',
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Gérer le texte formaté',
@@ -3959,6 +4033,7 @@ use vars qw( @ISA %Lexicon );
 
 ## plugins/GoogleAnalytics/tmpl/web_service_config.tmpl
 	'(No profile selected)' => '(Aucun profil sélectionné)',
+	'Google Analytics 4 (GA4) is not supported.' => '',
 	'Google Analytics profile' => 'Profil Google Analytics',
 	'Google Analytics' => 'Google Analytics',
 	'OAuth2 settings' => 'Paramètres OAuth2',
@@ -4029,6 +4104,48 @@ use vars qw( @ISA %Lexicon );
 	q{Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.} => q{L'agrégation inter-blogs sera activée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour restreindre l'accès à leur contenu par les autres blogs.},
 	q{Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.} => q{L'agrégation inter-blogs sera désactivée par défaut. Les blogs individuels peuvent être configurés via les paramètres MultiBlog du blog en question, pour autoriser l'accès à leur contenu par les autres blogs.},
 	q{Default system aggregation policy} => q{Règle d'agrégation du système par défaut},
+
+## plugins/SmartphoneOption/config.yaml
+	'Android' => '',
+	'Desktop' => '',
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => '',
+	'iPad' => '',
+	'iPhone' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'Mobile Dashboard' => '',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => '',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => '',
+	'This function is not supported by [_1].' => '',
+	'This function is not supported by your browser.' => '',
+	'[_1] View' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Publish (s)' => 'Publier',
+	'Re-Edit (e)' => '',
+	'Re-Edit' => '',
+	'Rich Text(HTML mode)' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '',
+	'Filters which you created from PC.' => '',
+	'_DISPLAY_OPTIONS_SHOW' => 'Afficher',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => 'Rechercher [_1]',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'Revision: <strong>[_1]</strong>' => 'Révision : <strong>[_1]</strong>',
+	'Smartphone Main' => '',
+	'Smartphone Sub' => '',
+	'Unpublish' => 'Dé-publier',
+	'View revisions of this [_1]' => 'Voir les révisions de ce [_1]',
+	'View revisions' => 'Voir les révisions',
+	'to [_1]' => '',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'Continue (s)' => 'Continuer (s)',
+	'No boilerplate could be found.' => '',
 
 ## plugins/StyleCatcher/config.yaml
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Une gamme de styles compatibles avec les gabarits MT4 par défaut',
@@ -4121,6 +4238,60 @@ use vars qw( @ISA %Lexicon );
 	'Failed.' => 'Échec.',
 	q{Moving storage of Widget Manager [_2]...} => q{Déplacement de l'emplacement du gestionnaire de wiget [_2]...},
 	q{Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.} => q{Widget Manager version 1.1. Cette version est destinée à la mise à jour des données des versions plus anciennes de Widget Manager, livré avec Movable Type. Aucune autre fonction n'est incluse. Vous pouvez supprimer ce plugin après avoir installé/mis à jour Movable Type.},
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'MT[_1] was not used in the proper context.' => '',
+	q{'[_1]' is a required argument of [_2]} => q{},
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Create a Feed Widget' => '',
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => '',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'10' => '',
+	'3' => '',
+	'5' => '',
+	'Configure feed widget settings' => '',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => '',
+	'Feeds.App Lite Widget Creator' => '',
+	'Select the maximum number of entries to display.' => '',
+	'[_1] Feed Widget' => '',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'A widget named <strong>[_1]</strong> has been created.' => '',
+	'Create Another' => '',
+	'Finish (s)' => 'Terminer (s)',
+	'Finish' => 'Terminer',
+	'No feeds could be discovered using [_1]' => '',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{},
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => '',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '',
+	'URI' => '',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'Create a widget from a feed' => '',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => '',
+	'Feed or Site URL' => '',
+	'You must enter a feed or site URL to proceed' => '',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => '',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => '',
+	'mixi' => '',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => '',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => '',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Link was previously published (TrackBack id [_1]).' => 'Le lien a été publié précédemment (ID de trackback [_1]).',
@@ -4261,21 +4432,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Site web classique',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crée un portail de blogs qui agrège les contenus de plusieurs blogs sur un site web.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Contenu lié',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Aperçu du commentaire',
-
-## themes/pico/templates/navigation.mtml
-	q{Subscribe} => q{S'abonner},
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Une collection de styles compatible avec les thèmes Pico.',
-	'Pico Styles' => 'Styles Pico',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico est un thème de microblogging conçu pour gérer simplement des mises à jour fréquentes. Pour mettre en avant votre contenu, nous avons déplacé les colonnes latérales sous la liste de vos notes.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Télécharger un nouvel élément',
@@ -4734,11 +4890,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Back (b)' => 'Retour (b)',
 	'Confirm Publishing Configuration' => 'Confirmer la configuration de publication',
-	'Continue (s)' => 'Continuer (s)',
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Entrer la nouvelle URL de la section des archives de votre blog. Exemple : http://www.exemple.com/blog/archives/',
 	'Parent Website' => 'Site web parent',
 	'Please choose parent website.' => 'Veuillez choisir un site web parent',
-	'Site Path' => 'Chemin du site',
 	'You must select a parent website.' => 'Vous devez choisir un site web parent',
 	'You must set a valid Site URL.' => 'Vous devez spécifier une URL valide.',
 	'You must set a valid local site path.' => 'Vous devez spécifier un chemin local de site valide.',
@@ -4777,8 +4931,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/asset_options.tmpl
 	'Create a new entry using this uploaded file.' => 'Créer une nouvelle note avec ce fichier envoyé.',
 	'File Options' => 'Options fichier',
-	'Finish (s)' => 'Terminer (s)',
-	'Finish' => 'Terminer',
 	q{Create entry using this uploaded file} => q{Créer une note à l'aide de ce fichier},
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
@@ -4814,9 +4966,9 @@ use vars qw( @ISA %Lexicon );
 	'Your reply:' => 'Votre réponse :',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	q{No websites exist in this installation. [_1]Create a website</a>} => q{Aucun site web n'existe dans cette installation. [_1]Créer un site web</a>},
 	q{No blogs exist in this installation. [_1]Create a blog</a>} => q{Aucun blog n'existe dans cette installation. [_1]Créer un blog</a>},
 	q{No roles exist in this installation. [_1]Create a role</a>} => q{Aucun rôle n'existe dans cette installation. [_1]Créer un rôle</a>},
+	q{No websites exist in this installation. [_1]Create a website</a>} => q{Aucun site web n'existe dans cette installation. [_1]Créer un site web</a>},
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Apply' => 'Appliquer',
@@ -4855,6 +5007,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/multi_asset_options.tmpl
 	'Display [_1] in entry/page' => 'Afficher [_1] dans la note/page',
 	q{Insert Options} => q{Options d'insertion},
+
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Are you sure you wish to continue?' => 'Voulez-vous vraiment continuer ?',
@@ -5126,7 +5281,6 @@ use vars qw( @ISA %Lexicon );
 	'Remove this asset.' => 'Supprimer cet élément.',
 	'Reset defaults' => 'Réinitialiser les valeurs par défaut',
 	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'Révision (date : [_1]) restaurée. Le statut actuel est : [_2].',
-	'Revision: <strong>[_1]</strong>' => 'Révision : <strong>[_1]</strong>',
 	'Save this [_1]' => 'Enregistrer cette [_1]',
 	'Schedule' => 'Planifier',
 	'Share' => 'Partager',
@@ -5145,8 +5299,6 @@ use vars qw( @ISA %Lexicon );
 	'View Entry' => 'Afficher la note',
 	'View Page' => 'Afficher une Page',
 	'View Previously Sent TrackBacks' => 'Voir les TrackBacks envoyés précédemment',
-	'View revisions of this [_1]' => 'Voir les révisions de ce [_1]',
-	'View revisions' => 'Voir les révisions',
 	'You have successfully deleted the checked TrackBack(s).' => 'Le ou les TrackBacks sélectionnés ont été correctement supprimés.',
 	'You have successfully deleted the checked comment(s).' => 'Les commentaires sélectionnés ont été supprimés.',
 	'You have successfully recovered your saved entry.' => 'Vous avez récupéré le contenu sauvegardé de votre note avec succès.',
@@ -5168,6 +5320,7 @@ use vars qw( @ISA %Lexicon );
 	q{Warning: Changing this entry's basename may break inbound links.} => q{Attention : changer le nom de base de cette note peut casser des liens entrants.},
 	q{Warning: If you set the basename manually, it may conflict with another entry.} => q{Attention : éditer le nom de base manuellement peut créer des conflits avec d'autres notes.},
 	q{You have unsaved changes to this entry that will be lost.} => q{Certains de vos changements dans cette note n'ont pas été enregistrés, ils seront perdus.},
+	q{You have unsaved changes to this page that will be lost.} => q{Certains de vos changements dans cette page n'ont pas été enregistrés, ils seront perdus.},
 	q{_USAGE_VIEW_LOG} => q{L'erreur est enregistrée dans le <a href="[_1]">journal d\'activité</a>.},
 
 ## tmpl/cms/edit_entry_batch.tmpl
@@ -5509,7 +5662,6 @@ use vars qw( @ISA %Lexicon );
 	'Compact' => 'Compacte',
 	'Expanded' => 'Étendue',
 	'[quant,_1,row,rows]' => '[quant,_1,ligne,lignes]',
-	'_DISPLAY_OPTIONS_SHOW' => 'Afficher',
 	q{Display Options} => q{Options d'affichage},
 	q{Save display options} => q{Enregistrer les options d'affichage},
 
@@ -5545,7 +5697,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'Aide',
 	'Search (q)' => 'Recherche (q)',
-	'Search [_1]' => 'Rechercher [_1]',
 	'Select an action' => 'Sélectionner une action',
 	'View Site' => 'Voir le site',
 	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'Vous avez <strong>[quant,_1,message,messages]</strong> du système.',
@@ -5604,6 +5755,7 @@ use vars qw( @ISA %Lexicon );
 	'Note' => 'Note',
 	'Saved By' => 'Enregistré par',
 	'_REVISION_DATE_' => 'Date',
+	q{*Deleted due to data breakage*} => q{*Supprimé en raison d'une rupture de données*},
 	q{No revisions could be found.} => q{Aucune révision n'a été trouvée.},
 
 ## tmpl/cms/include/rpt_log_table.tmpl
@@ -5872,7 +6024,6 @@ use vars qw( @ISA %Lexicon );
 	'All Files' => 'Tous les fichiers',
 	'Only Indexes' => 'Uniquement les index',
 	'Only [_1] Archives' => 'Uniquement les archives [_1]',
-	'Publish (s)' => 'Publier',
 	'Publish <em>[_1]</em>' => 'Publier <em>[_1]</em>',
 	'Publish [_1]' => 'Publier [_1]',
 	'_REBUILD_PUBLISH' => 'Publier',
@@ -6210,7 +6361,6 @@ use vars qw( @ISA %Lexicon );
 	'More like this' => 'Plus du même genre',
 	'On this day' => 'Pendant cette journée',
 	'On this entry' => 'Sur cette note',
-	'Unpublish' => 'Dé-publier',
 
 ## tmpl/feeds/feed_entry.tmpl
 	'From this author' => 'De cet auteur',

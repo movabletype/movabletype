@@ -22,7 +22,7 @@ function smarty_block_mtpings($args, $content, &$ctx, &$repeat) {
         $pings = $ctx->stash('_pings');
         $counter = $ctx->stash('_pings_counter');
     }
-    if ($counter < count($pings)) {
+    if (isset($pings) && $counter < count($pings)) {
         $blog_id = $ctx->stash('blog_id');
         $ping = $pings[$counter];
         if (!empty($ping)) {

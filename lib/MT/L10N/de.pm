@@ -1304,6 +1304,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'Kann Vorlage nicht laden.',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Mailversand fehlgeschlagen ([_1]). Sind die MailTransfer-Einstellungen richtig?',
+	'Synchronization error notification' => 'Benachrichtigung bei fehlgeschlagener Synchronisation',
+	'Synchronization start notification' => '',
+	'Synchronization success notification' => 'Benachrichtigung bei erfolgreicher Synchronisation',
 	q{Cannot find author for id '[_1]'} => q{Kein Autor mit ID [_1] gefunden},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
@@ -1338,15 +1341,22 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Destination Name' => 'Zielname',
 	'Download Sync Log (CSV)' => 'Synchronisation-Protokoll herunterladen (CSV)',
 	'Error' => 'Fehler',
+	'FTP Server' => 'FTP-Server',
 	'FTP' => 'FTP',
 	'Finish Date' => 'End-Datum',
 	'Finish Time' => 'End-Zeitpunkt',
 	'Message' => 'Mitteilung',
+	'Notify To' => '',
 	'Parallel' => 'Parallel',
+	'Port' => 'Port',
+	'Rsync Additional Options' => 'Rsync-Optionen',
+	'Rsync Destination' => 'Rsync-Ziel',
 	'Rsync' => 'Rsync',
 	'Scheduled' => 'Zu bestimmtem Zeitpunkt',
 	'Showing only ID: [_1]' => 'Zeige nur ID [_1]',
+	'Site Path' => 'Lokaler Pfad',
 	'Start Date' => 'Start-Datum',
+	'Start Directory' => 'Ausgangsverzeichnis',
 	'Start Time' => 'Start-Zeitpunkt',
 	'Success' => 'Erfolg',
 	'Suspended' => '',
@@ -1366,6 +1376,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Sync Status' => '', # Translate - New
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	', Error: [_1]' => '',
+	'Date: [_1], Blog: [_2]' => '',
+	'Date: [_1], Website: [_2]' => '',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisation([_1]) mit externem Server([_2]) fehlgeschlagen.',
 	'Failed to insert a new job for ([_1])' => '',
 	'Sync setting # [_1] not found.' => 'Synchronisations-Einstellungen [_1] nicht gefunden.',
@@ -1379,22 +1392,25 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	q{Failed to save sync list. (ID:'[_1]')} => q{Konnte Synchronisations-Liste nicht speichern. (ID:'[_1]')},
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => '[_1] kopiert',
+	'Immediate sync job for [_1] is registered by [_2]' => '',
 	'Permission denied: [_1]' => 'Zugriff verweigert: [_1]',
 	'Save failed: [_1]' => 'Beim Speichern ist ein Fehler aufgetreten: [_1]',
 	'Saving sync settings failed: [_1]' => 'Sichern der Synchronisations-Einstellungen fehlgeschlagen: [_1]',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Vorherige Synchronisations-Dateiliste geleert. [_1] von [_2].',
 	'The sync setting with the same name already exists.' => 'Synchronisations-Einstellungen mit diesem Namen existieren bereits.',
+	'[_1] (copy)' => '', # Translate - New
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{Bei der Verbindung mit dem FTP-Server '[_1]' ist ein Fehler aufgetreten: [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{Beim Einlesen des aktuellen Verzeichnisses von '[_1]' ist ein Fehler aufgetreten.},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{Beim Einlesen der Verzeichnisliste von '[_1]' ist ein Fehler aufgetreten.},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{}, # Translate - New
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{}, # Translate - New
 	q{Deleting sync file list failed "[_1]": [_2]} => q{Löschen der Synchronisations-Dateiliste mit '[_1]' fehlgeschlagen: [_2]},
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{}, # Translate - New
+	q{Queued items for destination '[_1]' is removed by [_2].} => q{},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{Synchronisations-Einstellung '[_1]' (ID: [_2]) von [_3] gelöscht.},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{Synchronisations-Einstellung '[_1]' (ID: [_2]) von [_3] bearbeitet.},
 	q{Synchronization log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log for website '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log reset by '[_1]'} => q{Synchronisations-Protokoll von '[_1]' zurückgesetzt},
+	q{Synchronization status information for destination '[_1]' is removed by [_2].} => q{},
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Entferne alle Synchronisations-Jobs...',
@@ -1404,19 +1420,23 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'A duplicate destination name exists.' => 'Zielname bereits vorhanden.',
 	'Add destination' => 'Ziel hinzufügen',
 	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Nach erfolgter Synchronisation wird eine E-Mail-Benachrichtigung an den Benutzer, der die Synchronisation angelegt hat, verschickt. Außerdem erhält als Standard der Administrator oder der oben angegebene Empfänger die Benachrichtigung.',
+	'Are you sure you want to clear synchronization queue of this destination?' => '',
+	'Are you sure you want to clear synchronization status of this destination?' => '',
 	'Are you sure you want to clear the previous synchronization file list?' => 'Vorherige Synchronisations-Dateiliste wirklich leeren?',
 	'Are you sure you want to register immediate sync job?' => '',
 	'Are you sure you want to remove this settings?' => 'Diese Einstellung wirklich entfernen?',
+	'Clear synchronization queue' => '',
+	'Clear synchronization status' => '',
 	'Clear the previous synchronization file list' => 'Vorherige Synchronisations-Dateiliste leeren',
 	'Contents Sync Settings' => 'Synchronisations-Einstellungen',
 	'Contents sync settings has been saved.' => 'Synchronisations-Einstellungen gespeichert.',
 	'Copy this sync setting' => 'Diese Synchronisations-Einstellung kopieren',
 	'Deleting...' => 'Lösche...',
+	'Destination ID' => '',
 	'Destination name should be shorter than [_1] characters.' => 'Zielnamen dürfen höchstens [_1] Zeichen lang sein.',
 	'Destinations' => 'Synchronisations-Ziele',
 	'Do not send .htaccess and .htpasswd file' => '.htaccess- und .htpasswd-Dateien nicht senden',
 	'Enable SSL' => 'SSL aktivieren',
-	'FTP Server' => 'FTP-Server',
 	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '',
 	'Invalid date.' => 'Ungültiges Datum',
 	'Invalid time.' => 'Zeitangabe ungültig.',
@@ -1424,16 +1444,14 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'OK' => 'OK',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Mindestens eine Vorlage wird dynamisch veröffentlicht. Dynamische Veröffentlichung wird vom Zielserver möglicherweise nicht unterstützt.',
 	'Please select a sync type.' => 'Bitte wählen Sie eine Synchronisationsart',
-	'Port' => 'Port',
 	'Receive only error notification' => 'Nur bei Fehlern benachrichtigen',
 	'Recipient for Notification' => 'Benachrichtigungs-Empfänger',
 	'Register immediate sync job' => '',
-	'Rsync Additional Options' => 'Rsync-Optionen',
-	'Rsync Destination' => 'Rsync-Ziel',
+	'Remove queued items to abort synchronization.' => '',
+	'Remove synchronization status information.' => '',
 	'SSL is not available.' => '',
 	'SSL' => 'SSL',
 	'Save changes to these settings (s)' => 'Änderungen speichern (s)',
-	'Start Directory' => 'Ausgangsverzeichnis',
 	'Sync Date' => 'Synchronisations-Zeitpunkt',
 	'Sync Type *' => 'Synchronisationsart *',
 	'Sync all files' => 'Alle Dateien synchronisieren',
@@ -1444,15 +1462,19 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'The previous synchronization file list has been cleared.' => 'Vorherige Synchronisations-Dateiliste geleert.',
 	'The sync date must be in the future.' => 'Der Zeitpunkt der Synchronisation muss in der Zukunft liegen.',
 	'The sync settings has been copied but not saved yet.' => 'Die Synchronisations-Einstellungen wurden kopiert, aber noch nicht gesichert.',
+	'This destination has been synchronized before.' => '',
+	'This destination has never been synchronized.' => '',
+	'This destination is queued to be synchronized.' => '',
+	'This destination will be fully synchronized next time.' => '',
 	'View sync log' => 'Synchronisations-Protokoll anzeigen',
 	'You must make one or more destination settings.' => 'Bitte geben Sie mindestens ein Ziel an.',
 	'htaccess' => 'htaccess',
+	q{Queued items for destination '[_1]' has been removed} => q{},
+	q{Sync status information for destination '[_1]' has been removed} => q{},
 
 ## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
 	'Executer' => 'Ausführender',
 	'Site' => '',
-	'Synchronization error notification' => 'Benachrichtigung bei fehlgeschlagener Synchronisation',
-	'Synchronization success notification' => 'Benachrichtigung bei erfolgreicher Synchronisation',
 
 ## default_templates/archive_index.mtml
 	'Banner Footer' => 'Banner-Fuß',
@@ -2323,6 +2345,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'The website root directory must be within [_1].' => 'Das Wurzelverzeichnis der Website muss in [_1] liegen.',
 	'Unknown list type' => 'Unbekannter Listentyp',
 	'[_1] Feed' => '[_1]-Feed',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschädigte Revisionen von [_2] (id: [_3]) wurden gelöscht.',
 	q{'[_1]' edited the global template '[_2]'} => q{&#8222;[_1]&#8220; hat die globale Vorlage &#8222;[_2]&#8220; bearbeitet},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{&#8222;[_1]&#8220; hat die Vorlage &#8222;[_2]&#8220; des Blogs &#8222;[_3]&#8220; bearbeitet},
 
@@ -3147,6 +3170,23 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Scheduled Pages' => 'Zeitgeplante Seiten',
 	'Unpublished Pages' => 'Unveröffentlichte Seiten',
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '', # Translate - New
+	'Unknown validation rule: [_1]' => '', # Translate - New
+	q{'[_1]' has multiple values} => q{}, # Translate - New
+	q{'[_1]' is required} => q{}, # Translate - New
+	q{'[_1]' requires a valid ID} => q{}, # Translate - New
+	q{'[_1]' requires a valid email} => q{}, # Translate - New
+	q{'[_1]' requires a valid integer} => q{}, # Translate - New
+	q{'[_1]' requires a valid number} => q{}, # Translate - New
+	q{'[_1]' requires a valid objtype} => q{}, # Translate - New
+	q{'[_1]' requires a valid string} => q{}, # Translate - New
+	q{'[_1]' requires a valid text} => q{}, # Translate - New
+	q{'[_1]' requires a valid word} => q{}, # Translate - New
+	q{'[_1]' requires a valid xdigit value} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) IDs} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) words} => q{}, # Translate - New
+
 ## lib/MT/Placement.pm
 	'Category Placement' => 'Kategorie-Platzierung',
 
@@ -3167,8 +3207,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'There are not the same types of objects, expecting two [_1]' => 'Objektarten stimmen nicht überein, erwarte zwei [_1]',
 	'Unknown method [_1]' => 'Unbekannte Methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Fehlerhaftes RevisioningDriver-Parameter &#8222;[_1]&#8220;: [_2]},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschädigte Revisionen von [_2] (id: [_3]) wurden gelöscht.',
-	'*Deleted due to data breakage*' => '*Wegen Datenbruch gelöscht*',
 
 ## lib/MT/Role.pm
 	'Blog Administrator' => 'Blog-Administrator',
@@ -3261,6 +3299,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## lib/MT/Template/Context.pm
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Wenn die gleichen Blog-ID gleichzeitig in den include_blogs- und exclude_blogs-Attributen eines mt:Entries-Befehls verwendet werden, werden die entsprechenden Blogs ausgeschlossen.',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{&#8222;[_1]&#8220; ist kein gültiger Wert für ein exclude_blogs-Attribut},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{Fehler im &#8222;[_2]&#8220;-Attribut: [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{&#8222;[_1]&#8220;-Vorlagenbefehl in einem Blog ohne zugehörige Website verwendet - möglicherweise ist die Blog-Zuordnung fehlerhaft},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{Sie haben einen &#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Autoren-Kontexts verwendet - &#8222;MTAuthors&#8220;-Container erforderlich},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{&#8222;[_1]&#8220;-Vorlagenbefehl außerhalb eines Kommentar-Kontexts verwendet - &#8222;MTComments&#8220;-Container erforderlich},
@@ -3326,7 +3365,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'Sort_by="score" erfordert einen Namespace.',
 	q{No such user '[_1]'} => q{Kein Benutzer &#8222;[_1]&#8220;},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{Fehler im &#8222;[_2]&#8220;-Attribut: [_1]},
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => '[_1] ohne vorhandenen Autorenkontext verwendet.',
@@ -3606,21 +3644,28 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Registry could not be loaded' => 'Konnte Registry nicht laden',
 	'Type must be specified' => 'Typangabe erforderlich',
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'Sowohl der Daten- als auch der Dateiname müssen angegeben werden.',
 	'Cannot extract from the object' => 'Kann aus Objekt nicht extrahieren',
+	'Cannot find external archiver: [_1]' => '', # Translate - New
 	'Cannot write to the object' => 'Kann Objekt nicht beschreiben',
-	'Could not read from filehandle.' => 'Dateihandle nicht lesbar.',
+	'Failed to create an archive [_1]: [_2]' => '', # Translate - New
 	'File [_1] exists; could not overwrite.' => '[_1] existiert bereits und konnte nicht überschrieben werden',
-	'File [_1] is not a tgz file.' => '[_1] ist keine .tgz-Datei',
 	'Type must be tgz.' => 'Typ muss .tgz sein.',
 	'[_1] in the archive contains ..' => '[_1] im Archiv enthält ...',
 	'[_1] in the archive is an absolute path' => '[_1] im Archiv ist ein absoluter Pfad',
 	'[_1] in the archive is not a regular file' => '[_1] im Archiv ist keine reguläre Datei',
 
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => '', # Translate - New
+	'Type must be zip' => 'Typ muss .zip sein.',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'Dateihandle nicht lesbar.',
+	'File [_1] is not a tgz file.' => '[_1] ist keine .tgz-Datei',
+
 ## lib/MT/Util/Archive/Zip.pm
 	'File [_1] is not a zip file.' => '[_1] ist keine .zip-Datei',
-	'Type must be zip' => 'Typ muss .zip sein.',
 
 ## lib/MT/Util/Captcha.pm
 	'Captcha' => 'Captcha',
@@ -3753,9 +3798,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Das Skript mt-check.cgi führt eine Überprüfung Ihrer Systemkonfiguration durch und stellt fest, ob alle zum Betrieb von Movable Type erforderlichen Komponenten vorhanden sind.},
 	q{You're ready to go!} => q{Sie können sofort anfangen!},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	'You have unsaved changes to this page that will be lost.' => 'Es liegen nicht gespeicherte Seitenänderungen vor, die verloren gehen werden.',
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'Ungültige Web-Adresse (URL)',
 	'Invalid date format' => 'Ungültiges Datumsformat',
@@ -3873,6 +3915,14 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
 	'value' => 'Wert',
 
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '', # Translate - New
+	'Cut column' => '', # Translate - New
+	'Horizontal align' => '', # Translate - New
+	'Paste column after' => '', # Translate - New
+	'Paste column before' => '', # Translate - New
+	'Vertical align' => '', # Translate - New
+
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => '', # Translate - New
 
@@ -3907,6 +3957,30 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Seite nicht gefunden - [_1]',
+
+## plugins/FacebookCommenters/config.yaml
+	'Facebook' => '',
+	'Provides commenter registration through Facebook Connect.' => '',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Authentication failure: [_1], reason:[_2]' => '',
+	'Could not verify this app with Facebook: [_1]' => '',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => '',
+	'Failed to create a session.' => '',
+	'Failed to created commenter.' => '',
+	'Please enter your Facebook App key and secret.' => '',
+	'Set up Facebook Commenters plugin' => '',
+	'The login could not be confirmed because of no/invalid blog_id' => '', # Translate - New
+
+## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
+	'Create Facebook App' => '',
+	'Edit Facebook App' => '',
+	'Facebook App ID' => '',
+	'Facebook Application Secret' => '',
+	'OAuth Redirect URL of Facebook Login' => '',
+	'Please set this URL to "Valid OAuth redirect URIs" field of Facebook Login.' => '',
+	'The key for the Facebook application associated with your blog.' => '',
+	'The secret for the Facebook application associated with your blog.' => '',
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Textbausteine verwalten',
@@ -3971,6 +4045,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Client ID of the OAuth2 application' => 'Client-ID der OAuth2-Anwendung',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Die Client ID oder das Client Secret von Google Analytics wurde geändert, ohne das Profil zu aktualisieren. Einstellungen wirklich speichern?',
 	'Client secret of the OAuth2 application' => 'Client Secret der OAuth2-Anwendung',
+	'Google Analytics 4 (GA4) is not supported.' => '',
 	'Google Analytics profile' => 'Google Analytics-Profil',
 	'Google Analytics' => 'Google Analytics',
 	'OAuth2 settings' => 'OAuth2-Einstellungen',
@@ -4038,6 +4113,48 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'Verwendung von Bloginhalten in anderen Blogs dieser Installation systemweit erlauben. Auf Blog-Ebene gemachte Einstellungen sind vorranging, so daß diese Voreinstellung für einzelne Blogs außer Kraft gesetzt werden kann.',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'Verwendung von Bloginhalten in anderen Blogs dieser Installation systemweit nicht erlauben. Auf Blog-Ebene gemachte Einstellungen sind vorranging, so daß diese Voreinstellung für einzelne Blogs außer Kraft gesetzt werden kann.',
 	'Default system aggregation policy' => 'Systemwite Aggregations- Voreinstellung',
+
+## plugins/SmartphoneOption/config.yaml
+	'Android' => '',
+	'Desktop' => '',
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => '',
+	'iPad' => '',
+	'iPhone' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'Mobile Dashboard' => '',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => '',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => '',
+	'This function is not supported by [_1].' => '',
+	'This function is not supported by your browser.' => '',
+	'[_1] View' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Publish (s)' => 'Veröffentlichen (s)',
+	'Re-Edit (e)' => '',
+	'Re-Edit' => '',
+	'Rich Text(HTML mode)' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '',
+	'Filters which you created from PC.' => '',
+	'_DISPLAY_OPTIONS_SHOW' => 'Zeige',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => '[_1] suchen',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'Revision: <strong>[_1]</strong>' => 'Revision <strong>[_1]</strong>',
+	'Smartphone Main' => '',
+	'Smartphone Sub' => '',
+	'Unpublish' => 'Nicht mehr veröffentlichen',
+	'View revisions of this [_1]' => 'Revisionen dieser/dieses [_1] anzeigen',
+	'View revisions' => 'Revisionen anzeigen',
+	'to [_1]' => '',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'Continue (s)' => 'Weiter (s)',
+	'No boilerplate could be found.' => '',
 
 ## plugins/StyleCatcher/config.yaml
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Mit den Standardvorlagen von MT 3.3+  kompatible Designvorlagen',
@@ -4130,6 +4247,60 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Failed.' => 'Fehlgeschlagen.',
 	'Moving storage of Widget Manager [_2]...' => 'Verschiebe Speicherort des Widget Managers [_2]...',
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager 1.1 - Diese Version des Plugins dient ausschließlich dazu, Daten älterer Versionen auf das Movable Type Core-Schema zu aktualisieren. Sie können diese Plugin daher nach Installation bzw. Aktualisierung von Movable Type gefahrlos löschen.',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'MT[_1] was not used in the proper context.' => '',
+	q{'[_1]' is a required argument of [_2]} => q{},
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Create a Feed Widget' => '',
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => '',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'10' => '',
+	'3' => '',
+	'5' => '',
+	'Configure feed widget settings' => '',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => '',
+	'Feeds.App Lite Widget Creator' => '',
+	'Select the maximum number of entries to display.' => '',
+	'[_1] Feed Widget' => '',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'A widget named <strong>[_1]</strong> has been created.' => '',
+	'Create Another' => '',
+	'Finish (s)' => 'Fertigstellen (s)',
+	'Finish' => 'Fertigstellen',
+	'No feeds could be discovered using [_1]' => '',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{},
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => '',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '',
+	'URI' => '',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'Create a widget from a feed' => '',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => '',
+	'Feed or Site URL' => '',
+	'You must enter a feed or site URL to proceed' => '',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => '',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => '',
+	'mixi' => '',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => '',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => '',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'Die IP-Adresse der Domain ([_2]) stimmt nicht mit der Ping-IP-Adresse ([_3]) überein. URL: [_1]',
@@ -4270,21 +4441,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Klassische Website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Für Portale, die die Inhalte mehrerer Blogs in einer gemeinsamen Website anzeigen.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Verwandte Einträge',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Kommentarvorschau',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Abonnieren',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Mit Pro-Themen kompatible Designs',
-	'Pico Styles' => 'Pico-Designs',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico ist das Microblogging-Thema, das speziell auf einfache und häufige Aktualisierungen ausgelegt ist. Zur Betonung der aktuellen Inhalte werden die Seitenleisten unterhalb der Einträge angezeigt.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Neues Asset hochladen',
@@ -4742,11 +4898,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Back (b)' => 'Zurück (b)',
 	'Confirm Publishing Configuration' => 'Veröffentlichungseinstellungen bestätigen',
-	'Continue (s)' => 'Weiter (s)',
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Geben Sie die neue Adresse des Archivs Ihres Blogs an. Beispiel: http://beispiel.de/blog/archiv/',
 	'Parent Website' => 'Eltern-Website',
 	'Please choose parent website.' => 'Bitte wählen Sie die Eltern-Website.',
-	'Site Path' => 'Lokaler Pfad',
 	'You must select a parent website.' => 'Bitte wählen Sie eine Eltern-Website.',
 	'You must set a valid Site URL.' => 'Bitte geben Sie eine gültige Adresse (URL) an',
 	'You must set a valid local site path.' => 'Bitte geben Sie ein gültiges lokales Verzeichnis an',
@@ -4786,8 +4940,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Create a new entry using this uploaded file.' => 'Neuen Eintrag mit hochgeladener Datei anlegen',
 	'Create entry using this uploaded file' => 'Eintrag mit hochgeladener Datei anlegen',
 	'File Options' => 'Dateioptionen',
-	'Finish (s)' => 'Fertigstellen (s)',
-	'Finish' => 'Fertigstellen',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => 'Bild in Eintrag/Seite anzeigen',
@@ -4822,9 +4974,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Your reply:' => 'Ihre Antwort:',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	'No websites exist in this installation. [_1]Create a website</a>' => 'In dieser MT-Installation ist kein Website vorhanden. [_1]Website anlegen</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'In dieser MT-Installation ist kein Blog vorhanden. [_1]Blog anlegen</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'In dieser MT-Installation ist keine Rolle vorhanden. [_1]Rolle anlegen</a>',
+	'No websites exist in this installation. [_1]Create a website</a>' => 'In dieser MT-Installation ist kein Website vorhanden. [_1]Website anlegen</a>',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Apply' => 'Anwenden',
@@ -4863,6 +5015,9 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## tmpl/cms/dialog/multi_asset_options.tmpl
 	'Display [_1] in entry/page' => '[_1] im Eintrag/auf der Seite anzeigen',
 	'Insert Options' => 'Einfüge-Optionen',
+
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'Alle Vorlagen statisch über die Veröffentlichungs-Warteschlange veröffentlichen.',
@@ -5138,7 +5293,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Reset defaults' => 'Auf Standardeinstellungen zurücksetzen',
 	'Reset display options to blog defaults' => 'Anzeigeoptionen auf Standardeinstellungen zurücksetzen',
 	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'Version wiederherstellen (Datum: [_1]). Aktueller Status: [_2]',
-	'Revision: <strong>[_1]</strong>' => 'Revision <strong>[_1]</strong>',
 	'Save this [_1]' => '[_1] speichern',
 	'Schedule' => 'Zeitplan',
 	'Share' => 'Teilen',
@@ -5157,14 +5311,13 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'View Entry' => 'Eintrag ansehen',
 	'View Page' => 'Seite ansehen',
 	'View Previously Sent TrackBacks' => 'TrackBacks anzeigen',
-	'View revisions of this [_1]' => 'Revisionen dieser/dieses [_1] anzeigen',
-	'View revisions' => 'Revisionen anzeigen',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'Warnung: Wenn Sie den Basisnamen manuell einstellen, ist es nicht auszuschließen, daß der gewählte Name bereits existiert.',
 	'You have successfully deleted the checked TrackBack(s).' => 'Die markierten TrackBacks wurden erfolgreich gelöscht.',
 	'You have successfully deleted the checked comment(s).' => 'Die markierten Kommentare wurden erfolgreich gelöscht.',
 	'You have successfully recovered your saved entry.' => 'Gespeicherten Eintrag erfolgreich wiederhergestellt.',
 	'You have successfully recovered your saved page.' => 'Gespeicherte Seite erfolgreich wiederhergestellt.',
 	'You have unsaved changes to this entry that will be lost.' => 'Es liegen nicht gespeicherte Eintragsänderungen vor, die verloren gehen werden.',
+	'You have unsaved changes to this page that will be lost.' => 'Es liegen nicht gespeicherte Seitenänderungen vor, die verloren gehen werden.',
 	'You must configure this blog before you can publish this entry.' => 'Bitte konfigurieren Sie das Blog, bevor Sie einen Eintrag veröffentlichen.',
 	'You must configure this blog before you can publish this page.' => 'Bitte konfigurieren Sie das Blog, bevor Sie eine Seite veröffentlichen.',
 	'Your changes to the comment have been saved.' => 'Kommentaränderungen gespeichert.',
@@ -5518,7 +5671,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Expanded' => 'Erweitert',
 	'Save display options' => 'Anzeigeoptionen speichern',
 	'[quant,_1,row,rows]' => '[quant,_1,Zeile,Zeilen]',
-	'_DISPLAY_OPTIONS_SHOW' => 'Zeige',
 
 ## tmpl/cms/include/entry_table.tmpl
 	'<a href="[_1]">Create an entry</a> now.' => 'Jetzt <a href="[_1]">einen Eintrag schreiben</a>.',
@@ -5552,7 +5704,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'Hilfe',
 	'Search (q)' => 'Suche (q)',
-	'Search [_1]' => '[_1] suchen',
 	'Select an action' => 'Aktion wählen',
 	'View Site' => 'Ansehen',
 	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'Sie haben <strong>[quant,_1,Nachricht,Nachrichten]</strong> vom System.',
@@ -5607,6 +5758,7 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'View the [_1] for this TrackBack' => '[_1] zu diesem TrackBack ansehen',
 
 ## tmpl/cms/include/revision_table.tmpl
+	'*Deleted due to data breakage*' => '*Wegen Datenbruch gelöscht*',
 	'No revisions could be found.' => 'Keine Revisionen vorhanden',
 	'Note' => 'Hinweis',
 	'Saved By' => 'Gesichert von',
@@ -5879,7 +6031,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'Index Template: [_1]' => 'Index-Vorlagen: [_1]',
 	'Only Indexes' => 'Nur Indizes',
 	'Only [_1] Archives' => 'Nur Archiv: [_1]',
-	'Publish (s)' => 'Veröffentlichen (s)',
 	'Publish <em>[_1]</em>' => '<em>[_1]</em> veröffentlichen',
 	'Publish [_1]' => 'Veröffentliche [_1]',
 	'_REBUILD_PUBLISH' => 'Veröffentlichen',
@@ -6215,7 +6366,6 @@ massa, convallis quis, rutrum vitae, porta quis, turpis.</p>
 	'More like this' => 'Ähnliche Einträge',
 	'On this day' => 'An diesem Tag',
 	'On this entry' => 'Zu diesem Eintrag',
-	'Unpublish' => 'Nicht mehr veröffentlichen',
 
 ## tmpl/feeds/feed_entry.tmpl
 	'From this author' => 'Von diesem Autoren',

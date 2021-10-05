@@ -1281,6 +1281,9 @@ use vars qw( @ISA %Lexicon );
 ## addons/Sync.pack/lib/MT/FileSynchronizer.pm
 	'Cannot load template.' => 'Kan sjabloon niet laden.',
 	'Error sending mail ([_1]); try another MailTransfer setting?' => 'Fout bij verzenden mail ([_1]); probeer een andere MailTransfer instelling?',
+	'Synchronization error notification' => 'Foutbericht synchronisatie',
+	'Synchronization start notification' => '',
+	'Synchronization success notification' => 'Succesbericht synchronisatie',
 	q{Cannot find author for id '[_1]'} => q{Kan geen auteur vinden voor id '[_1]'},
 
 ## addons/Sync.pack/lib/MT/FileSynchronizer/FTPBase.pm
@@ -1315,15 +1318,22 @@ use vars qw( @ISA %Lexicon );
 	'Destination Name' => 'Naam bestemming',
 	'Download Sync Log (CSV)' => 'Sync log downloaden (CSV)',
 	'Error' => 'Fout',
+	'FTP Server' => 'FTP Server',
 	'FTP' => 'FTP',
 	'Finish Date' => 'Einddatum',
 	'Finish Time' => 'Eindtijd',
 	'Message' => 'Boodschap',
+	'Notify To' => '',
 	'Parallel' => 'Paralel',
+	'Port' => 'Poort',
+	'Rsync Additional Options' => 'Rrsync bijkomende opties',
+	'Rsync Destination' => 'Rsync bestemming',
 	'Rsync' => 'Rsync',
 	'Scheduled' => 'Gepland',
 	'Showing only ID: [_1]' => 'Enkel ID wordt weergegeven: [_1]',
+	'Site Path' => 'Sitepad',
 	'Start Date' => 'Begindatum',
+	'Start Directory' => 'Beginmap',
 	'Start Time' => 'Starttijd',
 	'Success' => 'Succes',
 	'Suspended' => '',
@@ -1343,6 +1353,9 @@ use vars qw( @ISA %Lexicon );
 	'Sync Status' => '', # Translate - New
 
 ## addons/Sync.pack/lib/MT/Worker/ContentsSync.pm
+	', Error: [_1]' => '',
+	'Date: [_1], Blog: [_2]' => '',
+	'Date: [_1], Website: [_2]' => '',
 	'Failed to Synchronization([_1]) with an external server([_2]).' => 'Synchronisatie ([_1]) met een externe server ([_2]) is niet gelukt.',
 	'Failed to insert a new job for ([_1])' => '',
 	'Sync setting # [_1] not found.' => 'Synchronisatie instelling # [_1] niet gevonden.',
@@ -1356,22 +1369,25 @@ use vars qw( @ISA %Lexicon );
 	q{Failed to save sync list. (ID:'[_1]')} => q{Opslaan synchronisatielijst mislukt. (ID:'[_1]')},
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => '[_1] gekopiëerd',
 	'Deleting sync file list failed "[_1]": [_2]' => 'Verwijderen sync bestandenlijst mislukt "[_1]": [_2]',
+	'Immediate sync job for [_1] is registered by [_2]' => '',
 	'Permission denied: [_1]' => 'Toestemming geweigerd: [_1]',
 	'Save failed: [_1]' => 'Opslaan mislukt: [_1]',
 	'Saving sync settings failed: [_1]' => 'Opslaan instelling voor synchronisatie mislukt: [_1]',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'De vorige lijst met synchronisatiebestanden werd leeggemaakt. [_1] door [_2].',
 	'The sync setting with the same name already exists.' => 'Een synchronisatie instelling met dezelfde naam bestaat al.',
+	'[_1] (copy)' => '', # Translate - New
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{Er deed zich een fout voor bij het verbinden met de FTP server '[_1]': [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{Er deed zich een fout voor bij het ophalen van de huidige map van '[_1]'},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{Er deed zich een fout voor bij het ophalen van de lijst van mappen van '[_1]'},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{}, # Translate - New
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{}, # Translate - New
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{}, # Translate - New
+	q{Queued items for destination '[_1]' is removed by [_2].} => q{},
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{Sync instelling '[_1]' (ID: [_2]) verwijderd door [_3].},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{Sync instelling '[_1]' (ID: [_2]) bewerkt door [_3].},
 	q{Synchronization log for blog '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log for website '[_1]' (ID:[_2]) reset by '[_3]'} => q{},
 	q{Synchronization log reset by '[_1]'} => q{Synchronisatielog leeggemaakt door '[_1]'},
+	q{Synchronization status information for destination '[_1]' is removed by [_2].} => q{},
 
 ## addons/Sync.pack/lib/Sync/Upgrade.pm
 	'Removing all jobs of contents sync...' => 'Bezig alle inhoudssynchronisatie-jobs te verwijderen...',
@@ -1381,19 +1397,23 @@ use vars qw( @ISA %Lexicon );
 	'A duplicate destination name exists.' => 'Er bestaat reeds een identieke bestemmingsnaam.',
 	'Add destination' => 'Bestemming toevoegen',
 	'After a sync job is executed, an email notification will be sent to the user who registered the job, and to the system administrator (default) or the recipient specified above.' => 'Nadat een sync job afgerond is zal een email notificatie worden verstuurd naar de gebruiker die deze job registreerde en naar de systeembeheerder (standaard) of de ontvanger die hierboven werd opgegeven.',
+	'Are you sure you want to clear synchronization queue of this destination?' => '',
+	'Are you sure you want to clear synchronization status of this destination?' => '',
 	'Are you sure you want to clear the previous synchronization file list?' => 'Bent u zeker dat u de lijst met de vorige synchronisatiebestanden wenst te verwijderen?',
 	'Are you sure you want to register immediate sync job?' => '',
 	'Are you sure you want to remove this settings?' => 'Bent u zeker dat u deze instellingen wil verwijderen?',
+	'Clear synchronization queue' => '',
+	'Clear synchronization status' => '',
 	'Clear the previous synchronization file list' => 'Vorige lijst synchronisatiebestanden leegaken',
 	'Contents Sync Settings' => 'Instellingen synchronisatie inhoud',
 	'Contents sync settings has been saved.' => 'De instellingen voor synchronisatie van inhoud zijn opgeslagen.',
 	'Copy this sync setting' => 'Deze synchronisatie instelling kopiëren',
 	'Deleting...' => 'Verwijderen...',
+	'Destination ID' => '',
 	'Destination name should be shorter than [_1] characters.' => 'Naam bestemming moet minder dan [_1] karakters lang zijn.',
 	'Destinations' => 'Bestemmingen',
 	'Do not send .htaccess and .htpasswd file' => 'Stuur geen .htaccess en .htpasswd bestand',
 	'Enable SSL' => 'SSL inschakelen',
-	'FTP Server' => 'FTP Server',
 	'Immediate sync job is being registered. This job will be executed in next run-periodic-tasks execution.' => '',
 	'Invalid date.' => 'Ongeldige datum.',
 	'Invalid time.' => 'Ongeldig tijdstip;',
@@ -1401,16 +1421,14 @@ use vars qw( @ISA %Lexicon );
 	'OK' => 'OK',
 	'One or more templates are set to the Dynamic Publishing. Dynamic Publishing may not work properly on the destination server.' => 'Eén of meer sjablonen staan ingesteld om dynamisch gepubliceerd te worden. Dynamisch publiceren werkt mogelijk niet op de bestemmings-server.',
 	'Please select a sync type.' => 'Gelieve een synchronisatietype in te stellen.',
-	'Port' => 'Poort',
 	'Receive only error notification' => 'Enkel foutmeldingen ontvangen',
 	'Recipient for Notification' => 'Ontvanger van berichten',
 	'Register immediate sync job' => '',
-	'Rsync Additional Options' => 'Rrsync bijkomende opties',
-	'Rsync Destination' => 'Rsync bestemming',
+	'Remove queued items to abort synchronization.' => '',
+	'Remove synchronization status information.' => '',
 	'SSL is not available.' => '',
 	'SSL' => 'SSL',
 	'Save changes to these settings (s)' => 'Wijzigingen aan deze instellingen opslaan (s)',
-	'Start Directory' => 'Beginmap',
 	'Sync Date' => 'Synchronisatiedatum',
 	'Sync Type *' => 'Synchronisatietype *',
 	'Sync all files' => 'Alle bestanden synchroniseren',
@@ -1421,15 +1439,19 @@ use vars qw( @ISA %Lexicon );
 	'The previous synchronization file list has been cleared.' => 'De lijst met vorige synchronisatiebestanden is leeggemaakt.',
 	'The sync date must be in the future.' => 'De synchronisatiedatum moet in de toekomst liggen.',
 	'The sync settings has been copied but not saved yet.' => 'De synchronisatie instellingen zijn gekopiëerd maar nog niet opgeslagen.',
+	'This destination has been synchronized before.' => '',
+	'This destination has never been synchronized.' => '',
+	'This destination is queued to be synchronized.' => '',
+	'This destination will be fully synchronized next time.' => '',
 	'View sync log' => 'Sync log bekijken',
 	'You must make one or more destination settings.' => 'U moet één of meer bestemmingen instellen.',
 	'htaccess' => 'htaccess',
+	q{Queued items for destination '[_1]' has been removed} => q{},
+	q{Sync status information for destination '[_1]' has been removed} => q{},
 
 ## addons/Sync.pack/tmpl/mail_contents_sync.tmpl
 	'Executer' => 'Uitvoerder',
 	'Site' => '',
-	'Synchronization error notification' => 'Foutbericht synchronisatie',
-	'Synchronization success notification' => 'Succesbericht synchronisatie',
 
 ## default_templates/archive_index.mtml
 	'Banner Footer' => 'Banner voettekst',
@@ -2300,6 +2322,7 @@ use vars qw( @ISA %Lexicon );
 	'The website root directory must be within [_1].' => 'De hoofdmap van de website moet onder [_1] zitten.',
 	'Unknown list type' => 'Onbekend type lijst',
 	'[_1] Feed' => '[_1] Feed',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschadigde revisies van [_2] (id: [_3]) zijn verwijderd.',
 	q{'[_1]' edited the global template '[_2]'} => q{'[_1]' bewerkte het globale sjabloon '[_2]'},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{'[_1]' bewerkte het sjabloon '[_2]' op blog '[_3]'},
 
@@ -3124,6 +3147,23 @@ use vars qw( @ISA %Lexicon );
 	q{Scheduled Pages} => q{Geplande pagina's},
 	q{Unpublished Pages} => q{Niet gepubliceerde pagina's},
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '', # Translate - New
+	'Unknown validation rule: [_1]' => '', # Translate - New
+	q{'[_1]' has multiple values} => q{}, # Translate - New
+	q{'[_1]' is required} => q{}, # Translate - New
+	q{'[_1]' requires a valid ID} => q{}, # Translate - New
+	q{'[_1]' requires a valid email} => q{}, # Translate - New
+	q{'[_1]' requires a valid integer} => q{}, # Translate - New
+	q{'[_1]' requires a valid number} => q{}, # Translate - New
+	q{'[_1]' requires a valid objtype} => q{}, # Translate - New
+	q{'[_1]' requires a valid string} => q{}, # Translate - New
+	q{'[_1]' requires a valid text} => q{}, # Translate - New
+	q{'[_1]' requires a valid word} => q{}, # Translate - New
+	q{'[_1]' requires a valid xdigit value} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) IDs} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) words} => q{}, # Translate - New
+
 ## lib/MT/Placement.pm
 	'Category Placement' => 'Categorieplaatsing',
 
@@ -3144,8 +3184,6 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'Dit zijn verschillende objecttypes, er worden twee [_1] verwacht',
 	'Unknown method [_1]' => 'Onbekende methode [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Foute RevisioningDriver configuratie '[_1]': [_2]},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => '[_1] beschadigde revisies van [_2] (id: [_3]) zijn verwijderd.',
-	'*Deleted due to data breakage*' => '*Verwijderd wegens gegevensbreuk*',
 
 ## lib/MT/Role.pm
 	'Blog Administrator' => 'Blogadministrator',
@@ -3238,6 +3276,7 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Context.pm
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Wanneer het ID van een blog zowel bij include_blogs als exclude_blogs staat, wordt de blog in kwestie uitgesloten.',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{Het attribuut exclude_blogs kan niet '[_1]' als waarde hebben.},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{Er staat een fout in uw '[_2]' attribuut: [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{U gebruikte een '[_1]' tag in de context van een blog die geen deel uitmaakt van een website; Misschien is er een probleem met de gegevens van deze blog?},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{U gebruikten een '[_1]' tag buiten de context van een auteur; Misschien plaatste u de tag per ongeluk buiten een 'MTAuthors' container tag?},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{U gebruikte een '[_1]' tag buiten de context van een reactie; Misschien plaatste u die tag per ongeluik buiten een 'MTComments' container tag?},
@@ -3303,7 +3342,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" moet gebruikt worden in combinatie met een namespace.',
 	q{No such user '[_1]'} => q{Geen gebruiker '[_1]'},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{Er staat een fout in uw '[_2]' attribuut: [_1]},
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => 'U gebruikte een [_1] zonder een auteurscontext op te zetten.',
@@ -3583,21 +3621,28 @@ use vars qw( @ISA %Lexicon );
 	'Registry could not be loaded' => 'Registry kon niet worden geladen',
 	'Type must be specified' => 'Type moet worden opgegeven',
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'Zowel data gen bestandsnaam moeten worden opgegeven.',
 	'Cannot extract from the object' => 'Kan extractie uit object niet uitvoeren',
+	'Cannot find external archiver: [_1]' => '', # Translate - New
 	'Cannot write to the object' => 'Kan niet schrijven naar het object',
-	'Could not read from filehandle.' => 'Kon filehandle niet lezen.',
+	'Failed to create an archive [_1]: [_2]' => '', # Translate - New
 	'File [_1] exists; could not overwrite.' => 'Bestand [_1] bestaat; kon niet worden overschreven.',
-	'File [_1] is not a tgz file.' => 'Bestand [_1] is geen tgz bestand.',
 	'Type must be tgz.' => 'Type moet tgz zijn.',
 	'[_1] in the archive contains ..' => '[_1] in het archief bevat ..',
 	'[_1] in the archive is an absolute path' => '[_1] in het archief is een absoluut pad',
 	'[_1] in the archive is not a regular file' => '[_1] in het archief is geen gewoon bestand',
 
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => '', # Translate - New
+	'Type must be zip' => 'Type moet zip zijn.',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'Kon filehandle niet lezen.',
+	'File [_1] is not a tgz file.' => 'Bestand [_1] is geen tgz bestand.',
+
 ## lib/MT/Util/Archive/Zip.pm
 	'File [_1] is not a zip file.' => 'Bestand [_1] is geen zip bestand.',
-	'Type must be zip' => 'Type moet zip zijn.',
 
 ## lib/MT/Util/Captcha.pm
 	'Captcha' => 'Captcha',
@@ -3730,9 +3775,6 @@ use vars qw( @ISA %Lexicon );
 	q{The mt-check.cgi script provides you with information about your system's configuration and determines whether you have all of the components you need to run Movable Type.} => q{Het script mt-check.cgi geeft u informatie over de configuratie van uw systeem en controleert of u alle benodigde componenten heeft om Movable Type te kunnen draaien.},
 	q{You're ready to go!} => q{Klaar om van start te gaan!},
 
-## mt-static/addons/Sync.pack/js/cms.js
-	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen veranderingen op deze pagina die verloren zullen geen.',
-
 ## mt-static/jquery/jquery.mt.js
 	'Invalid URL' => 'Ongeldige URL',
 	'Invalid date format' => 'Ongeldig datumformaat',
@@ -3850,6 +3892,14 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/plugins/TinyMCE/tiny_mce/utils/editable_selects.js
 	'value' => 'waarde',
 
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '', # Translate - New
+	'Cut column' => '', # Translate - New
+	'Horizontal align' => '', # Translate - New
+	'Paste column after' => '', # Translate - New
+	'Paste column before' => '', # Translate - New
+	'Vertical align' => '', # Translate - New
+
 ## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/plugin.js
 	'HTML' => '', # Translate - New
 
@@ -3884,6 +3934,30 @@ use vars qw( @ISA %Lexicon );
 
 ## php/mt.php
 	'Page not found - [_1]' => 'Pagina niet gevonden - [_1]',
+
+## plugins/FacebookCommenters/config.yaml
+	'Facebook' => '',
+	'Provides commenter registration through Facebook Connect.' => '',
+
+## plugins/FacebookCommenters/lib/FacebookCommenters/Auth.pm
+	'Authentication failure: [_1], reason:[_2]' => '',
+	'Could not verify this app with Facebook: [_1]' => '',
+	'Facebook Commenters needs IO::Socket::SSL installed to communicate with Facebook.' => '',
+	'Failed to create a session.' => '',
+	'Failed to created commenter.' => '',
+	'Please enter your Facebook App key and secret.' => '',
+	'Set up Facebook Commenters plugin' => '',
+	'The login could not be confirmed because of no/invalid blog_id' => '', # Translate - New
+
+## plugins/FacebookCommenters/tmpl/blog_config_template.tmpl
+	'Create Facebook App' => '',
+	'Edit Facebook App' => '',
+	'Facebook App ID' => '',
+	'Facebook Application Secret' => '',
+	'OAuth Redirect URL of Facebook Login' => '',
+	'Please set this URL to "Valid OAuth redirect URIs" field of Facebook Login.' => '',
+	'The key for the Facebook application associated with your blog.' => '',
+	'The secret for the Facebook application associated with your blog.' => '',
 
 ## plugins/FormattedText/config.yaml
 	'Manage boilerplate.' => 'Standaardtekst beheren.',
@@ -3948,6 +4022,7 @@ use vars qw( @ISA %Lexicon );
 	'Client ID of the OAuth2 application' => 'Client ID van de OAuth2 applicatie',
 	'Client ID or client secret for Google Analytics was changed, but profile was not updated. Are you sure you want to save these settings?' => 'Client ID of client secret voor Google Analytics werd aangepast, maar profiel werd niet bijgewerkt.  Bent u zeker dat u deze instellingen wenst op te slaan?',
 	'Client secret of the OAuth2 application' => 'Client secret van de OAuth2 applicatie',
+	'Google Analytics 4 (GA4) is not supported.' => '',
 	'Google Analytics profile' => 'Google Analytics profiel',
 	'Google Analytics' => 'Google Analytics',
 	'OAuth2 settings' => 'OAuth2 instellingen',
@@ -4015,6 +4090,48 @@ use vars qw( @ISA %Lexicon );
 	'Cross-blog aggregation will be allowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to restrict access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard toegestaan zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te beperken.',
 	'Cross-blog aggregation will be disallowed by default.  Individual blogs can be configured through the blog-level MultiBlog settings to allow access to their content by other blogs.' => 'Cross-blog aggregatie zal standaard verboden zijn.  Individuele blgos kunnen via de MultiBlog instellingen op blogniveau worden ingesteld om toegang tot hun inhoud voor andere blogs te verlenen.',
 	'Default system aggregation policy' => 'Standaard aggregatiebeleid voor het systeem',
+
+## plugins/SmartphoneOption/config.yaml
+	'Android' => '',
+	'Desktop' => '',
+	'Provides an iPhone, iPad and Android touch-friendly UI for Movable Type. Once enabled, navigate to your MT installation from your mobile to use this interface.' => '',
+	'iPad' => '',
+	'iPhone' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS.pm
+	'Mobile Dashboard' => '',
+	'Rich text editor is not supported by your browser. Continue with  HTML editor ?' => '',
+	'Syntax highlight is not supported by your browser. Disable to continue ?' => '',
+	'This function is not supported by [_1].' => '',
+	'This function is not supported by your browser.' => '',
+	'[_1] View' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Entry.pm
+	'Publish (s)' => 'Publiceer (s)',
+	'Re-Edit (e)' => '',
+	'Re-Edit' => '',
+	'Rich Text(HTML mode)' => '',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Listing.pm
+	'All' => '',
+	'Filters which you created from PC.' => '',
+	'_DISPLAY_OPTIONS_SHOW' => 'Toon',
+
+## plugins/SmartphoneOption/lib/Smartphone/CMS/Search.pm
+	'Search [_1]' => 'Doorzoek [_1]',
+
+## plugins/SmartphoneOption/smartphone.yaml
+	'Revision: <strong>[_1]</strong>' => 'Revisie: <strong>[_1]</strong>',
+	'Smartphone Main' => '',
+	'Smartphone Sub' => '',
+	'Unpublish' => 'Publicatie ongedaan maken',
+	'View revisions of this [_1]' => 'Revisies bekijken van [_1]',
+	'View revisions' => 'Revisies bekijken',
+	'to [_1]' => '',
+
+## plugins/SmartphoneOption/tmpl/cms/dialog/select_formatted_text.tmpl
+	'Continue (s)' => 'Doorgaan (s)',
+	'No boilerplate could be found.' => '',
 
 ## plugins/StyleCatcher/config.yaml
 	'A collection of styles compatible with Movable Type 4 default templates.' => 'Een verzameling stijlen compatibel met de standaardsjablonen van Movable Type 4.',
@@ -4107,6 +4224,60 @@ use vars qw( @ISA %Lexicon );
 	'Failed.' => 'Mislukt.',
 	'Moving storage of Widget Manager [_2]...' => 'Opslag voor widget manager [_2] aan het verhuizen...',
 	'Widget Manager version 1.1; This version of the plugin is to upgrade data from older version of Widget Manager that has been shipped with Movable Type to the Movable Type core schema.  No other features are included.  You can safely remove this plugin after installing/upgrading Movable Type.' => 'Widget Manager versie 1.1: Deze versie van de plugin dient om data van de oudere versie van Widget Manager die met Movable Type werd meegeleverd over te zetten naar de kern van Movable Type.  Er zitten geen andere opties in.  Deze plugin kan zonder problemen verwijderd worden na de installatie/upgrade van Movable Type.',
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Lite.pm
+	'An error occurred processing [_1]. A previous version of the feed was not available.A HTTP status of [_2] was returned.' => '', # Translate - New
+	'An error occurred processing [_1]. The previous version of the feed was used. A HTTP status of [_2] was returned.' => '', # Translate - New
+
+## plugins/feeds-app-lite/lib/MT/Feeds/Tags.pm
+	'MT[_1] was not used in the proper context.' => '',
+	q{'[_1]' is a required argument of [_2]} => q{},
+
+## plugins/feeds-app-lite/mt-feeds.pl
+	'Create a Feed Widget' => '',
+	'Feeds.App Lite helps you republish feeds on your blogs. Want to do more with feeds in Movable Type? <a href="http://code.appnel.com/feeds-app" target="_blank">Upgrade to Feeds.App</a>.' => '',
+
+## plugins/feeds-app-lite/tmpl/config.tmpl
+	'10' => '',
+	'3' => '',
+	'5' => '',
+	'Configure feed widget settings' => '',
+	'Enter a title for your widget.  This will also be displayed as the title of the feed when used on your published blog.' => '',
+	'Feeds.App Lite Widget Creator' => '',
+	'Select the maximum number of entries to display.' => '',
+	'[_1] Feed Widget' => '',
+
+## plugins/feeds-app-lite/tmpl/msg.tmpl
+	'A widget named <strong>[_1]</strong> has been created.' => '',
+	'Create Another' => '',
+	'Finish (s)' => 'Klaar (s)',
+	'Finish' => 'Klaar',
+	'No feeds could be discovered using [_1]' => '',
+	q{An error occurred processing [_1]. Check <a href="javascript:void(0)" onclick="closeDialog('http://www.feedvalidator.org/check.cgi?url=[_2]')">here</a> for more detail and please try again.} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using <a href="javascript:void(0)" onclick="closeDialog('[_3]')">WidgetManager</a> or the following MTInclude tag:} => q{},
+	q{You may now <a href="javascript:void(0)" onclick="closeDialog('[_2]')">edit &ldquo;[_1]&rdquo;</a> or include the widget in your blog using the following MTInclude tag:} => q{},
+
+## plugins/feeds-app-lite/tmpl/select.tmpl
+	'Multiple feeds were found' => '',
+	'Select the feed you wish to use. <em>Feeds.App Lite supports text-only RSS 1.0, 2.0 and Atom feeds.</em>' => '',
+	'URI' => '',
+
+## plugins/feeds-app-lite/tmpl/start.tmpl
+	'Create a widget from a feed' => '',
+	'Enter the URL of a feed, or the URL of a site that has a feed.' => '',
+	'Feed or Site URL' => '',
+	'You must enter a feed or site URL to proceed' => '',
+
+## plugins/mixiComment/lib/mixiComment/App.pm
+	'mixi reported that you failed to login.  Try again.' => '',
+
+## plugins/mixiComment/mixiComment.pl
+	'Allows commenters to sign in to Movable Type using their own mixi username and password via OpenID.' => '',
+	'mixi' => '',
+
+## plugins/mixiComment/tmpl/config.tmpl
+	'A mixi ID has already been registered in this blog.  If you want to change the mixi ID for the blog, <a href="[_1]">click here</a> to sign in using your mixi account.  If you want all of the mixi users to comment to your blog (not only your my mixi users), click the reset button to remove the setting.' => '',
+	'If you want to restrict comments only from your my mixi users, <a href="[_1]">click here</a> to sign in using your mixi account.' => '',
 
 ## plugins/spamlookup/lib/spamlookup.pm
 	'Domain IP does not match ping IP for source URL [_1]; domain IP: [_2]; ping IP: [_3]' => 'Domein IO komt niet overeen met ping IP van bron URL [_1]; domein IP: [_2]; ping IP: [_3]',
@@ -4247,21 +4418,6 @@ use vars qw( @ISA %Lexicon );
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Klassieke website',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Maak een blogportaal dat de inhoud van verschillende blogs samenbrengt in één website.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Gerelateerde inhoud',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Voorbeeld reactie bekijken',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Inschrijven',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Een collectie stijlen die compatibel zijn met het Pico thema.',
-	'Pico Styles' => 'Pico stijlen',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico is een microblogthema, ontworpen om eenvoudig veel updates aan te kunnen.  Om meer focus te richten op de inhoud staan de 'zijkolommen' onderaan de lijst met berichten.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Nieuw mediabestand uploaden',
@@ -4720,11 +4876,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/adjust_sitepath.tmpl
 	'Back (b)' => 'Terug (b)',
 	'Confirm Publishing Configuration' => 'Bevestig publicatieconfiguratie',
-	'Continue (s)' => 'Doorgaan (s)',
 	'Enter the new URL of the archives section of your blog. Example: http://www.example.com/blog/archives/' => 'Vul de nieuwe URL in van de archiefsectie van uw blog.  Voorbeeld: http://www.example.com/blog/archives/',
 	'Parent Website' => 'Moederwebsite',
 	'Please choose parent website.' => 'Gelieve de moederwebsite te kiezen',
-	'Site Path' => 'Sitepad',
 	'You must select a parent website.' => 'U moet een moederwebsite selecteren',
 	'You must set a valid Site URL.' => 'U moet een geldige URL instellen voor uw site.',
 	'You must set a valid local site path.' => 'U moet een geldig lokaal site-pad instellen.',
@@ -4764,8 +4918,6 @@ use vars qw( @ISA %Lexicon );
 	'Create a new entry using this uploaded file.' => 'Maak een nieuw bericht aan met dit opgeladen bestand',
 	'Create entry using this uploaded file' => 'Bericht aanmaken met dit opgeladen bestand',
 	'File Options' => 'Bestandsopties',
-	'Finish (s)' => 'Klaar (s)',
-	'Finish' => 'Klaar',
 
 ## tmpl/cms/dialog/asset_options_image.tmpl
 	'Display image in entry/page' => 'Afbeelding tonen in bericht/pagina',
@@ -4800,9 +4952,9 @@ use vars qw( @ISA %Lexicon );
 	'Your reply:' => 'Uw antwoord:',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	'No websites exist in this installation. [_1]Create a website</a>' => 'Er bestaan geen websites in deze installatie.[_1]Maak een website aan</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Er bestaan geen blogs in deze installatie.[_1]Maak een blog aan</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Er bestaan geen rollen in deze installatie.[_1]Maak een rol aan</a>',
+	'No websites exist in this installation. [_1]Create a website</a>' => 'Er bestaan geen websites in deze installatie.[_1]Maak een website aan</a>',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Apply' => 'Toepassen',
@@ -4841,6 +4993,9 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/dialog/multi_asset_options.tmpl
 	'Display [_1] in entry/page' => 'Weergeven van [_1] in bericht/pagina.',
 	'Insert Options' => 'Invoegopties',
+
+## tmpl/cms/dialog/new_password.tmpl
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Que.' => 'Alle sjablonen statisch publiceren via de publicatiewachtrij',
@@ -5115,7 +5270,6 @@ use vars qw( @ISA %Lexicon );
 	'Reset defaults' => 'Standaardinstellingen terugzetten',
 	'Reset display options to blog defaults' => 'Opties schermindeling terugzetten naar blogstandaard',
 	'Restored revision (Date:[_1]).  The current status is: [_2]' => 'Teruggeplaatste revisie (Datum:[_1]).  De huidige status is: [_1]',
-	'Revision: <strong>[_1]</strong>' => 'Revisie: <strong>[_1]</strong>',
 	'Save this [_1]' => '[_1] bewaren',
 	'Schedule' => 'Plannen',
 	'Share' => 'Delen',
@@ -5134,14 +5288,13 @@ use vars qw( @ISA %Lexicon );
 	'View Entry' => 'Bericht bekijken',
 	'View Page' => 'Pagina bekijken',
 	'View Previously Sent TrackBacks' => 'Eerder verzonden TrackBacks bekijken',
-	'View revisions of this [_1]' => 'Revisies bekijken van [_1]',
-	'View revisions' => 'Revisies bekijken',
 	'Warning: If you set the basename manually, it may conflict with another entry.' => 'Waarschuwing: de basisnaam van het bericht met de hand aanpassen kan een conflict met een ander bericht veroorzaken.',
 	'You have successfully deleted the checked TrackBack(s).' => 'U heeft de geselecteerde TrackBack(s) met succes verwijderd.',
 	'You have successfully deleted the checked comment(s).' => 'Verwijdering van de geselecteerde reactie(s) is geslaagd.',
 	'You have successfully recovered your saved entry.' => 'Veiligheidskopie van opgeslagen bericht met succes teruggehaald.',
 	'You have successfully recovered your saved page.' => 'Veiligheidskopie van opgeslagen pagina met succes teruggehaald.',
 	'You have unsaved changes to this entry that will be lost.' => 'U heeft niet opgeslagen wijzigingen aan dit bericht die verloren zullen gaan.',
+	'You have unsaved changes to this page that will be lost.' => 'U heeft niet opgeslagen veranderingen op deze pagina die verloren zullen geen.',
 	'You must configure this blog before you can publish this entry.' => 'U moet deze weblog configureren voor u dit bericht kunt publiceren.',
 	'You must configure this blog before you can publish this page.' => 'U moet deze weblog configureren voor u deze pagina kunt publiceren.',
 	'Your changes to the comment have been saved.' => 'Uw wijzigingen aan de reactie zijn opgeslagen.',
@@ -5496,7 +5649,6 @@ use vars qw( @ISA %Lexicon );
 	'Expanded' => 'Uitgebreid',
 	'Save display options' => 'Opties schermindeling opslaan',
 	'[quant,_1,row,rows]' => '[quant,_1,rij,rijen]',
-	'_DISPLAY_OPTIONS_SHOW' => 'Toon',
 
 ## tmpl/cms/include/entry_table.tmpl
 	'<a href="[_1]">Create an entry</a> now.' => 'Nu <a href="[_1]">een bericht aanmaken</a>.',
@@ -5530,7 +5682,6 @@ use vars qw( @ISA %Lexicon );
 ## tmpl/cms/include/header.tmpl
 	'Help' => 'Hulp',
 	'Search (q)' => 'Zoeken (q)',
-	'Search [_1]' => 'Doorzoek [_1]',
 	'Select an action' => 'Selecteer een actie',
 	'View Site' => 'Site bekijken',
 	'You have <strong>[quant,_1,message,messages]</strong> from the system.' => 'U heeft <strong>[quant,_1,bericht,berichten]</strong> van het systeem.',
@@ -5585,6 +5736,7 @@ use vars qw( @ISA %Lexicon );
 	'View the [_1] for this TrackBack' => 'De [_1] bekijken voor deze TrackBack',
 
 ## tmpl/cms/include/revision_table.tmpl
+	'*Deleted due to data breakage*' => '*Verwijderd wegens gegevensbreuk*',
 	'No revisions could be found.' => 'Geen revisies gevonden.',
 	'Note' => 'Noot',
 	'Saved By' => 'Opgeslagen door',
@@ -5857,7 +6009,6 @@ use vars qw( @ISA %Lexicon );
 	'Index Template: [_1]' => 'Indexsjabloon: [_1]',
 	'Only Indexes' => 'Alleen indexen',
 	'Only [_1] Archives' => 'Alleen archieven [_1]',
-	'Publish (s)' => 'Publiceer (s)',
 	'Publish <em>[_1]</em>' => 'Publiceer <em>[_1]</em>',
 	'Publish [_1]' => 'Publiceer [_1]',
 	'_REBUILD_PUBLISH' => 'Publiceren',
@@ -6193,7 +6344,6 @@ use vars qw( @ISA %Lexicon );
 	'More like this' => 'Meer zoals dit',
 	'On this day' => 'Op deze dag',
 	'On this entry' => 'Op dit bericht',
-	'Unpublish' => 'Publicatie ongedaan maken',
 
 ## tmpl/feeds/feed_entry.tmpl
 	'From this author' => 'Van deze auteur',

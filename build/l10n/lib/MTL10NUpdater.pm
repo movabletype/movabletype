@@ -322,6 +322,7 @@ sub find_phrases {
             tiny_mce/themes/silver/theme.js
             themes/mont-blanc/
             php/lib/content_field_type_lib.php
+            plugins/Motion/
         );
         $ignore_re = $rt->regexp;
     }

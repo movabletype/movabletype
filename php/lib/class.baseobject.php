@@ -9,6 +9,7 @@
  * Base class for mt object
  */
 require_once('adodb.inc.php');
+if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
 require_once('adodb-active-record.inc.php');
 require_once('adodb-exceptions.inc.php');
 
@@ -143,7 +144,7 @@ abstract class BaseObject extends ADOdb_Active_Record
         if (isset($extra['distinct'])) {
             $mt = MT::get_instance();
             $mtdb = $mt->db();
-            if ( !$mtdb->has_distinct_support ) {
+            if ( !$mtdb->has_distinct_support() ) {
                 $unique_myself = true;
                 $extra['distinct'] = null;
             }

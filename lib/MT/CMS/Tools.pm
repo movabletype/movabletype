@@ -316,9 +316,17 @@ sub new_password {
             $user->password_reset(undef);
             $user->password_reset_expires(undef);
             $user->password_reset_return_to(undef);
+            $user->modified_by($user->id);
             $user->save;
             $app->param( 'username', $user->name )
                 if $user->type == MT::Author::AUTHOR();
+
+            $app->log({
+                message  => $app->translate(q{The password for the user '[_1]' has been recovered.}, $user->name),
+                level    => MT::Log::NOTICE(),
+                class    => 'system',
+                category => 'password-recovery',
+            });
 
             if ( ref $app eq 'MT::App::CMS' && !$redirect ) {
                 $app->login;
@@ -1941,6 +1949,7 @@ sub adjust_sitepath {
         my $blog = $app->model('blog')->load($id)
             or return $app->error(
             $app->translate( 'Cannot load blog #[_1].', $id ) );
+        my $original           = $blog->clone();
         my $old_site_path      = scalar $q->param("old_site_path_$id");
         my $old_site_url       = scalar $q->param("old_site_url_$id");
         my $site_path          = scalar $q->param("site_path_$id") || q();
@@ -2052,6 +2061,8 @@ sub adjust_sitepath {
                     )
             );
         }
+        _call_pre_save_blog( $app, $blog, $original )
+            or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $blog->save
             or $app->print_encode( $app->translate("failed") . "\n" ), next;
         $app->print_encode( $app->translate("ok") . "\n" );
@@ -3196,6 +3207,19 @@ sub _log_dirty_restore {
 sub login_json {
     my $app = shift;
     return $app->json_result( { magic_token => $app->current_magic, } );
+}
+
+sub _call_pre_save_blog {
+    my ( $app, $blog, $original ) = @_;
+    my @types = ('blog');
+    if ( !$blog->is_blog() ) {
+        push @types, 'website';
+    }
+    my $filter_result = 1;
+    for my $t (@types) {
+        $filter_result &&= $app->run_callbacks( 'cms_pre_save.' . $t, $app, $blog, $original );
+    }
+    return $filter_result;
 }
 
 1;
