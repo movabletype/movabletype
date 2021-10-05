@@ -30,11 +30,17 @@ function score_for(&$ctx, $obj_id, $datasource, $namespace) {
 
 function vote_for(&$ctx, $obj_id, $datasource, $namespace) {
     $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
+    if (!isset($scores)) {
+        return 0;
+    }
     return count($scores);
 }
 
 function _score_top(&$ctx, $obj_id, $datasource, $namespace, $sorter) {
     $scores = $ctx->mt->db()->fetch_scores($namespace, $obj_id, $datasource);
+    if (!isset($scores)) {
+        return 0;
+    }
     if (0 == count($scores)) {
         return 0;
     }

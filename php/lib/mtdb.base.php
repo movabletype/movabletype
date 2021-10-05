@@ -7,6 +7,7 @@
 
 require_once('adodb-exceptions.inc.php');
 require_once('adodb.inc.php');
+if (!defined('ADODB_ASSOC_CASE')) define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_LOWER);
 require_once('adodb-active-record.inc.php');
 
 abstract class MTDatabase {
@@ -254,7 +255,7 @@ abstract class MTDatabase {
                 $ctx = $mt->context();
                 $blog = $ctx->stash('blog');
                 if ( !empty( $blog ) ) {
-                    $tag = $ctx->_tag_stack[count($ctx->_tag_stack)-1][0];
+                    $tag = is_array($ctx->_tag_stack) ? $ctx->_tag_stack[count($ctx->_tag_stack)-1][0] : null;
                     if ( !empty($tag)
                       && ( $tag === 'mtwebsitepingcount'
                         || $tag === 'mtwebsiteentrycount'
@@ -1703,7 +1704,7 @@ abstract class MTDatabase {
             return $this->_cat_id_cache['c'.$cat_id];
         }
         $cats = $this->fetch_categories(array('category_id' => $cat_id, 'show_empty' => 1));
-        if ($cats && (count($cats) > 0)) {
+        if (isset($cats) && (count($cats) > 0)) {
             $this->_cat_id_cache['c'.$cat_id] = $cats[0];
             return $cats[0];
         } else {
@@ -2584,9 +2585,9 @@ abstract class MTDatabase {
 
                 if ($row['blog_parent_id'] > 0 ) {
                     preg_match('/^(https?):\/\/(.+)\/$/', $row['website_url'], $matches);
-                    if ( count($matches > 1 ) ) {
+                    if ( count($matches) > 1 ) {
                         $site_url = preg_split( '/\/::\//', $blog_url );
-                        if ( count($site_url > 0 ) )
+                        if ( count($site_url) > 0 )
                             $path = $matches[1] . '://' . $site_url[0] . $matches[2] . '/' . $site_url[1];
                         else
                             $path = $row['website_url'] . $this->blog_url;
