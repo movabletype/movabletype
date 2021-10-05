@@ -14,7 +14,7 @@
 /**
 	\mainpage
 
-	@version   v5.20.17  31-Mar-2020
+	@version   v5.20.20  01-Feb-2021
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -224,7 +224,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.20.17  31-Mar-2020';
+		$ADODB_vers = 'v5.20.20  01-Feb-2021';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -457,7 +457,11 @@ if (!defined('_ADODB_LAYER')) {
 	var $hasTransactions = true;	/// has transactions
 	//--
 	var $genID = 0;					/// sequence id used by GenID();
-	var $raiseErrorFn = false;		/// error function to call
+
+	/**
+	 * @var string|false Error function to call
+	 */
+	var $raiseErrorFn = false;
 	var $isoDates = false;			/// accepts dates in ISO format
 	var $cacheSecs = 3600;			/// cache for 1 hour
 
@@ -483,8 +487,16 @@ if (!defined('_ADODB_LAYER')) {
 	var $autoRollback = false; // autoRollback on PConnect().
 	var $poorAffectedRows = false; // affectedRows not working or unreliable
 
+	/**
+	 * @var string|false Execute function to call
+	 */
 	var $fnExecute = false;
+
+	/**
+	 * @var string|false Cache execution function to call
+	 */
 	var $fnCacheExecute = false;
+
 	var $blobEncodeType = false; // false=not required, 'I'=encode to integer, 'C'=encode to char
 	var $rsPrefix = "ADORecordSet_";
 
@@ -860,9 +872,16 @@ if (!defined('_ADODB_LAYER')) {
 
 	/**
 	 * Requested by "Karsten Dambekalns" <k.dambekalns@fishfarm.de>
+	 * @deprecated 5.20.20
 	 */
 	function QMagic($s) {
-		return $this->qstr($s,get_magic_quotes_gpc());
+		// magic quotes
+		// PHP7.4 spits deprecated notice, PHP8 removed magic_* stuff
+		$magic_quotes = version_compare(PHP_VERSION, '7.4.0', '<')
+			&& function_exists('get_magic_quotes_gpc')
+			&& get_magic_quotes_gpc();
+
+		return $this->qstr($s, $magic_quotes);
 	}
 
 	function q(&$s) {
@@ -1600,7 +1619,8 @@ if (!defined('_ADODB_LAYER')) {
 	*/
 	function &_rs2rs(&$rs,$nrows=-1,$offset=-1,$close=true) {
 		if (! $rs) {
-			return false;
+			$ret = false;
+			return $ret;
 		}
 		$dbtype = $rs->databaseType;
 		if (!$dbtype) {
@@ -2064,7 +2084,12 @@ if (!defined('_ADODB_LAYER')) {
 		if (!$rs) {
 		// no cached rs found
 			if ($this->debug) {
-				if (get_magic_quotes_runtime() && !$this->memCache) {
+				// PHP7.4 spits deprecated notice, PHP8 removed magic_* stuff
+				if (!$this->memCache
+					&& version_compare(PHP_VERSION, '7.4.0', '<')
+					&& function_exists('get_magic_quotes_runtime')
+					&& get_magic_quotes_runtime()
+				) {
 					ADOConnection::outp("Please disable magic_quotes_runtime - it corrupts cache files :(");
 				}
 				if ($this->debug !== -1) {
@@ -3515,13 +3540,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		$results = array();
 		$cnt = 0;
 		while (!$this->EOF && $nRows != $cnt) {
-			// $results[] = $this->fields;
-			$rs = $this->fields;
-			$keys = array_keys($rs);
-			$new_rs = null;
-			foreach( $keys as $key )
-				$new_rs[strtolower($key)] = $rs[$key];
-			$results[] = $new_rs;
+			$results[] = $this->fields;
 			$this->MoveNext();
 			$cnt++;
 		}
@@ -4789,6 +4808,13 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		if (!defined('ADODB_ASSOC_CASE')) {
 			define('ADODB_ASSOC_CASE', ADODB_ASSOC_CASE_NATIVE);
 		}
+		
+		/*
+		* Are there special characters in the dsn password
+		* that disrupt parse_url
+		*/
+		$needsSpecialCharacterHandling = false;
+		
 		$errorfn = (defined('ADODB_ERROR_HANDLER')) ? ADODB_ERROR_HANDLER : false;
 		if (($at = strpos($db,'://')) !== FALSE) {
 			$origdsn = $db;
@@ -4810,9 +4836,28 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 					$path = substr($path,0,$qmark);
 				}
 				$dsna['path'] = '/' . urlencode($path);
-			} else
-				$dsna = @parse_url($fakedsn);
-
+			} else {
+			    /*
+				* Stop # character breaking parse_url
+				*/
+				$cFakedsn = str_replace('#','\035',$fakedsn);
+				if (strcmp($fakedsn,$cFakedsn) != 0) 
+				{
+					/*
+					* There is a # in the string
+					*/
+					$needsSpecialCharacterHandling = true;
+					
+					/*
+					* This allows us to successfully parse the url
+					*/
+					$fakedsn = $cFakedsn;
+					
+				}
+				
+				$dsna = parse_url($fakedsn);
+			}
+			
 			if (!$dsna) {
 				return false;
 			}
@@ -4838,10 +4883,19 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			if (!$db) {
 				return false;
 			}
+			
 			$dsna['host'] = isset($dsna['host']) ? rawurldecode($dsna['host']) : '';
 			$dsna['user'] = isset($dsna['user']) ? rawurldecode($dsna['user']) : '';
 			$dsna['pass'] = isset($dsna['pass']) ? rawurldecode($dsna['pass']) : '';
 			$dsna['path'] = isset($dsna['path']) ? rawurldecode(substr($dsna['path'],1)) : ''; # strip off initial /
+
+			if ($needsSpecialCharacterHandling) 
+			{
+				/*
+				* Revert back to the original string
+				*/
+				$dsna = str_replace('\035','#',$dsna);
+			}
 
 			if (isset($dsna['query'])) {
 				$opt1 = explode('&',$dsna['query']);
@@ -4852,6 +4906,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			} else {
 				$opt = array();
 			}
+
 		}
 	/*
 	 *  phptype: Database backend used in PHP (mysql, odbc etc.)

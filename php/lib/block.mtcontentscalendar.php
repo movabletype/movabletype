@@ -221,7 +221,7 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
         if (!$is_padding) {
             $this_day = $prefix . sprintf("%02d", $day - $pad_start);
             $no_loop = 0;
-            if (count($left)) {
+            if (isset($left) && count($left)) {
                 $data = $left[0]->data();
                 $datetime = '';
                 if(isset($data[$dt_field_id])){
@@ -261,10 +261,14 @@ function smarty_block_mtcontentcalendar($args, $content, &$ctx, &$repeat) {
             $ctx->stash('current_timestamp_end', $this_day . '235959');
             $ctx->stash('CalendarDay', $day - $pad_start);
         }
+        $count = 0;
+        if (isset($cds)) {
+            $count = count($cds);
+        }
         $ctx->stash('CalendarWeekHeader', ($day - 1) % 7 == 0);
         $ctx->stash('CalendarWeekFooter', $day % 7 == 0);
-        $ctx->stash('CalendarIfContents', !$is_padding && count($cds));
-        $ctx->stash('CalendarIfNoContents', !$is_padding && !count($cds));
+        $ctx->stash('CalendarIfContents', !$is_padding && $count);
+        $ctx->stash('CalendarIfNoContents', !$is_padding && !$count);
         $ctx->stash('CalendarIfToday', $today == $this_day);
         $ctx->stash('CalendarIfBlank', $is_padding);
         $ctx->stash('cal_day', $day + 1);

@@ -4279,6 +4279,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                        $content_type_filter
                      group by
                            $year_ext,
+                           $cat_target_col,
                            category_label
                      order by
                            category_label $cat_order,
@@ -4431,6 +4432,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                      group by
                            $year_ext,
                            $month_ext,
+                           $cat_target_col,
                            category_label
                      order by
                            category_label $cat_order,
@@ -4585,6 +4587,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                            $year_ext,
                            $month_ext,
                            $day_ext,
+                           $cat_target_col,
                            category_label
                      order by
                            category_label $cat_order,
@@ -4743,6 +4746,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                        $content_type_filter
                      group by
                            $week_number,
+                           $cat_target_col,
                            category_label
                      order by
                            category_label $cat_order,

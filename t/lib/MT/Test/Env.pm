@@ -502,7 +502,7 @@ sub my_cnf {
 
     my %cnf = (
         'skip-networking' => '',
-        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO',    ## ONLY_FULL_GROUP_BY
+        'sql_mode'        => 'TRADITIONAL,NO_AUTO_VALUE_ON_ZERO,ONLY_FULL_GROUP_BY',
     );
 
     my ($major_version, $minor_version, $is_maria) = _mysql_version();
