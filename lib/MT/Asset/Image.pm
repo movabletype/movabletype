@@ -489,10 +489,11 @@ sub insert_options {
     $param->{do_thumb}
         = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
+    $param->{can_popup}  = $blog->can_image_popup();
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
     $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
-    $param->{popup_link} = $blog->image_default_link;
+    $param->{popup_link} = $param->{can_popup} ? $blog->image_default_link : 2;
     $param->{ 'align_' . $_ }
         = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
         for qw(none left center right);

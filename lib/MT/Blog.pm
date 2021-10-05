@@ -1743,6 +1743,25 @@ sub _adjust_threshold {
     }
 }
 
+sub can_image_popup {
+    my $blog = shift;
+    return 0 if MT->config('DisableImagePopup');
+
+    if (
+        MT->model('template')->exist(
+            {
+                blog_id => $blog->id,
+                type    => 'popup_image'
+            }
+        )
+      )
+    {
+        return 1;
+    }
+    return 0;
+}
+
+
 1;
 __END__
 
