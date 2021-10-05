@@ -1314,6 +1314,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を追加しました},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{[_3]がコンテンツタイプ '[_2]' (ID: [_2])を削除しました},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{[_3]がコンテンツタイプ '[_1]' (ID: [_2]) を変更しました},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{コンテンツフィールド'[_1]'と'[_2]'を同じコンテンツタイプ内で同時に利用することはできません},
+	q{Field '[_1]' must be unique in this content type.} => q{コンテンツフィールド'[_1]'が重複しています},
 	q{Name '[_1]' is already used.} => q{'[_1]'はすでに存在します},
 
 ## lib/MT/CMS/Dashboard.pm
@@ -4330,6 +4332,7 @@ use vars qw( @ISA %Lexicon );
 	'Confirm New Password' => '新しいパスワード確認',
 	'Enter the new password.' => '新しいパスワードを入力してください。',
 	'New Password' => '新しいパスワード',
+	'The password for the user \'[_1]\' has been recovered.' => 'ユーザー「[_1]」のパスワードが再設定されました。',
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'すべてのテンプレートを公開キュー経由でスタティックパブリッシングします。',

@@ -1314,6 +1314,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{Type de contenu '[_1]' (ID:[_2]) ajouté par l'utilisateur '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Type de contenu '[_1]' (ID:[_2]) supprimé par '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{Type de contenu '[_1]' (ID:[_2]) modifié par l'utilisateur '[_3]'},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{}, # Translate - New
+	q{Field '[_1]' must be unique in this content type.} => q{}, # Translate - New
 	q{Name '[_1]' is already used.} => q{Le nom '[_1]' est déjà utilisé.},
 
 ## lib/MT/CMS/Dashboard.pm
@@ -4329,6 +4331,7 @@ réessayer plus tard.',
 	'Confirm New Password' => 'Confirmer le nouveau mot de passe',
 	'Enter the new password.' => 'Saisissez le nouveau mot de passe.',
 	'New Password' => 'Nouveau mot de passe',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'Are you sure you wish to continue?' => 'Voulez-vous vraiment continuer ?',

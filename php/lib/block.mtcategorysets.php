@@ -84,7 +84,7 @@ function smarty_block_mtcategorysets($args, $content, &$ctx, &$repeat) {
         $cs = $category_sets[$counter];
         $count = $counter + 1;
         $ctx->__stash['vars']['__first__'] = $count == 1;
-        $ctx->__stash['vars']['__last__'] = ($count == count($categories));
+        $ctx->__stash['vars']['__last__'] = ($count == count($category_sets));
         $ctx->__stash['vars']['__odd__'] = ($count % 2) == 1;
         $ctx->__stash['vars']['__even__'] = ($count % 2) == 0;
         $ctx->__stash['vars']['__counter__'] = $count;

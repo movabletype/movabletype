@@ -1,6 +1,6 @@
 <?php
 /*
-@version   v5.20.17  31-Mar-2020
+@version   v5.20.20  01-Feb-2021
 @copyright (c) 2000-2013 John Lim. All rights reserved.
 @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -100,7 +100,7 @@ class ADODB_oci8po extends ADODB_oci8 {
 	*
 	* @return	string	The modified statement
 	*/	
-	final private function extractBinds($sql,$inputarr)
+	private function extractBinds($sql,$inputarr)
 	{
 		$inString  = false;
 		$escaped   = 0;
@@ -120,7 +120,7 @@ class ADODB_oci8po extends ADODB_oci8 {
 			/*
 			* find the next character of the string
 			*/
-			$c = $sql{$i};
+			$c = $sql[$i];
 
 			if ($c == "'" && !$inString && $escaped==0)
 				/*

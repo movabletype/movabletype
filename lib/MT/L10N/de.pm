@@ -1314,6 +1314,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{Inhaltstyp '[_1]' (ID:[_2]) von Benutzer '[_3]' hinzugefügt},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Inhaltstyp '[_1]' (ID:[_2]) von Benutzer '[_3]' gelöscht},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{Inhaltstyp '[_1]' (ID:[_2]) von Benutzer '[_3]' bearbeitet},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{}, # Translate - New
+	q{Field '[_1]' must be unique in this content type.} => q{}, # Translate - New
 	q{Name '[_1]' is already used.} => q{Der Name '[_1]' wird bereits verwendet.},
 
 ## lib/MT/CMS/Dashboard.pm
@@ -4330,6 +4332,7 @@ itte versuchen Sie es später erneut.',
 	'Confirm New Password' => 'Neues Passwort bestätigen',
 	'Enter the new password.' => 'Neues Passwort eingeben',
 	'New Password' => 'Neues Passwort',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'Alle Vorlagen im Hintergrund statisch veröffentlichen.',
