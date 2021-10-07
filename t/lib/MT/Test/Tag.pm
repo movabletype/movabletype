@@ -66,7 +66,7 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            my $result = eval { $tmpl->build };
+            my $got = eval { $tmpl->build };
 
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -85,8 +85,7 @@ sub run_perl_tests {
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-                local $TODO = "may fail"
-                    if $expected_error_method =~ /^expected_todo_/;
+                local $TODO = "may fail" if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
                     _filter_vars( $block->$expected_error_method ),
                     $test_name_prefix . $block->name . ' (error)'
@@ -99,27 +98,24 @@ sub run_perl_tests {
                     "expected_$method_name", "expected_todo"
                 );
                 for my $method (@extra_methods) {
-                    if ( exists $block->{$method} ) {
+                    if (exists $block->{$method}) {
                         $expected_method = $method;
                         last;
                     }
                 }
 
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
-                    if defined $result;
+                $got =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g if defined $got;
 
-                local $TODO = "may fail"
-                    if $expected_method =~ /^expected_todo/;
+                local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
-                my $got    = $result;
-                my $tester = $block->$expected_method;
-                $tester = _filter_vars($tester) unless ref($tester);
-                my $name   = $test_name_prefix . $block->name;
+                my $expected     = _filter_vars($block->$expected_method);
+                my $expected_ref = ref($expected);
+                my $name         = $test_name_prefix . $block->name;
 
-                if ( ref($tester) && ref($tester) eq 'Regexp' ) {
-                    like( $got, $tester, $name );
+                if ($expected_ref && $expected_ref eq 'Regexp') {
+                    like($got, $expected, $name);
                 } else {
-                    is( $got, $tester, $name );
+                    is($got, $expected, $name);
                 }
             }
         }
@@ -159,7 +155,7 @@ SKIP: {
                 my $php_script = php_test_script( $block->blog_id || $blog_id,
                     $template, $text, $extra );
 
-                my $php_result = MT::Test::PHP->run($php_script);
+                my $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -187,26 +183,24 @@ SKIP: {
                         last;
                     }
                 }
-                my $expected = $block->$expected_method;
-                $expected = '' unless defined $expected;
-                $expected =~ s/\\r/\\n/g unless (ref($expected));
-                $expected =~ s/\r/\n/g unless (ref($expected));
+                my $expected_src = $block->$expected_method // '';
+                $expected_src =~ s/\\r/\\n/g;
+                $expected_src =~ s/\r/\n/g;
 
                 # for Smarty 3.1.32+
-                $php_result =~ s/\n//gs;
-                $expected   =~ s/\n//gs;
+                $got          =~ s/\n//gs;
+                $expected_src =~ s/\n//gs;
 
-                local $TODO = "may fail"
-                    if $expected_method =~ /^expected_(?:php_)?todo/;
+                local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $got    = MT::I18N::encode_text($php_result, undef, 'utf-8');
-                my $tester = ref($expected) ? $expected : _filter_vars(MT::I18N::encode_text($expected, undef, 'utf-8'));
-                my $name   = $test_name_prefix . $block->name . ' - dynamic';
+                my $expected_ref = ref($expected_src);
+                my $expected     = _filter_vars($expected_src);
+                my $name         = $test_name_prefix . $block->name . ' - dynamic';
 
-                if ( ref($tester) && ref($tester) eq 'Regexp' ) {
-                    like( $got, $tester, $name );
+                if ($expected_ref && $expected_ref eq 'Regexp') {
+                    like($got, $expected, $name);
                 } else {
-                    is( $got, $tester, $name );
+                    is($got, $expected, $name);
                 }
             }
         }
