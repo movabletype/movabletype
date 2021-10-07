@@ -8,11 +8,8 @@ use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
-    );
+    $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
-    $ENV{MT_APP}    = 'MT::App::CMS';
 }
 
 use MT::Test::Tag;

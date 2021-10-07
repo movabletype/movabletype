@@ -12,7 +12,6 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-use MT::Util qw(ts2epoch epoch2ts);
 
 $test_env->prepare_fixture('db');
 
