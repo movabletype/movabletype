@@ -26,5 +26,5 @@ __DATA__
 === test 1
 --- template
 <mt:PasswordValidation form="password_reset_form" password="mypassfield" username="myusernamefield">
---- expected chop regexify
-(?s:function verify_password.+mypassfield.+myusernamefield)
+--- expected regexp=s
+function verify_password.+mypassfield.+myusernamefield

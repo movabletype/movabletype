@@ -272,11 +272,4 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 PHP
 }
 
-package MT::Test::Tag::Filter;
-use strict;
-use warnings;
-use Test::Base::Filter -base;
-
-sub regexify { qr{$_[0]} }
-
 1;

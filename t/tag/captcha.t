@@ -31,5 +31,5 @@ __DATA__
 === test 1
 --- template
 <mt:CaptchaFields>
---- expected chop regexify
+--- expected regexp
 <input type="hidden" name="token" value="[^"]{40}" />
