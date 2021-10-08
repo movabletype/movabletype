@@ -5608,15 +5608,17 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 --- expected
 <strong>
 
-=== include file
---- mt_config eval
+=== test 883-1
+--- mt_config
 {AllowFileInclude => 1}
 --- template embed_path=FILE-CONTENT
 left <mt:Include file="PATH"> right
 --- expected
 left FILE-CONTENT right
 
-=== test 883
+=== test 883-2
+--- mt_config
+{AllowFileInclude => 0}
 --- template
 left <mt:Include file="PATH"> right
 --- expected_error

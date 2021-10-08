@@ -53,7 +53,8 @@ sub run_perl_tests {
     SKIP: {
             skip $block->skip, 1 if $block->skip;
 
-            __PACKAGE__->_update_config($block);
+            my $prev_config = __PACKAGE__->_update_config($block->mt_config);
+
             MT::Request->instance->reset;
 
             my $tmpl = MT::Template->new( type => 'index' );
@@ -120,6 +121,7 @@ sub run_perl_tests {
                     is($got, $expected, $name);
                 }
             }
+            __PACKAGE__->_update_config($prev_config);
         }
     }
 }
@@ -149,7 +151,7 @@ SKIP: {
                 skip $block->skip, 1 if $block->skip;
                 skip 'skip php test', 1 if defined($block->skip_php // $block->SKIP_PHP);
 
-                __PACKAGE__->_update_config($block);
+                my $prev_config = __PACKAGE__->_update_config($block->mt_config);
 
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
@@ -206,6 +208,7 @@ SKIP: {
                 } else {
                     is($got, $expected, $name);
                 }
+                __PACKAGE__->_update_config($prev_config);
             }
         }
     }
@@ -277,21 +280,16 @@ PHP
 }
 
 sub _update_config {
-    my $block = @_ == 1 ? $_[0] : $_[1];
-    state $config_backup;
-    require File::Copy;
-    if ($config_backup) {
-        File::Copy::move($ENV{MT_CONFIG}. '~', $ENV{MT_CONFIG});
-        MT->instance->init_config;
-        $config_backup = undef;
+    my $config = shift || return;
+    $config = eval($config) unless ref($config);
+
+    my %prev;
+    for my $key (keys %$config) {
+        $prev{$key} = MT->instance->config($key);
+        MT->config($key, $config->{$key}, 1);
     }
-    if ($block->mt_config) {
-        my $config = $block->mt_config;
-        $config_backup = 1;
-        File::Copy::copy($ENV{MT_CONFIG}, $ENV{MT_CONFIG}. '~');
-        $main::test_env->update_config(%$config);
-        MT->instance->init_config;
-    }
+    MT->config->save_config;
+    return \%prev;
 }
 
 1;
