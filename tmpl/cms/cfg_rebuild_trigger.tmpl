@@ -27,15 +27,17 @@
       <mt:var name="error">
     </mtapp:statusmsg>
   </mt:if>
-  <mt:unless name="blog_id">
-    <mt:if name="config_warning_default_access_allowed">
-      <mtapp:statusmsg
-         id="info"
-         class="info"
-         can_close="0">
-        <mt:var name="config_warning_default_access_allowed">
-      </mtapp:statusmsg>
-    </mt:if>
+  <mt:unless name="disable_self_managed">
+    <mt:unless name="blog_id">
+      <mt:if name="config_warning_default_access_allowed">
+        <mtapp:statusmsg
+           id="info"
+           class="info"
+           can_close="0">
+          <mt:var name="config_warning_default_access_allowed">
+        </mtapp:statusmsg>
+      </mt:if>
+    </mt:unless>
   </mt:unless>
 </mt:setvarblock>
 

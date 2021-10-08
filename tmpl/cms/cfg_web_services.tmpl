@@ -20,14 +20,16 @@
     <__trans phrase="Your preferences have been saved.">
   </mtapp:statusmsg>
 </mt:if>
-<mt:if name="config_warning">
-  <mtapp:statusmsg
-     id="info"
-     class="info"
-     can_close="0">
-    <mt:var name="config_warning">
-  </mtapp:statusmsg>
-</mt:if>
+<mt:unless name="disable_self_managed">
+  <mt:if name="config_warning">
+    <mtapp:statusmsg
+       id="info"
+       class="info"
+       can_close="0">
+      <mt:var name="config_warning">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
 </mt:setvarblock>
 
 <mt:setvarblock name="page_content">
