@@ -22,17 +22,9 @@ my $app = MT->instance;
 
 $test_env->prepare_fixture('db');
 
-
-sub compress {
-    my $d = shift;
-    $d =~ s{[\x0d\x0a\s]}{ }g;
-    $d =~ s{\s$}{};
-    $d;
-}
-
 filters {
-    template => [qw( compress )],
-    expected => [qw( compress )],
+    template => [qw( trim )],
+    expected => [qw( trim )],
 };
 
 MT::Test::Tag->run_perl_tests(1, \&_set_mapping_url_perl);
@@ -67,14 +59,30 @@ left<current><mt:IfCurrentPage><mt:PagerLink></mt:IfCurrentPage></current>
 </mt:PagerBlock>
 --- expected
 left
-left<current></current> <prev>limit=2&page=1</prev> <more>limit=2&page=3</more>
- left<current>limit=2&page=2</current> <prev>limit=2&page=1</prev> <more>limit=2&page=3</more>
- left<current></current> <prev>limit=2&page=1</prev> <more>limit=2&page=3</more>
+left<current></current>
+<prev>limit=2&page=1</prev>
+<more>limit=2&page=3</more>
+
+left<current>limit=2&page=2</current>
+<prev>limit=2&page=1</prev>
+<more>limit=2&page=3</more>
+
+left<current></current>
+<prev>limit=2&page=1</prev>
+<more>limit=2&page=3</more>
 --- expected_php
 left
- left<current></current> <prev>?limit=2</prev> <more>?limit=2&offset=4</more>
-  left<current>?limit=2&offset=2</current> <prev>?limit=2</prev> <more>?limit=2&offset=4</more>
-  left<current></current> <prev>?limit=2</prev> <more>?limit=2&offset=4</more>
+left<current></current>
+<prev>?limit=2</prev>
+<more>?limit=2&offset=4</more>
+
+left<current>?limit=2&offset=2</current>
+<prev>?limit=2</prev>
+<more>?limit=2&offset=4</more>
+
+left<current></current>
+<prev>?limit=2</prev>
+<more>?limit=2&offset=4</more>
 
 === test PagerBlock
 --- template
