@@ -59,6 +59,17 @@ filters {
     expected_php => [qw( var )],
 };
 
+sub embed_path {
+    my $in = shift;
+    my $cont = filter_arguments;
+    require File::Temp;
+    my ( $fh, $file ) = File::Temp::tempfile();
+    print $fh $cont;
+    close $fh;
+    $in =~ s{PATH}{$file};
+    $in;
+}
+
 sub fix_path { File::Spec->canonpath(shift) }
 
 my $blog_id = 1;
@@ -5596,6 +5607,14 @@ Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 <mt:Calendar><mt:CalendarIfToday><strong></mt:CalendarIfToday></mt:Calendar>
 --- expected
 <strong>
+
+=== include file
+--- mt_config eval
+{AllowFileInclude => 1}
+--- template embed_path=FILE-CONTENT
+left <mt:Include file="PATH"> right
+--- expected
+left FILE-CONTENT right
 
 === test 883
 --- template

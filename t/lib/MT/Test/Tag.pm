@@ -8,6 +8,7 @@ package MT::Test::Tag;
 use strict;
 use warnings;
 use Encode;
+use v5.10;
 use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
@@ -52,6 +53,7 @@ sub run_perl_tests {
     SKIP: {
             skip $block->skip, 1 if $block->skip;
 
+            __PACKAGE__->_update_config($block);
             MT::Request->instance->reset;
 
             my $tmpl = MT::Template->new( type => 'index' );
@@ -146,6 +148,8 @@ SKIP: {
         SKIP: {
                 skip $block->skip, 1 if $block->skip;
                 skip 'skip php test', 1 if defined($block->skip_php // $block->SKIP_PHP);
+
+                __PACKAGE__->_update_config($block);
 
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
@@ -270,6 +274,24 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 
 ?>
 PHP
+}
+
+sub _update_config {
+    my $block = @_ == 1 ? $_[0] : $_[1];
+    state $config_backup;
+    require File::Copy;
+    if ($config_backup) {
+        File::Copy::move($ENV{MT_CONFIG}. '~', $ENV{MT_CONFIG});
+        MT->instance->init_config;
+        $config_backup = undef;
+    }
+    if ($block->mt_config) {
+        my $config = $block->mt_config;
+        $config_backup = 1;
+        File::Copy::copy($ENV{MT_CONFIG}, $ENV{MT_CONFIG}. '~');
+        $main::test_env->update_config(%$config);
+        MT->instance->init_config;
+    }
 }
 
 1;
