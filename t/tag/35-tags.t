@@ -5616,3 +5616,9 @@ left File include is disabled by "AllowFileInclude" config directive. right
 <mt:CaptchaFields>
 --- expected regexp
 <input type="hidden" name="token" value="[^"]{40}" />
+
+=== test 886
+--- template
+<mt:PasswordValidation form="password_reset_form" password="mypassfield" username="myusernamefield">
+--- expected regexp=s
+function verify_password.+mypassfield.+myusernamefield
