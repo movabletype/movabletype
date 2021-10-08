@@ -2202,6 +2202,8 @@ sub build_page {
         $param->{ $config_field . '_readonly' } = 1;
     }
 
+    $param->{disable_self_managed} = $mt->config->DisableSelfManaged;
+
     my $tmpl_file = '';
     if ( UNIVERSAL::isa( $file, 'MT::Template' ) ) {
         $tmpl      = $file;
