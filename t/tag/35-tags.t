@@ -20,6 +20,8 @@ my $server_path = MT->instance->server_path;
 $server_path =~ s|\\|/|g if $^O eq 'MSWin32';
 
 my $blog = MT::Blog->load(1);
+$blog->captcha_provider('mt_default');
+$blog->save;
 
 my $asset = MT::Asset->load(1);
 my ($year, $month) = unpack 'A4A2', $asset->created_on;
@@ -927,7 +929,7 @@ Example Blog
 --- template
 <MTCategories show_empty="1"><MTCategoryLabel>: <MTCategoryTrackbackLink> </MTCategories>
 --- expected
-bar: http://narnia.na/cgi-bin/mt-tb.cgi/2 foo:  subfoo:  
+bar: http://narnia.na/cgi-bin/mt-tb.cgi/2 foo:  subfoo:
 
 === test 130
 --- template
@@ -1001,7 +1003,7 @@ April  5, 2005 12:00 AM
 --- template
 <MTEntries lastn="1"><MTPingsSent><MTPingsSentURL>; </MTPingsSent></MTEntries>
 --- expected
-http://technorati.com/; 
+http://technorati.com/;
 
 === test 142
 --- template
@@ -1170,7 +1172,7 @@ active
 --- template
 <MTEntries lastn="10"><MTEntryID> <MTEntryCommentCount>; </MTEntries>
 --- expected
-1 3; 8 1; 7 0; 6 3; 5 1; 4 0; 
+1 3; 8 1; 7 0; 6 3; 5 1; 4 0;
 
 === test 168
 --- template
@@ -5197,7 +5199,7 @@ true
 --- template
  <mt:assets tag="not_exists"><mt:if tag="categorybasename"></mt:if><mt:assetproperty property="file_size" format="0"></mt:assets>
 --- expected
- 
+
 
 === test 818
 --- template
@@ -5608,3 +5610,9 @@ left File include is disabled by "AllowFileInclude" config directive. right
 <MTPages no_folder="1"><MTPageID>;</MTPages>
 --- expected
 20;
+
+=== test 885
+--- template
+<mt:CaptchaFields>
+--- expected regexp
+<input type="hidden" name="token" value="[^"]{40}" />
