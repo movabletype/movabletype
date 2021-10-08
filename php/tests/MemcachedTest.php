@@ -17,11 +17,11 @@ class MemcachedTest extends TestCase {
         $a->replace('a', 'c', 10);
         $this->assertEquals($a->get('a'), 'c');
         $a->delete('a');
-        $this->assertEquals($a->get('a'), null);
+        $this->assertNull($a->get('a'));
         $a->set('c', 'd', 10);
         $this->assertEquals($a->get('c'), 'd');
         $a->flush_all();
-        $this->assertEquals($a->get('c'), null);
+        $this->assertNull($a->get('c'));
     }
     
     public function testCacheMemcache() {
@@ -45,6 +45,6 @@ class MemcachedTest extends TestCase {
         $multi = $a->get_multi(array('a', 'c'));
         $this->assertEquals($multi['a'], 'b');
         $this->assertEquals($multi['c'], 'd');
-        $this->assertEquals($multi['e'], null);
+        $this->assertEquals(count($multi), 2);
     }
 }
