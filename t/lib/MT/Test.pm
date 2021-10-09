@@ -634,18 +634,17 @@ sub init_data {
     }
 
     my @verses = (
-        'Oh, where have you been, my blue-eyed son?
-Oh, where have you been, my darling young one?',
-        'I saw a newborn baby with wild wolves all around it
-I saw a highway of diamonds with nobody on it',
-        'Heard one hundred drummers whose hands were a-blazin\',
-Heard ten thousand whisperin\' and nobody listenin\'',
-        'I met one man who was wounded in love,
-I met another man who was wounded with hatred',
-        'Where hunger is ugly, where souls are forgotten,
-Where black is the color, where none is the number,
-And it\'s a hard, it\'s a hard, it\'s a hard, it\'s a hard,
-It\'s a hard rain\'s a-gonna fall',
+        'I must be cruel only to be kind;' . "\n" . 'Thus bad begins, and worse remains behind.',
+        'Look like the innocent flower,' . "\n" . 'But be the serpent under it.',
+        'Me, poor man, my library' . "\n" . 'Was dukedom large enough.',
+        'The Devil hath power' . "\n" . 'To assume a pleasing shape.',
+        join(
+            "\n",
+            'The weight of this sad time we must obey,',
+            'Speak what we feel, not what we ought to say.',
+            'The oldest hath borne most: we that are young',
+            'Shall never see so much, nor live so long.'
+        ),
     );
 
     require MT::Category;
