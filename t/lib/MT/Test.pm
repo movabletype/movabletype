@@ -564,7 +564,7 @@ sub init_data {
             {   blog_id        => 1,
                 title          => 'A preponderance of evidence',
                 text           => 'It is sufficient to say...',
-                text_more      => 'I suck at making up test data.',
+                text_more      => 'Brevity is the soul of wit.',
                 created_on     => '19790131074500',
                 modified_on    => '19790131074600',
                 authored_on    => '19780131074500',
