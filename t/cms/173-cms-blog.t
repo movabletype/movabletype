@@ -167,4 +167,48 @@ subtest 'Check callbacks for saving' => sub {
     like $app->message_text => qr/Your preferences have been saved/, 'Saved successfully';
 };
 
+subtest 'Check image disable popup' => sub {
+    my $app = MT::Test::App->new('MT::App::CMS');
+
+    subtest 'check image popup enabled' => sub {
+        $app->login($user);
+        $app->get_ok(
+            {
+                __mode  => 'cfg_entry',
+                blog_id => $website->id
+            }
+        );
+        $app->content_like( 'id="image_default_link_popup"', 'output' );
+    };
+
+    subtest 'change DisableImagePopup 1' => sub {
+        MT->config( "DisableImagePopup", 1 );
+        $app->get_ok(
+            {
+                __mode  => 'cfg_entry',
+                blog_id => $website->id
+            }
+        );
+        $app->content_unlike( 'id="image_default_link_popup"', 'output' );
+        MT->config( "DisableImagePopup", 0 );
+    };
+
+    subtest 'remove popup_image template' => sub {
+        MT->model('template')->remove(
+            {
+                blog_id => $website->id,
+                type    => 'popup_image'
+            }
+        );
+        $app->get_ok(
+            {
+                __mode  => 'cfg_entry',
+                blog_id => $website->id
+            }
+        );
+        $app->content_unlike( 'id="image_default_link_popup"', 'output' );
+    };
+};
+
+
 done_testing;
