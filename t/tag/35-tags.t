@@ -2122,13 +2122,13 @@ flow;river;watch;
 --- template
 <MTPages id='20'><MTPageTitle></MTPages>
 --- expected
-Watching the River Flow
+But in ourselves, that we are underlings.
 
 === test 323
 --- template
 <MTPages id='20'><MTPageBody></MTPages>
 --- expected
-<p>What the matter with me,</p>
+<p>Men at some time are masters of their fates:</p>
 
 === test 324
 --- template
@@ -2311,7 +2311,7 @@ Chuck D;Chucky Dee;chuckd@example.com;http://chuckd.com/;
 --- template
 <MTArchiveList type='Monthly'><MTPages><MTPageTitle></MTPages></MTArchiveList>
 --- expected
-Watching the River Flow
+But in ourselves, that we are underlings.
 
 === test 354
 --- template
@@ -2336,7 +2336,7 @@ EntryMonthlyWeeklyDailyCategoryPageAuthor
 --- template
 <MTPages id='20'><$MTPageMore$></MTPages>
 --- expected
-<p>I don't have much to say,</p>
+<p>The fault, dear Brutus, is not in our stars,</p>
 
 === test 358
 --- template

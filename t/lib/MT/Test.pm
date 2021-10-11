@@ -1201,9 +1201,9 @@ sub init_data {
     my $page = MT::Page->new();
     $page->set_values(
         {   blog_id     => 1,
-            title       => 'Watching the River Flow',
-            text        => 'What the matter with me,',
-            text_more   => 'I don\'t have much to say,',
+            title       => 'But in ourselves, that we are underlings.',
+            text        => 'Men at some time are masters of their fates:',
+            text_more   => 'The fault, dear Brutus, is not in our stars,',
             keywords    => 'no folder',
             excerpt     => 'excerpt',
             created_on  => '19780131074500',
@@ -1277,8 +1277,8 @@ sub init_data {
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #1',
-            text        => 'Wish I was back in the city',
-            text_more   => 'Instead of this old bank of sand,',
+            text        => 'Good night, good night! Parting is such sweet sorrow,',
+            text_more   => 'That I shall say good night till it be morrow.',
             keywords    => 'keywords',
             created_on  => '19790131074500',
             authored_on => '19790131074500',
@@ -1303,8 +1303,8 @@ sub init_data {
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #2',
-            text        => 'With the sub beating down over the chimney tops',
-            text_more   => 'And the one I love so close at hand',
+            text        => 'By the pricking of my thumbs,',
+            text_more   => 'Something wicked this way comes.',
             keywords    => 'keywords',
             created_on  => '19800131074500',
             authored_on => '19800131074500',
@@ -1329,8 +1329,8 @@ sub init_data {
     $page->set_values(
         {   blog_id     => 1,
             title       => 'Page #3',
-            text        => 'If I had wings and I could fly,',
-            text_more   => 'I know where I would go.',
+            text        => 'Good night, good night! parting is such sweet sorrow,',
+            text_more   => 'That I shall say good night till it be morrow.',
             keywords    => 'keywords',
             created_on  => '19810131074500',
             authored_on => '19810131074500',
