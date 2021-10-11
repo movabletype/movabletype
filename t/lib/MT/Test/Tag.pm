@@ -286,6 +286,7 @@ sub _update_config {
     my %prev;
     for my $key (keys %$config) {
         $prev{$key} = MT->instance->config($key);
+        MT->config($key, $config->{$key});
         MT->config($key, $config->{$key}, 1);
     }
     MT->config->save_config;
