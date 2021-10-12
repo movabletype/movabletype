@@ -188,4 +188,38 @@ subtest 'Check callbacks for saving' => sub {
     done_testing;
 };
 
+subtest 'Check image disable popup' => sub {
+    my %param = (
+        __test_user      => $user,
+        __mode           => 'cfg_entry',
+        blog_id          => $website->id
+    );
+
+    subtest 'check image popup enabled' => sub {
+        my $app = _run_app( 'MT::App::CMS', \%param );
+        my $out = delete $app->{__test_output};
+        like( $out, qr/id="image_default_popup"/, 'output' );
+    };
+
+    subtest 'change DisableImagePopup 1' => sub {
+        MT->config( "DisableImagePopup", 1 );
+        my $app = _run_app( 'MT::App::CMS', \%param );
+        my $out = delete $app->{__test_output};
+        unlike( $out, qr/id="image_default_popup"/, 'output' );
+        MT->config( "DisableImagePopup", 0 );
+    };
+
+    subtest 'remove popup_image template' => sub {
+        MT->model('template')->remove(
+            {
+                blog_id => $website->id,
+                type    => 'popup_image'
+            }
+        );
+        my $app = _run_app( 'MT::App::CMS', \%param );
+        my $out = delete $app->{__test_output};
+        unlike( $out, qr/id="image_default_popup"/, 'output' );
+    };
+};
+
 done_testing;
