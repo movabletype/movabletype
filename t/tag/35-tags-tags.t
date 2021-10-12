@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/lib"; # t/lib
+use lib "$FindBin::Bin/../lib"; # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
@@ -126,4 +126,3 @@ TEST
 <mt:Assets><mt:AssetIfTagged></mt:AssetIfTagged><mt:AssetIfTagged tag="@1clm">OK</mt:AssetIfTagged></mt:Assets>
 --- expected
 OK
-
