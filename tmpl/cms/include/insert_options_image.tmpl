@@ -35,6 +35,8 @@
     </li>
   </ul>
 </mtapp:setting>
+
+<mt:if name="can_popup">
 <mtapp:setting
    id="link_to_popup-<mt:var name="id">"
    label="<__trans phrase="Link image to full-size version in a popup window.">"
@@ -42,3 +44,4 @@
   <input type="checkbox" name="popup-<mt:var name="id">" id="link_to_popup-<mt:var name="id">" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
   <label for="link_to_popup-<mt:var name="id">"><__trans phrase="Link image to full-size version in a popup window."></label>
 </mtapp:setting>
+</mt:if>

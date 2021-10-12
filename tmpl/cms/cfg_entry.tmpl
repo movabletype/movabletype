@@ -289,13 +289,14 @@
         </li>
       </ul>
     </mtapp:setting>
-
+    <mt:if name="can_popup">
     <mtapp:setting
        id="image_default_popup"
        label="<__trans phrase="Link to popup window">">
       <input type="checkbox" name="image_default_popup" id="image_default_popup" value="1" <mt:if name="popup">checked="checked" </mt:if>/>
       <label for="image_default_popup"><__trans phrase="Link image to full-size version in a popup window."></label>
     </mtapp:setting>
+    </mt:if>
   </mtapp:settinggroup>
 
 <mt:setvarblock name="action_buttons" id="action-buttons">

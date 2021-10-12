@@ -2153,6 +2153,7 @@ BEGIN {
             'BinTarPath' => undef,
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
+            'DisableImagePopup' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {

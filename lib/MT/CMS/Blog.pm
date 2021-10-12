@@ -234,11 +234,13 @@ sub edit {
                 = 1;
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
 
+            $param->{can_popup}  = $blog->can_image_popup();
+            MT->log($param->{can_popup});
             $param->{popup}      = $blog->image_default_popup ? 1 : 0;
             $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) }
-                = 1;
+            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) } = 1;
             $param->{thumb_width} = $blog->image_default_width || 0;
+
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
