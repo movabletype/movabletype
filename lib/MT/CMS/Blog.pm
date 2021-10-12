@@ -235,7 +235,6 @@ sub edit {
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
 
             $param->{can_popup}  = $blog->can_image_popup();
-            MT->log($param->{can_popup});
             $param->{popup}      = $blog->image_default_popup ? 1 : 0;
             $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
             $param->{ 'align_' . ( $blog->image_default_align || 'none' ) } = 1;
