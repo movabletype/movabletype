@@ -19,7 +19,7 @@ jobs:
     - if: type != cron
       env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="phpunit && make test-php-lint"
+      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # Perl 5.20 / PHP 5.6 / MySQL 5.5
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -31,7 +31,7 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="phpunit && make test-php-lint"
+      env: TEST_IMAGE_NAME="jessie" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # Perl 5.10 / PHP 5.3 / MySQL 5.1
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -43,7 +43,7 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="phpunit && make test-php-lint"
+      env: TEST_IMAGE_NAME="centos6" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # Perl 5.30 / PHP 7.4 / MySQL 8.0
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -57,7 +57,7 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
+      env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
 before_script:
   - docker login --username "$DOCKER_USERNAME" --password "$DOCKER_PASSWORD"
