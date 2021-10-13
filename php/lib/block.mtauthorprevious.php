@@ -24,7 +24,8 @@ function smarty_block_mtauthorprevious($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'need_content' => 1);
-                list($prev_author) = $ctx->mt->db()->fetch_authors($args);
+                $aurhors = $ctx->mt->db()->fetch_authors($args);
+                $prev_author = isset($aurhors[0]) ? $aurhors[0] : null;
             }
             if ($prev_author) {
               $_prev_cache[$author_id] = $prev_author;

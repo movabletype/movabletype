@@ -32,7 +32,7 @@ function smarty_block_mtloop($args, $content, &$ctx, &$repeat) {
             $repeat = false;
             return '';
         }
-        $sort = $args['sort_by'];
+        $sort = isset($args['sort_by']) ? $args['sort_by'] : null;
         $keys = array_keys($value);
         if ($sort) {
             $sort = strtolower($sort);

@@ -7,8 +7,8 @@
 require_once('archive_lib.php');
 function smarty_function_mtarchivelink($args, &$ctx) {
     $blog = $ctx->stash('blog');
-    $at = $args['type'];
-    $at or $at = $args['archive_type'];
+    $at = isset($args['type']) ? $args['type'] : null;
+    $at or $at = isset($args['archive_type']) ? $args['archive_type'] : null;
     $at or $at = $ctx->stash('current_archive_type');
     $ts = $ctx->stash('current_timestamp');
     if ($at == 'Monthly') {
@@ -22,10 +22,10 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     } elseif ($at == 'Yearly') {
          $ts = substr($ts, 0, 4) . '0101000000';
     } elseif ($at == 'Individual' || $at == 'Page') {
-        $args['archive_type'] or $args['archive_type'] = $at;
+        $args['archive_type'] = !empty($args['archive_type']) ? $args['archive_type'] : $at;
         return $ctx->tag('EntryPermalink', $args);
     } elseif ($at == 'ContentType') {
-        $args['archive_type'] or $args['archive_type'] = $at;
+        !empty($args['archive_type']) or $args['archive_type'] = $at;
         return $ctx->tag('ContentPermalink', $args);
     } elseif ($at == 'Category' || $at == 'ContentType-Category') {
         if ( $at == 'ContentType-Category' && !$ctx->stash('category_set') ) {
@@ -39,7 +39,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     $link_sql = $ar->get_archive_link_sql($ts, $at, $args);
     $link = $ctx->mt->db()->archive_link($ts, $at, $link_sql, $args);
 
-    if ($args['with_index'] && preg_match('/\/(#.*)*$/', $link)) {
+    if (!empty($args['with_index']) && preg_match('/\/(#.*)*$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;

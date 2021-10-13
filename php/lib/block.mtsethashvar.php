@@ -19,7 +19,7 @@ function smarty_block_mtsethashvar($args, $content, &$ctx, &$repeat) {
                     "You used an [_1] tag without a valid name attribute.", "<MT$tag>" ));
         }
 
-        $hash = $vars[$name];
+        $hash = isset($vars[$name]) ? $vars[$name] : null;
         if (!isset($hash))
             $hash = array();
         $ctx->localize(array('__inside_set_hashvar', '__name_set_hashvar'));

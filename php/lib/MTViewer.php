@@ -215,7 +215,7 @@ class MTViewer extends SmartyBC {
                 $global ? -1 : 1
             );
         } else {
-            return preg_replace($search, $replace, $string, $global ? -1 : 1);
+            return preg_replace($search, $replace, $string, !empty($global) ? -1 : 1);
         }
     }
 
@@ -321,7 +321,7 @@ class MTViewer extends SmartyBC {
             if ($cond_tag == '1' or $cond_tag == '0') {
                 $ctx->stash('conditional', $cond_tag);
             } else {
-                $ctx->stash('conditional', $ctx->__stash[$cond_tag]);
+                $ctx->stash('conditional', isset($ctx->__stash[$cond_tag]) ? $ctx->__stash[$cond_tag] : null);
             }
         } else {
             if (!$ctx->__stash['conditional']) {
@@ -540,7 +540,7 @@ class MTViewer extends SmartyBC {
         if ($lang === 'jp') {
             $lang = 'ja';
         }
-        $lang_ar = $this->date_languages[$lang];
+        $lang_ar = isset($this->date_languages[$lang]) ? $this->date_languages[$lang] : null;
         if ($lang_ar) {
             if (array_key_exists($phrase, $lang_ar)) {
                 $phrase = $lang_ar[$phrase];
@@ -683,7 +683,7 @@ class MTViewer extends SmartyBC {
         if (isset($args['format_name'])) {
             if ($format = $args['format_name']) {
                 $tz = 'Z';
-                if (!$args['utc']) {
+                if (empty($args['utc'])) {
                     $blog = $ctx->stash('blog');
                     if (!is_object($blog)) {
                         $blog = $ctx->mt->db()->fetch_blog($blog);
@@ -836,7 +836,9 @@ EOT;
     }
 
     function load_modifier($name) {
-        include_once('modifier.'.$name.'.php');
+        if (stream_resolve_include_path('modifier.'.$name.'.php') !== false) {
+            include_once('modifier.'.$name.'.php');
+        }
         if ( function_exists('smarty_modifier_' . $name) )
             return true;
         else

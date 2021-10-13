@@ -25,10 +25,10 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
     }
 
-    $blog_id = $args['site_id'];
-    $blog_id or $blog_id = $args['blog_id'];
+    $blog_id = isset($args['site_id']) ? $args['site_id'] : null;
+    $blog_id or $blog_id = isset($args['blog_id']) ? $args['blog_id'] : null;
     $blog_id or $blog_id = $ctx->stash('blog_id');
-    if ($args['local'])
+    if (!empty($args['local']))
         $blog_id = $ctx->stash('local_blog_id');
     $blog = $ctx->mt->db()->fetch_blog($blog_id);
 
@@ -112,7 +112,7 @@ function smarty_function_mtinclude($args, &$ctx) {
     $cache_id = '';
     $cache_key = '';
     $cache_ttl = 0;
-    $cache_expire_type = $tmpl_meta->cache_expire_type;
+    $cache_expire_type = !empty($tmpl_meta) ? $tmpl_meta->cache_expire_type : null;
     if (!empty($load_type) &&
         isset($blog) && $blog->blog_include_cache == 1 &&
         ($cache_expire_type == '1' || $cache_expire_type == '2') ||
@@ -197,7 +197,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         if (isset($_include_cache[$cache_id])) {
             $_var_compiled = $_include_cache[$cache_id];
         } else {
-            $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, $args['global']);
+            $tmpl = $ctx->mt->db()->get_template_text($ctx, $load_name, $blog_id, $load_type, isset($args['global']) ? $args['global'] : null);
             if (!$ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
                 _clear_vars($ctx, $ext_args);
                 return $ctx->error("Error compiling template module '$module'");

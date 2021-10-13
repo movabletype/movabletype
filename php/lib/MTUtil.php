@@ -980,7 +980,7 @@ function decode_html($str, $quote_style = ENT_QUOTES) {
 function get_content_type_context(&$ctx, $args) {
     $blog         = $ctx->stash('blog');
     $content_type = $ctx->stash('content_type');
-    $blog_id      = ($args['blog_id'] || $blog->id || '');
+    $blog_id      = (!empty($args['blog_id']) ? $args['blog_id'] : ($blog->id || ''));
     if ($str = $args['content_type']) {
         ## If $str points to $content_type, just return it
         if ($content_type && ((preg_match('/^[0-9]+$/', $str) && $content_type->id === $str) ||
@@ -1089,7 +1089,7 @@ function substr_text($text, $startpos, $length) {
 function first_n_text($text, $n) {
     if (!isset($lang) || empty($lang)) { 
         $mt = MT::get_instance();
-        $lang = ($blog && $blog->blog_language ? $blog->blog_language : 
+        $lang = (!empty($blog) && $blog->blog_language ? $blog->blog_language : 
                      $mt->config('DefaultLanguage'));
     }
     if ($lang == 'jp') {
@@ -1139,7 +1139,7 @@ function catarray_length_sort($a, $b) {
 }
 
 function create_expr_exception($m) {
-    if ($m[2])
+    if (!empty($m[2]))
         return '(0)';
     else
         return $m[1];
@@ -1254,7 +1254,7 @@ function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     } catch (ParseError $e) {
         $error = true;
     }
-    if ($error || $fn === FALSE) {
+    if (!empty($error) || $fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
     }
@@ -1365,7 +1365,7 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     } catch (ParseError $e) {
         $error = true;
     }
-    if ($error || $fn === FALSE) {
+    if (!empty($error) || $fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;
     }
@@ -1573,7 +1573,7 @@ function asset_cleanup_cb($matches) {
 }
 
 # sorts by length of category label, from longest to shortest
-function rolearray_length_sort(&$a, &$b) {
+function rolearray_length_sort($a, $b) {
     $al = strlen($a->name);
     $bl = strlen($b->name);
     return $al === $bl ? 0 : ($al < $bl ? 1 : -1);
@@ -1618,7 +1618,7 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     } catch (ParseError $e) {
         $error = true;
     }
-    if ($error || $fn === FALSE) {
+    if (!empty($error) || $fn === FALSE) {
         echo "Invalid role filter: $orig_expr";
         return;
     }
@@ -1651,7 +1651,7 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     } catch (ParseError $e) {
         $error = true;
     }
-    if ($error || $fn === FALSE) {
+    if (!empty($error) || $fn === FALSE) {
         echo "Invalid status filter: $orig_expr";
         return;
     }
@@ -1685,7 +1685,7 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
     } catch (ParseError $e) {
         $error = true;
     }
-    if ($error || $fn === FALSE) {
+    if (!empty($error) || $fn === FALSE) {
         echo "Invalid rating filter: $orig_expr";
         return;
     }
@@ -1804,7 +1804,7 @@ function common_loop_vars() {
 function normalize_language($language, $locale, $ietf) {
     $real_lang = array('cz' => 'cs', 'dk' => 'da', 'jp' => 'ja', 'si' => 'sl');
 
-    if ($real_lang[$language]) {
+    if (!empty($real_lang[$language])) {
         $language = $real_lang[$language];
     }
     if ($locale) {

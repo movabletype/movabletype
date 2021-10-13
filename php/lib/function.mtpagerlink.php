@@ -12,14 +12,7 @@ function smarty_function_mtpagerlink($args, &$ctx) {
     $limit = $ctx->stash('__pager_limit');
     $offset = ( $page - 1 ) * $limit;
 
-    if ( strpos($link, '?') ) {
-        $link .= '&';
-    }
-    else {
-        $link .= '?';
-    }
-
-    $link .= "limit=$limit";
+    $link = "limit=$limit";
     if ( $offset )
         $link .= "&offset=$offset";
     return $link;

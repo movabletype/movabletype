@@ -92,7 +92,7 @@ class ContentFieldTypeTagHandler {
         }
 
         $coounter_max = $ctx->stash('_content_field_counter_max');
-        if (!$counter_max) {
+        if (empty($counter_max)) {
             $counter_max = $ctx->__stash['_content_field_counter_max'] = count($values);
         }
         $counter = $ctx->stash('_content_field_counter');
@@ -136,7 +136,7 @@ class ContentFieldTypeTagHandler {
             }
             $values = array();
             foreach($bind_values as $v) {
-                if ($map[$v]) {
+                if (!empty($map[$v])) {
                     array_push($values, $map[$v]);
                 }
             }
@@ -217,7 +217,7 @@ class ContentTypeRegistry implements ContentFieldType {
             }
             $values = array();
             foreach ($ids as $id) {
-                if ($map[$id]) {
+                if (!empty($map[$id])) {
                     $values[] = $map[$id];
                 }
             }
@@ -257,8 +257,8 @@ class SingleLineEditRegistry implements ContentFieldType {
     }
     public function get_field_value($value, &$ctx, &$args) {
         require_once("MTUtil.php");
-        return $args['words']
-            ? first_n_text($value, $args['words'])
+        return !empty($args['words'])
+            ? first_n_text($value, isset($args['words']) ? $args['words'] : null)
             : $value;
     }
     public function tag_handler($value, $args, &$res, &$ctx, &$repeat) {
@@ -594,7 +594,7 @@ class CategoriesRegistry implements ContentFieldType {
                     $map[$cat->id] = $cat;
                 }
                 foreach($bind_values as $v) {
-                    if ($map[$v]) {
+                    if (!empty($map[$v])) {
                         array_push($values, $map[$v]);
                     }
                 }
@@ -666,7 +666,7 @@ class TagsRegistry implements ContentFieldType {
 
             $values = array();
             foreach($bind_values as $v) {
-                $tag = $map[$v];
+                $tag = isset($map[$v]) ? $map[$v] : null;
                 if (!$tag && $is_preview && isset($args['include_private']) && $args['include_private']) {
                     $is_private = preg_match('/^\@/', $v) ? 1 : 0;
                     $tag = new Tag;

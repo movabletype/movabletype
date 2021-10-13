@@ -24,7 +24,8 @@ function smarty_block_mtauthornext($args, $content, &$ctx, &$repeat) {
                               'lastn' => 1,
                               'blog_id' => $blog_id,
                               'need_content' => 1);
-                list($next_author) = $ctx->mt->db()->fetch_authors($args);
+                $aurhots = $ctx->mt->db()->fetch_authors($args);
+                $next_author = isset($aurhots[0]) ? $aurhots[0] : null;
             }
             if ($next_author) {
               $_next_cache[$author_id] = $next_author;

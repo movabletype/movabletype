@@ -18,7 +18,8 @@ function smarty_function_mtwebsitedatelanguage($args, &$ctx) {
     $date_language = empty($website)
         ? $ctx->mt->config('DefaultLanguage')
         : $website->blog_date_language;
-    return normalize_language( $date_language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language( $date_language, 
+        isset($args['locale']) ? $args['locale'] : null,
+        isset($args['ietf']) ? $args['ietf'] : null );
 }
 ?>
