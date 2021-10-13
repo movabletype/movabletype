@@ -28,7 +28,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
         'preferred' => 1,
         'type' => $at
     ));
-    if (isset($maps)) {
+    if (isset($maps[0])) {
         $map = $maps[0];
         $dt_field_id = $map->templatemap_dt_field_id;
         if ($cat)
@@ -2432,8 +2432,9 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
                     'type'            => $at
                 ));
                 if (isset($maps)) {
-                    $map = $maps[0];
-                    $dt_field_id = $map->templatemap_dt_field_id;
+                    if (isset($maps[0])) {
+                        $dt_field_id = $maps[0]->templatemap_dt_field_id;
+                    }
                     if ($dt_field_id) {
                         $data = $cd->data();
                         $ts = $data[$dt_field_id];
@@ -3192,7 +3193,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
                 'preferred'       => 1,
                 'type'            => $at
             ));
-            if (isset($maps)) {
+            if (isset($maps[0])) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
             }
@@ -3899,7 +3900,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                 'preferred'       => 1,
                 'type'            => $at
             ));
-            if (isset($maps)) {
+            if (isset($maps[0])) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
                 $cat_field = $map->cat_field();

@@ -5062,8 +5062,8 @@ abstract class MTDatabase {
                 'preferred'    => 1,
                 'content_type' => $obj->id
             ));
-            if (isset($map))
-                $dt_field_id = $map->dt_field_id;
+            if (isset($map[0]))
+                $dt_field_id = $map[0]->dt_field_id;
         }
         if (isset($dt_field_id)) {
             $data = $obj->data();
