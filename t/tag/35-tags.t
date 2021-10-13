@@ -5589,3 +5589,29 @@ Test <a href=/foo/foo.php>FOO:FOO</a>bBar String
 --- expected
 Test <a href="/foo/foo.php">FOO:FOO</a>bBar String
 
+=== test if elsif else1
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+<MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+--- expected
+2
+3
+4
+
+=== test  if elsif else2
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
+--- expected
+2
+4
+
+=== test  if elsif else3
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+<MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+--- expected
+2
+3

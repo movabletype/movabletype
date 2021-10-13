@@ -999,6 +999,9 @@ EOT;
             if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
             }
+            if(!isset($ctx->__stash[$value])){
+                $ctx->__stash[$value] = new Smarty_Variable();
+            }
             $_smarty_tpl->tpl_vars[$value] = isset($ctx->__stash[$value]) ? $ctx->__stash[$value] : null;
         }
 
