@@ -84,7 +84,7 @@ class GoogleAnalyticsProvider extends StatsBaseProvider {
             return '';
         }
 
-        if($args['gtag']){
+        if(!empty($args['gtag'])){
             return <<<__HTML__
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={$config['profile_web_property_id']}"></script>
