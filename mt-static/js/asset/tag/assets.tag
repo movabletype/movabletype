@@ -1,12 +1,16 @@
 <assets>
+  <p class="alert alert-danger icon-left icon-error" if={ error }>
+    <ss href="{ StaticURI }images/sprite.svg#ic_caution" class="mt-icon mt-icon--sm mt-icon--danger" title={ trans("Failed to load") }></ss>
+    {error}
+  </p>
   <div class={ show_option ? 'd-none' : 'd-block' }>
     <div class="row flex-nowrap">
       <div class="col form-group row">
         <div class="col-auto"><label for="asset_type">{ trans('Type') }</label></div>
         <div class="col">
           <select id="asset_type" name="asset_type" class="custom-select form-control asset_type">
-            <option>{ trans('All Types') }</option>
-            <option each={ opts.types } value={ type } selected={ opts.filter == 'class' && opts.filter_val == type }>{ label }</option>
+            <option disabled={ opts.filter_val != ""}>{ trans('All Types') }</option>
+            <option each={ opts.types } value={ type } selected={ opts.filter == 'class' && opts.filter_val == type }  disabled={ opts.filter_val != "" && opts.filter_val != type }>{ label }</option>
           </select>
         </div>
       </div>
@@ -25,35 +29,46 @@
         </div>
         <div class="col-auto form-group">
           <a onclick={ changeShowOption } class="btn upload_setting">
-            <svg role="img" class="mt-icon">
-              <title>{ trans('Upload Settings') }</title><use xlink:href='{ StaticURI }images/sprite.svg#ic_setting' />
-            </svg>
+            <ss title="{ trans('Upload Settings') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_setting"></ss>
           </a>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row justify-content-center">
       <div class={opts.user_id || opts.content_field_id ? 'col-12 row' : 'col-8 row'}>
         <div class="mt-asset col-3" each={ filterdAssets } data-is="asset"></div>
+        <p if={ !filterdAssets.length }>{ trans( "No [_1] could be found.", (opts.user_id ? trans( "Userpic") : trans( "Assets")) ) }</p>
       </div>
       <div class="col-4 overflow-hidden" if={!opts.user_id && !opts.content_field_id}>
-        <div class="row">
+        <div class="row justify-content-center">
           <div class="col asset-preview" data-is="asset-preview"></div>
         </div>
       </div>
     </div>
-    <div class="row">
+    <div class="row justify-content-center mt-5">
       <nav aria-label="Page Navigation" if={ pages > 1 }>
         <ul class="pagination">
           <li class="page-item"><a class="page-link mt-pager-prev">{ trans('Previous') }</a></li>
-          <li class="page-item first-last"><a class="page-link mt-pager-index" href="#">1</a></li>
+          <virtual if={ pageIndex - 2 > 0 }>
+            <li
+              class="page-item first-last">
+                <a class="page-link mt-pager-index" href="#">1</a>
+            </li>
+            <li class="page-item" aria-hidden="true">...</li>
+          </virtual>
           <li
-            each={ index, val in Array(pages) }
-            class={ val == pageIndex ? "active page-item" : "page-item" }
+            each={ page in pageNumbers }
+            class={ page == pageIndex ? "active page-item" : "page-item" }
           >
-            <a class="page-link mt-pager-index" href="#">{ val+1 }<span class="sr-only" if={ val == pageIndex }>(current)</span></a>
+            <a class="page-link mt-pager-index" href="#">{ page+1 }<span class="sr-only" if={ page == pageIndex }>{ page }</span></a>
           </li>
-          <li class="page-item first-last"><a class="page-link mt-pager-index" href="#">{ pages }</a></li>
+          <virtual if={ pageIndex + 2 < pages }>
+            <li class="page-item" aria-hidden="true">...</li>
+            <li
+              class="page-item first-last">
+                <a class="page-link mt-pager-index" href="#">{ pages }</a>
+            </li>
+          </virtual>
           <li class="page-item"><a class="page-link mt-pager-next">{ trans('Next') }</a></li>
         </ul>
       </nav>
@@ -67,7 +82,7 @@
     <div class="upload-overlay-background">
       <div class="upload-overlay-drop">
         <div class="upload-overlay-message">
-          <img src="{ StaticURI }/images/upload/nowuploading@2x.png" width="60" height="50">
+          <img src="{ StaticURI }images/upload/nowuploading@2x.png" width="60" height="50">
           <p if={opts.can_upload}>{ trans("Drag and drop here") }</p>
           <p if={!opts.can_upload}>{ trans("You are not allowed to Upload File.") }</p>
         </div>
@@ -84,10 +99,21 @@
     <input type="hidden" name="magic_token" value={opts.magic_token}>
     <input type="hidden" name="prefs_json" value="">
   </form>
+  <form id="select_asset_asset_userpic" action={ ScriptURI } method="post">
+    <input type="hidden" name="__mode" value="asset_userpic">
+    <input type="hidden" name="magic_token" value={opts.magic_token}>
+    <input type="hidden" name="type" value="asset">
+    <input type="hidden" name="dialog_view" value="1">
+    <input type="hidden" name="no_insert" value="0">
+    <input type="hidden" name="dialog" value="1">
+    <input type="hidden" name="id" value="">
+    <input type="hidden" name="edit_field" value="userpic_asset_id">
+    <input type="hidden" name="user_id" value={opts.user_id}>
+  </form>
 
   <script>
     this.assets = opts.assets
-    this.limit = 12
+    this.limit = opts.limit
     this.isEmpty = this.assets.length > 0 ? false : true
     this.pageIndex = opts.index
     if(opts.filter && opts.filter == 'class'){
@@ -97,9 +123,9 @@
         })
         this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
     } else {
-      this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + 12)
+      this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + this.limit)
     }
-    this.pages = this.assets.length > 0 ?  parseInt(this.assets.length / 12) : 0
+    this.pages = this.filterdAssets.length > 0 ?  parseInt(this.filterdAssets.length / this.limit) : 0
     this.observer = opts.observer
     this.show_option = false
     this.targetAsset = {}
@@ -112,52 +138,85 @@
       operation_if_exists: opts.operation_if_exists,
       normalize_orientation: opts.normalize_orientation,
     }
+    this.pageNumbers = []
+    this.error = ""
 
     this.observer.on('onNextPage', () => {
-      if(this.pageIndex == this.pages) return
+      if((this.pageIndex+1) == this.pages) return
       this.pageIndex++
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
     this.observer.on('onPrevPage', () => {
       if(this.pageIndex == 0) return
       this.pageIndex--
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
 
     this.observer.on('onPageIndex', (pageIndex) => {
       this.pageIndex = (parseInt(pageIndex) -1)
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
     this.observer.on('onInsertAsset', () => {
-      if(!opts.content_field_id){
+      if(!opts.user_id && !opts.content_field_id && !opts.edit_field.match(/^customfield_.*$/)){
         return this.insertAsset()
       }
       selected_asset = this.assets.filter((asset) => {
         return asset.selected
       })
-      html = ''
 
-      options = []
-      errors = 0
-      selected_asset.map((asset) => {
-        opts = {}
-        opts.id = asset.id
-        if(asset.type == 'image'){
-          Object.keys(asset.insert_options).map( (key) => {
-            opts[key] = asset.insert_options[key]
-          })
-        }
-        options.push(opts)
-      })
-      var json = JSON.stringify(options);
-      var $form = jQuery('#asset-detail-form');
-      $form.find('[name="prefs_json"]').val(json);
-      $form.trigger('submit');
+      if(opts.user_id){
+        var $form = jQuery('#select_asset_asset_userpic')
+        $form.find("[name=id]").val(selected_asset[0].id)
+        $form.trigger('submit')
+      } else {
+        options = []
+        errors = 0
+        selected_asset.map((asset) => {
+          opts = {}
+          opts.id = asset.id
+          if(asset.type == 'image'){
+            Object.keys(asset.insert_options).map( (key) => {
+              opts[key] = asset.insert_options[key]
+            })
+          }
+          options.push(opts)
+        })
+        var json = JSON.stringify(options);
+        var $form = jQuery('#asset-detail-form');
+        $form.find('[name="prefs_json"]').val(json);
+        $form.trigger('submit');
+      }
     })
-
+    this.observer.on('changePager', () => {
+      if(this.pages > 7){
+        var max = this.pages
+        var min = 0
+        if( (this.pageIndex - 2) > 0 ){
+          min = this.pageIndex - 1
+        }
+        if( (this.pageIndex + 2) < this.pages ){
+          max = this.pageIndex + 2
+        }
+        this.pageNumbers = [...Array(this.pages).keys()].slice( min, max )
+      } else {
+        this.pageNumbers = [...Array(this.pages).keys()]
+      }
+    })
+    this.observer.on('changeTargetAsset', () => {
+      if(!Object.keys(this.targetAsset).length){
+        jQuery('.panel-buttons .insert-assets').attr('disabled', 'disabled')
+        jQuery('.panel-buttons .insert-assets').addClass('disabled')
+      } else {
+        jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
+        jQuery('.panel-buttons .insert-assets').removeClass('disabled')
+      }
+    })
     insertAsset() {
       selected_asset = this.assets.filter((asset) => {
         return asset.selected
@@ -190,6 +249,9 @@
       jQuery('.mt-close-dialog').trigger('click')
     }
     changeFilter(e) {
+      this.assets.map(asset => {
+        asset.selected = false
+      })
       const filter_type = document.getElementById("asset_type").value
       if(!filter_type) {
         filterAssets = this.assets
@@ -211,6 +273,9 @@
       this.pageIndex = 0
       this.pages = filterAssets.length > 0 ?  parseInt(filterAssets.length / 12) : 0
       this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager')
+      this.targetAsset = {}
+      this.observer.trigger('changeTargetAsset');
       this.update()
     }
     openFileDialog(e) {
@@ -235,13 +300,16 @@
       fd.append('file', file);
 
       // Set extended parameters
-      fd.append('__mode', 'js_upload_file');
+      fd.append('__mode', 'js_upload_file')
+      if(opts.upload_mode){
+        fd.append('type', 'userpic')
+      }
       fd.append('blog_id', opts.blog_id);
       fd.append('edit_field', opts.edit_field);
       fd.append('require_type', opts.require_type);
       fd.append('magic_token', opts.magic_token);
       fd.append('no_insert', 1);
-      if(opts.user_pick){
+      if(opts.user_id){
         fd.append('user_id', opts.user_id);
       }
       fd.append('dialog', 1);
@@ -269,13 +337,15 @@
 
         var fd = this.createFormData( file )
         if ( file.size >= max_upload_size ) {
-          console.error(trans("The file you tried to upload is too large: [_1]", file.name))
+          this.error = trans("The file you tried to upload is too large: [_1]", file.name)
+          console.error(this.error)
           return
         }
         if ( opts.require_type && opts.require_type !== 'file' ) {
           var regexp = new RegExp('^' + opts.require_type + '/.*')
           if(!file.type.match(regexp)) {
-            console.error(trans("[_1] is not a valid [_2] file.", file.name, opts.require_type_label))
+            this.error = trans("[_1] is not a valid [_2] file.", file.name, opts.require_type_label)
+            console.error(this.error)
             return
           }
         }
@@ -295,7 +365,7 @@
         })
         this.pageIndex = 0
         this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
-
+        this.observer.trigger('changePager')
         var f = this.uploadFile(fd, this.filterdAssets[0])
         this.queue.push(f)
       })
@@ -347,7 +417,7 @@
           targetAsset.id = data.result.asset.id
           targetAsset.blog_id = data.result.asset.blog_id
           targetAsset.label = data.result.asset.label
-          targetAsset.url = data.result.asset.thumbnail
+          //targetAsset.url = data.result.asset.thumbnail
           targetAsset.file_name = data.result.asset.filename
           targetAsset.type = data.result.asset.thumbnail_type
         }
@@ -366,6 +436,7 @@
         })
         this.pageIndex = 0
         this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+        this.observer.trigger('changePager')
         this.update()
       }
       return d.promise();
@@ -399,6 +470,7 @@
           this.uploadFiles(e.originalEvent.dataTransfer.files)
         })
     })
+    this.observer.trigger('changePager');
 
   </script>
 

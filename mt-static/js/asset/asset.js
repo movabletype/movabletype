@@ -1,4 +1,4 @@
-riot.tag2('asset-preview', '<div if="{Object.keys(targetAsset).length}"> <div class="row"> <div class="col"> <img if="{targetAsset.type == \'image\'}" riot-src="{targetAsset.url}" class="image img-fluid preview-image"> <virtual if="{targetAsset.type != \'image\'}"> <a href="{targetAsset.url}" target="_blank" class="preview-file"> <img if="{targetAsset.type != \'image\'}" riot-src="{StaticURI}/images/file-{targetAsset.type == ⁗file⁗ ? \'default\' : targetAsset.type==⁗video⁗ ? \'movie\' : targetAsset.type}.svg" width="60" height="60"> <svg role="img" class="mt-icon mt-icon--sm"> <title>View</title> <use xlink:href="{StaticURI}/images/sprite.svg#ic_permalink"></use> </svg> </a> </virtual> </div> <div class="col"> <div class="asset_name text-break">{targetAsset.label}</div> <div class="asset_size text-break" if="{targetAsset.type == ⁗image⁗}">{targetAsset.width} x {targetAsset.height}</div> </div> </div> <form class="form" if="{targetAsset.type == ⁗image⁗}"> <div class="form-group"> <div data-is="alt-input"></div> </div> <div class="form-group"> <div data-is="caption-input"></div> </div> <div class="form-group"> <div data-is="width-input"></div> </div> <div class="form-group"> <div data-is="link-input"></div> </div> <div class="form-group"> <div data-is="align-input"></div> </div> </form> </div>', 'asset-preview .preview-image,[data-is="asset-preview"] .preview-image{ height: 80px; } asset-preview .active,[data-is="asset-preview"] .active{ background : #E3F2F4; } asset-preview .preview-file,[data-is="asset-preview"] .preview-file{ position: relative; display: block; padding: 1em; background-color: #E3F2F4; } asset-preview .preview-file .mt-icon,[data-is="asset-preview"] .preview-file .mt-icon{ position: absolute; top: 0; right: 0; z-index: 1; }', '', function(opts) {
+riot.tag2('asset-preview', '<div if="{Object.keys(targetAsset).length}"> <div class="row"> <div class="col"> <img if="{targetAsset.type == \'image\'}" riot-src="{targetAsset.url}" class="image img-fluid preview-image"> <virtual if="{targetAsset.type != \'image\'}"> <a href="{targetAsset.url}" target="_blank" class="preview-file"> <img if="{targetAsset.type != \'image\'}" riot-src="{StaticURI}images/images/file-{targetAsset.type == ⁗file⁗ ? \'default\' : targetAsset.type==⁗video⁗ ? \'movie\' : targetAsset.type}.svg" width="60" height="60"> <ss title="{trans(\'View\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_permalink"></ss> </a> </virtual> </div> <div class="col"> <div class="asset_name text-break">{targetAsset.label}</div> <div class="asset_size text-break" if="{targetAsset.type == ⁗image⁗}">{targetAsset.width} x {targetAsset.height}</div> </div> </div> <form class="form pt-5" if="{targetAsset.type == ⁗image⁗}"> <div class="form-group mb-3"> <div data-is="alt-input"></div> </div> <div class="form-group mb-3"> <div data-is="caption-input"></div> </div> <div class="form-group mb-3"> <div data-is="width-input"></div> </div> <div class="form-group mb-3"> <div data-is="link-input"></div> </div> <div class="form-group mb-3"> <div data-is="align-input"></div> </div> </form> </div>', 'asset-preview .preview-image,[data-is="asset-preview"] .preview-image{ height: 80px; } asset-preview .active,[data-is="asset-preview"] .active{ background : #E3F2F4; } asset-preview .preview-file,[data-is="asset-preview"] .preview-file{ position: relative; display: block; padding: 1em; background-color: #E3F2F4; } asset-preview .preview-file .mt-icon,[data-is="asset-preview"] .preview-file .mt-icon{ position: absolute; top: 0; right: 0; z-index: 1; }', '', function(opts) {
     this.observer = this.parent.opts.observer
     this.targetAsset = this.parent.targetAsset
 
@@ -81,7 +81,7 @@ riot.tag2('link-input', '<div class="custom-control custom-checkbox"> <input typ
       this.update()
     })
 });
-riot.tag2('align-input', '<div class="form-group alignbutton"> <button type="button" class="btn btn-default p-1 alignleft {checked == \'left\' ? \'active\' : \'\'}" data-align="left" title="{trans(\'Align Left\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <svg role="img" class="mt-icon"> <title>{trans(\'Align Left\')}</title> <use xlink:href="{StaticURI}/images/sprite.svg#ic_alignleft"></use> </svg> </button> <button type="button" class="btn btn-default p-1 aligncenter {checked == \'center\' ? \'active\' : \'\'}" data-align="center" title="{trans(\'Align Center\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <svg role="img" class="mt-icon"> <title>{trans(\'Align Center\')}</title> <use xlink:href="{StaticURI}/images/sprite.svg#ic_aligncenter"></use> </svg> </button> <button type="button" class="btn btn-default p-1 alignright {checked == \'right\' ? \'active\' : \'\'}" data-align="right" title="{trans(\'Align Right\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <svg role="img" class="mt-icon"> <title>{trans(\'Align Right\')}</title> <use xlink:href="{StaticURI}/images/sprite.svg#ic_alignright"></use> </svg> </button> <button type="button" class="btn btn-default p-1 alignnone {checked == \'none\' ? \'active\' : \'\'}" data-align="none" title="{trans(\'None\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <svg role="img" class="mt-icon"> <title>{trans(\'None\')}</title> <use xlink:href="{StaticURI}/images/sprite.svg#ic_alignnone"></use> </svg> </button> </div>', 'align-input .active,[data-is="align-input"] .active{ border-color: #5FBCEB; box-shadow: 0 0 0 2px #5FBCEB; }', '', function(opts) {
+riot.tag2('align-input', '<div class="form-group alignbutton"> <button type="button" class="btn btn-default p-1 alignleft {checked == \'left\' ? \'active\' : \'\'}" data-align="left" title="{trans(\'Align Left\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <ss title="{trans(\'Align Left\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_alignleft"></ss> </button> <button type="button" class="btn btn-default p-1 aligncenter {checked == \'center\' ? \'active\' : \'\'}" data-align="center" title="{trans(\'Align Center\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <ss title="{trans(\'Align Left\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_aligncenter"></ss> </button> <button type="button" class="btn btn-default p-1 alignright {checked == \'right\' ? \'active\' : \'\'}" data-align="right" title="{trans(\'Align Right\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <ss title="{trans(\'Align Left\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_alignright"></ss> </button> <button type="button" class="btn btn-default p-1 alignnone {checked == \'none\' ? \'active\' : \'\'}" data-align="none" title="{trans(\'None\')}" data-toggle="button" aria-pressed="false" onclick="{changeAlign}"> <ss title="{trans(\'Align Left\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_alignnone"></ss> </button> </div>', 'align-input .active,[data-is="align-input"] .active{ border-color: #5FBCEB; box-shadow: 0 0 0 2px #5FBCEB; }', '', function(opts) {
     this.checked = this.parent.targetAsset.insert_options.align ? this.parent.targetAsset.insert_options.align : "none"
     this.observer = this.parent.observer
     this.changeAlign = function(e){
@@ -125,9 +125,10 @@ riot.tag2('asset-upload-option', '<div id="uploadSettings"> <fieldset class="for
     this.parent.upload_options.normalize_orientation = e.target.value
   }.bind(this)
 });
-riot.tag2('asset', '<div class="{⁗img-preview⁗ + (selected ? \' selected\' : \'\')}" onclick="{selectAsset}"> <img if="{type == \'image\'}" riot-src="{url}" class="image img-fluid"> <img if="{type != \'image\'}" riot-src="{StaticURI}images/file-{type == ⁗file⁗ ? \'default\' : type==⁗video⁗ ? \'movie\' : type}.svg" class="image img-fluid"> <div class="img-overlay" if="{selected}"> <input type="checkbox" id="asset-{id}" class="asset-checked" name="asset-img-id" riot-value="{id}" checked="{selected}" onclick="{unselectAsset}"> </div> <div class="upload_cancel" if="{is_upload}" onclick="{uploadCancel}"> <svg role="img" class="mt-icon mt-icon--warning"><title>{trans(\'Cancel\')}</title><use xlink:href="{StaticURI}images/sprite.svg#ic_caution"></use></svg> </div> <div class="img-progress" if="{is_upload}"> <progress riot-value="{upload_progress_rate}" max="100"></progress><span class="upload_rate">({upload_progress_rate}%)</span> </div> </div>', 'asset .img-preview,[data-is="asset"] .img-preview{ position: relative; box-shadow: inset 0 0 15px rgb(0 0 0 / 10%), inset 0 0 0 1px rgb(0 0 0 / 5%); background: #f0f0f1; cursor: pointer; border: 3px solid transparent; } asset .img-preview:before,[data-is="asset"] .img-preview:before{ content: ""; display: block; padding-top: 100%; } asset .img-preview.selected,[data-is="asset"] .img-preview.selected{ border: 3px solid #007bff; border-color: #007bff; border-width: 3px; } asset .img-preview .image,[data-is="asset"] .img-preview .image{ background-color: #FFFFFF; max-height: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); } asset .img-overlay,[data-is="asset"] .img-overlay{ position: absolute; top: 0; left: 0; padding:0; background-color: #ddd; width: 25px; height: 25px; text-align: center; box-sizing: border-box; } asset .upload_cancel,[data-is="asset"] .upload_cancel{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); } asset .img-progress,[data-is="asset"] .img-progress{ position: absolute; bottom: 0; width: 100%; text-align: center; box-sizing: border-box; } asset .img-progress progress,[data-is="asset"] .img-progress progress{ width: 98%; } asset .upload_rate,[data-is="asset"] .upload_rate{ color: #007bff; }', '', function(opts) {
+riot.tag2('asset', '<div class="{⁗img-preview⁗ + (selected ? \' selected\' : \'\')}" onclick="{selectAsset}"> <img if="{type == \'image\'}" riot-src="{url}" class="image img-fluid"> <img if="{type != \'image\'}" riot-src="{StaticURI}images/file-{type == ⁗file⁗ ? \'default\' : type==⁗video⁗ ? \'movie\' : type}.svg" class="image img-fluid"> <div class="img-overlay" if="{selected}"> <input type="checkbox" id="asset-{id}" class="asset-checked" name="asset-img-id" riot-value="{id}" checked="{selected}" onclick="{unselectAsset}"> </div> <div class="upload_cancel" if="{is_upload}" onclick="{uploadCancel}"> <ss title="{trans(\'Cancel\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_caution"></ss> </div> <div class="img-progress" if="{is_upload}"> <progress riot-value="{upload_progress_rate}" max="100"></progress><span class="upload_rate">({upload_progress_rate}%)</span> </div> </div>', 'asset .img-preview,[data-is="asset"] .img-preview{ position: relative; box-shadow: inset 0 0 15px rgb(0 0 0 / 10%), inset 0 0 0 1px rgb(0 0 0 / 5%); background: #f0f0f1; cursor: pointer; border: 3px solid transparent; } asset .img-preview:before,[data-is="asset"] .img-preview:before{ content: ""; display: block; padding-top: 100%; } asset .img-preview.selected,[data-is="asset"] .img-preview.selected{ border: 3px solid #007bff; border-color: #007bff; border-width: 3px; } asset .img-preview .image,[data-is="asset"] .img-preview .image{ background-color: #FFFFFF; max-height: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); } asset .img-overlay,[data-is="asset"] .img-overlay{ position: absolute; top: 0; left: 0; padding:0; background-color: #ddd; width: 25px; height: 25px; text-align: center; box-sizing: border-box; } asset .upload_cancel,[data-is="asset"] .upload_cancel{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); } asset .img-progress,[data-is="asset"] .img-progress{ position: absolute; bottom: 0; width: 100%; text-align: center; box-sizing: border-box; } asset .img-progress progress,[data-is="asset"] .img-progress progress{ width: 98%; } asset .upload_rate,[data-is="asset"] .upload_rate{ color: #007bff; }', '', function(opts) {
     this.selectAsset = function(e) {
       if(!this.selected){
+        this.parent.opts.can_multi ? '' : this.parent.assets.map((asset) => asset.selected = false );
         this.parent.assets.map((asset) => {
           if(asset.id == this.id){
             asset.selected = true
@@ -137,8 +138,6 @@ riot.tag2('asset', '<div class="{⁗img-preview⁗ + (selected ? \' selected\' :
       }
       this.parent.targetAsset = this
       this.parent.observer.trigger('changeTargetAsset')
-      jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
-      jQuery('.panel-buttons .insert-assets').removeClass('disabled')
     }.bind(this)
     this.unselectAsset = function(e) {
         this.parent.assets.map((asset) => {
@@ -149,13 +148,6 @@ riot.tag2('asset', '<div class="{⁗img-preview⁗ + (selected ? \' selected\' :
         })
       this.parent.targetAsset = {}
       this.parent.observer.trigger('changeTargetAsset')
-      if(jQuery('.asset-checked:checked').length){
-        jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
-        jQuery('.panel-buttons .insert-assets').removeClass('disabled')
-      } else {
-        jQuery('.panel-buttons .insert-assets').attr('disabled', 'disabled')
-        jQuery('.panel-buttons .insert-assets').addClass('disabled')
-      }
       e.stopPropagation()
     }.bind(this)
     this.uploadCancel = function(e) {
@@ -163,9 +155,9 @@ riot.tag2('asset', '<div class="{⁗img-preview⁗ + (selected ? \' selected\' :
       e.stopPropagation()
     }.bind(this)
 });
-riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div class="row flex-nowrap"> <div class="col form-group row"> <div class="col-auto"><label for="asset_type">{trans(\'Type\')}</label></div> <div class="col"> <select id="asset_type" name="asset_type" class="custom-select form-control asset_type"> <option>{trans(\'All Types\')}</option> <option each="{opts.types}" riot-value="{type}" selected="{opts.filter == \'class\' && opts.filter_val == type}">{label}</option> </select> </div> </div> <div class="col form-group"> <input type="text" id="asset_name" name="asset_name" class="form-control" value=""> </div> <div class="col-auto form-group"> <button type="button" class="btn btn-primary" onclick="{changeFilter}">{trans(\'Search\')}</button> </div> <div class="col form-group row" if="{opts.can_upload}"> <div class="col-auto form-group"> <input type="file" id="file" name="file" style="display: none;" multiple="{opts.can_multi ? \'multiple\' : \'\'}" onchange="{selectFiled}"> <a href="javascript:void(0)" id="open-file-dialog" class="btn btn-primary" onclick="{openFileDialog}"> {trans(\'Upload\')} </a> </div> <div class="col-auto form-group"> <a onclick="{changeShowOption}" class="btn upload_setting"> <svg role="img" class="mt-icon"> <title>{trans(\'Upload Settings\')}</title><use xlink:href="{StaticURI}images/sprite.svg#ic_setting"></use> </svg> </a> </div> </div> </div> <div class="row"> <div class="{opts.user_id || opts.content_field_id ? \'col-12 row\' : \'col-8 row\'}"> <div class="mt-asset col-3" each="{filterdAssets}" data-is="asset"></div> </div> <div class="col-4 overflow-hidden" if="{!opts.user_id && !opts.content_field_id}"> <div class="row"> <div class="col asset-preview" data-is="asset-preview"></div> </div> </div> </div> <div class="row"> <nav aria-label="Page Navigation" if="{pages > 1}"> <ul class="pagination"> <li class="page-item"><a class="page-link mt-pager-prev">{trans(\'Previous\')}</a></li> <li class="page-item first-last"><a class="page-link mt-pager-index" href="#">1</a></li> <li each="{index, val in Array(pages)}" class="{val == pageIndex ? ⁗active page-item⁗ : ⁗page-item⁗}"> <a class="page-link mt-pager-index" href="#">{val+1}<span class="sr-only" if="{val == pageIndex}">(current)</span></a> </li> <li class="page-item first-last"><a class="page-link mt-pager-index" href="#">{pages}</a></li> <li class="page-item"><a class="page-link mt-pager-next">{trans(\'Next\')}</a></li> </ul> </nav> </div> </div> <div class="{show_option ? \'asse-upload-options d-block\' : \'d-none\'}"> <div class="asset-upload-option" data-is="asset-upload-option"></div> </div> <div class="upload-overlay-container"> <div class="upload-overlay-background"> <div class="upload-overlay-drop"> <div class="upload-overlay-message"> <img riot-src="{StaticURI}/images/upload/nowuploading@2x.png" width="60" height="50"> <p if="{opts.can_upload}">{trans(⁗Drag and drop here⁗)}</p> <p if="{!opts.can_upload}">{trans(⁗You are not allowed to Upload File.⁗)}</p> </div> </div> </div> </div> <form id="asset-detail-form" action="{ScriptURI}" method="post"> <input type="hidden" name="__mode" value="insert_asset"> <input type="hidden" name="blog_id" riot-value="{opts.blog_id}"> <input type="hidden" name="edit_field" riot-value="{opts.edit_field}"> <input type="hidden" name="content_field_id" riot-value="{opts.content_field_id}" if="{opts.content_field_id}"> <input type="hidden" name="no_insert" value="1" if="{opts.no_insert}"> <input type="hidden" name="magic_token" riot-value="{opts.magic_token}"> <input type="hidden" name="prefs_json" value=""> </form>', 'assets .mt-asset,[data-is="assets"] .mt-asset{ padding: 0; } assets .upload_setting,[data-is="assets"] .upload_setting{ display: block; cursor: pointer; } assets .upload-overlay-container,[data-is="assets"] .upload-overlay-container{ display: none; position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; } assets .upload-overlay-background,[data-is="assets"] .upload-overlay-background{ background-color: #BAE3FF; opacity: 0.6; height: 100%; } assets .upload-overlay-drop,[data-is="assets"] .upload-overlay-drop{ position: fiexed; top: 0; height: 100%; } assets .upload-overlay-border,[data-is="assets"] .upload-overlay-border{ top: 0; border: 3px solid #0A93F3; } assets .upload-overlay-message,[data-is="assets"] .upload-overlay-message{ text-align: center; vertical-align: middle; font-size: 18px; color: #0D76BF; }', '', function(opts) {
+riot.tag2('assets', '<p class="alert alert-danger icon-left icon-error" if="{error}"> <ss href="{StaticURI}images/sprite.svg#ic_caution" class="mt-icon mt-icon--sm mt-icon--danger" title="{trans(⁗Failed to load⁗)}"></ss> {error} </p> <div class="{show_option ? \'d-none\' : \'d-block\'}"> <div class="row flex-nowrap"> <div class="col form-group row"> <div class="col-auto"><label for="asset_type">{trans(\'Type\')}</label></div> <div class="col"> <select id="asset_type" name="asset_type" class="custom-select form-control asset_type"> <option disabled="{opts.filter_val != ⁗⁗}">{trans(\'All Types\')}</option> <option each="{opts.types}" riot-value="{type}" selected="{opts.filter == \'class\' && opts.filter_val == type}" disabled="{opts.filter_val != ⁗⁗ && opts.filter_val != type}">{label}</option> </select> </div> </div> <div class="col form-group"> <input type="text" id="asset_name" name="asset_name" class="form-control" value=""> </div> <div class="col-auto form-group"> <button type="button" class="btn btn-primary" onclick="{changeFilter}">{trans(\'Search\')}</button> </div> <div class="col form-group row" if="{opts.can_upload}"> <div class="col-auto form-group"> <input type="file" id="file" name="file" style="display: none;" multiple="{opts.can_multi ? \'multiple\' : \'\'}" onchange="{selectFiled}"> <a href="javascript:void(0)" id="open-file-dialog" class="btn btn-primary" onclick="{openFileDialog}"> {trans(\'Upload\')} </a> </div> <div class="col-auto form-group"> <a onclick="{changeShowOption}" class="btn upload_setting"> <ss title="{trans(\'Upload Settings\')}" class="mt-icon" href="{StaticURI}images/sprite.svg#ic_setting"></ss> </a> </div> </div> </div> <div class="row justify-content-center"> <div class="{opts.user_id || opts.content_field_id ? \'col-12 row\' : \'col-8 row\'}"> <div class="mt-asset col-3" each="{filterdAssets}" data-is="asset"></div> <p if="{!filterdAssets.length}">{trans( ⁗No [_1] could be found.⁗, (opts.user_id ? trans( ⁗Userpic⁗) : trans( ⁗Assets⁗)) )}</p> </div> <div class="col-4 overflow-hidden" if="{!opts.user_id && !opts.content_field_id}"> <div class="row justify-content-center"> <div class="col asset-preview" data-is="asset-preview"></div> </div> </div> </div> <div class="row justify-content-center mt-5"> <nav aria-label="Page Navigation" if="{pages > 1}"> <ul class="pagination"> <li class="page-item"><a class="page-link mt-pager-prev">{trans(\'Previous\')}</a></li> <virtual if="{pageIndex - 2 > 0}"> <li class="page-item first-last"> <a class="page-link mt-pager-index" href="#">1</a> </li> <li class="page-item" aria-hidden="true">...</li> </virtual> <li each="{page in pageNumbers}" class="{page == pageIndex ? ⁗active page-item⁗ : ⁗page-item⁗}"> <a class="page-link mt-pager-index" href="#">{page+1}<span class="sr-only" if="{page == pageIndex}">{page}</span></a> </li> <virtual if="{pageIndex + 2 < pages}"> <li class="page-item" aria-hidden="true">...</li> <li class="page-item first-last"> <a class="page-link mt-pager-index" href="#">{pages}</a> </li> </virtual> <li class="page-item"><a class="page-link mt-pager-next">{trans(\'Next\')}</a></li> </ul> </nav> </div> </div> <div class="{show_option ? \'asse-upload-options d-block\' : \'d-none\'}"> <div class="asset-upload-option" data-is="asset-upload-option"></div> </div> <div class="upload-overlay-container"> <div class="upload-overlay-background"> <div class="upload-overlay-drop"> <div class="upload-overlay-message"> <img riot-src="{StaticURI}images/upload/nowuploading@2x.png" width="60" height="50"> <p if="{opts.can_upload}">{trans(⁗Drag and drop here⁗)}</p> <p if="{!opts.can_upload}">{trans(⁗You are not allowed to Upload File.⁗)}</p> </div> </div> </div> </div> <form id="asset-detail-form" action="{ScriptURI}" method="post"> <input type="hidden" name="__mode" value="insert_asset"> <input type="hidden" name="blog_id" riot-value="{opts.blog_id}"> <input type="hidden" name="edit_field" riot-value="{opts.edit_field}"> <input type="hidden" name="content_field_id" riot-value="{opts.content_field_id}" if="{opts.content_field_id}"> <input type="hidden" name="no_insert" value="1" if="{opts.no_insert}"> <input type="hidden" name="magic_token" riot-value="{opts.magic_token}"> <input type="hidden" name="prefs_json" value=""> </form> <form id="select_asset_asset_userpic" action="{ScriptURI}" method="post"> <input type="hidden" name="__mode" value="asset_userpic"> <input type="hidden" name="magic_token" riot-value="{opts.magic_token}"> <input type="hidden" name="type" value="asset"> <input type="hidden" name="dialog_view" value="1"> <input type="hidden" name="no_insert" value="0"> <input type="hidden" name="dialog" value="1"> <input type="hidden" name="id" value=""> <input type="hidden" name="edit_field" value="userpic_asset_id"> <input type="hidden" name="user_id" riot-value="{opts.user_id}"> </form>', 'assets .mt-asset,[data-is="assets"] .mt-asset{ padding: 0; } assets .upload_setting,[data-is="assets"] .upload_setting{ display: block; cursor: pointer; } assets .upload-overlay-container,[data-is="assets"] .upload-overlay-container{ display: none; position: absolute; width: 100vw; height: 100vh; top: 0; left: 0; } assets .upload-overlay-background,[data-is="assets"] .upload-overlay-background{ background-color: #BAE3FF; opacity: 0.6; height: 100%; } assets .upload-overlay-drop,[data-is="assets"] .upload-overlay-drop{ position: fiexed; top: 0; height: 100%; } assets .upload-overlay-border,[data-is="assets"] .upload-overlay-border{ top: 0; border: 3px solid #0A93F3; } assets .upload-overlay-message,[data-is="assets"] .upload-overlay-message{ text-align: center; vertical-align: middle; font-size: 18px; color: #0D76BF; }', '', function(opts) {
     this.assets = opts.assets
-    this.limit = 12
+    this.limit = opts.limit
     this.isEmpty = this.assets.length > 0 ? false : true
     this.pageIndex = opts.index
     if(opts.filter && opts.filter == 'class'){
@@ -175,9 +167,9 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
         })
         this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
     } else {
-      this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + 12)
+      this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + this.limit)
     }
-    this.pages = this.assets.length > 0 ?  parseInt(this.assets.length / 12) : 0
+    this.pages = this.filterdAssets.length > 0 ?  parseInt(this.filterdAssets.length / this.limit) : 0
     this.observer = opts.observer
     this.show_option = false
     this.targetAsset = {}
@@ -190,52 +182,85 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
       operation_if_exists: opts.operation_if_exists,
       normalize_orientation: opts.normalize_orientation,
     }
+    this.pageNumbers = []
+    this.error = ""
 
     this.observer.on('onNextPage', () => {
-      if(this.pageIndex == this.pages) return
+      if((this.pageIndex+1) == this.pages) return
       this.pageIndex++
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
     this.observer.on('onPrevPage', () => {
       if(this.pageIndex == 0) return
       this.pageIndex--
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
 
     this.observer.on('onPageIndex', (pageIndex) => {
       this.pageIndex = (parseInt(pageIndex) -1)
       this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager');
       this.update()
     })
     this.observer.on('onInsertAsset', () => {
-      if(!opts.content_field_id){
+      if(!opts.user_id && !opts.content_field_id && !opts.edit_field.match(/^customfield_.*$/)){
         return this.insertAsset()
       }
       selected_asset = this.assets.filter((asset) => {
         return asset.selected
       })
-      html = ''
 
-      options = []
-      errors = 0
-      selected_asset.map((asset) => {
-        opts = {}
-        opts.id = asset.id
-        if(asset.type == 'image'){
-          Object.keys(asset.insert_options).map( (key) => {
-            opts[key] = asset.insert_options[key]
-          })
-        }
-        options.push(opts)
-      })
-      var json = JSON.stringify(options);
-      var $form = jQuery('#asset-detail-form');
-      $form.find('[name="prefs_json"]').val(json);
-      $form.trigger('submit');
+      if(opts.user_id){
+        var $form = jQuery('#select_asset_asset_userpic')
+        $form.find("[name=id]").val(selected_asset[0].id)
+        $form.trigger('submit')
+      } else {
+        options = []
+        errors = 0
+        selected_asset.map((asset) => {
+          opts = {}
+          opts.id = asset.id
+          if(asset.type == 'image'){
+            Object.keys(asset.insert_options).map( (key) => {
+              opts[key] = asset.insert_options[key]
+            })
+          }
+          options.push(opts)
+        })
+        var json = JSON.stringify(options);
+        var $form = jQuery('#asset-detail-form');
+        $form.find('[name="prefs_json"]').val(json);
+        $form.trigger('submit');
+      }
     })
-
+    this.observer.on('changePager', () => {
+      if(this.pages > 7){
+        var max = this.pages
+        var min = 0
+        if( (this.pageIndex - 2) > 0 ){
+          min = this.pageIndex - 1
+        }
+        if( (this.pageIndex + 2) < this.pages ){
+          max = this.pageIndex + 2
+        }
+        this.pageNumbers = [...Array(this.pages).keys()].slice( min, max )
+      } else {
+        this.pageNumbers = [...Array(this.pages).keys()]
+      }
+    })
+    this.observer.on('changeTargetAsset', () => {
+      if(!Object.keys(this.targetAsset).length){
+        jQuery('.panel-buttons .insert-assets').attr('disabled', 'disabled')
+        jQuery('.panel-buttons .insert-assets').addClass('disabled')
+      } else {
+        jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
+        jQuery('.panel-buttons .insert-assets').removeClass('disabled')
+      }
+    })
     this.insertAsset = function() {
       selected_asset = this.assets.filter((asset) => {
         return asset.selected
@@ -268,6 +293,9 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
       jQuery('.mt-close-dialog').trigger('click')
     }.bind(this)
     this.changeFilter = function(e) {
+      this.assets.map(asset => {
+        asset.selected = false
+      })
       const filter_type = document.getElementById("asset_type").value
       if(!filter_type) {
         filterAssets = this.assets
@@ -289,6 +317,9 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
       this.pageIndex = 0
       this.pages = filterAssets.length > 0 ?  parseInt(filterAssets.length / 12) : 0
       this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.observer.trigger('changePager')
+      this.targetAsset = {}
+      this.observer.trigger('changeTargetAsset');
       this.update()
     }.bind(this)
     this.openFileDialog = function(e) {
@@ -311,13 +342,16 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
 
       fd.append('file', file);
 
-      fd.append('__mode', 'js_upload_file');
+      fd.append('__mode', 'js_upload_file')
+      if(opts.upload_mode){
+        fd.append('type', 'userpic')
+      }
       fd.append('blog_id', opts.blog_id);
       fd.append('edit_field', opts.edit_field);
       fd.append('require_type', opts.require_type);
       fd.append('magic_token', opts.magic_token);
       fd.append('no_insert', 1);
-      if(opts.user_pick){
+      if(opts.user_id){
         fd.append('user_id', opts.user_id);
       }
       fd.append('dialog', 1);
@@ -345,13 +379,15 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
 
         var fd = this.createFormData( file )
         if ( file.size >= max_upload_size ) {
-          console.error(trans("The file you tried to upload is too large: [_1]", file.name))
+          this.error = trans("The file you tried to upload is too large: [_1]", file.name)
+          console.error(this.error)
           return
         }
         if ( opts.require_type && opts.require_type !== 'file' ) {
           var regexp = new RegExp('^' + opts.require_type + '/.*')
           if(!file.type.match(regexp)) {
-            console.error(trans("[_1] is not a valid [_2] file.", file.name, opts.require_type_label))
+            this.error = trans("[_1] is not a valid [_2] file.", file.name, opts.require_type_label)
+            console.error(this.error)
             return
           }
         }
@@ -371,7 +407,7 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
         })
         this.pageIndex = 0
         this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
-
+        this.observer.trigger('changePager')
         var f = this.uploadFile(fd, this.filterdAssets[0])
         this.queue.push(f)
       })
@@ -423,7 +459,7 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
           targetAsset.id = data.result.asset.id
           targetAsset.blog_id = data.result.asset.blog_id
           targetAsset.label = data.result.asset.label
-          targetAsset.url = data.result.asset.thumbnail
+
           targetAsset.file_name = data.result.asset.filename
           targetAsset.type = data.result.asset.thumbnail_type
         }
@@ -442,6 +478,7 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
         })
         this.pageIndex = 0
         this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+        this.observer.trigger('changePager')
         this.update()
       }
       return d.promise();
@@ -475,5 +512,6 @@ riot.tag2('assets', '<div class="{show_option ? \'d-none\' : \'d-block\'}"> <div
           this.uploadFiles(e.originalEvent.dataTransfer.files)
         })
     })
+    this.observer.trigger('changePager');
 
 });

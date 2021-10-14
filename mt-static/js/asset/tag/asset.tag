@@ -1,12 +1,12 @@
 <asset>
   <div class={ "img-preview" + (selected ? ' selected' : '') } onclick={ selectAsset }>
     <img if={ type == 'image' } src={ url } class="image img-fluid">
-    <img if={ type != 'image' } src="{StaticURI}images/file-{ type == "file" ? 'default' : type=="video" ? 'movie' : type }.svg" class="image img-fluid">
+    <img if={ type != 'image' } src="{ StaticURI }images/file-{ type == "file" ? 'default' : type=="video" ? 'movie' : type }.svg" class="image img-fluid">
     <div class="img-overlay" if={ selected }>
       <input type="checkbox" id="asset-{ id }" class="asset-checked" name="asset-img-id" value={ id } checked={ selected } onclick={ unselectAsset }>
     </div>
     <div class="upload_cancel" if={ is_upload } onclick={ uploadCancel }>
-      <svg role="img" class="mt-icon mt-icon--warning"><title>{ trans('Cancel') }</title><use xlink:href="{StaticURI}images/sprite.svg#ic_caution"></use></svg>
+      <ss title="{ trans('Cancel') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_caution"></ss>
     </div>
     <div class="img-progress" if={ is_upload }>
       <progress value={ upload_progress_rate } max="100"></progress><span class="upload_rate">({ upload_progress_rate }%)</span>
@@ -16,6 +16,7 @@
   <script>
     selectAsset(e) {
       if(!this.selected){
+        this.parent.opts.can_multi ? '' : this.parent.assets.map((asset) => asset.selected = false );
         this.parent.assets.map((asset) => {
           if(asset.id == this.id){
             asset.selected = true
@@ -25,8 +26,6 @@
       }
       this.parent.targetAsset = this
       this.parent.observer.trigger('changeTargetAsset')
-      jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
-      jQuery('.panel-buttons .insert-assets').removeClass('disabled')
     }
     unselectAsset(e) {
         this.parent.assets.map((asset) => {
@@ -37,13 +36,6 @@
         })
       this.parent.targetAsset = {}
       this.parent.observer.trigger('changeTargetAsset')
-      if(jQuery('.asset-checked:checked').length){
-        jQuery('.panel-buttons .insert-assets').removeAttr('disabled')
-        jQuery('.panel-buttons .insert-assets').removeClass('disabled')
-      } else {
-        jQuery('.panel-buttons .insert-assets').attr('disabled', 'disabled')
-        jQuery('.panel-buttons .insert-assets').addClass('disabled')
-      }
       e.stopPropagation()
     }
     uploadCancel(e) {

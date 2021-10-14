@@ -199,7 +199,7 @@ sub dialog_asset_modal_v2 {
 
     $param{can_multi} = 1
         if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
-        && $app->param('can_multi');
+        && $app->param('can_multi') && $app->param('edit_field') !~ m/^customfield_.*$/;
 
     $param{filter} = $app->param('filter')
         if defined $app->param('filter');
@@ -231,6 +231,8 @@ sub dialog_asset_modal_v2 {
         $param{require_type_label} = $req_class->class_label;
     }
 
+    $param{page_limit} = 12;
+
     require MT::Asset;
     my $subclasses = MT::Asset->list_subclasses;
 
@@ -258,14 +260,49 @@ sub dialog_asset_modal_v2 {
         }
     }
 
+    my $asset_class = $app->model('asset') or return;
+    my %terms;
     my %args = ( sort => 'created_on', direction => 'descend' );
-    my $class = $app->model('asset');
+
     my $class_filter;
-    my $iter  = $class->load_iter(
-        {
-            class   => '*',
-            blog_id => $blog_id
-        },
+    my $filter = $app->param('filter') || '';
+    if ( $filter eq 'class' ) {
+        $class_filter = $app->param('filter_val');
+    }
+    elsif ( $filter eq 'userpic' ) {
+        $class_filter      = 'image';
+        $terms{created_by} = $app->param('filter_val');
+        $terms{blog_id}    = 0;
+
+        my $tag = MT->model('tag')
+            ->load( { name => '@userpic' }, { binary => { name => 1 } } );
+        if ($tag) {
+            require MT::ObjectTag;
+            $args{'join'} = MT::ObjectTag->join_on(
+                'object_id',
+                {   tag_id            => $tag->id,
+                    object_datasource => MT::Asset->datasource
+                },
+                { unique => 1 }
+            );
+        }
+    }
+
+    if ($blog_id) {
+        my $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+        $terms{blog_id} = $blog_ids;
+    }
+
+    if ($class_filter) {
+        my $asset_pkg = MT::Asset->class_handler($class_filter);
+        $terms{class} = $asset_pkg->type_list;
+    }
+    else {
+        $terms{class} = '*';    # all classes
+    }
+    my $iter  = $asset_class->load_iter(
+        \%terms,
         \%args
     );
 

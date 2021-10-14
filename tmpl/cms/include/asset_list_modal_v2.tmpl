@@ -11,11 +11,6 @@
 </mt:unless>
 
 
-<script type="text/javascript" src="<mt:var name="static_uri">js/asset/asset_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/asset/asset_action_client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/asset/asset_data.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-<script type="text/javascript" src="<mt:var name="static_uri">js/asset/asset_store.js?v=<mt:var name="mt_version_id" escape="url">"></script>
-
 <mt:unless name="debug_riot">
   <script type="text/javascript" src="<mt:var name="static_uri">riot/riot.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
   <script type="text/javascript" src="<mt:var name="static_uri">riot-ss/riot.ss.min.js?v=<mt:var name="mt_version_id" escape="url">"></script>
@@ -31,7 +26,7 @@
 </mt:setvarblock>
 
 <mt:setvarblock name="jq_js_include" append="1">
-  var assets = <mt:if name="assets">JSON.parse('<mt:var name="assets" escape="js">');<mt:else>[];</mt:if>
+  var assets = <mt:if name="assets">JSON.parse('<mt:var name="assets" escape="json">');<mt:else>[];</mt:if>
 
   var observer = riot.observable();
   jQuery(document).on('click', '.mt-pager-next', function(event) {
@@ -53,14 +48,13 @@
 
   var objectType = '<mt:var name="object_type" escape="js">';
 
-  var types = [];
-  <mt:loop name="class_filter_loop">
-  types.push({
+  var types = [<mt:loop name="class_filter_loop" glue=",">
+  {
     type: '<mt:var name="key" escape="js">',
     label: '<mt:var name="label" escape="js">'
-  });  
-  </mt:loop>
-
+  }
+  </mt:loop>];
+  
   riot.mount('assets', {
     blog_id: "<mt:var name="blog_id" escape="js">",
     magic_token: "<mt:var name="magic_token" escape="js">",
@@ -72,6 +66,7 @@
     types: types,
     observer: observer,
     index: 0,
+    limit: <mt:var name="page_limit">,
     can_multi: <mt:If name="can_multi" eq="1">true<mt:Else>false</mt:If>,
     can_upload: <mt:If name="can_upload" eq="1">true<mt:Else>false</mt:If>,
     destination: '<mt:var name="destination">',
@@ -88,7 +83,8 @@
     require_type_label: '<mt:var name="require_type_label" escape="js">',
     <mt:if name="user_id">user_id: '<mt:var name="user_id" escape="js">',</mt:if>
     filter: '<mt:var name="filter" escape="js">',
-    filter_val: '<mt:var name="filter_val" escape="js">'
+    filter_val: '<mt:var name="filter_val" escape="js">',
+    <mt:if name="upload_mode">upload_mode: '<mt:var name="upload_mode" escape="js">',</mt:If>
   });
 </mt:setvarblock>
 
@@ -107,6 +103,7 @@
         accesskey="s"
         title="<mt:if name="is_image"><__trans phrase="Next (s)"><mt:else><__trans phrase="Insert (s)"></mt:if>"
         class="action primary button disabled btn btn-primary insert-assets"
+        disabled="disabled"
         >
           <mt:if name="is_image"><__trans phrase="Continue"><mt:else><__trans phrase="Insert"></mt:if>
       </button>

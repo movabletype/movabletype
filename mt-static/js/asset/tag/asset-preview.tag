@@ -5,34 +5,30 @@
         <img if={ targetAsset.type == 'image' } src={ targetAsset.url } class="image img-fluid preview-image">
         <virtual if={ targetAsset.type != 'image' }>
           <a href={ targetAsset.url } target="_blank" class="preview-file">
-            <img if={ targetAsset.type != 'image' } src="{StaticURI}/images/file-{ targetAsset.type == "file" ? 'default' : targetAsset.type=="video" ? 'movie' : targetAsset.type }.svg" width="60" height="60">
-            <svg role="img" class="mt-icon mt-icon--sm">
-              <title>View</title>
-              <use xlink:href="{StaticURI}/images/sprite.svg#ic_permalink"></use>
-            </svg>
+            <img if={ targetAsset.type != 'image' } src="{ StaticURI }images/images/file-{ targetAsset.type == "file" ? 'default' : targetAsset.type=="video" ? 'movie' : targetAsset.type }.svg" width="60" height="60">
+            <ss title="{ trans('View') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_permalink"></ss>
           </a>
         </virtual>
       </div>
       <div class="col">
         <div class="asset_name text-break">{ targetAsset.label }</div>
         <div class="asset_size text-break" if={ targetAsset.type == "image"}>{ targetAsset.width } x { targetAsset.height }</div>
-        <!--  <div class="asset_info_link"><a href="">{ trans('Edit Image Info') }</a></div>  -->
       </div>
     </div>
-    <form class="form" if={ targetAsset.type == "image"}>
-      <div class="form-group">
+    <form class="form pt-5" if={ targetAsset.type == "image"}>
+      <div class="form-group mb-3">
         <div data-is="alt-input"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group mb-3">
         <div data-is="caption-input"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group mb-3">
         <div data-is="width-input"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group mb-3">
         <div data-is="link-input"></div>
       </div>
-      <div class="form-group">
+      <div class="form-group mb-3">
         <div data-is="align-input"></div>
       </div>
     </form>
@@ -171,28 +167,16 @@
 <align-input>
   <div class="form-group alignbutton">
     <button type="button" class="btn btn-default p-1 alignleft { checked == 'left' ? 'active' : '' }" data-align="left" title="{ trans('Align Left') }" data-toggle="button" aria-pressed="false" onclick={ changeAlign }>
-      <svg role="img" class="mt-icon">
-        <title>{ trans('Align Left') }</title>
-        <use xlink:href="{ StaticURI }/images/sprite.svg#ic_alignleft"></use>
-      </svg>
+      <ss title="{ trans('Align Left') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_alignleft"></ss>
     </button>
     <button type="button" class="btn btn-default p-1 aligncenter { checked == 'center' ? 'active' : '' }" data-align="center" title="{ trans('Align Center') }" data-toggle="button" aria-pressed="false" onclick={ changeAlign }>
-      <svg role="img" class="mt-icon">
-        <title>{ trans('Align Center') }</title>
-        <use xlink:href="{ StaticURI }/images/sprite.svg#ic_aligncenter"></use>
-      </svg>
+      <ss title="{ trans('Align Left') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_aligncenter"></ss>
     </button>
     <button type="button" class="btn btn-default p-1 alignright { checked == 'right' ? 'active' : '' }" data-align="right" title="{ trans('Align Right') }" data-toggle="button" aria-pressed="false" onclick={ changeAlign }>
-      <svg role="img" class="mt-icon">
-        <title>{ trans('Align Right') }</title>
-        <use xlink:href="{ StaticURI }/images/sprite.svg#ic_alignright"></use>
-      </svg>
+      <ss title="{ trans('Align Left') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_alignright"></ss>
     </button>
     <button type="button" class="btn btn-default p-1 alignnone { checked == 'none' ? 'active' : '' }" data-align="none" title="{ trans('None') }" data-toggle="button" aria-pressed="false" onclick={ changeAlign }>
-      <svg role="img" class="mt-icon">
-        <title>{ trans('None') }</title>
-        <use xlink:href="{ StaticURI }/images/sprite.svg#ic_alignnone"></use>
-      </svg>
+      <ss title="{ trans('Align Left') }" class="mt-icon" href="{ StaticURI }images/sprite.svg#ic_alignnone"></ss>
     </button>
   </div>
   <script>
