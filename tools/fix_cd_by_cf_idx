@@ -41,7 +41,6 @@ $Log::Minimal::PRINT = sub {
     my ($time, $type, $message, $trace, $raw_message) = @_;
     print STDERR "$time [$type] $message\n";
 };
-$Log::Minimal::Color = 1;
 
 my $field_types = MT->registry('content_field_types');
 
@@ -49,7 +48,7 @@ my %ct_args;
 $ct_args{blog_id} = \@site_ids if @site_ids;
 $ct_args{id}      = \@ct_ids   if @ct_ids;
 
-infof("Loading Content Types ...");
+infof("Loading Content Types ...") if $verbose;
 
 my %cf_map;
 my $ct_iter = MT::ContentType->load_iter(\%ct_args);
@@ -69,7 +68,7 @@ $cd_args{blog_id}         = \@site_ids if @site_ids;
 $cd_args{content_type_id} = \@ct_ids   if @ct_ids;
 $cd_args{id}              = \@cd_ids   if @cd_ids;
 
-infof("Loading Content Data ...");
+infof("Loading Content Data ...") if $verbose;
 
 my $total_updates = my $errors = my $ct = 0;
 my @updates;
@@ -121,7 +120,7 @@ sub _bulk_update {
     my $updates = shift;
     unless ($dry_run) {
         MT::ContentData->driver->begin_work;
-        infof("Updating the changes\n");
+        infof("Updating the changes") if $verbose;
         eval {
             for my $cd (@$updates) {
                 # use ->update to avoid unnecessary re-updating of cf_idx etc
@@ -133,7 +132,7 @@ sub _bulk_update {
             MT::ContentData->driver->rollback;
             $errors += @$updates;
         } else {
-            infof("Committing the changes");
+            infof("Committing the changes") if $verbose;
             MT::ContentData->driver->commit;
             $total_updates += @$updates;
         }
