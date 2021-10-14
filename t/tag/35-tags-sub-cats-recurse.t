@@ -11,7 +11,7 @@ BEGIN {
 }
 
 use MT::Test::Tag;
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 use MT;
 use MT::Test;
@@ -165,4 +165,3 @@ category_set_baz
 category_set_def
 category_set_abc
 category_set_ghi
-

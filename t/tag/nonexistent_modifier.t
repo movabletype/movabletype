@@ -26,7 +26,7 @@ YAML
 }
 
 use MT::Test::Tag;
-plan tests => 2 * blocks;
+plan tests => (1 + 2) * blocks;
 
 my $blog_id = 1;
 
@@ -65,4 +65,3 @@ I met another man who was wounded with hatredHeard one hundred drummers whose ha
 Heard ten thousand whisperin' and nobody listenin'I saw a newborn baby with wild wolves all around it
 I saw a highway of diamonds with nobody on it
 Foot
-

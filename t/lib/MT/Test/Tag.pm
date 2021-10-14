@@ -125,7 +125,7 @@ sub run_php_tests {
 
 SKIP: {
         unless ( has_php() ) {
-            skip "Can't find executable file: php", 1 * blocks;
+            skip "Can't find executable file: php", 2 * blocks;
         }
 
         if ( $callback && !ref $callback ) {
@@ -142,8 +142,8 @@ SKIP: {
         run {
             my $block = shift;
         SKIP: {
-                skip $block->skip, 1 if $block->skip;
-                skip 'skip php test', 1 if defined($block->skip_php // $block->SKIP_PHP);
+                skip $block->skip, 2 if $block->skip;
+                skip 'skip php test', 2 if defined($block->skip_php // $block->SKIP_PHP);
 
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
@@ -207,7 +207,7 @@ SKIP: {
                     ),
                     $name
                 );
-                note("PHPErrorLog: $name\n". $php_error) if $php_error;
+                is($php_error, '', 'no php warnings');
             }
         }
     }
