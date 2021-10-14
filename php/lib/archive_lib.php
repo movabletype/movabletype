@@ -4083,6 +4083,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $objectcategories = $objectcategories ? $objectcategories : array();
             $cat_field_ids = array();
             foreach ( $objectcategories as $objectcategory ) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
@@ -4227,6 +4228,7 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
         $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $objectcategories = $objectcategories ? $objectcategories : array();
             $cat_field_ids = array();
             foreach ( $objectcategories as $objectcategory ) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
@@ -4372,6 +4374,7 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
         $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $objectcategories = $objectcategories ? $objectcategories : array();
             $cat_field_ids = array();
             foreach ( $objectcategories as $objectcategory ) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
@@ -4529,6 +4532,7 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
         $seen_join_on = array();
         foreach ( $cats as $cat ) {
             $objectcategories = $mt->db()->fetch_objectcategory(array('category_id' => array($cat->category_id)));
+            $objectcategories = $objectcategories ? $objectcategories : array();
             $cat_field_ids = array();
             foreach ( $objectcategories as $objectcategory ) {
                 $cat_field_ids[$objectcategory->objectcategory_cf_id] = 1;
