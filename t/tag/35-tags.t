@@ -4826,6 +4826,14 @@ true
 --- expected
 barfoo
 
+=== test 756-2
+--- template
+<MTSubCategories top="1" sort_method="{ $b->label cmp $a->label }"><MTCategoryLabel></MTSubCategories>
+--- expected
+foobar
+--- expected_php
+barfoo
+
 === test 757
 --- template
 <MTSubCategories show_empty="1" top="1" sort_method="SortMethod::sort"><MTCategoryLabel></MTSubCategories>
