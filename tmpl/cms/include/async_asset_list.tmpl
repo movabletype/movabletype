@@ -462,6 +462,7 @@ jQuery('.actions-bar button.primary').on('click', function() {
     return;
   }
 
+<mt:if name="can_multi">
   var ids = [];
   var page_keys = Object.keys(checked);
   for(i=0; i < page_keys.length; i++) {
@@ -472,6 +473,10 @@ jQuery('.actions-bar button.primary').on('click', function() {
   }
   // Set asset ID
   jQuery('#select_asset input[name="id"]').val(ids.join(','));
+<mt:else>
+  var item_keys = Object.keys(checked[currentPage]);
+  jQuery('#select_asset input[name="id"]').val(checked[currentPage][item_keys[0]]);
+</mt:if>
 })
 
 jQuery('#asset-table').on('click', 'td.cb', function (e) {
