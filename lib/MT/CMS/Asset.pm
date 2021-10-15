@@ -226,7 +226,7 @@ sub dialog_list_asset {
 
     $app->add_breadcrumb( $app->translate("Files") );
 
-    my $content_field_id = $app->param('content_field_id') || '';
+    my $content_field_id = $app->param('content_field_id');
     if ($blog_id && !$content_field_id) {
         my $blog_ids = $app->_load_child_blog_ids($blog_id);
         push @$blog_ids, $blog_id;
