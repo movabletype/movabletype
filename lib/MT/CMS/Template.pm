@@ -2486,6 +2486,7 @@ sub refresh_all_templates {
         backup                 => [qw/MAYBE_STRING/],
         blog_id                => [qw/ID/],
         id                     => [qw/ID MULTI/],
+        action_name            => [qw/MAYBE_STRING/],
         plugin_action_selector => [qw/MAYBE_STRING/],
         refresh_type           => [qw/MAYBE_STRING/],
     }) or return;
@@ -2507,7 +2508,7 @@ sub refresh_all_templates {
     my @id;
     if ( my $blog_id = $app->param('blog_id') ) {
         if ( 'refresh_blog_templates' eq
-            ( $app->param('plugin_action_selector') || '' ) )
+            ( $app->param('action_name') || $app->param('plugin_action_selector') || '' ) )
         {
             ## called from website wide blog listing screen.
             @id = $app->multi_param('id');
