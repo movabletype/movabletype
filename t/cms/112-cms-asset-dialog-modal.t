@@ -16,7 +16,7 @@ use MT::Test;
 use MT::Test::App;
 use MT::Test::Permission;
 
-$test_env->prepare_fixture('db');
+$test_env->prepare_fixture('cms/assetdialogmodal');
 
 my $mt    = MT->instance;
 my $admin = $mt->model('author')->load(1);
@@ -44,49 +44,8 @@ subtest 'dialog_asset_modal' => sub {
 };
 
 subtest 'Load images by dialog_list_asset' => sub {
-    my $website = MT::Test::Permission->make_website(
-        name => 'my website',
-    );
-    my $blog = MT::Test::Permission->make_blog(
-        parent_id => $website->id,
-        name      => 'my blog',
-    );
-    my $ct = MT::Test::Permission->make_content_type(
-        name    => 'content type 1',
-        blog_id => $website->id,
-    );
-    my $cf_image = MT::Test::Permission->make_content_field(
-        blog_id         => $ct->blog_id,
-        content_type_id => $ct->id,
-        name            => 'asset_image',
-        type            => 'asset_image',
-    );
-    my $pic1 = MT::Test::Permission->make_asset(
-        class        => 'image',
-        blog_id      => $website->id,
-        url          => 'http://narnia.na/nana/images/test.jpg',
-        file_path    => File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
-        file_name    => 'test.jpg',
-        file_ext     => 'jpg',
-        image_width  => 640,
-        image_height => 480,
-        mime_type    => 'image/jpeg',
-        label        => 'Sample Image 1',
-        description  => 'Sample Image 1',
-    );
-    my $pic2 = MT::Test::Permission->make_asset(
-        class        => 'image',
-        blog_id      => $blog->id,
-        url          => 'http://narnia.na/nana/images/test.jpg',
-        file_path    => File::Spec->catfile($ENV{MT_HOME}, "t", 'images', 'test.jpg'),
-        file_name    => 'test.jpg',
-        file_ext     => 'jpg',
-        image_width  => 640,
-        image_height => 480,
-        mime_type    => 'image/jpeg',
-        label        => 'Sample Image 2',
-        description  => 'Sample Image 2',
-    );
+    my $website  = MT->model('website')->load({ name => 'asset dialog website' });
+    my $cf_image = MT->model('cf')->load({ name => 'asset_image' });
     my %dialog_list_asset_options = (
         __mode      => 'dialog_list_asset',
         _type       => 'asset',
