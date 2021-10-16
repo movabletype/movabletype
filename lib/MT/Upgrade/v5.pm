@@ -9,6 +9,20 @@ package MT::Upgrade::v5;
 use strict;
 use warnings;
 
+sub cast {
+    my ($value, $ds, $col) = @_;
+    $value = MT::Object->driver->r_handle->quote($value);
+    my $model = MT->model($ds);
+    my $ddl   = MT::Object->driver->dbd->ddl_class;
+    if ($ddl->can('castable_type')) {
+        if (my $type = $ddl->castable_type($model->properties->{column_defs}->{$col})) {
+            return sprintf('CAST(%s as %s)', $value, $type);
+        }
+    }
+    # Backward compatible
+    return $value;
+}
+
 sub upgrade_functions {
     return {
 
@@ -226,7 +240,7 @@ UPDATE mt_blog SET
                 }
             )
             THEN blog_language
-        ELSE '@{[ MT->config('DefaultLanguage') ]}' END
+        ELSE @{[ cast(MT->config('DefaultLanguage'), 'blog', 'language') ]} END
 __SQL__
             },
         },
