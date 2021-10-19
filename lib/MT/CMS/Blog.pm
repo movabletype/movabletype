@@ -213,40 +213,35 @@ sub edit {
         }
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
-            my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
-            %$param = ( %$param, %$pref_param );
-            $pref_param = $app->load_entry_prefs( { type => 'page' } );
-            %$param = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
-                = 1;
-            $param->{ 'status_default_' . $obj->status_default } = 1
+            my $pref_param = $app->load_entry_prefs({ type => 'entry' });
+            %$param                                                         = (%$param, %$pref_param);
+            $pref_param                                                     = $app->load_entry_prefs({ type => 'page' });
+            %$param                                                         = (%$param, %$pref_param);
+            $param->{ 'sort_order_posts_' . ($obj->sort_order_posts || 0) } = 1;
+            $param->{ 'status_default_' . $obj->status_default }            = 1
                 if $obj->status_default;
-            $param->{ 'allow_comments_default_'
-                    . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings}
-                = $cfg->AllowPings && $blog->allow_pings;
-            $param->{system_allow_comments} = $cfg->AllowComments
-                && ( $blog->allow_reg_comments
-                || $blog->allow_unreg_comments );
+            $param->{ 'allow_comments_default_' . ($obj->allow_comments_default || 0) } = 1;
+            $param->{system_allow_pings}                                                = $cfg->AllowPings && $blog->allow_pings;
+            $param->{system_allow_comments}                                             = $cfg->AllowComments
+                && ($blog->allow_reg_comments
+                || $blog->allow_unreg_comments);
             my $replace_fields = $blog->smart_replace_fields || '';
-            my @replace_fields = split( /,/, $replace_fields );
+            my @replace_fields = split(/,/, $replace_fields);
 
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
-                = 1;
-            $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
+            $param->{ 'nwc_smart_replace_' . ($blog->smart_replace || 0) } = 1;
+            $param->{'nwc_replace_none'} = ($blog->smart_replace || 0) == 2;
 
-            $param->{can_popup} = $blog->can_popup_image();
-            $param->{popup}     = $blog->image_default_popup ? 1 : 0;
-            $param->{popup_link} =
-              $param->{can_popup} ? $blog->image_default_link : 2;
-            $param->{make_thumb} = $blog->image_default_thumb ? 1 : 0;
-            $param->{ 'align_' . ( $blog->image_default_align || 'none' ) } = 1;
-            $param->{thumb_width} = $blog->image_default_width || 0;
+            $param->{can_popup}                                           = $blog->can_popup_image();
+            $param->{popup}                                               = $blog->image_default_popup ? 1                         : 0;
+            $param->{popup_link}                                          = $param->{can_popup}        ? $blog->image_default_link : 2;
+            $param->{make_thumb}                                          = $blog->image_default_thumb ? 1                         : 0;
+            $param->{ 'align_' . ($blog->image_default_align || 'none') } = 1;
+            $param->{thumb_width}                                         = $blog->image_default_width || 0;
 
-            $app->add_breadcrumb( $app->translate('Compose Settings') );
+            $app->add_breadcrumb($app->translate('Compose Settings'));
         }
         elsif ( $output eq 'cfg_web_services.tmpl' ) {
             $param->{system_disabled_notify_pings}
