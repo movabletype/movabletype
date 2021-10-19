@@ -489,7 +489,7 @@ sub insert_options {
     $param->{do_thumb}
         = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
-    $param->{can_popup}  = $blog->can_image_popup();
+    $param->{can_popup}  = $blog->can_popup_image();
     $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
     $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
     $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;

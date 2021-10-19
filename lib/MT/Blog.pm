@@ -1743,7 +1743,7 @@ sub _adjust_threshold {
     }
 }
 
-sub can_image_popup {
+sub can_popup_image {
     my $blog = shift;
     return 0 if MT->config('DisableImagePopup');
 

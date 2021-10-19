@@ -238,7 +238,7 @@ sub edit {
                 = 1;
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
 
-            $param->{can_popup} = $blog->can_image_popup();
+            $param->{can_popup} = $blog->can_popup_image();
             $param->{popup}     = $blog->image_default_popup ? 1 : 0;
             $param->{popup_link} =
               $param->{can_popup} ? $blog->image_default_link : 2;
