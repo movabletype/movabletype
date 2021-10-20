@@ -227,6 +227,7 @@ sub make_app {
         my $server;
         $server = XMLRPC::Transport::HTTP::Plack->new;
         $server->dispatch_to( 'blogger', 'metaWeblog', 'mt', 'wp' );
+        $server->dispatch_with( { 'mt' => 'MT::XMLRPCServer' } );
         $psgi_app = sub {
             eval "require $handler";
             my $env = shift;
