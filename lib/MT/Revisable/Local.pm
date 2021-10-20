@@ -39,7 +39,7 @@ sub revision_props {
             $obj_id     => 'integer not null',
             $obj_ds     => 'blob not null',
             rev_number  => 'integer not null',
-            changed     => 'string(255) not null'
+            changed     => 'string(255)'
         },
         indexes     => { $obj_id    => 1 },
         defaults    => { rev_number => 0 },
@@ -152,7 +152,7 @@ sub object_from_revision {
     $rev_obj->modified_by( $rev->created_by );
     $rev_obj->modified_on( $rev->modified_on );
 
-    my @changed = split ',', $rev->changed;
+    my @changed = split ',', ($rev->changed || '');
 
     return [ $rev_obj, \@changed, $rev->rev_number, $rev ];
 }
