@@ -168,14 +168,14 @@ subtest 'Check callbacks for saving' => sub {
 };
 
 subtest 'Check disable image popup' => sub {
-
+    my %params = (
+        __mode  => 'cfg_entry',
+        blog_id => $website->id
+    );
     subtest 'check image popup is enabled' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        $app->get_ok({
-            __mode  => 'cfg_entry',
-            blog_id => $website->id
-        });
+        $app->get_ok(\%params);
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 1, 'image popup check is show');
     };
@@ -185,10 +185,7 @@ subtest 'Check disable image popup' => sub {
         $app->login($user);
         MT->config("DisableImagePopup", 1);
         $test_env->update_config(DisableImagePopup => 1);
-        $app->get_ok({
-            __mode  => 'cfg_entry',
-            blog_id => $website->id
-        });
+        $app->get_ok(\%params);
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
         MT->config("DisableImagePopup", 0);
@@ -202,10 +199,7 @@ subtest 'Check disable image popup' => sub {
             blog_id => $website->id,
             type    => 'popup_image'
         });
-        $app->get_ok({
-            __mode  => 'cfg_entry',
-            blog_id => $website->id
-        });
+        $app->get_ok(\%params);
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
     };
