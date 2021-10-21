@@ -191,34 +191,34 @@ subtest 'Check callbacks for saving' => sub {
 
 subtest 'Check image disable popup' => sub {
     my %params = (
-        __test_user      => $user,
-        __mode           => 'cfg_entry',
-        blog_id          => $website->id
+        __test_user => $user,
+        __mode      => 'cfg_entry',
+        blog_id     => $website->id
     );
     my $elm_id = "#image_default_popup";
 
     subtest 'check image popup enabled' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        $app->get_ok(\%params);
+        $app->get_ok( \%params );
 
         note $app->wq_find($elm_id)->as_html;
-        is($app->wq_find($elm_id)->size, 1, 'image popup check is show');
+        is( $app->wq_find($elm_id)->size, 1, 'image popup check is show' );
     };
 
     subtest 'change DisableImagePopup 1' => sub {
         MT->config( "DisableImagePopup", 1 );
-        $test_env->update_config(DisableImagePopup => 1);
+        $test_env->update_config( DisableImagePopup => 1 );
 
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        $app->get_ok(\%params);
+        $app->get_ok( \%params );
 
         note $app->wq_find($elm_id)->as_html;
-        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
+        is( $app->wq_find($elm_id)->size, 0, 'image popup check is hide' );
 
         MT->config( "DisableImagePopup", 0 );
-        $test_env->update_config(DisableImagePopup => 0);
+        $test_env->update_config( DisableImagePopup => 0 );
     };
 
     subtest 'remove popup_image template' => sub {
@@ -226,16 +226,14 @@ subtest 'Check image disable popup' => sub {
         $app->login($user);
 
         $mt->model('template')->remove(
-            {
-                blog_id => $website->id,
+            {   blog_id => $website->id,
                 type    => 'popup_image'
             }
         );
-        $app->get_ok(\%params);
-
+        $app->get_ok( \%params );
 
         note $app->wq_find($elm_id)->as_html;
-        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
+        is( $app->wq_find($elm_id)->size, 0, 'image popup check is hide' );
     };
 };
 
