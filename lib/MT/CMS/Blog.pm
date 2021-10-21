@@ -210,17 +210,14 @@ sub edit {
         elsif ( $output eq 'cfg_entry.tmpl' ) {
             ## load entry preferences for new/edit entry page of the blog
             my $pref_param = $app->load_entry_prefs( { type => 'entry' } );
-            %$param = ( %$param, %$pref_param );
+            %$param     = ( %$param, %$pref_param );
             $pref_param = $app->load_entry_prefs( { type => 'page' } );
             %$param     = ( %$param, %$pref_param );
-            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) }
-                = 1;
-            $param->{ 'status_default_' . $obj->status_default } = 1
+            $param->{ 'sort_order_posts_' . ( $obj->sort_order_posts || 0 ) } = 1;
+            $param->{ 'status_default_' . $obj->status_default }              = 1
                 if $obj->status_default;
-            $param->{ 'allow_comments_default_'
-                    . ( $obj->allow_comments_default || 0 ) } = 1;
-            $param->{system_allow_pings}
-                = $cfg->AllowPings && $blog->allow_pings;
+            $param->{ 'allow_comments_default_' . ( $obj->allow_comments_default || 0 ) } = 1;
+            $param->{system_allow_pings}    = $cfg->AllowPings && $blog->allow_pings;
             $param->{system_allow_comments} = $cfg->AllowComments
                 && ( $blog->allow_reg_comments
                 || $blog->allow_unreg_comments );
@@ -230,8 +227,7 @@ sub edit {
             foreach my $fld (@replace_fields) {
                 $param->{ 'nwc_' . $fld } = 1;
             }
-            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) }
-                = 1;
+            $param->{ 'nwc_smart_replace_' . ( $blog->smart_replace || 0 ) } = 1;
             $param->{'nwc_replace_none'} = ( $blog->smart_replace || 0 ) == 2;
 
             $param->{can_popup}  = $blog->can_popup_image();

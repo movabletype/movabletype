@@ -515,18 +515,15 @@ sub insert_options {
     my $perms = $app->{perms};
     my $blog  = $asset->blog or return;
 
-    $param->{do_thumb}
-        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
+    $param->{do_thumb} = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
-    $param->{can_popup}  = $blog->can_popup_image();
-    $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
-    $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
-    $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
-    $param->{ 'align_' . $_ }
-        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
+    $param->{can_popup}       = $blog->can_popup_image();
+    $param->{popup}           = $blog->image_default_popup                     ? 1 : 0;
+    $param->{wrap_text}       = $blog->image_default_wrap_text                 ? 1 : 0;
+    $param->{make_thumb}      = $blog->image_default_thumb                     ? 1 : 0;
+    $param->{ 'align_' . $_ } = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
         for qw(none left center right);
-    $param->{ 'unit_w' . $_ }
-        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
+    $param->{ 'unit_w' . $_ } = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
         for qw(percent pixels);
     $param->{thumb_width}
         = $blog->image_default_width
