@@ -1735,7 +1735,7 @@ sub to_hash {
     return $hash;
 }
 
-sub can_image_popup {
+sub can_popup_image {
     my $blog = shift;
     return 0 if MT->config('DisableImagePopup');
 
