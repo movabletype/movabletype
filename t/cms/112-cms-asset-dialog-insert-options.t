@@ -12,10 +12,12 @@ BEGIN {
     $test_env = MT::Test::Env->new;
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
+use File::Temp qw( tempfile );
 
 use MT::Test;
 use MT::Test::App;
 use MT::Test::Permission;
+use MT::Test::Image;
 
 $test_env->prepare_fixture('db_data');
 
@@ -23,12 +25,15 @@ my $mt    = MT->instance;
 my $admin = $mt->model('author')->load(1);
 my $blog  = $mt->model('blog')->load(1);
 
+my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+    DIR    => $test_env->root,
+    SUFFIX => '.jpg',
+);
 my $asset = MT::Test::Permission->make_asset(
     class     => 'image',
     blog_id   => $blog->id,
     url       => 'http://narnia.na/nana/images/test.jpg',
-    file_path =>
-      File::Spec->catfile( $ENV{MT_HOME}, "t", 'images', 'test.jpg' ),
+    file_path => $tempfile,
     file_name    => 'test.jpg',
     file_ext     => 'jpg',
     image_width  => 640,
@@ -37,11 +42,11 @@ my $asset = MT::Test::Permission->make_asset(
     label        => 'Userpic A',
     description  => 'Userpic A',
 );
-subtest 'Check image disable popup' => sub {
-    my $app = MT::Test::App->new('MT::App::CMS');
-    $app->login($admin);
-
+subtest 'Check disable image popup' => sub {
+    my $elm_id = "#image_default_link_popup-" . $asset->id;
     subtest 'check image popup enabled' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
         $app->post_ok(
             {
                 __mode       => 'dialog_insert_options',
@@ -56,13 +61,15 @@ subtest 'Check image disable popup' => sub {
                 entry_insert => 1,
             }
         );
-
-        $app->content_like( 'id="image_default_link_popup-' . $asset->id . '"',
-            'image_default_link_popup is found' );
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 1, 'image popup check is show');
     };
 
     subtest 'change DisableImagePopup 1' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
         $mt->config( "DisableImagePopup", 1 );
+        $test_env->update_config(DisableImagePopup => 1);
         $app->post_ok(
             {
                 __mode       => 'dialog_insert_options',
@@ -77,13 +84,15 @@ subtest 'Check image disable popup' => sub {
                 entry_insert => 1,
             }
         );
-        $app->content_unlike(
-            'id="image_default_link_popup-' . $asset->id . '"',
-            'image_default_link_popup is not found'
-        );
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
+        $mt->config( "DisableImagePopup", 0 );
+        $test_env->update_config(DisableImagePopup => 0);
     };
 
     subtest 'remove popup_image template' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
         $mt->model('template')->remove(
             {
                 blog_id => $blog->id,
@@ -104,10 +113,8 @@ subtest 'Check image disable popup' => sub {
                 entry_insert => 1,
             }
         );
-        $app->content_unlike(
-            'id="image_default_link_popup-' . $asset->id . '"',
-            'image_default_link_popup is not found'
-        );
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
     };
 
 };
