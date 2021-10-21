@@ -172,12 +172,10 @@ subtest 'Check disable image popup' => sub {
     subtest 'check image popup is enabled' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        $app->get_ok(
-            {
-                __mode  => 'cfg_entry',
-                blog_id => $website->id
-            }
-        );
+        $app->get_ok({
+            __mode  => 'cfg_entry',
+            blog_id => $website->id
+        });
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 1, 'image popup check is show');
     };
@@ -185,39 +183,32 @@ subtest 'Check disable image popup' => sub {
     subtest 'change DisableImagePopup 1' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        MT->config( "DisableImagePopup", 1 );
+        MT->config("DisableImagePopup", 1);
         $test_env->update_config(DisableImagePopup => 1);
-        $app->get_ok(
-            {
-                __mode  => 'cfg_entry',
-                blog_id => $website->id
-            }
-        );
+        $app->get_ok({
+            __mode  => 'cfg_entry',
+            blog_id => $website->id
+        });
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
-        MT->config( "DisableImagePopup", 0 );
+        MT->config("DisableImagePopup", 0);
         $test_env->update_config(DisableImagePopup => 0);
     };
 
     subtest 'remove popup_image template' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        MT->model('template')->remove(
-            {
-                blog_id => $website->id,
-                type    => 'popup_image'
-            }
-        );
-        $app->get_ok(
-            {
-                __mode  => 'cfg_entry',
-                blog_id => $website->id
-            }
-        );
+        MT->model('template')->remove({
+            blog_id => $website->id,
+            type    => 'popup_image'
+        });
+        $app->get_ok({
+            __mode  => 'cfg_entry',
+            blog_id => $website->id
+        });
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
     };
 };
-
 
 done_testing;

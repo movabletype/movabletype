@@ -25,15 +25,15 @@ my $mt    = MT->instance;
 my $admin = $mt->model('author')->load(1);
 my $blog  = $mt->model('blog')->load(1);
 
-my ( $guard, $tempfile ) = MT::Test::Image->tempfile(
+my ($guard, $tempfile) = MT::Test::Image->tempfile(
     DIR    => $test_env->root,
     SUFFIX => '.jpg',
 );
 my $asset = MT::Test::Permission->make_asset(
-    class     => 'image',
-    blog_id   => $blog->id,
-    url       => 'http://narnia.na/nana/images/test.jpg',
-    file_path => $tempfile,
+    class        => 'image',
+    blog_id      => $blog->id,
+    url          => 'http://narnia.na/nana/images/test.jpg',
+    file_path    => $tempfile,
     file_name    => 'test.jpg',
     file_ext     => 'jpg',
     image_width  => 640,
@@ -47,20 +47,18 @@ subtest 'Check disable image popup' => sub {
     subtest 'check image popup enabled' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $app->post_ok(
-            {
-                __mode       => 'dialog_insert_options',
-                __type       => 'asset',
-                blog_id      => $blog->id,
-                dialog_view  => 1,
-                no_insert    => 0,
-                dialog       => 1,
-                id           => $asset->id,
-                edit_field   => 'editor-input-content',
-                force_insert => 1,
-                entry_insert => 1,
-            }
-        );
+        $app->post_ok({
+            __mode       => 'dialog_insert_options',
+            __type       => 'asset',
+            blog_id      => $blog->id,
+            dialog_view  => 1,
+            no_insert    => 0,
+            dialog       => 1,
+            id           => $asset->id,
+            edit_field   => 'editor-input-content',
+            force_insert => 1,
+            entry_insert => 1,
+        });
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 1, 'image popup check is show');
     };
@@ -68,51 +66,45 @@ subtest 'Check disable image popup' => sub {
     subtest 'change DisableImagePopup 1' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $mt->config( "DisableImagePopup", 1 );
+        $mt->config("DisableImagePopup", 1);
         $test_env->update_config(DisableImagePopup => 1);
-        $app->post_ok(
-            {
-                __mode       => 'dialog_insert_options',
-                __type       => 'asset',
-                blog_id      => $blog->id,
-                dialog_view  => 1,
-                no_insert    => 0,
-                dialog       => 1,
-                id           => $asset->id,
-                edit_field   => 'editor-input-content',
-                force_insert => 1,
-                entry_insert => 1,
-            }
-        );
+        $app->post_ok({
+            __mode       => 'dialog_insert_options',
+            __type       => 'asset',
+            blog_id      => $blog->id,
+            dialog_view  => 1,
+            no_insert    => 0,
+            dialog       => 1,
+            id           => $asset->id,
+            edit_field   => 'editor-input-content',
+            force_insert => 1,
+            entry_insert => 1,
+        });
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
-        $mt->config( "DisableImagePopup", 0 );
+        $mt->config("DisableImagePopup", 0);
         $test_env->update_config(DisableImagePopup => 0);
     };
 
     subtest 'remove popup_image template' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $mt->model('template')->remove(
-            {
-                blog_id => $blog->id,
-                type    => 'popup_image'
-            }
-        );
-        $app->post_ok(
-            {
-                __mode       => 'dialog_insert_options',
-                __type       => 'asset',
-                blog_id      => $blog->id,
-                dialog_view  => 1,
-                no_insert    => 0,
-                dialog       => 1,
-                id           => $asset->id,
-                edit_field   => 'editor-input-content',
-                force_insert => 1,
-                entry_insert => 1,
-            }
-        );
+        $mt->model('template')->remove({
+            blog_id => $blog->id,
+            type    => 'popup_image'
+        });
+        $app->post_ok({
+            __mode       => 'dialog_insert_options',
+            __type       => 'asset',
+            blog_id      => $blog->id,
+            dialog_view  => 1,
+            no_insert    => 0,
+            dialog       => 1,
+            id           => $asset->id,
+            edit_field   => 'editor-input-content',
+            force_insert => 1,
+            entry_insert => 1,
+        });
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
     };
