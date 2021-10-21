@@ -27,12 +27,13 @@ use MT::CMS::User;
 use MT::Role;
 
 use MT::Test;
+use MT::Test::App;
 
 MT::Test->init_app;
 
 $test_env->prepare_fixture('db_data');
 
-MT->instance;
+my $mt = MT->instance;
 my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
 our $is_superuser = 0;
@@ -189,36 +190,52 @@ subtest 'Check callbacks for saving' => sub {
 };
 
 subtest 'Check image disable popup' => sub {
-    my %param = (
+    my %params = (
         __test_user      => $user,
         __mode           => 'cfg_entry',
         blog_id          => $website->id
     );
+    my $elm_id = "#image_default_popup";
 
     subtest 'check image popup enabled' => sub {
-        my $app = _run_app( 'MT::App::CMS', \%param );
-        my $out = delete $app->{__test_output};
-        like( $out, qr/id="image_default_popup"/, 'output' );
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->get_ok(\%params);
+
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 1, 'image popup check is show');
     };
 
     subtest 'change DisableImagePopup 1' => sub {
         MT->config( "DisableImagePopup", 1 );
-        my $app = _run_app( 'MT::App::CMS', \%param );
-        my $out = delete $app->{__test_output};
-        unlike( $out, qr/id="image_default_popup"/, 'output' );
+        $test_env->update_config(DisableImagePopup => 1);
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->get_ok(\%params);
+
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
+
         MT->config( "DisableImagePopup", 0 );
+        $test_env->update_config(DisableImagePopup => 0);
     };
 
     subtest 'remove popup_image template' => sub {
-        MT->model('template')->remove(
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+
+        $mt->model('template')->remove(
             {
                 blog_id => $website->id,
                 type    => 'popup_image'
             }
         );
-        my $app = _run_app( 'MT::App::CMS', \%param );
-        my $out = delete $app->{__test_output};
-        unlike( $out, qr/id="image_default_popup"/, 'output' );
+        $app->get_ok(\%params);
+
+
+        note $app->wq_find($elm_id)->as_html;
+        is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
     };
 };
 
