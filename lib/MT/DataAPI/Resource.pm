@@ -183,6 +183,12 @@ sub core_resources {
                 updatable_fields => "${pkg}v2::Group::updatable_fields",
             },
         ],
+        'endpoint' => [
+            {
+                version => 1,
+                fields => "${pkg}Endpoint::fields",
+            },
+        ],
     };
 }
 
