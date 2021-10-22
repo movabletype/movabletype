@@ -195,6 +195,12 @@ sub core_resources {
                 fields => "${pkg}StatisticsDate::fields",
             },
         ],
+        statisticspath => [
+            {
+                version => 1,
+                fields => "${pkg}StatisticsPath::fields",
+            },
+        ],
     };
 }
 
