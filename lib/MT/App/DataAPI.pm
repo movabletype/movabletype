@@ -19,6 +19,7 @@ use MT::App::Search::Common;
 use MT::AccessToken;
 
 our %endpoints = ();
+our %schemas   = ();
 
 sub id                 {'data_api'}
 sub DEFAULT_VERSION () {4}
@@ -2916,6 +2917,73 @@ sub _compile_endpoints {
 sub endpoints {
     my ( $app, $version ) = @_;
     $endpoints{$version} ||= $app->_compile_endpoints($version);
+}
+
+sub fields_to_schema {
+    my ($app, $resource_name) = @_;
+    my $schema = {
+        type => 'object',
+    };
+    my $resource = MT::DataAPI::Resource->resource($resource_name);
+    for my $field (@{ $resource->{fields} }) {
+        if ($field->{schema}) {
+            $schema->{properties}{ $field->{name} } = {
+                %{ $field->{schema} },
+            };
+        } elsif (defined $field->{type} && $field->{type} =~ m/MT::DataAPI::Resource::DataType::Object\z/) {
+            $schema->{properties}{ $field->{name} }{type} = 'object';
+            for my $key (@{ $field->{fields} }) {
+                $schema->{properties}{ $field->{name} }{properties}{$key} = {
+                    type => 'string',
+                };
+            }
+        } elsif (defined $field->{type} && $field->{type} =~ m/MT::DataAPI::Resource::DataType::/) {
+            my $type_schema = $app->handler_to_coderef($field->{type} . '::schema')->();
+            $schema->{properties}{ $field->{name} } = {
+                %$type_schema,
+            };
+        } elsif (defined $field->{type}) {
+            $schema->{properties}{ $field->{name} } = {
+                type => $field->{type},
+            };
+        } else {
+            $schema->{properties}{ $field->{name} } = {
+                type => 'string',
+            };
+        }
+    }
+    if (scalar(@{ $resource->{updatable_fields} })) {
+        $schema->{description} = 'Updatable fields are ' . join(', ', map { $_->{name} } @{ $resource->{updatable_fields} });
+    }
+    return $schema;
+}
+
+sub _compile_schemas {
+    my ($app, $version) = @_;
+    my %hash       = ();
+    my @components = MT::Component->select();
+    for my $c (@components) {
+        my $resources = $c->registry('applications', 'data_api', 'resources');
+        next unless defined $resources;
+        for my $key (keys %$resources) {
+            if (ref($resources->{$key}) eq 'ARRAY') {
+                for my $v (@{ $resources->{$key} }) {
+                    $v->{version} ||= 1;
+                    next if $v->{version} > $version;
+                    $hash{$key} = $app->fields_to_schema($key);
+                }
+            } else {
+                # alias
+                next;
+            }
+        }
+    }
+    return \%hash;
+}
+
+sub schemas {
+    my ($app, $version) = @_;
+    $schemas{$version} ||= $app->_compile_schemas($version);
 }
 
 sub current_endpoint {
