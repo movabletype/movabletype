@@ -633,6 +633,12 @@ sub to_object {
     }
 }
 
+sub schema {
+    return +{
+        type => 'integer',
+    };
+}
+
 package MT::DataAPI::Resource::DataType::Boolean;
 
 use boolean ();
@@ -651,6 +657,12 @@ sub to_object {
     foreach my $o (@$objs) {
         $o->$name( $o->$name ? 1 : 0 ) if defined $o->$name;
     }
+}
+
+sub schema {
+    return +{
+        type => 'boolean',
+    };
 }
 
 package MT::DataAPI::Resource::DataType::ISO8601;
@@ -712,6 +724,13 @@ sub to_object {
             );
         }
     }
+}
+
+sub schema {
+    return +{
+        type   => 'string',
+        format => 'date-time',
+    };
 }
 
 1;

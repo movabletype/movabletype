@@ -27,6 +27,12 @@ our %fields = (
                     : undef;
             }
         },
+        schema => {
+            type => 'object',
+            properties => {
+                id => { type => 'integer' },
+            },
+        },
     },
     tags => {
         name        => 'tags',
@@ -41,6 +47,12 @@ our %fields = (
             }
             return;
         },
+        schema => {
+            type => 'array',
+            items => {
+                type => 'string',
+            },
+        },
     },
     status => {
         name        => 'status',
@@ -52,6 +64,9 @@ our %fields = (
             my ( $hash, $obj ) = @_;
             $obj->set_status_by_text( $hash->{status} );
             return;
+        },
+        schema => {
+            type => 'string',
         },
     },
     createdDate => {
@@ -86,6 +101,10 @@ our %fields = (
                     [qw(id displayName userpicUrl)] );
             }
         },
+        schema => {
+            type   => 'string',
+            format => 'date-time',
+        },
     },
     modifiedBy => {
         name             => 'modifiedBy',
@@ -108,6 +127,10 @@ our %fields = (
                     = MT::DataAPI::Resource->from_object( $author,
                     [qw(id displayName userpicUrl)] );
             }
+        },
+        schema => {
+            type   => 'string',
+            format => 'date-time',
         },
     },
 );
