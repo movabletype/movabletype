@@ -41,8 +41,17 @@ sub core_methods {
 sub core_endpoints {
     my $app = shift;
     my $pkg = '$Core::MT::DataAPI::Endpoint::';
-    return [
-
+    return [{
+            id             => 'openapi',
+            route          => '/',
+            version        => 1,
+            handler        => "${pkg}OpenAPI::build_schema",
+            requires_login => 0,
+            openapi        => {
+                tags    => ['Common API'],
+                summary => 'Retrieve OpenAPI schema'
+            },
+        },
         # version 1
         {   id             => 'list_endpoints',
             route          => '/endpoints',
