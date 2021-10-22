@@ -52,6 +52,32 @@ sub core_endpoints {
                 summary => 'Retrieve OpenAPI schema'
             },
         },
+        {
+            id             => 'version',
+            route          => '/version',
+            version        => 1,
+            requires_login => 0,
+            openapi        => {
+                tags      => ['Common API'],
+                summary   => 'Get server API version',
+                responses => {
+                    200 => {
+                        description => 'OK',
+                        content     => {
+                            'application/json' => {
+                                schema => {
+                                    type       => 'object',
+                                    properties => {
+                                        apiVersion      => { type => 'number', format => 'float' },
+                                        endpointVersion => { type => 'string' },
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
         # version 1
         {   id             => 'list_endpoints',
             route          => '/endpoints',
