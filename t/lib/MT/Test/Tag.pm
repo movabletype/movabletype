@@ -151,7 +151,8 @@ SKIP: {
                 my $extra    = $callback ? $callback->($block) : '';
 
                 require MT::Util::UniqueID;
-                my $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+                my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
+                          File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
                 my $php_script = php_test_script( $block->blog_id || $blog_id, $template, $text, $log, $extra );
                 my $php_result = MT::Test::PHP->run($php_script);
 
