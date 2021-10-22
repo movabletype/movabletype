@@ -189,6 +189,12 @@ sub core_resources {
                 fields => "${pkg}Endpoint::fields",
             },
         ],
+        statisticsdate => [
+            {
+                version => 1,
+                fields => "${pkg}StatisticsDate::fields",
+            },
+        ],
     };
 }
 
