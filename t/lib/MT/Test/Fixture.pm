@@ -729,12 +729,12 @@ sub prepare_role {
             } else {
                 @role_perms = @{ $spec->{role}{$name} || [] };
             }
-            for my $perm (@role_perms) {
-                my $reftype = ref $perm;
+            for my $role_perm (@role_perms) {
+                my $reftype = ref $role_perm;
                 if ($reftype eq 'HASH') {   # for content type
-                    my $ct_name = $perm->{content_type};
-                    my $cf_name = $perm->{content_field};
-                    my $ct_perm = $perm->{permissions};
+                    my $ct_name = $role_perm->{content_type};
+                    my $cf_name = $role_perm->{content_field};
+                    my $ct_perm = $role_perm->{permissions};
                     if ($ct_name) {
                         my $ct = $objs->{content_type}{$ct_name}{content_type}
                             or croak "unknown content type: $ct_name";
@@ -743,21 +743,23 @@ sub prepare_role {
                                 or croak "unknown content field: $ct_name $cf_name";
                             push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
                         } else {
-                            croak "content_type role permission is missing: $name" unless $ct_perm;
-                            push @perms, "$ct_perm:".$ct->unique_id;
-                            if ($ct_perm eq 'manage_content_data') {
-                                push @perms, "create_content_data:".$ct->unique_id;
-                                push @perms, "publish_content_data:".$ct->unique_id;
-                                push @perms, "edit_all_content_data:".$ct->unique_id;
-                                for my $cf_name (keys %{$objs->{content_type}{$ct_name}{content_field} || {}}) {
-                                    my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name};
-                                    push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                            croak "content_type role permissions are missing: $name" unless $ct_perm;
+                            for my $perm (@$ct_perm) {
+                                push @perms, "$perm:".$ct->unique_id;
+                                if ($perm eq 'manage_content_data') {
+                                    push @perms, "create_content_data:".$ct->unique_id;
+                                    push @perms, "publish_content_data:".$ct->unique_id;
+                                    push @perms, "edit_all_content_data:".$ct->unique_id;
+                                    for my $cf_name (keys %{$objs->{content_type}{$ct_name}{content_field} || {}}) {
+                                        my $cf = $objs->{content_type}{$ct_name}{content_field}{$cf_name};
+                                        push @perms, "content_type:".$ct->unique_id."-content_field:".$cf->unique_id;
+                                    }
                                 }
                             }
                         }
                     }
                 } elsif (!$reftype) {
-                    push @perms, $perm;
+                    push @perms, $role_perm;
                 } else {
                     croak "unknown role type: $name $reftype";
                 }
