@@ -59,6 +59,8 @@ sub prepare_author {
         for my $item ( @{ $spec->{author} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
             $arg{nickname} ||= $arg{name};
+            delete $arg{roles};  ## not for now
+            my $permissions = delete $arg{permissions};
             my $author = MT::Test::Permission->make_author(%arg);
             if ( !defined $arg{is_superuser} or $arg{is_superuser} ) {
                 $author->is_superuser(1);
@@ -66,6 +68,12 @@ sub prepare_author {
             }
             $objs->{author}{ $author->name } = $author;
             push @author_names, $author->name;
+
+            if ($permissions) {
+                my $perm = $author->permissions(0);
+                $perm->set_these_permissions($permissions);
+                $perm->save;
+            }
         }
     }
     if ( @author_names == 1 ) {
