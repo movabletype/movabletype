@@ -89,10 +89,18 @@ sub prepare_website {
     if ( ref $spec->{website} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{website} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+            my $authors = delete $arg{authors};
 
             my $site = MT::Test::Permission->make_website(%arg);
             $objs->{website}{ $site->name } = $site;
             push @site_names, $site->name;
+
+            if ($authors) {
+                for my $author_name (@$authors) {
+                    my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
+                    MT::Association->link($site, $author);
+                }
+            }
         }
     }
     if ( @site_names == 1 ) {
@@ -113,6 +121,8 @@ sub prepare_blog {
     if ( ref $spec->{blog} eq 'ARRAY' ) {
         for my $item ( @{ $spec->{blog} } ) {
             my %arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+            my $authors = delete $arg{authors};
+
             if ( my $parent_name = delete $arg{parent} ) {
                 my $parent = $objs->{website}{$parent_name} or croak "unknown parent: $parent_name";
                 $arg{parent_id} = $parent->id;
@@ -121,6 +131,13 @@ sub prepare_blog {
             my $blog = MT::Test::Permission->make_blog(%arg);
             $objs->{blog}{ $blog->name } = $blog;
             push @blog_names, $blog->name;
+
+            if ($authors) {
+                for my $author_name (@$authors) {
+                    my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
+                    MT::Association->link($blog, $author);
+                }
+            }
         }
     }
     if ( $objs->{blog_id} && @blog_names ) {
