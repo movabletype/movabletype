@@ -5,6 +5,7 @@ use warnings;
 use Carp;
 use MT::Test::Permission;
 use MT::Serialize;
+use MT::Association;
 use Data::Visitor::Tiny;
 use List::Util qw(uniq);
 
@@ -743,12 +744,18 @@ sub prepare_role {
     if (ref $spec->{role} eq 'HASH') {
         for my $name (keys %{$spec->{role}}) {
             my @perms;
-            for my $perm (@{$spec->{role}{$name} || []}) {
+            my @role_perms;
+            if (ref $spec->{role}{$name} eq 'HASH') {
+                @role_perms = @{ $spec->{role}{$name}{permissions} || [] };
+            } else {
+                @role_perms = @{ $spec->{role}{$name} || [] };
+            }
+            for my $perm (@role_perms) {
                 my $reftype = ref $perm;
                 if ($reftype eq 'HASH') {   # for content type
                     my $ct_name = $perm->{content_type};
                     my $cf_name = $perm->{content_field};
-                    my $ct_perm = $perm->{permission} || $perm->{perm};
+                    my $ct_perm = $perm->{permissions};
                     if ($ct_name) {
                         my $ct = $objs->{content_type}{$ct_name}{content_type}
                             or croak "unknown content type: $ct_name";
@@ -776,10 +783,50 @@ sub prepare_role {
                     croak "unknown role type: $name $reftype";
                 }
             }
-            MT::Test::Permission->make_role(
-                name => $name,
+            my $role = MT::Test::Permission->make_role(
+                name        => $name,
                 permissions => join ",", map {qq{'$_'}} uniq @perms,
             );
+            $objs->{role}{$name} = $role;
+        }
+    }
+
+    # prepare association
+    for my $target (qw/author group/) {
+        if ($spec->{$target} && ref $spec->{$target} eq 'ARRAY') {
+            for my $item ( @{ $spec->{$target} } ) {
+                my %target_arg = ref $item eq 'HASH' ? %$item : ( name => $item );
+                next unless @{$target_arg{roles} || []};
+                my $target_obj = $objs->{$target}{$target_arg{name}};
+                for my $role (@{$target_arg{roles}}) {
+                    my %role_arg;
+                    if (ref $role eq 'HASH') {
+                        %role_arg = %$role;
+                    } else {
+                        %role_arg = (role => $role);
+                    }
+                    my $role_name = $role_arg{role} or croak "role is required";;
+                    my $role_obj = $objs->{role}{$role_name} or croak "unknown role: $role_name";
+
+                    my $site_obj;
+                    if (my $website_name = delete $role_arg{website}) {
+                        $site_obj = $objs->{website}{$website_name} or croak "unknown website: $website_name";
+                    }
+                    if (my $blog_name = delete $role_arg{blog}) {
+                        $site_obj = $objs->{blog}{$blog_name} or croak "unknown blog: $blog_name";
+                    }
+                    if (!$site_obj) {
+                        my @sites = (values(%{$objs->{website} || {}}), values(%{$objs->{blog} || {}}));
+                        if (@sites == 1) {
+                            $site_obj = $sites[0];
+                        } else {
+                            croak "blog/website is required: $role_name";
+                        }
+                    }
+
+                    MT::Association->link($target_obj, $role_obj, $site_obj);
+                }
+            }
         }
     }
 }
