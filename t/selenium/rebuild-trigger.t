@@ -352,8 +352,9 @@ sub stringify_scenarios {
 }
 
 sub assert_no_browser_errors {
-    my @logs = $s->get_browser_error_log();
-    is(scalar @logs, 0, 'no browser error occured');
+    # mt_[lang].js may not exist depending on the env
+    my @logs = grep { $_->{message} !~ /\bmt_\w+\.js\b.+Failed to load/ } $s->get_browser_error_log();
+    is(scalar @logs, 0, 'no unknown browser error occured');
     note sprintf("<%s> %s", $_->{source}, $_->{message}) for @logs;
 }
 
