@@ -163,7 +163,7 @@ sub prepare_image {
         for my $name ( sort keys %{ $spec->{image} } ) {
             my $item = $spec->{image}{$name};
             if ( ref $item eq 'HASH' ) {
-                my $blog_id = _find_blog_id_by_name($objs, $item)
+                my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: image";
                 my $file = "$image_dir/$name";
                 MT::Test::Image->write( file => $file );
@@ -208,7 +208,7 @@ sub prepare_asset {
         for my $name ( sort keys %{ $spec->{asset} } ) {
             my $item = $spec->{asset}{$name};
             if ( ref $item eq 'HASH' ) {
-                my $blog_id = _find_blog_id_by_name($objs, $item)
+                my $blog_id = _find_blog_id($objs, $item)
                     or croak "blog_id is required: asset";
                 my $asset_class = delete $item->{class} || _get_asset_class($name);
                 my $file = "$asset_dir/$name";
@@ -286,7 +286,7 @@ sub prepare_category {
             else {
                 %arg = ( label => $item );
             }
-            $arg{blog_id} ||= _find_blog_id_by_name($objs, \%arg)
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: category";
             my $cat = MT::Test::Permission->make_category(%arg);
             $objs->{category}{ $cat->label } = $cat;
@@ -312,7 +312,7 @@ sub prepare_folder {
             else {
                 %arg = ( label => $item );
             }
-            $arg{blog_id} ||= _find_blog_id_by_name($objs, \%arg)
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: folder";
             my $folder = MT::Test::Permission->make_folder(%arg);
             $objs->{folder}{ $folder->label } = $folder;
@@ -339,7 +339,7 @@ sub prepare_customfield {
                     tag      => $item,
                 );
             }
-            $arg{blog_id} ||= _find_blog_id_by_name($objs, \%arg)
+            $arg{blog_id} ||= _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: customfield";
             my $field = MT::Test::Permission->make_field(%arg);
             $objs->{customfield}{ $field->name } = $field;
@@ -368,9 +368,9 @@ sub prepare_entry {
             my $title     = $arg{title} || '(no title)';
             my @cat_names = @{ delete $arg{categories} || [] };
 
-            my $blog_id = _find_blog_id_by_name($objs, \%arg)
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: entry: $title";
-            my $author_id = _find_author_id_by_name($objs, \%arg)
+            my $author_id = _find_author_id($objs, \%arg)
                 or croak "author_id is required: entry: $title";
 
             my $entry = MT::Test::Permission->make_entry(
@@ -414,9 +414,9 @@ sub prepare_page {
             my $title       = $arg{title} || '(no title)';
             my $folder_name = delete $arg{folder};
 
-            my $blog_id = _find_blog_id_by_name($objs, \%arg)
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: page: $title";
-            my $author_id = _find_author_id_by_name($objs, \%arg)
+            my $author_id = _find_author_id($objs, \%arg)
                 or croak "author_id is required: page: $title";
 
             my $page = MT::Test::Permission->make_page(
@@ -502,7 +502,7 @@ sub prepare_content_type {
                 @field_spec = @{ delete $ct_arg{fields} || [] };
             }
 
-            my $blog_id = _find_blog_id_by_name($objs, \%ct_arg)
+            my $blog_id = _find_blog_id($objs, \%ct_arg)
                 or croak "blog_id is required: content_type: $ct_name";
 
             my $ct = $objs->{content_type}{$ct_name}{content_type};
@@ -608,9 +608,9 @@ sub prepare_content_data {
                     or croak "content_type is required: content_data: $name";
                 $arg{content_type_id} = $ct->id;
 
-                $arg{author_id} ||= _find_author_id_by_name($objs, \%arg)
+                $arg{author_id} ||= _find_author_id($objs, \%arg)
                     or croak "author_id is required: content_data: $name";
-                $arg{blog_id}   ||= _find_blog_id_by_name($objs, \%arg)
+                $arg{blog_id}   ||= _find_blog_id($objs, \%arg)
                     or croak "blog_id is required: content_data: $name";
                 $arg{label} = $name unless defined $arg{label};
 
@@ -826,7 +826,7 @@ sub prepare_template {
                     or croak "unknown archive_type: $archive_type";
                 $arg{type} = _template_type($archive_type);
             }
-            my $blog_id = _find_blog_id_by_name($objs, \%arg)
+            my $blog_id = _find_blog_id($objs, \%arg)
                 or croak "blog_id is required: template: $arg{type}";
 
             my $ct;
@@ -912,7 +912,7 @@ sub _file_template {
     }
 }
 
-sub _find_blog_id_by_name {
+sub _find_blog_id {
     my ($objs, $arg) = @_;
     if (my $website_name = delete $arg->{website}) {
         my $site = $objs->{website}{$website_name} or croak "unknown website: $website_name";
@@ -925,7 +925,7 @@ sub _find_blog_id_by_name {
     $arg->{blog_id} || $objs->{blog_id};
 }
 
-sub _find_author_id_by_name {
+sub _find_author_id {
     my ($objs, $arg) = @_;
     if (my $author_name = delete $arg->{author}) {
         my $author = $objs->{author}{$author_name} or croak "unknown author: $author_name";
