@@ -2259,7 +2259,6 @@ abstract class MTDatabase {
                     $role_list[] = $role->role_id;
                 }
                 $as = $this->fetch_associations(array(
-                    'blog_id' => isset($blog_id) ? $blog_id : null,
                     'role_id' => $role_list
                 ));
                 foreach ($as as $a) {
@@ -2397,6 +2396,7 @@ abstract class MTDatabase {
         }
 
         $limit = 0;
+        $offset = 0;
          if (isset($args['limit']))
             $limit = $args['limit'];
 
@@ -2428,7 +2428,7 @@ abstract class MTDatabase {
         $i = -1;
         while (true) {
             $i++;
-            if (!empty($offset) && ($j++ < $offset)) continue;
+            if ($offset && ($j++ < $offset)) continue;
             $e = isset($results[$i]) ? $results[$i] : null;
             if (empty($e)) break;
             if (count($filters)) {
@@ -5020,7 +5020,7 @@ abstract class MTDatabase {
             $author_filter = "and cd_author_id = $author_id";
         }
 
-        if ( $arg = (isset($args['category_field']) ? $args['category_field'] : null) ) {
+        if ( isset($args['category_field']) && ($arg = $args['category_field']) ) {
             if (preg_match('/^[0-9]+$/', $arg))
                 $cf = $this->fetch_content_field($arg);
             if (!isset($cf)) {
@@ -5037,7 +5037,7 @@ abstract class MTDatabase {
             }
         }
 
-        if ( $arg = (isset($args['date_field']) ? $args['date_field'] : null) ) {
+        if ( isset($args['date_field']) && ($arg = $args['date_field']) ) {
             if (   $arg === 'authored_on'
                 || $arg === 'modified_on'
                 || $arg === 'created_on' )

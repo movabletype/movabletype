@@ -1087,11 +1087,8 @@ function substr_text($text, $startpos, $length) {
 }
 
 function first_n_text($text, $n) {
-    if (!isset($lang) || empty($lang)) { 
-        $mt = MT::get_instance();
-        $lang = (!empty($blog) && $blog->blog_language ? $blog->blog_language : 
-                     $mt->config('DefaultLanguage'));
-    }
+    $mt = MT::get_instance();
+    $lang = $mt->config('DefaultLanguage');
     if ($lang == 'jp') {
         $lang = 'ja';
     }
@@ -1251,10 +1248,10 @@ function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     $expr = '$pm = array_key_exists($o->'.$datasource.'_id, $c["c"]) ? $c["c"][$o->'.$datasource.'_id] : array(); return (' . $expr . ');';
     try {
         eval("\$fn = function(&\$o, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if (!empty($error) || $fn === FALSE) {
         echo "Invalid category filter: $orig_expr";
         return;
     }
@@ -1362,10 +1359,10 @@ function create_tag_expr_function($expr, &$tags, $datasource = 'entry') {
     $expr = '$tm = array_key_exists($o->'.$datasource.'_id, $c["t"]) ? $c["t"][$o->'.$datasource.'_id] : array(); return (' . $result . ');';
     try {
         eval("\$fn = function(&\$o, &\$c) { $expr; };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if (!empty($error) || $fn === FALSE) {
         echo "Invalid tag filter: $orig_expr";
         return;
     }
@@ -1615,10 +1612,10 @@ function create_role_expr_function($expr, &$roles, $datasource = 'author') {
     $expr = '$tm = array_key_exists($e->'.$datasource.'_id, $c["r"]) ? $c["r"][$e->'.$datasource.'_id] : array(); return ' . $expr . ';';
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if (!empty($error) || $fn === FALSE) {
         echo "Invalid role filter: $orig_expr";
         return;
     }
@@ -1648,10 +1645,10 @@ function create_status_expr_function($expr, &$status, $datasource = 'author') {
     $expr = 'return ' . $expr . ';';
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if (!empty($error) || $fn === FALSE) {
         echo "Invalid status filter: $orig_expr";
         return;
     }
@@ -1682,10 +1679,10 @@ function create_rating_expr_function($expr, $filter, $namespace, $datasource = '
 
     try {
         eval("\$fn = function(&\$e, &\$c) { $expr };");
+        if ($fn === FALSE) {
+            throw new MTException('$fn is not set');
+        }
     } catch (ParseError $e) {
-        $error = true;
-    }
-    if (!empty($error) || $fn === FALSE) {
         echo "Invalid rating filter: $orig_expr";
         return;
     }

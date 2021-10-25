@@ -1004,8 +1004,7 @@ class MT {
     }
 
     function mode() {
-        $mode = isset($_GET['__mode']) ? $_GET['__mode'] : null;
-        if (!isset($mode)) $mode = 'default';
+        $mode = isset($_GET['__mode']) ? $_GET['__mode'] : 'default';
         preg_replace('/[<>"\']/', '', $mode);
         return $mode;
     }

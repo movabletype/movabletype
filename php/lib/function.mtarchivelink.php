@@ -22,7 +22,7 @@ function smarty_function_mtarchivelink($args, &$ctx) {
     } elseif ($at == 'Yearly') {
          $ts = substr($ts, 0, 4) . '0101000000';
     } elseif ($at == 'Individual' || $at == 'Page') {
-        $args['archive_type'] = !empty($args['archive_type']) ? $args['archive_type'] : $at;
+        !empty($args['archive_type']) or $args['archive_type'] = $at;
         return $ctx->tag('EntryPermalink', $args);
     } elseif ($at == 'ContentType') {
         !empty($args['archive_type']) or $args['archive_type'] = $at;

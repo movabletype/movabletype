@@ -178,9 +178,10 @@ class MTViewer extends SmartyBC {
     }
 
     function regex_replace($string, $search, $replace) {
+        $limit = 1;
         if (preg_match('!([a-zA-Z\s]+)$!s', $search, $match) && (preg_match('/[eg]/', $match[1]))) {
             if (strpos($match[1], "g") !== false)
-                $global = 1;
+                $limit = -1;
             /* remove eval-modifier from $search */
             $search = substr($search, 0, -strlen($match[1])) . preg_replace('![eg\s]+!', '', $match[1]);
         }
@@ -212,10 +213,10 @@ class MTViewer extends SmartyBC {
                     return $replaced;
                 },
                 $string,
-                $global ? -1 : 1
+                $limit
             );
         } else {
-            return preg_replace($search, $replace, $string, !empty($global) ? -1 : 1);
+            return preg_replace($search, $replace, $string, $limit);
         }
     }
 
@@ -999,10 +1000,7 @@ EOT;
             if(isset($ctx->__stash[$value]) && !is_object($ctx->__stash[$value])){
                 $ctx->__stash[$value] = new Smarty_Variable($ctx->__stash[$value]);
             }
-            if(!isset($ctx->__stash[$value])){
-                $ctx->__stash[$value] = new Smarty_Variable();
-            }
-            $_smarty_tpl->tpl_vars[$value] = isset($ctx->__stash[$value]) ? $ctx->__stash[$value] : null;
+            $_smarty_tpl->tpl_vars[$value] = isset($ctx->__stash[$value]) ? $ctx->__stash[$value] : new Smarty_Variable();
         }
 
 
