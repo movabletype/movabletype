@@ -1662,11 +1662,11 @@ abstract class MTDatabase {
         }
 
         $sql = implode(' ', array(
-            "select tag_id, tag_name, count(*) as tag_count
-                 from mt_tag, mt_objecttag, mt_entry
-                 where objecttag_tag_id = tag_id
-                   and entry_id = objecttag_object_id and objecttag_object_datasource='entry'
-                   and entry_status = 2",
+            'select tag_id, tag_name, count(*) as tag_count',
+            'from mt_tag, mt_objecttag, mt_entry',
+            'where objecttag_tag_id = tag_id',
+            "and entry_id = objecttag_object_id and objecttag_object_datasource='entry'",
+            'and entry_status = 2',
             isset($entry_filter) ? $entry_filter : '',
             isset($blog_filter) ? $blog_filter : '',
             isset($tag_filter) ? $tag_filter : '',
@@ -3098,8 +3098,8 @@ abstract class MTDatabase {
         $otag = new ObjectTag;
 
         $where = implode(' ', array(
-            "objecttag_object_datasource ='$datasource'
-                and objecttag_tag_id in ($id_list)",
+            "objecttag_object_datasource ='$datasource'",
+            "and objecttag_tag_id in ($id_list)",
             $blog_filter,
             isset($object_filter) ? $object_filter : ''
         ));
@@ -5392,11 +5392,11 @@ abstract class MTDatabase {
         }
 
         $sql = implode(' ', array(
-            "select tag_id, tag_name, count(*) as tag_count
-                 from mt_tag, mt_objecttag, mt_cd
-                 where objecttag_tag_id = tag_id
-                   and cd_id = objecttag_object_id and objecttag_object_datasource='content_data'
-                   and cd_status = 2",
+            'select tag_id, tag_name, count(*) as tag_count',
+            'from mt_tag, mt_objecttag, mt_cd',
+            'where objecttag_tag_id = tag_id',
+            "and cd_id = objecttag_object_id and objecttag_object_datasource='content_data'",
+            'and cd_status = 2',
             isset($blog_filter) ? $blog_filter : '',
             isset($tag_filter) ? $tag_filter : '',
             isset($cd_filter) ? $cd_filter : '',

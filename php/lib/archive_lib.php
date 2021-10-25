@@ -739,14 +739,14 @@ class DailyArchiver extends DateBasedArchiver {
         $day_ext = $mt->db()->apply_extract_date('day', 'entry_authored_on');
 
         $sql = implode(' ', array(
-            "select count(*) as entry_count,
-                           $year_ext as y,
-                           $month_ext as m,
-                           $day_ext as d
-                      from mt_entry
-                     where entry_blog_id = $blog_id
-                       and entry_status = 2
-                       and entry_class = 'entry'",
+            'select count(*) as entry_count,',
+            "$year_ext as y,",
+            "$month_ext as m,",
+            "$day_ext as d",
+            'from mt_entry',
+            "where entry_blog_id = $blog_id",
+            'and entry_status = 2',
+            "and entry_class = 'entry'",
             isset($date_filter) ? $date_filter : '',
             "group by $year_ext, $month_ext, $day_ext order by $year_ext $order, $month_ext $order, $day_ext $order"
         ));
@@ -2009,11 +2009,11 @@ class MonthlyCategoryArchiver extends DateBasedCategoryArchiver {
             }
         #}
         $sql = implode(' ', array(
-            "select count(*) as entry_count,
-                       $year_ext as y,
-                       $month_ext as m,
-                       placement_category_id,
-                       category_label",
+            'select count(*) as entry_count,',
+            "$year_ext as y,",
+            "$month_ext as m,",
+            'placement_category_id,',
+            'category_label',
             "from mt_entry join mt_placement on entry_id = placement_entry_id",
             "join mt_category on placement_category_id = category_id",
             "where entry_blog_id = $blog_id and entry_status = 2 and entry_class = 'entry'",
@@ -2648,24 +2648,18 @@ class ContentTypeDailyArchiver extends ContentTypeDateBasedArchiver {
         $day_ext = $mt->db()->apply_extract_date('day', $dt_target_col);
 
         $sql = implode(' ', array(
-            "select count(*) as cd_count,
-                           $year_ext as y,
-                           $month_ext as m,
-                           $day_ext as d
-                      from mt_cd
-                      $join_on
-                     where cd_blog_id = $blog_id
-                       and cd_status = 2",
+            "select count(*) as cd_count,",
+            "$year_ext as y,",
+            "$month_ext as m,",
+            "$day_ext as d",
+            'from mt_cd',
+            $join_on,
+            "where cd_blog_id = $blog_id",
+            'and cd_status = 2',
            isset($date_filter) ? $date_filter : '',
            isset($content_type_filter) ? $content_type_filter : '',
-           "group by
-                 $year_ext,
-                 $month_ext,
-                 $day_ext
-           order by
-                 $year_ext $order,
-                 $month_ext $order,
-                 $day_ext $order"
+           "group by $year_ext, $month_ext, $day_ext",
+           "order by $year_ext $order, $month_ext $order, $day_ext $order"
         ));
 
         $limit = isset($args['lastn']) ? $args['lastn'] : -1;
@@ -3087,10 +3081,10 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         $content_type_filter = _get_content_type_filter($args);
 
         $sql = implode(' ', array(
-            "select count(*) as cd_count, cd_author_id, author_name
-            from mt_cd
-            join mt_author on cd_author_id = author_id
-            where cd_blog_id = $blog_id and cd_status = 2",
+            'select count(*) as cd_count, cd_author_id, author_name',
+            'from mt_cd',
+            'join mt_author on cd_author_id = author_id',
+            "where cd_blog_id = $blog_id and cd_status = 2",
             isset($content_type_filter) ? $content_type_filter : '',
             "group by cd_author_id, author_name order by author_name $order"
         ));
@@ -3875,9 +3869,9 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
         }
 
         $sql = implode(' ', array(
-            "fileinfo_blog_id = $blog_id and fileinfo_archive_type = '".$mt->db()->escape($at)."'
-                    and fileinfo_category_id = '$cat_id'
-                    and templatemap_is_preferred = 1",
+            "fileinfo_blog_id = $blog_id and fileinfo_archive_type = '".$mt->db()->escape($at)."'",
+            "and fileinfo_category_id = '$cat_id'",
+            "and templatemap_is_preferred = 1",
             isset($start_filter) ? $start_filter : '',
             isset($order) ? $order : ''
         ));
@@ -4112,11 +4106,8 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
                 }
 
                 $sql = implode(' ', array(
-                    "select count(*) as cd_count,
-                           $year_ext as y,
-                           $cat_target_col as category_id,
-                           category_label",
-                    "from mt_cd",
+                    "select count(*) as cd_count, $year_ext as y, $cat_target_col as category_id, category_label",
+                    'from mt_cd',
                     $join_on,
                     "where cd_blog_id = $blog_id and cd_status = 2",
                     isset($date_filter) ? $date_filter : '',
@@ -4258,12 +4249,12 @@ class ContentTypeCategoryMonthlyArchiver extends ContentTypeDateBasedCategoryArc
                     }
                 }
                 $sql = implode(' ', array(
-                    "select count(*) as cd_count,
-                               $year_ext as y,
-                               $month_ext as m,
-                               $cat_target_col as category_id,
-                               category_label
-                    from mt_cd",
+                    'select count(*) as cd_count,',
+                    "$year_ext as y,",
+                    "$month_ext as m,",
+                    "$cat_target_col as category_id,",
+                    'category_label',
+                    'from mt_cd',
                     $join_on,
                     "where cd_blog_id = $blog_id and cd_status = 2",
                     isset($date_filter) ? $date_filter : '',
@@ -4404,13 +4395,13 @@ class ContentTypeCategoryDailyArchiver extends ContentTypeDateBasedCategoryArchi
                     }
                 }
                 $sql = implode(' ', array(
-                    "select count(*) as cd_count,
-                           $year_ext as y,
-                           $month_ext as m,
-                           $day_ext as d,
-                           $cat_target_col as category_id,
-                           category_label",
-                    "from mt_cd",
+                    'select count(*) as cd_count,',
+                    "$year_ext as y,",
+                    "$month_ext as m,",
+                    "$day_ext as d,",
+                    "$cat_target_col as category_id,",
+                    'category_label',
+                    'from mt_cd',
                     $join_on,
                     "where cd_blog_id = $blog_id",
                     "and cd_status = 2",
@@ -4559,12 +4550,12 @@ class ContentTypeCategoryWeeklyArchiver extends ContentTypeDateBasedCategoryArch
                 }
                 $week_number = $dt_target_col === 'cd_authored_on' ? 'cd_week_number' : 'dt_cf_idx.cf_idx_value_integer';
                 $sql = implode(' ', array(
-                    "select count(*) as cd_count,
-                               $week_number as week_number,
-                               $cat_target_col as category_id,
-                               category_label
-                          from mt_cd
-                          $join_on",
+                    'select count(*) as cd_count,',
+                    "$week_number as week_number,",
+                    "$cat_target_col as category_id,",
+                    'category_label',
+                    'from mt_cd',
+                    $join_on,
                     "where cd_blog_id = $blog_id and cd_status = 2",
                     isset($date_filter) ? $date_filter : '',
                     isset($content_type_filter) ? $content_type_filter : '',
