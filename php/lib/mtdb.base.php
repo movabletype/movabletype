@@ -5062,7 +5062,7 @@ abstract class MTDatabase {
                 'preferred'    => 1,
                 'content_type' => $obj->id
             ));
-            if (isset($map[0]))
+            if (!empty($maps) && is_array($maps))
                 $dt_field_id = $map[0]->dt_field_id;
         }
         if (isset($dt_field_id)) {

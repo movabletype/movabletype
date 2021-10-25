@@ -19,8 +19,8 @@ function smarty_block_mtcategorynext($args, $content, &$ctx, &$repeat) {
         if ($e) {
             $cat = $e->category();
         }
-        isset($cat) or $cat = $ctx->stash('category');
-        isset($cat) or $cat = $ctx->stash('archive_category');
+        !empty($cat) or $cat = $ctx->stash('category');
+        !empty($cat) or $cat = $ctx->stash('archive_category');
         if (!$cat) return '';
         if ($cat->category_category_set_id) {
             $needs_contents = isset($args['contents']) ? $args['contents'] : null;

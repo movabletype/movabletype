@@ -28,7 +28,7 @@ function _get_join_on($ctx, $at, $blog_id, $cat = NULL, $cat_field_id = NULL) {
         'preferred' => 1,
         'type' => $at
     ));
-    if (isset($maps[0])) {
+    if (!empty($maps) && is_array($maps)) {
         $map = $maps[0];
         $dt_field_id = $map->templatemap_dt_field_id;
         if ($cat)
@@ -496,11 +496,11 @@ class YearlyArchiver extends DateBasedArchiver {
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
-        $format = !empty($args['format']) ? $args['format'] : null;
+        $format = isset($args['format']) ? $args['format'] : null;
         $blog = $ctx->stash('blog');
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
-            if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
+        if (strtolower($lang) == 'jp' || strtolower($lang) == 'ja') {
             $format or $format = "%Y&#24180;";
         } else {
             $format or $format = "%Y";
@@ -961,7 +961,7 @@ class AuthorBasedArchiver implements ArchiveType {
     protected function get_archive_list_data($args) {
         $mt = MT::get_instance();
         $blog_id = $args['blog_id'];
-        $order = isset($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
+        $order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
         $sql = "
             select count(*) as entry_count,
                    entry_author_id,
@@ -1165,7 +1165,7 @@ class YearlyAuthorBasedArchiver extends DateBasedAuthorArchiver {
         $author_name = parent::get_author_name();
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
-        $format = !empty($args['format']) ? $args['format'] : null;
+        $format = isset($args['format']) ? $args['format'] : null;
         $blog = $ctx->stash('blog');
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
@@ -1849,7 +1849,7 @@ class YearlyCategoryArchiver extends DateBasedCategoryArchiver {
         $cat_name = parent::get_category_name();
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
-        $format = !empty($args['format']) ? $args['format'] : null;
+        $format = isset($args['format']) ? $args['format'] : null;
         $blog = $ctx->stash('blog');
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
@@ -2432,7 +2432,7 @@ abstract class ContentTypeDateBasedArchiver implements ArchiveType {
                     'type'            => $at
                 ));
                 if (isset($maps)) {
-                    if (isset($maps[0])) {
+                    if (!empty($maps) && is_array($maps)) {
                         $dt_field_id = $maps[0]->templatemap_dt_field_id;
                     }
                     if ($dt_field_id) {
@@ -2899,7 +2899,7 @@ class ContentTypeYearlyArchiver extends ContentTypeDateBasedArchiver {
         $ctx =& $mt->context();
         $stamp = $ctx->stash('current_timestamp'); #$entry['entry_authored_on'];
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
-        $format = !empty($args['format']) ? $args['format'] : null;
+        $format = isset($args['format']) ? $args['format'] : null;
         $blog = $ctx->stash('blog');
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :
             $mt->config('DefaultLanguage'));
@@ -3082,7 +3082,7 @@ class ContentTypeAuthorArchiver implements ArchiveType {
         $mt = MT::get_instance();
         $ctx =& $mt->context();
         $blog_id = $args['blog_id'];
-        $order = isset($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
+        $order = !empty($args['sort_order']) && $args['sort_order'] == 'descend' ? 'desc' : 'asc';
 
         $content_type_filter = _get_content_type_filter($args);
 
@@ -3193,7 +3193,7 @@ abstract class ContentTypeDateBasedAuthorArchiver extends ContentTypeDateBasedAr
                 'preferred'       => 1,
                 'type'            => $at
             ));
-            if (isset($maps[0])) {
+            if (!empty($maps) && is_array($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
             }
@@ -3900,7 +3900,7 @@ abstract class ContentTypeDateBasedCategoryArchiver extends ContentTypeDateBased
                 'preferred'       => 1,
                 'type'            => $at
             ));
-            if (isset($maps[0])) {
+            if (!empty($maps) && is_array($maps)) {
                 $map = $maps[0];
                 $dt_field_id = $map->templatemap_dt_field_id;
                 $cat_field = $map->cat_field();
@@ -4026,7 +4026,7 @@ class ContentTypeCategoryYearlyArchiver extends ContentTypeDateBasedCategoryArch
         $cat_name = parent::get_category_name();
         $stamp = $ctx->stash('current_timestamp');
         list($start) = start_end_year($stamp, $ctx->stash('blog'));
-        $format = !empty($args['format']) ? $args['format'] : null;
+        $format = isset($args['format']) ? $args['format'] : null;
         $blog = $ctx->stash('blog');
 
         $lang = ($blog && $blog->blog_language ? $blog->blog_language :

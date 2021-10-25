@@ -56,7 +56,7 @@ function smarty_block_mtarchivelist($args, $res, &$ctx, &$repeat) {
                 'preferred' => 1,
                 'type' => $at,
             ));
-            if (isset($maps[0])) {
+            if (!empty($maps) && is_array($maps)) {
                 $cat_field = $maps[0]->cat_field();
             }
             if (isset($cat_field)) {

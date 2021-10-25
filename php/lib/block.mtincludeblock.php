@@ -14,7 +14,7 @@ function smarty_block_mtincludeblock($args, $content, &$ctx, &$repeat) {
             $vars = array();
             $ctx->__stash['vars'] = $vars;
         }
-        $name = isset($args['var']) ? $args['var'] : 'contents';
+        $name = !empty($args['var']) ? $args['var'] : 'contents';
         $oldval = isset($vars[$name]) ? $vars[$name] : null;
 
         $vars[$name] = $args['token_fn'];

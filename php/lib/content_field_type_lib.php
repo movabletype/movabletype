@@ -577,7 +577,7 @@ class CategoriesRegistry implements ContentFieldType {
                         $sort_by = $ctx->mt->db()->decorate_column($sort_by);
                     }
                     $where = $where . " order by $sort_by";
-                    if (isset($args['sort_order']) && $args['sort_order'] == 'descend') {
+                    if (!empty($args['sort_order']) && $args['sort_order'] == 'descend') {
                         $where = $where . " desc";
                     }
                 }

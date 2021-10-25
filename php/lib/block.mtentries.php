@@ -47,7 +47,7 @@ function smarty_block_mtentries($args, $content, &$ctx, &$repeat) {
         }
 
         $counter = 0;
-        $lastn = !empty($args['lastn']) ? $args['lastn'] : null;
+        $lastn = isset($args['lastn']) ? $args['lastn'] : null;
         $ctx->stash('_entries_lastn', $lastn);
         $ctx->stash('__out', false);
     } else {

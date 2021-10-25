@@ -101,7 +101,7 @@ function smarty_block_mtcontents($args, $res, &$ctx, &$repeat) {
                     $args['current_timestamp_end'] = $tse;
                 }
                 if (isset($archiver)) {
-                    empty($args['limit']) || $args['limit']() or $args['limit'] = -1;
+                    !empty($args['limit']) or $args['limit'] = -1;
                     $archiver->setup_args($args);
                 }
             }
