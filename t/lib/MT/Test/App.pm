@@ -100,6 +100,9 @@ sub login {
     $self->{user} = $user;
     delete $self->{session};
     delete $self->{access_token};
+    if (my $app = MT->app) {
+        delete $app->{perms};
+    }
 }
 
 sub request {
