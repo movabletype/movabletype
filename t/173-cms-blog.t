@@ -27,12 +27,13 @@ use MT::CMS::User;
 use MT::Role;
 
 use MT::Test;
+use MT::Test::App;
 
 MT::Test->init_app;
 
 $test_env->prepare_fixture('db_data');
 
-MT->instance;
+my $mt = MT->instance;
 my $user        = MT::Author->load(1);
 my $mock_author = Test::MockModule->new('MT::Author');
 our $is_superuser = 0;
@@ -186,6 +187,54 @@ subtest 'Check callbacks for saving' => sub {
     like( $out, qr/Location:.*saved=1/, 'Saved successfully' );
 
     done_testing;
+};
+
+subtest 'Check image disable popup' => sub {
+    my %params = (
+        __test_user => $user,
+        __mode      => 'cfg_entry',
+        blog_id     => $website->id
+    );
+    my $elm_id = "#image_default_popup";
+
+    subtest 'check image popup enabled' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->get_ok( \%params );
+
+        note $app->wq_find($elm_id)->as_html;
+        is( $app->wq_find($elm_id)->size, 1, 'image popup check is show' );
+    };
+
+    subtest 'change DisableImagePopup 1' => sub {
+        MT->config( "DisableImagePopup", 1 );
+        $test_env->update_config( DisableImagePopup => 1 );
+
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+        $app->get_ok( \%params );
+
+        note $app->wq_find($elm_id)->as_html;
+        is( $app->wq_find($elm_id)->size, 0, 'image popup check is hide' );
+
+        MT->config( "DisableImagePopup", 0 );
+        $test_env->update_config( DisableImagePopup => 0 );
+    };
+
+    subtest 'remove popup_image template' => sub {
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($user);
+
+        $mt->model('template')->remove(
+            {   blog_id => $website->id,
+                type    => 'popup_image'
+            }
+        );
+        $app->get_ok( \%params );
+
+        note $app->wq_find($elm_id)->as_html;
+        is( $app->wq_find($elm_id)->size, 0, 'image popup check is hide' );
+    };
 };
 
 done_testing;
