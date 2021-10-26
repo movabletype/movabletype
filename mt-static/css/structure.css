@@ -3585,6 +3585,9 @@ ul.tabs li a {
     margin: 5px 0 0 0;
 }
 
+#category-field-wrapper {
+  margin: 0;
+}
 
 #category-field {
     margin: 0;
