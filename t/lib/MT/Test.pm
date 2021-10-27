@@ -251,6 +251,9 @@ sub init_upgrade {
 
     require MT::Upgrade;
 
+    # Prevent temporal values for previous tests to be contaminated into DB
+    MT->instance->init_config_from_db;
+
     # Initialize the MT database
     MT::Upgrade->do_upgrade(
         Install => 1,
