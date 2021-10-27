@@ -143,14 +143,14 @@ sub core_endpoints {
                         name        => 'redirectUrl',
                         schema      => { type => 'string' },
                         description => 'This is required. When you succeed in login, you are redirected to the redirectUrl with "#_login". ',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
                         name        => 'clientId',
                         schema      => { type => 'string' },
                         description => 'This is required. the client ID of the application.',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                 ],
                 responses => {
@@ -176,7 +176,7 @@ sub core_endpoints {
                 tags        => ['Authentication'],
                 summary     => 'Create new session and access token. This is like login',
                 requestBody => {
-                    required => 'true',
+                    required => JSON::true,
                     content  => {
                         'application/x-www-form-urlencoded' => {
                             schema => {
@@ -1234,7 +1234,7 @@ DESCRIPTION
                 summary     => 'Upload a file',
                 description => "Upload a file.\n\nAuthorization is required.",
                 requestBody => {
-                    required => 'true',
+                    required => JSON::true,
                     content  => {
                         'multipart/form-data' => {
                             schema => {
@@ -1483,14 +1483,14 @@ DESCRIPTION
                         name        => 'startDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
                         name        => 'endDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
@@ -1570,14 +1570,14 @@ DESCRIPTION
                         name        => 'startDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
                         name        => 'endDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
@@ -1657,14 +1657,14 @@ DESCRIPTION
                         name        => 'startDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
                         name        => 'endDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
@@ -1744,14 +1744,14 @@ DESCRIPTION
                         name        => 'startDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
                         name        => 'endDate',
                         schema      => { type => 'string', format => 'date' },
                         description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => 'true',
+                        required    => JSON::true,
                     },
                     {
                         'in'        => 'query',
