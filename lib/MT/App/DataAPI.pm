@@ -1245,7 +1245,8 @@ DESCRIPTION
                                         description => 'The upload destination. You can specify the path to the under the site path.',
                                     },
                                     file => {
-                                        type        => 'file',
+                                        type        => 'string',
+                                        format      => 'binary',
                                         description => 'The actual file data',
                                     },
                                     autoRenameIfExists => {
