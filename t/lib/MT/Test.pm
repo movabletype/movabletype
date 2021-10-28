@@ -253,6 +253,7 @@ sub init_upgrade {
 
     # Prevent temporal values for previous tests to be contaminated into DB
     MT->instance->init_config_from_db;
+    MT->instance->init_plugins;
 
     # Initialize the MT database
     MT::Upgrade->do_upgrade(
