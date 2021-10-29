@@ -88,6 +88,7 @@ sub core_endpoints {
             openapi        => {
                 tags       => ['Endpoints'],
                 summary    => 'Retrieve a list of endpoints',
+                description => 'Retrieve a list of endpoints.'.
                 parameters => [{
                         'in'        => 'query',
                         name        => 'includeComponents',
@@ -138,6 +139,7 @@ sub core_endpoints {
             openapi        => {
                 tags       => ['Authentication'],
                 summary    => 'Return authorization(login) form as HTML',
+                description => 'Return authorization(login) form as HTML.',
                 parameters => [{
                         'in'        => 'query',
                         name        => 'redirectUrl',
@@ -175,6 +177,7 @@ sub core_endpoints {
             openapi        => {
                 tags        => ['Authentication'],
                 summary     => 'Create new session and access token. This is like login',
+                description => 'Create new session and access token. This is like login.',
                 requestBody => {
                     required => JSON::true,
                     content  => {
@@ -380,7 +383,11 @@ DESCRIPTION
             openapi => {
                 tags        => ['Authentication'],
                 summary     => 'Invalidate current session. This is like logout',
-                description => "Invalidate current access token. This is not logout. If the browser has active session id, new access token can be obtained easily.\n\nAuthorization is required.",
+                description => <<'DESCRIPTION',
+Invalidate current access token. This is not logout. If the browser has active session id, new access token can be obtained easily.
+
+Authorization is required.
+DESCRIPTION
                 responses   => {
                     200 => {
                         description => 'OK',
@@ -413,7 +420,11 @@ DESCRIPTION
             openapi        => {
                 tags        => ['Users'],
                 summary     => 'Retrieve a single user by its ID',
-                description => "Retrieve a single user by its ID.\n\nAuthorization is required if you want to retrieve private properties.",
+                description => <<'DESCRIPTION',
+Retrieve a single user by its ID.
+
+Authorization is required if you want to retrieve private properties.
+DESCRIPTION
                 parameters  => [{
                         'in'        => 'header',
                         name        => 'X-MT-Authorization',
@@ -464,7 +475,13 @@ DESCRIPTION
             openapi => {
                 tags        => ['Users'],
                 summary     => 'Update user data',
-                description => "Update user data.\n\nAuthorization is required.",
+                description => <<'DESCRIPTION',
+Update user data.
+
+Authorization is required.
+
+This method accepts PUT and POST with __method=PUT.
+DESCRIPTION
                 requestBody => {
                     content => {
                         'application/x-www-form-urlencoded' => {
@@ -535,6 +552,7 @@ DESCRIPTION
             openapi        => {
                 tags       => ['Users', 'Sites'],
                 summary    => 'Retrieve a list of blogs by user',
+                description => 'Retrieve a list of blogs by user.',
                 parameters => [{
                         'in'        => 'query',
                         name        => 'limit',
@@ -1007,6 +1025,8 @@ DESCRIPTION
 Update an entry.
 
 Authorization is required.
+
+This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
                 requestBody => {
                     content => {
@@ -1076,6 +1096,8 @@ DESCRIPTION
 Delete an entry.
 
 Authorization is required.
+
+This method accepts DELETE and POST with __method=DELETE.
 DESCRIPTION
                 requestBody => {
                     content => {
@@ -1232,7 +1254,11 @@ DESCRIPTION
             openapi => {
                 tags        => ['Assets'],
                 summary     => 'Upload a file',
-                description => "Upload a file.\n\nAuthorization is required.",
+                description => <<'DESCRIPTION',
+Upload a file.
+
+Authorization is required.
+DESCRIPTION
                 requestBody => {
                     required => JSON::true,
                     content  => {
@@ -1331,7 +1357,11 @@ DESCRIPTION
             openapi => {
                 tags        => ['Users', 'Permissions'],
                 summary     => 'Retrieve a list of permissions for a user',
-                description => "Retrieve a list of permissions for a user.\n\nAuthorization is required and can specify only 'me' (or user's own user ID) except for a super user.",
+                description => <<'DESCRIPTION',
+Retrieve a list of permissions for a user.
+
+Authorization is required and can specify only 'me' (or user's own user ID) except for a super user.
+DESCRIPTION
                 parameters  => [{
                         'in'        => 'query',
                         name        => 'blogIds',
@@ -1387,7 +1417,11 @@ DESCRIPTION
             openapi => {
                 tags        => ['Entries', 'Publish'],
                 summary     => 'Rebuild the static archives in relation to specified entries',
-                description => "Rebuild the static archives in relation to specified entries.\n\nAuthorization is required.",
+                description => <<'DESCRIPTION',
+Rebuild the static archives in relation to specified entries.
+
+Authorization is required.
+DESCRIPTION
                 parameters  => [{
                         'in'        => 'query',
                         name        => 'ids',
@@ -1449,6 +1483,11 @@ DESCRIPTION
             openapi => {
                 tags      => ['Statistics'],
                 summary   => 'Retrieve a current effective provider',
+                description => <<'DESCRIPTION',
+Retrieve a current effective provider.
+
+Authorization is required.
+DESCRIPTION
                 responses => {
                     200 => {
                         description => 'OK',
@@ -1484,6 +1523,11 @@ DESCRIPTION
             openapi => {
                 tags       => ['Statistics'],
                 summary    => 'Retrieve pageviews count for each path from provider (e.g. Google Analytics)',
+                description => <<'DESCRIPTION',
+Retrieve pageviews count for each path from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
                 parameters => [{
                         'in'        => 'query',
                         name        => 'startDate',
@@ -1571,6 +1615,11 @@ DESCRIPTION
             openapi => {
                 tags       => ['Statistics'],
                 summary    => 'Retrieve visits count for each path from provider (e.g. Google Analytics)',
+                description => <<'DESCRIPTION',
+Retrieve visits count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
                 parameters => [{
                         'in'        => 'query',
                         name        => 'startDate',
@@ -1658,6 +1707,11 @@ DESCRIPTION
             openapi => {
                 tags       => ['Statistics'],
                 summary    => 'Retrieve pageviews count for each date from provider (e.g. Google Analytics)',
+                description => <<'DESCRIPTION',
+Retrieve pageviews count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
                 parameters => [{
                         'in'        => 'query',
                         name        => 'startDate',
@@ -1745,6 +1799,11 @@ DESCRIPTION
             openapi => {
                 tags       => ['Statistics'],
                 summary    => 'Retrieve visits count for each date from provider (e.g. Google Analytics)',
+                description => <<'DESCRIPTION',
+Retrieve visits count for each date from provider (e.g. Google Analytics).
+
+Authorization is required.
+DESCRIPTION
                 parameters => [{
                         'in'        => 'query',
                         name        => 'startDate',
