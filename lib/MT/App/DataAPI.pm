@@ -413,7 +413,7 @@ DESCRIPTION
             openapi        => {
                 tags        => ['Users'],
                 summary     => 'Retrieve a single user by its ID',
-                description => "Retrieve a single user by its ID.\n\nAuthorization is required if you want to retrieve private elemethe.",
+                description => "Retrieve a single user by its ID.\n\nAuthorization is required if you want to retrieve private properties.",
                 parameters  => [{
                         'in'        => 'header',
                         name        => 'X-MT-Authorization',
