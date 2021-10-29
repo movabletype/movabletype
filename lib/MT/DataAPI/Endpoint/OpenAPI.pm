@@ -108,6 +108,22 @@ sub build_schema {
         if (@path_parameters) {
             $response->{paths}{$route}{$verb}{parameters} = \@path_parameters;
         }
+        if ($endpoints->{$id}{can_use_access_token}) {
+            push @{$response->{paths}{$route}{$verb}{parameters}}, +{
+                'in'        => 'header',
+                name        => 'X-MT-Authorization',
+                description => 'Input `MTAuth accessToken={accessToken}`',
+                schema      => { type => 'string' },
+            };
+        }
+        if ($endpoints->{$id}{can_use_session_id}) {
+            push @{$response->{paths}{$route}{$verb}{parameters}}, +{
+                'in'        => 'header',
+                name        => 'X-MT-Authorization',
+                description => 'Input `MTAuth sessionId={sessionId}`',
+                schema      => { type => 'string' },
+            };
+        }
         my $openapi = $endpoints->{$id}{openapi};
         for my $key (qw/summary description tags requestBody parameters/) {
             if ($openapi->{$key}) {

@@ -249,6 +249,7 @@ sub core_endpoints {
             version        => 1,
             handler        => "${pkg}Auth::token",
             requires_login => 0,
+            can_use_session_id => 1,
             openapi        => {
                 tags        => ['Authentication'],
                 summary     => 'Create new access token related to current session',
@@ -261,15 +262,6 @@ In the case of other than a browser, it is necessary to send a sessionId that is
 
 `MTAuth sessionId={retrieved sessionId}`
 DESCRIPTION
-                parameters => [{
-                        'in'        => 'header',
-                        name        => 'X-MT-Authorization',
-                        description => 'Input `MTAuth sessionId={sessionId}`',
-                        schema      => {
-                            type => 'string',
-                        },
-                    },
-                ],
                 requestBody => {
                     content => {
                         'application/x-www-form-urlencoded' => {
@@ -316,6 +308,7 @@ DESCRIPTION
             version        => 1,
             handler        => "${pkg}Auth::revoke_authentication",
             requires_login => 0,
+            can_use_session_id => 1,
             openapi        => {
                 tags        => ['Authentication'],
                 summary     => 'Invalidate current access token. This is not logout',
@@ -330,15 +323,6 @@ In the case of other than a browser, can be authorized by sending a sessionId th
 
 `MTAuth sessionId={retrieved sessionId}`
 DESCRIPTION
-                parameters => [{
-                        'in'        => 'header',
-                        name        => 'X-MT-Authorization',
-                        description => 'Input `MTAuth sessionId={sessionId}`',
-                        schema      => {
-                            type => 'string',
-                        },
-                    },
-                ],
                 requestBody => {
                     content => {
                         'application/x-www-form-urlencoded' => {
@@ -417,6 +401,7 @@ DESCRIPTION
                 403 => 'Do not have permission to retrieve the requested user.',
             },
             requires_login => 0,
+            can_use_access_token => 1,
             openapi        => {
                 tags        => ['Users'],
                 summary     => 'Retrieve a single user by its ID',
@@ -426,12 +411,6 @@ Retrieve a single user by its ID.
 Authorization is required if you want to retrieve private properties.
 DESCRIPTION
                 parameters  => [{
-                        'in'        => 'header',
-                        name        => 'X-MT-Authorization',
-                        description => 'Input `MTAuth accessToken={accessToken}`',
-                        schema      => { type => 'string' },
-                    },
-                    {
                         'in'        => 'query',
                         name        => 'fields',
                         schema      => { type => 'string' },
@@ -729,6 +708,7 @@ DESCRIPTION
                 403 => 'Do not have permission to retrieve the requested entries.',
             },
             requires_login => 0,
+            can_use_access_token => 1,
             openapi        => {
                 tags        => ['Entries'],
                 summary     => 'Retrieve a list of entries',
@@ -738,14 +718,6 @@ Retrieve a list of entries.
 Authorization is required if want to include unpublished entries.
 DESCRIPTION
                 parameters => [{
-                        'in'        => 'header',
-                        name        => 'X-MT-Authorization',
-                        description => 'Input `MTAuth accessToken={accessToken}`',
-                        schema      => {
-                            type => 'string',
-                        },
-                    },
-                    {
                         'in'        => 'query',
                         name        => 'search',
                         schema      => { type => 'string' },
@@ -994,6 +966,7 @@ DESCRIPTION
                 403 => 'Do not have permission to retrieve the requested entry.',
             },
             requires_login => 0,
+            can_use_access_token => 1,
             openapi        => {
                 tags        => ['Entries'],
                 summary     => 'Retrieve a single entry by its ID',
@@ -1003,14 +976,6 @@ Retrieve a single entry by its ID.
 Authorization is required if the entry status is "unpublished". If the entry status is "published", then this method can be called without authorization.
 DESCRIPTION
                 parameters => [{
-                        'in'        => 'header',
-                        name        => 'X-MT-Authorization',
-                        description => 'Input `MTAuth accessToken={accessToken}`',
-                        schema      => {
-                            type => 'string',
-                        },
-                    },
-                    {
                         'in'        => 'query',
                         name        => 'maxComments',
                         schema      => { type => 'integer' },
