@@ -1398,6 +1398,11 @@ DESCRIPTION
                 responses => {
                     200 => {
                         description => 'OK',
+                        headers => {
+                            'X-MT-Next-Phase-URL' => {
+                                description => 'If status is "Rebuilding", user should start next phase that implies by this header, manually.(In JavaScript library, a next phase is started automatically.) ',
+                            },
+                        },
                         content     => {
                             'application/json' => {
                                 schema => {
