@@ -491,6 +491,9 @@ DESCRIPTION
                                     '__method' => {
                                         type        => 'string',
                                         description => "This is not required but if request method is 'POST', should be set as 'PUT'",
+                                        enum => [
+                                            'PUT',
+                                        ],
                                     },
                                     user => {
                                         '$ref' => '#/components/schemas/user',
@@ -568,7 +571,13 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'sortBy',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'name',
+                                'created_on',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -584,7 +593,13 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'sortOrder',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'ascend',
+                                'descend',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -745,7 +760,16 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'status',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'Draft',
+                                'Publish',
+                                'Review',
+                                'Future',
+                                'Spam',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter. Filter by status.
 
@@ -797,7 +821,15 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'sortBy',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'authored_on',
+                                'title',
+                                'created_on',
+                                'modified_on',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -821,7 +853,13 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'sortOrder',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'descend',
+                                'ascend',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -1045,6 +1083,9 @@ DESCRIPTION
                                     '__method' => {
                                         type        => 'string',
                                         description => "This is not required but if request method is 'POST', should be set as 'PUT' ",
+                                        enum => [
+                                            'PUT',
+                                        ],
                                     },
                                     entry => {
                                         '$ref' => '#/components/schemas/entry',
@@ -1115,6 +1156,9 @@ DESCRIPTION
                                 properties => {
                                     '__method' => {
                                         type        => 'string',
+                                        enum => [
+                                            'DELETE',
+                                        ],
                                         description => "This is not required but if request method is not a 'DELETE', should be set as 'DELETE'",
                                     },
                                 },
@@ -1180,7 +1224,13 @@ DESCRIPTION
                 parameters  => [{
                         'in'        => 'query',
                         name        => 'sortBy',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'user_custom',
+                                'label',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -1196,7 +1246,13 @@ DESCRIPTION
                     {
                         'in'        => 'query',
                         name        => 'sortOrder',
-                        schema      => { type => 'string' },
+                        schema      => {
+                            type => 'string',
+                            enum => [
+                                'ascend',
+                                'descend',
+                            ],
+                        },
                         description => <<'DESCRIPTION',
 This is an optional parameter.
 
@@ -1452,6 +1508,10 @@ DESCRIPTION
                                     properties => {
                                         status => {
                                             type        => 'string',
+                                            enum => [
+                                                'Rebuilding',
+                                                'Complete',
+                                            ],
                                             description => <<'DESCRIPTION',
 The status text of this rebuild.
 
