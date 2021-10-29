@@ -965,6 +965,14 @@ Retrieve a single entry by its ID.
 Authorization is required if the entry status is "unpublished". If the entry status is "published", then this method can be called without authorization.
 DESCRIPTION
                 parameters => [{
+                        'in'        => 'header',
+                        name        => 'X-MT-Authorization',
+                        description => 'Input `MTAuth accessToken={accessToken}`',
+                        schema      => {
+                            type => 'string',
+                        },
+                    },
+                    {
                         'in'        => 'query',
                         name        => 'maxComments',
                         schema      => { type => 'integer' },
