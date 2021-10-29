@@ -1759,7 +1759,7 @@ DESCRIPTION
                                         },
                                         items => {
                                             type        => 'array',
-                                            description => 'An array of Items for path resource.',
+                                            description => 'An array of Items for date resource.',
                                             items       => {
                                                 '$ref' => '#/components/schemas/statisticsdate',
                                             },
@@ -1851,7 +1851,7 @@ DESCRIPTION
                                         },
                                         items => {
                                             type        => 'array',
-                                            description => 'An array of Items for path resource.',
+                                            description => 'An array of Items for date resource.',
                                             items       => {
                                                 '$ref' => '#/components/schemas/statisticsdate',
                                             },
