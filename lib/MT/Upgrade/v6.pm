@@ -216,8 +216,8 @@ SQL
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::Oracle$/ ) {
-        my ($cnt) = $dbh->selectrow_array(q{select count(*) from user_constraints where table_name = 'MT_TS_ERROR' AND constraint_type = 'P'});
-        return unless $cnt;
+        my ($exist) = $dbh->selectrow_array(q{select 1 from user_constraints where table_name = 'MT_TS_ERROR' AND constraint_type = 'P'});
+        return unless $exist;
         $driver->sql( [ 'alter table mt_ts_error drop primary key', ] );
     }
     elsif ( $driver->dbd =~ m/::u?mssqlserver$/i ) {
