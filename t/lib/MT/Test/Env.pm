@@ -369,7 +369,7 @@ sub _connect_info_sqlite {
 
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
-    my $db_charset = $self->mysql_db_charset;
+    my $db_charset = $self->mysql_db_charset // '';
     if ($db_charset ne 'utf8mb4') {
         plan skip_all => "Requires utf8mb4 database: $db_charset";
     }
