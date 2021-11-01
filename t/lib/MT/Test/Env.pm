@@ -392,6 +392,8 @@ sub show_mysql_db_variables {
 
 sub mysql_session_variable {
     my ($self, $name) = @_;
+    return unless $self->driver eq 'mysql';
+
     my $dbh = MT::Object->driver->rw_handle;
     my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
     my $res = $dbh->selectall_arrayref($sql, { Slice => +{} });
