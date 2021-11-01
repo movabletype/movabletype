@@ -455,6 +455,7 @@ sub suite {
 
         # list_parent_folders - normal tests
         {   setup => sub {
+                $test_env->update_sequences;
                 my $parent_folder
                     = MT::Test::Permission->make_folder( blog_id => 1 );
                 $parent_folder->id(30);

@@ -693,6 +693,9 @@ sub prepare_fixture {
     } else {
         $self->load_schema_and_fixture($id) or $code->();
     }
+
+    $self->update_sequences;
+
     if ($do_save) {
         $self->save_schema;
         $self->save_fixture($id);
