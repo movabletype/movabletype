@@ -892,8 +892,9 @@ sub update_sequences {
         my ($current) = $dbh->selectrow_array("SELECT $seq.NEXTVAL FROM DUAL");
         my $inc = ($max //= 0) - $current + 1;
         if ($inc) {
-            $dbh->do("ALTER SEQUENCE $seq INCREMENT BY $inc NOCACHE");
-            $dbh->do("ALTER SEQUENCE $seq INCREMENT BY 1 NOCACHE");
+            my $start = $max + 1;
+            $dbh->do("DROP SEQUENCE $seq");
+            $dbh->do("CREATE SEQUENCE $seq START WITH $start");
         }
     }
 }
