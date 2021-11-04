@@ -461,6 +461,7 @@ sub suite {
                 $parent_folder->id(30);
                 $parent_folder->save or die $parent_folder->errstr;
 
+                $test_env->update_sequences;
                 my $child_folder = MT::Test::Permission->make_folder(
                     blog_id => 1,
                     parent  => $parent_folder->id,
@@ -480,6 +481,7 @@ sub suite {
 
         # list_sibling_folders - normal tests
         {   setup => sub {
+                $test_env->update_sequences;
                 my $sibling_folder = MT::Test::Permission->make_folder(
                     blog_id => 1,
                     parent  => 30,
