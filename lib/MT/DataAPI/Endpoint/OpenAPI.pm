@@ -124,7 +124,7 @@ sub build_schema {
                 schema      => { type => 'string' },
             };
         }
-        my $openapi = $endpoints->{$id}{openapi};
+        my $openapi = $endpoints->{$id}{openapi_handler} ? $app->handler_to_coderef($endpoints->{$id}{openapi_handler})->() : {};
         for my $key (qw/summary description tags requestBody parameters/) {
             if ($openapi->{$key}) {
                 if (ref($openapi->{$key}) eq 'ARRAY') {
