@@ -46,11 +46,8 @@ sub core_endpoints {
             route          => '/',
             version        => 1,
             handler        => "${pkg}OpenAPI::build_schema",
+            openapi_handler => "${pkg}OpenAPI::openapi_spec",
             requires_login => 0,
-            openapi        => {
-                tags    => ['Common API'],
-                summary => 'Retrieve OpenAPI schema'
-            },
         },
         {
             id             => 'version',
@@ -84,88 +81,17 @@ sub core_endpoints {
             route          => '/endpoints',
             version        => 1,
             handler        => "${pkg}Util::endpoints",
+            openapi_handler => "${pkg}Util::endpoints_openapi_spec",
             requires_login => 0,
-            openapi        => {
-                tags       => ['Endpoints'],
-                summary    => 'Retrieve a list of endpoints',
-                description => 'Retrieve a list of endpoints.'.
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'includeComponents',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of components (a.k.a plugin) to include to result. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'excludeComponents',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of components (a.k.a plugin) to exclude from result. ',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of endpoints found.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Endpoints resource.',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/endpoint',
-                                            }
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'authorize',
             route          => '/authorization',
             version        => 1,
             handler        => "${pkg}Auth::authorization",
+            openapi_handler => "${pkg}Auth::authorization_openapi_spec",
             format         => 'html',
             requires_login => 0,
-            openapi        => {
-                tags       => ['Authentication'],
-                summary    => 'Return authorization(login) form as HTML',
-                description => 'Return authorization(login) form as HTML.',
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'redirectUrl',
-                        schema      => { type => 'string' },
-                        description => 'This is required. When you succeed in login, you are redirected to the redirectUrl with "#_login". ',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'clientId',
-                        schema      => { type => 'string' },
-                        description => 'This is required. the client ID of the application.',
-                        required    => JSON::true,
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'text/html' => {
-                                schema => { type => 'string' },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'authenticate',
@@ -173,74 +99,8 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::authentication",
+            openapi_handler => "${pkg}Auth::authentication_openapi_spec",
             requires_login => 0,
-            openapi        => {
-                tags        => ['Authentication'],
-                summary     => 'Create new session and access token. This is like login',
-                description => 'Create new session and access token. This is like login.',
-                requestBody => {
-                    required => JSON::true,
-                    content  => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    username => {
-                                        type        => 'string',
-                                        description => 'The username to authenticate.',
-                                    },
-                                    password => {
-                                        type        => 'string',
-                                        description => 'The password of the user.',
-                                    },
-                                    clientId => {
-                                        type        => 'string',
-                                        description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
-                                    },
-                                    remember => {
-                                        type        => 'boolean',
-                                        description => 'If true (generally, "1" is specified.), a new session will be created as a persistent session. If you want to specify false, you can pass "" or "0" to this parameter.',
-                                    },
-                                    mtDataApiLoginMagicToken => {
-                                        type        => 'string',
-                                        description => 'This is not required if you authenticate except via browser. If this parameter is passed and valid the MT will set cookie in order to start a session. ',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        sessionId => {
-                                            type        => 'string',
-                                            description => 'Session ID. This value is included only when mtDataApiLoginMagicToken is not passed. If mtDataApiLoginMagicToken is passed (and is valid value), sessionId is stored in httponly-cookie.',
-                                        },
-                                        accessToken => {
-                                            type        => 'string',
-                                            description => 'Access token',
-                                        },
-                                        expiresIn => {
-                                            type        => 'integer',
-                                            description => 'This access token will be invalidated automatically after the number of seconds specified here.',
-                                        },
-                                        remember => {
-                                            type        => 'boolean',
-                                            description => 'If true, a new session has been created as a persistent session.',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'get_token',
@@ -248,58 +108,9 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Auth::token",
+            openapi_handler => "${pkg}Auth::token_openapi_spec",
             requires_login => 0,
             can_use_session_id => 1,
-            openapi        => {
-                tags        => ['Authentication'],
-                summary     => 'Create new access token related to current session',
-                description => <<'DESCRIPTION',
-Create new access token related to current session.
-
-In order to create new access token, in the case of a web browser, it is necessary to create session via authentication endpoints beforehand.
-
-In the case of other than a browser, it is necessary to send a sessionId that is retrieved via authentication endpoints in MTAuth request header.
-
-`MTAuth sessionId={retrieved sessionId}`
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    clientId => {
-                                        type        => 'string',
-                                        description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        accessToken => {
-                                            type        => 'string',
-                                            description => 'Access token',
-                                        },
-                                        expiresIn => {
-                                            type        => 'integer',
-                                            description => 'This access token will be invalidated automatically after the number of seconds specified here.',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'revoke_authentication',
@@ -307,56 +118,9 @@ DESCRIPTION
             verb           => 'DELETE',
             version        => 1,
             handler        => "${pkg}Auth::revoke_authentication",
+            openapi_handler => "${pkg}Auth::revoke_authentication_openapi_spec",
             requires_login => 0,
             can_use_session_id => 1,
-            openapi        => {
-                tags        => ['Authentication'],
-                summary     => 'Invalidate current access token. This is not logout',
-                description => <<'DESCRIPTION',
-Invalidate current session. This is like logout. All access tokens related to that session are invalidated too.
-
-Authorization is required. but if there is an effective session, user can revoke by the following methods.
-
-In the case of a web browser, can be authorized by httponly-cookie.
-
-In the case of other than a browser, can be authorized by sending a sessionId that is retrieved via authentication endpoints in MTAuth request header.
-
-`MTAuth sessionId={retrieved sessionId}`
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    clientId => {
-                                        type        => 'string',
-                                        description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        status => {
-                                            type        => 'string',
-                                            description => 'The value of this parameter is always "success".',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id      => 'revoke_token',
@@ -364,82 +128,19 @@ DESCRIPTION
             verb    => 'DELETE',
             version => 1,
             handler => "${pkg}Auth::revoke_token",
-            openapi => {
-                tags        => ['Authentication'],
-                summary     => 'Invalidate current session. This is like logout',
-                description => <<'DESCRIPTION',
-Invalidate current access token. This is not logout. If the browser has active session id, new access token can be obtained easily.
-
-Authorization is required.
-DESCRIPTION
-                responses   => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        status => {
-                                            type        => 'string',
-                                            description => 'The value of this parameter is always "success".',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Auth::revoke_token_openapi_spec",
         },
         {
             id          => 'get_user',
             route       => '/users/:user_id',
             version     => 1,
             handler     => "${pkg}User::get",
+            openapi_handler => "${pkg}User::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested user.',
             },
             requires_login => 0,
             can_use_access_token => 1,
-            openapi        => {
-                tags        => ['Users'],
-                summary     => 'Retrieve a single user by its ID',
-                description => <<'DESCRIPTION',
-Retrieve a single user by its ID.
-
-Authorization is required if you want to retrieve private properties.
-DESCRIPTION
-                parameters  => [{
-                        'in'        => 'query',
-                        name        => 'fields',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The field list to retrieve as part of the Users resource. This list should be separated by comma. If this parameter is not specified, All fields will be returned.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/user',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id          => 'update_user',
@@ -448,72 +149,9 @@ DESCRIPTION
             verb        => 'PUT',
             version     => 1,
             handler     => "${pkg}User::update",
+            openapi_handler => "${pkg}User::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update the requested user.',
-            },
-            openapi => {
-                tags        => ['Users'],
-                summary     => 'Update user data',
-                description => <<'DESCRIPTION',
-Update user data.
-
-Authorization is required.
-
-This method accepts PUT and POST with __method=PUT.
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    '__method' => {
-                                        type        => 'string',
-                                        description => "This is not required but if request method is 'POST', should be set as 'PUT'",
-                                        enum => [
-                                            'PUT',
-                                        ],
-                                    },
-                                    user => {
-                                        '$ref' => '#/components/schemas/user',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/user',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                    405 => {
-                        description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
             },
         },
         {
@@ -521,6 +159,7 @@ DESCRIPTION
             route          => '/users/:user_id/sites',
             version        => 1,
             handler        => "${pkg}Blog::list",
+            openapi_handler => "${pkg}Blog::list_openapi_spec",
             default_params => {
                 limit     => 25,
                 offset    => 0,
@@ -531,164 +170,17 @@ DESCRIPTION
                 403 => 'Do not have permission to retrieve the list of blogs.',
             },
             requires_login => 0,
-            openapi        => {
-                tags       => ['Users', 'Sites'],
-                summary    => 'Retrieve a list of blogs by user',
-                description => 'Retrieve a list of blogs by user.',
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of blogs to retrieve. Default is 25. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'sortBy',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'name',
-                                'created_on',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### name
-
-(default) Sort by the name of each blogs.
-
-#### created_on
-
-Sort by the created time of each blogs.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'sortOrder',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'ascend',
-                                'descend',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### ascend
-
-(default) Return blogs in ascending order. For the date, it means from oldest to newset.
-
-#### descend
-
-Return blogs in descending order. For the date, it means from newest to oldest.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'includeIds',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of blogs to include to result. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'excludeIds',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of blogs to exclude from result. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'fields',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. the field list to retrieve as part of the Blogs resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of blogs found. ',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Blogs resource. The list will sorted descending by blog name. ',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/blog',
-                                            }
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id          => 'get_blog',
             route       => '/sites/:site_id',
             version     => 1,
             handler     => "${pkg}Blog::get",
+            openapi_handler => "${pkg}Blog::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested blog.',
             },
             requires_login => 0,
-            openapi        => {
-                tags       => ['Sites'],
-                summary    => 'Retrieve a single blog by its ID',
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'fields',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The field list to retrieve as part of the Entries resource. If this parameter is not specified, All fields will be returned.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/blog',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'list_entries',
@@ -696,6 +188,7 @@ DESCRIPTION
             verb           => 'GET',
             version        => 1,
             handler        => "${pkg}Entry::list",
+            openapi_handler => "${pkg}Entry::list_openapi_spec",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -709,196 +202,6 @@ DESCRIPTION
             },
             requires_login => 0,
             can_use_access_token => 1,
-            openapi        => {
-                tags        => ['Entries'],
-                summary     => 'Retrieve a list of entries',
-                description => <<'DESCRIPTION',
-Retrieve a list of entries.
-
-Authorization is required if want to include unpublished entries.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'search',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. Search query.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'searchFields',
-                        schema      => { type => 'string' },
-                        description => "This is an optional parameter. The comma separated field name list to search. Default is 'title,body,more,keywords,excerpt,basename'",
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'status',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'Draft',
-                                'Publish',
-                                'Review',
-                                'Future',
-                                'Spam',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter. Filter by status.
-
-#### Draft
-
-entry_status is 1.
-
-#### Publish
-
-entry_status is 2.
-
-#### Review
-
-entry_status is 3.
-
-#### Future
-
-entry_status is 4.
-
-#### Spam
-
-entry_status is 5.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of entries to retrieve. Default is 10. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'includeIds',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of entries to include to result. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'excludeIds',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of entries to exclude from result. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'sortBy',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'authored_on',
-                                'title',
-                                'created_on',
-                                'modified_on',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### authored_on
-
-(default) Sort by the Published time of each entries.
-
-#### title
-
-Sort by the title of each entries.
-
-#### created_on
-
-Sort by the created time of each entries.
-
-#### modified_on
-
-Sort by the modified time of each entries.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'sortOrder',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'descend',
-                                'ascend',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### descend
-
-(default) Return entries in descending order. For the date, it means from newest to oldest.
-
-#### ascend
-
-Return entries in ascending order. For the date, it means from oldest to newset.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'maxComments',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the Entries resource. If this parameter is not supplied, no comments will be returned.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'maxTrackbacks',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the Entries resource. If this parameter is not supplied, no trackbacks will be returned. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'fields',
-                        schema      => { type => 'string' },
-                        description => 'The field list to retrieve as part of the Entries resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned. ',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => ' The total number of entries found that by the request.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Entries resource. ',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/entry',
-                                            }
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'create_entry',
@@ -907,54 +210,10 @@ DESCRIPTION
             verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Entry::create",
+            openapi_handler => "${pkg}Entry::create_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to create an entry.',
-            },
-            openapi => {
-                tags        => ['Entries'],
-                summary     => 'Create a new entry',
-                description => <<'DESCRIPTION',
-Create a new entry.
-
-Authorization is required.
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    entry => {
-                                        '$ref' => '#/components/schemas/entry',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/entry',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
             },
         },
         {
@@ -962,61 +221,12 @@ DESCRIPTION
             route       => '/sites/:site_id/entries/:entry_id',
             version     => 1,
             handler     => "${pkg}Entry::get",
+            openapi_handler => "${pkg}Entry::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested entry.',
             },
             requires_login => 0,
             can_use_access_token => 1,
-            openapi        => {
-                tags        => ['Entries'],
-                summary     => 'Retrieve a single entry by its ID',
-                description => <<'DESCRIPTION',
-Retrieve a single entry by its ID.
-
-Authorization is required if the entry status is "unpublished". If the entry status is "published", then this method can be called without authorization.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'maxComments',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the Entries resource. If this parameter is not supplied, no comments will be returned.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'maxTrackbacks',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the Entries resource. If this parameter is not supplied, no trackbacks will be returned. ',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'fields',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. The field list to retrieve as part of the Entries resource. That list should be separated by commma. If this parameter is not specified, All fields will be returned. ',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/entry',
-                                }
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'update_entry',
@@ -1025,73 +235,10 @@ DESCRIPTION
             verb           => 'PUT',
             version        => 1,
             handler        => "${pkg}Entry::update",
+            openapi_handler => "${pkg}Entry::update_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to update an entry.',
-            },
-            openapi => {
-                tags        => ['Entries'],
-                summary     => 'Update an entry',
-                description => <<'DESCRIPTION',
-Update an entry.
-
-Authorization is required.
-
-This method accepts PUT and POST with __method=PUT.
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    '__method' => {
-                                        type        => 'string',
-                                        description => "This is not required but if request method is 'POST', should be set as 'PUT' ",
-                                        enum => [
-                                            'PUT',
-                                        ],
-                                    },
-                                    entry => {
-                                        '$ref' => '#/components/schemas/entry',
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/entry',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                    405 => {
-                        description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
             },
         },
         {
@@ -1100,69 +247,9 @@ DESCRIPTION
             verb        => 'DELETE',
             version     => 1,
             handler     => "${pkg}Entry::delete",
+            openapi_handler => "${pkg}Entry::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete an entry.',
-            },
-            openapi => {
-                tags        => ['Entries'],
-                summary     => 'Delete an entry',
-                description => <<'DESCRIPTION',
-Delete an entry.
-
-Authorization is required.
-
-This method accepts DELETE and POST with __method=DELETE.
-DESCRIPTION
-                requestBody => {
-                    content => {
-                        'application/x-www-form-urlencoded' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    '__method' => {
-                                        type        => 'string',
-                                        enum => [
-                                            'DELETE',
-                                        ],
-                                        description => "This is not required but if request method is not a 'DELETE', should be set as 'DELETE'",
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/entry',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                    405 => {
-                        description => "Request method is not 'DELETE' or 'POST' with '__method=DELETE'",
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
             },
         },
         {
@@ -1171,6 +258,7 @@ DESCRIPTION
             verb           => 'GET',
             version        => 1,
             handler        => "${pkg}Category::list",
+            openapi_handler => "${pkg}Category::list_openapi_spec",
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1182,90 +270,6 @@ DESCRIPTION
                 403 => 'Do not have permission to retrieve the list of categories.',
             },
             requires_login => 0,
-            openapi        => {
-                tags        => ['Categories'],
-                summary     => 'Retrieve a list of categories',
-                description => 'Retrieve a list of categories.',
-                parameters  => [{
-                        'in'        => 'query',
-                        name        => 'sortBy',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'user_custom',
-                                'label',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### user_custom
-
-(default) Sort order you specified on the Manage Categories screen.
-
-#### label
-
-Sort by the label of each categories.
-DESCRIPTION
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'sortOrder',
-                        schema      => {
-                            type => 'string',
-                            enum => [
-                                'ascend',
-                                'descend',
-                            ],
-                        },
-                        description => <<'DESCRIPTION',
-This is an optional parameter.
-
-#### ascend
-
-(default) Return categories in ascending order.
-
-#### descend
-
-Return categories in descending order.
-DESCRIPTION
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of categories found.',
-                                        },
-                                        items => {
-                                            type  => 'array',
-                                            items => {
-                                                '$ref' => '#/components/schemas/category',
-                                            }
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'upload_asset',
@@ -1273,6 +277,7 @@ DESCRIPTION
             verb           => 'POST',
             version        => 1,
             handler        => "${pkg}Asset::upload",
+            openapi_handler => "${pkg}Asset::upload_openapi_spec",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -1280,99 +285,13 @@ DESCRIPTION
             error_codes => {
                 403 => 'Do not have permission to upload.',
             },
-            openapi => {
-                tags        => ['Assets'],
-                summary     => 'Upload a file',
-                description => <<'DESCRIPTION',
-Upload a file.
-
-Authorization is required.
-DESCRIPTION
-                requestBody => {
-                    required => JSON::true,
-                    content  => {
-                        'multipart/form-data' => {
-                            schema => {
-                                type       => 'object',
-                                properties => {
-                                    path => {
-                                        type        => 'string',
-                                        description => 'The upload destination. You can specify the path to the under the site path.',
-                                    },
-                                    file => {
-                                        type        => 'string',
-                                        format      => 'binary',
-                                        description => 'The actual file data',
-                                    },
-                                    autoRenameIfExists => {
-                                        type        => 'boolean',
-                                        description => 'If this value is true and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is false.',
-                                    },
-                                    normalizeOrientation => {
-                                        type        => 'boolean',
-                                        description => "If this value is true and the uploaded file has a orientation information in Exif, this file's orientation is automatically normalized. Default is true.",
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/asset',
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                    409 => {
-                        description => 'Conflict',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        error => {
-                                            type       => 'object',
-                                            properties => {
-                                                code    => { type => 'integer' },
-                                                message => { type => 'string' },
-                                                data    => {
-                                                    type       => 'object',
-                                                    properties => {
-                                                        fileName => { type => 'string' },
-                                                        path     => { type => 'string' },
-                                                        temp     => { type => 'string' },
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id             => 'list_permissions_for_user',
             route          => '/users/:user_id/permissions',
             version        => 1,
             handler        => "${pkg}Permission::list",
+            openapi_handler => "${pkg}Permission::list_openapi_spec",
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1383,56 +302,6 @@ DESCRIPTION
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested user\'s permissions.',
             },
-            openapi => {
-                tags        => ['Users', 'Permissions'],
-                summary     => 'Retrieve a list of permissions for a user',
-                description => <<'DESCRIPTION',
-Retrieve a list of permissions for a user.
-
-Authorization is required and can specify only 'me' (or user's own user ID) except for a super user.
-DESCRIPTION
-                parameters  => [{
-                        'in'        => 'query',
-                        name        => 'blogIds',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The comma separated ID list of blogs to retrieve.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of permissions found.',
-                                        },
-                                        items => {
-                                            type  => 'array',
-                                            items => {
-                                                '$ref' => '#/components/schemas/permission',
-                                            }
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
         },
         {
             id          => 'publish_entries',
@@ -1440,72 +309,9 @@ DESCRIPTION
             verb        => 'GET',
             version     => 1,
             handler     => "${pkg}Publish::entries",
+            openapi_handler => "${pkg}Publish::entries_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to publish.',
-            },
-            openapi => {
-                tags        => ['Entries', 'Publish'],
-                summary     => 'Rebuild the static archives in relation to specified entries',
-                description => <<'DESCRIPTION',
-Rebuild the static archives in relation to specified entries.
-
-Authorization is required.
-DESCRIPTION
-                parameters  => [{
-                        'in'        => 'query',
-                        name        => 'ids',
-                        schema      => { type => 'string' },
-                        description => 'This is an required parameter. The comma separated ID list of entries to rebuild.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        headers => {
-                            'X-MT-Next-Phase-URL' => {
-                                description => 'If status is "Rebuilding", user should start next phase that implies by this header, manually.(In JavaScript library, a next phase is started automatically.) ',
-                            },
-                        },
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        status => {
-                                            type        => 'string',
-                                            enum => [
-                                                'Rebuilding',
-                                                'Complete',
-                                            ],
-                                            description => <<'DESCRIPTION',
-The status text of this rebuild.
-
-#### Rebuilding
-
-Not yet completed.
-User should start next phase that implies by X-MT-Next-Phase-URL response header.
-(In JavaScript library, a next phase is started automatically.)
-
-#### Complete
-
-All the static archives were rebuilded.
-DESCRIPTION
-                                        },
-                                        startTime => {
-                                            type        => 'string',
-                                            format      => 'date-time',
-                                            description => 'The time which started rebuilding.',
-                                        },
-                                        restIds => {
-                                            type        => 'string',
-                                            description => 'The comma separated ID list of entries which has not been rebuilt',
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                },
             },
         },
         {
@@ -1513,409 +319,35 @@ DESCRIPTION
             route   => '/sites/:site_id/stats/provider',
             version => 1,
             handler => "${pkg}Stats::provider",
-            openapi => {
-                tags      => ['Statistics'],
-                summary   => 'Retrieve a current effective provider',
-                description => <<'DESCRIPTION',
-Retrieve a current effective provider.
-
-Authorization is required.
-DESCRIPTION
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        id => { type => 'string' },
-                                    }
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Stats::provider_openapi_spec",
         },
         {
             id      => 'list_stats_pageviews_for_path',
             route   => '/sites/:site_id/stats/path/pageviews',
             version => 1,
             handler => "${pkg}Stats::pageviews_for_path",
-            openapi => {
-                tags       => ['Statistics'],
-                summary    => 'Retrieve pageviews count for each path from provider (e.g. Google Analytics)',
-                description => <<'DESCRIPTION',
-Retrieve pageviews count for each path from provider (e.g. Google Analytics).
-
-Authorization is required.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'startDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'endDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'path',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of paths found that by the request.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Items for path resource.',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/statisticspath',
-                                            },
-                                        },
-                                        totals => {
-                                            type       => 'object',
-                                            properties => {
-                                                pageviews => {
-                                                    type        => 'integer',
-                                                    description => 'The sum total of the pageviews in the specified period.',
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Stats::pageviews_for_path_openapi_spec",
         },
         {
             id      => 'list_stats_visits_for_path',
             route   => '/sites/:site_id/stats/path/visits',
             version => 1,
             handler => "${pkg}Stats::visits_for_path",
-            openapi => {
-                tags       => ['Statistics'],
-                summary    => 'Retrieve visits count for each path from provider (e.g. Google Analytics)',
-                description => <<'DESCRIPTION',
-Retrieve visits count for each date from provider (e.g. Google Analytics).
-
-Authorization is required.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'startDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'endDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'path',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of paths found that by the request.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Items for path resource.',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/statisticspath',
-                                            },
-                                        },
-                                        totals => {
-                                            type       => 'object',
-                                            properties => {
-                                                visits => {
-                                                    type        => 'integer',
-                                                    description => 'The sum total of the pageviews in the specified period.',
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Stats::visits_for_path_openapi_spec",
         },
         {
             id      => 'list_stats_pageviews_for_date',
             route   => '/sites/:site_id/stats/date/pageviews',
             version => 1,
             handler => "${pkg}Stats::pageviews_for_date",
-            openapi => {
-                tags       => ['Statistics'],
-                summary    => 'Retrieve pageviews count for each date from provider (e.g. Google Analytics)',
-                description => <<'DESCRIPTION',
-Retrieve pageviews count for each date from provider (e.g. Google Analytics).
-
-Authorization is required.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'startDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'endDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'path',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of paths found that by the request.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Items for date resource.',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/statisticsdate',
-                                            },
-                                        },
-                                        totals => {
-                                            type       => 'object',
-                                            properties => {
-                                                pageviews => {
-                                                    type        => 'integer',
-                                                    description => 'The sum total of the pageviews in the specified period.',
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Stats::pageviews_for_date_openapi_spec",
         },
         {
             id      => 'list_stats_visits_for_date',
             route   => '/sites/:site_id/stats/date/visits',
             version => 1,
             handler => "${pkg}Stats::visits_for_date",
-            openapi => {
-                tags       => ['Statistics'],
-                summary    => 'Retrieve visits count for each date from provider (e.g. Google Analytics)',
-                description => <<'DESCRIPTION',
-Retrieve visits count for each date from provider (e.g. Google Analytics).
-
-Authorization is required.
-DESCRIPTION
-                parameters => [{
-                        'in'        => 'query',
-                        name        => 'startDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. Start date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'endDate',
-                        schema      => { type => 'string', format => 'date' },
-                        description => 'This is an required parameter. End date of data. The format is "YYYY-MM-DD".',
-                        required    => JSON::true,
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'limit',
-                        schema      => { type => 'integer' },
-                        description => 'This is an optional parameter. Maximum number of paths to retrieve. Default is 10.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'offset',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
-                    },
-                    {
-                        'in'        => 'query',
-                        name        => 'path',
-                        schema      => { type => 'string' },
-                        description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
-                    },
-                ],
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        totalResults => {
-                                            type        => 'integer',
-                                            description => 'The total number of paths found that by the request.',
-                                        },
-                                        items => {
-                                            type        => 'array',
-                                            description => 'An array of Items for date resource.',
-                                            items       => {
-                                                '$ref' => '#/components/schemas/statisticsdate',
-                                            },
-                                        },
-                                        totals => {
-                                            type       => 'object',
-                                            properties => {
-                                                visits => {
-                                                    type        => 'integer',
-                                                    description => 'The sum total of the pageviews in the specified period.',
-                                                },
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
-                    404 => {
-                        description => 'Not Found',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    '$ref' => '#/components/schemas/ErrorContent',
-                                },
-                            },
-                        },
-                    },
-                },
-
-            },
+            openapi_handler => "${pkg}Stats::visits_for_date_openapi_spec",
         },
 
         # version 2

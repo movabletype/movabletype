@@ -12,6 +12,96 @@ use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 use MT::CMS::Asset;
 
+sub upload_openapi_spec {
+    +{
+        tags        => ['Assets'],
+        summary     => 'Upload a file',
+        description => <<'DESCRIPTION',
+Upload a file.
+
+Authorization is required.
+DESCRIPTION
+        requestBody => {
+            required => JSON::true,
+            content  => {
+                'multipart/form-data' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            path => {
+                                type        => 'string',
+                                description => 'The upload destination. You can specify the path to the under the site path.',
+                            },
+                            file => {
+                                type        => 'string',
+                                format      => 'binary',
+                                description => 'The actual file data',
+                            },
+                            autoRenameIfExists => {
+                                type        => 'boolean',
+                                description => 'If this value is true and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is false.',
+                            },
+                            normalizeOrientation => {
+                                type        => 'boolean',
+                                description => "If this value is true and the uploaded file has a orientation information in Exif, this file's orientation is automatically normalized. Default is true.",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/asset',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+            409 => {
+                description => 'Conflict',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                error => {
+                                    type       => 'object',
+                                    properties => {
+                                        code    => { type => 'integer' },
+                                        message => { type => 'string' },
+                                        data    => {
+                                            type       => 'object',
+                                            properties => {
+                                                fileName => { type => 'string' },
+                                                path     => { type => 'string' },
+                                                temp     => { type => 'string' },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub upload {
     my ( $app, $endpoint ) = @_;
 

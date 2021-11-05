@@ -107,6 +107,199 @@ sub build_post_save_sub {
     };
 }
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Retrieve a list of entries',
+        description => <<'DESCRIPTION',
+Retrieve a list of entries.
+
+Authorization is required if want to include unpublished entries.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'search',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. Search query.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'searchFields',
+                schema      => { type => 'string' },
+                description => "This is an optional parameter. The comma separated field name list to search. Default is 'title,body,more,keywords,excerpt,basename'",
+            },
+            {
+                'in'   => 'query',
+                name   => 'status',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'Draft',
+                        'Publish',
+                        'Review',
+                        'Future',
+                        'Spam',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+This is an optional parameter. Filter by status.
+
+#### Draft
+
+entry_status is 1.
+
+#### Publish
+
+entry_status is 2.
+
+#### Review
+
+entry_status is 3.
+
+#### Future
+
+entry_status is 4.
+
+#### Spam
+
+entry_status is 5.
+DESCRIPTION
+            },
+            {
+                'in'        => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of entries to retrieve. Default is 10. ',
+            },
+            {
+                'in'        => 'query',
+                name        => 'offset',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. 0-indexed offset. Default is 0.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'includeIds',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The comma separated ID list of entries to include to result. ',
+            },
+            {
+                'in'        => 'query',
+                name        => 'excludeIds',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The comma separated ID list of entries to exclude from result. ',
+            },
+            {
+                'in'   => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'authored_on',
+                        'title',
+                        'created_on',
+                        'modified_on',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+This is an optional parameter.
+
+#### authored_on
+
+(default) Sort by the Published time of each entries.
+
+#### title
+
+Sort by the title of each entries.
+
+#### created_on
+
+Sort by the created time of each entries.
+
+#### modified_on
+
+Sort by the modified time of each entries.
+DESCRIPTION
+            },
+            {
+                'in'   => 'query',
+                name   => 'sortOrder',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'descend',
+                        'ascend',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+This is an optional parameter.
+
+#### descend
+
+(default) Return entries in descending order. For the date, it means from newest to oldest.
+
+#### ascend
+
+Return entries in ascending order. For the date, it means from oldest to newset.
+DESCRIPTION
+            },
+            {
+                'in'        => 'query',
+                name        => 'maxComments',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the Entries resource. If this parameter is not supplied, no comments will be returned.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'maxTrackbacks',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the Entries resource. If this parameter is not supplied, no trackbacks will be returned. ',
+            },
+            {
+                'in'        => 'query',
+                name        => 'fields',
+                schema      => { type => 'string' },
+                description => 'The field list to retrieve as part of the Entries resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned. ',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of entries found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Entries resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/entry',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -115,6 +308,54 @@ sub list {
     +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Create a new entry',
+        description => <<'DESCRIPTION',
+Create a new entry.
+
+Authorization is required.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            entry => {
+                                '$ref' => '#/components/schemas/entry',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/entry',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -166,6 +407,59 @@ sub create {
     $new_entry;
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Retrieve a single entry by its ID',
+        description => <<'DESCRIPTION',
+Retrieve a single entry by its ID.
+
+Authorization is required if the entry status is "unpublished". If the entry status is "published", then this method can be called without authorization.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'maxComments',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the Entries resource. If this parameter is not supplied, no comments will be returned.',
+            },
+            {
+                'in'        => 'query',
+                name        => 'maxTrackbacks',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the Entries resource. If this parameter is not supplied, no trackbacks will be returned. ',
+            },
+            {
+                'in'        => 'query',
+                name        => 'fields',
+                schema      => { type => 'integer' },
+                description => 'This is an optional parameter. The field list to retrieve as part of the Entries resource. That list should be separated by commma. If this parameter is not specified, All fields will be returned. ',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/entry',
+                        }
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -177,6 +471,73 @@ sub get {
         or return;
 
     $entry;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Update an entry',
+        description => <<'DESCRIPTION',
+Update an entry.
+
+Authorization is required.
+
+This method accepts PUT and POST with __method=PUT.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            '__method' => {
+                                type        => 'string',
+                                description => "This is not required but if request method is 'POST', should be set as 'PUT' ",
+                                enum        => [
+                                    'PUT',
+                                ],
+                            },
+                            entry => {
+                                '$ref' => '#/components/schemas/entry',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/entry',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+            405 => {
+                description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -206,6 +567,70 @@ sub update {
     $post_save->();
 
     $new_entry;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Entries'],
+        summary     => 'Delete an entry',
+        description => <<'DESCRIPTION',
+Delete an entry.
+
+Authorization is required.
+
+This method accepts DELETE and POST with __method=DELETE.
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            '__method' => {
+                                type => 'string',
+                                enum => [
+                                    'DELETE',
+                                ],
+                                description => "This is not required but if request method is not a 'DELETE', should be set as 'DELETE'",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/entry',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+            405 => {
+                description => "Request method is not 'DELETE' or 'POST' with '__method=DELETE'",
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

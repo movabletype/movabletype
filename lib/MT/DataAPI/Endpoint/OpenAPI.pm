@@ -8,6 +8,13 @@ package MT::DataAPI::Endpoint::OpenAPI;
 use warnings;
 use strict;
 
+sub openapi_spec {
+    +{
+        tags    => ['Common API'],
+        summary => 'Retrieve OpenAPI schema'
+    };
+}
+
 sub build_schema {
     my ($app, $endpoint) = @_;
     my $endpoints        = $app->endpoints($app->current_api_version)->{hash};

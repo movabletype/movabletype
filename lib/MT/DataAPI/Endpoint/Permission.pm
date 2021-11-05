@@ -11,6 +11,59 @@ use strict;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Users', 'Permissions'],
+        summary     => 'Retrieve a list of permissions for a user',
+        description => <<'DESCRIPTION',
+Retrieve a list of permissions for a user.
+
+Authorization is required and can specify only 'me' (or user's own user ID) except for a super user.
+DESCRIPTION
+        parameters => [{
+                'in'        => 'query',
+                name        => 'blogIds',
+                schema      => { type => 'string' },
+                description => 'This is an optional parameter. The comma separated ID list of blogs to retrieve.',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of permissions found.',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Not Found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
