@@ -13,6 +13,14 @@ function smarty_function_mtpagerlink($args, &$ctx) {
     $offset = ( $page - 1 ) * $limit;
 
     $link = '';
+    if ( strpos($link, '?') ) {
+        $link .= '&';
+    }
+    else {
+        $link .= '?';
+    }
+
+    $link .= "limit=$limit";
     if ( $offset )
         $link .= "&offset=$offset";
     return $link;

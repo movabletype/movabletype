@@ -42,7 +42,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     }
 
     # Set default mode for backwards compatibility
-    $mode = isset($args['mode']) ? $args['mode'] : 'loop';
+    $mode = !empty($args['mode']) ? $args['mode'] : 'loop';
 
     # Run MultiBlog in specified mode
     if ($mode == 'loop') {
