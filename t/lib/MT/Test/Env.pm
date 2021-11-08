@@ -221,6 +221,7 @@ sub update_config {
     my ($self, %extra_config) = @_;
     for my $key (keys %extra_config) {
         $self->{_config}{$key} = $extra_config{$key};
+        MT->config($key, $extra_config{$key});
     }
     $self->_write_config;
 }
@@ -581,13 +582,15 @@ sub _get_id_from_caller {
     die "get_id_from_caller can't detect .t file";
 }
 
+sub fixture_uid { shift->{fixture_uid} }
+
 sub _set_fixture_dirs {
     my $self = shift;
     return $self->{fixture_dirs} if @{ $self->{fixture_dirs} || [] };
 
     $self->_find_addons_and_plugins();
     my $md5 = md5_hex(join '+', @{ $self->{addons_and_plugins} });
-    my $uid = substr($md5, 0, 7);
+    my $uid = $self->{fixture_uid} = substr($md5, 0, 7);
 
     my @fixture_dirs = ("$MT_HOME/t/fixture/$uid");
 
@@ -796,7 +799,8 @@ sub load_schema_and_fixture {
     if (  !$fixture_schema_version
         or $fixture_schema_version ne $self->schema_version)
     {
-        diag "FIXTURE IS IGNORED: please update fixture";
+        my $fixture_uid = $self->fixture_uid;
+        diag "FIXTURE ($fixture_uid) IS IGNORED: please update fixture";
         if ($fixture_schema_version && eval { require Text::Diff }) {
             $fixture_schema_version .= "\n";
             my $self_schema_version = $self->schema_version . "\n";
