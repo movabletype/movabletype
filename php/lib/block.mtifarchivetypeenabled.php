@@ -12,7 +12,7 @@ function smarty_block_mtifarchivetypeenabled($args, $content, &$ctx, &$repeat) {
         $at = $args['type'];
         $at or $at = $args['archive_type'];
         $at = preg_quote($at);
-        if (preg_match('/ContentType/i', $at) && (empty($args['content_type']) || $args['content_type'] === '')) {
+        if (preg_match('/ContentType/i', $at) && empty($args['content_type'])) {
             $repeat = false;
             return $ctx->error(
               $ctx->mt->translate(
