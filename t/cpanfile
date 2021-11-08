@@ -105,6 +105,7 @@ on 'test' => sub {
     requires 'IO::String';
     requires 'IPC::Run3';
     requires 'JSON::XS';  # For speed
+    requires 'JSON::Validator';
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
     requires 'MIME::Head';
