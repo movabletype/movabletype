@@ -50,9 +50,6 @@ for my $driver ( $test_env->image_drivers ) {
         ok( $image, 'Create MT::Asset::Image record.' );
 
         subtest 'image_metadata field' => sub {
-            ok( $image->has_meta('image_metadata'),
-                'Has image_metadata field.'
-            );
             isa_ok( $image->image_metadata, 'HASH' );
             isnt( %{ $image->image_metadata },
                 (), 'image_metadata field is not empty.' );
