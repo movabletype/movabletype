@@ -38,12 +38,14 @@ DESCRIPTION
                                 description => 'The actual file data',
                             },
                             autoRenameIfExists => {
-                                type        => 'boolean',
-                                description => 'If this value is true and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is false.',
+                                type        => 'integer',
+                                description => 'If this value is "1" and the file with the same filename exists, the uploaded file is automatically renamed to the random generated name. Default is "0".',
+                                enum => [0, 1],
                             },
                             normalizeOrientation => {
-                                type        => 'boolean',
-                                description => "If this value is true and the uploaded file has a orientation information in Exif, this file's orientation is automatically normalized. Default is true.",
+                                type        => 'integer',
+                                description => 'If this value is "1" and the uploaded file has a orientation information in Exif, this file\'s orientation is automatically normalized. Default is "1".',
+                                enum => [0, 1],
                             },
                         },
                     },
@@ -120,7 +122,8 @@ sub upload {
         normalizeOrientation => 'normalize_orientation',
     );
     for my $k ( keys %keys ) {
-        if ( my $v = $app->param($k) ) {
+        my $v = $app->param($k);
+        if (defined $v && $v ne '') {
             $app->param( $keys{$k}, $v );
         }
     }

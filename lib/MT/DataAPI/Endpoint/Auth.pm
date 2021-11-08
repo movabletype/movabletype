@@ -156,8 +156,9 @@ sub authentication_openapi_spec {
                                 description => 'This is not required if you specify session id via "X-MT-Authorization" request header. You can create new access token if you have a session id related to this clientId, although you do not have an access token. ',
                             },
                             remember => {
-                                type        => 'boolean',
+                                type        => 'integer',
                                 description => 'If true (generally, "1" is specified.), a new session will be created as a persistent session. If you want to specify false, you can pass "" or "0" to this parameter.',
+                                enum => [0, 1],
                             },
                             mtDataApiLoginMagicToken => {
                                 type        => 'string',
