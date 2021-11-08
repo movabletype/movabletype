@@ -68,7 +68,7 @@ sub build_schema {
             push @path_parameters, +{
                 name     => $1,
                 in       => 'path',
-                required => 'true',
+                required => JSON::true,
                 schema   => {
                     type => 'integer',
                 },
