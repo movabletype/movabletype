@@ -2417,6 +2417,24 @@ Athena;Enterprise Solution;Boomer;;
 --- expected
 foo(1.00)<br />bar(1.13)<br />
 
+=== test 370-2 respect 0 over default
+--- template
+<MTVar name='arr' index="0" value='foo'><MTVar name='arr' function='shift'><MTVar name='arr' function='count' default='9'>
+--- expected
+foo0
+
+=== test 370-3 respect "0" over default
+--- template
+<MTVar name='arr' index="0" value='0'><MTVar name='arr' function='shift' default='9'>
+--- expected
+0
+
+=== test 370-4 respect default over ""
+--- template
+<MTVar name='arr' index="0" value=''><MTVar name='arr' function='shift' default='9'>
+--- expected
+9
+
 === test 371
 --- template
 <MTSetVar name='offices1' value='San Francisco' index='0'><MTSetVar name='offices1' value='Tokyo' function='unshift'><MTSetVarBlock name='offices1' index='2'>Paris</MTSetVarBlock>--<MTGetVar name='offices1' function='count'>;<MTGetVar name='offices1' index='1'>;<MTGetVar name='offices1' function='shift'>;<MTGetVar name='offices1' function='count'>;<MTGetVar name='offices1' index='1'>
