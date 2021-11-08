@@ -803,14 +803,14 @@ sub normal_tests_for_create {
                 },
             },
             result => sub {
-                ok my $cd = MT->model('content_data')->load(
+                my $cd = MT->model('content_data')->load(
                     { content_type_id => $ct_with_content_type_id, },
                     {   sort      => 'id',
                         direction => 'descend',
                         limit     => 1,
                     },
                 );
-                ok %{ $cd->data };
+                ok $cd && %{ $cd->data };
                 $cd;
             },
         }

@@ -369,7 +369,7 @@ sub _connect_info_sqlite {
 
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
-    my $db_charset = $self->mysql_db_charset;
+    my $db_charset = $self->mysql_db_charset // '';
     if ($db_charset ne 'utf8mb4') {
         plan skip_all => "Requires utf8mb4 database: $db_charset";
     }
@@ -392,6 +392,8 @@ sub show_mysql_db_variables {
 
 sub mysql_session_variable {
     my ($self, $name) = @_;
+    return unless $self->driver eq 'mysql';
+
     my $dbh = MT::Object->driver->rw_handle;
     my $sql = "SHOW SESSION VARIABLES LIKE '$name'";
     my $res = $dbh->selectall_arrayref($sql, { Slice => +{} });
