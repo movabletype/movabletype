@@ -183,12 +183,10 @@ subtest 'Check disable image popup' => sub {
     subtest 'change DisableImagePopup 1' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($user);
-        MT->config("DisableImagePopup", 1);
         $test_env->update_config(DisableImagePopup => 1);
         $app->get_ok(\%params);
         note $app->wq_find("#image_default_link_popup")->as_html;
         is($app->wq_find("#image_default_link_popup")->size, 0, 'image popup check is hide');
-        MT->config("DisableImagePopup", 0);
         $test_env->update_config(DisableImagePopup => 0);
     };
 

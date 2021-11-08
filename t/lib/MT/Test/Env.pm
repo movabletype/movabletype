@@ -221,6 +221,7 @@ sub update_config {
     my ($self, %extra_config) = @_;
     for my $key (keys %extra_config) {
         $self->{_config}{$key} = $extra_config{$key};
+        MT->config($key, $extra_config{$key});
     }
     $self->_write_config;
 }
