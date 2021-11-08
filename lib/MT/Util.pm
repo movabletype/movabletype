@@ -2630,7 +2630,7 @@ sub clear_site_stats_widget_cache {
     if ($site_id) {
         my $sub_dir = sprintf( "%03d", $site_id % 1000 );
         my $top_dir = $site_id > $sub_dir ? $site_id - $sub_dir : 0;
-        @parts = ($sub_dir, $top_dir);
+        @parts = ($top_dir, $sub_dir);
     }
     my $dir = File::Spec->catdir( MT->app->support_directory_path, 'dashboard', 'stats', @parts );
     if (-d $dir) {
