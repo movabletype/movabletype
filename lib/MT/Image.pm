@@ -279,8 +279,10 @@ sub remove_metadata {
     $exif = Image::ExifTool->new;
     $exif->SetNewValuesFromFile($file);
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
-        if lc($file) =~ /\.jpe?g$/;
+    if (lc($file) =~ /\.jpe?g$/) {
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+    }
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',
         $exif->GetValue('Error') );

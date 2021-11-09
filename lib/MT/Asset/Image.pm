@@ -1152,8 +1152,10 @@ sub remove_all_metadata {
 
     my $exif = $asset->exif or return;
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
-        if lc( $asset->file_ext =~ /^jpe?g$/ );
+    if (lc($asset->file_ext) =~ /^jpe?g$/) {
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+    }
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
