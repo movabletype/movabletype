@@ -2658,6 +2658,7 @@ sub handler_to_coderef {
     else {
         $hdlr_pkg =~ s/::[^:]+$//;
     }
+    die "Illegal package name: $hdlr_pkg" unless $hdlr_pkg =~ /\A[A-Za-z][A-Za-z0-9_]*(?:(?:::|')[A-Za-z0-9_]+)*\z/;
     if ( !defined(&$name) && !$pkg->can('AUTOLOAD') ) {
 
         # The delayed option will return a coderef that delays the loading
