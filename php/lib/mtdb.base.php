@@ -2798,34 +2798,6 @@ abstract class MTDatabase {
         return true;
     }
 
-    public function cache_comment_counts($entry_list) {
-        $ids = array();
-        foreach ($entry_list as $entry_id) {
-            if (!isset($this->_comment_count_cache[$entry_id])) {
-                $ids[] = $entry_id;
-                $this->_comment_count_cache[$entry_id] = 0;
-            }
-        }
-        if (empty($ids))
-            return;
-        $id_list = implode(",", $ids);
-        if (empty($id_list))
-            return;
-
-        require_once('class.mt_entry.php');
-        $entry = new Entry;
-        $where = "entry_id in ($id_list)";
-
-        $results = $entry->Find($where);
-        if (!empty($results)) {
-            foreach ($results as $e) {
-                $this->_comment_count_cache[$e->id] = $e->comment_count;
-            }
-        }
-
-        return true;
-    }
-
     function blog_entry_count($args) {
         if ($sql = $this->include_exclude_blogs($args)) {
             $blog_filter = 'and entry_blog_id ' . $sql;
@@ -3391,34 +3363,6 @@ abstract class MTDatabase {
         }
   
         return $comments;
-    }
-
-    public function cache_ping_counts($entry_list) {
-        $ids = array();
-        foreach ($entry_list as $entry_id) {
-            if (!isset($this->_ping_count_cache[$entry_id])) {
-                $ids[] = $entry_id;
-                $this->_ping_count_cache[$entry_id] = 0;
-            }
-        }
-        if (empty($ids))
-            return;
-        $id_list = implode(",", $ids);
-        if (empty($id_list))
-            return;
-
-        $where = "entry_id in ($id_list)";
-
-        require_once('class.mt_entry.php');
-        $entry = new Entry;
-        $entries = $entry->Find($where);
-        if (!empty($results)) {
-            foreach ($entries as $e) {
-                $this->_ping_count_cache[$e->id] = $e->ping_count;
-            }
-        }
-
-        return true;
     }
 
     public function entry_ping_count($entry_id) {
