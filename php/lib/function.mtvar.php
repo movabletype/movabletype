@@ -168,7 +168,7 @@ function smarty_function_mtvar($args, &$ctx) {
         }
     }
 
-    if ($return_val == '') {
+    if ($return_val === '') {
         if (isset($args['default'])) {
             $return_val = $args['default'];
         }

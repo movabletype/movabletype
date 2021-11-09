@@ -1713,7 +1713,7 @@ function _math_operation($op, $lvalue, $rvalue) {
         return $lvalue * $rvalue;
     }
     elseif ( ( '/' == $op ) || ( 'div' == $op ) ) {
-        if ( $rvalue == 0 )
+        if ( !$rvalue )
             return;
         return $lvalue / $rvalue;
     }
@@ -1721,7 +1721,7 @@ function _math_operation($op, $lvalue, $rvalue) {
         // to be in line with perl equivalent
         $lvalue = floor($lvalue);
         $rvalue = floor($rvalue);
-        if ( $rvalue == 0 )
+        if ( !$rvalue )
             return;
         return $lvalue % $rvalue;
     }

@@ -947,7 +947,7 @@ EOT;
     function count_format($count, $args) {
         $phrase = '';
         if (! empty($args)) {
-            if ($count == 0) {
+            if (intval($count) === 0) {
                 $phrase = array_key_exists('none', $args) ? $args['none'] :
                     (array_key_exists('plural', $args) ? $args['plural'] : '');
             } elseif ($count == 1) {

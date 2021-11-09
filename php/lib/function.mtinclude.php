@@ -130,9 +130,9 @@ function smarty_function_mtinclude($args, &$ctx) {
                 : md5('blog::' . $cache_blog_id . '::template_' . $load_type  . '::' . $load_name));
 
         if (isset($args['ttl']))
-            $cache_ttl = $args['ttl'];
+            $cache_ttl = intval($args['ttl']);
         elseif (isset($cache_expire_type) && $cache_expire_type == '1')
-            $cache_ttl = $tmpl_meta->cache_expire_interval;
+            $cache_ttl = intval($tmpl_meta->cache_expire_interval);
         else
             $cache_ttl = 60 * 60; # default 60 min.
 
@@ -157,7 +157,7 @@ function smarty_function_mtinclude($args, &$ctx) {
         }
 
         $elapsed_time = time() - offset_time( datetime_to_timestamp( $tmpl_meta->template_modified_on, 'gmt' ), $blog, '-' );
-        if ($cache_ttl == 0 || $elapsed_time < $cache_ttl) {
+        if ($cache_ttl === 0 || $elapsed_time < $cache_ttl) {
             $cache_ttl = $elapsed_time;
         }
 
