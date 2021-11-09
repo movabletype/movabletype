@@ -15,14 +15,14 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
 
         # If MTMultiBlog was called with no arguments, we check the 
         # blog-level settings for the default includes/excludes.
-        if ( !( $args['blog_ids']
-                or $args['include_sites'] 
-                or $args['exclude_sites']
-                or $args['include_blogs'] 
-                or $args['exclude_blogs']
-                or $args['include_websites'] 
-                or $args['exclude_websites']
-                or $args['site_ids']  )) {
+        if ( !( !empty($args['blog_ids'])
+                or !empty($args['include_sites'])
+                or !empty($args['exclude_sites'])
+                or !empty($args['include_blogs'])
+                or !empty($args['exclude_blogs'])
+                or !empty($args['include_websites'])
+                or !empty($args['exclude_websites'])
+                or !empty($args['site_ids'])  )) {
             $blog = $ctx->stash('blog');
             $is_include = isset( $blog->default_mt_sites_action )
                 ? $blog->default_mt_sites_actio : 1;
@@ -42,8 +42,7 @@ function smarty_block_mtblogs($args, $content, &$ctx, &$repeat) {
     }
 
     # Set default mode for backwards compatibility
-    $mode = $args['mode'];
-    $mode or $mode = 'loop';
+    $mode = !empty($args['mode']) ? $args['mode'] : 'loop';
 
     # Run MultiBlog in specified mode
     if ($mode == 'loop') {
@@ -110,7 +109,7 @@ function multiblog_loop($args, $content, &$ctx, &$repeat) {
             $args['class'] = '*';
         }
 
-        if ($args['ignore_archive_context']) {
+        if (!empty($args['ignore_archive_context'])) {
             $ctx->stash('contents', null);
             $ctx->stash('entries', null);
             $ctx->stash('current_timestamp', null);

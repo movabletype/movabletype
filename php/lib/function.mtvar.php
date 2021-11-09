@@ -83,7 +83,7 @@ function smarty_function_mtvar($args, &$ctx) {
                     }
                 } else {
                     if ($key != chr(0)) {
-                        $return_val = $value[$key];
+                        $return_val = isset($value[$key]) ? $value[$key] : null;
                     } else {
                         unset($value);
                     }
@@ -112,7 +112,7 @@ function smarty_function_mtvar($args, &$ctx) {
         elseif (is_array($value)) {
             if ( isset($index) ) {
                 if (is_numeric($index)) {
-                    $return_val = $value[ $index ];
+                    $return_val = isset($value[$index]) ? $value[$index] : null;
                 } else {
                     unset($value); # fall through to any 'default'
                 }
@@ -149,7 +149,7 @@ function smarty_function_mtvar($args, &$ctx) {
         }
         if ( array_key_exists('op', $args) ) {
             $op = $args['op'];
-            $rvalue = $args['value'];
+            $rvalue = isset($args['value']) ? $args['value'] : null;
             if ( $op && isset($value) && !is_array($value) ) {
                 $return_val = _math_operation($op, $value, $rvalue);
                 if (!isset($return_val)) {

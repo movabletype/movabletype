@@ -8,7 +8,8 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtentryrank($args, &$ctx) {
-    return hdlr_rank($ctx, 'entry', $args['namespace'], $args['max'],
+    return hdlr_rank($ctx, 'entry', $args['namespace'], 
+        (isset($args['max']) ? $args['max'] : null),
         "AND (entry_status = 2)\n", $args
     );
 }

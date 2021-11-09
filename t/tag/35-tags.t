@@ -4839,6 +4839,14 @@ true
 --- expected
 barfoo
 
+=== test 756-2
+--- template
+<MTSubCategories top="1" sort_method="{ $b->label cmp $a->label }"><MTCategoryLabel></MTSubCategories>
+--- expected
+foobar
+--- expected_php
+barfoo
+
 === test 757
 --- template
 <MTSubCategories show_empty="1" top="1" sort_method="SortMethod::sort"><MTCategoryLabel></MTSubCategories>
@@ -5643,3 +5651,30 @@ left File include is disabled by "AllowFileInclude" config directive. right
 <mt:PasswordValidation form="password_reset_form" password="mypassfield" username="myusernamefield">
 --- expected regexp=s
 function verify_password.+mypassfield.+myusernamefield
+
+=== test if elsif else1
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+<MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3<MTElse>4</MTIf>
+--- expected
+2
+3
+4
+
+=== test  if elsif else2
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse>4</MTIf>
+--- expected
+2
+4
+
+=== test  if elsif else3
+--- template
+<MTVar name='idx' value='2'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+<MTVar name='idx' value='3'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+<MTVar name='idx' value='5'><MTIf name='idx' eq='2'>2<MTElse name='idx' eq='3'>3</MTIf>
+--- expected
+2
+3

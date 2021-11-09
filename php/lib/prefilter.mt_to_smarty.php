@@ -76,7 +76,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
             $attrargs = '';
             $modargs = '';
 
-            list($mttag, $args) = preg_split('!\s+!s', $tag, 2);
+            list($mttag, $args) = array_pad(preg_split('!\s+!s', $tag, 2), 2, '');
             $mttag or $mttag = $tag;
             // ignore namespace delimiter, for now
             $mttag = preg_replace('/:/', '', strtolower($mttag));
@@ -93,6 +93,9 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                     } else {
                         $attr = $arglist[$a][1];
                         $attr = strtolower(preg_replace('/:/', '___', $attr));
+                        if (!is_unsupported_attribute($mttag, $attr)) {
+                            continue;
+                        }
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
@@ -109,7 +112,7 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                         }
                         $quote = '';
                     }
-                    if ($ctx->global_attr[$attr]) {
+                    if (!empty($ctx->global_attr[$attr])) {
                         if( (preg_match('!^MTVar!i', $mttag ) || preg_match('!^MTGetVar!i', $mttag ) )
                             && (
                                 (isset($attrs['name']) && preg_match('/\[.*\]/i', $attrs['name'] ))
@@ -315,6 +318,13 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
     return $smart_source;
 }
 
+function is_unsupported_attribute($tag, $attr) {
+    $ng = array(
+        'mtsubcategories' => array('sort_method' => 1),
+    );
+    return !isset($ng[$tag][$attr]);
+}
+
 function _parse_modifier($str) {
     if (!preg_match('/,/', $str)) {
         return $str;
@@ -353,7 +363,7 @@ function _parse_modifier($str) {
 }
 
 function _block_handler_exists(&$smarty, $name) {
-    if (!is_null($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
+    if (isset($smarty->smarty->registered_plugins[Smarty::PLUGIN_BLOCK][$name])) return true;
     $_plugin_filename = 'block.' . $name . '.php';
     foreach ($smarty->smarty->plugins_dir as $value) { 
         $filepath = $value .$_plugin_filename; 

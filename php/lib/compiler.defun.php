@@ -20,7 +20,7 @@ class smarty_compiler_fun extends Smarty_Internal_CompileBase {
         unset($attrs['name']); 
         $_params = var_export($attrs,true);
 
-        return "$_func(\$_smarty_tpl, \$_params);"; 
+        return "$_func(\$_smarty_tpl, $_params);"; 
     }
 } 
 
