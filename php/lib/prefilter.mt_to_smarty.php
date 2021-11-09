@@ -93,9 +93,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                     } else {
                         $attr = $arglist[$a][1];
                         $attr = strtolower(preg_replace('/:/', '___', $attr));
-                        if (!is_unsupported_attribute($mttag, $attr)) {
-                            continue;
-                        }
                         $attrs[$attr] = $arglist[$a][3];
                         $quote = $arglist[$a][2];
                     }
@@ -316,13 +313,6 @@ function smarty_prefilter_mt_to_smarty($tpl_source, $ctx2) {
                                  $ldelim.'php'.$rdelim.'\1'.';'.$ldelim.'/php'.$rdelim, $smart_source);
 #    echo $smart_source;
     return $smart_source;
-}
-
-function is_unsupported_attribute($tag, $attr) {
-    $ng = array(
-        'mtsubcategories' => array('sort_method' => 1),
-    );
-    return !isset($ng[$tag][$attr]);
 }
 
 function _parse_modifier($str) {
