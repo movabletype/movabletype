@@ -2884,7 +2884,7 @@ sub upload_info {
             $no_upload = 1;
         }
     }
-    elsif ( $fh = $q->upload($param_name) } {
+    elsif ( $fh = $q->upload($param_name) ) {
         $info = $q->uploadInfo($fh);
     }
     else {
