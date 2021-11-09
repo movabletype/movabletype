@@ -121,11 +121,12 @@
           if(asset.type == opts.filter_val) return true
           return false
         })
+        this.pages = filterAssets.length > 0 ?  parseInt(filterAssets.length / this.limit) : 0
         this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
     } else {
+      this.pages = this.assets.length > 0 ?  parseInt(this.assets.length / this.limit) : 0
       this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + this.limit)
     }
-    this.pages = this.filterdAssets.length > 0 ?  parseInt(this.filterdAssets.length / this.limit) : 0
     this.observer = opts.observer
     this.show_option = false
     this.targetAsset = {}
