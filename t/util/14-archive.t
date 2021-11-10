@@ -31,10 +31,9 @@ my %files = (
 );
 
 my $str = <<TXT;
-When I look into your eyes, I can see the love restrained.
-But darling when I hold you, don't you know I feel the same.
-Nothing lasts forever, and we both know hearts can change.
-And it's hard to hold a candle, in the cold november rain.
+Men at some time are masters of their fates:
+The fault, dear Brutus, is not in our stars,
+But in ourselves, that we are underlings.
 TXT
 
 my $arc = MT::Util::Archive->new('txt', $files{'zip'});

@@ -114,24 +114,24 @@ is( $tokens->[0][1]{yes},
 
 note("Testing compilation of text + function tag");
 $tokens = $builder->compile( $ctx, <<'TEXT');
-time to kick out the jams, motherfuckers
+All that glitters is not gold.
 <$MTFoo$>
 TEXT
 note( "Error: " . $builder->errstr ) unless $tokens;
 ok( $tokens && ref($tokens) eq 'ARRAY', "Compiles and yields tokens" );
 ok( @$tokens == 3,             "Created 3 tokens" );
 ok( $tokens->[0][0] eq 'TEXT', "Token 1 is a text token" );
-ok( $tokens->[0][1] eq "time to kick out the jams, motherfuckers\n",
+ok( $tokens->[0][1] eq "All that glitters is not gold.\n",
     "Text is expected value" );
 ok( $tokens->[1][0] eq 'Foo',  "Token 2 is a tag token" );
 ok( $tokens->[2][0] eq 'TEXT', "Token 3 is a text token" );
 ok( $tokens->[2][1] eq "\n",   "Text is expected value" );
 is( $builder->build( $ctx, $tokens ),
-    "time to kick out the jams, motherfuckers\nfoo\n",
+    "All that glitters is not gold.\nfoo\n",
     "Building produces expected result"
 );
 is( $builder->build( $ctx, $tokens, { Foo => 0 } ),
-    "time to kick out the jams, motherfuckers\n\n",
+    "All that glitters is not gold.\n\n",
     "Building produces expected result, with conditional"
 );
 

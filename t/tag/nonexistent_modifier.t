@@ -57,11 +57,11 @@ Head
 Foot
 --- expected
 Head
-On a drizzly day last weekend,Where hunger is ugly, where souls are forgotten,
-Where black is the color, where none is the number,
-And it's a hard, it's a hard, it's a hard, it's a hard,
-It's a hard rain's a-gonna fallI met one man who was wounded in love,
-I met another man who was wounded with hatredHeard one hundred drummers whose hands were a-blazin',
-Heard ten thousand whisperin' and nobody listenin'I saw a newborn baby with wild wolves all around it
-I saw a highway of diamonds with nobody on it
+On a drizzly day last weekend,The weight of this sad time we must obey,
+Speak what we feel, not what we ought to say.
+The oldest hath borne most: we that are young
+Shall never see so much, nor live so long.The Devil hath power
+To assume a pleasing shape.Me, poor man, my library
+Was dukedom large enough.Look like the innocent flower,
+But be the serpent under it.
 Foot
