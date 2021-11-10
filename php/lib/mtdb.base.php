@@ -2118,6 +2118,9 @@ abstract class MTDatabase {
         $args['blog_id'] = $mt->get_current_blog_id();
         $args['author_name'] = $this->escape($author_name);
         $authors = $this->fetch_authors($args);
+        if (!isset($authors[0])) {
+            return;
+        }
         $author = isset($authors[0]) ? $authors[0] : null;
         $this->_author_id_cache[$author->author_id] = $author;
         return $author;
