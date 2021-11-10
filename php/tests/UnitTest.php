@@ -58,13 +58,6 @@ class ApiTest extends TestCase {
         $this->assertTrue($a instanceof CaptchaProvider);
     }
     
-    public function testArchiverFactory() {
-        include_once("php/lib/archive_lib.php");
-        ArchiverFactory::add_archiver('ContentType', 'ContentTypeArchiver');
-        $a = ArchiverFactory::get_archiver('ContentType');
-        $this->assertTrue($a instanceof ArchiveType);
-    }
-
     public function testCC() {
         include_once("php/lib/cc_lib.php");
         $this->assertEquals(cc_name('by'), 'Attribution');
