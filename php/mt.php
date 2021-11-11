@@ -710,7 +710,7 @@ class MT {
 
         if (!isset($content_type)) {
             $content_type = $this->mime_types['__default__'];
-            if ($req_ext && (isset($this->mime_types[$req_ext]))) {
+            if (!empty($req_ext) && (isset($this->mime_types[$req_ext]))) {
                 $content_type = $this->mime_types[$req_ext];
             }
         }
