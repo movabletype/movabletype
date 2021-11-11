@@ -4695,7 +4695,7 @@ sub _build_category_list {
     my $top_cat = 1;
 
     require MT::Meta::Proxy;
-    MT::Meta::Proxy->bulk_load_meta_objects(\@cats);
+    MT::Meta::Proxy->bulk_load_meta_objects([grep {ref $_} @cats]);
     while ( my $obj = shift @cats ) {
         my $row = {};
         if ( !ref($obj) ) {
