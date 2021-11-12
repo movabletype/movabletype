@@ -286,7 +286,7 @@ sub connect_info {
                 $connect_info{$key} = $ENV{$env_key};
             }
         }
-
+        note "DRIVER: $connect_info{ObjectDriver}";
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
     %connect_info;
