@@ -142,6 +142,7 @@ sub write_config {
         ShowIpInformation      => 1,
         EnableAddressBook      => 1,
         CaptchaSourceImageBase => 'MT_HOME/mt-static/images/captcha-source/',
+        NewsboxURL             => 'disable',
     );
 
     if ($extra) {
