@@ -68,7 +68,7 @@ sub load_envfile {
         open my $fh, '<', $envfile or die $!;
         while (<$fh>) {
             chomp;
-            next if /^#/;
+            next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
             my ($key, $value) = split /\s*=\s*/, $_, 2;
             $ENV{ uc $key } = $value;
