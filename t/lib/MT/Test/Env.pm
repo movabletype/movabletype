@@ -39,18 +39,6 @@ binmode $builder->output,         ":encoding($enc)";
 binmode $builder->failure_output, ":encoding($enc)";
 binmode $builder->todo_output,    ":encoding($enc)";
 
-my $envfile = "$MT_HOME/.mt_test_env";
-if (-f $envfile) {
-    open my $fh, '<', $envfile;
-    while (<$fh>) {
-        chomp;
-        next if /^#/;
-        s/(?:^\s*|\s*$)//g;
-        my ($key, $value) = split /\s*=\s*/;
-        $ENV{ uc $key } = $value;
-    }
-}
-
 sub new {
     my ($class, %extra_config) = @_;
 
@@ -80,9 +68,9 @@ sub load_envfile {
         open my $fh, '<', $envfile or die $!;
         while (<$fh>) {
             chomp;
-            next if /^#/;
+            next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
-            my ($key, $value) = split /\s*=\s*/, 2;
+            my ($key, $value) = split /\s*=\s*/, $_, 2;
             $ENV{ uc $key } = $value;
         }
     }
@@ -154,6 +142,7 @@ sub write_config {
         ShowIpInformation      => 1,
         EnableAddressBook      => 1,
         CaptchaSourceImageBase => 'MT_HOME/mt-static/images/captcha-source/',
+        NewsboxURL             => 'disable',
     );
 
     if ($extra) {
@@ -297,7 +286,7 @@ sub connect_info {
                 $connect_info{$key} = $ENV{$env_key};
             }
         }
-
+        note "DRIVER: $connect_info{ObjectDriver}";
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
     %connect_info;
