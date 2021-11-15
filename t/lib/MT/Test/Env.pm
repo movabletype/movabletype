@@ -358,6 +358,27 @@ sub _connect_info_sqlite {
     );
 }
 
+sub _connect_info_oracle {
+    my $self = shift;
+
+    my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword);
+    for my $key (@keys) {
+        my $env_key = "MT_TEST_" . (uc $key);
+        if ($ENV{$env_key}) {
+            $connect_info{$key} = $ENV{$env_key};
+        }
+    }
+    note "DRIVER: Oracle";
+
+    # for better compatibility
+    $ENV{NLS_LANG}  = $ENV{MT_TEST_NLS_LANG}  || 'AMERICAN_AMERICA.AL32UTF8';
+    $ENV{NLS_NCHAR} = $ENV{MT_TEST_NLS_NCHAR} || 'AL32UTF8';
+    $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
+    $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
+
+    %connect_info;
+}
+
 sub skip_unless_mysql_supports_utf8mb4 {
     my $self       = shift;
     my $db_charset = $self->mysql_db_charset // '';
