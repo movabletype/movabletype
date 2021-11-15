@@ -361,6 +361,11 @@ sub _connect_info_sqlite {
 sub _connect_info_oracle {
     my $self = shift;
 
+    my %connect_info = (
+        ObjectDriver => 'DBI::Oracle',
+        DBPort       => 1521,
+        DBUser       => 'system',
+    );
     my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword);
     for my $key (@keys) {
         my $env_key = "MT_TEST_" . (uc $key);
