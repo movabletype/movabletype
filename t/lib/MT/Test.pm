@@ -1476,6 +1476,10 @@ It\'s a hard rain\'s a-gonna fall',
         $map->save;
     }
 
+    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+        MT::Test::Env->update_sequences;
+    }
+
     1;
 }
 

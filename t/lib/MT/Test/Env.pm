@@ -688,6 +688,9 @@ sub prepare_fixture {
     } else {
         $self->load_schema_and_fixture($id) or $code->();
     }
+
+    $self->update_sequences;
+
     if ($do_save) {
         $self->save_schema;
         $self->save_fixture($id);
@@ -847,6 +850,49 @@ sub load_schema_and_fixture {
     MT->instance->init_config_from_db;
 
     return 1;
+}
+
+sub update_sequences {
+    my $self = shift;
+
+    return unless lc $self->driver eq 'oracle';
+
+    my @classes;
+    my $types = MT->registry('object_types');
+    for my $key (keys %$types) {
+        next if $key =~ /\./;
+        my $class = $types->{$key};
+        $class = $class->[0] if ref $class eq 'ARRAY';
+        push @classes, $class;
+        if ( $key eq 'entry' or $key eq 'user' ) {
+            push @classes, "$class\::Summary";
+        }
+        if ( my $model = MT->model($key) ) {
+            if ( $model->meta_pkg ) {
+                my $meta_class = MT->model("$key:meta");
+                push @classes, $meta_class if $meta_class;
+            }
+        }
+    }
+    for my $class (@classes) {
+        my $col = $class->properties->{primary_key} or next;
+        $col = $col->[1] if ref $col;
+        my $def = $class->column_def($col);
+        my $ddl = $class->driver->dbd->ddl_class;
+        next unless $def->{auto} && ($def->{type} eq 'integer' or $ddl->type2db($def) =~ /^number/);
+        my $dbh = $class->driver->dbh;
+        my $field_prefix = $class->datasource;
+        my $table_name   = $class->table_name;
+        my ($max) = $dbh->selectrow_array("SELECT MAX(${field_prefix}_${col}) FROM $table_name");
+        my $seq = $class->driver->dbd->sequence_name($class);
+        my ($current) = $dbh->selectrow_array("SELECT $seq.NEXTVAL FROM DUAL");
+        my $inc = ($max //= 0) - $current + 1;
+        if ($inc) {
+            my $start = $max + 1;
+            $dbh->do("DROP SEQUENCE $seq");
+            $dbh->do("CREATE SEQUENCE $seq START WITH $start");
+        }
+    }
 }
 
 sub save_schema {
