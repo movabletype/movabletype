@@ -143,6 +143,7 @@ sub write_config {
         EnableAddressBook      => 1,
         CaptchaSourceImageBase => 'MT_HOME/mt-static/images/captcha-source/',
         NewsboxURL             => 'disable',
+        DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
     );
 
     if ($extra) {
