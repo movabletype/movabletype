@@ -17,9 +17,8 @@ use POSIX qw( floor );
 __PACKAGE__->install_properties(
     {   class_type  => 'image',
         column_defs => {
-            'image_width'    => 'integer meta',
-            'image_height'   => 'integer meta',
-            'image_metadata' => 'blob meta',
+            'image_width'  => 'integer meta',
+            'image_height' => 'integer meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -32,21 +31,14 @@ sub extensions {
         [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
 }
 
-sub save {
-    my $asset = shift;
-
-    if ( $asset->has_metadata && $asset->exif ) {
-        my $info = $asset->exif->GetInfo;
-
-# TODO: An error occurs when uploading image having ThumbnailImage tag on Azure.
+sub image_metadata {
+    my $self = shift;
+    if ($self->exif) {
+        my $info = $self->exif->GetInfo;
         delete $info->{ThumbnailImage};
-        $asset->image_metadata($info);
+        return $info;
     }
-    else {
-        $asset->image_metadata(undef);
-    }
-
-    $asset->SUPER::save(@_);
+    return;
 }
 
 sub class_label {
@@ -1138,9 +1130,6 @@ sub remove_gps_metadata {
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
 
-    $asset->image_metadata( $asset->exif->GetInfo );
-    $asset->save or return;
-
     1;
 }
 
@@ -1157,9 +1146,6 @@ sub remove_all_metadata {
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
-
-    $asset->image_metadata(undef);
-    $asset->save or return;
 
     1;
 }

@@ -205,6 +205,15 @@ sub upgrade_functions {
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
             },
         },
+        'v7_remove_image_metadata' => {
+            version_limit => '7.0051',
+            priority      => 3.1,
+            updater       => {
+                type   => 'asset:meta',
+                label => 'Remove image metadata',
+                sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
+            },
+        },
     };
 }
 

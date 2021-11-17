@@ -32,7 +32,6 @@ abstract class BaseObject extends ADOdb_Active_Record
         'asset' => array(
             'image_width' => 'vinteger',
             'image_height' => 'vinteger',
-            'image_metadata' => 'vblob'
             ),
         'entry' => array(
             'junk_log' => 'vstring',
