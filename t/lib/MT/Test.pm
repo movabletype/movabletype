@@ -285,6 +285,10 @@ sub init_upgrade {
     require MT::ObjectDriver::Driver::Cache::RAM;
     MT::ObjectDriver::Driver::Cache::RAM->clear_cache();
 
+    if (lc($ENV{MT_TEST_BACKEND} // '') eq 'oracle') {
+        MT::Test::Env->update_sequences;
+    }
+
     1;
 }
 
