@@ -14,7 +14,6 @@ use List::Util qw( shuffle );
 
 my $instance;
 
-our $RANDOMIZE_JOBS = 0;
 our $OBJECT_REPORT  = 0;
 
 sub instance {
@@ -38,6 +37,8 @@ sub default_logger {
     # suppress TheSchwartz::Job's 'job completed'
     return if $msg eq 'job completed';
     return if $msg eq 'TheSchwartz::work_once found no jobs';
+    return if $msg =~ /^TheSchwartz::work_once got job of/;
+    return if $msg =~ /^Working on/;
 
     $msg =~ s/\s+$//;
     print STDERR "$msg\n";
@@ -47,9 +48,8 @@ sub new {
     my $class = shift;
     $class->mt_schwartz_init();
     my (%param) = @_;
-    my $workers;
+    my $workers = [];
     $workers        = delete $param{workers}   if exists $param{workers};
-    $RANDOMIZE_JOBS = delete $param{randomize} if exists $param{randomize};
 
     # Reports object usage inbetween jobs if Devel::Leak::Object is loaded
     $OBJECT_REPORT = 1 if $Devel::Leak::Object::VERSION;
@@ -57,37 +57,14 @@ sub new {
     $param{verbose} = \&default_logger
         if $param{verbose} && ( ref $param{verbose} ne 'CODE' );
 
-    my $client = $class->SUPER::new(%param);
+    my $client = $class->SUPER::new(%param) or return;
+    $instance = $client;
 
-    if ($client) {
-        $instance = $client;
-        unless ($workers) {
-            $workers = [];
-
-            my $all_workers = MT->registry("task_workers") || {};
-
-            foreach my $id ( keys %$all_workers ) {
-                my $w = $all_workers->{$id};
-                my $c = $w->{class} or next;
-                push @$workers, $c;
-            }
-        }
-
-        if (@$workers) {
-
-            # Can we do this?
-            foreach my $c (@$workers) {
-                if ( eval( 'require ' . $c ) ) {
-
-                    # Yes, we can do this.
-                    $client->can_do($c);
-                }
-                else {
-
-                    # No, we can't. Here's why...
-                    print STDERR "Failed to load worker class '$c': $@\n";
-                }
-            }
+    for my $c (@$workers) {
+        if ( eval( 'require ' . $c ) ) {
+            $client->can_do($c);
+        } else {
+            print STDERR "Failed to load worker class '$c': $@\n";
         }
     }
 
@@ -341,55 +318,6 @@ sub leak_report {
         }
     }
     return $report;
-}
-
-sub _grab_a_job {
-    my TheSchwartz $client = shift;
-    my $hashdsn            = shift;
-    my $driver             = $client->driver_for($hashdsn);
-
-    ## Got some jobs! Randomize them to avoid contention between workers.
-    my @jobs = $RANDOMIZE_JOBS ? shuffle(@_) : @_;
-
-JOB:
-    while ( my $job = shift @jobs ) {
-        ## Convert the funcid to a funcname, based on this database's map.
-        $job->funcname(
-            $client->funcid_to_name( $driver, $hashdsn, $job->funcid ) );
-
-        ## Update the job's grabbed_until column so that
-        ## no one else takes it.
-        my $worker_class      = $job->funcname;
-        my $old_grabbed_until = $job->grabbed_until;
-
-        my $server_time = $client->get_server_time($driver)
-            or die "expected a server time";
-
-        $job->grabbed_until(
-            $server_time + ( $worker_class->grab_for || 1 ) );
-
-        ## Update the job in the database, and end the transaction.
-        if ( $driver->update( $job, { grabbed_until => $old_grabbed_until } )
-            < 1 )
-        {
-            ## We lost the race to get this particular job--another worker must
-            ## have got it and already updated it. Move on to the next job.
-            $TheSchwartz::T_LOST_RACE->() if $TheSchwartz::T_LOST_RACE;
-            next JOB;
-        }
-
-        ## Now prepare the job, and return it.
-        my $handle = TheSchwartz::JobHandle->new(
-            {   dsn_hashed => $hashdsn,
-                jobid      => $job->jobid,
-            }
-        );
-        $handle->client($client);
-        $job->handle($handle);
-        return $job;
-    }
-
-    return undef;
 }
 
 1;

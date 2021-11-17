@@ -1200,7 +1200,7 @@ sub _rebuild_entry_archive_type {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my ( $start, $end );
@@ -1827,7 +1827,7 @@ sub rebuild_indexes {
     local *FH;
     my $site_root = $blog->site_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $site_root;
     my $fmgr = $blog->file_mgr;
     while ( my $tmpl = $iter->() ) {
@@ -2166,7 +2166,7 @@ sub rebuild_entry_from_fileinfo {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $pub->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my %cond;
@@ -2419,7 +2419,7 @@ sub unpublish_past_entries {
                             "An error occurred while unpublishing past entries: [_1]",
                             $err
                         ),
-                        class    => "unpublish",
+                        class    => "unpublish",    ## trans('unpublish')
                         category => 'rebuild',
                         blog_id  => $site->id,
                         level    => MT::Log::ERROR()

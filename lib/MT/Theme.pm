@@ -449,9 +449,12 @@ sub validate_versions {
     my @elements = $theme->elements;
     my ( @errors, @warnings );
     my $requires = $theme->{required_components};
+    require MT::version;
     for my $component ( keys %$requires ) {
-        my $version = $requires->{$component};
-        my $c       = MT->component($component);
+        my $version   = $requires->{$component};
+        my $c         = MT->component($component);
+        my $r_version = MT::version->parse($version);
+        my $c_version = MT::version->parse($c ? $c->id eq 'core' ? MT->product_version : $c->version : '0.0');
         if ( !$c ) {
             push @errors, sub {
                 MT->translate(
@@ -460,18 +463,20 @@ sub validate_versions {
                 );
             };
         }
-        elsif ( $c->version < $version ) {
+        elsif ( $c_version < $r_version ) {
             push @errors, sub {
                 MT->translate(
                     "Component \'[_1]\' version [_2] or greater is needed to use this theme, but the installed version is [_3].",
-                    $component, $version, $c->version );
+                    $component, $version, $c_version );
             };
         }
     }
     my $optionals = $theme->{optional_components};
     for my $component ( keys %$optionals ) {
-        my $version = $optionals->{$component};
-        my $c       = MT->component($component);
+        my $version   = $optionals->{$component};
+        my $c         = MT->component($component);
+        my $r_version = MT::version->parse($version);
+        my $c_version = MT::version->parse($c ? $c->id eq 'core' ? MT->product_version : $c->version : '0.0');
         if ( !$c ) {
             push @warnings, sub {
                 MT->translate(
@@ -480,11 +485,11 @@ sub validate_versions {
                 );
             };
         }
-        elsif ( $c->version < $version ) {
+        elsif ( $c_version < $r_version ) {
             push @warnings, sub {
                 MT->translate(
                     "Component \'[_1]\' version [_2] or greater is needed to use this theme, but the installed version is [_3].",
-                    $component, $version, $c->version );
+                    $component, $version, $c_version );
             };
         }
     }

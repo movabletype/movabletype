@@ -234,8 +234,9 @@ sub dialog_list_asset {
 
     my $hasher = build_asset_hasher(
         $app,
-        PreviewWidth  => 120,
-        PreviewHeight => 120
+        PreviewWidth     => 120,
+        PreviewHeight    => 120,
+        NoTags           => 1,
     );
 
     if ($class_filter) {
@@ -554,6 +555,7 @@ sub js_upload_file {
                 }
             );
         },
+        js => 1,
     );
     return unless $asset;
 
@@ -623,6 +625,9 @@ sub js_upload_file {
 ### DEPRECATED: v6.2
 sub upload_file {
     my $app = shift;
+
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
 
     if ( my $perms = $app->permissions ) {
         return $app->error( $app->translate("Permission denied.") )
@@ -989,8 +994,9 @@ sub build_asset_hasher {
     my $app = shift;
     my (%param) = @_;
     my ($default_thumb_width,   $default_thumb_height,
-        $default_preview_width, $default_preview_height
-    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight )};
+        $default_preview_width, $default_preview_height,
+        $no_tags,
+    ) = @param{qw( ThumbWidth ThumbHeight PreviewWidth PreviewHeight NoTags )};
 
     require File::Basename;
     require JSON;
@@ -1006,7 +1012,7 @@ sub build_asset_hasher {
         $row->{asset_type}        = $obj->class_type;
         $row->{asset_class_label} = $obj->class_label;
         my $file_path = $obj->file_path;    # has to be called to calculate
-        my $meta      = $obj->metadata;
+        my $meta      = $obj->metadata(no_tags => $no_tags);
 
         $row->{file_is_missing} = 0;
 
@@ -1044,18 +1050,12 @@ sub build_asset_hasher {
         if ( $obj->has_thumbnail && $obj->can_create_thumbnail ) {
             $row->{has_thumbnail}  = 1;
             $row->{can_edit_image} = 1;
-            my $height
-                = $thumb_height
-                || $default_thumb_height
-                || $default_thumbnail_size;
-            my $width
-                = $thumb_width
-                || $default_thumb_width
-                || $default_thumbnail_size;
-            my $square = $height == $default_thumbnail_size
-                && $width == $default_thumbnail_size;
+            my $height = $thumb_height || $default_thumb_height || $default_thumbnail_size;
+            my $width  = $thumb_width  || $default_thumb_width  || $default_thumbnail_size;
+            my $square = $height == $default_thumbnail_size && $width == $default_thumbnail_size;
+            my $thumbnail_method = $obj->can('maybe_dynamic_thumbnail_url') || 'thumbnail_url';
             @$meta{qw( thumbnail_url thumbnail_width thumbnail_height )}
-                = $obj->thumbnail_url(
+                = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
                 Square => $square
@@ -1068,7 +1068,7 @@ sub build_asset_hasher {
 
             if ( $default_preview_width && $default_preview_height ) {
                 @$meta{qw( preview_url preview_width preview_height )}
-                    = $obj->thumbnail_url(
+                    = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
                     );
@@ -1130,16 +1130,24 @@ sub build_asset_table {
     }
     return [] unless $iter;
 
-    my @data;
-    my $hasher = build_asset_hasher($app);
+    my @objs;
     while ( my $obj = $iter->() ) {
+        push @objs, $obj;
+        last if $limit and @objs > $limit;
+    }
+    return [] unless @objs;
+
+    require MT::Meta::Proxy;
+    MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+
+    my @data;
+    my $hasher = build_asset_hasher($app, NoTags => 1);
+    for my $obj (@objs) {
         my $row = $obj->get_values;
         $hasher->( $obj, $row );
         $row->{object} = $obj;
         push @data, $row;
-        last if $limit and @data > $limit;
     }
-    return [] unless @data;
 
     $param->{template_table}[0]              = {%$list_pref};
     $param->{template_table}[0]{object_loop} = \@data;
@@ -1250,38 +1258,45 @@ sub _make_upload_destinations {
         path  => '%s/%y/%m/%d',
         };
 
-    if ( $blog->column('archive_path') ) {
-        $class_label = MT->translate('Archive');
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>', $class_label ),
-            path  => '%a',
-            };
-        push @dest_root,
-            {
-            label => $app->translate(
-                '<[_1] Root>/[_2]',
-                $class_label, $user_basename
-            ),
-            path => '%a/%u',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
-            path  => '%a/%y',
-            };
-        push @dest_root,
-            {
-            label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
-            path  => '%a/%y/%m',
-            };
-        push @dest_root,
-            {
-            label =>
-                $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
-            path => '%a/%y/%m/%d',
-            };
+    my $archive_flg = { 'archive' => 1, 'disabled' => 0};
+    unless ( $blog->column('archive_path') ) {
+        $archive_flg->{disabled} = 1;
     }
+    $class_label = MT->translate('Archive');
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>', $class_label ),
+        path  => '%a',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate(
+            '<[_1] Root>/[_2]',
+            $class_label, $user_basename
+        ),
+        path => '%a/%u',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $y ),
+        path  => '%a/%y',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label => $app->translate( '<[_1] Root>/[_2]', $class_label, $ym ),
+        path  => '%a/%y/%m',
+        %$archive_flg
+        };
+    push @dest_root,
+        {
+        label =>
+            $app->translate( '<[_1] Root>/[_2]', $class_label, $ymd ),
+        path => '%a/%y/%m/%d',
+        %$archive_flg
+        };
 
     if ( $blog->upload_destination ) {
         if ( my @selected
@@ -1381,9 +1396,10 @@ sub _set_start_upload_params {
     $param;
 }
 
-### DEPRECATED: v6.2
+### Not used from Web UI since v6.2, but still used by DataAPI endpoints
 sub _upload_file_compat {
     my $app = shift;
+
     my (%upload_param) = @_;
     require MT::Image;
 
@@ -2014,7 +2030,7 @@ sub _upload_file {
     $basename
         = Encode::is_utf8($basename)
         ? $basename
-        : Encode::decode( $app->charset,
+        : Encode::decode( $upload_param{js} ? 'utf-8' : $app->charset,
         File::Basename::basename($basename) );
 
     # Change to real file extension
@@ -2921,6 +2937,7 @@ sub thumbnail_image {
     # Thumbnail size on "Edit Image" screen is 240.
     my $width  = $app->param('width')  || 400;
     my $height = $app->param('height') || 400;
+    my $square = $app->param('square');
 
     my $asset;
 
@@ -2934,12 +2951,12 @@ sub thumbnail_image {
     }
 
     # Check permission.
-    if ( !can_view( undef, $app, $id ) ) {
+    if ( !$app->can_do('view_thumbnail_image') ) {
         return $app->permission_denied;
     }
 
     my ($thumbnail)
-        = $asset->thumbnail_file( Width => $width, Height => $height )
+        = $asset->thumbnail_file( Width => $width, Height => $height, Square => $square )
         or return $app->error( $asset->errstr );
 
     require MT::FileMgr;

@@ -1175,6 +1175,9 @@ sub make_atom_id {
 
 # Deprecated (case #112321).
 sub sync_assets {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+
     my $entry = shift;
     my $text = ( $entry->text || '' ) . "\n" . ( $entry->text_more || '' );
 
@@ -2020,7 +2023,7 @@ The status of the entry, either Publish (C<2>) or Draft (C<1>).
 
 An integer flag specifying whether comments are allowed on this entry. This
 setting determines whether C<E<lt>MTEntryIfAllowCommentsE<gt>> containers are
-displayed for this entry. Possible values are 0 for not allowing any additional 
+displayed for this entry. Possible values are 0 for not allowing any additional
 comments and 1 for allowing new comments to be made on the entry.
 
 =item * convert_breaks

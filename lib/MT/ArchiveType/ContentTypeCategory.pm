@@ -254,7 +254,14 @@ sub does_publish_file {
     }
     return 0 unless $params{Category};
 
-    return 1 if $params{Blog}->publish_empty_archive;
+    if ($params{Blog}->publish_empty_archive and $params{ContentData}) {
+        my $cat_id = $params{Category}->id;
+        my $target_category_ids = $obj->target_category_ids($params{ContentData}, $params{TemplateMap});
+        for my $id (@$target_category_ids) {
+            return 1 if $id == $cat_id;
+        }
+        return 0;
+    }
 
     MT::ArchiveType::archive_contents_count( $obj, \%params );
 }

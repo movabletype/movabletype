@@ -96,6 +96,9 @@ on 'test' => sub {
     requires 'Devel::GlobalDestruction';
     requires 'DBD::SQLite';
     requires 'DBI', '1.633';
+    requires 'File::Temp', '0.23';
+    requires 'File::Which';
+    requires 'HTML::Filter::Callbacks';
     requires 'HTML::Form';
     requires 'HTTP::DAV';
     requires 'HTTP::Request::Common';
@@ -104,6 +107,7 @@ on 'test' => sub {
     requires 'JSON::XS';  # For speed
     requires 'Log::Log4perl';
     requires 'Log::Minimal';
+    requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
@@ -113,7 +117,6 @@ on 'test' => sub {
     requires 'PHP::Serialization';
     requires 'POSIX::AtFork' unless $^O eq 'MSWin32';
     requires 'Proc::ProcessTable' unless $^O eq 'MSWin32';
-    requires 'pQuery';
     requires 'Role::Tiny';
     requires 'Selenium::Remote::Driver', '1.36';
     requires 'SQL::Maker';

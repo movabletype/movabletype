@@ -32,6 +32,8 @@ sub new {
 sub init {
     my ( $image, %param ) = @_;
 
+    $image->{param} = \%param;
+
     my $jpeg_quality
         = exists $param{JpegQuality}
         ? $param{JpegQuality}
@@ -50,9 +52,10 @@ sub init {
 sub get_dimensions {
     my $image = shift;
     my %param = @_;
-    my ( $w, $h ) = ( $image->{width}, $image->{height} );
+    my ($w, $h);
     if ( my $pct = $param{Scale} ) {
-        ( $w, $h ) = ( int( $w * $pct / 100 ), int( $h * $pct / 100 ) );
+        $image->_init_image_size;
+        ( $w, $h ) = ( int( $image->{width} * $pct / 100 ), int( $image->{height} * $pct / 100 ) );
         $w = 1 if $w < 1;
         $h = 1 if $h < 1;
     }
@@ -61,6 +64,8 @@ sub get_dimensions {
             ( $w, $h ) = ( $param{Width}, $param{Height} );
         }
         else {
+            $image->_init_image_size;
+            ($w, $h) = ($image->{width}, $image->{height});
             my $x = $param{Width}  || $w;
             my $y = $param{Height} || $h;
             my $w_pct = $x / $w;
@@ -75,6 +80,7 @@ sub get_dimensions {
 sub get_degrees {
     my $image = shift;
     my %param = @_;
+    $image->_init_image_size;
     my ( $w, $h ) = ( $image->{width}, $image->{height} );
     my $degrees = $param{Degrees};
 
@@ -108,6 +114,7 @@ sub inscribe_square {
 
 sub make_square {
     my $image  = shift;
+    $image->_init_image_size;
     my %square = $image->inscribe_square(
         Width  => $image->{width},
         Height => $image->{height},

@@ -10,8 +10,8 @@
  */
 require_once('lib/class.exception.php');
 
-define('VERSION', '7.8');
-define('PRODUCT_VERSION', '7.8.2');
+define('VERSION', '7.9');
+define('PRODUCT_VERSION', '7.9.0');
 define('DATA_API_DEFAULT_VERSION', '4');
 
 $PRODUCT_NAME = '__PRODUCT_NAME__';
@@ -21,7 +21,7 @@ define('PRODUCT_NAME', $PRODUCT_NAME);
 
 $RELEASE_NUMBER = '__RELEASE_NUMBER__';
 if ( $RELEASE_NUMBER == '__RELEASE_' . 'NUMBER__' )
-    $RELEASE_NUMBER = 2;
+    $RELEASE_NUMBER = 0;
 define('RELEASE_NUMBER', $RELEASE_NUMBER);
 
 $PRODUCT_VERSION_ID = '__PRODUCT_VERSION_ID__';
@@ -144,7 +144,7 @@ class MT {
             $lang = substr(strtolower(
                 $blog && $blog->blog_language
                     ? $blog->blog_language
-                    : $mt->config('DefaultLanguage')
+                    : $this->config('DefaultLanguage')
                 ), 0, 2);
         }
         else {

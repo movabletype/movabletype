@@ -226,7 +226,7 @@ UPDATE mt_blog SET
                 }
             )
             THEN blog_language
-        ELSE '@{[ MT->config('DefaultLanguage') ]}' END;
+        ELSE '@{[ MT->config('DefaultLanguage') ]}' END
 __SQL__
             },
         },

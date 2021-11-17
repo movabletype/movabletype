@@ -181,17 +181,12 @@ use vars qw( @ISA %Lexicon );
 	'Sync file list' => 'Lista de ficheros para sincronizar',
 
 ## addons/Sync.pack/lib/MT/SyncLog.pm
-	'*Sync setting deleted*' => '*Opción de sincronización borrada*',
 	'*User deleted*' => '*Usuario borrado*',
 	'Are you sure you want to reset the sync log?' => '¿Está seguro de que desea reiniciar el registro de sincronización?',
-	'Error' => 'Error',
 	'FTP' => 'FTP',
 	'Invalid parameter.' => 'Parámetro no válido.',
-	'Parallel' => 'Paralelo',
 	'Rsync' => 'Rsync',
-	'Scheduled' => 'Programado',
 	'Showing only ID: [_1]' => 'Mostrando solo ID: [_1]',
-	'Success' => 'OK',
 	'Sync Name' => 'Nombre de sincronización',
 	'Sync Result' => 'Resultado de sincronización',
 	'Sync Type' => 'Tipo de sincronización',
@@ -205,7 +200,6 @@ use vars qw( @ISA %Lexicon );
 	'Sync Status' => '', # Translate - New
 
 ## addons/Sync.pack/lib/Sync/App/CMS.pm
-	'Copied [_1]' => 'Copiado [_1]',
 	'Create Sync Setting' => 'Crear configuración de sincronización',
 	'Deleting sync file list failed "[_1]": [_2]' => 'Falló el borrado de la lista de archivos de sincronización "[_1]": [_2]',
 	'Invalid request.' => 'Petición no válida.',
@@ -214,9 +208,10 @@ use vars qw( @ISA %Lexicon );
 	'Sync Settings' => 'Configuración de la sincronización',
 	'The previous synchronization file list has been cleared. [_1] by [_2].' => 'Se eliminó la lista de archivos de sincronizaciones previas. [_1] por [_2].',
 	'The sync setting with the same name already exists.' => 'Ya existe una configuración de sincronización con el mismo nombre.',
+	'[_1] (copy)' => '', # Translate - New
 	q{An error occurred while attempting to connect to the FTP server '[_1]': [_2]} => q{Ocurrió un error al intentar conectar con el servidor FTP '[_1]': [_2]},
-	q{An error occurred while attempting to retrieve the current directory from '[_1]'} => q{Ocurrió un error al intentar copiar el directorio actual desde '[_1]'},
-	q{An error occurred while attempting to retrieve the list of directories from '[_1]'} => q{Ocurrió un error al intentar copiar la lista de directorios de '[_1]'},
+	q{An error occurred while attempting to retrieve the current directory from '[_1]': [_2]} => q{}, # Translate - New
+	q{An error occurred while attempting to retrieve the list of directories from '[_1]': [_2]} => q{}, # Translate - New
 	q{Error saving Sync Setting. No response from FTP server '[_1]'.} => q{}, # Translate - New
 	q{Sync setting '[_1]' (ID: [_2]) deleted by [_3].} => q{Configuración de sincrinización '[_1]' (ID: [_2]) borrada por [_3].},
 	q{Sync setting '[_1]' (ID: [_2]) edited by [_3].} => q{Configuración de sincronización '[_1]' (ID: [_2]) editada por [_3].},
@@ -492,6 +487,7 @@ use vars qw( @ISA %Lexicon );
 	'Email Address is required for password reset.' => 'La dirección de correo es necesaria para el reinicio de contraseña.',
 	'Email Address' => 'Dirección de correo electrónico',
 	'Error sending mail: [_1]' => 'Error enviado correo: [_1]',
+	'Failed login attempt by anonymous user' => '', # Translate - New
 	'Failed to open pid file [_1]: [_2]' => 'Falló la apertura del fichero pid [_1]: [_2]',
 	'Failed to send reboot signal: [_1]' => 'Falló el envío de la señal de reinicio: [_1]',
 	'Internal Error: Login user is not initialized.' => 'Error interno: Inicio de sesión de usuarios no inicializada.',
@@ -1186,6 +1182,7 @@ use vars qw( @ISA %Lexicon );
 	'Entries must be cloned if comments and trackbacks are cloned' => 'Las entradas tienen que clonarse su se clonan los comentarios y trackbacks',
 	'Entries must be cloned if comments are cloned' => 'Las entradas deben clonarse si se clonan los comentarios',
 	'Entries must be cloned if trackbacks are cloned' => 'Las entradas deben clonarse si se clonan los trackbacks',
+	'Error' => 'Error',
 	'Error: Movable Type cannot write to the template cache directory. Please check the permissions for the directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no puede escribir en el directorio de caché de las plantillas. Por favor, compruebe los permisos del directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
 	'Error: Movable Type was not able to create a directory to cache your dynamic templates. You should create a directory called <code>[_1]</code> underneath your blog directory.' => 'Error: Movable Type no pudo crear un directorio para cachear las plantillas dinámicas. Debe crear un directorio llamado <code>[_1]</code> dentro del directorio de su blog.',
 	'Feedback Settings' => 'Configuración de respuestas',
@@ -1230,14 +1227,20 @@ use vars qw( @ISA %Lexicon );
 	'The [_1] must be given a name!' => '¡Debe dar un nombre a [_1]!',
 	'Tried to update [_1]([_2]), but the object was not found.' => 'Se intentó actualizar [_1]([_2]), pero el objeto no se encontró.',
 	'Your changes have been made (added [_1], edited [_2] and deleted [_3]). <a href="#" onclick="[_4]" class="mt-rebuild">Publish your site</a> to see these changes take effect.' => 'Se han realizado los cambios ([_1] añadido, [_2] editado y [_3] borrado). <a href="#" onclick="[_4]" class="mt-rebuild">Publique el sitio</a> para que los cambios tomen efecto.',
+	'category_set' => 'Conjunto de categorías',
 	q{Category '[_1]' (ID:[_2]) deleted by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 	q{Category '[_1]' (ID:[_2]) edited by '[_3]'} => q{La categoría '[_1]' (ID:[_2]) fue editada por '[_3]'},
 	q{Category '[_1]' created by '[_2]'.} => q{La categoría '[_1]' fue creada por '[_2]'.},
+	q{Category Set '[_1]' (ID:[_2]) edited by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue editada por '[_3]'},
+	q{Category Set '[_1]' created by '[_2]'.} => q{Conjunto de categorías '[_1]' fue creada por '[_2]'.},
 	q{The category basename '[_1]' conflicts with the basename of another category. Top-level categories and sub-categories with the same parent must have unique basenames.} => q{Hay un conflicto entre el nombre base de la categoría '[_1]' y el de otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The category name '[_1]' conflicts with another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{El nombre de la categría '[_1]' tiene conflicto con otra categoría. Las categorías de primer nivel y las sub-categorías con el mismo padre deben tener nombres únicos.},
 	q{The category name '[_1]' conflicts with the name of another category. Top-level categories and sub-categories with the same parent must have unique names.} => q{Hay un conflicto entre el nombre de la categoría '[_1]' y otra categoría. Las categorías de nivel superior y las subcategorías con una misma raíz deben tener nombres diferentes.},
 	q{The name '[_1]' is too long!} => q{El nombre '[_1]' es demasiado largo.},
 	q{[_1] order has been edited by '[_2]'.} => q{El orden de [_1] fue editado por '[_2]'.},
+
+## lib/MT/CMS/CategorySet.pm
+	q{Category Set '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Conjunto de categorías '[_1]' (ID:[_2]) fue borrada por '[_3]'},
 
 ## lib/MT/CMS/Common.pm
 	'All [_1]' => 'Todos los/las [_1]',
@@ -1259,6 +1262,7 @@ use vars qw( @ISA %Lexicon );
 	'Unknown list type' => 'Tipo de lista desconocido',
 	'Web Services Settings' => 'Configuración de los servicios web',
 	'[_1] Feed' => 'Sindicación de [_1]',
+	'[_1] broken revisions of [_2](id:[_3]) are removed.' => 'Se han eliminado [_1] revisiones dañadas de [_2] (id: [_3]).',
 	'__SELECT_FILTER_VERB' => 'es',
 	q{'[_1]' edited the global template '[_2]'} => q{'[_1]' editó la plantilla global '[_2]'},
 	q{'[_1]' edited the template '[_2]' in the blog '[_3]'} => q{'[_1]' editó la plantilla '[_2]' en el blog '[_3]'},
@@ -1301,6 +1305,7 @@ use vars qw( @ISA %Lexicon );
 	'Some content fields were deleted: ([_1])' => 'Some content fields were deleted: ([_1])',
 	'The content type name is required.' => 'Se necesita el nombre de tipo de contenido.',
 	'The content type name must be shorter than 255 characters.' => 'El nombre del tipo de contenido debe contener menos de 255 caracteres.',
+	'content_type' => 'Tipo de contenido',
 	q{A content field '[_1]' ([_2]) was added} => q{El campo d  '[_1]' ([_2]) was added},
 	q{A content field options of '[_1]' ([_2]) was changed} => q{A content field options of '[_1]' ([_2]) was changed},
 	q{A description for content field of '[_1]' should be shorter than 255 characters.} => q{La descripción del campo de contenido de '[_1]' debe contener menos de 255 caracteres.},
@@ -1309,6 +1314,8 @@ use vars qw( @ISA %Lexicon );
 	q{Content Type '[_1]' (ID:[_2]) added by user '[_3]'} => q{Tipo de contenido '[_1]' (ID:[_2]) creado por el usuario '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'} => q{Content Type '[_1]' (ID:[_2]) deleted by '[_3]'},
 	q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'} => q{Content Type '[_1]' (ID:[_2]) edited by user '[_3]'},
+	q{Field '[_1]' and '[_2]' must not coexist within the same content type.} => q{}, # Translate - New
+	q{Field '[_1]' must be unique in this content type.} => q{}, # Translate - New
 	q{Name '[_1]' is already used.} => q{El nombre '[_1]' ya está en uso.},
 
 ## lib/MT/CMS/Dashboard.pm
@@ -1419,8 +1426,9 @@ use vars qw( @ISA %Lexicon );
 	'(All sites and child sites in this system)' => '(Todos los sitios y sitios hijos del sistema)',
 	'Comment' => 'Comentario',
 	'Create Rebuild Trigger' => 'Crear un inductor de republicación',
-	'Entry or Page' => 'Entrada o página',
 	'Entry/Page' => 'Entrada/Página',
+	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Error de formato: Los valores separados por comas contienen un número incorrecto de campos.',
+	'Format Error: Trigger data include illegal characters.' => 'Error de formato: Los datos de activación incluyen caracteres ilegales.',
 	'Save' => 'Guardar',
 	'Search Content Type' => 'Buscar tipo de contenido',
 	'Search Sites and Child Sites' => 'Buscar sitios y sitios hijos',
@@ -1429,20 +1437,9 @@ use vars qw( @ISA %Lexicon );
 	'Select to apply this trigger to all child sites in this site.' => 'Seleccione para aplicar este inductor de republicación en todos los sitios hijos del sitio.',
 	'Select to apply this trigger to all sites and child sites in this system.' => 'Seleccione aplicar este inductor de republicación a todos los sitios y sitios hijos del sistema.',
 	'TrackBack' => 'TrackBack',
-	'Trackback' => 'TrackBack',
-	'Unpublish' => 'Despublicar',
-	'publishes a TrackBack' => 'publica un TrackBack',
-	'publishes a comment' => 'publica un comentario',
-	'publishes a content' => 'publicar un contenido',
-	'publishes an entry/page' => 'publica una entrada/página',
+	'__UNPUBLISHED' => 'Despublicar',
 	'rebuild indexes and send pings.' => 'reconstruye los índices y envía pings.',
 	'rebuild indexes.' => 'reconstruye los índices.',
-	'saves a content' => 'guardar un contenido',
-	'saves an entry/page' => 'guarda una entrada/página',
-	'unpublishes a content' => 'despublicar un contenido',
-	'unpublishes an entry/page' => 'despublica una entrada/página',
-	'Format Error: Trigger data include illegal characters.' => 'Error de formato: Los datos de activación incluyen caracteres ilegales.',
-	'Format Error: Comma-separated-values contains wrong number of fields.' => 'Error de formato: Los valores separados por comas contienen un número incorrecto de campos.',
 
 ## lib/MT/CMS/Search.pm
 	'"[_1]" field is required.' => 'El campo "[_1]" es necesario.',
@@ -1496,6 +1493,7 @@ use vars qw( @ISA %Lexicon );
 	'Create Widget Set' => 'Crear conjunto de widgets',
 	'Create Widget' => 'Crear widget',
 	'Email Templates' => 'Plantillas de correo',
+	'Entry or Page' => 'Entrada o página',
 	'Error creating new template: ' => 'Error creando nueva plantilla: ',
 	'Global Template' => 'Plantilla global',
 	'Global Templates' => 'Plantillas globales',
@@ -1871,7 +1869,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past contents: [_1]' => 'Ocurrió un error durante la despublicación de contenidos antiguos: [_1]',
 	'Cannot load catetory. (ID: [_1]' => 'No se pudo leer la categoría. (ID: [_1]',
 	'Scheduled publishing.' => 'Publicación programada.',
-	'You did not set your blog publishing path' => 'No configuró la ruta de publicación del blog',
+	'You did not set your site publishing path' => 'No configuró la ruta de publicación del blog',
 	'[_1] archive type requires [_2] parameter' => 'El tipo de archivo [_1] necesita [_2] parámetro',
 	q{An error occurred publishing [_1] '[_2]': [_3]} => q{Un error se ha producido durante la publicación},
 	q{An error occurred publishing date-based archive '[_1]': [_2]} => q{Ocurrió un error publicando el archivo de fechas '[_1]': [_2]},
@@ -1889,7 +1887,6 @@ use vars qw( @ISA %Lexicon );
 	'Content Data # [_1] not found.' => 'Datos de contenido # [_1] no encontrados.',
 	'Create Content Data' => 'Crear datos de contenido',
 	'Edit All Content Data' => 'Editar todos los datos de contenido',
-	'Manage All Content Data' => 'Administrar todos los datos de contenido',
 	'Manage Content Data' => 'Administrar datos de contenido',
 	'Publish Content Data' => 'Publicar datos de contenido',
 	'Tags with [_1]' => 'Etiquetas con [_1]',
@@ -1950,6 +1947,7 @@ use vars qw( @ISA %Lexicon );
 	'Legacy Quick Filter' => 'Filtro rápido antiguo',
 	'Log' => 'Histórico',
 	'Manage Address Book' => 'Administración del libro de Direcciones',
+	'Manage All Content Data' => 'Administrar todos los datos de contenido',
 	'Manage Assets' => 'Administrar multimedia',
 	'Manage Blog' => 'Administrar blog',
 	'Manage Categories' => 'Administrar categorías',
@@ -2049,6 +2047,7 @@ use vars qw( @ISA %Lexicon );
 
 ## lib/MT/DataAPI/Callback/Log.pm
 	'author_id (ID:[_1]) is invalid.' => 'author_id (Id:[_1]) no válido.',
+	'log' => 'Histórico',
 	q{Log (ID:[_1]) deleted by '[_2]'} => q{Histórico (Id:[_1]) borrado por '[_2]'},
 
 ## lib/MT/DataAPI/Callback/Tag.pm
@@ -2241,6 +2240,7 @@ use vars qw( @ISA %Lexicon );
 	'Review' => 'Revisar',
 	'Reviewing' => 'En revisión',
 	'Scheduled Entries' => 'Entradas programadas',
+	'Scheduled' => 'Programado',
 	'Spam' => 'Spam',
 	'Unpublished (End)' => 'Despublicar (fin)',
 	'Unpublished Entries' => 'Entradas no publicadas',
@@ -2429,6 +2429,23 @@ use vars qw( @ISA %Lexicon );
 	'Scheduled Pages' => 'Páginas programadas',
 	'Unpublished Pages' => 'Páginas no publicadas',
 
+## lib/MT/ParamValidator.pm
+	'Invalid validation rules: [_1]' => '', # Translate - New
+	'Unknown validation rule: [_1]' => '', # Translate - New
+	q{'[_1]' has multiple values} => q{}, # Translate - New
+	q{'[_1]' is required} => q{}, # Translate - New
+	q{'[_1]' requires a valid ID} => q{}, # Translate - New
+	q{'[_1]' requires a valid email} => q{}, # Translate - New
+	q{'[_1]' requires a valid integer} => q{}, # Translate - New
+	q{'[_1]' requires a valid number} => q{}, # Translate - New
+	q{'[_1]' requires a valid objtype} => q{}, # Translate - New
+	q{'[_1]' requires a valid string} => q{}, # Translate - New
+	q{'[_1]' requires a valid text} => q{}, # Translate - New
+	q{'[_1]' requires a valid word} => q{}, # Translate - New
+	q{'[_1]' requires a valid xdigit value} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) IDs} => q{}, # Translate - New
+	q{'[_1]' requires valid (concatenated) words} => q{}, # Translate - New
+
 ## lib/MT/Plugin.pm
 	'My Text Format' => 'Mi formato de texto',
 
@@ -2450,8 +2467,6 @@ use vars qw( @ISA %Lexicon );
 	'There are not the same types of objects, expecting two [_1]' => 'No son el mismo tipo de objetos, se esperaban dos [_1]',
 	'Unknown method [_1]' => 'Método desconocido [_1]',
 	q{Bad RevisioningDriver config '[_1]': [_2]} => q{Configuración de RevisioningDriver errónea '[_1]': [_2]},
-	'[_1] broken revisions of [_2](id:[_3]) are removed.' => 'Se han eliminado [_1] revisiones dañadas de [_2] (id: [_3]).',
-	'*Deleted due to data breakage*' => '*Eliminada debido a la rotura de datos*',
 
 ## lib/MT/Role.pm
 	'Can administer the site.' => 'Puede administrar el sitio.',
@@ -2528,6 +2543,7 @@ use vars qw( @ISA %Lexicon );
 	'No Content Field could be found: "[_1]"' => '', # Translate - New
 	'When the same blog IDs are simultaneously listed in the include_blogs and exclude_blogs attributes, those blogs are excluded.' => 'Si hay identificadores de blogs listados a la vez en los atributos de include_blogs y exclude_blogs, se excluirá a dichos blogs.',
 	q{The attribute exclude_blogs cannot take '[_1]' for a value.} => q{El atributo exclude_blogs no puede tener el valor '[_1]'.},
+	q{You have an error in your '[_2]' attribute: [_1]} => q{Tiene un error en el atributo '[_2]': [_1]},
 	q{You used an '[_1]' tag inside of the context of a blog which has no parent website; Perhaps your blog record is broken?} => q{Ha utilizado una etiqueta '[_1]' en el contexto de un blog que no tiene un sitio web raíz. ¿Quizás el registro del blog está mal?},
 	q{You used an '[_1]' tag outside of the context of a author; Perhaps you mistakenly placed it outside of an 'MTAuthors' container tag?} => q{Utilizó una etiqueta '[_1]' fuera del contexto de un autor. ¿Quizás la situó por error fuera de la etiqueta contenedora 'MTAuthors'?},
 	q{You used an '[_1]' tag outside of the context of a comment; Perhaps you mistakenly placed it outside of an 'MTComments' container tag?} => q{Utilizó una etiqueta '[_1]' fuera del contexto de un comentario. ¿Quizás la situó por error fuera de la etiqueta contenedor 'MTComments'?},
@@ -2603,7 +2619,6 @@ use vars qw( @ISA %Lexicon );
 ## lib/MT/Template/Tags/Asset.pm
 	'sort_by="score" must be used in combination with namespace.' => 'sort_by="score" debe usarse en combinación con el espacio de nombres.',
 	q{No such user '[_1]'} => q{No existe el usuario '[_1]'},
-	q{You have an error in your '[_2]' attribute: [_1]} => q{Tiene un error en el atributo '[_2]': [_1]},
 
 ## lib/MT/Template/Tags/Author.pm
 	'You used an [_1] without a author context set up.' => 'Utilizó un [_1] sin establecer un contexto de autor.',
@@ -2894,6 +2909,8 @@ use vars qw( @ISA %Lexicon );
 	'Migrating create child site permissions...' => 'Migrando permisos de creación de sitios hijos...',
 	'Migrating data column of MT::ContentData...' => 'Migrando columna de datos de MT::ContentData...',
 	'Migrating fields column of MT::ContentType...' => 'Migrando columna de campos de MT::ContentType...',
+	'MultiBlog migration for site(ID:[_1]) is skipped due to the data breakage.' => '', # Translate - New
+	'MultiBlog migration is skipped due to the data breakage.' => '', # Translate - New
 	'Rebuilding Content Type count of Category Sets...' => 'Reconstruyendo las estadísticas del tipo de contenido de los conjuntos de categorías...',
 	'Rebuilding MT::ContentFieldIndex of embedded_text field...' => 'Reconstruyendo MT::ContentFieldIndex del campo embedded_text...',
 	'Rebuilding MT::ContentFieldIndex of multi_line_text field...' => 'Reconstruyendo MT::ContentFieldIndex del campo multi_line_text...',
@@ -2911,6 +2928,7 @@ use vars qw( @ISA %Lexicon );
 	'Reorder SECURITY level' => '', # Translate - New
 	'Reorder WARNING level' => '', # Translate - New
 	'Reset default dashboard widgets...' => 'Reinicio del panel de control predefinido de widgets...',
+	'Some MultiBlog migrations for site(ID:[_1]) are skipped due to the data breakage.' => '', # Translate - New
 	'Truncating values of value_varchar column...' => 'Acortando los valores de la columna value_varchar...',
 	'add administer_site permission for Blog Administrator...' => 'añadir permiso administer_site para el administrador del blog...',
 	'change [_1] to [_2]' => 'cambiar [_1] a [_2]',
@@ -2941,21 +2959,28 @@ use vars qw( @ISA %Lexicon );
 	'Registry could not be loaded' => 'El registro no pudo cargarse',
 	'Type must be specified' => 'Debe especificar el tipo',
 
-## lib/MT/Util/Archive/Tgz.pm
+## lib/MT/Util/Archive/BinTgz.pm
 	'Both data and file name must be specified.' => 'Se deben especificar tanto los datos como el nombre del fichero.',
 	'Cannot extract from the object' => 'No se pudo extraer usando el objeto',
+	'Cannot find external archiver: [_1]' => '', # Translate - New
 	'Cannot write to the object' => 'No se pudo escribir en el objeto',
-	'Could not read from filehandle.' => 'No se pudo leer desde el manejador de ficheros',
+	'Failed to create an archive [_1]: [_2]' => '', # Translate - New
 	'File [_1] exists; could not overwrite.' => 'El fichero [_1] existe: no puede sobreescribirse.',
-	'File [_1] is not a tgz file.' => 'El fichero [_1] no es un tgz.',
 	'Type must be tgz.' => 'El tipo debe ser tgz.',
 	'[_1] in the archive contains ..' => '[_1] en el archivo contiene...',
 	'[_1] in the archive is an absolute path' => '[_1] en el archivo es una ruta absoluta',
 	'[_1] in the archive is not a regular file' => '[_1] en el archivo no es un fichero normal',
 
+## lib/MT/Util/Archive/BinZip.pm
+	'Failed to rename an archive [_1]: [_2]' => '', # Translate - New
+	'Type must be zip' => 'El tipo debe ser zip',
+
+## lib/MT/Util/Archive/Tgz.pm
+	'Could not read from filehandle.' => 'No se pudo leer desde el manejador de ficheros',
+	'File [_1] is not a tgz file.' => 'El fichero [_1] no es un tgz.',
+
 ## lib/MT/Util/Archive/Zip.pm
 	'File [_1] is not a zip file.' => 'El fichero [_1] no es un fichero zip.',
-	'Type must be zip' => 'El tipo debe ser zip',
 
 ## lib/MT/Util/Captcha.pm
 	'Captcha' => 'Captcha',
@@ -2979,6 +3004,7 @@ use vars qw( @ISA %Lexicon );
 	'An error occurred while unpublishing past entries: [_1]' => 'Ocurrió un error durante la despublicación de las entradas antiguas: [_1]',
 	'Blog, BlogID or Template param must be specified.' => 'Debe especificarse el parámetro Blog, BlogID o Template.',
 	'The same archive file exists. You should change the basename or the archive path. ([_1])' => 'Ya existe el fichero del mismo archivo. Debe modificar el título o la ruta. ([_1])',
+	'unpublish' => 'Despublicar',
 	q{Template '[_1]' does not have an Output File.} => q{La plantilla '[_1]' no tiene un fichero de salida.},
 
 ## lib/MT/Website.pm
@@ -3132,7 +3158,7 @@ use vars qw( @ISA %Lexicon );
 	'You can only act upon a minimum of [_1] [_2].' => 'Solo puede actuar sobre un mínimo de [_1] [_2].',
 	'You did not select any [_1] to [_2].' => 'No seleccionó ninguna [_1] sobre la que [_2].',
 	'act upon' => 'actuar sobre',
-	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]]'?},
+	q{Are you sure you want to remove filter '[_1]'?} => q{¿Está seguro de que desea borrar el filtro '[_1]'?},
 
 ## mt-static/js/listing/tag/display-options-for-mobile.tag
 	'100 rows' => '100 filas',
@@ -3282,6 +3308,14 @@ use vars qw( @ISA %Lexicon );
 
 ## mt-static/plugins/TinyMCE/tiny_mce/plugins/mt_fullscreen/langs/plugin.js
 	'Fullscreen' => 'Pantalla completa',
+
+## mt-static/plugins/TinyMCE5/lib/js/tinymce/plugins/mt/langs/plugin.js
+	'Copy column' => '', # Translate - New
+	'Cut column' => '', # Translate - New
+	'Horizontal align' => '', # Translate - New
+	'Paste column after' => '', # Translate - New
+	'Paste column before' => '', # Translate - New
+	'Vertical align' => '', # Translate - New
 
 ## php/lib/block.mtarchives.php
 	'ArchiveType not found - [_1]' => 'ArchiveType no encontrado - [_1]',
@@ -3668,24 +3702,6 @@ r, inténtelo más tarde.',
 ## themes/classic_website/theme.yaml
 	'Classic Website' => 'Sitio web clásico',
 	'Create a blog portal that aggregates contents from several blogs in one website.' => 'Crear un portal que agrega contenidos de otros blogs en un sitio web.',
-
-## themes/pico/templates/archive_index.mtml
-	'Related Content' => 'Contenido relacionado',
-
-## themes/pico/templates/comment_preview.mtml
-	'Preview Comment' => 'Prever comentario',
-
-## themes/pico/templates/entry.mtml
-	'Home' => 'Inicio',
-
-## themes/pico/templates/navigation.mtml
-	'Subscribe' => 'Suscribirse',
-
-## themes/pico/theme.yaml
-	'A collection of styles compatible with Pico themes.' => 'Colección de estilos compatible con los temas Pico.',
-	'Pico Styles' => 'Estilos Pico',
-	'Pico' => 'Pico',
-	q{Pico is a microblogging theme, designed for keeping things simple to handle frequent updates. To put the focus on content we've moved the sidebars below the list of posts.} => q{Pico es un tema para microblogs, diseñado con la simplicidad en mente, para mostrar actualizaciones frecuentes. Hemos movido las barras laterales debajo de la lista de entradas para destacar el contenido.},
 
 ## tmpl/cms/asset_replace.tmpl
 	'Upload New Asset' => 'Transferir nuevo fichero multimedia',
@@ -4254,10 +4270,10 @@ r, inténtelo más tarde.',
 	'Create and Insert' => 'Crear e insertar',
 
 ## tmpl/cms/dialog/create_association.tmpl
-	'No sites exist in this installation. [_1]Create a site</a>' => 'Ningún sitio existe en esta instalación. [_1]Crear un sitio</a>',
 	'No blogs exist in this installation. [_1]Create a blog</a>' => 'Ningún blog existe en esta instalación. [_1]Crear un blog</a>',
 	'No groups exist in this installation. [_1]Create a group</a>' => 'Ningún grupo existe en esta instalación. [_1]Crear un grupo</a>',
 	'No roles exist in this installation. [_1]Create a role</a>' => 'Ningún rol existe en esta instalación. [_1]Crear un rol</a>',
+	'No sites exist in this installation. [_1]Create a site</a>' => 'Ningún sitio existe en esta instalación. [_1]Crear un sitio</a>',
 	'No users exist in this installation. [_1]Create a user</a>' => 'Ningún usuario existe en esta instalación. [_1]Crear un usuario</a>',
 	'all' => 'Todos',
 
@@ -4270,7 +4286,6 @@ r, inténtelo más tarde.',
 	'Select Trigger Action' => 'Seleccione acción inductora',
 	'Select Trigger Event' => 'Seleccione evento inductor',
 	'Select Trigger Object' => 'Seleccioe el objecto inductor',
-	'__UNPUBLISHED' => 'Despublicar',
 
 ## tmpl/cms/dialog/edit_image.tmpl
 	'Crop' => 'Recortar',
@@ -4316,6 +4331,7 @@ r, inténtelo más tarde.',
 	'Confirm New Password' => 'Confirmar nueva contraseña',
 	'Enter the new password.' => 'Introduzca la nueva contraseña.',
 	'New Password' => 'Nueva contraseña',
+	'The password for the user \'[_1]\' has been recovered.' => '', # Translate - New
 
 ## tmpl/cms/dialog/publishing_profile.tmpl
 	'All templates published statically via Publish Queue.' => 'Todas las plantillas publicadas estáticamente via Cola de publicación',
@@ -4585,9 +4601,7 @@ r, inténtelo más tarde.',
 	'View revisions' => 'Ver revisiones',
 	'Warning: If you set the basename manually, it may conflict with another content data.' => 'Aviso: Si establece el nombre base manualmente, podría haber conflicto con otros datos de contenido.',
 	'You have successfully recovered your saved content data.' => 'Ha recuperado con éxito los datos de contenido guardados.',
-	'You must configure this blog before you can publish this content data.' => 'Debe configurar este blog antes de publicar estos datos de contenido.',
-	'You must configure this blog before you can publish this entry.' => 'Debe configurar el blog antes de poder publicar esta entrada.',
-	'You must configure this blog before you can publish this page.' => 'Debe configurar el blog antes de poder publicar esta página.',
+	'You must configure this site before you can publish this content data.' => '', # Translate - New
 	q{Warning: Changing this content data's basename may break inbound links.} => q{Aviso: El cambio del nombre base de estos datos de contenido podría romper los enlaces entrantes.},
 
 ## tmpl/cms/edit_content_type.tmpl
@@ -4653,6 +4667,8 @@ r, inténtelo más tarde.',
 	'You have successfully recovered your saved entry.' => 'Ha recuperado con éxito la entrada guardada.',
 	'You have successfully recovered your saved page.' => 'Ha recuperado con éxito la página guardada.',
 	'You have unsaved changes to this entry that will be lost.' => 'Posee cambios no guardados en esta entrada que se perderán.',
+	'You must configure this site before you can publish this entry.' => '', # Translate - New
+	'You must configure this site before you can publish this page.' => '', # Translate - New
 	'Your changes to the comment have been saved.' => 'Se guardaron sus cambios al comentario.',
 	'Your customization preferences have been saved, and are visible in the form below.' => 'Se guardaron los cambios en las preferencias y pueden verse en el siguiente formulario.',
 	'Your notification has been sent.' => 'Se envió su notificación.',
@@ -5065,6 +5081,7 @@ r, inténtelo más tarde.',
 ## tmpl/cms/include/content_data_table.tmpl
 	'Created' => 'Creado',
 	'Republish selected [_1] (r)' => 'Republicar [_1] seleccionadas (r)',
+	'Unpublish' => 'Despublicar',
 	'View Content Data' => 'Ver datos de contenido',
 
 ## tmpl/cms/include/copyright.tmpl
@@ -5177,6 +5194,7 @@ r, inténtelo más tarde.',
 	'Open Site Menu' => 'Abrir menú del sitio',
 
 ## tmpl/cms/include/revision_table.tmpl
+	'*Deleted due to data breakage*' => '*Eliminada debido a la rotura de datos*',
 	'No revisions could be found.' => 'No se encontraron revisiones.',
 	'Note' => 'Nota',
 	'Saved By' => 'Guardado por',
@@ -5452,6 +5470,7 @@ r, inténtelo más tarde.',
 
 ## tmpl/cms/pinging.tmpl
 	'Pinging sites...' => 'Enviando pings a sitios...',
+	'Trackback' => 'TrackBack',
 
 ## tmpl/cms/popup/pinged_urls.tmpl
 	'Failed Trackbacks' => 'TrackBacks sin éxito',
@@ -5472,6 +5491,7 @@ r, inténtelo más tarde.',
 	'Publish Again (s)' => 'Publicar otra vez (s)',
 	'Publish Again' => 'Publicar otra vez.',
 	'Publish time: [_1].' => 'Tiempo de publicación: [_1].',
+	'Success' => 'OK',
 	'The files for [_1] have been published.' => 'Los ficheros de [_1] han sido publicados.',
 	'View this page.' => 'Ver página.',
 	'View your site.' => 'Ver sitio.',

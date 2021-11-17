@@ -17,8 +17,9 @@ BEGIN {
 }
 
 use MT;
-use MT::Test qw( :app :db :data );
+use MT::Test;
 use MT::Test::Permission;
+use MT::Test::App;
 
 my $blog_id = 1;
 
@@ -57,8 +58,7 @@ my $template = MT::Test::Permission->make_template(
     blog_id => $blog_id,
     name    => 'Category Test',
     type    => 'categories',
-    text =>
-        '<MTEntryNext><MTEntryID></MTEntryNext><MTEntryPrevious><MTEntryID></MTEntryPrevious>',
+    text    => '<MTEntryNext><MTEntryID></MTEntryNext><MTEntryPrevious><MTEntryID></MTEntryPrevious>',
 );
 my $template_map = MT::Test::Permission->make_templatemap(
     template_id   => $template->id,
@@ -69,8 +69,8 @@ my $template_map = MT::Test::Permission->make_templatemap(
 );
 
 my $blog = MT::Blog->load($blog_id);
-$blog->site_path( join "/", $test_env->root, "site" );
-$blog->archive_path( join "/", $test_env->root, "site/archive" );
+$blog->site_path(join "/", $test_env->root, "site");
+$blog->archive_path(join "/", $test_env->root, "site/archive");
 $blog->archive_type('Individual');
 $blog->save;
 
@@ -87,40 +87,43 @@ sleep 1;
 my $fmgr = MT::FileMgr->new('Local');
 
 my $filename1 = $entry1->title;
-my $archive1  = File::Spec->catfile( $test_env->root,
-    "site/archive/2018/08/$filename1.html" );
+my $archive1  = File::Spec->catfile(
+    $test_env->root,
+    "site/archive/2018/08/$filename1.html"
+);
 ok -e $archive1;
 is $fmgr->get_data($archive1) => '2', 'output1';
 
 my $filename2 = $entry2->title;
-my $archive2  = File::Spec->catfile( $test_env->root,
-    "site/archive/2018/08/$filename2.html" );
+my $archive2  = File::Spec->catfile(
+    $test_env->root,
+    "site/archive/2018/08/$filename2.html"
+);
 ok -e $archive2;
 is $fmgr->get_data($archive2) => '31', 'output2';
 
 my $filename3 = $entry3->title;
-my $archive3  = File::Spec->catfile( $test_env->root,
-    "site/archive/2018/08/$filename3.html" );
+my $archive3  = File::Spec->catfile(
+    $test_env->root,
+    "site/archive/2018/08/$filename3.html"
+);
 ok -e $archive3;
 is $fmgr->get_data($archive3) => '2', 'output3';
 
-my @finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+my @finfos = MT::FileInfo->load({ blog_id => $blog_id });
 is @finfos => 3, "three FileInfo";
 
-my $app = _run_app(
-    'MT::App::CMS',
-    {   __test_user      => $admin,
-        __request_method => 'POST',
-        __mode           => 'delete_entry',
-        blog_id          => $blog_id,
-        id               => $entry2->id,
-    }
-);
-my $out = delete $app->{__test_output};
-ok( $out,                     "Request: delete_entry" );
-ok( $out !~ m!permission=1!i, "delete_entry by admin" );
+my $app = MT::Test::App->new('MT::App::CMS');
+$app->login($admin);
+$app->post_ok({
+    __mode  => 'delete_entry',
+    blog_id => $blog_id,
+    id      => $entry2->id,
+});
+is $app->page_title => "Dashboard", "went to dashboard (DEPRECATED MODE)";
+ok !$app->generic_error, "delete_entry by admin";
 
-@finfos = MT::FileInfo->load( { blog_id => $blog_id } );
+@finfos = MT::FileInfo->load({ blog_id => $blog_id });
 is @finfos => 2, "two FileInfo";
 
 ok -e $archive1;

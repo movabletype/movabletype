@@ -564,8 +564,19 @@ sub listing {
             ? $iter_method
             : ( $class->$iter_method( $terms, $args )
                 or return $app->error( $class->errstr ) );
-        my @data;
+        my @objs;
         while ( my $obj = $iter->() ) {
+            push @objs, $obj;
+            last if ( scalar @objs == $limit ) && ( !$no_limit );
+        }
+
+        if (@objs && $objs[0]->has_meta) {
+            require MT::Meta::Proxy;
+            MT::Meta::Proxy->bulk_load_meta_objects(\@objs);
+        }
+
+        my @data;
+        for my $obj (@objs) {
             my $row = $obj->get_values();
             $hasher->( $obj, $row ) if $hasher;
 
@@ -576,7 +587,6 @@ sub listing {
             #$app->run_callbacks( 'app_listing_'.$app->mode,
             #                     $app, $obj, $row );
             push @data, $row;
-            last if ( scalar @data == $limit ) && ( !$no_limit );
         }
 
         $param->{object_loop} = \@data;
@@ -931,6 +941,10 @@ sub print {
 sub print_encode {
     my $app = shift;
     my $enc = $app->charset || 'UTF-8';
+    my $restype = $app->{response_content_type} || '';
+    if ($restype =~ m!/json$!) {
+        $enc = 'UTF-8';
+    }
     $app->print( Encode::encode( $enc, $_[0] ) );
 }
 
@@ -1034,13 +1048,21 @@ sub run_callbacks {
         my $app = shift;
         $app->SUPER::init_callbacks(@_);
         return if $callbacks_added;
+
+        my $call_with_current_app = sub {
+            my $method_name = shift;
+            my $current_app = MT->instance;
+            return unless $current_app->isa('MT::App');
+            $current_app->$method_name;
+        };
         MT->add_callback( 'post_save',   0, $app, \&_cb_mark_blog );
         MT->add_callback( 'post_remove', 0, $app, \&_cb_mark_blog );
         MT->add_callback( 'MT::Blog::post_remove', 0, $app,
             \&_cb_unmark_blog );
         MT->add_callback( 'MT::Config::post_save', 0, $app,
-            sub { $app->reboot } );
-        MT->add_callback( 'pre_build', 9, $app, sub { $app->touch_blogs() } );
+            sub { $call_with_current_app->('reboot') } );
+        MT->add_callback( 'pre_build', 9, $app,
+            sub { $call_with_current_app->('touch_blogs') } );
         $callbacks_added = 1;
     }
 }
@@ -2084,6 +2106,17 @@ sub login {
     my $ctx = MT::Auth->fetch_credentials( { app => $app } );
     unless ($ctx) {
         if ( defined( $app->param('password') ) ) {
+            # Login invalid (empty password)
+            my $username = $app->param('username');
+            my $message  = defined $username && $username ne ''
+                         ? $app->translate("Failed login attempt by user '[_1]'", $username)
+                         : $app->translate("Failed login attempt by anonymous user");
+            $app->log({
+                message  => $message,
+                level    => MT::Log::SECURITY(),
+                category => 'login_user',
+                class    => 'author',
+            });
             return $app->error( $app->translate('Invalid login.') );
         }
         return;
@@ -2155,7 +2188,7 @@ sub login {
         || $res == MT::Auth::SESSION_EXPIRED() )
     {
 
-        # Login invlaid (password error, etc...)
+        # Login invalid (password error, etc...)
         $app->log(
             {   message => $app->translate(
                     "Failed login attempt by user '[_1]'", $user
@@ -4184,7 +4217,11 @@ sub app_path {
     $app->{__path} = $path;
 }
 
-sub envelope {''}
+sub envelope {
+    require MT::Util::Deprecated;
+    MT::Util::Deprecated::warning(since => '7.8');
+    '';
+}
 
 sub script {
     my $app = shift;

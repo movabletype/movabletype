@@ -35,7 +35,9 @@ sub get {
 sub get_ok {
     my ( $self, $params ) = @_;
     my $res = $self->get($params);
-    ok $res->is_success, "get succeeded";
+    ok !$res->is_error, "get succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
     $res;
 }
 
@@ -49,7 +51,9 @@ sub post {
 sub post_ok {
     my ( $self, $params ) = @_;
     my $res = $self->post($params);
-    ok $res->is_success, "post succeeded";
+    ok !$res->is_error, "post succeeded";
+    my $header_title = $self->header_title();
+    note $header_title if $header_title;
     $res;
 }
 
@@ -118,15 +122,15 @@ sub status_isnt {
 sub content { shift->{content} // '' }
 
 sub content_like {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content =~ /$pattern/, "content contains $pattern";
+    ok $self->content =~ /$pattern/, $message // "content contains $pattern";
 }
 
 sub content_unlike {
-    my ( $self, $pattern ) = @_;
+    my ( $self, $pattern, $message ) = @_;
     $pattern = qr/\Q$pattern\E/ unless ref $pattern;
-    ok $self->content !~ /$pattern/, "content doesn't contain $pattern";
+    ok $self->content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 sub content_doesnt_expose {
@@ -152,6 +156,39 @@ sub api_request_ok {
     my $res = $self->api_request(@_);
     ok $res->is_success, "request succeeded";
     return JSON::decode_json($res->decoded_content);
+}
+
+sub json {
+    my $self = shift;
+    return unless $self->{res} && $self->{res}->header('Content-Type') =~ qr{^application/json;};
+    return MT::Util::from_json($self->{content});
+}
+
+sub html_content {
+    my $self = shift;
+    my $content = $self->content;
+    $content =~ s/\n(\s*\n)+/\n/gs;
+    require HTML::Filter::Callbacks;
+    my $filter = HTML::Filter::Callbacks->new;
+    $filter->add_callbacks(
+        script => {
+            start => sub { shift->remove_text_and_tag },
+            end   => sub { shift->remove_text_and_tag },
+        },
+    );
+    $self->{html_content} = $filter->process($content);
+}
+
+sub html_content_like {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content =~ /$pattern/, $message // "content contains $pattern";
+}
+
+sub html_content_unlike {
+    my ( $self, $pattern, $message ) = @_;
+    $pattern = qr/\Q$pattern\E/ unless ref $pattern;
+    ok $self->html_content !~ /$pattern/, $message // "content doesn't contain $pattern";
 }
 
 1;

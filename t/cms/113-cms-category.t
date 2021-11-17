@@ -3,13 +3,13 @@
 use strict;
 use warnings;
 use FindBin;
-use lib "$FindBin::Bin/../lib"; # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
 BEGIN {
     $test_env = MT::Test::Env->new(
-        DefaultLanguage => 'en_US',  ## for now
+        DefaultLanguage => 'en_US',    ## for now
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
 }
@@ -17,9 +17,10 @@ BEGIN {
 use JSON;
 
 use MT::Test;
-MT::Test->init_app;
-MT::Test->init_db;
+use MT::Test::App;
 use MT::Test::Permission;
+
+$test_env->prepare_fixture('db');
 
 ### Make test data
 
@@ -29,7 +30,7 @@ my $website = MT::Test::Permission->make_website();
 my $second_website = MT::Test::Permission->make_website();
 
 # Blog
-my $blog = MT::Test::Permission->make_blog( parent_id => $website->id, );
+my $blog = MT::Test::Permission->make_blog(parent_id => $website->id,);
 
 # Author
 my $aikawa = MT::Test::Permission->make_author(
@@ -60,71 +61,58 @@ my $edit_categories = MT::Test::Permission->make_role(
     permissions => "'edit_categories'",
 );
 
-my $designer = MT::Role->load( { name => MT->translate('Designer') } );
+my $designer = MT::Role->load({ name => MT->translate('Designer') });
 
 require MT::Association;
-MT::Association->link( $aikawa, $edit_categories, $website );
-MT::Association->link( $egawa,  $designer,        $website );
+MT::Association->link($aikawa, $edit_categories, $website);
+MT::Association->link($egawa,  $designer,        $website);
 
-MT::Association->link( $ukawa, $edit_categories, $blog );
+MT::Association->link($ukawa, $edit_categories, $blog);
 
-MT::Association->link( $ichikawa, $edit_categories, $second_website );
+MT::Association->link($ichikawa, $edit_categories, $second_website);
 
 # Run
 my $cat_class = MT->model('category');
 
 subtest 'Test on website' => sub {
     subtest 'Menu visibility check' => sub {
-        plan tests => 8;
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->get_ok({
+            __mode  => 'dashboard',
+            blog_id => $website->id
+        });
+        $app->content_like(qr/Categories/, '"Categories" menu exists if admin');
 
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $admin,
-                __mode      => 'dashboard',
-                blog_id     => $website->id
-            }
+        $app->login($aikawa);
+        $app->get_ok({
+            __mode  => 'dashboard',
+            blog_id => $website->id
+        });
+        $app->content_like(
+            qr/Categories/,
+            '"Categories" menu exists if permitted user'
         );
-        my $out = delete $app->{__test_output};
-        ok( $out, "Request: website dashboard" );
-        like( $out, qr/Categories/, '"Categories" menu exists if admin' );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $aikawa,
-                __mode      => 'dashboard',
-                blog_id     => $website->id
-            }
+        $app->login($ukawa);
+        $app->get_ok({
+            __mode  => 'dashboard',
+            blog_id => $website->id
+        });
+        $app->content_unlike(
+            qr/Categories/,
+            '"Categories" menu does not exist if child blog'
         );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: website dashboard" );
-        like( $out, qr/Categories/,
-            '"Categories" menu exists if permitted user' );
 
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $ukawa,
-                __mode      => 'dashboard',
-                blog_id     => $website->id
-            }
+        $app->login($egawa);
+        $app->get_ok({
+            __mode  => 'dashboard',
+            blog_id => $website->id
+        });
+        $app->content_unlike(
+            qr/Categories/,
+            '"Categories" menu does not exist if other permission'
         );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/Categories/,
-            '"Categories" menu does not exist if child blog' );
-
-        $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user => $egawa,
-                __mode      => 'dashboard',
-                blog_id     => $website->id
-            }
-        );
-        $out = delete $app->{__test_output};
-        ok( $out, "Request: website dashboard" );
-        unlike( $out, qr/Categories/,
-            '"Categories" menu does not exist if other permission' );
-
-        done_testing();
     };
 
     subtest '"filtered_list" method check' => sub {
@@ -150,27 +138,20 @@ subtest 'Test on website' => sub {
 
         # Do test
         local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'filtered_list',
-                datasource       => 'category',
-                blog_id          => $website->id,
-                _type            => 'category',
-            }
-        );
-        my $out = delete $app->{__test_output};
-        ok( $out, "Request: filtered_list" );
-        like( $out, qr/Foo/, 'Request has "Foo" category' );
-        unlike( $out, qr/Bar/, 'Request has not "Bar" category' );
-        unlike( $out, qr/Baz/, 'Request has not "Baz" category' );
-
-        done_testing();
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->post_ok({
+            __mode     => 'filtered_list',
+            datasource => 'category',
+            blog_id    => $website->id,
+            _type      => 'category',
+        });
+        $app->content_like(qr/Foo/, 'Request has "Foo" category');
+        $app->content_unlike(qr/Bar/, 'Request has not "Bar" category');
+        $app->content_unlike(qr/Baz/, 'Request has not "Baz" category');
     };
 
     subtest '"save" method check' => sub {
-
         # Remove previous test data
         $cat_class->remove_all();
 
@@ -178,46 +159,43 @@ subtest 'Test on website' => sub {
             blog_id => $website->id,
             label   => 'Foo',
         );
-        is( $cat_class->count(), 1, "A new category has created" );
+        is($cat_class->count(), 1, "A new category has created");
 
-        my $cat = $cat_class->load( undef, { limit => 1 } );
-        ok( $cat, "Loaded a category" );
+        my $cat = $cat_class->load(undef, { limit => 1 });
+        ok($cat, "Loaded a category");
 
-        my $app = _run_app(
-            'MT::App::CMS',
-            {   __test_user      => $admin,
-                __request_method => 'POST',
-                __mode           => 'save',
-                blog_id          => $website->id,
-                _type            => 'category',
-                id               => $cat->id,
-                label            => 'Bar',                 # Label
-                basename         => 'bar',                 # Basename
-                description      => 'Description sample.', # Description
-                allow_pings      => 1,                     # Accept Trackbacks
-                tb_passphrase => 'Baz',    # Passphrase Protection
-                ping_urls => 'http://localhost/dummy',    # Trackback URLs
-            }
-        );
-        my $out = delete $app->{__test_output};
-        ok( $out, "Request: save" );
-        is( $cat_class->count(), 1, "Number of category has not changed." );
+        my $app = MT::Test::App->new('MT::App::CMS');
+        $app->login($admin);
+        $app->post_ok({
+            __mode        => 'save',
+            blog_id       => $website->id,
+            _type         => 'category',
+            id            => $cat->id,
+            label         => 'Bar',                       # Label
+            basename      => 'bar',                       # Basename
+            description   => 'Description sample.',       # Description
+            allow_pings   => 1,                           # Accept Trackbacks
+            tb_passphrase => 'Baz',                       # Passphrase Protection
+            ping_urls     => 'http://localhost/dummy',    # Trackback URLs
+        });
+        is($cat_class->count(), 1, "Number of category has not changed.");
 
-        $cat = $cat_class->load( undef, { limit => 1 } );
-        ok( $cat, "Loaded a category" );
+        $cat = $cat_class->load(undef, { limit => 1 });
+        ok($cat, "Loaded a category");
 
         # Check category parameters
-        is( $cat->label,    'Bar', 'Category Label is "Bar"' );
-        is( $cat->basename, 'bar', 'Category Basename is "bar"' );
-        is( $cat->description,
+        is($cat->label,    'Bar', 'Category Label is "Bar"');
+        is($cat->basename, 'bar', 'Category Basename is "bar"');
+        is(
+            $cat->description,
             'Description sample.',
             'Category Description is "Discription sample."'
         );
-        is( $cat->allow_pings, 1, 'Category Accept Trackbacks is "1"' );
-        is( $cat->ping_urls, "http://localhost/dummy",
-            'Category Trackback URLs is "http://localhost/dummy"' );
-
-        done_testing();
+        is($cat->allow_pings, 1, 'Category Accept Trackbacks is "1"');
+        is(
+            $cat->ping_urls, "http://localhost/dummy",
+            'Category Trackback URLs is "http://localhost/dummy"'
+        );
     };
 
     subtest '"bulk_update_category" method check' => sub {
@@ -225,28 +203,25 @@ subtest 'Test on website' => sub {
         # Remove previous test data
         $cat_class->remove_all();
 
-        require MT::Util;
-        my $to_json = sub {
-            my $ret = MT::Util::to_json(shift, {canonical => 1});
-            return $ret;
-        };
+        my $json_encoder = JSON->new->canonical;
 
         require Digest::MD5;
         my $make_checksum = sub {
-            my @old_objects = $cat_class->load( { blog_id => $website->id } );
+            my @old_objects = $cat_class->load({ blog_id => $website->id });
 
             # Test CheckSum
-            $website = MT->model('website')->load( $website->id );
+            $website = MT->model('website')->load($website->id);
             my $text = $website->category_order || '';
             if (@old_objects) {
                 $text = join(
                     ':', $text,
                     map {
-                        join( ':',
+                        join(
+                            ':',
                             $_->id,
-                            ( $_->parent || '0' ),
-                            Encode::encode_utf8( $_->label ),
-                            )
+                            ($_->parent || '0'),
+                            Encode::encode_utf8($_->label),
+                        )
                         }
                         sort { $a->id <=> $b->id } @old_objects
                 );
@@ -259,111 +234,100 @@ subtest 'Test on website' => sub {
 
         # (none) => Foo
         subtest 'add a category' => sub {
-            my @params = (
-                {   id       => 'x1',
-                    parent   => '0',
-                    label    => 'Foo',
-                    basename => 'foo',
-                }
-            );
-            my $json     = $to_json->( \@params );
+            my @params = ({
+                id       => 'x1',
+                parent   => '0',
+                label    => 'Foo',
+                basename => 'foo',
+            });
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
 
-            my $app = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 1, "Added a category" );
+            my $app = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 1, "Added a category");
 
-            my $cat = $cat_class->load( undef, { limit => 1 } );
-            ok( $cat, "Loaded a category" );
-            is( $cat->label,    'Foo', 'Category label is "Foo"' );
-            is( $cat->basename, 'foo', 'Category basename is "foo"' );
+            my $cat = $cat_class->load(undef, { limit => 1 });
+            ok($cat, "Loaded a category");
+            is($cat->label,    'Foo', 'Category label is "Foo"');
+            is($cat->basename, 'foo', 'Category basename is "foo"');
         };
 
         # Foo => (none)
         subtest 'delete a category' => sub {
             my @params   = ();
-            my $json     = $to_json->( \@params );
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 0, "Removed a category" );
+
+            $test_env->clear_mt_cache;
+
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 0, "Removed a category");
         };
 
         # (none) => parent: Foo, child: Bar
         subtest 'add 2 categories' => sub {
-            my @params = (
-                {   id       => 'x1',
+            my @params = ({
+                    id       => 'x1',
                     parent   => '0',
                     label    => 'Foo',
                     basename => 'foo',
                 },
-                {   id       => 'x2',
+                {
+                    id       => 'x2',
                     parent   => 'x1',
                     label    => 'Bar',
                     basename => 'bar',
-                }
-            );
-            my $json     = $to_json->( \@params );
+                });
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 2, "Created categories" );
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 2, "Created categories");
 
-            my $cat = $cat_class->load( { parent => 0 } );
-            ok( $cat, 'Loaded a parent category' );
-            is( $cat->label,    'Foo', 'Category label is "Foo"' );
-            is( $cat->basename, 'foo', 'Category basename is "foo"' );
+            my $cat = $cat_class->load({ parent => 0 });
+            ok($cat, 'Loaded a parent category');
+            is($cat->label,    'Foo', 'Category label is "Foo"');
+            is($cat->basename, 'foo', 'Category basename is "foo"');
 
-            $cat = $cat_class->load( { parent => { not => 0 } } );
-            ok( $cat, 'Loaded a child category' );
-            is( $cat->label,    'Bar', 'Category label is "Bar"' );
-            is( $cat->basename, 'bar', 'Category basename is "bar"' );
+            $cat = $cat_class->load({ parent => { not => 0 } });
+            ok($cat, 'Loaded a child category');
+            is($cat->label,    'Bar', 'Category label is "Bar"');
+            is($cat->basename, 'bar', 'Category basename is "bar"');
         };
 
         # parent: Foo, child: Bar => parent: FooBar, child: Baz
         subtest 'rename 2 categories' => sub {
-            my $cat = $cat_class->load( { parent => 0 } );
-            my @params = (
-                {   id       => $cat->id,
-                    parent   => 0,
-                    label    => 'FooBar',
-                    basename => 'foobar',
-                }
-            );
-            $cat = $cat_class->load( { parent => { not => 0 } } );
+            my $cat    = $cat_class->load({ parent => 0 });
+            my @params = ({
+                id       => $cat->id,
+                parent   => 0,
+                label    => 'FooBar',
+                basename => 'foobar',
+            });
+            $cat = $cat_class->load({ parent => { not => 0 } });
             push @params,
                 {
                 id       => $cat->id,
@@ -371,109 +335,95 @@ subtest 'Test on website' => sub {
                 label    => 'Baz',
                 basename => 'baz',
                 };
-            my $json     = $to_json->( \@params );
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 2, "Renamed categories" );
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 2, "Renamed categories");
 
-            $cat = $cat_class->load( { parent => 0 } );
-            ok( $cat, 'Loaded a parent category' );
-            is( $cat->label,    'FooBar', 'Category label is "FooBar"' );
-            is( $cat->basename, 'foobar', 'Category basename is "foobar"' );
+            $cat = $cat_class->load({ parent => 0 });
+            ok($cat, 'Loaded a parent category');
+            is($cat->label,    'FooBar', 'Category label is "FooBar"');
+            is($cat->basename, 'foobar', 'Category basename is "foobar"');
 
-            $cat = $cat_class->load( { parent => { not => 0 } } );
-            ok( $cat, 'Loaded a child category' );
-            is( $cat->label,    'Baz', 'Category label is "Baz"' );
-            is( $cat->basename, 'baz', 'Category basename is "baz"' );
+            $cat = $cat_class->load({ parent => { not => 0 } });
+            ok($cat, 'Loaded a child category');
+            is($cat->label,    'Baz', 'Category label is "Baz"');
+            is($cat->basename, 'baz', 'Category basename is "baz"');
         };
 
         # parent: FooBar, child: Baz => parent: Baz, child: FooBar
         subtest 'swap 2 categories' => sub {
-            my $cat = $cat_class->load( { parent => 0 } );
-            my @params = (
-                {   id       => $cat->id,
+            my $cat    = $cat_class->load({ parent => 0 });
+            my @params = ({
+                    id       => $cat->id,
                     parent   => 'dummy',
                     label    => $cat->label,
                     basename => $cat->basename,
                 },
-                { parent => 0, }
-            );
-            $cat = $cat_class->load( { parent => { not => 0 } } );
+                { parent => 0, });
+            $cat                 = $cat_class->load({ parent => { not => 0 } });
             $params[0]{parent}   = $cat->id;
             $params[1]{id}       = $cat->id;
             $params[1]{label}    = $cat->label;
             $params[1]{basename} = $cat->basename;
-            my $json     = $to_json->( \@params );
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 2, "Swapped categories" );
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 2, "Swapped categories");
 
-            $cat = $cat_class->load( { parent => 0 } );
-            ok( $cat, 'Loaded a parent category' );
-            is( $cat->label,    'Baz', 'Category label is "Baz"' );
-            is( $cat->basename, 'baz', 'category basename is "baz"' );
+            $cat = $cat_class->load({ parent => 0 });
+            ok($cat, 'Loaded a parent category');
+            is($cat->label,    'Baz', 'Category label is "Baz"');
+            is($cat->basename, 'baz', 'category basename is "baz"');
 
-            $cat = $cat_class->load( { parent => { not => 0 } } );
-            ok( $cat, 'Loaded a child category' );
-            is( $cat->label,    'FooBar', 'Category label is "FooBar"' );
-            is( $cat->basename, 'foobar', 'Category basename is "foobar"' );
+            $cat = $cat_class->load({ parent => { not => 0 } });
+            ok($cat, 'Loaded a child category');
+            is($cat->label,    'FooBar', 'Category label is "FooBar"');
+            is($cat->basename, 'foobar', 'Category basename is "foobar"');
         };
 
         # parent: Baz, child: FooBar => Baz
         subtest 'remove child category' => sub {
-            my $cat = $cat_class->load( { parent => 0 } );
-            my @params = (
-                {   parent   => 0,
-                    id       => $cat->id,
-                    label    => $cat->label,
-                    basename => $cat->basename,
-                }
-            );
-            my $json     = $to_json->( \@params );
+            my $cat    = $cat_class->load({ parent => 0 });
+            my @params = ({
+                parent   => 0,
+                id       => $cat->id,
+                label    => $cat->label,
+                basename => $cat->basename,
+            });
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 1, "Removed a child category" );
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 1, "Removed a child category");
 
             $cat = $cat_class->load();
-            ok( $cat, 'Loaded a class' );
-            is( $cat->label,    'Baz', 'Category label is "Baz"' );
-            is( $cat->basename, 'baz', 'Category basename is "baz"' );
+            ok($cat, 'Loaded a class');
+            is($cat->label,    'Baz', 'Category label is "Baz"');
+            is($cat->basename, 'baz', 'Category basename is "baz"');
         };
 
         # Baz => (none)
@@ -481,91 +431,83 @@ subtest 'Test on website' => sub {
 
         # (none) => Foo, Bar
         subtest 'add 2 categories' => sub {
-            my @params = (
-                {   id       => 'x1',
+            my @params = ({
+                    id       => 'x1',
                     parent   => 0,
                     label    => 'Foo',
                     basename => 'foo',
                 },
-                {   id       => 'x2',
+                {
+                    id       => 'x2',
                     parent   => 0,
                     label    => 'Bar',
                     basename => 'bar',
-                }
-            );
-            my $json     = $to_json->( \@params );
+                });
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
-            );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 2, "Added categories" );
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 2, "Added categories");
 
-            my $cat_foo = $cat_class->load( { label => 'Foo' } );
-            my $cat_bar = $cat_class->load( { label => 'Bar' } );
-            my $cat_order = join ',', ( $cat_foo->id, $cat_bar->id );
-            $website = MT->model('website')->load( $website->id );
-            ok( $website->category_order, 'Website has category_order' );
-            is( $website->category_order, $cat_order,
-                'Category order is correct' );
+            my $cat_foo   = $cat_class->load({ label => 'Foo' });
+            my $cat_bar   = $cat_class->load({ label => 'Bar' });
+            my $cat_order = join ',', ($cat_foo->id, $cat_bar->id);
+            $website = MT->model('website')->load($website->id);
+            ok($website->category_order, 'Website has category_order');
+            is(
+                $website->category_order, $cat_order,
+                'Category order is correct'
+            );
         };
 
         # For, Bar => Bar, Foo
         subtest 'swap 2 categories' => sub {
-            my $cat_foo = $cat_class->load( { label => 'Foo' } );
-            my $cat_bar = $cat_class->load( { label => 'Bar' } );
-            my @params  = (
-                {   id       => $cat_bar->id,
+            my $cat_foo = $cat_class->load({ label => 'Foo' });
+            my $cat_bar = $cat_class->load({ label => 'Bar' });
+            my @params  = ({
+                    id       => $cat_bar->id,
                     parent   => 0,
                     label    => $cat_bar->label,
                     basename => $cat_bar->basename,
                 },
-                {   id       => $cat_foo->id,
+                {
+                    id       => $cat_foo->id,
                     parent   => 0,
                     label    => $cat_foo->label,
                     basename => $cat_foo->basename,
-                }
-            );
-            my $json     = $to_json->( \@params );
+                });
+            my $json     = $json_encoder->encode(\@params);
             my $checksum = $make_checksum->();
-            my $app      = _run_app(
-                'MT::App::CMS',
-                {   __test_user      => $admin,
-                    __request_method => 'POST',
-                    __mode           => 'bulk_update_category',
-                    datasource       => 'category',
-                    blog_id          => $website->id,
-                    objects          => $json,
-                    checksum         => $checksum,
-                }
+            my $app      = MT::Test::App->new('MT::App::CMS');
+            $app->login($admin);
+            $app->post_ok({
+                __mode     => 'bulk_update_category',
+                datasource => 'category',
+                blog_id    => $website->id,
+                objects    => $json,
+                checksum   => $checksum,
+            });
+            is($cat_class->count(), 2, "Swapped categories");
+
+            $cat_foo = $cat_class->load({ label => 'Foo' });
+            $cat_bar = $cat_class->load({ label => 'Bar' });
+            my $cat_order = join ',', ($cat_bar->id, $cat_foo->id);
+
+            $website = MT->model('website')->load($website->id);
+            ok($website->category_order, 'Website has category_order');
+            is(
+                $website->category_order, $cat_order,
+                'Category order is correct'
             );
-            my $out = delete $app->{__test_output};
-            ok( $out, "Request: bulk_update_category" );
-            is( $cat_class->count(), 2, "Swapped categories" );
-
-            $cat_foo = $cat_class->load( { label => 'Foo' } );
-            $cat_bar = $cat_class->load( { label => 'Bar' } );
-            my $cat_order = join ',', ( $cat_bar->id, $cat_foo->id );
-
-            $website = MT->model('website')->load( $website->id );
-            ok( $website->category_order, 'Website has category_order' );
-            is( $website->category_order, $cat_order,
-                'Category order is correct' );
         };
-
-        done_testing();
     };
-
-    done_testing();
 };
 
 subtest 'Edit Category screen check' => sub {
@@ -579,44 +521,30 @@ subtest 'Edit Category screen check' => sub {
         blog_id   => $blog->id,
         author_id => $ukawa->id,
     );
-    ok( $website_category, 'Created a website category' );
-    ok( $blog_category,    'Created a blog category' );
+    ok($website_category, 'Created a website category');
+    ok($blog_category,    'Created a blog category');
 
-    my $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'edit',
-            _type       => 'category',
-            blog_id     => $website->id,
-            id          => $website_category->id,
-        },
-    );
-    my $out = delete $app->{__test_output};
-    ok( $out, 'Request: edit(category)' );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($admin);
+    $app->get_ok({
+        __mode  => 'edit',
+        _type   => 'category',
+        blog_id => $website->id,
+        id      => $website_category->id,
+    });
 
-    my $link
-        = quotemeta
-        '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id='
-        . $admin->id . '">';
-    ok( $out =~ m/$link/, 'Link to Edit Profile in website scope is ok' );
+    my $link = quotemeta '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id=' . $admin->id . '">';
+    $app->content_like(qr/$link/, 'Link to Edit Profile in website scope is ok');
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user => $admin,
-            __mode      => 'edit',
-            _type       => 'category',
-            blog_id     => $blog->id,
-            id          => $blog_category->id,
-        },
-    );
-    $out = delete $app->{__test_output};
-    ok( $out, 'Request: edit(category)' );
+    $app->get_ok({
+        __mode  => 'edit',
+        _type   => 'category',
+        blog_id => $blog->id,
+        id      => $blog_category->id,
+    });
 
-    $link
-        = quotemeta
-        '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id='
-        . $admin->id . '">';
-    ok( $out =~ m/$link/, 'Link to Edit Profile in blog scope is ok' );
+    $link = quotemeta '<li id="user"><a href="/cgi-bin/mt.cgi?blog_id=0&amp;__mode=view&amp;_type=author&amp;id=' . $admin->id . '">';
+    $app->content_like(qr/$link/, 'Link to Edit Profile in blog scope is ok');
 };
-done_testing();
 
+done_testing();

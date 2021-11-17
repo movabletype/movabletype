@@ -95,10 +95,11 @@ sub get_internal {
         return $mgr->get($alias);
     }
 
-    ( $mgr->is_overwritable($var) && defined( $val = $mgr->{__dbvar}{$var} ) )
-        or defined( $val = $mgr->{__var}{$var} )
-        or defined( $val = $mgr->{__dbvar}{$var} )
-        or return $mgr->default($var);
+    $val = $mgr->{__dbvar}{$var} if $mgr->is_overwritable($var);
+    $val = $mgr->{__var}{$var} unless defined($val);
+    $val = { %{ $mgr->{__dbvar}{$var} }, %$val } if ($mgr->type($var) eq 'HASH' && $val && $mgr->{__dbvar}{$var});
+    $val = $mgr->{__dbvar}{$var} unless defined($val);
+    return $mgr->default($var) unless defined($val);
 
     $val = $val->() if ref($val) eq 'CODE';
     wantarray && ( $mgr->{__settings}{$var}{type} || '' ) eq 'ARRAY'
@@ -171,13 +172,10 @@ sub set_internal {
             }
         }
         elsif ( $type eq 'HASH' ) {
-            my $hash = $mgr->{$set}{$var};
-            $hash = $mgr->default($var) unless defined $hash;
             if ( ref $val eq 'HASH' ) {
                 $mgr->{$set}{$var} = $val;
             }
             else {
-                $hash ||= {};
                 ( my ($key), $val ) = split /=/, $val;
                 $mgr->{$set}{$var}{$key} = $val;
             }

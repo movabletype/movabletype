@@ -26,7 +26,7 @@ sub upgrade_functions {
 UPDATE mt_blog
 SET    blog_class = 'website'
 WHERE  blog_class = 'blog'
-    AND ( blog_parent_id is null OR blog_parent_id = 0 );
+    AND ( blog_parent_id is null OR blog_parent_id = 0 )
 __SQL__
             },
         },
@@ -45,7 +45,7 @@ __SQL__
                 sql => <<__SQL__,
 UPDATE mt_author_meta
 SET    author_meta_type = 'favorite_websites'
-WHERE  author_meta_type = 'favorite_blogs';
+WHERE  author_meta_type = 'favorite_blogs'
 __SQL__
             },
         },

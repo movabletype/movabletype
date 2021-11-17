@@ -1603,7 +1603,7 @@ sub rebuild_content_from_fileinfo {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $pub->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     my %cond;
@@ -1764,7 +1764,7 @@ sub _rebuild_content_archive_type {
     my $arch_root
         = ( $at eq 'Page' ) ? $blog->site_path : $blog->archive_path;
     return $mt->error(
-        MT->translate("You did not set your blog publishing path") )
+        MT->translate("You did not set your site publishing path") )
         unless $arch_root;
 
     ## For each mapping, we need to rebuild the entries we loaded above in

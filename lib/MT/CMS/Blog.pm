@@ -3222,7 +3222,7 @@ sub clone {
             $base_url = $raw_site_url[0];
         }
         $param->{site_url} = $base_url;
-        $param->{'use_subdomain'} = defined $param->{site_url_subdomain};
+        $param->{'use_subdomain'} = defined $param->{site_url_subdomain} && $param->{site_url_subdomain};
 
         if ( $param->{enable_archive_paths} ) {
             my $base_archive_url;
@@ -3398,12 +3398,7 @@ HTML
         $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
         $subdomain =~ s/\.{2,}/\./g;
         my $path = $app->param('site_url_path');
-        if ( $subdomain || $path ) {
-            $new_blog->site_url("$subdomain/::/$path");
-        }
-        else {
-            $new_blog->site_url( $param->{'site_url'} );
-        }
+        $new_blog->site_url("$subdomain/::/$path");
 
         if ( $param->{enable_archive_paths} ) {
             $new_blog->archive_path(
@@ -3417,12 +3412,7 @@ HTML
             $subdomain .= '.' if $subdomain && $subdomain !~ /\.$/;
             $subdomain =~ s/\.{2,}/\./g;
             my $path = $app->param('archive_url_path');
-            if ( $subdomain || $path ) {
-                $new_blog->archive_url("$subdomain/::/$path");
-            }
-            else {
-                $new_blog->archive_url( $param->{'site_url'} );
-            }
+            $new_blog->archive_url("$subdomain/::/$path");
         }
 
         $new_blog->save();

@@ -15,15 +15,14 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Permission;
-
-MT::Test->init_app;
+use MT::Test::App;
 
 ### Make test data
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
     # Site
-    my $site = MT::Test::Permission->make_website( name => 'my website' );
+    my $site = MT::Test::Permission->make_website(name => 'my website');
 
     # Author
     my $user = MT::Test::Permission->make_author(
@@ -38,56 +37,44 @@ $test_env->prepare_fixture(sub {
     );
 
     require MT::Association;
-    MT::Association->link( $user => $create_site_role => $site );
+    MT::Association->link($user => $create_site_role => $site);
 
 });
 
 require MT::Website;
-my $site             = MT::Website->load( { name => 'my website' } );
+my $site = MT::Website->load({ name => 'my website' });
 
 require MT::Author;
-my $admin            = MT::Author->load(1);
-my $user             = MT::Author->load( { name => 'aikawa' } );
+my $admin = MT::Author->load(1);
+my $user  = MT::Author->load({ name => 'aikawa' });
 
 require MT::Role;
-my $create_site_role = MT::Role->load( { name => MT->translate('Create Child Site') } );
+my $create_site_role = MT::Role->load({ name => MT->translate('Create Child Site') });
 
-# Run
-my ( $app, $out );
 subtest 'mode = save (new)' => sub {
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'blog',
-            name             => 'BlogName',
-            parent_id        => $site->id,
-            blog_id          => $site->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out !~ m!permission=1!i, "save (new) by permitted user" );
+    my $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+    $app->post_ok({
+        __mode    => 'save',
+        _type     => 'blog',
+        name      => 'BlogName',
+        parent_id => $site->id,
+        blog_id   => $site->id,
+    });
+    $app->has_no_permission_error("save (new) by permitted user");
 
-    MT::Association->unlink( $user => $create_site_role => $site );
+    MT::Association->unlink($user => $create_site_role => $site);
 
-    $app = _run_app(
-        'MT::App::CMS',
-        {   __test_user      => $user,
-            __request_method => 'POST',
-            __mode           => 'save',
-            _type            => 'blog',
-            name             => 'BlogName',
-            parent_id        => $site->id,
-            blog_id          => $site->id,
-        }
-    );
-    $out = delete $app->{__test_output};
-    ok( $out,                     "Request: save" );
-    ok( $out =~ m!permission=1!i, "save (new) by permitted user" );
-
-    done_testing();
+    $app = MT::Test::App->new('MT::App::CMS');
+    $app->login($user);
+    $app->post_ok({
+        __mode    => 'save',
+        _type     => 'blog',
+        name      => 'BlogName',
+        parent_id => $site->id,
+        blog_id   => $site->id,
+    });
+    $app->has_permission_error("save (new) by permitted user");
 };
 
 done_testing();

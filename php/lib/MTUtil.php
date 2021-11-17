@@ -1145,7 +1145,7 @@ function create_expr_exception($m) {
         return $m[1];
 }
 
-function create_cat_expr_function($expr, &$cats, $datasource = 'entry', $param) {
+function create_cat_expr_function($expr, &$cats, $datasource, $param) {
     $mt = MT::get_instance();
     $cats_used = array();
     $orig_expr = $expr;
