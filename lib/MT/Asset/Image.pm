@@ -1110,13 +1110,12 @@ sub has_metadata {
             || $g eq 'File'
             || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
-        my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
+        my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
+        next unless %writable_tags;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
-        for my $t ( sort $exif->GetTagList ) {
-            if ( grep { $t eq $_ } @writable_tags ) {
-                return 1;
-            }
+        for my $t ( $exif->GetTagList ) {
+            return 1 if $writable_tags{$t};
         }
     }
     return 0;
