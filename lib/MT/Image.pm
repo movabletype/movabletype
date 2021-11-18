@@ -277,7 +277,7 @@ sub remove_metadata {
     }
 
     $exif = Image::ExifTool->new;
-    $exif->SetNewValuesFromFile($file);
+    $exif->ExtractInfo($file);
 
     my $orientation = $exif->GetValue('Orientation');
 
