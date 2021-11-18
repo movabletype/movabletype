@@ -1151,10 +1151,14 @@ sub remove_all_metadata {
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
     if (lc($asset->file_ext) =~ /^jpe?g$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
