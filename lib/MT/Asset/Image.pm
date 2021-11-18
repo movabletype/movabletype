@@ -1108,7 +1108,7 @@ sub has_metadata {
         next
             if $g eq 'ExifTool'
             || $g eq 'File'
-            || ( $is_jpeg && $g eq 'JFIF' )
+            || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
         $exif->Options( Group => $g );
