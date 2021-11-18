@@ -1094,6 +1094,8 @@ sub has_gps_metadata {
         : 0;
 }
 
+my @MandatoryExifTags;
+
 sub has_metadata {
     my ($asset) = @_;
 
@@ -1104,6 +1106,8 @@ sub has_metadata {
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
+
+    @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'
@@ -1111,6 +1115,7 @@ sub has_metadata {
             || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
         my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
+        delete $writable_tags{$_} for @MandatoryExifTags;
         delete $writable_tags{Orientation};  # special case
         next unless %writable_tags;
         $exif->Options( Group => $g );
@@ -1120,6 +1125,17 @@ sub has_metadata {
         }
     }
     return 0;
+}
+
+sub _set_mandatory_exif_tags {
+    require Image::ExifTool::Exif;
+    @MandatoryExifTags = ();
+    for my $value (values %Image::ExifTool::Exif::Main) {
+        if (ref $value eq 'HASH' && $value->{Mandatory}) {
+            push @MandatoryExifTags, $value->{Name};
+        }
+    }
+    @MandatoryExifTags;
 }
 
 sub remove_gps_metadata {
