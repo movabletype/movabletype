@@ -108,6 +108,7 @@ on 'test' => sub {
     requires 'Log::Minimal';
     requires 'MIME::Head';
     requires 'Mock::MonkeyPatch';
+    requires 'Mojolicious';
     requires 'Net::SFTP';
     requires 'Parallel::ForkManager';
     requires 'Path::Tiny';

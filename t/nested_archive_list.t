@@ -13,7 +13,7 @@ BEGIN {
 
 use MT::Test;
 use MT::Test::Fixture;
-use Mojo::DOM;
+use Web::Query::LibXML qw(wq);
 use File::Spec;
 use Test::Deep;
 use utf8;
@@ -171,23 +171,23 @@ $test_env->ls;
 for my $name ('nested_archivelist', 'archive/nested/2021/index', 'archive/nested/2020/index') {
     subtest "$name.html" => sub {
         my $html = $test_env->slurp(File::Spec->catfile($site_path, "$name.html"));
-        my $dom  = Mojo::DOM->new($html);
+        my $dom  = wq($html);
         my @url;
-        $dom->find('a.year')->each(sub { push @url, $_->{href} });
+        $dom->find('a.year')->each(sub { push @url, $_->attr('href') });
         cmp_bag \@url => [qw(
             http://narnia.na/nested/2020/
             http://narnia.na/nested/2021/
         )], "expected year href";
 
         @url = ();
-        $dom->find('li.2021 a.month')->each(sub { push @url, $_->{href} });
+        $dom->find('li.2021 a.month')->each(sub { push @url, $_->attr('href') });
         cmp_bag \@url => [qw(
             http://narnia.na/2021/10/
             http://narnia.na/2021/11/
         )], "expected months of 2021 href";
 
         @url = ();
-        $dom->find('li.2020 a.month')->each(sub { push @url, $_->{href} });
+        $dom->find('li.2020 a.month')->each(sub { push @url, $_->attr('href') });
         cmp_bag \@url => [qw(
             http://narnia.na/2020/11/
         )], "expected months of 2020 href";
@@ -197,9 +197,9 @@ for my $name ('nested_archivelist', 'archive/nested/2021/index', 'archive/nested
 for my $name ('unnested_archivelist', 'archive/unnested/2021/11/index', 'archive/unnested/2021/10/index', 'archive/unnested/2020/11/index') {
     subtest "$name.html" => sub {
         my $html = $test_env->slurp(File::Spec->catfile($site_path, "$name.html"));
-        my $dom  = Mojo::DOM->new($html);
+        my $dom  = wq($html);
         my @url;
-        $dom->find('option')->each(sub { push @url, $_->{value} if defined $_->{value} });
+        $dom->find('option')->each(sub { push @url, $_->attr('value') if defined $_->attr('value') });
         cmp_bag \@url => [qw(
             http://narnia.na/2020/11/
             http://narnia.na/2021/10/
