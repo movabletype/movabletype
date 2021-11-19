@@ -54,6 +54,23 @@ subtest 'simple' => sub {
     };
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
     validate_headers();
+    my $last_sent = last_sent_mail();
+    like($last_sent, qr{mail body}, 'right body');
+    unlike($last_sent, qr{\x0d}, 'no illegal newline chars');
+};
+
+subtest 'illegal newline chars' => sub {
+    eval {
+        MT::Mail->send({
+                To => ['test@localhost.localdomain', 'test2@localhost.localdomain'],
+            },
+            "line1\x0d\x0aline2\x0dline3\x0aline4",
+        );
+    };
+    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    my $last_sent = last_sent_mail();
+    like($last_sent, qr{line1\x0aline2\x0aline3\x0aline4}, 'right body');
+    unlike($last_sent, qr{\x0d}, 'no illegal newline chars');
 };
 
 subtest 'different cases' => sub {
@@ -188,8 +205,13 @@ sub validate_headers {
             ok !@invalid, "no invalid $tag" or note explain \@invalid;
         }
     }
-    unlink $file;
 }
+
+sub last_sent_mail {
+    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
+}
+
+sub _last_mail_file { "$ENV{MT_TEST_ROOT}/mail" }
 
 sub _is_valid_email {
     my $address = shift;

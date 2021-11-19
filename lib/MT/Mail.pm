@@ -17,6 +17,9 @@ use MT::Util qw(is_valid_email);
 
 our $MAX_LINE_OCTET = 998;
 
+my $crlf = "\x0d\x0a";
+my $lf   = "\x0a";
+
 my %SMTPModules = (
     Core     => [ 'Net::SMTPS',      'MIME::Base64' ],
     Auth     => ['Authen::SASL'],
@@ -28,14 +31,6 @@ sub send {
     my ( $hdrs_arg, $body ) = @_;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
-    foreach my $h ( keys %hdrs ) {
-        if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
-            map {y/\n\r/  /} @{ $hdrs{$h} };
-        }
-        else {
-            $hdrs{$h} =~ y/\n\r/  / unless ( ref( $hdrs{$h} ) );
-        }
-    }
 
     my $id       = delete $hdrs{id};
     my $mgr      = MT->config;
@@ -44,6 +39,7 @@ sub send {
 
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
+    $body =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
 
     eval "require MIME::EncWords;";
     unless ($@) {
@@ -52,6 +48,7 @@ sub send {
 
             if ( ref $val eq 'ARRAY' ) {
                 foreach (@$val) {
+                    y/\x0d\x0a/  /;
                     if ( ( $mail_enc ne 'iso-8859-1' ) || (m/[^[:print:]]/) )
                     {
                         if ( $header =~ m/^(From|To|Reply-To|B?cc)/i ) {
@@ -83,6 +80,7 @@ sub send {
                 }
             }
             else {
+                $val =~ y/\x0d\x0a/  /;
                 if (   ( $mail_enc ne 'iso-8859-1' )
                     || ( $val =~ /[^[:print:]]/ ) )
                 {
@@ -330,7 +328,7 @@ sub _send_mt_smtp {
         $smtp->data();
         $smtp->datasend($hdr);
         $_check_smtp_err->();
-        $smtp->datasend("\n");
+        $smtp->datasend($crlf);
         $smtp->datasend($body);
         $_check_smtp_err->();
         $smtp->dataend();
@@ -382,9 +380,9 @@ sub _render_headers {
         next if ( $k =~ /^(To|Bcc|Cc)$/ );
         my $value = $hdrs->{$k};
         if (ref $value eq 'ARRAY') {   # From, Reply-To
-            $hdr .= "$k: " . join( ",\r\n ", @$value ) . "\r\n";
+            $hdr .= "$k: " . join( ",$crlf ", @$value ) . $crlf;
         } else {
-            $hdr .= "$k: " . $value . "\r\n";
+            $hdr .= "$k: " . $value . $crlf;
         }
     }
 
@@ -394,7 +392,7 @@ sub _render_headers {
             my $addr = $hdrs->{$h};
             $addr = [$addr] unless 'ARRAY' eq ref $addr;
             push @recipients, @$addr;
-            $hdr .= "$h: " . join( ",\r\n ", @$addr ) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
+            $hdr .= "$h: " . join( ",$crlf ", @$addr ) . $crlf unless $hide_bcc && $h eq 'Bcc';
         }
     }
     return wantarray ? ($hdr, @recipients) : $hdr;
@@ -431,9 +429,11 @@ sub _send_mt_sendmail {
     $class->_dedupe_headers($hdrs);
 
     my $hdr = $class->_render_headers($hdrs);
+    $hdr =~ s{$crlf}{$lf}g;
+    $body =~ s{$crlf}{$lf}g;
 
     print $MAIL $hdr;
-    print $MAIL "\n";
+    print $MAIL $lf;
     print $MAIL $body;
     close $MAIL;
     1;
