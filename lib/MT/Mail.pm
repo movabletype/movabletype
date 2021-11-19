@@ -13,6 +13,8 @@ use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
+use MT::Util qw(is_valid_email);
+
 our $MAX_LINE_OCTET = 998;
 
 my %SMTPModules = (
@@ -167,8 +169,6 @@ sub send {
             MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
     }
 }
-
-use MT::Util qw(is_valid_email);
 
 sub _send_mt_debug {
     my $class = shift;
