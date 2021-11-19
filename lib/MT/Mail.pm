@@ -245,17 +245,14 @@ sub _send_mt_smtp {
 
     $smtp->recipient($_) for @recipients;
 
-    my $_check_smtp_err;
-    {
-        $_check_smtp_err = sub {
+    my $_check_smtp_err = sub {
 
-            # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
-            return unless $smtp->can('status');
+        # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
+        return unless $smtp->can('status');
 
-            # status 4xx or 5xx is not send message.
-            die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
-        };
-    }
+        # status 4xx or 5xx is not send message.
+        die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
+    };
 
     eval {
         $smtp->data();
