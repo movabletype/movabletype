@@ -40,11 +40,9 @@ sub send {
         }
     }
 
-    my $mgr  = MT->config;
-    my $xfer = $mgr->MailTransfer;
-
-    my $mail_enc = uc( $mgr->MailEncoding || $mgr->PublishCharset );
-    $mail_enc = lc $mail_enc;
+    my $mgr      = MT->config;
+    my $xfer     = $mgr->MailTransfer;
+    my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
 
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode( $body, undef, $mail_enc );
