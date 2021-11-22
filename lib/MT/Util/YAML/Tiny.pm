@@ -22,14 +22,17 @@ sub Dump {
 sub Load {
     my ($yaml) = @_;
     my ($y)    = YAML::Tiny::Load($yaml);
+    my $has_string_sub = $yaml =~ /\bsub\s*\{/s;
     if ( ref($y) eq 'ARRAY' ) {
 
         # skip over non-hash elements
         shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
-        return $y->[0] if @$y;
+        if (@$y) {
+            return $has_string_sub ? MT::Util::YAML::_codify_string_sub($y->[0]) : $y->[0];
+        }
     }
     elsif ( ref($y) eq 'HASH' ) {
-        return $y;
+        return $has_string_sub ? MT::Util::YAML::_codify_string_sub($y) : $y;
     }
     return {};
 }

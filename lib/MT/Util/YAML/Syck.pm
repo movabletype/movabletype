@@ -24,15 +24,18 @@ sub Load {
     my ($str) = @_;
     require YAML::Syck;
     local $YAML::Syck::ImplicitUnicode = 1;
+    my $has_string_sub = $str =~ /\bsub\s*\{/s ? 1 : 0;
     my ($y) = YAML::Syck::Load($str);
     if ( ref($y) eq 'ARRAY' ) {
 
         # skip over non-hash elements
         shift @$y while @$y && ( ref( $y->[0] ) ne 'HASH' );
-        return $y->[0] if @$y;
+        if (@$y) {
+            return $has_string_sub ? MT::Util::YAML::_codify_string_sub($y->[0]) : $y->[0];
+        }
     }
     elsif ( ref($y) eq 'HASH' ) {
-        return $y;
+        return $has_string_sub ? MT::Util::YAML::_codify_string_sub($y) : $y;
     }
     return {};
 }

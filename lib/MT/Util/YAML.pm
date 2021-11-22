@@ -40,6 +40,19 @@ sub _find_module {
     1;
 }
 
+sub _codify_string_sub {
+    my $data = shift;
+    require Data::Visitor::Tiny;
+    Data::Visitor::Tiny::visit($data, sub {
+        my ($key, $valueref) = @_;
+        if ($$valueref && $$valueref =~ /^\s*sub\s*\{/s) {
+            my $code = MT->handler_to_coderef($$valueref, undef, 1);
+            $$valueref = $code if $code;
+        }
+    });
+    return $data;
+}
+
 BEGIN { _find_module() }
 
 sub Dump {
