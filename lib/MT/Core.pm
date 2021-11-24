@@ -2689,11 +2689,14 @@ sub remove_temporary_files {
         { kind => 'TF', start => [ undef, time - $expiration ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
+    my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
-            $f->remove;
+            push @ids, $f->id;
         }
     }
+    return unless @ids;
+    MT::Session->remove({id => \@ids});
 
     # This is a silent task; no need to log removal of temporary files
     return '';
