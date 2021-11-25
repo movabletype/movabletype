@@ -327,7 +327,7 @@ DESCRIPTION
                         type       => 'object',
                         properties => {
                             entry => {
-                                '$ref' => '#/components/schemas/entry',
+                                '$ref' => '#/components/schemas/entry_updatable',
                             },
                         },
                     },
@@ -498,7 +498,7 @@ DESCRIPTION
                                 ],
                             },
                             entry => {
-                                '$ref' => '#/components/schemas/entry',
+                                '$ref' => '#/components/schemas/entry_updatable',
                             },
                         },
                     },

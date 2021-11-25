@@ -89,7 +89,7 @@ DESCRIPTION
                                 ],
                             },
                             user => {
-                                '$ref' => '#/components/schemas/user',
+                                '$ref' => '#/components/schemas/user_updatable',
                             },
                         },
                     },

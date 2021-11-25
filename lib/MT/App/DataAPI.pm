@@ -3211,10 +3211,18 @@ sub fields_to_schema {
             };
         }
     }
+    my $updatable_schema;
     if (scalar(@{ $resource->{updatable_fields} })) {
         $schema->{description} = 'Updatable fields are ' . join(', ', map { $_->{name} } @{ $resource->{updatable_fields} });
+        $updatable_schema->{type} = 'object';
+        for my $f (@{ $resource->{updatable_fields} }) {
+            my $field_name = $f->{name};
+            if (grep { $field_name eq $_ } keys(%{ $schema->{properties} })) {
+                $updatable_schema->{properties}{$field_name} = $schema->{properties}{$field_name};
+            }
+        }
     }
-    return $schema;
+    return ($schema, $updatable_schema);
 }
 
 sub _compile_schemas {
@@ -3229,7 +3237,10 @@ sub _compile_schemas {
                 for my $v (@{ $resources->{$key} }) {
                     $v->{version} ||= 1;
                     next if $v->{version} > $version;
-                    $hash{$key} = $app->fields_to_schema($key);
+                    ($hash{$key}, my $updatable_schema) = $app->fields_to_schema($key);
+                    if ($updatable_schema) {
+                        $hash{"${key}_updatable"} = $updatable_schema;
+                    }
                 }
             } else {
                 # alias
