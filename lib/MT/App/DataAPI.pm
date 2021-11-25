@@ -54,26 +54,7 @@ sub core_endpoints {
             route          => '/version',
             version        => 1,
             requires_login => 0,
-            openapi        => {
-                tags      => ['Common API'],
-                summary   => 'Get server API version',
-                responses => {
-                    200 => {
-                        description => 'OK',
-                        content     => {
-                            'application/json' => {
-                                schema => {
-                                    type       => 'object',
-                                    properties => {
-                                        apiVersion      => { type => 'number', format => 'float' },
-                                        endpointVersion => { type => 'string' },
-                                    }
-                                },
-                            },
-                        },
-                    },
-                },
-            },
+            openapi_handler => "${pkg}Version::version_openapi_spec",
         },
         # version 1
         {
