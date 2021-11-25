@@ -994,6 +994,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Page::list",
+            openapi_handler => "${pkg}v2::Page::list_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1013,6 +1018,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Page::list_for_folder",
+            openapi_handler => "${pkg}v2::Page::list_for_folder_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1032,6 +1042,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Page::list_for_asset",
+            openapi_handler => "${pkg}v2::Page::list_for_asset_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1071,6 +1086,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Page::list_for_site_and_tag",
+            openapi_handler => "${pkg}v2::Page::list_for_site_and_tag_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'page,pages',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1091,6 +1111,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}v2::Page::create",
+            openapi_handler => "${pkg}v2::Page::create_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to create a page.',
@@ -1101,6 +1122,10 @@ sub core_endpoints {
             route       => '/sites/:site_id/pages/:page_id',
             version     => 2,
             handler     => "${pkg}v2::Page::get",
+            openapi_handler => "${pkg}v2::Page::get_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested page.',
             },
@@ -1113,6 +1138,7 @@ sub core_endpoints {
             verb           => 'PUT',
             version        => 2,
             handler        => "${pkg}v2::Page::update",
+            openapi_handler => "${pkg}v2::Page::update_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to update a page.',
@@ -1124,6 +1150,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Page::delete",
+            openapi_handler => "${pkg}v2::Page::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a page.',
             },
@@ -1134,6 +1161,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Entry::preview_by_id",
+            openapi_handler => "${pkg}v2::Page::preview_by_id_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview page.',
             },
@@ -1144,6 +1172,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Page::preview",
+            openapi_handler => "${pkg}v2::Page::preview_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview page.',
             },
