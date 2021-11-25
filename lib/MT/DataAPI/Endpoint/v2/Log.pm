@@ -17,6 +17,123 @@ use MT::CMS::Log;
 use MT::DataAPI::Resource;
 use MT::DataAPI::Endpoint::Common;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Logs'],
+        summary     => 'Retrieve a list of logs in the specified site',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- view_blog_log for website and blog.
+- view_log for the system.
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/log/search' },
+            { '$ref' => '#/components/parameters/log/searchFields' },
+            { '$ref' => '#/components/parameters/log/limit' },
+            { '$ref' => '#/components/parameters/log/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'id',
+                        'created_on',
+                        'blog_id',
+                        'author_id',
+                        'level',
+                        'class',
+                    ],
+                    default => 'created_on',
+                },
+                description => <<'DESCRIPTION',
+- id
+- created_on
+- blog_id
+- author_id
+- level
+- class
+
+**Default**: created_on
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/log/sortOrder' },
+            { '$ref' => '#/components/parameters/log/fields' },
+            { '$ref' => '#/components/parameters/log/includeIds' },
+            { '$ref' => '#/components/parameters/log/excludeIds' },
+            {
+                in     => 'query',
+                name   => 'level',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'security',
+                        'error',
+                        'warning',
+                        'info',
+                        'debug',
+                        'security_or_error',
+                        'security_or_error_or_warning',
+                        'not_debug',
+                        'debug_or_error',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+The comma separated list of level name to filter logs. Available value is foolows.
+
+- security
+- error
+- warning
+- info
+- debug
+- security_or_error
+- security_or_error_or_warning
+- not_debug
+- debug_or_error
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of logs found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of log resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/log',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -26,6 +143,39 @@ sub list {
         totalResults => ( $res->{count} || 0 ),
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub get_openapi_spec {
+    +{
+        tags       => ['Logs'],
+        summary    => 'Retrieve a single log by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/log/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/log',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Log not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
     };
 }
 
@@ -40,6 +190,49 @@ sub get {
         or return;
 
     return $log;
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Logs'],
+        summary     => 'Create a new log',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            log => {
+                                '$ref' => '#/components/schemas/log_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/log',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -65,6 +258,50 @@ sub create {
     return $new_log;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Logs'],
+        summary     => 'Update an existing log',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            log => {
+                                '$ref' => '#/components/schemas/log_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/log',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Log not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -78,6 +315,35 @@ sub update {
         or return;
 
     return $new_log;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['Logs'],
+        summary   => 'Delete an existing log',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/log',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Log not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -102,6 +368,40 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.log', $app, $log );
 
     $log;
+}
+
+sub reset_openapi_spec {
+    +{
+        tags      => ['Logs'],
+        summary   => 'Reset logs',
+        responses => {
+            200 => {
+                description => 'No Errors',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => {
+                                    type => 'string',
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub reset {
@@ -176,6 +476,39 @@ sub reset {
     }
 
     return +{ status => 'success' };
+}
+
+sub export_openapi_spec {
+    +{
+        tags       => ['Logs'],
+        summary    => 'Export logs',
+        parameters => [{
+                in     => 'query',
+                name   => 'encoding',
+                schema => { type => 'string' },
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors',
+                content     => {
+                    'text/csv' => {
+                        schema => { type => 'string' },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub export {

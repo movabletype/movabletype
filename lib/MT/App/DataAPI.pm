@@ -1413,6 +1413,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/logs',
             version        => 2,
             handler        => "${pkg}v2::Log::list",
+            openapi_handler => "${pkg}v2::Log::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'log,logs',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1430,6 +1434,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/logs/:log_id',
             version     => 2,
             handler     => "${pkg}v2::Log::get",
+            openapi_handler => "${pkg}v2::Log::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested log.',
             },
@@ -1441,6 +1446,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Log::create",
+            openapi_handler => "${pkg}v2::Log::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a log.',
             },
@@ -1452,6 +1458,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Log::update",
+            openapi_handler => "${pkg}v2::Log::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a log.',
             },
@@ -1462,6 +1469,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Log::delete",
+            openapi_handler => "${pkg}v2::Log::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a log.',
             },
@@ -1472,6 +1480,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Log::reset",
+            openapi_handler => "${pkg}v2::Log::reset_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to reset logs.',
             },
@@ -1482,6 +1491,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 2,
             handler     => "${pkg}v2::Log::export",
+            openapi_handler => "${pkg}v2::Log::export_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to export logs.',
             },
