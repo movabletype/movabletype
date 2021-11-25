@@ -2991,6 +2991,10 @@ sub core_endpoints {
             route          => '/groups',
             version        => 2,
             handler        => "${pkg}v2::Group::list",
+            openapi_handler => "${pkg}v2::Group::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'group,groups',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -3008,6 +3012,10 @@ sub core_endpoints {
             route          => '/users/:user_id/groups',
             version        => 2,
             handler        => "${pkg}v2::Group::list_for_user",
+            openapi_handler => "${pkg}v2::Group::list_for_user_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'group,groups',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -3025,6 +3033,7 @@ sub core_endpoints {
             route       => '/groups/:group_id',
             version     => 2,
             handler     => "${pkg}v2::Group::get",
+            openapi_handler => "${pkg}v2::Group::get_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to retrieve the requested group.",
             },
@@ -3036,6 +3045,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Group::create",
+            openapi_handler => "${pkg}v2::Group::create_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to create a group.",
             },
@@ -3047,6 +3057,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Group::update",
+            openapi_handler => "${pkg}v2::Group::update_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to update a group.",
             },
@@ -3057,6 +3068,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Group::delete",
+            openapi_handler => "${pkg}v2::Group::delete_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to delete a group.",
             },
@@ -3075,6 +3087,10 @@ sub core_endpoints {
                 filterKeys => 'blogIds',
             },
             handler     => "${pkg}v2::Permission::list_for_group",
+            openapi_handler => "${pkg}v2::Permission::list_for_group_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             error_codes => {
                 403 => "Do not have permission to retrieve the requested group's permissions.",
             },
@@ -3085,6 +3101,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::grant_to_group",
+            openapi_handler => "${pkg}v2::Permission::grant_to_group_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to grant a permission.",
             },
@@ -3095,6 +3112,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::revoke_from_group",
+            openapi_handler => "${pkg}v2::Permission::revoke_from_group_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to revoke a permission.",
             },
@@ -3106,6 +3124,10 @@ sub core_endpoints {
             route          => '/groups/:group_id/members',
             version        => 2,
             handler        => "${pkg}v2::Group::list_members_for_group",
+            openapi_handler => "${pkg}v2::Group::list_members_for_group_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'user,users',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -3123,6 +3145,7 @@ sub core_endpoints {
             route       => '/groups/:group_id/members/:member_id',
             version     => 2,
             handler     => "${pkg}v2::Group::get_member",
+            openapi_handler => "${pkg}v2::Group::get_member_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to retrieve the requested group member.",
             },
@@ -3133,6 +3156,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Group::add_member",
+            openapi_handler => "${pkg}v2::Group::add_member_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to add a member to group.",
             },
@@ -3143,6 +3167,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Group::remove_member",
+            openapi_handler => "${pkg}v2::Group::remove_member_openapi_spec",
             error_codes => {
                 403 => "Do not have permission to remove a member from group.",
             },

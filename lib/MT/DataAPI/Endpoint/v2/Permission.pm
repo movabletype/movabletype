@@ -791,6 +791,60 @@ sub revoke_from_user {
     return +{ status => 'success' };
 }
 
+sub list_for_group_openapi_spec {
+    +{
+        tags        => ['Groups', 'Permissions'],
+        summary     => 'Retrieve a list of permissions for user',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- If you want to get others list, you should have Administer privilege.
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/permission/limit' },
+            { '$ref' => '#/components/parameters/permission/offset' },
+            { '$ref' => '#/components/parameters/permission/sortBy' },
+            { '$ref' => '#/components/parameters/permission/sortOrder' },
+            { '$ref' => '#/components/parameters/permission/fields' },
+            { '$ref' => '#/components/parameters/permission/blogIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of permissions found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of permission resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Group not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_group {
     my ( $app, $endpoint ) = @_;
 
@@ -805,6 +859,61 @@ sub list_for_group {
         totalResults => ( $res->{count} || 0 ),
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub grant_to_group_openapi_spec {
+    +{
+        tags        => ['Groups', 'Permissions'],
+        summary     => 'Grant permissions to group',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have grant_administer_role or grant_role_for_blog (Need grant_administer_role when granting role having administer_blog)
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            site_id => {
+                                type        => 'integer',
+                                description => 'The site ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Group not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
