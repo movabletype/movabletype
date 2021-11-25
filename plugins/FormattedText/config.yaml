@@ -85,6 +85,9 @@ applications:
               route: /sites/:site_id/formatted_texts
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::list
+              openapi_handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::list_openapi_spec
+              openapi_options:
+                  filtered_list_ds_nouns: formatted_text,formatted_texts
               default_params:
                   limit: 10
                   offset: 0
@@ -98,6 +101,7 @@ applications:
               route: /sites/:site_id/formatted_texts/:formatted_text_id
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::get
+              openapi_handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::get_openapi_spec
               error_codes:
                   403: Do not have permission to retrieve the requested formatted text.
 
@@ -108,6 +112,7 @@ applications:
               verb: POST
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::create
+              openapi_handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::create_openapi_spec
               error_codes:
                   403: Do not have permission to create a formatted text.
 
@@ -118,6 +123,7 @@ applications:
               verb: PUT
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::update
+              openapi_handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::update_openapi_spec
               error_codes:
                   403: Do not have permission to update a formatted text.
 
@@ -126,6 +132,7 @@ applications:
               verb: DELETE
               version: 2
               handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::delete
+              openapi_handler: $FormattedText::FormattedText::DataAPI::Endpoint::v2::FormattedText::delete_openapi_spec
               error_codes:
                   403: Do not have permission to delete a formatted text.
 
