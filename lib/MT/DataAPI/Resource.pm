@@ -201,6 +201,12 @@ sub core_resources {
                 fields => "${pkg}StatisticsPath::fields",
             },
         ],
+        theme => [
+            {
+                version => 2,
+                fields => "${pkg}v2::Theme::fields",
+            },
+        ],
     };
 }
 

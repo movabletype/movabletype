@@ -1659,6 +1659,7 @@ sub core_endpoints {
             route       => '/themes',
             version     => 2,
             handler     => "${pkg}v2::Theme::list",
+            openapi_handler => "${pkg}v2::Theme::list_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested themes.',
             },
@@ -1668,6 +1669,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/themes',
             version     => 2,
             handler     => "${pkg}v2::Theme::list_for_site",
+            openapi_handler => "${pkg}v2::Theme::list_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested site\'s themes.',
             },
@@ -1677,6 +1679,7 @@ sub core_endpoints {
             route       => '/themes/:theme_id',
             version     => 2,
             handler     => "${pkg}v2::Theme::get",
+            openapi_handler => "${pkg}v2::Theme::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested theme.',
             },
@@ -1686,6 +1689,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/themes/:theme_id',
             version     => 2,
             handler     => "${pkg}v2::Theme::get_for_site",
+            openapi_handler => "${pkg}v2::Theme::get_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested site\'s theme.',
             },
@@ -1696,6 +1700,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Theme::apply",
+            openapi_handler => "${pkg}v2::Theme::apply_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to apply the requested theme to site.',
             },
@@ -1706,6 +1711,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Theme::uninstall",
+            openapi_handler => "${pkg}v2::Theme::uninstall_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to uninstall the requested theme.',
             },
@@ -1716,6 +1722,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Theme::export",
+            openapi_handler => "${pkg}v2::Theme::export_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to export the requested theme.',
             },
