@@ -70,12 +70,17 @@ sub build_schema {
         my $route = $endpoints->{$id}{route};
         my @path_parameters;
         while ($route =~ s!/:([^/]+)!/{$1}!) {
+            my $id_name = $1;
+            my $id_type = 'integer';
+            if ($id_name eq 'user_id' || $id_name eq 'theme_id' || $id_name eq 'plugin_id') {
+                $id_type = 'string';
+            }
             push @path_parameters, +{
-                name     => $1,
+                name     => $id_name,
                 in       => 'path',
                 required => JSON::true,
                 schema   => {
-                    type => 'integer',
+                    type => $id_type,
                 },
             };
         }
