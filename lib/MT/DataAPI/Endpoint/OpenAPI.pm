@@ -115,7 +115,7 @@ sub build_schema {
         if (@path_parameters) {
             $response->{paths}{$route}{$verb}{parameters} = \@path_parameters;
         }
-        if ($endpoints->{$id}{can_use_access_token}) {
+        if ($endpoints->{$id}{openapi_options}{can_use_access_token}) {
             push @{$response->{paths}{$route}{$verb}{parameters}}, +{
                 'in'        => 'header',
                 name        => 'X-MT-Authorization',
@@ -123,7 +123,7 @@ sub build_schema {
                 schema      => { type => 'string' },
             };
         }
-        if ($endpoints->{$id}{can_use_session_id}) {
+        if ($endpoints->{$id}{openapi_options}{can_use_session_id}) {
             push @{$response->{paths}{$route}{$verb}{parameters}}, +{
                 'in'        => 'header',
                 name        => 'X-MT-Authorization',

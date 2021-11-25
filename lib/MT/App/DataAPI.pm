@@ -109,8 +109,10 @@ sub core_endpoints {
             version            => 1,
             handler            => "${pkg}Auth::token",
             openapi_handler    => "${pkg}Auth::token_openapi_spec",
+            openapi_options    => {
+                can_use_session_id => 1,
+            },
             requires_login     => 0,
-            can_use_session_id => 1,
         },
         {
             id                 => 'revoke_authentication',
@@ -119,8 +121,10 @@ sub core_endpoints {
             version            => 1,
             handler            => "${pkg}Auth::revoke_authentication",
             openapi_handler    => "${pkg}Auth::revoke_authentication_openapi_spec",
+            openapi_options    => {
+                can_use_session_id => 1,
+            },
             requires_login     => 0,
-            can_use_session_id => 1,
         },
         {
             id              => 'revoke_token',
@@ -136,11 +140,13 @@ sub core_endpoints {
             version         => 1,
             handler         => "${pkg}User::get",
             openapi_handler => "${pkg}User::get_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested user.',
             },
             requires_login       => 0,
-            can_use_access_token => 1,
         },
         {
             id              => 'update_user',
@@ -189,6 +195,9 @@ sub core_endpoints {
             version         => 1,
             handler         => "${pkg}Entry::list",
             openapi_handler => "${pkg}Entry::list_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             default_params  => {
                 limit        => 10,
                 offset       => 0,
@@ -201,7 +210,6 @@ sub core_endpoints {
                 403 => 'Do not have permission to retrieve the requested entries.',
             },
             requires_login       => 0,
-            can_use_access_token => 1,
         },
         {
             id              => 'create_entry',
@@ -222,11 +230,13 @@ sub core_endpoints {
             version         => 1,
             handler         => "${pkg}Entry::get",
             openapi_handler => "${pkg}Entry::get_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested entry.',
             },
             requires_login       => 0,
-            can_use_access_token => 1,
         },
         {
             id              => 'update_entry',
