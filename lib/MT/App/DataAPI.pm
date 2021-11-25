@@ -2334,6 +2334,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/backup',
             version     => 2,
             handler     => "${pkg}v2::BackupRestore::backup",
+            openapi_handler => "${pkg}v2::BackupRestore::backup_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to back up the requested site.',
             },
