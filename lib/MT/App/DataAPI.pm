@@ -1596,6 +1596,10 @@ sub core_endpoints {
                 searchFields => 'name',
             },
             handler     => "${pkg}v2::Tag::list_for_site",
+            openapi_handler => "${pkg}v2::Tag::list_for_site_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'tag,tags',
+            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of tags.',
             },
@@ -1617,6 +1621,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/tags/:tag_id',
             version     => 2,
             handler     => "${pkg}v2::Tag::get_for_site",
+            openapi_handler => "${pkg}v2::Tag::get_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested tag.',
             },
@@ -1637,6 +1642,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Tag::rename_for_site",
+            openapi_handler => "${pkg}v2::Tag::rename_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to rename a tag.',
             },
@@ -1656,6 +1662,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Tag::delete_for_site",
+            openapi_handler => "${pkg}v2::Tag::delete_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a tag.',
             },
