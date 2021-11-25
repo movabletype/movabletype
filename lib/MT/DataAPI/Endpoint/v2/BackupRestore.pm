@@ -14,6 +14,44 @@ use MT::App::DataAPI;
 use MT::Util;
 use MT::CMS::Tools;
 
+sub backup_openapi_spec {
+    +{
+        tags      => ['Sites', 'BackupRestore'],
+        summary   => 'Backup specified site',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status      => { type => 'string' },
+                                backupFiles => {
+                                    type  => 'array',
+                                    items => {
+                                        type => 'string',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub backup {
     my ( $app, $endpoint ) = @_;
 
