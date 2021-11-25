@@ -15,6 +15,59 @@ use MT::DataAPI::Resource;
 my @fields
     = qw( id name updatable widgets blog createdBy createdDate modifiedBy modifiedDate );
 
+sub list_openapi_spec {
+    +{
+        tags       => ['WidgetSets'],
+        summary    => 'Retrieve a list of widgetsets in the specified site',
+        parameters => [
+            { '$ref' => '#/components/parameters/widgetset/search' },
+            { '$ref' => '#/components/parameters/widgetset/searchFields' },
+            { '$ref' => '#/components/parameters/widgetset/limit' },
+            { '$ref' => '#/components/parameters/widgetset/offset' },
+            { '$ref' => '#/components/parameters/widgetset/sortBy' },
+            { '$ref' => '#/components/parameters/widgetset/sortOrder' },
+            { '$ref' => '#/components/parameters/widgetset/fields' },
+            { '$ref' => '#/components/parameters/widgetset/includeIds' },
+            { '$ref' => '#/components/parameters/widgetset/excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of widgetsets found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of widgetset resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/template',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -48,6 +101,38 @@ sub list_all {
     };
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['WidgetSets'],
+        summary    => 'Retrieve a single widgetset by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/widgetset/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or WidgetSet not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -58,6 +143,49 @@ sub get {
         or return;
 
     return MT::DataAPI::Resource->from_object( $ws, \@fields );
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['WidgetSets'],
+        summary     => 'Create a new widgetset',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            widgetset => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub create {
@@ -105,6 +233,49 @@ sub create {
     return MT::DataAPI::Resource->from_object( $new_ws, \@fields );
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['WidgetSets'],
+        summary     => 'Update an existing widgetset',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            widgetset => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or WidgetSet not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -137,6 +308,35 @@ sub update {
     save_object( $app, 'widgetset', $new_ws, $orig_ws ) or return;
 
     return MT::DataAPI::Resource->from_object( $new_ws, \@fields );
+}
+
+sub delete_openapi_spec {
+    +{
+        tags      => ['WidgetSets'],
+        summary   => 'Delete an existing widgetset',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or WidgetSet not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {

@@ -183,6 +183,16 @@ sub fields {
                 return MT::DataAPI::Resource->from_object( \@widgets,
                     [qw/ id name /] );
             },
+            schema => {
+                type  => 'array',
+                items => {
+                    type       => 'object',
+                    properties => {
+                        id   => { type => 'integer' },
+                        name => { type => 'string' },
+                    },
+                },
+            },
         },
     ];
 }

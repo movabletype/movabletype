@@ -1968,6 +1968,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/widgetsets',
             version        => 2,
             handler        => "${pkg}v2::WidgetSet::list",
+            openapi_handler => "${pkg}v2::WidgetSet::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'widgetset,widgetsets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2001,6 +2005,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/widgetsets/:widgetset_id',
             version     => 2,
             handler     => "${pkg}v2::WidgetSet::get",
+            openapi_handler => "${pkg}v2::WidgetSet::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested widgetset.',
             },
@@ -2012,6 +2017,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::WidgetSet::create",
+            openapi_handler => "${pkg}v2::WidgetSet::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a widgetset.',
             },
@@ -2023,6 +2029,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::WidgetSet::update",
+            openapi_handler => "${pkg}v2::WidgetSet::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a widgetset.',
             },
@@ -2033,6 +2040,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::WidgetSet::delete",
+            openapi_handler => "${pkg}v2::WidgetSet::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a widgetset.',
             },
