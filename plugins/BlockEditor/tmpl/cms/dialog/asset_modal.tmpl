@@ -146,6 +146,8 @@
 
     if (page - 2 >= 1) {
       $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+    }
+    if (page - 3 >= 1) {
       $e.append('<li class="page-item" aria-hidden="true">...</li>');
     }
 
@@ -161,8 +163,10 @@
       $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
     }
 
-    if (page + 2 <= maxPage) {
+    if (page + 3 <= maxPage) {
       $e.append('<li class="page-item" aria-hidden="true">...</li>');
+    }
+    if (page + 2 <= maxPage) {
       $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
     }
 
