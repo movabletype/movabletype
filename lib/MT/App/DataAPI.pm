@@ -818,6 +818,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Entry::list_for_category",
+            openapi_handler => "${pkg}v2::Entry::list_for_category_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -837,6 +842,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Entry::list_for_asset",
+            openapi_handler => "${pkg}v2::Entry::list_for_asset_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -874,6 +884,11 @@ sub core_endpoints {
             route          => '/sites/:site_id/tags/:tag_id/entries',
             version        => 2,
             handler        => "${pkg}v2::Entry::list_for_site_and_tag",
+            openapi_handler => "${pkg}v2::Entry::list_for_site_and_tag_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'entry,entries',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -894,6 +909,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}v2::Entry::create",
+            openapi_handler => "${pkg}v2::Entry::create_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to create an entry.',
@@ -906,6 +922,7 @@ sub core_endpoints {
             verb           => 'PUT',
             version        => 2,
             handler        => "${pkg}v2::Entry::update",
+            openapi_handler => "${pkg}v2::Entry::update_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to update an entry.',
@@ -917,6 +934,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Entry::import",
+            openapi_handler => "${pkg}v2::Entry::import_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to import entries.',
             },
@@ -926,6 +944,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/entries/export',
             version     => 2,
             handler     => "${pkg}v2::Entry::export",
+            openapi_handler => "${pkg}v2::Entry::export_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to export entries.',
             },
@@ -936,6 +955,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Entry::preview_by_id",
+            openapi_handler => "${pkg}v2::Entry::preview_by_id_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview entry.',
             },
@@ -946,6 +966,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Entry::preview",
+            openapi_handler => "${pkg}v2::Entry::preview_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview entry.',
             },
