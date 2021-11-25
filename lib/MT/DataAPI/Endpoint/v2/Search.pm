@@ -12,6 +12,153 @@ use warnings;
 use MT::App::Search;
 use MT::DataAPI::Endpoint::Common;
 
+sub search_openapi_spec {
+    +{
+        tags       => ['Search'],
+        summary    => 'Searching entries',
+        parameters => [{
+                required    => JSON::true,
+                in          => 'query',
+                name        => 'search',
+                schema      => { type => 'string' },
+                description => <<'DESCRIPTION',
+The search term.
+
+You can specify search term, like [foo], [foo AND bar], 'foo NOT bar'.
+
+Also, you can specify category filter, like [category:foo], [category:"hoge OR 'foo bar'"]
+
+Also, you can specify author filter, like [author:Melody]
+
+Also, you can specify Custom Fields filter, like [field:address:akasaka] in this case, address is basename of Custom Fields. akasaka is filter value.
+DESCRIPTION
+            },
+            {
+                in          => 'query',
+                name        => 'blog_id',
+                schema      => { type => 'integer' },
+                description => 'The site ID for search. If you want to specify multiple site ID, you must use IncludeBlogs.',
+            },
+            {
+                in          => 'query',
+                name        => 'IncludeBlogs',
+                schema      => { type => 'string' },
+                description => 'The list of the site ID that will be included in the search it should be separated by comma.',
+            },
+            {
+                in          => 'query',
+                name        => 'ExcludeBlogs',
+                schema      => { type => 'string' },
+                description => 'The list of the site ID will be excluded from the search it should be separated by comma.',
+            },
+            {
+                in          => 'query',
+                name        => 'limit',
+                schema      => { type => 'integer' },
+                description => <<'DESCRIPTION',
+Maximum number of entries to retrieve.
+
+**Default**: 20
+DESCRIPTION
+            },
+            {
+                in          => 'query',
+                name        => 'offset',
+                schema      => { type => 'integer' },
+                description => <<'DESCRIPTION',
+0-indexed offset.
+
+**Default**: 0
+DESCRIPTION
+            },
+            {
+                in     => 'query',
+                name   => 'SearchSortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'created_on',
+                        'title',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+The sort column for the search results. Available value is follows.
+
+#### created_on
+
+Will sort the entries by the authored on date.
+
+#### title
+
+Will sort the entries by title.
+DESCRIPTION
+            },
+            {
+                in     => 'query',
+                name   => 'SearchResultDisplay',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'ascend',
+                        'descend',
+                    ],
+                    default     => 'ascend',
+                },
+                description => <<'DESCRIPTION',
+Defines the sort order search results. Available value is follows.
+
+#### ascend
+
+will list the entries in chronological order (oldest entry at the top)
+
+#### descend
+
+will list the entries in reverse chronological order (newest entry at the top).
+
+**Default**: ascend
+DESCRIPTION
+            },
+            {
+                in          => 'query',
+                name        => 'SearchMaxResults',
+                schema      => { type => 'integer' },
+                description => <<'DESCRIPTION',
+Maximum number of entries to retrieve.
+
+NOTE: By default, "SearchMaxResults" override is disabled.
+
+**Default**: 20
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'OK',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of entries found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of Entries resource. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/entry',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub search {
     my ( $app, $endpoint ) = @_;
 
