@@ -15,6 +15,60 @@ use MT::Role;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_for_user_openapi_spec {
+    +{
+        tags        => ['Users', 'Permissions'],
+        summary     => 'Retrieve a list of permissions for user',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- If you want to get others list, you should have Administer privilege.
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/permission/limit' },
+            { '$ref' => '#/components/parameters/permission/offset' },
+            { '$ref' => '#/components/parameters/permission/sortBy' },
+            { '$ref' => '#/components/parameters/permission/sortOrder' },
+            { '$ref' => '#/components/parameters/permission/fields' },
+            { '$ref' => '#/components/parameters/permission/blogIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of permissions found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of permission resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or User not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_user {
     my ( $app, $endpoint ) = @_;
 
@@ -40,6 +94,60 @@ sub list_for_user {
     };
 }
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Permissions'],
+        summary     => 'Retrieve a list of permissions',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- Need Administer privilege.
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/permission/limit' },
+            { '$ref' => '#/components/parameters/permission/offset' },
+            { '$ref' => '#/components/parameters/permission/sortBy' },
+            { '$ref' => '#/components/parameters/permission/sortOrder' },
+            { '$ref' => '#/components/parameters/permission/fields' },
+            { '$ref' => '#/components/parameters/permission/blogIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of permissions found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of permission resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
     my $user = $app->user or return;
@@ -59,6 +167,64 @@ sub list {
     +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects}, ),
+    };
+}
+
+sub list_for_site_openapi_spec {
+    +{
+        tags        => ['Sites', 'Permissions'],
+        summary     => 'Retrieve a list of permissions for site',
+        description => <<'DESCRIPTION',
+- Authentication is required
+
+#### Permissions
+
+- Administer
+- Website Administrator for websites
+- Blog Administrator for blog
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/permission/limit' },
+            { '$ref' => '#/components/parameters/permission/offset' },
+            { '$ref' => '#/components/parameters/permission/sortBy' },
+            { '$ref' => '#/components/parameters/permission/sortOrder' },
+            { '$ref' => '#/components/parameters/permission/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of permissions found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of permission resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -87,6 +253,63 @@ sub list_for_site {
     +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_for_role_openapi_spec {
+    +{
+        tags        => ['Roles', 'Permissions'],
+        summary     => 'Retrieve a list of permissions by role',
+        description => <<'DESCRIPTION',
+- Authentication is required
+
+#### Permissions
+
+- Administer
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/permission/limit' },
+            { '$ref' => '#/components/parameters/permission/offset' },
+            { '$ref' => '#/components/parameters/permission/sortBy' },
+            { '$ref' => '#/components/parameters/permission/sortOrder' },
+            { '$ref' => '#/components/parameters/permission/fields' },
+            { '$ref' => '#/components/parameters/permission/blogIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of permissions found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of permission resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/permission',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -224,6 +447,61 @@ sub _retrieve_role_from_param {
     return $role;
 }
 
+sub grant_to_site_openapi_spec {
+    +{
+        tags        => ['Sites', 'Permissions'],
+        summary     => 'Grant permissions to site',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have grant_administer_role or grant_role_for_blog (Need grant_administer_role when granting role having administer_blog)
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            user_id => {
+                                type        => 'integer',
+                                description => 'The user ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub grant_to_site {
     my ( $app, $endpoint ) = @_;
 
@@ -257,6 +535,61 @@ sub _can_revoke {
         && $role->has('administer_site');
 
     return 1;
+}
+
+sub revoke_from_site_openapi_spec {
+    +{
+        tags        => ['Sites', 'Permissions'],
+        summary     => 'Revoke permissions from site',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have revoke_role(Need revoke_administer_role when granting role having administer_blog )
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            user_id => {
+                                type        => 'integer',
+                                description => 'The user ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub revoke_from_site {
@@ -305,6 +638,61 @@ sub _retrieve_site_from_param {
     return $site;
 }
 
+sub grant_to_user_openapi_spec {
+    +{
+        tags        => ['Users', 'Permissions'],
+        summary     => 'Grant permissions to user',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have revoke_role(Need revoke_administer_role when granting role having administer_blog )
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            site_id => {
+                                type        => 'integer',
+                                description => 'The site ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub grant_to_user {
     my ( $app, $endpoint ) = @_;
 
@@ -321,6 +709,61 @@ sub grant_to_user {
     _grant( $app, $param_user, $role, $site ) or return;
 
     return +{ status => 'success' };
+}
+
+sub revoke_from_user_openapi_spec {
+    +{
+        tags        => ['Users', 'Permissions'],
+        summary     => 'Revoke permissions from user',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have revoke_role(Need revoke_administer_role when granting role having administer_blog )
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            site_id => {
+                                type        => 'integer',
+                                description => 'The site ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Role or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub revoke_from_user {
@@ -392,6 +835,61 @@ sub grant_to_group {
     }
 
     return +{ status => 'success' };
+}
+
+sub revoke_from_group_openapi_spec {
+    +{
+        tags        => ['Groups', 'Permissions'],
+        summary     => 'Revoke permissions from group',
+        description => <<'DESCRIPTION',
+- Authentication is required
+- You should have revoke_role(Need revoke_administer_role when granting role having administer_blog )
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            role_id => {
+                                type        => 'integer',
+                                description => 'The role ID',
+                            },
+                            site_id => {
+                                type        => 'integer',
+                                description => 'The site ID',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Group not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub revoke_from_group {

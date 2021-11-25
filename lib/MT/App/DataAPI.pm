@@ -1324,6 +1324,10 @@ sub core_endpoints {
             route          => '/permissions',
             version        => 2,
             handler        => "${pkg}v2::Permission::list",
+            openapi_handler => "${pkg}v2::Permission::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1341,6 +1345,10 @@ sub core_endpoints {
             route          => '/users/:user_id/permissions',
             version        => 2,
             handler        => "${pkg}v2::Permission::list_for_user",
+            openapi_handler => "${pkg}v2::Permission::list_for_user_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1357,6 +1365,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/permissions',
             version        => 2,
             handler        => "${pkg}v2::Permission::list_for_site",
+            openapi_handler => "${pkg}v2::Permission::list_for_site_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit     => 25,
                 offset    => 0,
@@ -1372,6 +1384,10 @@ sub core_endpoints {
             route          => '/roles/:role_id/permissions',
             version        => 2,
             handler        => "${pkg}v2::Permission::list_for_role",
+            openapi_handler => "${pkg}v2::Permission::list_for_role_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'permission,permissions',
+            },
             default_params => {
                 limit      => 25,
                 offset     => 0,
@@ -1389,6 +1405,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::grant_to_site",
+            openapi_handler => "${pkg}v2::Permission::grant_to_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to grant a permission.',
             },
@@ -1399,6 +1416,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::grant_to_user",
+            openapi_handler => "${pkg}v2::Permission::grant_to_user_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to grant a permission.',
             },
@@ -1409,6 +1427,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::revoke_from_site",
+            openapi_handler => "${pkg}v2::Permission::revoke_from_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to revoke a permission.',
             },
@@ -1419,6 +1438,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Permission::revoke_from_user",
+            openapi_handler => "${pkg}v2::Permission::revoke_from_user_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to revoke a permission.',
             },
