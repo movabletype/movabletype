@@ -25,6 +25,57 @@ sub list {
     };
 }
 
+sub list_for_site_openapi_spec {
+    +{
+        tags       => ['Tags'],
+        summary    => 'Retrieve a list of tags that related with specific site',
+        parameters => [
+            { '$ref' => '#/components/parameters/tag/search' },
+            { '$ref' => '#/components/parameters/tag/searchFields' },
+            { '$ref' => '#/components/parameters/tag/limit' },
+            { '$ref' => '#/components/parameters/tag/offset' },
+            { '$ref' => '#/components/parameters/tag/sortBy' },
+            { '$ref' => '#/components/parameters/tag/sortOrder' },
+            { '$ref' => '#/components/parameters/tag/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of tags found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of tag resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/tag',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_for_site {
     my ( $app, $endpoint ) = @_;
 
@@ -52,6 +103,38 @@ sub get {
         or return;
 
     return $tag;
+}
+
+sub get_for_site_openapi_spec {
+    +{
+        tags       => ['Tags'],
+        summary    => 'Retrieve a single tag by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/tag/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub get_for_site {
@@ -102,6 +185,49 @@ sub rename {
         save_object( $app, 'tag', $new_tag, $orig_tag, ) or return;
         return $new_tag;
     }
+}
+
+sub rename_for_site_openapi_spec {
+    +{
+        tags        => ['Tags'],
+        summary     => 'Update an existing tag',
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            tag => {
+                                '$ref' => '#/components/schemas/tag_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub rename_for_site {
@@ -180,6 +306,35 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.tag', $app, $tag );
 
     return $tag;
+}
+
+sub delete_for_site_openapi_spec {
+    +{
+        tags      => ['Tags'],
+        summary   => 'Delete an existing tag',
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/tag',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Tag not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete_for_site {
