@@ -13,6 +13,107 @@ use MT::Util;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['Categories'],
+        summary    => 'Retrieve categories in the specified site',
+        parameters => [
+            { '$ref' => '#/components/parameters/category/search' },
+            { '$ref' => '#/components/parameters/category/searchFields' },
+            { '$ref' => '#/components/parameters/category/limit' },
+            { '$ref' => '#/components/parameters/category/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'user_custom',
+                        'created_by',
+                        'id',
+                        'basename',
+                        'label',
+                    ],
+                    default => 'user_custom',
+                },
+                description => <<'DESCRIPTION',
+#### user_custom
+
+Sort order you specified on the Manage Categories screen.
+
+#### created_by
+
+Sort by the ID of user who created each category.
+
+#### id
+
+Sort by the ID of each category.
+
+#### basename
+Sort by the basename of each category.
+
+#### label
+
+Sort by the label of each category.
+
+**Default**: user_custom
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/sortOrder' },
+            { '$ref' => '#/components/parameters/category/fields' },
+            {
+                in     => 'query',
+                name   => 'top',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => <<'DESCRIPTION',
+If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/includeIds' },
+            { '$ref' => '#/components/parameters/category/excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
     return list_common( $app, $endpoint, 'category' );
@@ -73,6 +174,77 @@ sub _get_all_child_categories {
     return @all_child_cats;
 }
 
+sub list_parents_openapi_spec {
+    +{
+        tags       => ['Categories'],
+        summary    => 'Retrieve parent categories from the specified category',
+        parameters => [{
+                in          => 'query',
+                name        => 'maxDepth',
+                schema      => { type => 'integer' },
+                description => <<'DESCRIPTION',
+The depth of retrieving parent categories.
+
+**Default**: 0
+DESCRIPTION
+            },
+            {
+                in     => 'query',
+                name   => 'includeCurrent',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => <<'DESCRIPTION',
+#### 1
+
+The list does not include current category.
+
+#### 0
+
+The list includes current category.
+
+**Default**: 0
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_parents {
     my ( $app, $endpoint ) = @_;
     return list_parents_common( $app, $endpoint, 'category' );
@@ -102,6 +274,108 @@ sub list_parents_common {
     };
 }
 
+sub list_siblings_openapi_spec {
+    +{
+        tags       => ['Categories'],
+        summary    => 'Retrieve siblings categories from the specified category',
+        parameters => [
+            { '$ref' => '#/components/parameters/category/search' },
+            { '$ref' => '#/components/parameters/category/searchFields' },
+            { '$ref' => '#/components/parameters/category/limit' },
+            { '$ref' => '#/components/parameters/category/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'user_custom',
+                        'created_by',
+                        'id',
+                        'basename',
+                        'label',
+                    ],
+                    default => 'user_custom',
+                },
+                description => <<'DESCRIPTION',
+#### user_custom
+
+Sort order you specified on the Manage Categories screen.
+
+#### created_by
+
+Sort by the ID of user who created each category.
+
+#### id
+
+Sort by the ID of each category.
+
+#### basename
+
+Sort by the basename of each category.
+
+#### label
+
+Sort by the label of each category.
+
+**Default**: user_custom
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/sortOrder' },
+            { '$ref' => '#/components/parameters/category/fields' },
+            {
+                in          => 'query',
+                name        => 'top',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => <<'DESCRIPTION',
+If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/includeIds' },
+            { '$ref' => '#/components/parameters/category/excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list_siblings {
     my ( $app, $endpoint ) = @_;
     return list_siblings_common( $app, $endpoint, 'category' );
@@ -123,6 +397,77 @@ sub list_siblings_common {
     +{  totalResults => $res->{count},
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_children_openapi_spec {
+    +{
+        tags       => ['Categories'],
+        summary    => 'Retrieve child categories from the specified category',
+        parameters => [{
+                in          => 'query',
+                name        => 'maxDepth',
+                schema      => { type => 'integer' },
+                description => <<'DESCRIPTION',
+The depth of retrieving parent categories.
+
+**Default**: 0
+DESCRIPTION
+            },
+            {
+                in     => 'query',
+                name   => 'includeCurrent',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => <<'DESCRIPTION',
+#### 0
+
+The list does not include current category.
+
+#### 1
+
+The list includes current category.
+
+**Default**: 0
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -151,6 +496,56 @@ sub list_children_common {
 
     +{  totalResults => scalar @child_cats,
         items => MT::DataAPI::Resource::Type::ObjectList->new( \@child_cats ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Categories'],
+        summary     => 'Create a new category',
+        description => <<'DESCRIPTION',
+Authorization is required.
+
+#### Permission
+
+- Manage Categories
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            category => {
+                                '$ref' => '#/components/schemas/category_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -194,6 +589,38 @@ sub create_common {
     $new_category;
 }
 
+sub get_openapi_spec {
+    +{
+        tags       => ['Categories'],
+        summary    => 'Retrieve single category by its ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/category/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Category or site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
     return get_common( $app, $endpoint, 'category' );
@@ -216,6 +643,57 @@ sub get_common {
         or return;
 
     $category;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Categories'],
+        summary     => 'Update an existing category',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts PUT and POST with __method=PUT.
+
+#### Permission
+
+- Manage Categories
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            category => {
+                                '$ref' => '#/components/schemas/category_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -252,6 +730,44 @@ sub update_common {
     $new_category;
 }
 
+sub delete_openapi_spec {
+    +{
+        tags        => ['Categories'],
+        summary     => 'Delete an existing category',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts DELETE and POST with __method=DELETE.
+- This method returns deleted Category resource.
+
+#### Permission
+
+- Manage Categories
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/category',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Category not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub delete {
     my ( $app, $endpoint ) = @_;
 
@@ -284,6 +800,135 @@ sub delete {
     $app->run_callbacks( 'data_api_post_delete.category', $app, $category );
 
     $category;
+}
+
+sub list_for_entry_openapi_spec {
+    +{
+        tags        => ['Categories'],
+        summary     => 'Retrieve categories in the specified entry',
+        description => <<'DESCRIPTION',
+#### Permissions
+
+- edit_entry
+  - If want to retrieve the non-published entry's categories.
+
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/category/search' },
+            { '$ref' => '#/components/parameters/category/searchFields' },
+            { '$ref' => '#/components/parameters/category/limit' },
+            { '$ref' => '#/components/parameters/category/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'user_custom',
+                        'created_by',
+                        'id',
+                        'basename',
+                        'label',
+                    ],
+                    default => 'user_custom',
+                },
+                description => <<'DESCRIPTION',
+#### user_custom
+
+Sort order you specified on the Manage Categories screen.
+
+#### created_by
+
+Sort by the ID of user who created each category.
+
+#### id
+
+Sort by the ID of each category.
+
+#### basename
+
+Sort by the basename of each category.
+
+#### label
+
+Sort by the label of each category.
+
+**Default**: user_custom
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/sortOrder' },
+            { '$ref' => '#/components/parameters/category/fields' },
+            {
+                in          => 'query',
+                name        => 'top',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => <<'DESCRIPTION',
+If set to 1, retrieves only top level categories. New in v2
+
+**Default**: 0
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/category/includeIds' },
+            { '$ref' => '#/components/parameters/category/excludeIds' },
+            {
+                in     => 'query',
+                name   => 'type',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'primary',
+                        'secondary',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+#### primary
+
+Retrieve primary category only
+
+#### secondary
+
+Retrieve secondary categories only
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/category',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Entry not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub list_for_entry {
@@ -320,6 +965,91 @@ sub list_for_entry {
     +{  totalResults => $res->{count},
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub permutate_openapi_spec {
+    +{
+        tags        => ['Categories'],
+        summary     => 'Rearrange existing categories in a new order',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method returns rearranged Categories resource.
+
+#### Permission
+
+- Manage Categories
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    # TODO: The schema will be like below.
+                    # However, items are packed as strings instead objects in Swagger.
+                    # As a workaround, categories parameter treats as string.
+                    #schema => {
+                    #    type => 'object',
+                    #    properties => {
+                    #        categories => {
+                    #           type => 'array',
+                    #           items => {
+                    #               type => 'object',
+                    #               properties => {
+                    #                   id => {
+                    #                       type => 'integer',
+                    #                   },
+                    #               },
+                    #           },
+                    #        },
+                    #    },
+                    #},
+                    #encoding => {
+                    #    categories => {
+                    #        contentType => 'application/json',
+                    #    },
+                    #},
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            categories => {
+                                type    => 'string',
+                                example => <<'EXAMPLE',
+[
+  { "id": 0 },
+  { "id": 1 } 
+]
+EXAMPLE
+                                description => 'Array of category resource that were rearranged.',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type  => 'array',
+                            items => {
+                                '$ref' => '#/components/schemas/category',
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 

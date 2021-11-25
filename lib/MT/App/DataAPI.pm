@@ -349,6 +349,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Category::list",
+            openapi_handler => "${pkg}v2::Category::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -367,6 +371,11 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Category::list_for_entry",
+            openapi_handler => "${pkg}v2::Category::list_for_entry_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -385,6 +394,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 2,
             handler     => "${pkg}v2::Category::list_parents",
+            openapi_handler => "${pkg}v2::Category::list_parents_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of categories.',
             },
@@ -396,6 +406,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Category::list_siblings",
+            openapi_handler => "${pkg}v2::Category::list_siblings_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -414,6 +428,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 2,
             handler     => "${pkg}v2::Category::list_children",
+            openapi_handler => "${pkg}v2::Category::list_children_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of categories.',
             },
@@ -426,6 +441,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Category::create",
+            openapi_handler => "${pkg}v2::Category::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a category.',
             },
@@ -435,6 +451,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/categories/:category_id',
             version     => 2,
             handler     => "${pkg}v2::Category::get",
+            openapi_handler => "${pkg}v2::Category::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested category.',
             },
@@ -447,6 +464,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Category::update",
+            openapi_handler => "${pkg}v2::Category::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a category.',
             },
@@ -457,6 +475,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Category::delete",
+            openapi_handler => "${pkg}v2::Category::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a category.',
             },
@@ -467,6 +486,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Category::permutate",
+            openapi_handler => "${pkg}v2::Category::permutate_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to permutate categories.',
             },
