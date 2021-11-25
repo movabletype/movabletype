@@ -2613,7 +2613,7 @@ sub effective_captcha_provider {
 
 sub handler_to_coderef {
     my $pkg = shift;
-    my ( $name, $delayed ) = @_;
+    my ( $name, $delayed, $allow_string_sub ) = @_;
 
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
@@ -2633,7 +2633,7 @@ sub handler_to_coderef {
             $component = $1;
         }
     }
-    if ( $name =~ m/^\s*sub\s*\{/s ) {
+    if ( $allow_string_sub && $name =~ m/^\s*sub\s*\{/s ) {
         $code = eval $name or die $@;
 
         if ($component) {

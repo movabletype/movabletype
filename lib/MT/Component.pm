@@ -157,6 +157,7 @@ sub load_registry {
     my $y = eval { MT::Util::YAML::LoadFile($path) }
         or die "Error reading $path: "
         . ( MT::Util::YAML->errstr || $@ || $! );
+    __deep_codify_string_sub($c, $y) if ref $y eq 'HASH';
     return $y;
 }
 
@@ -684,8 +685,10 @@ sub registry {
                                 or die "Error reading $f: "
                                 . ( MT::Util::YAML->errstr || $@ || $! );
                             if ($y) {
-                                __deep_localize_labels( $c, $y )
-                                    if ref $y eq 'HASH';
+                                if (ref $y eq 'HASH') {
+                                    __deep_codify_string_sub( $c, $y );
+                                    __deep_localize_labels( $c, $y );
+                                }
                                 $r->{$p} = $y;
                             }
                         }
@@ -737,6 +740,22 @@ sub registry {
             push @list, $r if defined $r;
         }
         return @list ? \@list : undef;
+    }
+}
+
+sub __deep_codify_string_sub {
+    my ($c, $hash) = @_;
+    foreach my $k (keys %$hash) {
+        if (ref $hash->{$k} eq 'HASH') {
+            __deep_codify_string_sub($c, $hash->{$k});
+        }
+        else {
+            my $value = $hash->{$k} or next;
+            if (!ref $value && $value =~ /sub\s*\{/) {
+                my $code = MT->handler_to_coderef($value, undef, 1);
+                $hash->{$k} = $code if $code;
+            }
+        }
     }
 }
 
