@@ -1185,6 +1185,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Blog::list",
+            openapi_handler => "${pkg}v2::Blog::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1203,6 +1207,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Blog::list_by_parent",
+            openapi_handler => "${pkg}v2::Blog::list_by_parent_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params => {
                 limit        => 25,
                 offset       => 0,
@@ -1222,6 +1230,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Blog::insert_new_blog",
+            openapi_handler => "${pkg}v2::Blog::insert_new_blog_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a blog.',
             },
@@ -1233,6 +1242,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Blog::insert_new_website",
+            openapi_handler => "${pkg}v2::Blog::insert_new_website_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a website.',
             },
@@ -1243,6 +1253,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Blog::update",
+            openapi_handler => "${pkg}v2::Blog::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a site.',
             },
@@ -1253,6 +1264,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Blog::delete",
+            openapi_handler => "${pkg}v2::Blog::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a site.',
             },
