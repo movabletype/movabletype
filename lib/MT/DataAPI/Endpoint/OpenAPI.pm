@@ -132,7 +132,7 @@ sub build_schema {
             };
         }
         my $openapi = $endpoints->{$id}{openapi_handler} ? $app->handler_to_coderef($endpoints->{$id}{openapi_handler})->() : {};
-        for my $key (qw/summary description tags requestBody parameters/) {
+        for my $key (qw/summary description tags requestBody parameters deprecated/) {
             if ($openapi->{$key}) {
                 if (ref($openapi->{$key}) eq 'ARRAY') {
                     push @{ $response->{paths}{$route}{$verb}{$key} }, @{ $openapi->{$key} };
