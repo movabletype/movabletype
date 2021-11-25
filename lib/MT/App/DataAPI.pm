@@ -591,6 +591,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Asset::list",
+            openapi_handler => "${pkg}v2::Asset::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -630,6 +634,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Asset::list_for_entry",
+            openapi_handler => "${pkg}v2::Asset::list_for_entry_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -649,6 +657,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 2,
             handler        => "${pkg}v2::Asset::list_for_page",
+            openapi_handler => "${pkg}v2::Asset::list_for_page_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -686,6 +698,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/tags/:tag_id/assets',
             version        => 2,
             handler        => "${pkg}v2::Asset::list_for_site_and_tag",
+            openapi_handler => "${pkg}v2::Asset::list_for_site_and_tag_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'asset,assets',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -705,6 +721,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}v2::Asset::upload",
+            openapi_handler => "${pkg}v2::Asset::upload_openapi_spec",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -719,6 +736,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 2,
             handler        => "${pkg}Asset::upload",
+            openapi_handler => "${pkg}Asset::upload_v2_openapi_spec",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -732,6 +750,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/assets/:asset_id',
             version     => 2,
             handler     => "${pkg}v2::Asset::get",
+            openapi_handler => "${pkg}v2::Asset::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested asset.',
             },
@@ -744,6 +763,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Asset::update",
+            openapi_handler => "${pkg}v2::Asset::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update an asset.',
             },
@@ -754,6 +774,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Asset::delete",
+            openapi_handler => "${pkg}v2::Asset::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete an asset.',
             },
@@ -763,6 +784,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/assets/:asset_id/thumbnail',
             version     => 2,
             handler     => "${pkg}v2::Asset::get_thumbnail",
+            openapi_handler => "${pkg}v2::Asset::get_thumbnail_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested thumbnail.',
             },
