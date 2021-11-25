@@ -16,6 +16,119 @@ use MT::DataAPI::Resource;
 my %SupportedType
     = map { $_ => 1 } qw/ index archive individual page category /;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Retrieve a list of templates in the specified site',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/template/search' },
+            { '$ref' => '#/components/parameters/template/searchFields' },
+            { '$ref' => '#/components/parameters/template/limit' },
+            { '$ref' => '#/components/parameters/template/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'id',
+                        'name',
+                        'created_on',
+                        'modified_on',
+                        'created_by',
+                        'modified_by',
+                        'type',
+                    ],
+                    default => 'name',
+                },
+                description => <<'DESCRIPTION',
+#### id
+
+Sort by the ID of each template.
+
+#### name
+
+Sort by the name of each template.
+
+#### created_on
+
+Sort by the created time of each template.
+
+#### modified_on
+
+Sort by the modified time of each template.
+
+#### created_by
+
+Sort by the ID of user who created each template.
+
+#### modified_by
+
+Sort by the ID of user who modified each template.
+
+#### type
+
+Sort by the type of each template.
+
+**Default**: name
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/template/sortOrder' },
+            { '$ref' => '#/components/parameters/template/fields' },
+            { '$ref' => '#/components/parameters/template/includeIds' },
+            { '$ref' => '#/components/parameters/template/excludeIds' },
+            {
+                in          => 'query',
+                name        => 'type',
+                schema      => { type => 'string' },
+                description => 'Filter by template type. The list should be separated by commas. (e.g. archive, custom, index, individual, page etc...)',
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of templates found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of template resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/template',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -29,6 +142,45 @@ sub list {
         totalResults => ( $res->{count} || 0 ),
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub get_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Retrieve single template by its ID',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/template/fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -54,6 +206,56 @@ sub get {
     return $tmpl;
 }
 
+sub create_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Create a new template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            template => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub create {
     my ( $app, $endpoint ) = @_;
 
@@ -72,6 +274,57 @@ sub create {
     remove_autosave_session_obj( $app, 'template' );
 
     return $new_tmpl;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Update a template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts PUT or POST with __method=PUT.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            template => {
+                                '$ref' => '#/components/schemas/template_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -103,6 +356,43 @@ sub update {
     remove_autosave_session_obj( $app, 'template', $new_tmpl->id );
 
     return $new_tmpl;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Delete a template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts DELETE or POST with __method=DELETE.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/template',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -138,6 +428,51 @@ sub delete {
     return $tmpl;
 }
 
+sub publish_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Publish a template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- Only available for following templates
+  - index
+  - archive
+  - individual
+  - page
+  - category
+
+#### Permissions
+
+- rebuild
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub publish {
     my ( $app, $endpoint ) = @_;
 
@@ -168,6 +503,51 @@ sub publish {
     }
 
     return +{ status => 'success' };
+}
+
+sub refresh_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Reset template text to theme default or tempalte_set default',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status   => { type => 'string' },
+                                messages => {
+                                    type  => 'array',
+                                    items => {
+                                        type => 'string',
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub refresh {
@@ -207,6 +587,71 @@ sub refresh {
     };
 }
 
+sub refresh_for_site_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Reset all templates in the site',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'refresh_type',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'refresh',
+                        'clean',
+                    ],
+                    default => 'refresh',
+                },
+                description => <<'DESCRIPTION',
+The type of refresh mode.
+
+#### refresh
+
+Refresh all templates. However, A template that created by user will never refreshed and never removed from a site.
+
+#### clean
+
+Refresh all templates. In this mode, A template that created by user will removed from a site.
+
+**Default**: refresh
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub refresh_for_site {
     my ( $app, $endpoint ) = @_;
 
@@ -242,6 +687,45 @@ sub refresh_for_site {
     else {
         return $app->error(403);
     }
+}
+
+sub clone_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Make a clone of a template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub clone {
@@ -289,6 +773,79 @@ sub clone {
     return +{ status => 'success' };
 }
 
+sub preview_by_id_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Make a preview for a template with existing data',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- **This endpoint is available in Movable Type 6.1.2 or later.**
+- Only available for following templates
+  - index
+  - archive
+  - individual
+  - page
+  - category
+  - **template** parameter is required. If you just want to get preview template from existing data, you should provide **template** parameter with empty json.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            template => {
+                                '$ref' => '#/components/schemas/template',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Template not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub preview_by_id {
     my ( $app, $endpoint ) = @_;
 
@@ -308,6 +865,73 @@ sub preview_by_id {
     $app->param( 'id', $tmpl->id );
 
     return preview( $app, $endpoint );
+}
+
+sub preview_openapi_spec {
+    +{
+        tags        => ['Templates'],
+        summary     => 'Make a preview for a template',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **type** parameter in the Templates resource is required.
+
+#### Permissions
+
+- edit_templates
+DESCRIPTION
+        parameters => [{
+                in     => 'query',
+                name   => 'raw',
+                schema => {
+                    type    => 'integer',
+                    enum    => [0, 1],
+                    default => 0,
+                },
+                description => 'If specify "1", will be returned preview contents.',
+            },
+        ],
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            template => {
+                                '$ref' => '#/components/schemas/template',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                preview => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub preview {
