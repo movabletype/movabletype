@@ -16,6 +16,49 @@ use MT::CMS::Blog;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags       => ['Sites'],
+        summary    => 'Retrieve sites',
+        parameters => [
+            { '$ref' => '#/components/parameters/site/search' },
+            { '$ref' => '#/components/parameters/site/searchFields' },
+            { '$ref' => '#/components/parameters/site/limit' },
+            { '$ref' => '#/components/parameters/site/offset' },
+            { '$ref' => '#/components/parameters/site/sortBy' },
+            { '$ref' => '#/components/parameters/site/sortOrder' },
+            { '$ref' => '#/components/parameters/site/fields' },
+            { '$ref' => '#/components/parameters/site/includeIds' },
+            { '$ref' => '#/components/parameters/site/excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of sites found.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of sites resource. The list will sorted descending by blog name. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/blog',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -25,6 +68,59 @@ sub list {
     +{  totalResults => $res->{count} + 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub list_by_parent_openapi_spec {
+    +{
+        tags       => ['Sites'],
+        summary    => 'Retrieve sites by parent ID',
+        parameters => [
+            { '$ref' => '#/components/parameters/site/search' },
+            { '$ref' => '#/components/parameters/site/searchFields' },
+            { '$ref' => '#/components/parameters/site/limit' },
+            { '$ref' => '#/components/parameters/site/offset' },
+            { '$ref' => '#/components/parameters/site/sortBy' },
+            { '$ref' => '#/components/parameters/site/sortOrder' },
+            { '$ref' => '#/components/parameters/site/fields' },
+            { '$ref' => '#/components/parameters/site/includeIds' },
+            { '$ref' => '#/components/parameters/site/excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => 'The total number of sites found.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of sites resource. The list will sorted descending by blog name. ',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/blog',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -67,6 +163,56 @@ sub _rebuild_pages {
     unless ( $fmgr->exists($site_path) ) {
         $fmgr->mkpath($site_path);
     }
+}
+
+sub insert_new_blog_openapi_spec {
+    +{
+        tags => ['Sites'],
+        summary => 'Create a new blog',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+
+#### Permissions
+
+- create_blog
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            blog => {
+                                '$ref' => '#/components/schemas/blog_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/blog',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 # Implemented by reference to MT::CMS::Common::save().
@@ -168,6 +314,57 @@ sub _default_theme {
     }
 }
 
+sub insert_new_website_openapi_spec {
+    +{
+        tags        => ['Sites'],
+        summary     => 'Create a new website',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts PUT and POST with __method=PUT.
+
+#### Permissions
+
+- create_website
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            website => {
+                                '$ref' => '#/components/schemas/blog_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/blog',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 # Implemented by reference to MT::CMS::Common::save().
 sub insert_new_website {
     my ( $app, $endpoint ) = @_;
@@ -216,6 +413,57 @@ sub insert_new_website {
     $new_website;
 }
 
+sub update_openapi_spec {
+    +{
+        tags        => ['Sites'],
+        summary     => 'Update an existing blog or website',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts PUT and POST with __method=PUT.
+
+#### Permissions
+
+- edit_blog_config
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            website => {
+                                '$ref' => '#/components/schemas/blog_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/blog',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -249,6 +497,44 @@ sub update {
     }
 
     $new_site;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Sites'],
+        summary     => 'Delete an existing blog or website',
+        description => <<'DESCRIPTION',
+- Authorization is required.
+- This method accepts DELETE and POST with __method=DELETE.
+
+#### Permissions
+
+- delete_website (for website)
+- delete_blog (for blog)
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/blog',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
