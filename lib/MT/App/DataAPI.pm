@@ -2268,6 +2268,7 @@ sub core_endpoints {
             route       => '/plugins',
             version     => 2,
             handler     => "${pkg}v2::Plugin::list",
+            openapi_handler => "${pkg}v2::Plugin::list_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of plugins.',
             },
@@ -2277,6 +2278,7 @@ sub core_endpoints {
             route       => '/plugins/:plugin_id',
             version     => 2,
             handler     => "${pkg}v2::Plugin::get",
+            openapi_handler => "${pkg}v2::Plugin::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested plugin.',
             },
@@ -2287,6 +2289,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Plugin::enable",
+            openapi_handler => "${pkg}v2::Plugin::enable_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to enable a plugin.',
             },
@@ -2297,6 +2300,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Plugin::disable",
+            openapi_handler => "${pkg}v2::Plugin::disable_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to disable a plugin.',
             },
@@ -2307,6 +2311,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Plugin::enable_all",
+            openapi_handler => "${pkg}v2::Plugin::enable_all_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to enable all plugins.',
             },
@@ -2317,6 +2322,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Plugin::disable_all",
+            openapi_handler => "${pkg}v2::Plugin::disable_all_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to disable all plugins.',
             },

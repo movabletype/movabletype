@@ -207,6 +207,12 @@ sub core_resources {
                 fields => "${pkg}v2::Theme::fields",
             },
         ],
+        plugin => [
+            {
+                version => 2,
+                fields => "${pkg}v2::Plugin::fields",
+            },
+        ],
     };
 }
 
