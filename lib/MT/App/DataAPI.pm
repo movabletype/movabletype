@@ -1727,6 +1727,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/templates',
             version        => 2,
             handler        => "${pkg}v2::Template::list",
+            openapi_handler => "${pkg}v2::Template::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'template,templates',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -1762,6 +1766,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/templates/:template_id',
             version     => 2,
             handler     => "${pkg}v2::Template::get",
+            openapi_handler => "${pkg}v2::Template::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested template.',
             },
@@ -1773,6 +1778,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Template::create",
+            openapi_handler => "${pkg}v2::Template::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a template.',
             },
@@ -1784,6 +1790,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 2,
             handler     => "${pkg}v2::Template::update",
+            openapi_handler => "${pkg}v2::Template::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a template.',
             },
@@ -1794,6 +1801,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 2,
             handler     => "${pkg}v2::Template::delete",
+            openapi_handler => "${pkg}v2::Template::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a template.',
             },
@@ -1804,6 +1812,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Template::publish",
+            openapi_handler => "${pkg}v2::Template::publish_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to publish a template.',
             },
@@ -1814,6 +1823,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Template::refresh",
+            openapi_handler => "${pkg}v2::Template::refresh_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to refresh a template.',
             },
@@ -1824,6 +1834,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Template::refresh_for_site",
+            openapi_handler => "${pkg}v2::Template::refresh_for_site_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to refresh templates of the request site.',
             },
@@ -1834,6 +1845,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 2,
             handler     => "${pkg}v2::Template::clone",
+            openapi_handler => "${pkg}v2::Template::clone_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to clone a template.',
             },
@@ -1843,6 +1855,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/templates/:template_id/preview',
             version     => 2,
             handler     => "${pkg}v2::Template::preview_by_id",
+            openapi_handler => "${pkg}v2::Template::preview_by_id_openapi_spec",
             verb        => 'POST',
             error_codes => {
                 403 => 'Do not have permission to get template preview.',
@@ -1853,6 +1866,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/templates/preview',
             version     => 2,
             handler     => "${pkg}v2::Template::preview",
+            openapi_handler => "${pkg}v2::Template::preview_openapi_spec",
             verb        => 'POST',
             error_codes => {
                 403 => 'Do not have permission to get template preview.',
