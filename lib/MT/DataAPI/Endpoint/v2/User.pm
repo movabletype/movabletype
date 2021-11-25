@@ -14,6 +14,135 @@ use MT::CMS::Tools;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Retrieve a list of users in the specified site',
+        description => <<'DESCRIPTION',
+- Authentication is required if want to include non-active users. Also, want to get private properties.
+
+#### Permissions
+
+- administer
+  - for retrieve non-active users
+  - for read private properties
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/user/search' },
+            { '$ref' => '#/components/parameters/user/searchFields' },
+            { '$ref' => '#/components/parameters/user/limit' },
+            { '$ref' => '#/components/parameters/user/offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'id',
+                        'name',
+                    ],
+                    default => 'name',
+                },
+                description => <<'DESCRIPTION',
+The field name for sort. You can specify one of following values
+- id
+- name
+
+**Default**: name
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/user/sortOrder' },
+            { '$ref' => '#/components/parameters/user/fields' },
+            { '$ref' => '#/components/parameters/user/includeIds' },
+            { '$ref' => '#/components/parameters/user/excludeIds' },
+            {
+                in     => 'query',
+                name   => 'status',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'active',
+                        'disabled',
+                        'pending',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+Filter by users's status.
+
+#### active
+
+status is Active
+
+#### disabled
+
+status is Disabled.
+
+#### pending
+
+status is Pending
+DESCRIPTION
+            },
+            {
+                in     => 'query',
+                name   => 'lockout',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'locked_out',
+                        'not_locked_out',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+Filter by user's lockout status.
+
+#### locked_out
+
+Locked out user only
+
+#### not_locked_out
+
+Not locked out user only
+DESCRIPTION
+            },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type        => 'integer',
+                                    description => ' The total number of users found that by the request.',
+                                },
+                                items => {
+                                    type        => 'array',
+                                    description => 'An array of user resource.',
+                                    items       => {
+                                        '$ref' => '#/components/schemas/user',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -23,6 +152,56 @@ sub list {
         totalResults => $res->{count},
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Create a new user',
+        description => <<'DESCRIPTION',
+- Authentication is required.
+
+#### Permissions
+
+- administer
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            user => {
+                                '$ref' => '#/components/schemas/user_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -44,6 +223,44 @@ sub create {
     save_object( $app, 'author', $new_user, $orig_user ) or return;
 
     return $new_user;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Delete user',
+        description => <<'DESCRIPTION',
+- Authentication is required.
+- This method accepts DELETE and POST with __method=DELETE.
+- Cannot delete oneself. Also, cannot delete system administrator user.
+
+#### Permissions
+
+- administer
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/user',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or User not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub delete {
@@ -70,6 +287,45 @@ sub delete {
     return $user;
 }
 
+sub unlock_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Unlock user account',
+        description => <<'DESCRIPTION',
+- Authentication is required.
+
+#### Permissions
+
+- administer
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub unlock {
     my ( $app, $endpoint ) = @_;
 
@@ -83,6 +339,46 @@ sub unlock {
         $app->translate( 'Saving object failed: [_1]', $user->errstr ), 500 );
 
     return +{ status => 'success' };
+}
+
+sub recover_password_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Send the link for password recovery to specified user by email',
+        description => <<'DESCRIPTION',
+- Authentication is required.
+
+#### Permissions
+
+- administer
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                message => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub recover_password {
@@ -108,6 +404,66 @@ sub recover_password {
     else {
         return $app->error( $res, 500 );
     }
+}
+
+sub recover_openapi_spec {
+    +{
+        tags        => ['Users'],
+        summary     => 'Send the link for password recovery to specified email',
+        description => <<'DESCRIPTION',
+- This method always returns successful code if it does not found a user, because security reason.
+- Authentication is not required.
+
+#### Permissions
+
+- administer
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            email => {
+                                type        => 'string',
+                                description => 'Email address for user',
+                            },
+                            name => {
+                                type        => 'string',
+                                description => 'Name for user',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                status  => { type => 'string' },
+                                message => { type => 'string' },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or User not found',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub recover {

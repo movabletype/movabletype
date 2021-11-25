@@ -2143,6 +2143,11 @@ sub core_endpoints {
             route          => '/users',
             version        => 2,
             handler        => "${pkg}v2::User::list",
+            openapi_handler => "${pkg}v2::User::list_openapi_spec",
+            openapi_options => {
+                can_use_access_token => 1,
+                filtered_list_ds_nouns => 'user,users',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2163,6 +2168,7 @@ sub core_endpoints {
             verb        => 'POST',
             resources   => ['user'],
             handler     => "${pkg}v2::User::create",
+            openapi_handler => "${pkg}v2::User::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a user.',
             },
@@ -2173,6 +2179,7 @@ sub core_endpoints {
             version     => 2,
             verb        => 'DELETE',
             handler     => "${pkg}v2::User::delete",
+            openapi_handler => "${pkg}v2::User::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a user.',
             },
@@ -2183,6 +2190,7 @@ sub core_endpoints {
             version     => 2,
             verb        => 'POST',
             handler     => "${pkg}v2::User::unlock",
+            openapi_handler => "${pkg}v2::User::unlock_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to unlock a user.',
             },
@@ -2193,6 +2201,7 @@ sub core_endpoints {
             version     => 2,
             verb        => 'POST',
             handler     => "${pkg}v2::User::recover_password",
+            openapi_handler => "${pkg}v2::User::recover_password_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to recover password for user.',
             },
@@ -2203,6 +2212,7 @@ sub core_endpoints {
             version        => 2,
             verb           => 'POST',
             handler        => "${pkg}v2::User::recover",
+            openapi_handler => "${pkg}v2::User::recover_openapi_spec",
             requires_login => 0,
         },
 
