@@ -2604,7 +2604,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label     => 'Remove Temporary Files',
-            frequency => $cfg->TempoarayFileExpiration,   # once per hour by default
+            frequency => $cfg->TemporaryFileExpiration,   # once per hour by default
             code      => sub {
                 MT::Core->remove_temporary_files;
             },
