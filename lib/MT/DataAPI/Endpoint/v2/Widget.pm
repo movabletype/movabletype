@@ -406,7 +406,7 @@ sub delete_openapi_spec {
                 content     => {
                     'application/json' => {
                         schema => {
-                            '$ref' => '#/components/schemas/widget',
+                            '$ref' => '#/components/schemas/template',
                         },
                     },
                 },
