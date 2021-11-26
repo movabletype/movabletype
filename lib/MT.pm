@@ -2633,7 +2633,7 @@ sub handler_to_coderef {
             $component = $1;
         }
     }
-    if ( $allow_string_sub && $name =~ m/^\s*sub\s*\{/s ) {
+    if ($name =~ m/^\s*sub\s*\{/s && ($allow_string_sub || MT->config('ForceAllowStringSub'))) {
         $code = eval $name or die $@;
 
         if ($component) {
