@@ -2367,6 +2367,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 3,
             handler        => "${pkg}v3::Asset::upload",
+            openapi_handler => "${pkg}v3::Asset::upload_openapi_spec",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
@@ -2381,6 +2382,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 3,
             handler        => "${pkg}v3::Asset::upload",
+            openapi_handler => "${pkg}v3::Asset::upload_deprecated_openapi_spec",
             default_params => {
                 autoRenameIfExists   => 0,
                 normalizeOrientation => 1,
