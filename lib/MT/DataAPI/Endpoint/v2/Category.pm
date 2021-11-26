@@ -1018,6 +1018,7 @@ DESCRIPTION
   { "id": 1 } 
 ]
 EXAMPLE
+                                description => 'Array of category resource that were rearranged.',
                             },
                         },
                     },

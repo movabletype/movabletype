@@ -610,6 +610,7 @@ DESCRIPTION
   { "id": 1 } 
 ]
 EXAMPLE
+                                description => 'Array of folder resource that were rearranged.',
                             },
                         },
                     },
