@@ -2257,6 +2257,7 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
             'DisableImagePopup' => undef,
+            'TemporaryFileExpiration' => { default => 60 * 60 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
@@ -2603,7 +2604,7 @@ sub load_core_tasks {
         },
         'CleanTemporaryFiles' => {
             label     => 'Remove Temporary Files',
-            frequency => 60 * 60,                    # once per hour
+            frequency => $cfg->TemporaryFileExpiration,   # once per hour by default
             code      => sub {
                 MT::Core->remove_temporary_files;
             },
@@ -2681,16 +2682,21 @@ sub remove_compiled_template_files {
 sub remove_temporary_files {
     require MT::Session;
 
+    my $expiration = MT->config->TemporaryFileExpiration;
+
     my @files
         = MT::Session->load(
-        { kind => 'TF', start => [ undef, time - 60 * 60 ] },
+        { kind => 'TF', start => [ undef, time - $expiration ] },
         { range => { start => 1 } } );
     my $fmgr = MT::FileMgr->new('Local');
+    my @ids;
     foreach my $f (@files) {
         if ( $fmgr->delete( $f->name ) ) {
-            $f->remove;
+            push @ids, $f->id;
         }
     }
+    return unless @ids;
+    MT::Session->remove({id => \@ids});
 
     # This is a silent task; no need to log removal of temporary files
     return '';
