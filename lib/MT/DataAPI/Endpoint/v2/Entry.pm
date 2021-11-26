@@ -782,16 +782,17 @@ DESCRIPTION
         },
         responses => {
             200 => {
-                content => {
+                description => 'No Errors',
+                content     => {
                     'application/json' => {
                         schema => {
                             type       => 'object',
                             properties => {
                                 status => {
-                                    schema => { type => 'string' },
+                                    type => 'string',
                                 },
                                 message => {
-                                    schema => { type => 'string' },
+                                    type => 'string',
                                 },
                             },
                         },
