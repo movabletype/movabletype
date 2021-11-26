@@ -28,10 +28,10 @@ sub list_openapi_spec {
 - edit_templates
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/template/search' },
-            { '$ref' => '#/components/parameters/template/searchFields' },
-            { '$ref' => '#/components/parameters/template/limit' },
-            { '$ref' => '#/components/parameters/template/offset' },
+            { '$ref' => '#/components/parameters/template_search' },
+            { '$ref' => '#/components/parameters/template_searchFields' },
+            { '$ref' => '#/components/parameters/template_limit' },
+            { '$ref' => '#/components/parameters/template_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -80,10 +80,10 @@ Sort by the type of each template.
 **Default**: name
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/template/sortOrder' },
-            { '$ref' => '#/components/parameters/template/fields' },
-            { '$ref' => '#/components/parameters/template/includeIds' },
-            { '$ref' => '#/components/parameters/template/excludeIds' },
+            { '$ref' => '#/components/parameters/template_sortOrder' },
+            { '$ref' => '#/components/parameters/template_fields' },
+            { '$ref' => '#/components/parameters/template_includeIds' },
+            { '$ref' => '#/components/parameters/template_excludeIds' },
             {
                 in          => 'query',
                 name        => 'type',
@@ -157,7 +157,7 @@ sub get_openapi_spec {
 - edit_templates
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/template/fields' },
+            { '$ref' => '#/components/parameters/template_fields' },
         ],
         responses => {
             200 => {

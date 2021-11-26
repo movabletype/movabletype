@@ -30,10 +30,10 @@ sub list_openapi_spec {
 - view_log for the system.
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/log/search' },
-            { '$ref' => '#/components/parameters/log/searchFields' },
-            { '$ref' => '#/components/parameters/log/limit' },
-            { '$ref' => '#/components/parameters/log/offset' },
+            { '$ref' => '#/components/parameters/log_search' },
+            { '$ref' => '#/components/parameters/log_searchFields' },
+            { '$ref' => '#/components/parameters/log_limit' },
+            { '$ref' => '#/components/parameters/log_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -60,10 +60,10 @@ DESCRIPTION
 **Default**: created_on
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/log/sortOrder' },
-            { '$ref' => '#/components/parameters/log/fields' },
-            { '$ref' => '#/components/parameters/log/includeIds' },
-            { '$ref' => '#/components/parameters/log/excludeIds' },
+            { '$ref' => '#/components/parameters/log_sortOrder' },
+            { '$ref' => '#/components/parameters/log_fields' },
+            { '$ref' => '#/components/parameters/log_includeIds' },
+            { '$ref' => '#/components/parameters/log_excludeIds' },
             {
                 in     => 'query',
                 name   => 'level',
@@ -151,7 +151,7 @@ sub get_openapi_spec {
         tags       => ['Logs'],
         summary    => 'Retrieve a single log by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/log/fields' },
+            { '$ref' => '#/components/parameters/log_fields' },
         ],
         responses => {
             200 => {

@@ -155,9 +155,9 @@ sub build_schema {
             if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
                 my ($singular, $plural) = split(',', $nouns);
                 push @{$response->{paths}{$route}{$verb}{parameters}}, (
-                    { '$ref' => "#/components/parameters/$singular/dateField" },
-                    { '$ref' => "#/components/parameters/$singular/dateFrom" },
-                    { '$ref' => "#/components/parameters/$singular/dateTo" },
+                    { '$ref' => "#/components/parameters/${singular}_dateField" },
+                    { '$ref' => "#/components/parameters/${singular}_dateFrom" },
+                    { '$ref' => "#/components/parameters/${singular}_dateTo" },
                 );
             }
         }
@@ -179,38 +179,38 @@ sub _build_filtered_list_parameters {
     my ($app, $nouns, $default_params) = @_;
     my ($singular, $plural)         = split(/,/, $nouns);
     my $parameter_template = {
-        search => {
+        "${singular}_search" => {
             in          => 'query',
             name        => 'search',
             schema      => { type => 'string' },
             description => 'Search query.',
         },
-        searchFields => {
+        "${singular}_searchFields" => {
             in          => 'query',
             name        => 'searchFields',
             schema      => { type => 'string' },
             description => 'The comma separated field name list to search.',
         },
-        limit => {
+        "${singular}_limit" => {
             in          => 'query',
             name        => 'limit',
             schema      => { type => 'integer' },
             description => 'Maximum number of :object_plural to retrieve.',
         },
-        offset => {
+        "${singular}_offset" => {
             in          => 'query',
             name        => 'offset',
             schema      => { type => 'integer' },
             description => '0-indexed offset.',
         },
-        sortBy => {
+        "${singular}_sortBy" => {
             in     => 'query',
             name   => 'sortBy',
             schema => {
                 type => 'string',
             },
         },
-        sortOrder => {
+        "${singular}_sortOrder" => {
             in     => 'query',
             name   => 'sortOrder',
             schema => {
@@ -231,20 +231,20 @@ Return :object_plural in ascending order.
 
 DESCRIPTION
         },
-        fields => {
+        "${singular}_fields" => {
             in          => 'query',
             name        => 'fields',
             schema      => { type => 'string' },
             description => 'The field list to retrieve as part of the :object_singular resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.',
 
         },
-        includeIds => {
+        "${singular}_includeIds" => {
             in          => 'query',
             name        => 'includeIds',
             schema      => { type => 'string' },
             description => 'The comma separated ID list of :object_plural to include to result.',
         },
-        excludeIds => {
+        "${singular}_excludeIds" => {
             in          => 'query',
             name        => 'excludeIds',
             schema      => { type => 'string' },
@@ -252,7 +252,7 @@ DESCRIPTION
         },
     };
     if ($app->current_api_version >= 3) {
-        $parameter_template->{dateField} = {
+        $parameter_template->{"${singular}_dateField"} = {
             in     => 'query',
             name   => 'dateField',
             schema => {
@@ -261,13 +261,13 @@ DESCRIPTION
             },
             description => 'Specifies the field name to be used as a date field for filtering. (new in v3)',
         };
-        $parameter_template->{dateFrom} = {
+        $parameter_template->{"${singular}_dateFrom"} = {
             in          => 'query',
             name        => 'dateFrom',
             schema      => { type => 'string' },
             description => 'The start date to filtering. Specify in "YYYY-MM-DD" format. (new in v3)',
         };
-        $parameter_template->{dateTo} = {
+        $parameter_template->{"${singular}_dateTo"} = {
             in          => 'query',
             name        => 'dateTo',
             schema      => { type => 'string' },
@@ -275,19 +275,19 @@ DESCRIPTION
         };
     }
     if ($singular eq 'entry' || $singular eq 'page') {
-        $parameter_template->{maxComments} = {
+        $parameter_template->{"${singular}_maxComments"} = {
             in          => 'query',
             name        => 'maxComments',
             schema      => { type => 'integer' },
             description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the :object_plural resource. If this parameter is not supplied, no comments will be returned.',
         };
-        $parameter_template->{maxTrackbacks} = {
+        $parameter_template->{"${singular}_maxTrackbacks"} = {
             in          => 'query',
             name        => 'maxTrackbacks',
             schema      => { type => 'integer' },
             description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the :object_plural resource. If this parameter is not supplied, no trackbacks will be returned.',
         };
-        $parameter_template->{status} = {
+        $parameter_template->{"${singular}_status"} = {
             in     => 'query',
             name   => 'status',
             schema => {
@@ -324,7 +324,7 @@ entry_status is 4.
 entry_status is 5.
 DESCRIPTION
         };
-        $parameter_template->{sortBy} = {
+        $parameter_template->{"${singular}_sortBy"} = {
             in     => 'query',
             name   => 'sortBy',
             schema => {
@@ -344,7 +344,7 @@ The field name for sort. You can specify one of following values
 - modified_on
 DESCRIPTION
         };
-        $parameter_template->{no_text_filter} = {
+        $parameter_template->{"${singular}_no_text_filter"} = {
             in     => 'query',
             name   => 'no_text_filter',
             schema => {
@@ -356,7 +356,7 @@ If you want to fetch the raw text, set to '1'. New in v2
 DESCRIPTION
         };
     } elsif ($singular eq 'site' || $singular eq 'blog') {
-        $parameter_template->{sortBy} = {
+        $parameter_template->{"${singular}_sortBy"} = {
             in     => 'query',
             name   => 'sortBy',
             schema => {
@@ -371,7 +371,7 @@ Only 'name' is available
 DESCRIPTION
         };
     } elsif ($singular eq 'role') {
-        $parameter_template->{sortBy} = {
+        $parameter_template->{"${singular}_sortBy"} = {
             in     => 'query',
             name   => 'sortBy',
             schema => {
@@ -394,7 +394,7 @@ The field name for sort. You can specify one of following values
 DESCRIPTION
         };
     } elsif ($singular eq 'permission') {
-        $parameter_template->{sortBy} = {
+        $parameter_template->{"${singular}_sortBy"} = {
             in     => 'query',
             name   => 'sortBy',
             schema => {
@@ -418,7 +418,7 @@ The field name for sort. You can specify one of following values
 - created_on
 DESCRIPTION
         };
-        $parameter_template->{blogIds} = {
+        $parameter_template->{"${singular}_blogIds"} = {
             in          => 'query',
             name        => 'blogIds',
             schema      => { type => 'string' },
@@ -440,7 +440,7 @@ DESCRIPTION
             $param->{$key}{description} .= "\n\n**Default**: " . $default_value;
         }
     }
-    return +{ $singular => $param };
+    return $param;
 }
 
 1;

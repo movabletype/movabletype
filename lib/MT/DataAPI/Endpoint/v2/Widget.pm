@@ -17,15 +17,15 @@ sub list_openapi_spec {
         tags       => ['Widgets'],
         summary    => 'Retrieve a list of widgets in the specified site',
         parameters => [
-            { '$ref' => '#/components/parameters/widget/search' },
-            { '$ref' => '#/components/parameters/widget/searchFields' },
-            { '$ref' => '#/components/parameters/widget/limit' },
-            { '$ref' => '#/components/parameters/widget/offset' },
-            { '$ref' => '#/components/parameters/widget/sortBy' },
-            { '$ref' => '#/components/parameters/widget/sortOrder' },
-            { '$ref' => '#/components/parameters/widget/fields' },
-            { '$ref' => '#/components/parameters/widget/includeIds' },
-            { '$ref' => '#/components/parameters/widget/excludeIds' },
+            { '$ref' => '#/components/parameters/widget_search' },
+            { '$ref' => '#/components/parameters/widget_searchFields' },
+            { '$ref' => '#/components/parameters/widget_limit' },
+            { '$ref' => '#/components/parameters/widget_offset' },
+            { '$ref' => '#/components/parameters/widget_sortBy' },
+            { '$ref' => '#/components/parameters/widget_sortOrder' },
+            { '$ref' => '#/components/parameters/widget_fields' },
+            { '$ref' => '#/components/parameters/widget_includeIds' },
+            { '$ref' => '#/components/parameters/widget_excludeIds' },
         ],
         responses => {
             200 => {
@@ -103,15 +103,15 @@ sub list_for_widgetset_openapi_spec {
         tags       => ['Widgets', 'WidgetSets'],
         summary    => 'Retrieve a list of widgets in the specified widgetset',
         parameters => [
-            { '$ref' => '#/components/parameters/widget/search' },
-            { '$ref' => '#/components/parameters/widget/searchFields' },
-            { '$ref' => '#/components/parameters/widget/limit' },
-            { '$ref' => '#/components/parameters/widget/offset' },
-            { '$ref' => '#/components/parameters/widget/sortBy' },
-            { '$ref' => '#/components/parameters/widget/sortOrder' },
-            { '$ref' => '#/components/parameters/widget/fields' },
-            { '$ref' => '#/components/parameters/widget/includeIds' },
-            { '$ref' => '#/components/parameters/widget/excludeIds' },
+            { '$ref' => '#/components/parameters/widget_search' },
+            { '$ref' => '#/components/parameters/widget_searchFields' },
+            { '$ref' => '#/components/parameters/widget_limit' },
+            { '$ref' => '#/components/parameters/widget_offset' },
+            { '$ref' => '#/components/parameters/widget_sortBy' },
+            { '$ref' => '#/components/parameters/widget_sortOrder' },
+            { '$ref' => '#/components/parameters/widget_fields' },
+            { '$ref' => '#/components/parameters/widget_includeIds' },
+            { '$ref' => '#/components/parameters/widget_excludeIds' },
         ],
         responses => {
             200 => {
@@ -180,7 +180,7 @@ sub get_openapi_spec {
         tags       => ['Widgets'],
         summary    => 'Retrieve a single widget by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/widget/fields' },
+            { '$ref' => '#/components/parameters/widget_fields' },
         ],
         responses => {
             200 => {
@@ -225,7 +225,7 @@ sub get_for_widgetset_openapi_spec {
         tags       => ['Widgets', 'WidgetSets'],
         summary    => 'Retrieve a single widget by widgetset ID',
         parameters => [
-            { '$ref' => '#/components/parameters/widget/fields' },
+            { '$ref' => '#/components/parameters/widget_fields' },
         ],
         responses => {
             200 => {

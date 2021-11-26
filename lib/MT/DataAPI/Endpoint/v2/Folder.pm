@@ -19,10 +19,10 @@ sub list_openapi_spec {
         summary     => 'Retrieve a list of folders',
         description => 'Authentication required if you want to get private properties.',
         parameters  => [
-            { '$ref' => '#/components/parameters/folder/search' },
-            { '$ref' => '#/components/parameters/folder/searchFields' },
-            { '$ref' => '#/components/parameters/folder/limit' },
-            { '$ref' => '#/components/parameters/folder/offset' },
+            { '$ref' => '#/components/parameters/folder_search' },
+            { '$ref' => '#/components/parameters/folder_searchFields' },
+            { '$ref' => '#/components/parameters/folder_limit' },
+            { '$ref' => '#/components/parameters/folder_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -61,10 +61,10 @@ Sort by the label of each folders.
 **Default**: user_custom
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/folder/sortOrder' },
-            { '$ref' => '#/components/parameters/folder/fields' },
-            { '$ref' => '#/components/parameters/folder/includeIds' },
-            { '$ref' => '#/components/parameters/folder/excludeIds' },
+            { '$ref' => '#/components/parameters/folder_sortOrder' },
+            { '$ref' => '#/components/parameters/folder_fields' },
+            { '$ref' => '#/components/parameters/folder_includeIds' },
+            { '$ref' => '#/components/parameters/folder_excludeIds' },
             {
                 in     => 'query',
                 name   => 'top',
@@ -186,10 +186,10 @@ sub list_siblings_openapi_spec {
         summary     => 'Retrieve a list of sibling folders of the requested folder',
         description => 'Authentication required if you want to get private properties.',
         parameters  => [
-            { '$ref' => '#/components/parameters/folder/search' },
-            { '$ref' => '#/components/parameters/folder/searchFields' },
-            { '$ref' => '#/components/parameters/folder/limit' },
-            { '$ref' => '#/components/parameters/folder/offset' },
+            { '$ref' => '#/components/parameters/folder_search' },
+            { '$ref' => '#/components/parameters/folder_searchFields' },
+            { '$ref' => '#/components/parameters/folder_limit' },
+            { '$ref' => '#/components/parameters/folder_offset' },
             {
                 in     => 'query',
                 name   => 'sortBy',
@@ -228,10 +228,10 @@ Sort by the label of each folders.
 **Default**: user_custom
 DESCRIPTION
             },
-            { '$ref' => '#/components/parameters/folder/sortOrder' },
-            { '$ref' => '#/components/parameters/folder/fields' },
-            { '$ref' => '#/components/parameters/folder/includeIds' },
-            { '$ref' => '#/components/parameters/folder/excludeIds' },
+            { '$ref' => '#/components/parameters/folder_sortOrder' },
+            { '$ref' => '#/components/parameters/folder_fields' },
+            { '$ref' => '#/components/parameters/folder_includeIds' },
+            { '$ref' => '#/components/parameters/folder_excludeIds' },
             {
                 in     => 'query',
                 name   => 'top',
@@ -352,7 +352,7 @@ sub get_openapi_spec {
         tags       => ['Folders'],
         summary    => 'Retrieve single folder by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/folder/fields' },
+            { '$ref' => '#/components/parameters/folder_fields' },
         ],
         responses => {
             200 => {

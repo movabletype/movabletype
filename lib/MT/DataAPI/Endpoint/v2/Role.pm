@@ -17,13 +17,13 @@ sub list_openapi_spec {
         tags      => ['Roles'],
         summary   => 'Retrieve a list of roles',
         parameters => [
-            { '$ref' => '#/components/parameters/role/search' },
-            { '$ref' => '#/components/parameters/role/searchFields' },
-            { '$ref' => '#/components/parameters/role/limit' },
-            { '$ref' => '#/components/parameters/role/offset' },
-            { '$ref' => '#/components/parameters/role/sortBy' },
-            { '$ref' => '#/components/parameters/role/sortOrder' },
-            { '$ref' => '#/components/parameters/role/fields' },
+            { '$ref' => '#/components/parameters/role_search' },
+            { '$ref' => '#/components/parameters/role_searchFields' },
+            { '$ref' => '#/components/parameters/role_limit' },
+            { '$ref' => '#/components/parameters/role_offset' },
+            { '$ref' => '#/components/parameters/role_sortBy' },
+            { '$ref' => '#/components/parameters/role_sortOrder' },
+            { '$ref' => '#/components/parameters/role_fields' },
         ],
         responses => {
             200 => {
@@ -141,7 +141,7 @@ sub get_openapi_spec {
         tags       => ['Roles'],
         summary    => 'Retrieve a single role by its ID',
         parameters => [
-            { '$ref' => '#/components/parameters/role/fields' },
+            { '$ref' => '#/components/parameters/role_fields' },
         ],
         responses => {
             200 => {

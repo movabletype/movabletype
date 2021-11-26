@@ -28,19 +28,19 @@ sub list_openapi_spec {
   - for retrieve unpublished page
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/page/search' },
-            { '$ref' => '#/components/parameters/page/searchFields' },
-            { '$ref' => '#/components/parameters/page/limit' },
-            { '$ref' => '#/components/parameters/page/offset' },
-            { '$ref' => '#/components/parameters/page/sortBy' },
-            { '$ref' => '#/components/parameters/page/sortOrder' },
-            { '$ref' => '#/components/parameters/page/fields' },
-            { '$ref' => '#/components/parameters/page/includeIds' },
-            { '$ref' => '#/components/parameters/page/excludeIds' },
-            { '$ref' => '#/components/parameters/page/status' },
-            { '$ref' => '#/components/parameters/page/maxComments' },
-            { '$ref' => '#/components/parameters/page/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/page/no_text_filter' },
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -105,19 +105,19 @@ sub list_for_folder_openapi_spec {
   - for retrieve unpublished page
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/page/search' },
-            { '$ref' => '#/components/parameters/page/searchFields' },
-            { '$ref' => '#/components/parameters/page/limit' },
-            { '$ref' => '#/components/parameters/page/offset' },
-            { '$ref' => '#/components/parameters/page/sortBy' },
-            { '$ref' => '#/components/parameters/page/sortOrder' },
-            { '$ref' => '#/components/parameters/page/fields' },
-            { '$ref' => '#/components/parameters/page/includeIds' },
-            { '$ref' => '#/components/parameters/page/excludeIds' },
-            { '$ref' => '#/components/parameters/page/status' },
-            { '$ref' => '#/components/parameters/page/maxComments' },
-            { '$ref' => '#/components/parameters/page/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/page/no_text_filter' },
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -176,19 +176,19 @@ sub list_for_asset_openapi_spec {
   - for retrieve unpublished page
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/page/search' },
-            { '$ref' => '#/components/parameters/page/searchFields' },
-            { '$ref' => '#/components/parameters/page/limit' },
-            { '$ref' => '#/components/parameters/page/offset' },
-            { '$ref' => '#/components/parameters/page/sortBy' },
-            { '$ref' => '#/components/parameters/page/sortOrder' },
-            { '$ref' => '#/components/parameters/page/fields' },
-            { '$ref' => '#/components/parameters/page/includeIds' },
-            { '$ref' => '#/components/parameters/page/excludeIds' },
-            { '$ref' => '#/components/parameters/page/status' },
-            { '$ref' => '#/components/parameters/page/maxComments' },
-            { '$ref' => '#/components/parameters/page/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/page/no_text_filter' },
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -253,19 +253,19 @@ sub list_for_site_and_tag_openapi_spec {
   - for retrieve unpublished page
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/page/search' },
-            { '$ref' => '#/components/parameters/page/searchFields' },
-            { '$ref' => '#/components/parameters/page/limit' },
-            { '$ref' => '#/components/parameters/page/offset' },
-            { '$ref' => '#/components/parameters/page/sortBy' },
-            { '$ref' => '#/components/parameters/page/sortOrder' },
-            { '$ref' => '#/components/parameters/page/fields' },
-            { '$ref' => '#/components/parameters/page/includeIds' },
-            { '$ref' => '#/components/parameters/page/excludeIds' },
-            { '$ref' => '#/components/parameters/page/status' },
-            { '$ref' => '#/components/parameters/page/maxComments' },
-            { '$ref' => '#/components/parameters/page/maxTrackbacks' },
-            { '$ref' => '#/components/parameters/page/no_text_filter' },
+            { '$ref' => '#/components/parameters/page_search' },
+            { '$ref' => '#/components/parameters/page_searchFields' },
+            { '$ref' => '#/components/parameters/page_limit' },
+            { '$ref' => '#/components/parameters/page_offset' },
+            { '$ref' => '#/components/parameters/page_sortBy' },
+            { '$ref' => '#/components/parameters/page_sortOrder' },
+            { '$ref' => '#/components/parameters/page_fields' },
+            { '$ref' => '#/components/parameters/page_includeIds' },
+            { '$ref' => '#/components/parameters/page_excludeIds' },
+            { '$ref' => '#/components/parameters/page_status' },
+            { '$ref' => '#/components/parameters/page_maxComments' },
+            { '$ref' => '#/components/parameters/page_maxTrackbacks' },
+            { '$ref' => '#/components/parameters/page_no_text_filter' },
         ],
         responses => {
             200 => {
@@ -319,7 +319,7 @@ sub get_openapi_spec {
 - Authorization is required if the page status is "unpublished". If the page status is "published", then this method can be called without authorization.
 DESCRIPTION
         parameters => [
-            { '$ref' => '#/components/parameters/page/fields' },
+            { '$ref' => '#/components/parameters/page_fields' },
         ],
         responses => {
             200 => {
