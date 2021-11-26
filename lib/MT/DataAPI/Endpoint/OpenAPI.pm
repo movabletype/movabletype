@@ -64,7 +64,7 @@ sub build_schema {
     for my $id (sort keys %$endpoints) {
         if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
             my $current_parameters = $response->{components}{parameters} || {};
-            my $additional_parameters = _build_filtered_list_parameters($nouns, $endpoints->{$id}{default_params});
+            my $additional_parameters = _build_filtered_list_parameters($app, $nouns, $endpoints->{$id}{default_params});
             $response->{components}{parameters} = { %$current_parameters, %$additional_parameters };
         }
         my $route = $endpoints->{$id}{route};
@@ -151,6 +151,16 @@ sub build_schema {
                 }
             }
         }
+        if ($app->current_api_version >= 3) {
+            if (my $nouns = $endpoints->{$id}{openapi_options}{filtered_list_ds_nouns}) {
+                my ($singular, $plural) = split(',', $nouns);
+                push @{$response->{paths}{$route}{$verb}{parameters}}, (
+                    { '$ref' => "#/components/parameters/$singular/dateField" },
+                    { '$ref' => "#/components/parameters/$singular/dateFrom" },
+                    { '$ref' => "#/components/parameters/$singular/dateTo" },
+                );
+            }
+        }
         if ($openapi->{responses}) {
             for my $code (keys(%{ $openapi->{responses} })) {
                 $response->{paths}{$route}{$verb}{responses}{$code} = $openapi->{responses}{$code};
@@ -166,7 +176,7 @@ sub build_schema {
 }
 
 sub _build_filtered_list_parameters {
-    my ($nouns,    $default_params) = @_;
+    my ($app, $nouns, $default_params) = @_;
     my ($singular, $plural)         = split(/,/, $nouns);
     my $parameter_template = {
         search => {
@@ -241,6 +251,29 @@ DESCRIPTION
             description => 'The comma separated ID list of :object_plural to exclude from result.',
         },
     };
+    if ($app->current_api_version >= 3) {
+        $parameter_template->{dateField} = {
+            in     => 'query',
+            name   => 'dateField',
+            schema => {
+                type    => 'string',
+                default => 'created_on',
+            },
+            description => 'Specifies the field name to be used as a date field for filtering. (new in v3)',
+        };
+        $parameter_template->{dateFrom} = {
+            in          => 'query',
+            name        => 'dateFrom',
+            schema      => { type => 'string' },
+            description => 'The start date to filtering. Specify in "YYYY-MM-DD" format. (new in v3)',
+        };
+        $parameter_template->{dateTo} = {
+            in          => 'query',
+            name        => 'dateTo',
+            schema      => { type => 'string' },
+            description => 'The end date to filtering. Specify in "YYYY-MM-DD" format. (new in v3)',
+        };
+    }
     if ($singular eq 'entry' || $singular eq 'page') {
         $parameter_template->{maxComments} = {
             in          => 'query',

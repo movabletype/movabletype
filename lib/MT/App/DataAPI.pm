@@ -147,6 +147,9 @@ sub core_endpoints {
             version         => 1,
             handler         => "${pkg}Blog::list",
             openapi_handler => "${pkg}Blog::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'site,sites',
+            },
             default_params  => {
                 limit     => 25,
                 offset    => 0,
@@ -178,6 +181,7 @@ sub core_endpoints {
             openapi_handler => "${pkg}Entry::list_openapi_spec",
             openapi_options => {
                 can_use_access_token => 1,
+                filtered_list_ds_nouns => 'entry,entries',
             },
             default_params  => {
                 limit        => 10,
