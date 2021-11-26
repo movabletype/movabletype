@@ -2358,6 +2358,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 3,
             handler        => "${pkg}v3::Auth::authentication",
+            openapi_handler => "${pkg}v3::Auth::authentication_openapi_spec",
             requires_login => 0,
         },
         {
