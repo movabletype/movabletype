@@ -10,7 +10,7 @@ sub tempfile {
     my ( $class, %args ) = @_;
     my ( $fh, $filename ) = File::Temp::tempfile(%args);
 
-    $class->write( fh => $fh, type => $args{SUFFIX} );
+    $class->write( %args, fh => $fh, type => $args{SUFFIX} );
 
     return wantarray ? ( $fh, $filename ) : $fh;
 }
@@ -22,7 +22,7 @@ sub tempfile_multi {
     $type =~ s/\.//;
     $type =~ s/jpg/jpeg/;
 
-    $class->write_multi( fh => $fh, type => $type );
+    $class->write_multi( %args, fh => $fh, type => $type );
 
     return wantarray ? ( $fh, $filename ) : $fh;
 }
@@ -67,9 +67,14 @@ sub write_multi {
 
 sub _image_data_for {
     my ( $class, $args ) = @_;
-    my ($type) = ( $args->{type} || $args->{file} ) =~ /(gif|png|jpe?g)$/;
+    my ($type) = ( $args->{type} || $args->{file} ) =~ /(gif|png|jpe?g|bmp)$/;
     my $method = "_$type";
     my $data = decode_base64( $class->$method );
+
+    if ($type eq 'bmp' && $args->{TOPDOWN}) {
+        substr($data, 22, 4, pack('l*', -1 * unpack 'l*', substr($data, 22, 4)));
+    }
+
     return wantarray ? ( $data, $type ) : $data;
 }
 
