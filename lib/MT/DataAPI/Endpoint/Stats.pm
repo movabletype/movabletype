@@ -128,6 +128,15 @@ DESCRIPTION
                 schema      => { type => 'string' },
                 description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
             },
+            {
+                'in'   => 'query',
+                name   => 'uniquePath',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contains page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
+            },
         ],
         responses => {
             200 => {
@@ -315,6 +324,15 @@ DESCRIPTION
                 name        => 'path',
                 schema      => { type => 'string' },
                 description => 'This is an optional parameter. The target path of data to retrieve. Default is the path of the current site.',
+            },
+            {
+                'in'   => 'query',
+                name   => 'uniquePath',
+                schema => {
+                    type => 'integer',
+                    enum => [0, 1],
+                },
+                description => 'This is an optional parameter. If true is given, the MT can return total pageviews for each uniqueness paths. However, that data does not contains page title because its spec. (Sometimes, Google Analytics will return another pageviews by same path.)',
             },
         ],
         responses => {
