@@ -73,6 +73,7 @@ sub image_height {
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
+    require MT::Image;
     my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
     $asset->meta( 'image_height', $h );
     if ( $asset->id ) {
@@ -89,6 +90,7 @@ sub image_width {
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
+    require MT::Image;
     my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
     $asset->meta( 'image_width', $w );
     if ( $asset->id ) {
