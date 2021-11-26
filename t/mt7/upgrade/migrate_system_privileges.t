@@ -15,8 +15,6 @@ use MT::Test;
 use MT::Test::Permission;
 use MT::Test::Upgrade;
 
-my $blog_id = 1;
-
 $test_env->prepare_fixture(sub {
     MT::Test->init_db;
 
