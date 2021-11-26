@@ -67,12 +67,10 @@ subtest 'Check disable image popup' => sub {
     subtest 'change DisableImagePopup 1' => sub {
         my $app = MT::Test::App->new('MT::App::CMS');
         $app->login($admin);
-        $mt->config("DisableImagePopup", 1);
         $test_env->update_config(DisableImagePopup => 1);
         $app->post_ok(\%params);
         note $app->wq_find($elm_id)->as_html;
         is($app->wq_find($elm_id)->size, 0, 'image popup check is hide');
-        $mt->config("DisableImagePopup", 0);
         $test_env->update_config(DisableImagePopup => 0);
     };
 

@@ -2698,7 +2698,7 @@ else
 </mt:Comments>
 --- expected
 1: Userpic
-2: 
+2:
 3: Userpic
 
 === mt:AuthorCommentCount
@@ -3153,4 +3153,8 @@ https://www.typekey.com/t/typekey/login?
 --- expected
 5
 
-
+=== mt:AuthorEntriesCount
+--- template
+<mt:Authors site_ids="1"><mt:AuthorEntriesCount></mt:Authors>
+--- expected
+7

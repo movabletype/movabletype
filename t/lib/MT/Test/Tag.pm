@@ -8,10 +8,12 @@ package MT::Test::Tag;
 use strict;
 use warnings;
 use Encode;
+use v5.10;
 use Test::More;
 use MT::Test 'has_php';
 use MT::I18N;
 use MT::Test::PHP;
+use File::Spec;
 
 BEGIN {
     eval qq{ use Test::Base -Base; 1 }
@@ -51,6 +53,8 @@ sub run_perl_tests {
     SKIP: {
             skip $block->skip, 1 if $block->skip;
 
+            my $prev_config = __PACKAGE__->_update_config($block->mt_config);
+
             MT::Request->instance->reset;
 
             my $tmpl = MT::Template->new( type => 'index' );
@@ -65,7 +69,7 @@ sub run_perl_tests {
 
             $callback->( $ctx, $block ) if $callback;
 
-            my $result = eval { $tmpl->build };
+            my $got = eval { $tmpl->build };
 
             ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -84,8 +88,7 @@ sub run_perl_tests {
                     }
                 }
                 $error =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g;
-                local $TODO = "may fail"
-                    if $expected_error_method =~ /^expected_todo_/;
+                local $TODO = "may fail" if $expected_error_method =~ /^expected_todo_/;
                 is( $error,
                     _filter_vars( $block->$expected_error_method ),
                     $test_name_prefix . $block->name . ' (error)'
@@ -98,23 +101,27 @@ sub run_perl_tests {
                     "expected_$method_name", "expected_todo"
                 );
                 for my $method (@extra_methods) {
-                    if ( exists $block->{$method} ) {
+                    if (exists $block->{$method}) {
                         $expected_method = $method;
                         last;
                     }
                 }
 
-                $result =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g
-                    if defined $result;
+                $got =~ s/^(\r\n|\r|\n|\s)+|(\r\n|\r|\n|\s)+\z//g if defined $got;
 
-                local $TODO = "may fail"
-                    if $expected_method =~ /^expected_todo/;
+                local $TODO = "may fail" if $expected_method =~ /^expected_todo/;
 
-                is( $result,
-                    _filter_vars( $block->$expected_method ),
-                    $test_name_prefix . $block->name
-                );
+                my $expected     = _filter_vars($block->$expected_method);
+                my $expected_ref = ref($expected);
+                my $name         = $test_name_prefix . $block->name;
+
+                if ($expected_ref && $expected_ref eq 'Regexp') {
+                    like($got, $expected, $name);
+                } else {
+                    is($got, $expected, $name);
+                }
             }
+            __PACKAGE__->_update_config($prev_config);
         }
     }
 }
@@ -144,6 +151,8 @@ SKIP: {
                 skip $block->skip, 1 if $block->skip;
                 skip 'skip php test', 1 if defined($block->skip_php // $block->SKIP_PHP);
 
+                my $prev_config = __PACKAGE__->_update_config($block->mt_config);
+
                 my $template = _filter_vars( $block->template );
                 $template    = Encode::encode_utf8( $template ) if Encode::is_utf8( $template );
                 my $text     = $block->text || '';
@@ -152,7 +161,7 @@ SKIP: {
                 my $php_script = php_test_script( $block->blog_id || $blog_id,
                     $template, $text, $extra );
 
-                my $php_result = MT::Test::PHP->run($php_script);
+                my $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
 
                 ( my $method_name = $archive_type ) =~ tr|A-Z-|a-z_|;
 
@@ -164,8 +173,6 @@ SKIP: {
                     "expected_todo_$method_name",
                     "expected_php_error_$method_name",
                     "expected_error_$method_name",
-                    "expected_php_todo_$method_name",
-                    "expected_todo_$method_name",
                     "expected_$method_name",
                     "expected_php_todo",
                     "expected_todo_error",
@@ -182,25 +189,26 @@ SKIP: {
                         last;
                     }
                 }
-                my $expected = $block->$expected_method;
-                $expected = '' unless defined $expected;
-                $expected =~ s/\\r/\\n/g;
-                $expected =~ s/\r/\n/g;
+                my $expected_src = $block->$expected_method // '';
+                $expected_src =~ s/\\r/\\n/g;
+                $expected_src =~ s/\r/\n/g;
 
                 # for Smarty 3.1.32+
-                $php_result =~ s/\n//gs;
-                $expected   =~ s/\n//gs;
+                $got          =~ s/\n//gs;
+                $expected_src =~ s/\n//gs;
 
-                local $TODO = "may fail"
-                    if $expected_method =~ /^expected_(?:php_)?todo/;
+                local $TODO = "may fail" if $expected_method =~ /^expected_(?:php_)?todo/;
 
-                my $name = $test_name_prefix . $block->name . ' - dynamic';
-                is( MT::I18N::encode_text( $php_result, undef, 'utf-8' ),
-                    _filter_vars(
-                        MT::I18N::encode_text( $expected, undef, 'utf-8' )
-                    ),
-                    $name
-                );
+                my $expected_ref = ref($expected_src);
+                my $expected     = _filter_vars($expected_src);
+                my $name         = $test_name_prefix . $block->name . ' - dynamic';
+
+                if ($expected_ref && $expected_ref eq 'Regexp') {
+                    like($got, $expected, $name);
+                } else {
+                    is($got, $expected, $name);
+                }
+                __PACKAGE__->_update_config($prev_config);
             }
         }
     }
@@ -269,6 +277,20 @@ if ($ctx->_compile_source('evaluated template', $tmpl, $_var_compiled)) {
 
 ?>
 PHP
+}
+
+sub _update_config {
+    my $config = shift || return;
+    $config = eval($config) unless ref($config);
+
+    my %prev;
+    for my $key (keys %$config) {
+        $prev{$key} = MT->instance->config($key);
+        MT->config($key, $config->{$key});
+        MT->config($key, $config->{$key}, 1);
+    }
+    MT->config->save_config;
+    return \%prev;
 }
 
 1;
