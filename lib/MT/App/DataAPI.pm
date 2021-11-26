@@ -2424,6 +2424,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 3,
             handler        => "${pkg}v3::Page::create",
+            openapi_handler => "${pkg}v3::Page::create_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to create a page.',
@@ -2436,6 +2437,7 @@ sub core_endpoints {
             verb           => 'PUT',
             version        => 3,
             handler        => "${pkg}v3::Page::update",
+            openapi_handler => "${pkg}v3::Page::update_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to update a page.',
