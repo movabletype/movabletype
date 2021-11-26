@@ -2398,6 +2398,7 @@ sub core_endpoints {
             verb           => 'POST',
             version        => 3,
             handler        => "${pkg}v3::Entry::create",
+            openapi_handler => "${pkg}v3::Entry::create_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to create an entry.',
@@ -2410,6 +2411,7 @@ sub core_endpoints {
             verb           => 'PUT',
             version        => 3,
             handler        => "${pkg}v3::Entry::update",
+            openapi_handler => "${pkg}v3::Entry::update_openapi_spec",
             default_params => { save_revision => 1, },
             error_codes    => {
                 403 => 'Do not have permission to update an entry.',
