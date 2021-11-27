@@ -135,7 +135,7 @@ sub send {
     if ( $body =~ /^.{@{[$MAX_LINE_OCTET+1]},}/m
         && eval { require MIME::Base64 } )
     {
-        $body = MIME::Base64::encode_base64($body);
+        $body = MIME::Base64::encode_base64($body, $crlf);
         $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
 

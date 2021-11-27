@@ -38,8 +38,7 @@ my @base64_encode_suite = (
     },
     {   name  => 'Base64 encoded',
         input => 'a' x ( $max_line_octet + 1 ),
-        expected =>
-            MIME::Base64::encode_base64( 'a' x ( $max_line_octet + 1 ) ),
+        expected => MIME::Base64::encode_base64('a' x ($max_line_octet + 1), $crlf),
         headers => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
     }
 );
