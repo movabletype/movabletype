@@ -57,7 +57,8 @@ sub send {
         headers  => \%hdrs,
         body     => \$body,
         transfer => \$xfer,
-        ($id ? (id => $id) : ()));
+        ($id ? (id => $id) : ()),
+        class => $class);
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
