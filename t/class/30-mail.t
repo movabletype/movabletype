@@ -20,6 +20,9 @@ use MT;
 use MT::Mail;
 use MIME::Base64;
 
+my $crlf = "\x0d\x0a";
+my $lf   = "\x0a";
+
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
 
@@ -62,8 +65,9 @@ sub send_mail {
     MT::Mail->send( $hdrs_arg, $body );
     close $write;
 
-    while ( ( my $line = <$read> ) ne "\n" ) {
-        chomp $line;
+    while (my $line = <$read>) {
+        last if $line eq $crlf;
+        $line =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         my ( $key, $value ) = split /: /, $line, 2;
         $headers{$key} = $value;
     }
