@@ -1732,13 +1732,13 @@ no folder
 --- template
 <MTPages id='20'><MTPageBasename></MTPages>
 --- expected
-watching_the_river_flow
+but_in_ourselves_that_we_are_underlings
 
 === test 329
 --- template
 <MTPages id='20'><MTPagePermalink></MTPages>
 --- expected
-http://narnia.na/nana/watching-the-river-flow.html
+http://narnia.na/nana/but-in-ourselves-that-we-are-underlings.html
 
 === test 330
 --- template
