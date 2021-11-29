@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib"; # t/lib
+use Module::Load '';
 use Test::More;
 use MT::Test::Env;
 BEGIN {
@@ -21,7 +22,6 @@ BEGIN {
 }
 
 use MT;
-use MT::Mail;
 
 # mock
 my ( $MECH, $SUPPORTS );
@@ -58,26 +58,31 @@ $cfg->SMTPUser('dummy');
 $cfg->SMTPPassword('dummy');
 
 # test
-{
-    $SUPPORTS = 'DIGEST-MD5 CRAM-MD5';
-    _send_mail();
-    my @mech = grep {$_} split /\s+/, $MECH;
-    is_deeply( \@mech, ['CRAM-MD5'], 'Disable "DIGEST-MD5"' );
-}
+for my $mail_class ('MT::Mail', 'MT::Mail::MIME') {
+    Module::Load::load($mail_class);
 
-{
-    $SUPPORTS = 'DIGEST-MD5';
-    _send_mail();
-    my @mech = grep {$_} split /\s+/, $MECH;
-    is( scalar @mech, 0, 'Disable "DIGEST-MD5"' );
-}
+    {
+        $SUPPORTS = 'DIGEST-MD5 CRAM-MD5';
+        _send_mail($mail_class);
+        my @mech = grep {$_} split /\s+/, $MECH;
+        is_deeply( \@mech, ['CRAM-MD5'], 'Disable "DIGEST-MD5"' );
+    }
 
-{
-    $SUPPORTS = 'DIGEST-MD5 CRAM-MD5';
-    $cfg->SMTPAuthSASLMechanism('DIGEST-MD5');
-    _send_mail();
-    my @mech = grep {$_} split /\s+/, $MECH;
-    is_deeply( \@mech, ['DIGEST-MD5'], 'Use SMTPAuthSASLMechanism value' );
+    {
+        $SUPPORTS = 'DIGEST-MD5';
+        _send_mail($mail_class);
+        my @mech = grep {$_} split /\s+/, $MECH;
+        is( scalar @mech, 0, 'Disable "DIGEST-MD5"' );
+    }
+
+    {
+        $SUPPORTS = 'DIGEST-MD5 CRAM-MD5';
+        $cfg->SMTPAuthSASLMechanism('DIGEST-MD5');
+        _send_mail($mail_class);
+        my @mech = grep {$_} split /\s+/, $MECH;
+        is_deeply( \@mech, ['DIGEST-MD5'], 'Use SMTPAuthSASLMechanism value' );
+        $cfg->SMTPAuthSASLMechanism(undef);
+    }
 }
 
 sub _send_mail {
@@ -93,4 +98,3 @@ sub _send_mail {
 }
 
 done_testing;
-

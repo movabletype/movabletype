@@ -3,6 +3,7 @@ use warnings;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
+use Module::Load '';
 use MT::Test::Env;
 BEGIN {
     plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
@@ -17,7 +18,6 @@ BEGIN {
 
 use MT::Test;
 use MT;
-use MT::Mail;
 use MIME::Base64;
 
 my $crlf = "\x0d\x0a";
@@ -26,7 +26,7 @@ my $lf   = "\x0a";
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
 
-my $max_line_octet = $MT::Mail::MAX_LINE_OCTET;
+my $max_line_octet = 998;
 
 isa_ok($mt, 'MT');
 
@@ -42,26 +42,31 @@ my @base64_encode_suite = ({
         expected => MIME::Base64::encode_base64('a' x ($max_line_octet + 1), $crlf),
         headers  => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
     });
-for my $data (@base64_encode_suite) {
-    my ($headers, $body) = send_mail({}, $data->{input});
-    is($body, $data->{expected}, $data->{name} . ' : body');
-    foreach my $key (sort keys %{ $data->{headers} }) {
-        like(
-            $headers->{$key},
-            $data->{headers}{$key},
-            $data->{name} . ' : header : ' . $key
-        );
-    }
+for my $mail_class ('MT::Mail', 'MT::Mail::MIME') {
+    Module::Load::load($mail_class);
+    subtest $mail_class => sub {
+        for my $data (@base64_encode_suite) {
+            my ($headers, $body) = send_mail({}, $data->{input}, $mail_class);
+            is($body, $data->{expected}, $data->{name} . ' : body');
+            foreach my $key (sort keys %{ $data->{headers} }) {
+                like(
+                    $headers->{$key},
+                    $data->{headers}{$key},
+                    $data->{name} . ' : header : ' . $key
+                );
+            }
+        }
+    };
 }
 
 sub send_mail {
-    my ($hdrs_arg, $body) = @_;
+    my ($hdrs_arg, $body, $mail_class) = @_;
     my (%headers, $mail_body);
 
     my $save_stderr = \*STDERR;
     pipe my $read, my $write;
     *STDERR = $write;
-    MT::Mail->send($hdrs_arg, $body);
+    $mail_class->send($hdrs_arg, $body);
     close $write;
 
     while (my $line = <$read>) {

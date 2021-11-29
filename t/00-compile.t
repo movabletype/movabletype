@@ -239,6 +239,7 @@ use_ok('MT::ImportExport');
 use_ok('MT::Import');
 use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
+use_ok('MT::Mail::MIME');
 use_ok('MT::Promise');
 use_ok('MT::Request');
 use_ok('MT::Sanitize');
