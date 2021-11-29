@@ -366,7 +366,7 @@ subtest 'On Edit Content type ' => sub {
     foreach my $field (@$before_fields) {
         my $type   = $field->{type};
         my @fields = grep { $_->{type} eq $type } @$fields_new;
-        foreach my $key (keys $fields[0]->{options}) {
+        foreach my $key (keys %{$fields[0]->{options}}) {
 
             if ($key ne 'label') {
                 if (ref $fields[0]->{options}->{$key} ne 'ARRAY') {
