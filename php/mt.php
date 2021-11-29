@@ -710,7 +710,7 @@ class MT {
 
         if (!isset($content_type)) {
             $content_type = $this->mime_types['__default__'];
-            if ($req_ext && (isset($this->mime_types[$req_ext]))) {
+            if (!empty($req_ext) && (isset($this->mime_types[$req_ext]))) {
                 $content_type = $this->mime_types[$req_ext];
             }
         }
@@ -762,7 +762,7 @@ class MT {
         $data = $this->db->resolve_url($path, $this->blog_id, $build_type);
         if (isset($data)) {
             $tmpl_map = $data->templatemap();
-            if (strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
+            if (isset($tmpl_map) && strtolower($tmpl_map->templatemap_archive_type) == 'contenttype') {
                 if ( isset($data->fileinfo_cd_id)
                     && is_numeric($data->fileinfo_cd_id)
                 ) {
@@ -1004,8 +1004,7 @@ class MT {
     }
 
     function mode() {
-        $mode = $_GET['__mode'];
-        if (!isset($mode)) $mode = 'default';
+        $mode = isset($_GET['__mode']) ? $_GET['__mode'] : 'default';
         preg_replace('/[<>"\']/', '', $mode);
         return $mode;
     }

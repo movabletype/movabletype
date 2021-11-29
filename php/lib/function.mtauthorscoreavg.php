@@ -8,6 +8,6 @@
 require_once('rating_lib.php');
 
 function smarty_function_mtauthorscoreavg($args, &$ctx) {
-    return hdlr_score_avg($ctx, 'author', $args['namespace'], $args);
+    return hdlr_score_avg($ctx, 'author', isset($args['namespace']) ? $args['namespace'] : null, $args);
 }
 ?>

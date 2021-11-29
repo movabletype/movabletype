@@ -60,7 +60,7 @@ function smarty_function_mtfiletemplate($args, &$ctx) {
     if (!$format) return '';
 
     #my ($dir, $sep);
-    if ($args['separator']) {
+    if (!empty($args['separator'])) {
         $dir = "dirify='" . $args['separator'] . "'";
         $sep = "separator='" . $args['separator'] . "'";
     } else {
