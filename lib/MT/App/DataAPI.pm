@@ -2803,6 +2803,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentData::list",
+            openapi_handler => "${pkg}v4::ContentData::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'content_data,content_data',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2823,6 +2827,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentData::create",
+            openapi_handler => "${pkg}v4::ContentData::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a content data.',
             },
@@ -2833,6 +2838,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentData::get",
+            openapi_handler => "${pkg}v4::ContentData::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested content data.',
             },
@@ -2845,6 +2851,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::ContentData::update",
+            openapi_handler => "${pkg}v4::ContentData::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a content data.',
             },
@@ -2855,6 +2862,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentData::delete",
+            openapi_handler => "${pkg}v4::ContentData::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a content data.',
             },
@@ -2866,6 +2874,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentData::preview_by_id",
+            openapi_handler => "${pkg}v4::ContentData::preview_by_id_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview content data.',
             },
@@ -2877,6 +2886,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentData::preview",
+            openapi_handler => "${pkg}v4::ContentData::preview_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to preview content data.',
             },
@@ -2887,6 +2897,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::Publish::content_data",
+            openapi_handler => "${pkg}v4::Publish::content_data_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to publish content_data.',
             },
