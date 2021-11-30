@@ -10,10 +10,15 @@ use strict;
 use warnings;
 
 use MT::DataAPI::Endpoint::Common;
+use MT::DataAPI::Endpoint::v2::TemplateMap;
 use MT::DataAPI::Resource;
 
 my %SupportedType
     = map { $_ => 1 } qw/ archive individual page category ct ct_archive /;
+
+sub list_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::TemplateMap::list_openapi_spec;
+}
 
 sub list {
     my ( $app, $endpoint ) = @_;
@@ -37,6 +42,10 @@ sub list {
     };
 }
 
+sub get_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::TemplateMap::get_openapi_spec;
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -49,6 +58,10 @@ sub get {
         or return;
 
     return $map;
+}
+
+sub create_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::TemplateMap::create_openapi_spec;
 }
 
 sub create {
@@ -73,6 +86,10 @@ sub create {
     return $new_map;
 }
 
+sub update_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::TemplateMap::update_openapi_spec;
+}
+
 sub update {
     my ( $app, $endpoint ) = @_;
 
@@ -85,6 +102,10 @@ sub update {
     save_object( $app, 'templatemap', $new_map, $orig_map ) or return;
 
     return $new_map;
+}
+
+sub delete_openapi_spec {
+    return MT::DataAPI::Endpoint::v2::TemplateMap::delete_openapi_spec;
 }
 
 sub delete {
