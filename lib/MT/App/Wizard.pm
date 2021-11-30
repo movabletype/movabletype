@@ -1030,13 +1030,13 @@ sub optional {
         };
     }
 
-    require MT::Mail;
-    $param{has_net_smtp}      = MT::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Mail->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = MT::Mail->errstr;
-    $param{has_net_smtp_tls}     = MT::Mail->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = MT::Mail->errstr;
+    require MT::Mail::MIME;
+    $param{has_net_smtp}      = MT::Mail::MIME->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Mail::MIME->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}  = MT::Mail::MIME->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp_ssl_msg} = MT::Mail::MIME->errstr;
+    $param{has_net_smtp_tls}     = MT::Mail::MIME->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls_msg} = MT::Mail::MIME->errstr;
     $param{can_use_ssl}          = $param{has_net_smtp_ssl}
         || $param{has_net_smtp_tls};
 
@@ -1089,15 +1089,15 @@ sub optional {
                 "This is the test email sent by your new installation of Movable Type."
                 );
 
-            require MT::Mail;
-            $ok = MT::Mail->send( \%head, $body );
+            require MT::Mail::MIME;
+            $ok = MT::Mail::MIME->send( \%head, $body );
 
             if ($ok) {
                 $param{success} = 1;
                 return $app->build_page( "optional.tmpl", \%param );
             }
             else {
-                $err_msg = MT::Mail->errstr;
+                $err_msg = MT::Mail::MIME->errstr;
             }
         }
 
