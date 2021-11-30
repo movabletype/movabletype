@@ -2922,6 +2922,10 @@ sub core_endpoints {
             route          => '/sites/:site_id/templates',
             version        => 4,
             handler        => "${pkg}v4::Template::list",
+            openapi_handler => "${pkg}v4::Template::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'template,templates',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2939,6 +2943,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/templates/:template_id',
             version     => 4,
             handler     => "${pkg}v4::Template::get",
+            openapi_handler => "${pkg}v4::Template::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested template.',
             },
@@ -2950,6 +2955,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::Template::update",
+            openapi_handler => "${pkg}v4::Template::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a template.',
             },
@@ -2960,6 +2966,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::Template::delete",
+            openapi_handler => "${pkg}v4::Template::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a template.',
             },
@@ -2971,6 +2978,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Template::publish",
+            openapi_handler => "${pkg}v4::Template::publish_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to publish a template.',
             },
@@ -2981,6 +2989,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Template::refresh",
+            openapi_handler => "${pkg}v4::Template::refresh_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to refresh a template.',
             },
@@ -2991,6 +3000,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Template::clone",
+            openapi_handler => "${pkg}v4::Template::clone_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to clone a template.',
             },
