@@ -2909,6 +2909,7 @@ sub core_endpoints {
             route       => '/search',
             version     => 4,
             handler     => "${pkg}v4::Search::search",
+            openapi_handler => "${pkg}v4::Search::search_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to search objects.',
             },
