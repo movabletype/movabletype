@@ -2456,6 +2456,17 @@ sub core_endpoints {
             route       => '/sites/:site_id/categorySets',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::list",
+            openapi_handler => "${pkg}v4::CategorySet::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'category_set,category_sets',
+            },
+            default_params => {
+                limit        => 10,
+                offset       => 0,
+                sortBy       => 'name',
+                sortOrder    => 'descend',
+                searchFields => 'name',
+            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the list of category sets.',
             },
@@ -2468,6 +2479,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::create",
+            openapi_handler => "${pkg}v4::CategorySet::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a category set.',
             },
@@ -2477,6 +2489,7 @@ sub core_endpoints {
             route       => '/sites/:site_id/categorySets/:category_set_id',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::get",
+            openapi_handler => "${pkg}v4::CategorySet::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested category set.',
             },
@@ -2489,6 +2502,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::update",
+            openapi_handler => "${pkg}v4::CategorySet::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a category set.',
             },
@@ -2499,6 +2513,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::CategorySet::delete",
+            openapi_handler => "${pkg}v4::CategorySet::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a category set.',
             },
