@@ -434,7 +434,8 @@ DESCRIPTION
             $param->{$key}{description} =~ s/:object_plural/$plural/g;
         }
 
-        my $default_value = $default_params->{$key};
+        (my $source_key = $key) =~ s/${singular}_(.*)/$1/;
+        my $default_value = $default_params->{$source_key};
         if (defined $default_value && $default_value ne '') {
             $param->{$key}{schema}{default} = $default_value;
             $param->{$key}{description} .= "\n\n**Default**: " . $default_value;
