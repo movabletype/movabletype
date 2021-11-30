@@ -2526,6 +2526,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::Category::list_for_category_set",
+            openapi_handler => "${pkg}v4::Category::list_for_category_set_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2544,6 +2548,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::Category::list_parents_for_category_set",
+            openapi_handler => "${pkg}v4::Category::list_parents_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
@@ -2555,6 +2560,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::Category::list_siblings_for_category_set",
+            openapi_handler => "${pkg}v4::Category::list_siblings_for_category_set_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'category,categories',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2573,6 +2582,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::Category::list_children_for_category_set",
+            openapi_handler => "${pkg}v4::Category::list_children_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
@@ -2585,6 +2595,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Category::create_for_category_set",
+            openapi_handler => "${pkg}v4::Category::create_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a category for category set.',
             },
@@ -2595,6 +2606,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::Category::get_for_category_set",
+            openapi_handler => "${pkg}v4::Category::get_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested category for category set.',
             },
@@ -2607,6 +2619,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::Category::update_for_category_set",
+            openapi_handler => "${pkg}v4::Category::update_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a category for category set.',
             },
@@ -2617,6 +2630,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::Category::delete_for_category_set",
+            openapi_handler => "${pkg}v4::Category::delete_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a category for category set.',
             },
@@ -2627,6 +2641,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::Category::permutate_for_category_set",
+            openapi_handler => "${pkg}v4::Category::permutate_for_category_set_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to permutate categories for category set.',
             },
