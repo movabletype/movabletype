@@ -2463,8 +2463,8 @@ sub core_endpoints {
             default_params => {
                 limit        => 10,
                 offset       => 0,
-                sortBy       => 'name',
-                sortOrder    => 'descend',
+                sortBy       => 'id',
+                sortOrder    => 'ascend',
                 searchFields => 'name',
             },
             error_codes => {
