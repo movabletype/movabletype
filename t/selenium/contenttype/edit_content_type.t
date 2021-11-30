@@ -350,36 +350,71 @@ $author->save or die $author->errstr;
 use Class::Inspector;
 
 subtest 'On Edit Content type ' => sub {
-    my $selenium = MT::Test::Selenium->new($test_env);
-    $selenium->visit('/cgi-bin/mt.cgi?__mode=view&blog_id=1&_type=content_type&id=1&username=Melody&password=Nelson');
-    $selenium->screenshot_full;
-    $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){ jQuery(this).get(0).click() });');
-    $selenium->screenshot_full;
-    $selenium->driver->execute_script('jQuery("[data-is=\'content-fields\'] button.btn-primary").trigger("click")');
-    $selenium->screenshot_full;
+    subtest 'Duplicate Field' => sub {
+        my $selenium = MT::Test::Selenium->new($test_env);
+        $selenium->visit('/cgi-bin/mt.cgi?__mode=view&blog_id=1&_type=content_type&id=1&username=Melody&password=Nelson');
+        $selenium->screenshot_full;
+        $selenium->driver->execute_script('jQuery(".mt-contentfield .duplicate-content-field").each(function(){ jQuery(this).get(0).click() });');
+        $selenium->screenshot_full;
+        $selenium->driver->execute_script('jQuery("[data-is=\'content-fields\'] button.btn-primary").trigger("click")');
+        $selenium->screenshot_full;
 
-    my $ct_new     = MT->model('content_type')->load(1);
-    my $fields_new = $ct_new->fields;
+        my $ct_new     = MT->model('content_type')->load(1);
+        my $fields_new = $ct_new->fields;
 
-    is(scalar(@$fields_new), (scalar(@$before_fields) * 2), 'All fields are duplicated');
+        is(scalar(@$fields_new), (scalar(@$before_fields) * 2), 'All fields are duplicated');
 
-    foreach my $field (@$before_fields) {
-        my $type   = $field->{type};
-        my @fields = grep { $_->{type} eq $type } @$fields_new;
-        foreach my $key (keys %{$fields[0]->{options}}) {
+        foreach my $field (@$before_fields) {
+            my $type   = $field->{type};
+            my @fields = grep { $_->{type} eq $type } @$fields_new;
+            foreach my $key (keys %{ $fields[0]->{options} }) {
 
-            if ($key ne 'label') {
-                if (ref $fields[0]->{options}->{$key} ne 'ARRAY') {
-                    is($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
+                if ($key ne 'label') {
+                    if (ref $fields[0]->{options}->{$key} ne 'ARRAY') {
+                        is($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
+                    } else {
+                        is_deeply($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
+                    }
                 } else {
-                    is_deeply($fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - ${key} fields are duplicated");
+                    is('Duplicate - ' . $fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - label are duplicated");
                 }
-            } else {
-                is('Duplicate - ' . $fields[0]->{options}->{$key}, $fields[1]->{options}->{$key}, "${type} - label are duplicated");
             }
         }
-    }
+    };
+
+    subtest 'Delete Field' => sub {
+        my $selenium = MT::Test::Selenium->new($test_env);
+        $selenium->visit('/cgi-bin/mt.cgi?__mode=view&blog_id=1&_type=content_type&id=1&username=Melody&password=Nelson');
+        $selenium->screenshot_full;
+
+        my $count_script = q{
+          return jQuery("#content-fields .mt-contentfield").length;
+        };
+        my $click_script = q{
+          jQuery(".mt-contentfield .delete-content-field:eq(0)").get(0).click();
+        };
+
+        subtest 'not delete field' => sub {
+            my $length = $selenium->driver->execute_script($count_script);
+            $selenium->driver->execute_script($click_script);
+            # cancel
+            $selenium->driver->dismiss_alert;
+            my $length_new = $selenium->driver->execute_script($count_script);
+            $selenium->screenshot_full;
+            is($length, $length_new, 'not delete field');
+        };
+
+        subtest 'delete field' => sub {
+            my $length = $selenium->driver->execute_script($count_script);
+            $selenium->driver->execute_script($click_script);
+            # cancel
+            $selenium->driver->accept_alert;
+            my $length_new = $selenium->driver->execute_script($count_script);
+            $selenium->screenshot_full;
+            is(($length - 1), $length_new, 'delete field');
+        };
+    };
 };
 
-runtests unless caller;
+done_testing;
 
