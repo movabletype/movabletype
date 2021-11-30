@@ -2723,6 +2723,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentField::list",
+            openapi_handler => "${pkg}v4::ContentField::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'content_field,content_fields',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2741,6 +2745,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentField::create",
+            openapi_handler => "${pkg}v4::ContentField::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a content type.',
             },
@@ -2751,6 +2756,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentField::get",
+            openapi_handler => "${pkg}v4::ContentField::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested content field.',
             },
@@ -2762,6 +2768,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::ContentField::update",
+            openapi_handler => "${pkg}v4::ContentField::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a content field.',
             },
@@ -2772,6 +2779,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentField::delete",
+            openapi_handler => "${pkg}v4::ContentField::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a content field.',
             },
@@ -2782,6 +2790,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentField::permutate",
+            openapi_handler => "${pkg}v4::ContentField::permutate_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to permutate content fields.',
             },
