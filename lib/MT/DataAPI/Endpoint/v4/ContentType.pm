@@ -11,6 +11,81 @@ use warnings;
 use MT::DataAPI::Endpoint::Common;
 use MT::DataAPI::Resource;
 
+sub list_openapi_spec {
+    +{
+        tags        => ['Content Types'],
+        summary     => 'Content Type Collection',
+        description => <<'DESCRIPTION',
+Authentication required
+
+Retrieve a list of Content Types. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_type_limit' },
+            { '$ref' => '#/components/parameters/content_type_offset' },
+            {
+                in     => 'query',
+                name   => 'sortBy',
+                schema => {
+                    type => 'string',
+                    enum => [
+                        'name',
+                        'dataLabel',
+                        'uniqueID',
+                        'modified_on',
+                    ],
+                },
+                description => <<'DESCRIPTION',
+The field name for sort. You can specify one of following values.
+- name
+- dataLabel
+- uniqueID
+- modified_on
+DESCRIPTION
+            },
+            { '$ref' => '#/components/parameters/content_type_sortOrder' },
+            { '$ref' => '#/components/parameters/content_type_fields' },
+            { '$ref' => '#/components/parameters/content_type_includeIds' },
+            { '$ref' => '#/components/parameters/content_type_excludeIds' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            type       => 'object',
+                            properties => {
+                                totalResults => {
+                                    type => 'integer',
+                                },
+                                items => {
+                                    type  => 'array',
+                                    items => {
+                                        '$ref' => '#/components/schemas/content_type',
+                                    }
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub list {
     my ( $app, $endpoint ) = @_;
 
@@ -22,6 +97,60 @@ sub list {
     +{  totalResults => $res->{count} || 0,
         items =>
             MT::DataAPI::Resource::Type::ObjectList->new( $res->{objects} ),
+    };
+}
+
+sub create_openapi_spec {
+    +{
+        tags        => ['Content Types'],
+        summary     => 'Create Content Type',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Create a new Content Type. This endpoint requires following permission.
+
+- Manage Content Types
+
+Post form data is follows.
+
+- content_type (required, ContentType) - Single Content Type resource
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_type => {
+                                '$ref' => '#/components/schemas/content_type_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/content_type',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
     };
 }
 
@@ -42,6 +171,45 @@ sub create {
     $new_content_type;
 }
 
+sub get_openapi_spec {
+    +{
+        tags        => ['Content Types'],
+        summary     => 'Fetch single Content Type',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Fetch single content type. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        parameters => [
+            { '$ref' => '#/components/parameters/content_type_fields' },
+        ],
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/content_type',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
+}
+
 sub get {
     my ( $app, $endpoint ) = @_;
 
@@ -53,6 +221,56 @@ sub get {
         or return;
 
     $content_type;
+}
+
+sub update_openapi_spec {
+    +{
+        tags        => ['Content Types'],
+        summary     => 'Update Content Type',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Update content type. This endpoint requires following permission.
+
+- Manage Content Types
+DESCRIPTION
+        requestBody => {
+            content => {
+                'application/x-www-form-urlencoded' => {
+                    schema => {
+                        type       => 'object',
+                        properties => {
+                            content_type => {
+                                '$ref' => '#/components/schemas/content_type_updatable',
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/content_type',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+    };
 }
 
 sub update {
@@ -68,6 +286,45 @@ sub update {
     save_object( $app, 'content_type', $new_content_type ) or return;
 
     $new_content_type;
+}
+
+sub delete_openapi_spec {
+    +{
+        tags        => ['Content Types'],
+        summary     => 'Delete Content Type',
+        description => <<'DESCRIPTION',
+**Authentication required**
+
+Delete content type. This endpoint requires following permission.
+
+- Manage Content Types
+
+This method accepts DELETE or POST with parameter ‘__method=DELETE’.
+DESCRIPTION
+        responses => {
+            200 => {
+                description => 'No Errors.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/content_type',
+                        },
+                    },
+                },
+            },
+            404 => {
+                description => 'Site or Content_type not found.',
+                content     => {
+                    'application/json' => {
+                        schema => {
+                            '$ref' => '#/components/schemas/ErrorContent',
+                        },
+                    },
+                },
+            },
+        },
+
+    };
 }
 
 sub delete {

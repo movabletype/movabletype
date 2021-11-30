@@ -2654,6 +2654,10 @@ sub core_endpoints {
             verb           => 'GET',
             version        => 4,
             handler        => "${pkg}v4::ContentType::list",
+            openapi_handler => "${pkg}v4::ContentType::list_openapi_spec",
+            openapi_options => {
+                filtered_list_ds_nouns => 'content_type,content_types',
+            },
             default_params => {
                 limit        => 10,
                 offset       => 0,
@@ -2672,6 +2676,7 @@ sub core_endpoints {
             verb        => 'POST',
             version     => 4,
             handler     => "${pkg}v4::ContentType::create",
+            openapi_handler => "${pkg}v4::ContentType::create_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to create a content type.',
             },
@@ -2682,6 +2687,7 @@ sub core_endpoints {
             verb        => 'GET',
             version     => 4,
             handler     => "${pkg}v4::ContentType::get",
+            openapi_handler => "${pkg}v4::ContentType::get_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested content type.',
             },
@@ -2693,6 +2699,7 @@ sub core_endpoints {
             verb        => 'PUT',
             version     => 4,
             handler     => "${pkg}v4::ContentType::update",
+            openapi_handler => "${pkg}v4::ContentType::update_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to update a content type.',
             },
@@ -2703,6 +2710,7 @@ sub core_endpoints {
             verb        => 'DELETE',
             version     => 4,
             handler     => "${pkg}v4::ContentType::delete",
+            openapi_handler => "${pkg}v4::ContentType::delete_openapi_spec",
             error_codes => {
                 403 => 'Do not have permission to delete a content type.',
             },
