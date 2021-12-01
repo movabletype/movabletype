@@ -278,7 +278,7 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line) use ($mt) {
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
     if ($error_no & E_USER_ERROR) {
         print($error_msg."\n");
     } else {

@@ -30,7 +30,7 @@ EOF
     $php .= <<'EOF';
     include_once($MT_HOME . '/php/mt.php');
     include_once($MT_HOME . '/php/lib/MTUtil.php');
-    $prev = set_error_handler(function($errno, $errstr, $errfile, $errline, $errorvars) {
+    $prev = set_error_handler(function($errno, $errstr, $errfile, $errline, $errorvars = null) {
         if (preg_match('/include_once/', $errstr)) {
             return false;
         }
