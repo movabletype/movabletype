@@ -7,23 +7,23 @@ services:
 
 jobs:
   include:
-    - # Perl 5.32 / PHP 8.0 / MariaDB 10.5
+    - # Perl 5.28 / PHP 7.3 / MariaDB 10.3
       if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/1*.t"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/2*.t"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12s]*.t"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/[^12s]*.t"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms/ t/delete_files_at_rebuild/ t/data_api/"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/cms/ t/delete_files_at_rebuild/ t/data_api/"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type != cron
-      env: TEST_IMAGE_NAME="sid" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="phpunit php/tests/*Test.php && make test-php-lint"
 
     - # Perl 5.20 / PHP 5.6 / MySQL 5.5
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
