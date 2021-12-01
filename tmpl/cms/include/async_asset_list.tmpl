@@ -161,6 +161,9 @@ function loadAssetList(offset) {
 <mt:if name="blog_id">
       blog_id: <mt:var name="blog_id" escape="html">,
 </mt:if>
+<mt:if name="content_field_id">
+      content_field_id: '<mt:var name="content_field_id" escape="html">',
+</mt:if>
       dialog_view: 1,
 <mt:if name="upload_mode">
       upload_mode: '<mt:var name="upload_mode" escape="html">',
