@@ -159,8 +159,10 @@ SKIP: {
                 my $extra    = $callback ? $callback->($block) : '';
 
                 require MT::Util::UniqueID;
-                my $log = File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
-                my $php_script = php_test_script( $block->blog_id || $blog_id, $template, $text, $log, $extra );
+                my $log = $ENV{MT_TEST_PHP_ERROR_LOG_FILE_PATH} ||
+                          File::Spec->catfile($ENV{MT_TEST_ROOT}, 'php-' . MT::Util::UniqueID::create_session_id() . '.log');
+                my $block_name = $block->name || $block->seq_num;
+                my $php_script = php_test_script( $block_name, $block->blog_id || $blog_id, $template, $text, $log, $extra );
                 my $got = Encode::decode_utf8(MT::Test::PHP->run($php_script));
 
                 my $php_error = '';
@@ -229,8 +231,10 @@ sub MT::Test::Tag::_filter_vars {
 }
 
 sub MT::Test::Tag::php_test_script {    # full qualified to avoid Spiffy magic
-    my ( $blog_id, $template, $text, $log, $extra ) = @_;
+    my ( $block_name, $blog_id, $template, $text, $log, $extra ) = @_;
     $text ||= '';
+
+    $ENV{REQUEST_URI} = "$0 [$block_name]";
 
     $template =~ s/<\$(mt.+?)\$>/<$1>/gi;
     $template =~ s/\$/\\\$/g;
@@ -274,7 +278,7 @@ PHP
     $test_script .= $extra if $extra;
 
     $test_script .= <<'PHP';
-set_error_handler(function($error_no, $error_msg, $error_file, $error_line) use ($mt) {
+set_error_handler(function($error_no, $error_msg, $error_file, $error_line, $error_context = null) use ($mt) {
     if ($error_no & E_USER_ERROR) {
         print($error_msg."\n");
     } else {
