@@ -109,9 +109,9 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="phpunit && make test-php-lint"
 
-    - # no need to run extra tests under various environments
+    - # no need to run extra tests under various environments (use buster to keep MySQL < 8 for now)
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_IMAGE_NAME="centos8" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
+      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
 #    - if: (type = cron
 #      env: TEST_COMMAND="travis_retry npm run test-riot"
 
