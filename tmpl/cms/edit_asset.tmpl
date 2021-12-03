@@ -103,7 +103,7 @@
             </div>
           </div>
     <mt:elseif name="has_thumbnail">
-          <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+          <img src="<mt:var name="thumbnail_url" escape="html"><mt:unless name="thumbnail_url" like="ts=">?ts=<mt:var name="modified_on" escape="url"></mt:unless>" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
     <mt:else>
           <div class="mt-thumbnail">
             <img src="<mt:var name="static_uri" escape="html">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
@@ -242,7 +242,7 @@ jQuery(window).on('load', init );
         <mt:if name="has_thumbnail">
         <div class="col-12 col-md-auto asset-preview-thumb picture small">
           <div class="thumbnail">
-            <img src="<mt:var name="thumbnail_url" escape="html">?ts=<mt:var name="modified_on" escape="url">" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+            <img src="<mt:var name="thumbnail_url" escape="html"><mt:unless name="thumbnail_url" like="ts=">?ts=<mt:var name="modified_on" escape="url"></mt:unless>" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
           </div>
         </div>
         <mt:elseif name="asset_type" ne="image">
