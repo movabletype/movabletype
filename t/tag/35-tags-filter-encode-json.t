@@ -5,7 +5,7 @@ use warnings;
 use utf8;
 use Encode;
 use FindBin;
-use lib "$FindBin::Bin/lib";    # t/lib
+use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use MT::Test::Env;
 our $test_env;
