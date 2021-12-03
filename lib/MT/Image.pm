@@ -277,11 +277,15 @@ sub remove_metadata {
     }
 
     $exif = Image::ExifTool->new;
-    $exif->SetNewValuesFromFile($file);
+    $exif->ExtractInfo($file);
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
     if (lc($file) =~ /\.jpe?g$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }
     $exif->WriteInfo($file)
         or $class->trans_error( 'Writing metadata failed: [_1]',

@@ -1094,6 +1094,8 @@ sub has_gps_metadata {
         : 0;
 }
 
+my @MandatoryExifTags;
+
 sub has_metadata {
     my ($asset) = @_;
 
@@ -1104,22 +1106,36 @@ sub has_metadata {
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
+
+    @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'
             || $g eq 'File'
-            || ( $is_jpeg && $g eq 'JFIF' )
+            || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
-        my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
+        my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
+        delete $writable_tags{$_} for @MandatoryExifTags;
+        delete $writable_tags{Orientation};  # special case
+        next unless %writable_tags;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
-        for my $t ( sort $exif->GetTagList ) {
-            if ( grep { $t eq $_ } @writable_tags ) {
-                return 1;
-            }
+        for my $t ( $exif->GetTagList ) {
+            return 1 if $writable_tags{$t};
         }
     }
     return 0;
+}
+
+sub _set_mandatory_exif_tags {
+    require Image::ExifTool::Exif;
+    @MandatoryExifTags = ();
+    for my $value (values %Image::ExifTool::Exif::Main) {
+        if (ref $value eq 'HASH' && $value->{Mandatory}) {
+            push @MandatoryExifTags, $value->{Name};
+        }
+    }
+    @MandatoryExifTags;
 }
 
 sub remove_gps_metadata {
@@ -1151,10 +1167,14 @@ sub remove_all_metadata {
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
     if (lc($asset->file_ext) =~ /^jpe?g$/) {
         $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
         $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
     }
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',

@@ -88,11 +88,13 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
         my $tool = Image::ExifTool->new;
         $tool->ExtractInfo($test_image);
         $tool->SetNewValue(Keywords => 'mt_test');
+        $tool->SetNewValue('EXIF:Orientation' => 'Horizontal (normal)');
         $tool->WriteInfo($test_image);
 
         my $org_exif = Image::ExifTool::ImageInfo($test_image);
         ok $org_exif->{ProfileCMMType}, "test image has profile information in exif";
         is $org_exif->{Keywords} => 'mt_test', "test image has Keywords in exif";
+        is $org_exif->{Orientation} => 'Horizontal (normal)', "test image has Orientation in exif";
 
         $test_env->update_config(ForceExifRemoval => $exif_removal);
 
@@ -138,6 +140,7 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
             if ($exif_removal or $key eq 'thumbnail') {
                 ok !$exif->{Keywords}, "$key has no Keywords in exif";
                 ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
                 if ($has_image_magick) {
                     my $magick = Image::Magick->new;
                     $magick->Read($file);
@@ -146,6 +149,7 @@ subtest 'Regular JPEG image, wrt exif removal' => sub {
             } else {
                 is $exif->{Keywords} => 'mt_test', "$key still has Keywords in exif";
                 ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
                 if ($has_image_magick) {
                     my $magick = Image::Magick->new;
                     $magick->Read($file);
