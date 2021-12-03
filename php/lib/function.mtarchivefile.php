@@ -12,7 +12,7 @@ function smarty_function_mtarchivefile($args, &$ctx) {
         $e = $ctx->stash('entry');
         if (!$e) {
             $entries = $ctx->stash('entries');
-            $e = $entries[0];
+            $e = isset($entries[0]) ? $entries[0] : null;
         }
         if (!$e) return $ctx->error("Could not determine entry");
         $f = $e->entry_basename;
@@ -37,7 +37,7 @@ function smarty_function_mtarchivefile($args, &$ctx) {
             $f .= '.' . $ext;
         }
     }
-    if ($args['separator']) {
+    if (!empty($args['separator'])) {
         if ($args['separator'] == '-')
             $f = preg_replace('/_/', '-', $f);
     }

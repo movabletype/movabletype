@@ -205,6 +205,15 @@ sub upgrade_functions {
                 sql   => 'UPDATE mt_log SET log_level = 0 WHERE log_level = 16',
             },
         },
+        'v7_remove_image_metadata' => {
+            version_limit => '7.0051',
+            priority      => 3.1,
+            updater       => {
+                type   => 'asset:meta',
+                label => 'Remove image metadata',
+                sql   => q{DELETE FROM mt_asset_meta WHERE asset_meta_type = 'image_metadata'},
+            },
+        },
     };
 }
 
@@ -493,11 +502,7 @@ sub _migrate_system_privileges {
             'Migrating system level permissions to new structure...')
     );
 
-    my $iter = MT->model('author')->load_iter(
-        {   status => MT::Author::ACTIVE(),
-            type   => MT::Author::AUTHOR(),
-        }
-    );
+    my $iter = MT->model('author')->load_iter({ type => MT::Author::AUTHOR() });
     while ( my $author = $iter->() ) {
         $author->can_sign_in_cms(1);
         $author->can_sign_in_data_api(1);

@@ -344,9 +344,9 @@ sub make_page {
     require MT::Page;
     my $values = {
         blog_id     => 1,
-        title       => 'Watching the River Flow',
-        text        => 'What the matter with me,',
-        text_more   => 'I don\'t have much to say,',
+        title       => 'But in ourselves, that we are underlings.',
+        text        => 'Men at some time are masters of their fates:',
+        text_more   => 'The fault, dear Brutus, is not in our stars,',
         keywords    => 'no folder',
         excerpt     => 'excerpt',
         created_on  => '19780131074500',

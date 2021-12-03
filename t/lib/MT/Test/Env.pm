@@ -39,18 +39,6 @@ binmode $builder->output,         ":encoding($enc)";
 binmode $builder->failure_output, ":encoding($enc)";
 binmode $builder->todo_output,    ":encoding($enc)";
 
-my $envfile = "$MT_HOME/.mt_test_env";
-if (-f $envfile) {
-    open my $fh, '<', $envfile;
-    while (<$fh>) {
-        chomp;
-        next if /^#/;
-        s/(?:^\s*|\s*$)//g;
-        my ($key, $value) = split /\s*=\s*/;
-        $ENV{ uc $key } = $value;
-    }
-}
-
 sub new {
     my ($class, %extra_config) = @_;
 
@@ -80,9 +68,9 @@ sub load_envfile {
         open my $fh, '<', $envfile or die $!;
         while (<$fh>) {
             chomp;
-            next if /^#/;
+            next if /^(?:#|\s*$)/;
             s/(?:^\s*|\s*$)//g;
-            my ($key, $value) = split /\s*=\s*/, 2;
+            my ($key, $value) = split /\s*=\s*/, $_, 2;
             $ENV{ uc $key } = $value;
         }
     }
@@ -137,22 +125,25 @@ sub write_config {
             MT_HOME/t/themes/
             MT_HOME/themes/
         )],
-        TempDir             => File::Spec->tmpdir,
-        DefaultLanguage     => $default_language,
-        StaticWebPath       => '/mt-static/',
-        StaticFilePath      => 'TEST_ROOT/mt-static',
-        EmailAddressMain    => 'mt@localhost.localdomain',
-        WeblogTemplatesPath => 'MT_HOME/default_templates',
-        ImageDriver         => $image_driver,
-        MTVersion           => MT->version_number,
-        MTReleaseNumber     => MT->release_number,
-        LoggerModule        => 'Test',
-        LoggerPath          => 'TEST_ROOT/log',
-        LoggerLevel         => 'DEBUG',
-        MailTransfer        => 'debug',
-        DBIRaiseError       => 1,
-        ShowIpInformation   => 1,
-        EnableAddressBook   => 1,
+        TempDir                => File::Spec->tmpdir,
+        DefaultLanguage        => $default_language,
+        StaticWebPath          => '/mt-static/',
+        StaticFilePath         => 'TEST_ROOT/mt-static',
+        EmailAddressMain       => 'mt@localhost.localdomain',
+        WeblogTemplatesPath    => 'MT_HOME/default_templates',
+        ImageDriver            => $image_driver,
+        MTVersion              => MT->version_number,
+        MTReleaseNumber        => MT->release_number,
+        LoggerModule           => 'Test',
+        LoggerPath             => 'TEST_ROOT/log',
+        LoggerLevel            => 'DEBUG',
+        MailTransfer           => 'debug',
+        DBIRaiseError          => 1,
+        ShowIpInformation      => 1,
+        EnableAddressBook      => 1,
+        CaptchaSourceImageBase => 'MT_HOME/mt-static/images/captcha-source/',
+        NewsboxURL             => 'disable',
+        DebugMode              => $ENV{MT_TEST_DEBUG_MODE} || 0,
     );
 
     if ($extra) {
@@ -296,7 +287,7 @@ sub connect_info {
                 $connect_info{$key} = $ENV{$env_key};
             }
         }
-
+        note "DRIVER: $connect_info{ObjectDriver}";
         # TODO: $self->{dsn} = "dbi:$driver:...";
     }
     %connect_info;
@@ -366,6 +357,32 @@ sub _connect_info_sqlite {
         ObjectDriver => "DBI::sqlite",
         Database     => $database,
     );
+}
+
+sub _connect_info_oracle {
+    my $self = shift;
+
+    my %connect_info = (
+        ObjectDriver => 'DBI::Oracle',
+        DBPort       => 1521,
+        DBUser       => 'system',
+    );
+    my @keys = qw(ObjectDriver Database DBPort DBHost DBSocket DBUser DBPassword);
+    for my $key (@keys) {
+        my $env_key = "MT_TEST_" . (uc $key);
+        if ($ENV{$env_key}) {
+            $connect_info{$key} = $ENV{$env_key};
+        }
+    }
+    note "DRIVER: Oracle";
+
+    # for better compatibility
+    $ENV{NLS_LANG}  = $ENV{MT_TEST_NLS_LANG}  || 'AMERICAN_AMERICA.AL32UTF8';
+    $ENV{NLS_NCHAR} = $ENV{MT_TEST_NLS_NCHAR} || 'AL32UTF8';
+    $ENV{NLS_COMP}  = $ENV{MT_TEST_NLS_COMP}  || 'LINGUISTIC';
+    $ENV{NLS_SORT}  = $ENV{MT_TEST_NLS_SORT}  || 'AMERICAN_AMERICA';
+
+    %connect_info;
 }
 
 sub skip_unless_mysql_supports_utf8mb4 {
@@ -698,6 +715,9 @@ sub prepare_fixture {
     } else {
         $self->load_schema_and_fixture($id) or $code->();
     }
+
+    $self->update_sequences;
+
     if ($do_save) {
         $self->save_schema;
         $self->save_fixture($id);
@@ -857,6 +877,49 @@ sub load_schema_and_fixture {
     MT->instance->init_config_from_db;
 
     return 1;
+}
+
+sub update_sequences {
+    my $self = shift;
+
+    return unless lc $self->driver eq 'oracle';
+
+    my @classes;
+    my $types = MT->registry('object_types');
+    for my $key (keys %$types) {
+        next if $key =~ /\./;
+        my $class = $types->{$key};
+        $class = $class->[0] if ref $class eq 'ARRAY';
+        push @classes, $class;
+        if ( $key eq 'entry' or $key eq 'user' ) {
+            push @classes, "$class\::Summary";
+        }
+        if ( my $model = MT->model($key) ) {
+            if ( $model->meta_pkg ) {
+                my $meta_class = MT->model("$key:meta");
+                push @classes, $meta_class if $meta_class;
+            }
+        }
+    }
+    for my $class (@classes) {
+        my $col = $class->properties->{primary_key} or next;
+        $col = $col->[1] if ref $col;
+        my $def = $class->column_def($col);
+        my $ddl = $class->driver->dbd->ddl_class;
+        next unless $def->{auto} && ($def->{type} eq 'integer' or $ddl->type2db($def) =~ /^number/);
+        my $dbh = $class->driver->dbh;
+        my $field_prefix = $class->datasource;
+        my $table_name   = $class->table_name;
+        my ($max) = $dbh->selectrow_array("SELECT MAX(${field_prefix}_${col}) FROM $table_name");
+        my $seq = $class->driver->dbd->sequence_name($class);
+        my ($current) = $dbh->selectrow_array("SELECT $seq.NEXTVAL FROM DUAL");
+        my $inc = ($max //= 0) - $current + 1;
+        if ($inc) {
+            my $start = $max + 1;
+            $dbh->do("DROP SEQUENCE $seq");
+            $dbh->do("CREATE SEQUENCE $seq START WITH $start");
+        }
+    }
 }
 
 sub save_schema {

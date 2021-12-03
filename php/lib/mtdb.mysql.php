@@ -75,7 +75,7 @@ class MTDatabasemysql extends MTDatabase {
 
     function set_names($mt) {
         $conf = $mt->config('sqlsetnames');
-        if (isset($conf) && $conf == 0)
+        if (isset($conf) && empty($conf))
             return;
 
         $ret = $this->Execute('show variables like "character_set_database"');

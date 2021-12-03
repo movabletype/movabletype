@@ -38,7 +38,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
             }
         }
 
-        $prefix = $args['month'];
+        $prefix = isset($args['month']) ? $args['month'] : null;
         if ($prefix) {
             if ($prefix == 'this') {
                 $ts = $ctx->stash('current_timestamp');
@@ -107,7 +107,7 @@ function smarty_block_mtcalendar($args, $content, &$ctx, &$repeat) {
         $today = $ctx->stash('cal_today');
         $cell = $ctx->stash('CalendarCellNumber');
     }
-    $left or $left = array();
+    !empty($left) or $left = array();
     $entries = array();
     if ($day <= $pad_start + $days_in_month + $pad_end) {
         $is_padding = $day < $pad_start + 1 || $day > $pad_start + $days_in_month;

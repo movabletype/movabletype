@@ -34,14 +34,14 @@ our $plugins_installed;
 BEGIN {
     $plugins_installed = 0;
 
-    ( $VERSION, $SCHEMA_VERSION ) = ( '7.8', '7.0050' );
+    ( $VERSION, $SCHEMA_VERSION ) = ( '7.9', '7.0051' );
     (   $PRODUCT_NAME, $PRODUCT_CODE,   $PRODUCT_VERSION,
         $VERSION_ID,   $RELEASE_NUMBER, $PORTAL_URL,
         $RELEASE_VERSION_ID
         )
         = (
         '__PRODUCT_NAME__',   'MT',
-        '7.8.2',              '__PRODUCT_VERSION_ID__',
+        '7.9.0',              '__PRODUCT_VERSION_ID__',
         '__RELEASE_NUMBER__', '__PORTAL_URL__',
         '__RELEASE_VERSION_ID__',
         );
@@ -59,11 +59,11 @@ BEGIN {
     }
 
     if ( $RELEASE_NUMBER eq '__RELEASE' . '_NUMBER__' ) {
-        $RELEASE_NUMBER = 2;
+        $RELEASE_NUMBER = 0;
     }
 
     if ( $RELEASE_VERSION_ID eq '__RELEASE' . '_VERSION_ID__' ) {
-        $RELEASE_VERSION_ID = 'r.5003';
+        $RELEASE_VERSION_ID = 'r.5004';
     }
 
     $DebugMode = 0;

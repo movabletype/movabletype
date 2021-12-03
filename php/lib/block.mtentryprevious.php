@@ -46,7 +46,8 @@ function smarty_block_mtentryprevious($args, $content, &$ctx, &$repeat) {
                 if (isset($args['by_category']) || isset($args['by_folder'])) {
                     $eargs['category_id'] = $cat_id;
                 }
-                list($prev_entry) = $ctx->mt->db()->fetch_entries($eargs);
+                $entries = $ctx->mt->db()->fetch_entries($eargs);
+                $prev_entry = isset($entries[0]) ? $entries[0] : null;
                 if ($prev_entry) $_prev_cache[$label] = $prev_entry;
             }
             $ctx->stash('entry', $prev_entry);

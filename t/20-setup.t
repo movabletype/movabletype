@@ -29,9 +29,8 @@ MT->instance;
 
 $test_env->prepare_fixture('db');
 
-my $BLOG_NAME = 'Fear of a Black Planet';
-my $BLOG_DESC = 'Wherein Chuck D expounds on the plight of the black man in '
-    . 'a white man\'s world.';
+my $BLOG_NAME = 'Shakespeare\'s Quotes';
+my $BLOG_DESC = 'Shakespeare\'s Quotes';
 my $BLOG_URL  = 'http://www.black-planet.org/';
 my $BLOG_PATH = '/opt/www/content/blog';
 
@@ -83,12 +82,11 @@ isa_ok( $entry, 'MT::Entry' );
 $entry->blog_id( $blog->id );
 $entry->status(2);
 $entry->author_id( $author->id );
-$entry->title('Fight the Power');
+$entry->title('Julius Caesar, Act I, Scene II');
 $entry->allow_comments(1);
-$entry->excerpt('Fight the powers that be');
-$entry->text('Elvis was a hero to most but he never meant shit to me');
-$entry->text_more( 'straight up racist that sucker was simple and plain '
-        . 'mother fuck him and john wayne' );
+$entry->excerpt('Dear Brutus');
+$entry->text('Men at some time are masters of their fates');
+$entry->text_more('The fault, dear Brutus, is not in our stars, But in ourselves');
 $test = $entry->save or die $entry->errstr;
 ok( $test, "saved $entry" );
 
