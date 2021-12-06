@@ -104,6 +104,8 @@ subtest 'Edit Profile screen' => sub {
     };
 
     subtest 'Empty name user' => sub {
+        plan skip_all => 'Empty names are not supported on oracle' if lc($test_env->driver) eq 'oracle';
+
         my ($app, $saved) = $test->({
             name   => '',
             status => MT::Author::ACTIVE(),
@@ -183,6 +185,8 @@ subtest 'Manage Users screen' => sub {
     };
 
     subtest 'Enable users having no name' => sub {
+        plan skip_all => 'Empty names are not supported on oracle' if lc($test_env->driver) eq 'oracle';
+
         my $no_name_count = MT::Author->count({ name => '', status => MT::Author::INACTIVE });
 
         my $app = MT::Test::App->new('MT::App::CMS');
@@ -214,7 +218,7 @@ subtest 'Manage Users screen' => sub {
             return_args => '__mode=list&_type=author&blog_id=0&does_act=1',
             id          => [
                 map { $_->id } MT::Author->load({
-                    name   => { not => '' },
+                    name   => [ '-and', \'IS NOT NULL', { not => '' } ],
                     status => MT::Author::INACTIVE
                 })
             ],
