@@ -32,7 +32,7 @@ function smarty_block_mtentryadditionalcategories($args, $content, &$ctx, &$repe
                 $ctx->stash('__out', true);
         }
     } else {
-        if (isset($args['glue']) && $out && !empty($content))
+        if (isset($args['glue']) && !empty($out) && !empty($content))
             $content = $args['glue'] . $content;
         $ctx->restore($localvars);
         $repeat = false;

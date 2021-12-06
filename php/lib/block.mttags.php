@@ -19,16 +19,16 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         require_once('multiblog.php');
         multiblog_block_wrapper($args, $content, $ctx, $repeat);
 
-        $ctx->stash('include_blogs', $args['include_blogs']);
-        $ctx->stash('exclude_blogs', $args['exclude_blogs']);
-        $ctx->stash('blog_ids', $args['blog_ids']);
+        $ctx->stash('include_blogs', isset($args['include_blogs']) ? $args['include_blogs'] : null);
+        $ctx->stash('exclude_blogs', isset($args['exclude_blogs']) ? $args['exclude_blogs'] : null);
+        $ctx->stash('blog_ids', isset($args['blog_ids']) ? $args['blog_ids'] : null);
         if (!isset($args['include_blogs']) && !isset($args['exclude_blogs']) && !isset($args['blog_ids']) && !isset($args['blog_id'])) {
             $blog_id = $ctx->stash('blog_id');
             $args['blog_id'] = $ctx->stash('blog_id');
         }
         if (isset($args['top'])) {
-            $post_sort_by = $args['sort_by'];
-            $post_sort_order = $args['sort_order'];
+            $post_sort_by = isset($args['sort_by']) ? $args['sort_by'] : null;
+            $post_sort_order = isset($args['sort_order']) ? $args['sort_order'] : null;
             $args['sort_by'] = 'rank';
             $args['sort_order'] = 'descend';
         }
@@ -36,7 +36,7 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
             $s = $args['sort_by'];
             if (($s == 'rank') || ($s == 'count')) { // Aliased
                 $args['sort_by'] = 'count';
-                $args['sort_order'] or $args['sort_order'] = 'descend'; // Inverted default
+                !empty($args['sort_order']) or $args['sort_order'] = 'descend'; // Inverted default
             } elseif (($s != 'name') && ($s != 'id')) {
                 $args['sort_by'] = NULL;
             }
@@ -136,9 +136,9 @@ function smarty_block_mttags($args, $content, &$ctx, &$repeat) {
         $ctx->stash('_tags_counter', $counter + 1);
         $repeat = true;
         if (isset($args['glue'])) {
-            if ($out && !empty($content))
+            if (!empty($out) && !empty($content))
                 $content = $args['glue'] . $content;
-            if (!$out && !empty($content))
+            if (empty($out) && !empty($content))
               $ctx->stash('__out', true);
         }
         $count = $counter + 1;

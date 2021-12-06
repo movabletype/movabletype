@@ -62,7 +62,7 @@ sub field_type_icon {
 
     $id = 'ic_contentstype' unless $id;
     if ($title) {
-        $title = qq { title=$title};
+        $title = qq {<title>$title</title>};
     }
     else {
         $title = '';
@@ -71,7 +71,7 @@ sub field_type_icon {
     my $static_uri = MT->static_path;
 
     return
-        qq{<svg$title role="img" class="mt-icon"><use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
+        qq{<svg role="img" class="mt-icon">$title<use xlink:href="${static_uri}images/sprite.svg#$id"></use></svg>};
 }
 
 sub _get_cd_ids {

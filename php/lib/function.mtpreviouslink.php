@@ -14,6 +14,7 @@ function smarty_function_mtpreviouslink($args, &$ctx) {
     else
         $offset -= $limit;
 
+    $link = '';
     if ( strpos($link, '?') ) {
         $link .= '&';
     }

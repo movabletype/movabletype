@@ -11,6 +11,7 @@ function smarty_function_mtnextlink($args, &$ctx) {
     $offset = $ctx->stash('__pager_offset');
     $offset += $limit;
 
+    $link = '';
     if ( strpos($link, '?') ) {
         $link .= '&';
     }

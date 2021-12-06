@@ -15,7 +15,7 @@ function smarty_function_mtindexlink($args, &$ctx) {
     $site_url = $blog->site_url();
     if (!preg_match('!/$!', $site_url)) $site_url .= '/';
     $link = $site_url . $idx->template_outfile;
-    if (!$args['with_index']) {
+    if (empty($args['with_index'])) {
         $link = _strip_index($link, $blog);
     }
     return $link;
