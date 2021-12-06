@@ -84,7 +84,7 @@ $test_env->prepare_fixture(sub {
             basename        => 'guest',
             email           => 'guest@localhost',
             url             => 'http://localhost/~guest/',
-            password        => '',
+            password        => 'guest',
             type            => MT::Author::AUTHOR(),
             locked_out_time => 0,
         }
