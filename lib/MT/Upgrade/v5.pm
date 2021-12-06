@@ -204,8 +204,7 @@ sub upgrade_functions {
                 label =>
                     'Assigning a language to each blog to help choose appropriate display format for dates...',
                 code => sub {
-                    CORE::state %supported;
-                    %supported = map { lc($_->{l_tag}) => 1 } @{ MT::I18N::languages_list() };
+                    my %supported = map { lc($_->{l_tag}) => 1 } @{ MT::I18N::languages_list() };
                     my $language = $_[0]->language;
                     $_[0]->date_language($language);
                     $_[0]->language($supported{ lc($language) } ? $language : MT->config('DefaultLanguage'));
