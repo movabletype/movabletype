@@ -2154,6 +2154,7 @@ BEGIN {
             'BinZipPath' => undef,
             'BinUnzipPath' => undef,
             'DisableImagePopup' => undef,
+            'ForceAllowStringSub' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
