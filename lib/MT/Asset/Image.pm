@@ -139,7 +139,7 @@ sub maybe_dynamic_thumbnail_url {
             height  => $height,
         );
         $args{square} = 1 if $param{Square};
-        $args{ts} = $asset->modified_on if $asset->modified_on;
+        $args{ts} = $asset->modified_on if $param{Ts} && $asset->modified_on;
         my $url = MT->app->mt_uri(
             mode => 'thumbnail_image',
             args => \%args,
