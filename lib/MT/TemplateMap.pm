@@ -53,7 +53,7 @@ sub save {
     my $at   = $map->archive_type;
     my $blog = MT->model('blog')->load( $map->blog_id )
         or return;
-    my $blog_at = $blog->archive_type;
+    my $blog_at = $blog->archive_type || '';
     my @ats;
     @ats = map {$_}
         grep { $map->archive_type ne $_ }
