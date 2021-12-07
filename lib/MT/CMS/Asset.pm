@@ -1502,6 +1502,7 @@ sub _upload_file_compat {
                     )[2];
                 if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+                    && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
                     if ( $basename eq $ext_old ) {
@@ -2048,6 +2049,7 @@ sub _upload_file {
 
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
             if ( $basename eq $ext_old ) {
