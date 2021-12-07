@@ -18,6 +18,9 @@ use File::Path;
 use MT::Test;
 use MT::Test::Image;
 use MT::Test::App;
+use Image::ExifTool;
+
+my $has_image_magick = eval { require Image::Magick; 1 };
 
 $test_env->prepare_fixture('db_data');
 
@@ -69,15 +72,104 @@ subtest 'Regular JPEG image' => sub {
     );
 };
 
+subtest 'Regular JPEG image, wrt exif removal' => sub {
+    my $org_force_exif_removal = MT->config('ForceExifRemoval');
+    my $asset_dir              = File::Spec->catdir($blog->archive_path, 'assets_c');
+
+    for my $exif_removal (0, 1) {
+        my $name         = 'test_' . ($exif_removal ? 'without' : 'with') . '_exif';
+        my $newest_asset = MT::Asset->load(
+            { class => '*' },
+            { sort  => [{ column => 'id', desc => 'DESC' }] },
+        );
+
+        my $test_image = $test_env->path("$name.jpg");
+        MT::Test::Image->write(file => $test_image);
+        my $tool = Image::ExifTool->new;
+        $tool->ExtractInfo($test_image);
+        $tool->SetNewValue(Keywords => 'mt_test');
+        $tool->SetNewValue('EXIF:Orientation' => 'Horizontal (normal)');
+        $tool->WriteInfo($test_image);
+
+        my $org_exif = Image::ExifTool::ImageInfo($test_image);
+        ok $org_exif->{ProfileCMMType}, "test image has profile information in exif";
+        is $org_exif->{Keywords} => 'mt_test', "test image has Keywords in exif";
+        is $org_exif->{Orientation} => 'Horizontal (normal)', "test image has Orientation in exif";
+
+        $test_env->update_config(ForceExifRemoval => $exif_removal);
+
+        my $app = MT::Test::App->new('CMS');
+        $app->login($admin);
+        $app->js_post_ok({
+            __test_upload => [file => $test_image],
+            __mode        => 'js_upload_file',
+            blog_id       => $blog->id,
+            destination   => '%a',
+        });
+
+        my $created_asset = MT::Asset->load(
+            { id   => { '>' => $newest_asset->id } },
+            { sort => [{ column => 'id', desc => 'DESC' }] },
+        );
+        ok($created_asset, 'An asset is created');
+        my $expected_values = {
+            'file_ext'   => 'jpg',
+            'file_path'  => File::Spec->catfile('%a', "$name.jpg"),
+            'file_name'  => "$name.jpg",
+            'url'        => '%a/' . "$name.jpg",
+            'class'      => 'image',
+            'blog_id'    => '1',
+            'created_by' => '1'
+        };
+        my $result_values = do {
+            return +{} unless $created_asset;
+            my $values = $created_asset->column_values();
+            +{ map { $_ => $values->{$_} } keys %$expected_values };
+        };
+        is_deeply(
+            $result_values, $expected_values,
+            "Created asset's column values"
+        );
+
+        my ($thumbnail)   = grep /$name/, $test_env->files($asset_dir);
+        my $uploaded_file = File::Spec->catfile($blog->archive_path, "$name.jpg");
+
+        for my $item (['uploaded file' => $uploaded_file], [thumbnail => $thumbnail]) {
+            my ($key, $file) = @$item;
+            my $exif = Image::ExifTool::ImageInfo($file);
+            if ($exif_removal or $key eq 'thumbnail') {
+                ok !$exif->{Keywords}, "$key has no Keywords in exif";
+                ok $exif->{ProfileCMMType}, "but $key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
+                if ($has_image_magick) {
+                    my $magick = Image::Magick->new;
+                    $magick->Read($file);
+                    ok $magick->Get('icc'), "Image::Magick still returns icc";
+                }
+            } else {
+                is $exif->{Keywords} => 'mt_test', "$key still has Keywords in exif";
+                ok $exif->{ProfileCMMType}, "$key still has profile information in exif";
+                is $exif->{Orientation} => 'Horizontal (normal)', "but $key still has orientation information in exif";
+                if ($has_image_magick) {
+                    my $magick = Image::Magick->new;
+                    $magick->Read($file);
+                    ok $magick->Get('icc'), "Image::Magick returns icc";
+                }
+            }
+        }
+    }
+    $test_env->update_config(ForceExifRemoval => $org_force_exif_removal);
+};
+
 subtest 'Regular JPEG image with wrong extension' => sub {
     my $newest_asset = MT::Asset->load(
         { class => '*' },
         { sort  => [{ column => 'id', desc => 'DESC' }] },
     );
 
-    my $test_image = $test_env->path('test.jpg');
+    my $test_image = $test_env->path('wrong-extension-test.jpg');
     MT::Test::Image->write(file => $test_image);
-    (my $renamed_test_image = $test_image) =~ s/test\.jpg/wrong-extension-test\.gif/;
+    (my $renamed_test_image = $test_image) =~ s/\.jpg/.gif/;
     rename $test_image => $renamed_test_image;
 
     my $app = MT::Test::App->new('CMS');

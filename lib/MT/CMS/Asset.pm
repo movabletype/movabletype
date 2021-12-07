@@ -1919,6 +1919,10 @@ sub _upload_file_compat {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2459,6 +2463,10 @@ sub _upload_file {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
