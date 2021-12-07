@@ -218,7 +218,7 @@ subtest 'Manage Users screen' => sub {
             return_args => '__mode=list&_type=author&blog_id=0&does_act=1',
             id          => [
                 map { $_->id } MT::Author->load({
-                    name   => [ '-and', \'IS NOT NULL', { not => '' } ],
+                    name   => { not => '' },
                     status => MT::Author::INACTIVE
                 })
             ],
