@@ -40,6 +40,13 @@ my $other_content_type = MT::Test::Permission->make_content_type(
 );
 my $other_content_type_id = $other_content_type->id;
 
+my $category_set    = MT::Test::Permission->make_category_set(blog_id => $site_id);
+my $category_set_id = $category_set->id;
+my $category        = MT::Test::Permission->make_category(
+    blog_id         => $site_id,
+    category_set_id => $category_set->id,
+);
+
 normal_tests_for_create();
 irregular_tests_for_create();
 
@@ -199,6 +206,57 @@ sub normal_tests_for_create {
             },
         }
     );
+
+    test_data_api({
+        note         => 'Create category field (MTC-26485)',
+        path         => "/v4/sites/$site_id/contentTypes/$content_type_id/fields",
+        method       => 'POST',
+        is_superuser => 1,
+        restrictions => {
+            0        => ['edit_all_content_types'],
+            $site_id => ['edit_all_content_types'],
+        },
+        params => {
+            content_field => {
+                label   => 'create-category-field-1',
+                options => {
+                    category_set => $category_set_id,
+                },
+                type => 'categories',
+            },
+        },
+        callbacks => [{
+                name  => 'MT::App::DataAPI::data_api_save_permission_filter.content_type',
+                count => 0,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_save_permission_filter.content_field',
+                count => 0,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_save_filter.content_field',
+                count => 1,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_pre_save.content_field',
+                count => 1,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_post_save.content_field',
+                count => 1,
+            },
+        ],
+        result => sub {
+            MT->model('content_field')->load({
+                content_type_id => $content_type_id,
+                name            => 'create-category-field-1',
+            });
+        },
+        complete => sub {
+            $category_set = MT->model('category_set')->load({ id => $category_set_id });
+            is($category_set->ct_count, 1, 'ct_count');
+        },
+    });
 }
 
 sub irregular_tests_for_create {
@@ -1224,6 +1282,40 @@ sub normal_tests_for_delete {
             },
         }
     );
+
+    $cf = MT->model('content_field')->load({
+        content_type_id => $content_type_id,
+        name            => 'create-category-field-1',
+    });
+    test_data_api({
+        note         => 'Delete category field (MTC-26485)',
+        path         => "/v4/sites/$site_id/contentTypes/$content_type_id/fields/" . $cf->id,
+        method       => 'DELETE',
+        is_superuser => 1,
+        restrictions => {
+            0        => ['edit_all_content_types'],
+            $site_id => ['edit_all_content_types'],
+        },
+        callbacks => [{
+                name  => 'MT::App::DataAPI::data_api_save_permission_filter.content_type',
+                count => 0,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_delete_permission_filter.content_field',
+                count => 0,
+            },
+            {
+                name  => 'MT::App::DataAPI::data_api_post_delete.content_field',
+                count => 1,
+            },
+        ],
+        result   => sub { $cf; },
+        complete => sub {
+            ok(!MT->model('content_field')->load($cf->id));
+            $category_set = MT->model('category_set')->load({ id => $category_set_id });
+            is($category_set->ct_count, 0, 'ct_count');
+        },
+    });
 }
 
 done_testing;
