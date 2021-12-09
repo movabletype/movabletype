@@ -58,7 +58,7 @@ my $parent_category_id = $parent_category->id;
 
 my $category = MT::Test::Permission->make_category(
     blog_id         => $site_id,
-    category_set_id => $category_set->id,
+    category_set_id => $category_set_id,
     parent          => $parent_category->id,
 );
 ok($category);
@@ -175,6 +175,11 @@ sub normal_tests_for_create_category {
                         label           => 'create-category-2',
                     }
                 );
+            },
+            complete => sub {
+                my $category_count = MT->model('category')->count({ category_set_id => $category_set_id });
+                $category_set      = MT->model('category_set')->load({ id => $category_set_id });
+                is($category_set->cat_count, $category_count, 'cat_count');
             },
         }
     );
@@ -1243,9 +1248,13 @@ sub normal_tests_for_delete_category {
             result   => sub { $cat; },
             complete => sub {
                 ok( !MT->model('category')->load( $cat->id ) );
+                my $category_count = MT->model('category')->count({ category_set_id => $category_set_id });
+                $category_set      = MT->model('category_set')->load({ id => $category_set_id });
+                is($category_set->cat_count, $category_count, 'cat_count');
             },
         }
     );
+
 }
 
 done_testing;
