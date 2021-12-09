@@ -137,6 +137,9 @@ sub create_for_category_set {
 
     save_object( $app, 'category', $new_category ) or return;
 
+    # Care about cat_count
+    $category_set->save;
+
     $new_category;
 }
 
@@ -194,6 +197,9 @@ sub delete_for_category_set {
         ),
         500,
         );
+
+    # Care about cat_count
+    $category_set->save;
 
     $app->run_callbacks( 'data_api_post_delete.category', $app, $category );
 
