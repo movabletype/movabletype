@@ -93,6 +93,17 @@ sub _build_around_filter {
             $field->{options} = Hash::Merge::Simple->merge( $field->{options},
                 $hash->{options} );
         }
+        if (my $pre_save = $content_field_types->{$field->{type}}{options_pre_save_handler}) {
+            if (!ref $pre_save) {
+                $pre_save = MT->handler_to_coderef($pre_save);
+            }
+            if ('CODE' eq ref $pre_save) {
+                my $options = $field->{options};
+                $pre_save->($app, $field->{type}, $new_content_field, $options);
+                $new_content_field->save;
+                $field->{options} = Hash::Merge::Simple->merge($field->{options}, $options);
+            }
+        }
 
         $content_type->fields($fields);
         $content_type->save
