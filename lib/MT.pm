@@ -3065,7 +3065,7 @@ sub effective_captcha_provider {
 
 sub handler_to_coderef {
     my $pkg = shift;
-    my ( $name, $delayed, $allow_string_sub ) = @_;
+    my ( $name, $delayed ) = @_;
 
     return $name if ref($name) eq 'CODE';
     return undef unless defined $name && $name ne '';
@@ -3085,7 +3085,7 @@ sub handler_to_coderef {
             $component = $1;
         }
     }
-    if ( $name =~ m/^\s*sub\s*\{/s && ($allow_string_sub || MT->config('ForceAllowStringSub'))) {
+    if ( $name =~ m/^\s*sub\s*\{/s ) {
         $code = eval $name or die $@;
 
         if ($component) {
@@ -3110,7 +3110,6 @@ sub handler_to_coderef {
     else {
         $hdlr_pkg =~ s/::[^:]+$//;
     }
-    die "Illegal package name: $hdlr_pkg" unless $hdlr_pkg =~ /\A[A-Za-z][A-Za-z0-9_]*(?:(?:::|')[A-Za-z0-9_]+)*\z/;
     if ( !defined(&$name) && !$pkg->can('AUTOLOAD') ) {
 
         # The delayed option will return a coderef that delays the loading
