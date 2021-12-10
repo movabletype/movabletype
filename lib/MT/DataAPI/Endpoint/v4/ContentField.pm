@@ -81,12 +81,7 @@ sub _build_around_filter {
         $field->{options}{description} = $new_content_field->description;
 
         $field->{type}      = $new_content_field->type;
-        $field->{unique_id} = $new_content_field->unique_id;
         my $content_field_types = $app->registry('content_field_types');
-        my $type_label = $content_field_types->{ $field->{type} }->{label};
-        $type_label = $type_label->() if 'CODE' eq ref $type_label;
-        $field->{type_label} = $type_label;
-        $field->{order}      = scalar @$fields || 0;
 
         my $hashes = $app->request('data_api_content_field_hashes_for_save');
         if ( my $hash = shift @{ $hashes || [] } ) {
@@ -100,8 +95,7 @@ sub _build_around_filter {
             if ('CODE' eq ref $pre_save) {
                 my $options = $field->{options};
                 $pre_save->($app, $field->{type}, $new_content_field, $options);
-                $new_content_field->save;
-                $field->{options} = Hash::Merge::Simple->merge($field->{options}, $options);
+                $save_method->();
             }
         }
 
