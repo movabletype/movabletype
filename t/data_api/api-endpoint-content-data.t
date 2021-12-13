@@ -132,6 +132,53 @@ $ct_with_content_type->fields(
 $ct_with_content_type->save;
 my $ct_with_content_type_id = $ct_with_content_type->id;
 
+my $category_set    = MT::Test::Permission->make_category_set(blog_id => $site_id);
+my $parent_category = MT::Test::Permission->make_category(
+    blog_id         => $site_id,
+    category_set_id => $category_set->id,
+);
+my $parent_category_id  = $parent_category->id;
+my $ct_with_category    = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $ct_with_category_id = $ct_with_category->id;
+my $category_field      = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_category_id,
+    name            => 'category_set',
+    type            => 'categories',
+);
+$ct_with_category->fields([{
+    id      => $category_field->id,
+    options => {
+        category_set => $category_set->id,
+        label        => $category_field->name,
+    },
+    order     => 1,
+    type      => $category_field->type,
+    unique_id => $category_field->unique_id,
+}]);
+$ct_with_category->save;
+
+my $asset            = MT::Test::Permission->make_asset(blog_id => $site_id);
+my $asset_id         = $asset->id;
+my $ct_with_asset    = MT::Test::Permission->make_content_type(blog_id => $site_id);
+my $ct_with_asset_id = $ct_with_asset->id;
+my $asset_field      = MT::Test::Permission->make_content_field(
+    blog_id         => $site_id,
+    content_type_id => $ct_with_asset_id,
+    name            => 'asset',
+    type            => 'asset',
+);
+$ct_with_asset->fields([{
+    id      => $asset_field->id,
+    options => {
+        label => $asset_field->name,
+    },
+    order     => 1,
+    type      => $asset_field->type,
+    unique_id => $asset_field->unique_id,
+}]);
+$ct_with_asset->save;
+
 $user->permissions(0)->rebuild;
 $user->permissions($site_id)->rebuild;
 
@@ -986,6 +1033,100 @@ sub normal_tests_for_create {
             },
         }
     );
+
+    test_data_api({
+        note         => 'Category Set field (MTC-26481; no data field)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_category_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => { content_data => { label => 'no category field', }, },
+        result       => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_category_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Category Set field (MTC-26481)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_category_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'category field',
+                data  => [{
+                        id   => $category_field->id,
+                        data => [$parent_category_id],
+                    },
+                ],
+            },
+        },
+        result => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_category_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Asset field (MTC-26481; no data field)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_asset_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => { content_data => { label => 'no asset field', }, },
+        result       => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_asset_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
+
+    test_data_api({
+        note         => 'Asset field (MTC-26481)',
+        path         => "/v4/sites/$site_id/contentTypes/$ct_with_asset_id/data",
+        method       => 'POST',
+        is_superuser => 1,
+        params       => {
+            content_data => {
+                label => 'asset field',
+                data  => [{
+                        id   => $asset_field->id,
+                        data => [$asset_id],
+                    },
+                ],
+            },
+        },
+        result => sub {
+            ok my $cd = MT->model('content_data')->load(
+                { content_type_id => $ct_with_asset_id, },
+                {
+                    sort      => 'id',
+                    direction => 'descend',
+                    limit     => 1,
+                },
+            );
+            $cd;
+        },
+    });
 }
 
 sub irregular_tests_for_list {
