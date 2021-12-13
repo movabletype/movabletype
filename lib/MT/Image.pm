@@ -165,12 +165,27 @@ sub get_image_info {
         require File::RandomAccess;
         $info = Image::ExifTool::ImageInfo(File::RandomAccess->new($fh));
         seek $fh, 0, 0;
+        if ($info->{FileType} =~ /(?:svg|xml|gzip)/i) {
+            _get_svg_info($fh, $info);
+        }
+        seek $fh, 0, 0;
     }
     elsif ( my $filename = $params{Filename} ) {
         $info = Image::ExifTool::ImageInfo($filename);
+        if ($info->{FileType} =~ /(?:svg|xml|gzip)/i) {
+            _get_svg_info($filename, $info);
+        }
     }
     return unless $info;
     return int($info->{ImageWidth} || 0), int($info->{ImageHeight} || 0), $info->{FileTypeExtension};
+}
+
+sub _get_svg_info {
+    my ($fh_or_fname, $info) = @_;
+    # TODO: better to handle gzip first
+    require MT::Image::SVG;
+    my $svg_size = MT::Image::SVG->get_size($fh_or_fname, $info->{FileType});
+    $info->{$_} = $svg_size->{$_} for keys %$svg_size;
 }
 
 sub get_image_type {
