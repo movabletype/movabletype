@@ -2979,6 +2979,10 @@ sub thumbnail_image {
     my $data = $fmgr->get_data( $thumbnail, 'upload' );
 
     $app->{no_print_body} = 1;
+    if (lc $asset->file_ext eq 'svgz') {
+        require MT::Image::SVG;
+        $data = MT::Image::SVG::gunzip($data);
+    }
     $app->send_http_header( $asset->mime_type );
     $app->print($data);
 }
