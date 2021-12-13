@@ -19,7 +19,7 @@ sub new {
     eval "require $class"
         or return __PACKAGE__->error(
         MT->translate( "Invalid Image Driver [_1]", $class ) );
-    my $image = bless {}, $class;
+    my $image = bless {driver => MT->config->ImageDriver}, $class;
     $image->load_driver
         or return $class->error( $image->errstr );
     if (@_) {
