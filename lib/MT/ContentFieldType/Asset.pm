@@ -35,12 +35,14 @@ sub field_html_params {
     my $type = $field_data->{type};
     $type =~ s/_/\./g if $type =~ /_/;
 
+    my $options = $field_data->{options} || {};
+
     if (@value) {
         require MT::CMS::Asset;
         my $hasher = MT::CMS::Asset::build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
 
         my $iter = $app->model($type)->load_iter( { id => \@value } );
@@ -69,8 +71,6 @@ sub field_html_params {
                 };
         }
     }
-
-    my $options = $field_data->{options} || {};
 
     my $multiple = '';
     if ( $options->{multiple} ) {
