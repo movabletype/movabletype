@@ -30,7 +30,7 @@ my @Img = (
     [ 'test.png', 150, 150 ],
     [ 'test.bmp', 600, 450 ],
 );
-my @drivers = $test_env->image_drivers;
+my @drivers = grep !/SVG/, $test_env->image_drivers;
 
 MT->set_language('en-us');
 

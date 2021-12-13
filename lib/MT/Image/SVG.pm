@@ -14,6 +14,10 @@ my $HasLibXML;
 my $HasExpat;
 my $HasCompressZlib;
 
+sub load_driver {
+    return 1;    # everything is bundled
+}
+
 # Always use an XS parser if available; PP is too slow for large images
 sub _check_xs_parser {
     if (!defined $HasLibXML) {
