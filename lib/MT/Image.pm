@@ -186,8 +186,8 @@ sub _get_svg_info {
     my ($fh_or_fname, $info) = @_;
     # TODO: better to handle gzip first
     require MT::Image::SVG;
-    my $svg_size = MT::Image::SVG->get_size($fh_or_fname, $info->{FileType});
-    $info->{$_} = $svg_size->{$_} for keys %$svg_size;
+    my $svg_info = MT::Image::SVG->get_size($fh_or_fname, $info->{FileType});
+    $info->{$_} = $svg_info->{$_} for keys %$svg_info;
 }
 
 sub get_image_type {
