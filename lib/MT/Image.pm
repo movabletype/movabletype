@@ -223,9 +223,9 @@ sub check_upload {
     my ( $filename, $path, $ext )
         = ( File::Basename::fileparse( $filepath, qr/[A-Za-z0-9]+$/ ) );
 
-    # Check for Content Sniffing bug (IE)
+    # Check for Content Sniffing bug (IE), except for .svg
     require MT::Asset::Image;
-    if ( MT::Asset::Image->can_handle($ext) ) {
+    if ( MT::Asset::Image->can_handle($ext) && lc $ext !~ /svg/ ) {
         return $class->error(
             MT->translate(
                 "Saving [_1] failed: Invalid image file format.",
