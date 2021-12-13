@@ -786,6 +786,8 @@ sub edit_template_param {
 sub normalize_orientation {
     my $obj = shift;
 
+    return 1 if $obj->file_ext =~ /svg/i;  # no need to normalize
+
     require Image::ExifTool;
 
     my $exif_tool = new Image::ExifTool;
