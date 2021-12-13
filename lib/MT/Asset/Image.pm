@@ -28,7 +28,7 @@ __PACKAGE__->install_properties(
 sub extensions {
     my $pkg = shift;
     return $pkg->SUPER::extensions(
-        [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
+        [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i, qr/svgz?/i ] );
 }
 
 sub image_metadata {
