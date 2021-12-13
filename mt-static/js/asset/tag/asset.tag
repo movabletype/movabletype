@@ -15,17 +15,17 @@
 
   <script>
     selectAsset(e) {
-      if(!this.selected){
-        this.parent.opts.can_multi ? '' : this.parent.assets.map((asset) => asset.selected = false );
-        this.parent.assets.map((asset) => {
-          if(asset.id == this.id){
-            asset.selected = true
-            this.selected = true
-          }
-        })
-      }
+      this.parent.assets.map((asset) => {
+        if(asset.id == this.id){
+          asset.selected = true
+          this.selected = true
+        } else {
+          this.parent.opts.can_multi ? '' : asset.selected = false
+        }
+      })
       this.parent.targetAsset = this
       this.parent.observer.trigger('changeTargetAsset')
+      this.parent.update()
     }
     unselectAsset(e) {
         this.parent.assets.map((asset) => {

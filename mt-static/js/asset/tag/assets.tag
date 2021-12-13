@@ -35,11 +35,11 @@
       </div>
     </div>
     <div class="row justify-content-center">
-      <div class={opts.user_id || opts.content_field_id ? 'col-12 row' : 'col-8 row'}>
+      <div class={opts.user_id || opts.content_field_id || opts.edit_field.startsWith('customfield_') ? 'col-12 row' : 'col-8 row'}>
         <div class="mt-asset col-3" each={ filterdAssets } data-is="asset"></div>
         <p if={ !filterdAssets.length }>{ trans( "No [_1] could be found.", (opts.user_id ? trans( "Userpic") : trans( "Assets")) ) }</p>
       </div>
-      <div class="col-4 overflow-hidden" if={!opts.user_id && !opts.content_field_id}>
+      <div class="col-4 overflow-hidden" if={!opts.user_id && !opts.content_field_id && !opts.edit_field.startsWith('customfield_')}>
         <div class="row justify-content-center">
           <div class="col asset-preview" data-is="asset-preview"></div>
         </div>
@@ -141,25 +141,27 @@
     }
     this.pageNumbers = []
     this.error = ""
+    this.current_filter_type = "";
+    this.current_filter_name = "";
 
     this.observer.on('onNextPage', () => {
       if((this.pageIndex+1) == this.pages) return
       this.pageIndex++
-      this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.changeFilter()
       this.observer.trigger('changePager');
       this.update()
     })
     this.observer.on('onPrevPage', () => {
       if(this.pageIndex == 0) return
       this.pageIndex--
-      this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.changeFilter()
       this.observer.trigger('changePager');
       this.update()
     })
 
     this.observer.on('onPageIndex', (pageIndex) => {
       this.pageIndex = (parseInt(pageIndex) -1)
-      this.filterdAssets = this.assets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
+      this.changeFilter()
       this.observer.trigger('changePager');
       this.update()
     })
@@ -218,6 +220,30 @@
         jQuery('.panel-buttons .insert-assets').removeClass('disabled')
       }
     })
+    loadAssets() {
+      jQuery.ajax({
+        type: "GET",
+        url: ScriptURI,
+        dataType: "json",
+        cache: false,
+        data: {
+          __mode: 'list_asset',
+          _type: 'asset',
+          blog_id: opts.blog_id,
+          dialog_view: 1,
+          json: 1,
+          filter: opts.filter,
+          filter_val: opts.filter_val,
+          offset: this.assets.length,
+        }
+      }).then((data) => {
+        this.assets = this.assets.concat(data)
+        this.changeFilter()
+        this.update()
+      }).catch((error) => {
+        console.log(error)
+      })
+    }
     insertAsset() {
       selected_asset = this.assets.filter((asset) => {
         return asset.selected
@@ -271,8 +297,13 @@
           return false
         })
       }
-      this.pageIndex = 0
-      this.pages = filterAssets.length > 0 ?  parseInt(filterAssets.length / 12) : 0
+      // filter change or search click
+      if(this.current_filter_type != filter_type || this.current_filter_name != filter_name || (e && e.type == "click") ){
+        this.pageIndex = 0
+        this.current_filter_type = filter_type
+        this.current_filter_name = filter_name
+      }
+      this.pages = filterAssets.length > 0 ? filterAssets.length % 12 == 0 ? (filterAssets.length / 12) : Math.floor(filterAssets.length / 12) + 1 : 0
       this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
       this.observer.trigger('changePager')
       this.targetAsset = {}
@@ -472,6 +503,9 @@
         })
     })
     this.observer.trigger('changePager');
+    if(this.assets.length != opts.assets_count){
+      this.loadAssets()
+    }
 
   </script>
 

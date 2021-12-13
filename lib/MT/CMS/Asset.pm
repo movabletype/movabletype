@@ -175,7 +175,7 @@ sub edit {
 
 sub dialog_asset_modal_v2 {
     my $app = shift;
-
+    my $json = $app->param('json');
     my $blog_id = $app->param('blog_id');
     my $blog_class = $app->model('blog');
 
@@ -301,11 +301,24 @@ sub dialog_asset_modal_v2 {
     else {
         $terms{class} = '*';    # all classes
     }
+    my $count = $asset_class->count(
+        \%terms,
+        \%args
+    );
+    if(!$json){
+        $args{limit} = $app->config->AssetModalFiestLoad ? $app->config->AssetModalFiestLoad : 120;
+    }
+    my $offset = $app->param('offset') ? $app->param('offset') : 0;
+    if($offset){
+        $args{offset} = $offset;
+    }
+    if($count > $args{limit}){
+        $param{assets_count} = $count;
+    }
     my $iter  = $asset_class->load_iter(
         \%terms,
         \%args
     );
-
     my @assets;
     while ( my $obj = $iter->() ) {
         my $row = $obj->get_values;
@@ -330,8 +343,10 @@ sub dialog_asset_modal_v2 {
             }
         );
     }
+    if($json){
+        return JSON::to_json( @assets ? \@assets : [] );
+    }
     $param{assets} = JSON::to_json( @assets ? \@assets : [] );
-
     return $app->load_tmpl( 'include/asset_list_modal_v2.tmpl', \%param );
 }
 
