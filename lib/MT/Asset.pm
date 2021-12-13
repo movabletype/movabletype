@@ -849,7 +849,6 @@ sub save {
     }
 
     unless ( $asset->SUPER::save(@_) ) {
-        print STDERR "error during save: " . $asset->errstr . "\n";
         die $asset->errstr;
     }
 }
