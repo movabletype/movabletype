@@ -185,7 +185,7 @@ sub _build_filtered_list_parameters {
             in          => 'query',
             name        => 'limit',
             schema      => { type => 'integer' },
-            description => 'Maximum number of :object_plural to retrieve.',
+            description => "Maximum number of $plural to retrieve.",
         },
         offset => {
             in          => 'query',
@@ -210,14 +210,14 @@ sub _build_filtered_list_parameters {
                     'ascend',
                 ],
             },
-            description => <<'DESCRIPTION',
+            description => <<"DESCRIPTION",
 #### descend
 
-Return :object_plural in descending order.
+Return $plural in descending order.
 
 #### ascend
 
-Return :object_plural in ascending order.
+Return $plural in ascending order.
 
 DESCRIPTION
         },
@@ -225,20 +225,20 @@ DESCRIPTION
             in          => 'query',
             name        => 'fields',
             schema      => { type => 'string' },
-            description => 'The field list to retrieve as part of the :object_singular resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.',
+            description => "The field list to retrieve as part of the $singular resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.",
 
         },
         includeIds => {
             in          => 'query',
             name        => 'includeIds',
             schema      => { type => 'string' },
-            description => 'The comma separated ID list of :object_plural to include to result.',
+            description => "The comma separated ID list of $plural to include to result.",
         },
         excludeIds => {
             in          => 'query',
             name        => 'excludeIds',
             schema      => { type => 'string' },
-            description => 'The comma separated ID list of :object_plural to exclude from result.',
+            description => "The comma separated ID list of $plural to exclude from result.",
         },
     };
     if ($singular eq 'entry' || $singular eq 'page') {
@@ -246,13 +246,13 @@ DESCRIPTION
             in          => 'query',
             name        => 'maxComments',
             schema      => { type => 'integer' },
-            description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the :object_plural resource. If this parameter is not supplied, no comments will be returned.',
+            description => "This is an optional parameter. Maximum number of comments to retrieve as part of the $plural resource. If this parameter is not supplied, no comments will be returned.",
         };
         $parameter_template->{maxTrackbacks} = {
             in          => 'query',
             name        => 'maxTrackbacks',
             schema      => { type => 'integer' },
-            description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the :object_plural resource. If this parameter is not supplied, no trackbacks will be returned.',
+            description => "This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the $plural resource. If this parameter is not supplied, no trackbacks will be returned.",
         };
         $parameter_template->{status} = {
             in     => 'query',
@@ -267,8 +267,8 @@ DESCRIPTION
                     'Spam',
                 ],
             },
-            description => <<'DESCRIPTION',
-Filter by container :object_singular's status.
+            description => <<"DESCRIPTION",
+Filter by container ${singular}'s status.
 
 #### Draft
 
@@ -395,11 +395,6 @@ DESCRIPTION
     my $param;
     for my $key (keys %$parameter_template) {
         $param->{$key} = $parameter_template->{$key};
-
-        if ($param->{$key}{description}) {
-            $param->{$key}{description} =~ s/:object_singular/$singular/g;
-            $param->{$key}{description} =~ s/:object_plural/$plural/g;
-        }
 
         my $default_value = $default_params->{$key};
         if (defined $default_value && $default_value ne '') {
