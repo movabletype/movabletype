@@ -5,6 +5,7 @@
 package MT::Image::SVG;
 use strict;
 use warnings;
+use Carp;
 use base qw( MT::Image );
 use XML::SAX::SVGTransformer;
 use XML::SAX::ParserFactory;
