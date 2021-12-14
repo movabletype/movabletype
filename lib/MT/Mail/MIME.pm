@@ -171,15 +171,8 @@ sub send {
 sub _send_mt_debug {
     my $class = shift;
     my ( $hdrs, $body, $mgr ) = @_;
-    for my $key ( keys %$hdrs ) {
-        my @arr
-            = ref( $hdrs->{$key} ) eq 'ARRAY'
-            ? @{ $hdrs->{$key} }
-            : ( $hdrs->{$key} );
-        print STDERR map "$key: $_\n", @arr;
-    }
-    print STDERR "\n";
-    print STDERR $body;
+    my ($hdr) = $class->_render_headers($hdrs);
+    print STDERR $hdr. "\n". $body;
     1;
 }
 
