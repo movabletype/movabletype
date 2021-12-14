@@ -66,7 +66,7 @@ sub field_html_params {
                 asset_label          => $row->{label},
                 asset_preview_url    => $row->{preview_url},
                 asset_preview_height => $row->{preview_height},
-                asset_preview_width  => $row->{preivew_width},
+                asset_preview_width  => $row->{preview_width},
                 asset_type           => $row->{class},
                 };
         }
