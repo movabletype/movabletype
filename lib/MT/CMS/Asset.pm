@@ -174,38 +174,38 @@ sub edit {
 }
 
 sub dialog_asset_modal_v2 {
-    my $app = shift;
-    my $json = $app->param('json');
-    my $blog_id = $app->param('blog_id');
+    my $app        = shift;
+    my $json       = $app->param('json');
+    my $blog_id    = $app->param('blog_id');
     my $blog_class = $app->model('blog');
 
     my $mode_userpic = $app->param('upload_mode') || '';
-    return $app->return_to_dashboard( redirect => 1 )
+    return $app->return_to_dashboard(redirect => 1)
         if !$blog_id && $mode_userpic ne 'upload_userpic';
 
     my %param;
-    _set_start_upload_params( $app, \%param );
+    _set_start_upload_params($app, \%param);
 
     if (   $app->param('edit_field')
-        && $app->param('edit_field') =~ m/^customfield_.*$/ )
+        && $app->param('edit_field') =~ m/^customfield_.*$/)
     {
         return $app->permission_denied()
             unless $app->permissions;
-    }
-    else {
+    } else {
         return $app->permission_denied()
             if $blog_id && !$app->can_do('access_to_insert_asset_list');
     }
 
     $param{can_multi} = 1
-        if ( $app->param('upload_mode') || '' ) ne 'upload_userpic'
-        && $app->param('can_multi') && $app->param('edit_field') !~ m/^customfield_.*$/;
+        if ($app->param('upload_mode') || '') ne 'upload_userpic'
+        && $app->param('can_multi')
+        && $app->param('edit_field') !~ m/^customfield_.*$/;
 
     $param{filter} = $app->param('filter')
         if defined $app->param('filter');
     $param{filter_val} = $app->param('filter_val')
         if defined $app->param('filter_val');
-    $param{search} = $app->param('search') if defined $app->param('search');
+    $param{search}     = $app->param('search') if defined $app->param('search');
     $param{edit_field} = $app->param('edit_field')
         if defined $app->param('edit_field');
     $param{next_mode}    = $app->param('next_mode');
@@ -226,8 +226,8 @@ sub dialog_asset_modal_v2 {
         $param{can_upload}   = 1;
     }
 
-    if ( $param{require_type} ) {
-        my $req_class = $app->model( $param{require_type} );
+    if ($param{require_type}) {
+        my $req_class = $app->model($param{require_type});
         $param{require_type_label} = $req_class->class_label;
     }
 
@@ -250,9 +250,9 @@ sub dialog_asset_modal_v2 {
     # Set directory separator
     $param{dir_separator} = MT::Util::dir_separator;
 
-    if ( my $content_field_id = $app->param('content_field_id') ) {
+    if (my $content_field_id = $app->param('content_field_id')) {
         require MT::ContentField;
-        if ( my $content_field = MT::ContentField->load($content_field_id) ) {
+        if (my $content_field = MT::ContentField->load($content_field_id)) {
             $param{content_field_id} = $content_field_id;
             my $options = $content_field->options;
             $param{can_multi}  = $options->{multiple}     ? 1 : 0;
@@ -262,29 +262,27 @@ sub dialog_asset_modal_v2 {
 
     my $asset_class = $app->model('asset') or return;
     my %terms;
-    my %args = ( sort => 'created_on', direction => 'descend' );
+    my %args = (sort => 'created_on', direction => 'descend');
 
     my $class_filter;
     my $filter = $app->param('filter') || '';
-    if ( $filter eq 'class' ) {
+    if ($filter eq 'class') {
         $class_filter = $app->param('filter_val');
-    }
-    elsif ( $filter eq 'userpic' ) {
+    } elsif ($filter eq 'userpic') {
         $class_filter      = 'image';
         $terms{created_by} = $app->param('filter_val');
         $terms{blog_id}    = 0;
 
-        my $tag = MT->model('tag')
-            ->load( { name => '@userpic' }, { binary => { name => 1 } } );
+        my $tag = MT->model('tag')->load({ name => '@userpic' }, { binary => { name => 1 } });
         if ($tag) {
             require MT::ObjectTag;
             $args{'join'} = MT::ObjectTag->join_on(
                 'object_id',
-                {   tag_id            => $tag->id,
+                {
+                    tag_id            => $tag->id,
                     object_datasource => MT::Asset->datasource
                 },
-                { unique => 1 }
-            );
+                { unique => 1 });
         }
     }
 
@@ -297,30 +295,29 @@ sub dialog_asset_modal_v2 {
     if ($class_filter) {
         my $asset_pkg = MT::Asset->class_handler($class_filter);
         $terms{class} = $asset_pkg->type_list;
-    }
-    else {
+    } else {
         $terms{class} = '*';    # all classes
     }
     my $count = $asset_class->count(
         \%terms,
         \%args
     );
-    if(!$json){
+    if (!$json) {
         $args{limit} = $app->config->AssetModalFiestLoad ? $app->config->AssetModalFiestLoad : 120;
     }
     my $offset = $app->param('offset') ? $app->param('offset') : 0;
-    if($offset){
+    if ($offset) {
         $args{offset} = $offset;
     }
-    if($count > $args{limit}){
+    if ($count > $args{limit}) {
         $param{assets_count} = $count;
     }
-    my $iter  = $asset_class->load_iter(
+    my $iter = $asset_class->load_iter(
         \%terms,
         \%args
     );
     my @assets;
-    while ( my $obj = $iter->() ) {
+    while (my $obj = $iter->()) {
         my $row = $obj->get_values;
         push(
             @assets,
@@ -332,22 +329,20 @@ sub dialog_asset_modal_v2 {
                 description    => $obj->description,
                 file_name      => $obj->file_name,
                 type           => $row->{class},
-                width          => $row->{class} eq 'image' ? $obj->image_width : '',
+                width          => $row->{class} eq 'image' ? $obj->image_width  : '',
                 height         => $row->{class} eq 'image' ? $obj->image_height : '',
                 insert_options => {
-                    alt => $obj->label,
-                    width => $row->{class} eq 'image' ? $obj->image_width : '',
+                    alt     => $obj->label,
+                    width   => $row->{class} eq 'image' ? $obj->image_width : '',
                     caption => '',
-                    align => 'none',
-                }
-            }
-        );
+                    align   => 'none',
+                } });
     }
-    if($json){
-        return JSON::to_json( @assets ? \@assets : [] );
+    if ($json) {
+        return JSON::to_json(@assets ? \@assets : []);
     }
-    $param{assets} = JSON::to_json( @assets ? \@assets : [] );
-    return $app->load_tmpl( 'include/asset_list_modal_v2.tmpl', \%param );
+    $param{assets} = JSON::to_json(@assets ? \@assets : []);
+    return $app->load_tmpl('include/asset_list_modal_v2.tmpl', \%param);
 }
 
 sub dialog_list_asset {
