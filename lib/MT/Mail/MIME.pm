@@ -25,9 +25,6 @@ sub send {
     my $class = shift;
     my ( $hdrs_arg, $body ) = @_;
 
-    local $hdrs_arg->{id} = $hdrs_arg->{id};
-    my $id = delete $hdrs_arg->{id};
-
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
     foreach my $h ( keys %hdrs ) {
         if ( ref( $hdrs{$h} ) eq 'ARRAY' ) {
@@ -38,6 +35,7 @@ sub send {
         }
     }
 
+    my $id       = delete $hdrs{id};
     my $mgr  = MT->config;
     my $xfer = $mgr->MailTransfer;
     my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
