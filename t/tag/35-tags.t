@@ -1324,25 +1324,25 @@ Melody
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size'$></MTAssets>
 --- expected
-84.1 KB
+129.9 KB
 
 === test 258
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='0'$></MTAssets>
 --- expected
-86094
+133050
 
 === test 259
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='1'$></MTAssets>
 --- expected
-84.1 KB
+129.9 KB
 
 === test 260
 --- template
 <MTAssets lastn='1'><$MTAssetProperty property='file_size' format='k'$></MTAssets>
 --- expected
-84.1
+129.9
 
 === test 261
 --- template

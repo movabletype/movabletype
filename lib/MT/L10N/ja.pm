@@ -3132,6 +3132,8 @@ use vars qw( @ISA %Lexicon );
 ## mt-static/js/contenttype/tag/content-field.tag
 	'ContentField' => 'コンテンツフィールド',
 	'Move' => '移動',
+	'Do you want to delete [_1]([_2])?' => '[_1]([_2])を削除しますか？',
+	'Duplicate' => '複製',
 
 ## mt-static/js/contenttype/tag/content-fields.tag
 	'Allow users to change the display and sort of fields by display option' => 'ユーザーにフィールドの並び替えや表示非表示の変更を許可する',

@@ -215,7 +215,14 @@ SKIP: {
                 } else {
                     is($got, $expected, $name);
                 }
-                is($php_error, '', 'no php warnings');
+                if ($ENV{MT_TEST_IGNORE_PHP_WARNINGS} && $php_error) {
+                    SKIP: {
+                        local $TODO = 'for now';
+                        ok !$php_error, 'no php warnings';
+                    }
+                } else {
+                    is($php_error, '', 'no php warnings');
+                }
                 __PACKAGE__->_update_config($prev_config);
             }
         }
