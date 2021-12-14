@@ -150,6 +150,9 @@ function loadAssetList(offset) {
   jQuery('#asset-class').attr("disabled", "disabled");
   jQuery('#search').attr("disabled", "disabled");
   jQuery('#search-button').attr("disabled", "disabled");
+  <mt:unless name="can_multi">
+  jQuery('.actions-bar button.primary').attr('disabled','disabled').addClass('disabled');
+  </mt:unless>
 
   var opts= {
     offset: offset,
