@@ -13,6 +13,7 @@ use MT;
 use base qw( MT::ErrorHandler );
 use Encode;
 use Sys::Hostname;
+use MT::Util qw(is_valid_email);
 
 my %SMTPModules = (
     Core     => [ 'Net::SMTPS',      'MIME::Base64' ],
@@ -167,8 +168,6 @@ sub send {
             MT->translate( "Unknown MailTransfer method '[_1]'", $xfer ) );
     }
 }
-
-use MT::Util qw(is_valid_email);
 
 sub _send_mt_debug {
     my $class = shift;
