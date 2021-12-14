@@ -511,6 +511,12 @@ jQuery('#asset-table').on('click', 'td:not(.cb)', function (e) {
   }
 });
 
+jQuery('#list-asset-panel').on('changePanel', function(){
+  if(jQuery('table.listing-table tbody tr input[name="id"]:checked').length > 0){
+    jQuery('.actions-bar button.primary').prop('disabled', false).removeClass('disabled');
+  }
+});
+
 if (MT.Util.isIos()) {
   jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
 } else {
