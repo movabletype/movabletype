@@ -236,6 +236,16 @@ function loadAssetList(offset) {
         }
         saveChecked(currentPage);
       });
+      <mt:if name="can_multi">
+      if(checked.length > 0 && currentPage in checked){
+        jQuery('table.listing-table tbody tr input[name="id"]').map(function(index, elm){
+          let id = jQuery(elm).closest('tr').attr('id');
+          if( id in checked[currentPage]){
+            jQuery(elm).prop('checked', true);
+          }
+        });
+      }
+      </mt:if>
 
       toggleClassOfPaginationContainer();
     },
