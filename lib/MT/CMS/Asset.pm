@@ -302,15 +302,13 @@ sub dialog_asset_modal_v2 {
         \%terms,
         \%args
     );
+    $param{assets_count} = $count;
     if (!$json) {
         $args{limit} = $app->config->AssetModalFiestLoad ? $app->config->AssetModalFiestLoad : 120;
     }
     my $offset = $app->param('offset') ? $app->param('offset') : 0;
     if ($offset) {
         $args{offset} = $offset;
-    }
-    if ($count > $args{limit}) {
-        $param{assets_count} = $count;
     }
     my $iter = $asset_class->load_iter(
         \%terms,
