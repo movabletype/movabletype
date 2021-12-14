@@ -3,13 +3,13 @@
     <ss href="{ StaticURI }images/sprite.svg#ic_caution" class="mt-icon mt-icon--sm mt-icon--danger" title={ trans("Failed to load") }></ss>
     {error}
   </p>
-  <div class={ show_option ? 'd-none' : 'd-block' }>
+  <div class={ showOption ? 'd-none' : 'd-block' }>
     <div class="row flex-nowrap">
       <div class="col form-group row">
         <div class="col-auto"><label for="asset_type">{ trans('Type') }</label></div>
         <div class="col">
           <select id="asset_type" name="asset_type" class="custom-select form-control asset_type">
-            <option disabled={ opts.filter_val != ""}>{ trans('All Types') }</option>
+            <option disabled={ opts.filter_val != ""} value="">{ trans('All Types') }</option>
             <option each={ opts.types } value={ type } selected={ opts.filter == 'class' && opts.filter_val == type }  disabled={ opts.filter_val != "" && opts.filter_val != type }>{ label }</option>
           </select>
         </div>
@@ -74,7 +74,7 @@
       </nav>
     </div>
   </div>
-  <div class={ show_option ? 'asse-upload-options d-block' : 'd-none' }>
+  <div class={ showOption ? 'asse-upload-options d-block' : 'd-none' }>
     <div class="asset-upload-option" data-is="asset-upload-option"></div>
   </div>
 
@@ -128,10 +128,10 @@
       this.filterdAssets = this.assets.slice(this.pageIndex, this.pageIndex + this.limit)
     }
     this.observer = opts.observer
-    this.show_option = false
+    this.showOption = false
     this.targetAsset = {}
     this.queue = [];
-    this.upload_options = {
+    this.uploadOoptions = {
       destination: opts.destination,
       extra_path: opts.extra_path,
       dir_separator: opts.dir_separator,
@@ -141,8 +141,8 @@
     }
     this.pageNumbers = []
     this.error = ""
-    this.current_filter_type = "";
-    this.current_filter_name = "";
+    this.currentFilterType = "";
+    this.currentFilterName = "";
 
     this.observer.on('onNextPage', () => {
       if((this.pageIndex+1) == this.pages) return
@@ -298,10 +298,10 @@
         })
       }
       // filter change or search click
-      if(this.current_filter_type != filter_type || this.current_filter_name != filter_name || (e && e.type == "click") ){
+      if(this.currentFilterType != filter_type || this.currentFilterName != filter_name || (e && e.type == "click") ){
         this.pageIndex = 0
-        this.current_filter_type = filter_type
-        this.current_filter_name = filter_name
+        this.currentFilterType = filter_type
+        this.currentFilterName = filter_name
       }
       this.pages = filterAssets.length > 0 ? filterAssets.length % 12 == 0 ? (filterAssets.length / 12) : Math.floor(filterAssets.length / 12) + 1 : 0
       this.filterdAssets = filterAssets.slice(this.limit * this.pageIndex, this.limit * (this.pageIndex + 1))
@@ -315,13 +315,13 @@
     }
 
     changeShowOption(e) {
-      this.show_option = true
+      this.showOption = true
       jQuery('.asset-options-buttons').removeClass('d-none')
       jQuery('.panel-buttons').addClass('d-none')
       jQuery('.asset-options-buttons .action').on('click', () => {
         jQuery('.asset-options-buttons').addClass('d-none')
         jQuery('.panel-buttons').removeClass('d-none')
-        this.show_option = false
+        this.showOption = false
         this.update()
       });
     }
@@ -345,8 +345,8 @@
         fd.append('user_id', opts.user_id);
       }
       fd.append('dialog', 1);
-      Object.keys(this.upload_options).map( (key) => {
-        fd.append(key, this.upload_options[key])
+      Object.keys(this.uploadOoptions).map( (key) => {
+        fd.append(key, this.uploadOoptions[key])
       })
 
       return fd;
