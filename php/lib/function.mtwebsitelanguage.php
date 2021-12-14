@@ -14,7 +14,7 @@ function smarty_function_mtwebsitelanguage($args, &$ctx) {
     $language = empty($website)
         ? $ctx->mt->config('DefaultLanguage')
         : $website->blog_language;
-    return normalize_language( $language, $args['locale'],
-        $args['ietf'] );
+    return normalize_language( $language, isset($args['locale']) ? $args['locale'] : null,
+        isset($args['ietf']) ? $args['ietf'] : null );
 }
 ?>

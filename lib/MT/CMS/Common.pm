@@ -316,12 +316,13 @@ sub save {
 
                         my $name  = 'can_' . $_->[0];
                         my $value = $app->param($name);
+                        my $perm_obj = $obj->can($name) ? $obj : $obj->permissions(0);
                         if ( defined $value ) {
-                            $obj->$name($value);
+                            $perm_obj->$name($value);
                             delete $values{$name};
                         }
                         else {
-                            $obj->$name(0);
+                            $perm_obj->$name(0);
                         }
                     }
                 }

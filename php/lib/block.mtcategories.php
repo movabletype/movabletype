@@ -24,9 +24,9 @@ function smarty_block_mtcategories($args, $content, &$ctx, &$repeat) {
             }
         }
         $args['sort_by'] = 'label';
-        $args['sort_order'] or $args['sort_order'] = 'ascend';
+        !empty($args['sort_order']) or $args['sort_order'] = 'ascend';
         $categories = $ctx->mt->db()->fetch_categories($args);
-        $glue = $args['glue'];
+        $glue = isset($args['glue']) ? $args['glue'] : '';
         $ctx->stash('_categories_glue', $glue);
         $ctx->stash('_categories', $categories);
         $ctx->stash('inside_mt_categories', 1);

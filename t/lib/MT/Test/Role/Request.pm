@@ -81,6 +81,24 @@ sub post_form_ok {
     $res;
 }
 
+sub js_get_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->get_ok($params);
+}
+
+sub js_post_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post_ok($params);
+}
+
+sub js_post_form_ok {
+    my ( $self, $params ) = @_;
+    local $ENV{HTTP_X_REQUESTED_WITH} = 'XMLHttpRequest';
+    $self->post_form_ok($params);
+}
+
 sub forms {
     my $self = shift;
     HTML::Form->parse(

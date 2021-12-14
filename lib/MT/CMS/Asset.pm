@@ -404,7 +404,8 @@ sub dialog_list_asset {
 
     $app->add_breadcrumb( $app->translate("Files") );
 
-    if ($blog_id) {
+    my $content_field_id = $app->param('content_field_id');
+    if ($blog_id && !$content_field_id) {
         my $blog_ids = $app->_load_child_blog_ids($blog_id);
         push @$blog_ids, $blog_id;
         $terms{blog_id} = $blog_ids;
@@ -1236,7 +1237,8 @@ sub build_asset_hasher {
                 = $obj->$thumbnail_method(
                 Height => $height,
                 Width  => $width,
-                Square => $square
+                Square => $square,
+                Ts     => 1,
                 );
 
             $meta->{thumbnail_width_offset}
@@ -1249,6 +1251,7 @@ sub build_asset_hasher {
                     = $obj->$thumbnail_method(
                     Height => $default_preview_height,
                     Width  => $default_preview_width,
+                    Ts     => 1,
                     );
                 $meta->{preview_width_offset} = int(
                     ( $default_preview_width - $meta->{preview_width} ) / 2 );
@@ -1677,6 +1680,7 @@ sub _upload_file_compat {
                     )[2];
                 if (   $ext_new ne lc($ext_old)
                     && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+                    && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
                     && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
                 {
                     if ( $basename eq $ext_old ) {
@@ -2096,6 +2100,10 @@ sub _upload_file_compat {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;
@@ -2219,6 +2227,7 @@ sub _upload_file {
 
         if (   $ext_new ne lc($ext_old)
             && !( lc($ext_old) eq 'jpeg' && $ext_new eq 'jpg' )
+            && !( lc($ext_old) eq 'mpeg' && $ext_new eq 'mpg' )
             && !( lc($ext_old) eq 'swf'  && $ext_new eq 'cws' ) )
         {
             if ( $basename eq $ext_old ) {
@@ -2636,6 +2645,10 @@ sub _upload_file {
         # and ImageQualityPng.
         $asset->change_quality
             if $app->config('AutoChangeImageQuality');
+
+        if ($app->config('ForceExifRemoval')) {
+            $asset->remove_all_metadata;
+        }
     }
 
     $asset->mime_type($mimetype) if $mimetype;

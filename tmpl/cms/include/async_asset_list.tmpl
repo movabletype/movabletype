@@ -161,6 +161,9 @@ function loadAssetList(offset) {
 <mt:if name="blog_id">
       blog_id: <mt:var name="blog_id" escape="html">,
 </mt:if>
+<mt:if name="content_field_id">
+      content_field_id: '<mt:var name="content_field_id" escape="html">',
+</mt:if>
       dialog_view: 1,
 <mt:if name="upload_mode">
       upload_mode: '<mt:var name="upload_mode" escape="html">',
@@ -285,6 +288,8 @@ function renderPagination(pager) {
 
   if (page - 2 >= 1) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+  }
+  if (page - 3 >= 1) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
   }
 
@@ -300,8 +305,10 @@ function renderPagination(pager) {
     $pagination.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
   }
 
-  if (page + 2 <= maxPage) {
+  if (page + 3 <= maxPage) {
     $pagination.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+  if (page + 2 <= maxPage) {
     $pagination.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
   }
 

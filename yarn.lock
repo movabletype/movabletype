@@ -238,16 +238,16 @@ atob@^2.1.2:
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
   integrity sha512-Wm6ukoaOGJi/73p/cl2GvLjTI5JM1k/O14isD73YML8StrH/7/lRFgmg8nICZgD3bZZvjwCGxtMOD3wWNAu8cg==
 
-autoprefixer@^9.8.6:
-  version "9.8.6"
-  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.8.6.tgz#3b73594ca1bf9266320c5acf1588d74dea74210f"
-  integrity sha512-XrvP4VVHdRBCdX1S3WXVD8+RyG9qeb1D5Sn1DeLiG2xfSpzellk5k54xbUERJ3M5DggQxes39UGOTP8CFrEGbg==
+autoprefixer@^9.8.8:
+  version "9.8.8"
+  resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-9.8.8.tgz#fd4bd4595385fa6f06599de749a4d5f7a474957a"
+  integrity sha512-eM9d/swFopRt5gdJ7jrpCwgvEMIayITpojhkkSMRsFHYuH5bkSQ4p/9qTEHtmNudUZh22Tehu7I6CxAW0IXTKA==
   dependencies:
     browserslist "^4.12.0"
     caniuse-lite "^1.0.30001109"
-    colorette "^1.2.1"
     normalize-range "^0.1.2"
     num2fraction "^1.2.2"
+    picocolors "^0.2.1"
     postcss "^7.0.32"
     postcss-value-parser "^4.1.0"
 
@@ -491,19 +491,19 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-clean-css-cli@^5.3.3:
-  version "5.3.3"
-  resolved "https://registry.yarnpkg.com/clean-css-cli/-/clean-css-cli-5.3.3.tgz#2ce11038240de9cc276d5a9585f3b15b80f17453"
-  integrity sha512-Reo/w25/3J2uRL4EFHvo92Tv97uhefyHranTpxXNqQ7iIRB8oxRNVlXC+Xcq8RWO2LjSyOofrb7AU6I6oXpPpA==
+clean-css-cli@^5.4.2:
+  version "5.4.2"
+  resolved "https://registry.yarnpkg.com/clean-css-cli/-/clean-css-cli-5.4.2.tgz#4b242e0bfd42f25af56633326fbf9c50744502c2"
+  integrity sha512-BYxVOuBQL8f2+yucOgmwUi1idpAQV4k9bxG6mxTrBikuwrkXBG5/Pq6tqCi4GZUtgvslMj8dGVtFSoXp9OLzeA==
   dependencies:
-    clean-css "^5.1.5"
+    clean-css "^5.2.2"
     commander "7.x"
     glob "^7.1.6"
 
-clean-css@^5.1.5:
-  version "5.1.5"
-  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.1.5.tgz#3b0af240dcfc9a3779a08c2332df3ebd4474f232"
-  integrity sha512-9dr/cU/LjMpU57PXlSvDkVRh0rPxJBXiBtD0+SgYt8ahTCsXtfKjCkNYgIoTC6mBg8CFr5EKhW3DKCaGMUbUfQ==
+clean-css@^5.2.2:
+  version "5.2.2"
+  resolved "https://registry.yarnpkg.com/clean-css/-/clean-css-5.2.2.tgz#d3a7c6ee2511011e051719838bdcf8314dc4548d"
+  integrity sha512-/eR8ru5zyxKzpBLv9YZvMXgTSSQn7AdkMItMYynsFgGwTveCRVam9IUPFloE85B4vAIj05IuKmmEoV7/AQjT0w==
   dependencies:
     source-map "~0.6.0"
 
@@ -2175,6 +2175,11 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/performance-now/-/performance-now-2.1.0.tgz#6309f4e0e5fa913ec1c69307ae364b4b377c9e7b"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
+
+picocolors@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-0.2.1.tgz#570670f793646851d1ba135996962abad587859f"
+  integrity sha512-cMlDqaLEqfSaW8Z7N5Jw+lyIW869EzT73/F5lhtY9cLGoVxSXznfgfXMO0Z5K0o0Q2TkTXq+0KFsdnSe3jDViA==
 
 picomatch@^2.0.4, picomatch@^2.0.5, picomatch@^2.2.1:
   version "2.2.2"

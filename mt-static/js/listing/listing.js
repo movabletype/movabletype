@@ -522,8 +522,8 @@ riot.tag2('list-filter-item', '<div class="filteritem"> <button class="close" ar
         dayNamesMin: this.listFilterTop.opts.localeCalendarHeader,
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
-        prevText: '&lt;',
-        nextText: '&gt;',
+        prevText: '<',
+        nextText: '>',
       })
     }.bind(this)
 

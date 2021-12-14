@@ -2419,7 +2419,7 @@ sub unpublish_past_entries {
                             "An error occurred while unpublishing past entries: [_1]",
                             $err
                         ),
-                        class    => "unpublish",
+                        class    => "unpublish",    ## trans('unpublish')
                         category => 'rebuild',
                         blog_id  => $site->id,
                         level    => MT::Log::ERROR()

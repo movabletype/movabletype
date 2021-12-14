@@ -85,6 +85,8 @@ for my $ds ('template', 'cd', 'entry') {
 
     my $obj = $objs->{ $ds_spec->{$ds}->{fixture} }{ $ds . '1' };
 
+    MT->model($ds . ':revision')->remove({ $ds . '_id' => $obj->id });
+
     for (1 .. 21) {
         my $rev_obj = $obj->clone();
         $rev_obj->{changed_revisioned_cols} = [$ds_spec->{$ds}->{field}];

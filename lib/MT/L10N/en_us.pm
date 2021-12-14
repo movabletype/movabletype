@@ -253,9 +253,9 @@ sub ascii_only { ( ( ref $_[0] ) || $_[0] ) eq __PACKAGE__ }
         'Powered by <a href="https://www.movabletype.org/"><$MTProductName$></a>',
     '_DISPLAY_OPTIONS_SHOW' => 'Show',
     '_WARNING_DELETE_USER_EUM' =>
-        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
+        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries or content data. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)? They will be able to re-create themselves if selected user(s) still exist in your external directory.',
     '_WARNING_DELETE_USER' =>
-        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
+        'Deleting a user is an irrevocable action which creates orphans of the user\'s entries or content data. If you wish to retire a user or remove their access to the system, disabling their account is the recommended course of action. Are you sure you want to delete the selected user(s)?',
     '_WARNING_REFRESH_TEMPLATES_FOR_BLOGS' =>
         'This action will restore the templates in the selected blog(s) to theme default settings. Are you sure you want to refresh templates in the selected blog(s)?',
 

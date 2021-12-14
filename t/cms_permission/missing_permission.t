@@ -47,8 +47,8 @@ my $objs = MT::Test::Fixture->prepare({
     },
     role => {
         test_role => [
-            { content_type => 'ct',  permission => 'manage_content_data' },
-            { content_type => 'ct2', permission => 'manage_content_data' },
+            { content_type => 'ct',  permissions => [qw/manage_content_data/] },
+            { content_type => 'ct2', permissions => [qw/manage_content_data/] },
         ],
     },
 });
