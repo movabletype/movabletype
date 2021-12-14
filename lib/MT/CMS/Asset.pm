@@ -3329,10 +3329,11 @@ sub insert_asset {
 
     my $can_multi;
     my $content_field_id = $app->param('content_field_id');
+    my $options;
     if ($content_field_id) {
         require MT::ContentField;
         if ( my $content_field = MT::ContentField->load($content_field_id) ) {
-            my $options = $content_field->options;
+            $options = $content_field->options;
             $can_multi = $options->{multiple} ? 1 : 0;
         }
         else {
@@ -3344,8 +3345,8 @@ sub insert_asset {
         my @assets_data;
         my $hasher = build_asset_hasher(
             $app,
-            PreviewWidth  => 80,
-            PreviewHeight => 80,
+            PreviewWidth  => $options->{preview_width} || 80,
+            PreviewHeight => $options->{preview_height} || 80,
         );
         for my $obj (@$assets) {
             my $row = $obj->get_values;
