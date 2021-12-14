@@ -66,7 +66,6 @@
 </div>
 
 <script>
-  console.log(this.parent.opts.filter)
   changeDestinationText(e){
       this.parent.upload_options.destination = e.target.value
   }
