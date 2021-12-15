@@ -275,18 +275,19 @@ sub filtered_list {
         if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { @act = $code->(); };
+            eval { ($list_permission, @act) = $code->($app); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
                 )
             ) if $@;
         }
-        elsif ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
+
+        if ( 'ARRAY' eq ref $list_permission ) {
+            unshift @act, @$list_permission;
         }
         else {
-            @act = split /\s*,\s*/, $list_permission;
+            unshift @act, split /\s*,\s*/, $list_permission;
         }
         my $blog_ids = undef;
         if ($blog_id) {

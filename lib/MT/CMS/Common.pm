@@ -1063,7 +1063,7 @@ sub list {
         if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->($app); };
+            eval { ($list_permission, @act) = $code->($app); };
             return $app->error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
@@ -1072,10 +1072,10 @@ sub list {
         }
 
         if ( 'ARRAY' eq ref $list_permission ) {
-            @act = @$list_permission;
+            unshift @act, @$list_permission;
         }
         else {
-            @act = split /\s*,\s*/, $list_permission;
+            unshift @act, split /\s*,\s*/, $list_permission;
         }
         my $blog_ids = undef;
         if ($blog_id) {
@@ -1554,7 +1554,7 @@ sub filtered_list {
         if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
-            eval { $list_permission = $code->($app); };
+            eval { ($list_permission, @permissions) = $code->($app); };
             return $app->json_error(
                 $app->translate(
                     'Error occurred during permission check: [_1]', $@
@@ -1563,10 +1563,10 @@ sub filtered_list {
         }
 
         if ( 'ARRAY' eq ref $list_permission ) {
-            @permissions = @$list_permission;
+            unshift @permissions, @$list_permission;
         }
         else {
-            @permissions = split /\s*,\s*/, $list_permission;
+            unshift @permissions, split /\s*,\s*/, $list_permission;
         }
         foreach my $p (@permissions) {
             $allowed = 1,
