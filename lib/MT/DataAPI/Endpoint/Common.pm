@@ -272,7 +272,7 @@ sub filtered_list {
         }
         my $allowed = 0;
         my @act;
-        if ( $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
+        if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
             my $code = $list_permission;
             $code = MT->handler_to_coderef($code);
             eval { @act = $code->(); };
