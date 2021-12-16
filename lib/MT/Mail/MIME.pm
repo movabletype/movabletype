@@ -95,19 +95,13 @@ sub send {
         $hdrs{Subject} = MT::I18N::default->encode_text_encode($hdrs{Subject}, undef, $mail_enc);
         $hdrs{From}    = MT::I18N::default->encode_text_encode($hdrs{From},    undef, $mail_enc);
     }
-    $hdrs{'Content-Type'} ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'} = (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
-    $hdrs{'MIME-Version'} ||= "1.0";
+    $hdrs{'Content-Type'}              ||= qq(text/plain; charset=") . $mail_enc . q(");
+    $hdrs{'Content-Transfer-Encoding'} ||= (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs{'MIME-Version'}              ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
     if (!$hdrs{From}) {
         return $class->error(MT->translate("System Email Address is not configured."));
-    }
-
-    my $max_line_octet = $class->MAX_LINE_OCTET;
-    if ($body =~ /^.{@{[$max_line_octet+1]},}/m && eval { require MIME::Base64 }) {
-        $body = MIME::Base64::encode_base64($body);
-        $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
@@ -126,8 +120,8 @@ sub send {
 sub _send_mt_debug {
     my $class = shift;
     my ($hdrs, $body, $mgr) = @_;
-    my ($hdr) = $class->_render_headers($hdrs);
-    print STDERR $hdr . "\n" . $body;
+    my ($msg) = $class->render($hdrs, $body);
+    print STDERR $msg;
     1;
 }
 
@@ -234,7 +228,7 @@ sub _send_mt_smtp {
     # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From});
 
-    my ($hdr, @recipients) = $class->_render_headers($hdrs, 'hide_bcc');
+    my ($msg, @recipients) = $class->render($hdrs, $body, 'hide_bcc');
 
     $smtp->recipient($_) for @recipients;
 
@@ -249,10 +243,7 @@ sub _send_mt_smtp {
 
     eval {
         $smtp->data();
-        $smtp->datasend($hdr);
-        $_check_smtp_err->();
-        $smtp->datasend("\n");
-        $smtp->datasend($body);
+        $smtp->datasend($msg);
         $_check_smtp_err->();
         $smtp->dataend();
         $smtp->quit;
@@ -296,33 +287,6 @@ sub _dedupe_headers {
     }
 }
 
-sub _render_headers {
-    my ($class, $hdrs, $hide_bcc) = @_;
-
-    # Setup headers
-    my $hdr;
-    foreach my $k (keys %$hdrs) {
-        next if ($k =~ /^(To|Bcc|Cc)$/);
-        my $value = $hdrs->{$k};
-        if (ref $value eq 'ARRAY') {    # From, Reply-To
-            $hdr .= "$k: " . join(",\r\n ", @$value) . "\r\n";
-        } else {
-            $hdr .= "$k: " . $value . "\r\n";
-        }
-    }
-
-    my @recipients;
-    foreach my $h (qw( To Bcc Cc )) {
-        if (defined $hdrs->{$h}) {
-            my $addr = $hdrs->{$h};
-            $addr = [$addr] unless 'ARRAY' eq ref $addr;
-            push @recipients, @$addr;
-            $hdr .= "$h: " . join(",\r\n ", @$addr) . "\r\n" unless $hide_bcc && $h eq 'Bcc';
-        }
-    }
-    return wantarray ? ($hdr, @recipients) : $hdr;
-}
-
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
@@ -346,12 +310,9 @@ sub _send_mt_sendmail {
 
     $class->_dedupe_headers($hdrs);
 
-    my $hdr = $class->_render_headers($hdrs);
-    $hdr =~ s{\r\n}{\n}g;
-
-    print $MAIL $hdr;
-    print $MAIL "\n";
-    print $MAIL $body;
+    my ($msg) = $class->render($hdrs, $body);
+    $msg =~ s{\r\n}{\n}g;
+    print $MAIL $msg;
     close $MAIL;
     1;
 }

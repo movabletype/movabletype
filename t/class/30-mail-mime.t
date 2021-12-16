@@ -29,16 +29,18 @@ sub base64_encode_suite {
     my $mail_class     = shift;
     my $max_line_octet = $mail_class->MAX_LINE_OCTET;
     return ({
-            name     => 'Not base64 encoded',
-            input    => 'a' x $max_line_octet,
-            expected => 'a' x $max_line_octet,
-            headers  => { 'Content-Transfer-Encoding' => qr/\A\dbit\z/, },
+            name        => '8bit',
+            input       => 'a' x $max_line_octet,
+            header_args => { 'Content-Transfer-Encoding' => '8bit' },
+            expected    => 'a' x $max_line_octet,
+            headers     => { 'Content-Transfer-Encoding' => qr/\A\dbit\z/, },
         },
         {
-            name     => 'Base64 encoded',
-            input    => 'a' x ($max_line_octet + 1),
-            expected => MIME::Base64::encode_base64('a' x ($max_line_octet + 1)),
-            headers  => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
+            name        => 'Base64 encoded',
+            input       => 'a' x ($max_line_octet + 1),
+            header_args => { 'Content-Transfer-Encoding' => 'base64' },
+            expected    => MIME::Base64::encode_base64('a' x ($max_line_octet + 1)),
+            headers     => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
         });
 }
 
@@ -48,7 +50,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
 
         subtest 'encode' => sub {
             for my $data (base64_encode_suite($mail_class)) {
-                my ($headers, $body) = send_mail({}, $data->{input}, $mail_class);
+                my ($headers, $body) = send_mail({ %{ $data->{header_args} } }, $data->{input}, $mail_class);
                 my $expected = $data->{expected};
                 $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
                 $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
@@ -89,7 +91,7 @@ sub send_mail {
     close $write;
 
     while (my $line = <$read>) {
-        last if $line eq "\n";
+        last if $line =~ /\A(\x0d\x0a|\x0d|\x0a)\z/;
         $line =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         my ($key, $value) = split /: /, $line, 2;
         $headers{$key} = $value;
