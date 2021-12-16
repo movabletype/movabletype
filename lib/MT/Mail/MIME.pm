@@ -110,15 +110,6 @@ sub send {
         $hdrs{'Content-Transfer-Encoding'} = 'base64';
     }
 
-    return 1
-        unless MT->run_callbacks(
-        'mail_filter',
-        args     => $hdrs_arg,
-        headers  => \%hdrs,
-        body     => \$body,
-        transfer => \$xfer,
-        ($id ? (id => $id) : ()));
-
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
     if ($xfer eq 'sendmail') {
