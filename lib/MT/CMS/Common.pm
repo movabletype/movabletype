@@ -1051,41 +1051,20 @@ sub list {
     if ( defined $screen_settings->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $screen_settings->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
-        my $allowed = 0;
-        my @act;
-        if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { ($list_permission, @act) = $code->($app); };
-            return $app->error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($screen_settings->{permission}) };
+        my $error = $@;
+        return $app->error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            unshift @act, @$list_permission;
-        }
-        else {
-            unshift @act, split /\s*,\s*/, $list_permission;
-        }
         my $blog_ids = undef;
         if ($blog_id) {
             push @$blog_ids, $blog_id;
         }
-        foreach my $p (@act) {
+        my $allowed = 0;
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1542,37 +1521,16 @@ sub filtered_list {
     if ( defined $setting->{permission}
         && !$app->user->is_superuser() )
     {
-        my $list_permission = $setting->{permission};
-        my $inherit_blogs   = 1;
-        if ( 'HASH' eq ref $list_permission ) {
-            $inherit_blogs = $list_permission->{inherit}
-                if defined $list_permission->{inherit};
-            $list_permission = $list_permission->{permit_action};
-        }
         my $allowed = 0;
-        my @permissions;
-        if ( ref $list_permission eq 'CODE' || $list_permission =~ m/^sub \{/ || $list_permission =~ m/^\$/ ) {
-            my $code = $list_permission;
-            $code = MT->handler_to_coderef($code);
-            eval { ($list_permission, @permissions) = $code->($app); };
-            return $app->json_error(
-                $app->translate(
-                    'Error occurred during permission check: [_1]', $@
-                )
-            ) if $@;
-        }
+        my ($actions, $inherit_blogs) = eval { $app->parse_filtered_list_permission($setting->{permission}) };
+        my $error = $@;
+        return $app->json_error($app->translate('Error occurred during permission check: [_1]', $error)) if $error;
 
-        if ( 'ARRAY' eq ref $list_permission ) {
-            unshift @permissions, @$list_permission;
-        }
-        else {
-            unshift @permissions, split /\s*,\s*/, $list_permission;
-        }
-        foreach my $p (@permissions) {
+        foreach my $action (@$actions) {
             $allowed = 1,
                 last
                 if $app->user->can_do(
-                $p,
+                $action,
                 at_least_one => 1,
                 ( $blog_ids ? ( blog_id => $blog_ids ) : () )
                 );
@@ -1580,7 +1538,7 @@ sub filtered_list {
         return $app->json_error(
             $app->translate(
                 'Permission denied: [_1]',
-                join( ',', @permissions )
+                join( ',', @$actions )
             )
         ) unless $allowed;
     }
