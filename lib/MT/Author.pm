@@ -577,8 +577,8 @@ sub _bulk_author_name_html {
             <div class="row">
                 <div class="col-auto px-0 userpic">
                     <div class="mt-user">
-                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48">
-                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" /></div>
+                        <img src="$userpic_url" alt="User" class="rounded-circle" width="48" height="48" loading="lazy" decoding="async">
+                        <div class="mt-user__badge--img"><img alt="$auth_label" src="$auth_img" width="16" height="16" class="mt-icon--img" loading="lazy" decoding="async" /></div>
                     </div>
                 </div>
                 <div class="col pl-4">
@@ -1503,8 +1503,8 @@ sub userpic_html {
     my $asset = $author->userpic(@_);
     my $format
         = $param{Ts}
-        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" />}
-        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" />};
+        ? q{<img src="%s&%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />}
+        : q{<img src="%s?%d" width="%d" height="%d" alt="%s" loading="lazy" decoding="async" />};
     sprintf $format,
         MT::Util::encode_html($thumb_url), $asset->id, $w, $h,
         MT::Util::encode_html( $asset->label );

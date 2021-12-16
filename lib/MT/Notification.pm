@@ -82,7 +82,7 @@ sub list_props {
                     <span id="note-url-link-$id" class="view-link"><a href="javascript:void(0)" class="edit-link start-edit" title="$title" data-id="$id">$url</a>}
                     . (
                     $url
-                    ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" /></a>}
+                    ? qq{&nbsp;<a href="$url" target="_blank">                        <img alt="View" src="$view_img" loading="lazy" decoding="async" /></a>}
                     : ''
                     )
                     . qq{</span>
