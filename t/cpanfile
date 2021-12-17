@@ -51,6 +51,7 @@ requires 'Crypt::DSA';
 #requires 'Cache::File';
 
 requires 'MIME::Base64';
+requires 'Email::MIME';
 requires 'XML::Atom';
 requires 'Cache::Memcached';
 requires 'Archive::Tar';

@@ -245,12 +245,13 @@ sub _insert_failedlogin {
                 }
             );
 
-            require MT::Mail;
-            MT::Mail->send( \%head, $body )
+            require MT::Util::Mail;
+            my $mail_class = MT::Util::Mail->load_class;
+            $mail_class->send( \%head, $body )
                 or $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        MT::Mail->errstr
+                        $mail_class->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',
@@ -299,12 +300,13 @@ sub _insert_failedlogin {
                 }
             );
 
-            require MT::Mail;
-            MT::Mail->send( \%head, $body )
+            require MT::Util::Mail;
+            my $mail_class = MT::Util::Mail->load_class;
+            $mail_class->send( \%head, $body )
                 or $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        MT::Mail->errstr
+                        $mail_class->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',

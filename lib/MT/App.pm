@@ -2589,7 +2589,7 @@ sub _send_comment_notification {
         return;
     }
 
-    require MT::Mail;
+    require MT::Util::Mail;
     my $author = $entry->author;
     $app->set_language( $author->preferred_language )
         if $author && $author->preferred_language;
@@ -2694,11 +2694,12 @@ sub _send_comment_notification {
             ) ? 1 : 0,
         );
         my $body = MT->build_email( 'new-comment.tmpl', \%param );
-        MT::Mail->send( \%head, $body ) or do {
+        my $mail_class = MT::Util::Mail->load_class;
+        $mail_class->send( \%head, $body ) or do {
             $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        MT::Mail->errstr
+                        $mail_class->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',
@@ -2706,7 +2707,7 @@ sub _send_comment_notification {
                 }
             );
 
-            return $app->error( MT::Mail->errstr() );
+            return $app->error( $mail_class->errstr() );
         };
     }
 }
@@ -2731,7 +2732,7 @@ sub _send_sysadmins_email {
         }
     );
 
-    require MT::Mail;
+    require MT::Util::Mail;
 
     my $from_addr;
     my $reply_to;
@@ -2767,11 +2768,12 @@ sub _send_sysadmins_email {
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
         $head{'Content-Type'} = qq(text/plain; charset="$charset");
-        MT::Mail->send( \%head, $body ) or do {
+        my $mail_class = MT::Util::Mail->load_class;
+        $mail_class->send( \%head, $body ) or do {
             $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        MT::Mail->errstr
+                        $mail_class->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',
