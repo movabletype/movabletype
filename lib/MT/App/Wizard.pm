@@ -1091,15 +1091,14 @@ sub optional {
                 );
 
             require MT::Util::Mail;
-            my $mail_class = MT::Util::Mail->load_class;
-            $ok = $mail_class->send( \%head, $body );
+            $ok = MT::Util::Mail->send( \%head, $body );
 
             if ($ok) {
                 $param{success} = 1;
                 return $app->build_page( "optional.tmpl", \%param );
             }
             else {
-                $err_msg = $mail_class->errstr;
+                $err_msg = MT::Util::Mail->errstr;
             }
         }
 

@@ -219,12 +219,11 @@ sub recover_password {
             );
 
             require MT::Util::Mail;
-            my $mail_class = MT::Util::Mail->load_class;
-            $mail_class->send( \%head, $body ) or do {
+            MT::Util::Mail->send( \%head, $body ) or do {
                 $app->log(
                     {   message => $app->translate(
                             'Error sending mail: [_1]',
-                            $mail_class->errstr
+                            MT::Util::Mail->errstr
                         ),
                         level    => MT::Log::ERROR(),
                         class    => 'system',
@@ -234,7 +233,7 @@ sub recover_password {
                 die $app->translate(
                     "Error sending e-mail ([_1]); Please fix the problem, then "
                         . "try again to recover your password.",
-                    $mail_class->errstr
+                    MT::Util::Mail->errstr
                 );
             };
         }
@@ -2853,12 +2852,11 @@ sub reset_password {
     );
 
     require MT::Util::Mail;
-    my $mail_class = MT::Util::Mail->load_class;
-    $mail_class->send( \%head, $body ) or do {
+    MT::Util::Mail->send( \%head, $body ) or do {
         $app->log(
             {   message => $app->translate(
                     'Error sending mail: [_1]',
-                    $mail_class->errstr
+                    MT::Util::Mail->errstr
                 ),
                 level    => MT::Log::ERROR(),
                 class    => 'system',
@@ -2869,7 +2867,7 @@ sub reset_password {
             $app->translate(
                 "Error sending e-mail ([_1]); Please fix the problem, then "
                     . "try again to recover your password.",
-                $mail_class->errstr
+                MT::Util::Mail->errstr
             )
         );
     };

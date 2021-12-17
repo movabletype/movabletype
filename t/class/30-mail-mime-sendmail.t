@@ -45,17 +45,17 @@ use MT::Util ();
 MT->instance;
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_class = MT::Util::Mail->load_class($c);
+    my $mail_class = MT::Util::Mail::find_module($c);
 
     subtest 'simple' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     To => ['test@localhost.localdomain', 'test2@localhost.localdomain'],
                 },
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
         my $last_sent = last_sent_mail();
         like($last_sent, qr{mail body},                         'right body');
@@ -64,20 +64,20 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
 
     subtest 'different cases' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     to => ['test@localhost.localdomain'],
                     To => ['test2@localhost.localdomain'],
                 },
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'different froms and reply-toes' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => ['test@localhost.localdomain'],
                     from       => ['test@localhost.localdomain'],
                     To         => ['test@localhost.localdomain'],
@@ -87,13 +87,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'different froms and reply-toes in scalar' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => 'test@localhost.localdomain',
                     from       => 'test@localhost.localdomain',
                     To         => 'test@localhost.localdomain',
@@ -103,13 +103,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'different froms and reply-toes with <>' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => 'test@localhost.localdomain',
                     from       => 'test@localhost.localdomain',
                     To         => 'test@localhost.localdomain',
@@ -119,13 +119,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'different froms and reply-toes with the same address' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => 'test@localhost.localdomain',
                     from       => 'test@localhost.localdomain',
                     To         => 'test@localhost.localdomain',
@@ -135,13 +135,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'only uncanonical reply-to' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => 'test@localhost.localdomain',
                     To         => 'test@localhost.localdomain',
                     'Reply-to' => 'test@localhost.localdomain',
@@ -149,13 +149,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 
     subtest 'only uncanonical to' => sub {
         eval {
-            $mail_class->send({
+            MT::Util::Mail->send({
                     From       => 'test@localhost.localdomain',
                     TO         => 'test@localhost.localdomain',
                     'Reply-To' => 'test@localhost.localdomain',
@@ -163,7 +163,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !$mail_class->errstr, "No error" or note $@;
+        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
         validate_headers();
     };
 }

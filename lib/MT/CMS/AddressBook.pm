@@ -147,13 +147,12 @@ sub send_notify {
     $head{'Content-Type'} = qq(text/plain; charset="$charset");
     my $i = 1;
     require MT::Util::Mail;
-    my $mail_class = MT::Util::Mail->load_class;
     unless ( exists $params{from_address} ) {
-        $mail_class->send( \%head, $body ) or do {
+        MT::Util::Mail->send( \%head, $body ) or do {
             $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        $mail_class->errstr
+                        MT::Util::Mail->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',
@@ -163,7 +162,7 @@ sub send_notify {
 
             return $app->errtrans(
                 "Error sending mail ([_1]): Try another MailTransfer setting?",
-                $mail_class->errstr
+                MT::Util::Mail->errstr
             );
         };
     }
@@ -183,11 +182,11 @@ sub send_notify {
         } @addresses_to_send;
     }
     foreach my $info (@email_to_send) {
-        $mail_class->send( $info, $body ) or do {
+        MT::Util::Mail->send( $info, $body ) or do {
             $app->log(
                 {   message => $app->translate(
                         'Error sending mail: [_1]',
-                        $mail_class->errstr
+                        MT::Util::Mail->errstr
                     ),
                     level    => MT::Log::ERROR(),
                     class    => 'system',
@@ -198,7 +197,7 @@ sub send_notify {
             return $app->error(
                 $app->translate(
                     "Error sending mail ([_1]): Try another MailTransfer setting?",
-                    $mail_class->errstr
+                    MT::Util::Mail->errstr
                 )
             );
         };

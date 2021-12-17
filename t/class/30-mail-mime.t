@@ -45,7 +45,7 @@ sub base64_encode_suite {
 }
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_class = MT::Util::Mail->load_class($c);
+    my $mail_class = MT::Util::Mail::find_module($c);
     subtest $mail_class => sub {
 
         subtest 'encode' => sub {
@@ -81,13 +81,13 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
 }
 
 sub send_mail {
-    my ($hdrs_arg, $body, $mail_class) = @_;
+    my ($hdrs_arg, $body) = @_;
     my (%headers, $mail_body);
 
     my $save_stderr = \*STDERR;
     pipe my $read, my $write;
     *STDERR = $write;
-    $mail_class->send($hdrs_arg, $body);
+    MT::Util::Mail->send($hdrs_arg, $body);
     close $write;
 
     while (my $line = <$read>) {
