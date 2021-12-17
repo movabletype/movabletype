@@ -151,9 +151,32 @@ sub build_schema {
                 }
             }
         }
+        my @notes;
+        if ($verb eq 'put' || $verb eq 'delete') {
+            push @notes, sprintf('This method accepts %s and POST with __method=%s.', uc $verb, uc $verb);
+        }
+        if (@notes) {
+            my $description;
+            for my $note (@notes) {
+                $description .= "- $note\n";
+            }
+            $response->{paths}{$route}{$verb}{description} .= "\n#### Notes\n$description";
+        }
         if ($openapi->{responses}) {
             for my $code (keys(%{ $openapi->{responses} })) {
                 $response->{paths}{$route}{$verb}{responses}{$code} = $openapi->{responses}{$code};
+            }
+            if ($verb eq 'put' || $verb eq 'delete') {
+                $response->{paths}{$route}{$verb}{responses}{405} = {
+                    description => sprintf('Request method is not %s or POST with __method=%s', uc $verb, uc $verb),
+                    content     => {
+                        'application/json' => {
+                            schema => {
+                                '$ref' => '#/components/schemas/ErrorContent',
+                            },
+                        },
+                    },
+                };
             }
         }
         for my $code (keys %{ $endpoints->{$id}{error_codes} }) {

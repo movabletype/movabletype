@@ -651,7 +651,6 @@ sub update_openapi_spec {
         summary     => 'Update an existing category',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Permission
 
@@ -736,7 +735,6 @@ sub delete_openapi_spec {
         summary     => 'Delete an existing category',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts DELETE and POST with __method=DELETE.
 - This method returns deleted Category resource.
 
 #### Permission

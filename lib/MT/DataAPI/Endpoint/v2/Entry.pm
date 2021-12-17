@@ -160,7 +160,6 @@ sub update_openapi_spec {
     $spec->{sumamry} = 'Update an existing entry';
     $spec->{description} = <<'DESCRIPTION';
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Update in v2.0
 

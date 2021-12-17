@@ -482,7 +482,6 @@ Update an entry.
 
 Authorization is required.
 
-This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
         requestBody => {
             content => {
@@ -490,13 +489,6 @@ DESCRIPTION
                     schema => {
                         type       => 'object',
                         properties => {
-                            '__method' => {
-                                type        => 'string',
-                                description => "This is not required but if request method is 'POST', should be set as 'PUT' ",
-                                enum        => [
-                                    'PUT',
-                                ],
-                            },
                             entry => {
                                 '$ref' => '#/components/schemas/entry_updatable',
                             },
@@ -518,16 +510,6 @@ DESCRIPTION
             },
             404 => {
                 description => 'Not Found',
-                content     => {
-                    'application/json' => {
-                        schema => {
-                            '$ref' => '#/components/schemas/ErrorContent',
-                        },
-                    },
-                },
-            },
-            405 => {
-                description => "Request method is not 'PUT' or 'POST' with '__method=PUT'",
                 content     => {
                     'application/json' => {
                         schema => {
@@ -578,26 +560,7 @@ Delete an entry.
 
 Authorization is required.
 
-This method accepts DELETE and POST with __method=DELETE.
 DESCRIPTION
-        requestBody => {
-            content => {
-                'application/x-www-form-urlencoded' => {
-                    schema => {
-                        type       => 'object',
-                        properties => {
-                            '__method' => {
-                                type => 'string',
-                                enum => [
-                                    'DELETE',
-                                ],
-                                description => "This is not required but if request method is not a 'DELETE', should be set as 'DELETE'",
-                            },
-                        },
-                    },
-                },
-            },
-        },
         responses => {
             200 => {
                 description => 'OK',
@@ -611,16 +574,6 @@ DESCRIPTION
             },
             404 => {
                 description => 'Not Found',
-                content     => {
-                    'application/json' => {
-                        schema => {
-                            '$ref' => '#/components/schemas/ErrorContent',
-                        },
-                    },
-                },
-            },
-            405 => {
-                description => "Request method is not 'DELETE' or 'POST' with '__method=DELETE'",
                 content     => {
                     'application/json' => {
                         schema => {

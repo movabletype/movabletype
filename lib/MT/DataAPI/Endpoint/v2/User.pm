@@ -231,7 +231,6 @@ sub delete_openapi_spec {
         summary     => 'Delete user',
         description => <<'DESCRIPTION',
 - Authentication is required.
-- This method accepts DELETE and POST with __method=DELETE.
 - Cannot delete oneself. Also, cannot delete system administrator user.
 
 #### Permissions

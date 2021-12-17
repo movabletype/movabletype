@@ -523,7 +523,6 @@ sub update_openapi_spec {
         summary     => 'Update an existing page',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Update in v2.0
 
@@ -671,7 +670,7 @@ sub delete_openapi_spec {
         tags        => ['Pages'],
         summary     => 'Delete an existing page',
         description => <<'DESCRIPTION',
-- Authorization is required. This method accepts PUT and POST with __method=DELETE.
+- Authorization is required.
 
 #### Permissions
 
