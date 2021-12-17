@@ -39,7 +39,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of themes found that by the request.',
+                                    description => ' The total number of themes.',
                                 },
                                 items => {
                                     type        => 'array',

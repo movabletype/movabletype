@@ -40,7 +40,7 @@ sub list_openapi_spec {
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of widgetsets found that by the request.',
+                                    description => ' The total number of widgetsets.',
                                 },
                                 items => {
                                     type        => 'array',

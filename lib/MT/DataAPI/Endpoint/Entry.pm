@@ -114,7 +114,7 @@ sub list_openapi_spec {
         description => <<'DESCRIPTION',
 Retrieve a list of entries.
 
-Authorization is required if want to include unpublished entries.
+Authorization is required to include unpublished entries.
 DESCRIPTION
         parameters => [{
                 'in'        => 'query',
@@ -272,7 +272,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',

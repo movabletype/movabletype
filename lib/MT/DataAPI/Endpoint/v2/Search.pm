@@ -141,7 +141,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',

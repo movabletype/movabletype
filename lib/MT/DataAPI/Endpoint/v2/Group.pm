@@ -39,7 +39,7 @@ sub list_openapi_spec {
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of groups found that by the request.',
+                                    description => ' The total number of groups.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -366,7 +366,7 @@ sub list_members_for_group_openapi_spec {
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of members found that by the request.',
+                                    description => ' The total number of members.',
                                 },
                                 items => {
                                     type        => 'array',

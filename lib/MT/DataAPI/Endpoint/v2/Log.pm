@@ -106,7 +106,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of logs found that by the request.',
+                                    description => ' The total number of logs.',
                                 },
                                 items => {
                                     type        => 'array',

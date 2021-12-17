@@ -139,7 +139,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => 'The total number of paths found that by the request.',
+                                    description => 'The total number of paths.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -233,7 +233,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => 'The total number of paths found that by the request.',
+                                    description => 'The total number of paths.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -327,7 +327,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => 'The total number of paths found that by the request.',
+                                    description => 'The total number of paths.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -420,7 +420,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => 'The total number of paths found that by the request.',
+                                    description => 'The total number of paths.',
                                 },
                                 items => {
                                     type        => 'array',

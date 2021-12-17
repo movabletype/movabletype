@@ -810,7 +810,7 @@ sub list_for_entry_openapi_spec {
 #### Permissions
 
 - edit_entry
-  - If want to retrieve the non-published entry's categories.
+  - If you want to retrieve the non-published entry's categories.
 
 DESCRIPTION
         parameters => [
