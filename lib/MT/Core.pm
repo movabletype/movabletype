@@ -1856,6 +1856,7 @@ BEGIN {
             'MailClass'             => { default => 'MT::Mail::MIME::Lite', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
+            'MailTransferEncoding'  => { default => 'base64', },
             'SMTPServer'            => { default => 'localhost', },
             'SMTPAuth'              => { default => 0, },
             'SMTPUser'              => undef,

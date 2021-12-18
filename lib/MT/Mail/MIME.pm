@@ -21,31 +21,15 @@ my %SMTPModules = (
     SSLorTLS => ['IO::Socket::SSL', 'Net::SSLeay'],
 );
 
-sub send {
-    my $class = shift;
-    my ($hdrs_arg, $body) = @_;
+sub encwords {
+    my ($class, $hdrs, $mail_enc) = @_;
 
-    my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
-    foreach my $h (keys %hdrs) {
-        if (ref($hdrs{$h}) eq 'ARRAY') {
-            map { y/\n\r/  / } @{ $hdrs{$h} };
-        } else {
-            $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
-        }
-    }
-
-    my $id       = delete $hdrs{id};
-    my $mgr      = MT->config;
-    my $xfer     = $mgr->MailTransfer;
-    my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
-
-    require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
+    return unless ($hdrs->{'Content-Transfer-Encoding'} eq 'base64');
 
     eval "require MIME::EncWords;";
     unless ($@) {
-        foreach my $header (keys %hdrs) {
-            my $val = $hdrs{$header};
+        foreach my $header (keys %$hdrs) {
+            my $val = $hdrs->{$header};
 
             if (ref $val eq 'ARRAY') {
                 foreach (@$val) {
@@ -73,7 +57,7 @@ sub send {
                 if (($mail_enc ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
                     if ($header =~ m/^(From|To|Reply|B?cc)/i) {
                         if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                            $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                            $hdrs->{$header} = MIME::EncWords::encode_mimeword(
                                 MT::I18N::default->encode_text_encode($1, undef, $mail_enc),
                                 'b',
                                 $mail_enc
@@ -82,7 +66,7 @@ sub send {
                                 . $2;
                         }
                     } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
-                        $hdrs{$header} = MIME::EncWords::encode_mimeword(
+                        $hdrs->{$header} = MIME::EncWords::encode_mimeword(
                             MT::I18N::default->encode_text_encode($val, undef, $mail_enc),
                             'b',
                             $mail_enc
@@ -92,11 +76,34 @@ sub send {
             }
         }
     } else {
-        $hdrs{Subject} = MT::I18N::default->encode_text_encode($hdrs{Subject}, undef, $mail_enc);
-        $hdrs{From}    = MT::I18N::default->encode_text_encode($hdrs{From},    undef, $mail_enc);
+        $hdrs->{Subject} = MT::I18N::default->encode_text_encode($hdrs->{Subject}, undef, $mail_enc);
+        $hdrs->{From}    = MT::I18N::default->encode_text_encode($hdrs->{From},    undef, $mail_enc);
     }
+}
+
+sub send {
+    my $class = shift;
+    my ($hdrs_arg, $body) = @_;
+
+    my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
+    foreach my $h (keys %hdrs) {
+        if (ref($hdrs{$h}) eq 'ARRAY') {
+            map { y/\n\r/  / } @{ $hdrs{$h} };
+        } else {
+            $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
+        }
+    }
+
+    my $id       = delete $hdrs{id};
+    my $mgr      = MT->config;
+    my $xfer     = $mgr->MailTransfer;
+    my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
+
+    require MT::I18N::default;
+    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
+
     $hdrs{'Content-Type'}              ||= qq(text/plain; charset=") . $mail_enc . q(");
-    $hdrs{'Content-Transfer-Encoding'} ||= (($mail_enc) !~ m/utf-?8/) ? '7bit' : '8bit';
+    $hdrs{'Content-Transfer-Encoding'} ||= $mgr->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
     $hdrs{'MIME-Version'}              ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};

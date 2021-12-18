@@ -40,17 +40,47 @@ my @base64_encode_suite = (
         headers => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
     }
 );
-for my $data (@base64_encode_suite) {
-    my ( $headers, $body ) = send_mail( {}, $data->{input} );
-    is( $body, $data->{expected}, $data->{name} . ' : body' );
-    foreach my $key ( sort keys %{ $data->{headers} } ) {
-        like(
-            $headers->{$key},
-            $data->{headers}{$key},
-            $data->{name} . ' : header : ' . $key
-        );
+
+subtest 'encode' => sub {
+    for my $data (@base64_encode_suite) {
+        my ($headers, $body) = send_mail({}, $data->{input});
+        is( $body, $data->{expected}, $data->{name} . ' : body' );
+        foreach my $key ( sort keys %{ $data->{headers} } ) {
+            like(
+                $headers->{$key},
+                $data->{headers}{$key},
+                $data->{name} . ' : header : ' . $key
+            );
+        }
     }
-}
+};
+
+subtest 'encoded words' => sub {
+    subtest 'utf-8' => sub {
+        $mt->config('MailEncoding', 'utf-8');
+        subtest 'single' => sub {
+            my ($headers, $body) = send_mail({ To => 'a/b c<t@a.com>' }, 'body text');
+            is($headers->{To}, '=?UTF-8?B?YS9iIGM=?= <t@a.com>', 'right to header');
+        };
+        subtest 'array' => sub {
+            my ($headers, $body) = send_mail({ To => ['a/b c<t@a.com>', 'a/b c2<t@a.com>'] }, 'body text');
+            is($headers->{To}->[0], '=?UTF-8?B?YS9iIGM=?= <t@a.com>', 'right To header');
+            is($headers->{To}->[1], '=?UTF-8?B?YS9iIGMy?= <t@a.com>', 'right To header');
+        };
+    };
+    subtest 'iso-8859-1' => sub {
+        $mt->config('MailEncoding', 'iso-8859-1');
+        subtest 'single' => sub {
+            my ($headers, $body) = send_mail({ To => 'a/b c<t@a.com>' }, 'body text');
+            is($headers->{To}, 'a/b c<t@a.com>', 'right to header');
+        };
+        subtest 'array' => sub {
+            my ($headers, $body) = send_mail({ To => ['a/b c<t@a.com>', 'a/b c2<t@a.com>'] }, 'body text');
+            is($headers->{To}->[0], 'a/b c<t@a.com>', 'right To header');
+            is($headers->{To}->[1], 'a/b c2<t@a.com>', 'right To header');
+        };
+    };
+};
 
 sub send_mail {
     my ( $hdrs_arg, $body ) = @_;
@@ -65,7 +95,14 @@ sub send_mail {
     while ( ( my $line = <$read> ) ne "\n" ) {
         chomp $line;
         my ( $key, $value ) = split /: /, $line, 2;
-        $headers{$key} = $value;
+        if (exists $headers{$key}) {
+            $headers{$key} = [
+                (ref $headers{$key}) ? @{$headers{$key}} : $headers{$key},
+                $value,
+            ];
+        } else {
+            $headers{$key} = $value;
+        }
     }
     $mail_body = join '', <$read>;
 

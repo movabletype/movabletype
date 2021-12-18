@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use FindBin;
 use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
@@ -50,7 +51,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
 
         subtest 'encode' => sub {
             for my $data (base64_encode_suite($mail_class)) {
-                my ($headers, $body) = send_mail({ %{ $data->{header_args} } }, $data->{input}, $mail_class);
+                my ($headers, $body) = send_mail({ %{ $data->{header_args} } }, $data->{input});
                 my $expected = $data->{expected};
                 $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
                 $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
@@ -78,6 +79,45 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
             is(scalar(@{ $hdr->{From} }), 3, 'right number of elements');
         };
     };
+
+    subtest 'header encoding' => sub {
+        subtest 'utf-8' => sub {
+            $mt->config('MailEncoding',         'utf-8');
+            $mt->config('MailTransferEncoding', 'base64');
+            my $jp1   = 'あ';
+            my $jp2   = 'い';
+            my $mime1 = '=?UTF-8?B?44GC?=';    # あ
+            my $mime2 = '=?UTF-8?B?44GE?=';    # い
+            subtest 'single' => sub {
+                my $hdrs = { To => "$jp1<t1\@a.com>" };
+                my ($headers, $body) = send_mail($hdrs, 'body text');
+                like($headers->{To}, qr/\Q$mime1\E/, 'right to header');
+            };
+            subtest 'multiple' => sub {
+                my $hdrs = { To => ["$jp1<t1\@a.com>", "$jp2<t2\@a.com>"] };
+                my ($headers, $body) = send_mail($hdrs, 'body text');
+                my @addrs = split(', ', $headers->{To});
+                like($addrs[0], qr{\Q$mime1\E}, 'right To header');
+                like($addrs[1], qr{\Q$mime2\E}, 'right To header');
+            };
+        };
+        subtest 'iso-8859-1' => sub {
+            $mt->config('MailEncoding',         'iso-8859-1');
+            $mt->config('MailTransferEncoding', 'base64');
+            subtest 'single' => sub {
+                my $hdrs = { To => "a/a<t1\@a.com>" };
+                my ($headers, $body) = send_mail($hdrs, 'body text');
+                like($headers->{To}, qr{a/a}, 'right to header');
+            };
+            subtest 'multiple' => sub {
+                my $hdrs = { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] };
+                my ($headers, $body) = send_mail($hdrs, 'body text');
+                my @addrs = split(', ', $headers->{To});
+                like($addrs[0], qr{a/a}, 'right To header');
+                like($addrs[1], qr{a/b}, 'right To header');
+            };
+        };
+    };
 }
 
 sub send_mail {
@@ -94,7 +134,14 @@ sub send_mail {
         last if $line =~ /\A(\x0d\x0a|\x0d|\x0a)\z/;
         $line =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         my ($key, $value) = split /: /, $line, 2;
-        $headers{$key} = $value;
+        if (exists $headers{$key}) {
+            $headers{$key} = [
+                (ref $headers{$key}) ? @{ $headers{$key} } : $headers{$key},
+                $value,
+            ];
+        } else {
+            $headers{$key} = $value;
+        }
     }
     $mail_body = join '', <$read>;
 

@@ -20,6 +20,15 @@ my $crlf = "\x0d\x0a";
 sub render {
     my ($class, $hdrs, $body, $hide_bcc) = @_;
 
+    my $mail_enc = ($hdrs->{'Content-Type'} =~ /charset="(.+)"/)[0];
+    $class->encwords($hdrs, $mail_enc);
+
+    # MIME::Lite doesn't allow array ref for unique headers
+    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
+    for my $k (@unique_headers) {
+        $hdrs->{$k} = join(', ', @{ $hdrs->{$k} }) if ref $hdrs->{$k};
+    }
+
     my $msg;
 
     eval {
@@ -29,7 +38,7 @@ sub render {
         $msg = MIME::Lite->new(%$hdrs, Data => $body);
         $msg->attr($_, $special_fields{$_}) for keys(%special_fields);
     };
-    return $class->error(MT->translate('Failed to encode mail'. ($@ ? ':'. $@ : ''))) if $@ || !$msg;
+    return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
 
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
@@ -37,18 +46,6 @@ sub render {
     my @recipients = map { split(/, /, $_) } grep { $_ } map { $hdrs->{$_} } (qw( To Bcc Cc ));
 
     return ($encoded, @recipients);
-}
-
-sub _dedupe_headers {
-    my ($class, $hdrs) = @_;
-
-    $class->SUPER::_dedupe_headers($hdrs);
-
-    # MIME::Lite doesn't allow array ref for unique headers
-    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
-    for my $k (@unique_headers) {
-        $hdrs->{$k} = join(', ', @{$hdrs->{$k}}) if ref $hdrs->{$k};
-    }
 }
 
 1;
