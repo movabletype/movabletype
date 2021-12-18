@@ -47,6 +47,35 @@ sub base64_encode_suite {
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
     my $mail_class = MT::Util::Mail::find_module($c);
+
+    subtest 'render' => sub {
+        my $hdrs = {
+            'Content-Type'              => q(text/plain; charset="utf-8"),
+            'Content-Transfer-Encoding' => '8bit',
+            'MIME-Version'              => "1.0",
+            To                          => 'to@a.com',
+            Cc                          => 'cc@a.com',
+            Bcc                         => 'bcc@a.com',
+        };
+        subtest 'without hide_bcc' => sub {
+            my $hdr_copy = {%$hdrs};
+            my ($ret, @recipients) = $mail_class->render($hdr_copy, 'body');
+            print($ret);
+            like($ret, qr/To:/, 'key exists');
+            like($ret, qr/Cc:/, 'key exists');
+            like($ret, qr/Bcc:/, 'key exists');
+            is(scalar @recipients, 3, 'right number of recipients')
+        };
+        subtest 'with hide_bcc' => sub {
+            my $hdr_copy = {%$hdrs};
+            my ($ret, @recipients) = $mail_class->render($hdr_copy, 'body', 1);
+            like($ret, qr/To:/, 'key exists');
+            like($ret, qr/Cc:/, 'key exists');
+            unlike($ret, qr/Bcc:/, 'key exists');
+            is(scalar @recipients, 3, 'right number of recipients')
+        };
+    };
+
     subtest $mail_class => sub {
 
         subtest 'encode' => sub {

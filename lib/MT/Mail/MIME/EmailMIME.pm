@@ -20,6 +20,10 @@ my $crlf = "\x0d\x0a";
 sub render {
     my ($class, $hdrs, $body, $hide_bcc) = @_;
 
+    my @recipients = map { split(/, /, $_) } grep { $_ } map { $hdrs->{$_} } (qw( To Bcc Cc ));
+
+    delete $hdrs->{Bcc} if $hide_bcc;
+
     my $msg;
 
     eval {
@@ -36,8 +40,6 @@ sub render {
 
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
-
-    my @recipients = map { split(/, /, $_) } grep { $_ } map { $hdrs->{$_} } (qw( To Bcc Cc ));
 
     return ($encoded, @recipients);
 }

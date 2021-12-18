@@ -27,6 +27,30 @@ my $max_line_octet = $MT::Mail::MAX_LINE_OCTET;
 
 isa_ok($mt, 'MT');
 
+subtest '_render_headers' => sub {
+    my $hdrs = {
+        To => 'to@a.com',
+        Cc => 'cc@a.com',
+        Bcc => 'bcc@a.com',
+    };
+    subtest 'without hide_bcc' => sub {
+        my $hdr_copy = {%$hdrs};
+        my ($ret, @recipients) = MT::Mail->_render_headers($hdr_copy);
+        like($ret, qr/To:/, 'key exists');
+        like($ret, qr/Cc:/, 'key exists');
+        like($ret, qr/Bcc:/, 'key exists');
+        is(scalar @recipients, 3, 'right number of recipients')
+    };
+    subtest 'with hide_bcc' => sub {
+        my $hdr_copy = {%$hdrs};
+        my ($ret, @recipients) = MT::Mail->_render_headers($hdr_copy, 1);
+        like($ret, qr/To:/, 'key exists');
+        like($ret, qr/Cc:/, 'key exists');
+        unlike($ret, qr/Bcc:/, 'key exists');
+        is(scalar @recipients, 3, 'right number of recipients')
+    };
+};
+
 my @base64_encode_suite = (
     {   name     => 'Not base64 encoded',
         input    => 'a' x $max_line_octet,
