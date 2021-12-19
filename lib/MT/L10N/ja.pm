@@ -5115,6 +5115,7 @@ use vars qw( @ISA %Lexicon );
 	'https://plugins.movabletype.org/' => 'https://plugins.movabletype.jp/',
 	'https://www.movabletype.org' => 'https://www.movabletype.jp',
 	'with' => 'with',
+	'Mobile View' => 'モバイル表示',
 
 ## tmpl/cms/include/group_table.tmpl
 	'Disable selected group (d)' => '選択されたグループを無効にする (d)',

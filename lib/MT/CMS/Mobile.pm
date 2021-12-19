@@ -9,5 +9,12 @@ sub change_to_pc_view {
     $app->json_result( { success => 1 } );
 }
 
+sub change_to_mobile_view {
+    my ($app) = @_;
+    $app->session( 'pc_view', 0 );
+    $app->session->save;
+    $app->json_result( { success => 1 } );
+}
+
 1;
 
