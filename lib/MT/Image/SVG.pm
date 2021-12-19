@@ -118,7 +118,7 @@ sub scale {
     my $self = shift;
     my ($w, $h) = $self->get_dimensions(@_);
     my $blob = $self->blob;
-    $blob = $self->_transform($blob, Width => $w, Height => $h);
+    $blob = $self->_transform($blob, Width => $w, Height => $h, KeepAspectRatio => 1);
     wantarray ? ($blob, @$self{qw(width height)}) : $blob;
 }
 
