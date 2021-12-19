@@ -18,7 +18,8 @@ sub MAX_LINE_OCTET { 990 }
 my $crlf = "\x0d\x0a";
 
 sub render {
-    my ($class, $hdrs, $body, $hide_bcc) = @_;
+    my ($class, %args) = @_;
+    my ($hdrs, $body, $hide_bcc) = map { $args{$_} } (qw(header body hide_bcc));
 
     my $mail_enc = ($hdrs->{'Content-Type'} =~ /charset="(.+)"/)[0];
     $class->encwords($hdrs, $mail_enc);

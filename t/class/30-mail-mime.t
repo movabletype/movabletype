@@ -59,7 +59,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         };
         subtest 'without hide_bcc' => sub {
             my $hdr_copy = {%$hdrs};
-            my ($ret, @recipients) = $mail_class->render($hdr_copy, 'body');
+            my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body');
             print($ret);
             like($ret, qr/To:/, 'key exists');
             like($ret, qr/Cc:/, 'key exists');
@@ -68,7 +68,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         };
         subtest 'with hide_bcc' => sub {
             my $hdr_copy = {%$hdrs};
-            my ($ret, @recipients) = $mail_class->render($hdr_copy, 'body', 1);
+            my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body', hide_bcc => 1);
             like($ret, qr/To:/, 'key exists');
             like($ret, qr/Cc:/, 'key exists');
             unlike($ret, qr/Bcc:/, 'key exists');
