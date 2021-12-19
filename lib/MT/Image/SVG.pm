@@ -125,7 +125,7 @@ sub scale {
 sub crop_rectangle {
     my $self = shift;
     my $blob = $self->blob;
-    Carp::carp "Cropping SVG is not supported (yet)";
+    # Cropping SVG is not supported yet
     wantarray ? ($blob, @$self{qw(width height)}) : $blob;
 }
 
