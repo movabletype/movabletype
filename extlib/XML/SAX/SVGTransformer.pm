@@ -6,7 +6,7 @@ use base 'XML::SAX::Base';
 use Math::Matrix;
 use Math::Trig qw/deg2rad/;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our $GroupId = 'SVGTransformer';
 
 my $IdMatrix = Math::Matrix->id(4);
@@ -14,9 +14,10 @@ my $IdMatrix = Math::Matrix->id(4);
 sub start_document {
     my $self = shift;
     $self->SUPER::start_document(@_);
-    $self->{_stack} = [];
-    $self->{_ops}   = [];
-    $self->{_stash} = {};
+    $self->{_stack}   = [];
+    $self->{_ops}     = [];
+    $self->{_stash}   = {};
+    $self->{_comment} = '';
 }
 
 sub start_element {
@@ -28,12 +29,14 @@ sub start_element {
         return;
     } elsif ($self->_stash('svg') && !$self->_stash('grouped')) {
         my $svg = $self->_stash('svg');
-        my $group;
+        $self->_stash(grouped => 1);
+        $self->_stash(svg     => undef);
         if ($name eq 'g' && (_attr($elem, 'id') || '') eq $self->_group_id) {
-            $group = $elem;
+            $self->_update_tags($svg, $elem);
+            return;
         } else {
             my $name = $svg->{Prefix} ? "$svg->{Prefix}:g" : "g";
-            $group = {
+            my $group = {
                 LocalName    => 'g',
                 Name         => $name,
                 Prefix       => $svg->{Prefix},
@@ -49,14 +52,9 @@ sub start_element {
                     },
                 },
             };
-
             $self->_stash(added_group => 1);
+            $self->_update_tags($svg, $group);
         }
-
-        $self->_update_tags($svg, $group);
-        $self->_stash(grouped => 1);
-        $self->_stash(svg     => undef);
-        return unless $self->_stash('added_group');
     }
     $self->_push($name);
     $self->SUPER::start_element(@_);
@@ -64,9 +62,13 @@ sub start_element {
 
 sub comment {
     my ($self, $comment) = @_;
-    if ($self->{_stash}) {
-        $self->{_comment} = $comment->{Data};
-        return;
+    if ($self->_stash('svg')) {
+        my $data  = $comment->{Data};
+        my @parts = split /(?:\s+|\s*,\s*)/, $data || '';
+        if (@parts == 4 && !grep !/^[-0-9.eE]+$/, @parts) {
+            $self->{_comment} = $data;
+            return;
+        }
     }
     $self->SUPER::comment($comment);
 }
@@ -77,15 +79,27 @@ sub end_element {
     my $name = lc $elem->{LocalName};
     my $prev = $self->{_stack}[-1] || '';
     if ($name eq 'svg') {
-        if ($self->_seen($name) == 1 && $self->_stash('added_group') && $prev eq 'g') {
-            $self->_pop($prev);
-            my $name = $elem->{Prefix} ? "$elem->{Prefix}:g" : 'g';
-            $self->SUPER::end_element({
+        my $left = 1;
+        $left++ if $self->_stash('added_wrapper');
+        if ($self->_seen($name) == $left) {
+            my $group_name = $elem->{Prefix} ? "$elem->{Prefix}:g" : 'g';
+            my $group      = {
                 LocalName    => 'g',
-                Name         => $name,
+                Name         => $group_name,
                 Prefix       => $elem->{Prefix},
                 NamespaceURI => $elem->{NamespaceURI},
-            });
+            };
+
+            if ($self->_stash('added_group') && $prev eq 'g') {
+                $self->_pop($prev);
+                $self->SUPER::end_element($group);
+            }
+            if ($self->_stash('added_wrapper')) {
+                $self->_pop($name);
+                $self->SUPER::end_element(@_);
+                $self->_pop($prev);
+                $self->SUPER::end_element($group);
+            }
         }
     }
     $self->_pop($name);
@@ -102,6 +116,10 @@ sub _update_tags {
     my $svg_viewbox = _attr($svg, 'viewBox');
     my $svg_version = _attr($svg, 'version');
 
+    if (!$svg_viewbox && $svg_width && $svg_height) {
+        $svg_viewbox = "0 0 $svg_width $svg_height";
+    }
+
     my $transform = _attr($group, 'transform');
 
     my $view;
@@ -117,7 +135,7 @@ sub _update_tags {
     }
     _translate($view);
 
-    my $scale = _scale($view, @$self{qw/Width Height/});
+    my $scale = $self->_scale($view, @$self{qw/Width Height/});
     push @{$self->{_ops}}, ['scale', @$scale];
 
     $self->_parse_transform($transform);
@@ -129,27 +147,79 @@ sub _update_tags {
 
     push @{$self->{_ops}}, ['translate', @$view{qw/tx ty/}];
 
+    my $width  = $view->{max_x};
+    my $height = $view->{max_y};
+
+    if ($self->{KeepAspectRatio}) {
+        $width  = $self->{Width};
+        $height = $self->{Height};
+        my @offset = (0, 0);
+        if ($width > $view->{max_x}) {
+            $offset[0] = ($width - $view->{max_x}) / 2;
+        }
+        if ($height > $view->{max_y}) {
+            $offset[1] = ($height - $view->{max_y}) / 2;
+        }
+
+        if ($offset[0] or $offset[1]) {
+            my $wrapper = {
+                LocalName    => $svg->{LocalName},
+                Name         => $svg->{Name},
+                Prefix       => $svg->{Prefix},
+                NamespaceURI => $svg->{NamespaceURI},
+            };
+            my $wrapper_group = {
+                LocalName    => $group->{LocalName},
+                Name         => $group->{Name},
+                Prefix       => $group->{Prefix},
+                NamespaceURI => $group->{NamespaceURI},
+            };
+            _attr($wrapper, 'width',   $width);
+            _attr($wrapper, 'height',  $height);
+            _attr($wrapper, 'viewBox', "0 0 $width $height");
+
+            _attr($wrapper_group, 'transform', "translate($offset[0] $offset[1])");
+
+            _attr($group, 'id', undef);
+
+            $self->_push('svg');
+            $self->_push('g');
+            $self->SUPER::start_element($wrapper);
+            $self->SUPER::start_element($wrapper_group);
+            $self->_stash(added_wrapper => 1);
+        }
+    }
+
     _attr($svg, 'width',   $view->{max_x});
     _attr($svg, 'height',  $view->{max_y});
     _attr($svg, 'viewBox', "0 0 $view->{max_x} $view->{max_y}");
 
-    _attr($group, 'transform', $self->_ops_to_transform);
-
     $self->_push('svg');
-    $self->_push('g');
     $self->SUPER::start_element($svg);
     $self->SUPER::comment({Data => $svg_viewbox});
-    $self->SUPER::start_element($group);
+
+    $transform = $self->_ops_to_transform;
+    if ($transform) {
+        _attr($group, 'transform', $transform);
+        $self->_push('g');
+        $self->SUPER::start_element($group);
+    } else {
+        if ($self->_stash('added_group')) {
+            $self->_stash(added_group => undef);
+        }
+    }
 
     $self->{_info} = {
-        width   => $view->{max_x},
-        height  => $view->{max_y},
+        width   => $width,
+        height  => $height,
         version => $svg_version,
     };
 }
 
 sub _parse_transform {
     my ($self, $transform) = @_;
+
+    $transform = '' unless defined $transform;
 
     my @ops = @{$self->{_ops}};
     if ($transform) {
@@ -243,6 +313,8 @@ sub _ops_to_transform {
             push @transform, "scale($args[0] $args[1])";
         } elsif ($name eq 'translate') {
             next if !$args[0] && !$args[1];
+            $args[0] ||= 0;
+            $args[1] ||= 0;
             push @transform, "translate($args[0] $args[1])";
         }
     }
@@ -320,7 +392,7 @@ sub _to_hash {
 }
 
 sub _scale {
-    my ($set, $x, $y) = @_;
+    my ($self, $set, $x, $y) = @_;
 
     my ($scale_x, $scale_y) = (1, 1);
     if ($x && $y) {
@@ -329,6 +401,13 @@ sub _scale {
         }
         if ($set->{max_y}) {
             $scale_y = $y / $set->{max_y};
+        }
+        if ($self->{KeepAspectRatio}) {
+            if ($scale_x > $scale_y) {
+                $scale_x = $scale_y;
+            } else {
+                $scale_y = $scale_x;
+            }
         }
     } elsif ($x) {
         if ($set->{max_x}) {
@@ -464,6 +543,11 @@ An xpected image height. The actual height may be different.
 
 You can set both Width and Height, but you usually get a better
 result when you specify only one of them.
+
+=item KeepAspectRatio
+
+If set to true, aspect ratio is kept when both Width and Height
+are set.
 
 =item Transform
 
