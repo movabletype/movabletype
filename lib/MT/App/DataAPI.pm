@@ -3555,7 +3555,7 @@ sub fields_to_schema {
         $updatable_schema->{type} = 'object';
         for my $f (@{ $resource->{updatable_fields} }) {
             my $field_name = $f->{name};
-            if (grep { $field_name eq $_ } keys(%{ $schema->{properties} })) {
+            if (exists $schema->{properties}{$field_name}) {
                 $updatable_schema->{properties}{$field_name} = $schema->{properties}{$field_name};
             }
         }

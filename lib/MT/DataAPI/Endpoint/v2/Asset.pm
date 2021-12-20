@@ -281,7 +281,6 @@ sub update_openapi_spec {
         summary     => 'Update an asset',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Permissions
 
@@ -345,7 +344,6 @@ sub delete_openapi_spec {
         summary     => 'Delete an asset',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts DELETE and POST with __method=DELETE.
 
 #### Permissions
 
@@ -757,7 +755,7 @@ DESCRIPTION
                     type => 'integer',
                     enum => [0, 1],
                 },
-                description => 'If specify "1", the API always overwrites an existing file with the uploaded file. This parameter is available in Movable Type 6.1.2',
+                description => 'If specify "1", the API always overwrites an existing file with the uploaded file. This parameter is available since Movable Type 6.1.2',
             },
         ],
         requestBody => {

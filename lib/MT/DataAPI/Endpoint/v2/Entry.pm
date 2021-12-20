@@ -28,7 +28,7 @@ sub create_openapi_spec {
 
 #### Update in v2.0
 
-- You can attach categories and assets in the one request.
+- You can attach categories and assets in one request.
 
 #### Permissions
 
@@ -160,16 +160,15 @@ sub update_openapi_spec {
     $spec->{sumamry} = 'Update an existing entry';
     $spec->{description} = <<'DESCRIPTION';
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Update in v2.0
 
-- You can attach/detach categories and assets in the one request.
+- You can attach/detach categories and assets in one request.
 
 #### Permissions
 
 - edit_entry
-  - for retrieve unpublished entry
+  - to retrieve unpublished entry
 DESCRIPTION
     $spec->{responses}{404}{description} = 'Site or Entry not found.';
     return $spec;
@@ -289,12 +288,12 @@ sub list_for_category_openapi_spec {
         tags        => ['Entries', 'Categories'],
         summary     => 'Retrieve a list of entries by specific category',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished entries.
+- Authorization is required to include unpublished entries.
 
 #### Permissions
 
 - edit_entry
-  - for retrieve unpublished entry
+  - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/entry_search' },
@@ -321,7 +320,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -386,12 +385,12 @@ sub list_for_asset_openapi_spec {
         tags        => ['Entries', 'Assets'],
         summary     => 'Retrieve a list of entries that related with specific asset',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished entries.
+- Authorization is required to include unpublished entries.
 
 #### Permissions
 
 - edit_entry
-  - for retrieve unpublished entry
+  - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/entry_search' },
@@ -418,7 +417,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -518,12 +517,12 @@ sub list_for_site_and_tag_openapi_spec {
         tags        => ['Entries', 'Tags'],
         summary     => 'Retrieve a list of entries that related with specific tag',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished entries.
+- Authorization is required to include unpublished entries.
 
 #### Permissions
 
 - edit_entry
-  - for retrieve unpublished entry
+  - to retrieve unpublished entry
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/entry_search' },
@@ -550,7 +549,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of entries found that by the request.',
+                                    description => ' The total number of entries.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -895,7 +894,7 @@ sub preview_by_id_openapi_spec {
         summary     => 'Make a preview for a entry with existing data',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 - **entry** parameter is required. If you just want to get preview entry from existing data, you should provide entry parameter with empty json.
 
 #### Permissions
@@ -1013,7 +1012,7 @@ sub preview_openapi_spec {
     $spec->{summary} = 'Make a preview for a entry';
     $spec->{description} = <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 
 #### Permissions
 

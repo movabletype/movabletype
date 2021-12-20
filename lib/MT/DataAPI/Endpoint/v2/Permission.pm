@@ -41,7 +41,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of permissions found that by the request.',
+                                    description => ' The total number of permissions.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -120,7 +120,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of permissions found that by the request.',
+                                    description => ' The total number of permissions.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -200,7 +200,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of permissions found that by the request.',
+                                    description => ' The total number of permissions.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -285,7 +285,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of permissions found that by the request.',
+                                    description => ' The total number of permissions.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -817,7 +817,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of permissions found that by the request.',
+                                    description => ' The total number of permissions.',
                                 },
                                 items => {
                                     type        => 'array',

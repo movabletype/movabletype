@@ -161,9 +161,32 @@ sub build_schema {
                 );
             }
         }
+        my @notes;
+        if ($verb eq 'put' || $verb eq 'delete') {
+            push @notes, sprintf('This method accepts %s and POST with __method=%s.', uc $verb, uc $verb);
+        }
+        if (@notes) {
+            my $description;
+            for my $note (@notes) {
+                $description .= "- $note\n";
+            }
+            $response->{paths}{$route}{$verb}{description} .= "\n#### Notes\n$description";
+        }
         if ($openapi->{responses}) {
             for my $code (keys(%{ $openapi->{responses} })) {
                 $response->{paths}{$route}{$verb}{responses}{$code} = $openapi->{responses}{$code};
+            }
+            if ($verb eq 'put' || $verb eq 'delete') {
+                $response->{paths}{$route}{$verb}{responses}{405} = {
+                    description => sprintf('Request method is not %s or POST with __method=%s', uc $verb, uc $verb),
+                    content     => {
+                        'application/json' => {
+                            schema => {
+                                '$ref' => '#/components/schemas/ErrorContent',
+                            },
+                        },
+                    },
+                };
             }
         }
         for my $code (keys %{ $endpoints->{$id}{error_codes} }) {
@@ -195,7 +218,7 @@ sub _build_filtered_list_parameters {
             in          => 'query',
             name        => 'limit',
             schema      => { type => 'integer' },
-            description => 'Maximum number of :object_plural to retrieve.',
+            description => "Maximum number of $plural to retrieve.",
         },
         "${singular}_offset" => {
             in          => 'query',
@@ -220,14 +243,14 @@ sub _build_filtered_list_parameters {
                     'ascend',
                 ],
             },
-            description => <<'DESCRIPTION',
+            description => <<"DESCRIPTION",
 #### descend
 
-Return :object_plural in descending order.
+Return $plural in descending order.
 
 #### ascend
 
-Return :object_plural in ascending order.
+Return $plural in ascending order.
 
 DESCRIPTION
         },
@@ -235,20 +258,20 @@ DESCRIPTION
             in          => 'query',
             name        => 'fields',
             schema      => { type => 'string' },
-            description => 'The field list to retrieve as part of the :object_singular resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.',
+            description => "The field list to retrieve as part of the $singular resource. That list should be separated by comma. If this parameter is not specified, All fields will be returned.",
 
         },
         "${singular}_includeIds" => {
             in          => 'query',
             name        => 'includeIds',
             schema      => { type => 'string' },
-            description => 'The comma separated ID list of :object_plural to include to result.',
+            description => "The comma separated ID list of $plural to include to result.",
         },
         "${singular}_excludeIds" => {
             in          => 'query',
             name        => 'excludeIds',
             schema      => { type => 'string' },
-            description => 'The comma separated ID list of :object_plural to exclude from result.',
+            description => "The comma separated ID list of $plural to exclude from result.",
         },
     };
     if ($app->current_api_version >= 3) {
@@ -279,13 +302,13 @@ DESCRIPTION
             in          => 'query',
             name        => 'maxComments',
             schema      => { type => 'integer' },
-            description => 'This is an optional parameter. Maximum number of comments to retrieve as part of the :object_plural resource. If this parameter is not supplied, no comments will be returned.',
+            description => "This is an optional parameter. Maximum number of comments to retrieve as part of the $plural resource. If this parameter is not supplied, no comments will be returned.",
         };
         $parameter_template->{"${singular}_maxTrackbacks"} = {
             in          => 'query',
             name        => 'maxTrackbacks',
             schema      => { type => 'integer' },
-            description => 'This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the :object_plural resource. If this parameter is not supplied, no trackbacks will be returned.',
+            description => "This is an optional parameter. Maximum number of received trackbacks to retrieve as part of the $plural resource. If this parameter is not supplied, no trackbacks will be returned.",
         };
         $parameter_template->{"${singular}_status"} = {
             in     => 'query',
@@ -300,8 +323,8 @@ DESCRIPTION
                     'Spam',
                 ],
             },
-            description => <<'DESCRIPTION',
-Filter by container :object_singular's status.
+            description => <<"DESCRIPTION",
+Filter by container ${singular}'s status.
 
 #### Draft
 
@@ -428,11 +451,6 @@ DESCRIPTION
     my $param;
     for my $key (keys %$parameter_template) {
         $param->{$key} = $parameter_template->{$key};
-
-        if ($param->{$key}{description}) {
-            $param->{$key}{description} =~ s/:object_singular/$singular/g;
-            $param->{$key}{description} =~ s/:object_plural/$plural/g;
-        }
 
         (my $source_key = $key) =~ s/${singular}_(.*)/$1/;
         my $default_value = $default_params->{$source_key};

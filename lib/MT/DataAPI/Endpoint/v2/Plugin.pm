@@ -29,7 +29,7 @@ sub list_openapi_spec {
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of plugins found that by the request.',
+                                    description => ' The total number of plugins.',
                                 },
                                 items => {
                                     type        => 'array',

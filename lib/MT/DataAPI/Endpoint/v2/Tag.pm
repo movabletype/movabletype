@@ -48,7 +48,7 @@ sub list_for_site_openapi_spec {
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of tags found that by the request.',
+                                    description => ' The total number of tags.',
                                 },
                                 items => {
                                     type        => 'array',
