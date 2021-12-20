@@ -15,12 +15,6 @@ use Encode;
 use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
-my %SMTPModules = (
-    Core     => ['Net::SMTPS', 'MIME::Base64'],
-    Auth     => ['Authen::SASL'],
-    SSLorTLS => ['IO::Socket::SSL', 'Net::SSLeay'],
-);
-
 sub encwords {
     my ($class, $hdrs, $mail_enc) = @_;
 
@@ -140,14 +134,10 @@ sub _send_mt_smtp {
     my $host      = $mgr->SMTPServer;
     my $user      = $mgr->SMTPUser;
     my $pass      = $mgr->SMTPPassword;
-    my $localhost = hostname() || 'localhost';
-    my $port =
-          $mgr->SMTPPort          ? $mgr->SMTPPort
-        : $mgr->SMTPAuth eq 'ssl' ? 465
-        :                           25;
+    my $localhost = hostname()     || 'localhost';
+    my $port      = $mgr->SMTPPort || ($mgr->SMTPAuth eq 'ssl' ? 465 : 25);
     my ($auth, $tls, $ssl);
     if ($mgr->SMTPAuth) {
-
         if ('starttls' eq $mgr->SMTPAuth) {
             $tls  = 1;
             $auth = 1;
@@ -165,12 +155,13 @@ sub _send_mt_smtp {
         if $auth and (!$user or !$pass);
 
     # Check required modules;
-    my @modules = ();
-    push @modules, @{ $SMTPModules{Core} };
-    push @modules, @{ $SMTPModules{Auth} }     if $auth;
-    push @modules, @{ $SMTPModules{SSLorTLS} } if $ssl || $tls;
-
-    $class->can_use(\@modules) or return;
+    if ($do_ssl) {
+        return unless $class->can_use_smtpauth_ssl;
+    } elsif ($auth) {
+        return unless $class->can_use_smtpauth;
+    } else {
+        return unless $class->can_use_smtp;
+    }
 
     # bugid: 111227
     # Do not use IO::Socket::INET6 on Windows environment for avoiding an error.
@@ -189,9 +180,7 @@ sub _send_mt_smtp {
             $do_ssl
             ? (
                 SSL_verify_mode => $ssl_verify_mode,
-                SSL_version     => MT->config->SSLVersion
-                    || MT->config->SMTPSSLVersion
-                    || 'SSLv23:!SSLv3:!SSLv2',
+                SSL_version     => MT->config->SSLVersion || MT->config->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
                 (eval { require Mozilla::CA; 1 })
                 ? (SSL_ca_file => Mozilla::CA::SSL_ca_file())
                 : (),
@@ -324,13 +313,12 @@ sub _send_mt_sendmail {
     1;
 }
 
-sub can_use {
-    my $class = shift;
-    my ($mods) = @_;
-    return unless $mods;
+sub _can_use {
+    my ($class, @mods) = @_;
+    return unless @mods;
 
     my @err;
-    for my $module (@{$mods}) {
+    for my $module (@mods) {
         eval "use $module;";
         push @err, $module if $@;
     }
@@ -343,40 +331,10 @@ sub can_use {
     return 1;
 }
 
-sub can_use_smtp {
-    my $class = shift;
-    my @mods;
-    push @mods, @{ $SMTPModules{Core} };
-
-    return $class->can_use(\@mods);
-}
-
-sub can_use_smtpauth {
-    my $class = shift;
-
-    # return if we cannot use smtp modules
-    return unless $class->can_use_smtp;
-
-    my @mods;
-    push @mods, @{ $SMTPModules{Auth} };
-    return $class->can_use(\@mods);
-}
-
-sub can_use_smtpauth_ssl {
-    my $class = shift;
-
-    # return if we cannot use smtp modules
-    return unless $class->can_use_smtp;
-
-    # return if we cannot use smtpauth modules
-    return unless $class->can_use_smtpauth;
-
-    my @mods;
-    push @mods, @{ $SMTPModules{SSLorTLS} };
-    return $class->can_use(\@mods);
-}
-
-*can_use_smtpauth_tls = \&can_use_smtpauth_ssl;
+sub can_use_smtp         { $_[0]->_can_use('Net::SMTPS', 'MIME::Base64') }
+sub can_use_smtpauth     { $_[0]->can_use_smtp     && $_[0]->_can_use('Authen::SASL') }
+sub can_use_smtpauth_ssl { $_[0]->can_use_smtpauth && $_[0]->_can_use('IO::Socket::SSL', 'Net::SSLeay') }
+sub can_use_smtpauth_tls { $_[0]->can_use_smtpauth_ssl }
 
 1;
 __END__
