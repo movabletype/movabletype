@@ -20,9 +20,9 @@ sub list_openapi_spec {
         description => <<'DESCRIPTION',
 Retrieve list of content data of specified content type in the specified site.
 
-Authentication required if you want to retrieve unpublished content data. Required pemission is follows.
+Authentication required if you want to retrieve unpublished content data. Required pemissions are as follows.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Publish Content Data (each content type)
 - Edit All Content Data (each content type)
 DESCRIPTION
@@ -116,7 +116,7 @@ sub create_openapi_spec {
         description => <<'DESCRIPTION',
 **Authentication Required** Create a new content data. This endpoint requires following permissions.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Create Content Data (each content type)
 
 Post form data is following
@@ -125,8 +125,8 @@ Post form data is following
 
 Known issues (these will be solved in future release)
 
-- If content type contains non required Content Type field, request will failed when post data does not contains its data.
-- If content type contains non required Date and Time field, request will failed when post data does not contains its data.
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
 - Date and Time field must be specified by YYYYMMDDHHmmSS format.
 DESCRIPTION
 
@@ -219,9 +219,9 @@ sub get_openapi_spec {
         description => <<'DESCRIPTION',
 Fetch single content data.
 
-Authentication required if you want fetch unpublished content data. Required permission is follows.
+Authentication required if you want fetch unpublished content data. Required permissions are as follows.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Edit All Content Data (each content type)
 - Publish Content Data (each content type)
 DESCRIPTION
@@ -273,7 +273,7 @@ sub update_openapi_spec {
         description => <<'DESCRIPTION',
 Authentication Required Update a single content data. This endpoint requires folllowing permissions.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Edit All Content Data (each content type)
 - Publish Content Data (each content type)
 
@@ -385,7 +385,7 @@ sub delete_openapi_spec {
 
 Delete a single content data. This endpoint requires folllowing permissions.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Edit All Content Data (each content type)
 - Publish Content Data (each content type)
 
@@ -547,17 +547,17 @@ sub preview_by_id_openapi_spec {
 
 Make a preview by ID. This endpoint requires following permissions.
 
-- Content Data (site, sistem, each content type)
+- Content Data (site, system, each content type)
 - Create Content Data (each content type)
 
-Post form data is follows
+Post form data is as follows
 
 - entry (Entry, required) - Should be provide empty json. This parameter will be removed in the future.
 
 Known issues (these will be solved in future release)
 
-- If content type contains non required Content Type field, request will failed when post data does not contains its data.
-- If content type contains non required Date and Time field, request will failed when post data does not contains its data.
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
 - Date and Time field must be specified by YYYYMMDDHHmmSS format.
 DESCRIPTION
         parameters => [{
@@ -647,7 +647,7 @@ sub preview_openapi_spec {
 
 Make a preview by specified data. This endpoint requires following permissions.
 
-- Manage Content Data (site, sistem, each content type)
+- Manage Content Data (site, system, each content type)
 - Create Content Data (each content type)
 
 Post form data is following
@@ -656,8 +656,8 @@ Post form data is following
 
 Known issues (these will be solved in future release)
 
-- If content type contains non required Content Type field, request will failed when post data does not contains its data.
-- If content type contains non required Date and Time field, request will failed when post data does not contains its data.
+- If content type contains non required Content Type field, request will failed when post data does not contain its data.
+- If content type contains non required Date and Time field, request will failed when post data does not contain its data.
 - Date and Time field must be specified by YYYYMMDDHHmmSS format.
 DESCRIPTION
         parameters => [{

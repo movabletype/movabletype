@@ -14,8 +14,8 @@ use MT::DataAPI::Resource;
 
 sub list_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
-        summary     => 'Categoris Collection for category set',
+        tags        => ['Categories', 'Category Sets'],
+        summary     => 'Category Collection for category set',
         description => 'Retrieve list of categories of the specified category set.',
         parameters  => [{
                 in          => 'query',
@@ -33,7 +33,7 @@ sub list_for_category_set_openapi_spec {
                 },
                 description => <<'DESCRIPTION',
 - 1: The list does not include current category.
-- The list includes current category.
+- 0: The list includes current category.
 DESCRIPTION
             },
         ],
@@ -99,8 +99,8 @@ sub list_for_category_set {
 
 sub list_parents_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
-        summary     => 'Categoris Collection of parent categories for category set',
+        tags        => ['Categories', 'Category Sets'],
+        summary     => 'Category Collection of parent categories for category set',
         description => 'Retrieve list of parent categories of the specified category set.',
         parameters  => [{
                 in          => 'query',
@@ -118,7 +118,7 @@ sub list_parents_for_category_set_openapi_spec {
                 },
                 description => <<'DESCRIPTION',
 - 1: The list does not include current category.
-- The list includes current category.
+- 0: The list includes current category.
 DESCRIPTION
             },
         ],
@@ -190,8 +190,8 @@ sub list_parents_for_category_set {
 
 sub list_siblings_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
-        summary     => 'Categoris Collection of sibling categories for category set',
+        tags        => ['Categories', 'Category Sets'],
+        summary     => 'Category Collection of sibling categories for category set',
         description => 'Retrieve list of sibling categories of the specified category set.',
         parameters  => [
             { '$ref' => '#/components/parameters/category_search' },
@@ -296,8 +296,8 @@ sub list_siblings_for_category_set {
 
 sub list_children_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
-        summary     => 'Categoris Collection of child categories for category set',
+        tags        => ['Categories', 'Category Sets'],
+        summary     => 'Category Collection of child categories for category set',
         description => 'Retrieve list of child categories of the specified category set.',
         parameters  => [{
                 in          => 'query',
@@ -315,7 +315,7 @@ sub list_children_for_category_set_openapi_spec {
                 },
                 description => <<'DESCRIPTION',
 - 1: The list does not include current category.
-- The list includes current category.
+- 0: The list includes current category.
 DESCRIPTION
             },
         ],
@@ -386,7 +386,7 @@ sub list_children_for_category_set {
 
 sub create_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
+        tags        => ['Categories', 'Category Sets'],
         summary     => 'Create a new category for category set',
         description => <<'DESCRIPTION',
 **Authentication required.**
@@ -462,7 +462,7 @@ sub create_for_category_set {
 
 sub get_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
+        tags        => ['Categories', 'Category Sets'],
         summary     => 'Fetch single category in category set',
         description => 'Retrieve a single category by its ID.',
         parameters  => [
@@ -511,7 +511,7 @@ sub get_for_category_set {
 
 sub update_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
+        tags        => ['Categories', 'Category Sets'],
         summary     => 'Update single category in category set',
         description => <<'DESCRIPTION',
 **Authentication required.**
@@ -584,7 +584,7 @@ sub update_for_category_set {
 
 sub delete_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
+        tags        => ['Categories', 'Category Sets'],
         summary     => 'Delete single category in category set',
         description => <<'DESCRIPTION',
 **Authentication required.**
@@ -649,7 +649,7 @@ sub delete_for_category_set {
 
 sub permutate_for_category_set_openapi_spec {
     +{
-        tags        => ['Categories', 'Category Set'],
+        tags        => ['Categories', 'Category Sets'],
         summary     => 'Save hierarchical categories order in category set',
         description => <<'DESCRIPTION',
 **Authentication required.**

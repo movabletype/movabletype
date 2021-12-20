@@ -111,7 +111,7 @@ Create a new Content Type. This endpoint requires following permission.
 
 - Manage Content Types
 
-Post form data is follows.
+Post form data is as follows.
 
 - content_type (required, ContentType) - Single Content Type resource
 DESCRIPTION

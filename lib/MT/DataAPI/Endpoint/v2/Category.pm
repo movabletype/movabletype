@@ -423,11 +423,11 @@ DESCRIPTION
                     default => 0,
                 },
                 description => <<'DESCRIPTION',
-#### 0
+#### 1
 
 The list does not include current category.
 
-#### 1
+#### 0
 
 The list includes current category.
 

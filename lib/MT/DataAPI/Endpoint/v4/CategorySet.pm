@@ -13,10 +13,10 @@ use MT::DataAPI::Resource;
 
 sub list_openapi_spec {
     +{
-        tags        => ['Category Set'],
+        tags        => ['Category Sets'],
         summary     => 'Category Set Collection',
         description => <<'DESCRIPTION',
-Retrieve list of category set in the specified site. Authentication required if you want retrieve private field in categorySet resource. Required permissions is follows.
+Retrieve list of category set in the specified site. Authentication required if you want retrieve private field in categorySet resource. Required permissions are as follows.
 
 - Manage Category Set
 - If you use search parameter, you must specify search parameter with searchFields parameter. (This will be fixed in a future release.)
@@ -107,7 +107,7 @@ sub list {
 
 sub create_openapi_spec {
     +{
-        tags        => ['Category Set'],
+        tags        => ['Category Sets'],
         summary     => 'Create a new category set',
         description => <<'DESCRIPTION',
 **Authentication Required**
@@ -178,10 +178,10 @@ sub create {
 
 sub get_openapi_spec {
     +{
-        tags        => ['Category Set'],
+        tags        => ['Category Sets'],
         summary     => 'Fetch single category set',
         description => <<'DESCRIPTION',
-Fetch a single category set. Authentication required if you want retrieve private field in categorySet resource. Required permissions is follows.
+Fetch a single category set. Authentication required if you want retrieve private field in categorySet resource. Required permissions are as follows.
 
 - Manage Category Set
 DESCRIPTION
@@ -228,7 +228,7 @@ sub get {
 
 sub update_openapi_spec {
     +{
-        tags        => ['Category Set'],
+        tags        => ['Category Sets'],
         summary     => 'Update category set',
         description => <<'DESCRIPTION',
 **Authentication required** Update single category set. This endpoint requires following permissions.
@@ -295,7 +295,7 @@ sub update {
 
 sub delete_openapi_spec {
     +{
-        tags        => ['Category Set'],
+        tags        => ['Category Sets'],
         summary => 'Delete category set',
         description => <<'DESCRIPTION',
 **Authentication required** Delete a single category set. This endpoint requires following permissions.

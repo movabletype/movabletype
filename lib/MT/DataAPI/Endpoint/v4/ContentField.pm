@@ -124,7 +124,7 @@ Create a new Content Field. This endpoint requires following permission.
 
 - Manage Content Types
 
-Post form data is follows.
+Post form data is as follows.
 
 - content_field (required, ContentField) - Single Content Field resource
 DESCRIPTION

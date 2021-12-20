@@ -19,7 +19,7 @@ sub search_openapi_spec {
             name        => 'class',
             schema      => { type => 'string' },
             description => <<'DESCRIPTION',
-Class name of the object to be searched. Available value is follows.
+Class name of the object to be searched. Available values are as follows.
 
 - entry: Search results will only contain entries.
 - page: Search results will only contain pages.
