@@ -779,7 +779,7 @@ sub preview_by_id_openapi_spec {
         summary     => 'Make a preview for a template with existing data',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 - Only available for following templates
   - index
   - archive
@@ -873,7 +873,7 @@ sub preview_openapi_spec {
         summary     => 'Make a preview for a template',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 - **type** parameter in the Templates resource is required.
 
 #### Permissions

@@ -741,7 +741,7 @@ sub preview_by_id_openapi_spec {
         summary     => 'Make a preview for a page with existing data',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 - **page** parameter is required. If you just want to get preview page from existing data, you should provide page parameter with empty json.
 
 #### Permissions
@@ -807,7 +807,7 @@ sub preview_openapi_spec {
     $spec->{summary} = 'Make a preview for a page';
     $spec->{description} = <<'DESCRIPTION';
 - Authorization is required.
-- **This endpoint is available in Movable Type 6.1.2 or later.**
+- **This endpoint is available since Movable Type 6.1.2 or later.**
 
 #### Permissions
 
