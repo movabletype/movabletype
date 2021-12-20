@@ -68,6 +68,7 @@ sub _gd {
             or return $image->error(
             MT->translate( "Reading image failed: [_1]", $@ ) );
     }
+    $image->_init_image_size;
     $image->{gd}->alphaBlending(0);
     $image->{gd}->saveAlpha(1);
     $image->{gd};
