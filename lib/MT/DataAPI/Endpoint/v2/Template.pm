@@ -101,7 +101,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of templates found that by the request.',
+                                    description => ' The total number of templates.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -282,7 +282,6 @@ sub update_openapi_spec {
         summary     => 'Update a template',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT or POST with __method=PUT.
 
 #### Permissions
 
@@ -364,7 +363,6 @@ sub delete_openapi_spec {
         summary     => 'Delete a template',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts DELETE or POST with __method=DELETE.
 
 #### Permissions
 

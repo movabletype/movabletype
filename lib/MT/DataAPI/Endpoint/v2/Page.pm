@@ -20,12 +20,12 @@ sub list_openapi_spec {
         tags        => ['Pages'],
         summary     => 'Retrieve a list of pages in the specified site',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished pages.
+- Authorization is required to include unpublished pages.
 
 #### Permissions
 
 - manage_pages
-  - for retrieve unpublished page
+  - to retrieve unpublished page
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/page_search' },
@@ -52,7 +52,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of pages found that by the request.',
+                                    description => ' The total number of pages.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -97,12 +97,12 @@ sub list_for_folder_openapi_spec {
         tags        => ['Pages', 'Folders'],
         summary     => 'Retrieve a list of pages by specific folder',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished pages.
+- Authorization is required to include unpublished pages.
 
 #### Permissions
 
 - manage_pages
-  - for retrieve unpublished page
+  - to retrieve unpublished page
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/page_search' },
@@ -129,7 +129,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of pages found that by the request.',
+                                    description => ' The total number of pages.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -168,12 +168,12 @@ sub list_for_asset_openapi_spec {
         tags        => ['Pages', 'Assets'],
         summary     => 'Retrieve a list of pages that related with specific asset',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished pages.
+- Authorization is required to include unpublished pages.
 
 #### Permissions
 
 - manage_pages
-  - for retrieve unpublished page
+  - to retrieve unpublished page
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/page_search' },
@@ -200,7 +200,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of pages found that by the request.',
+                                    description => ' The total number of pages.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -245,12 +245,12 @@ sub list_for_site_and_tag_openapi_spec {
         tags        => ['Pages', 'Tags'],
         summary     => 'Retrieve a list of pages that related with specific tag.',
         description => <<'DESCRIPTION',
-- Authorization is required if want to include unpublished pages.
+- Authorization is required to include unpublished pages.
 
 #### Permissions
 
 - manage_pages
-  - for retrieve unpublished page
+  - to retrieve unpublished page
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/page_search' },
@@ -277,7 +277,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of pages found that by the request.',
+                                    description => ' The total number of pages.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -367,7 +367,7 @@ sub create_openapi_spec {
 
 #### Update in v2.0
 
-- You can attach folder and assets in the one request.
+- You can attach folder and assets in one request.
 
 #### Permissions
 
@@ -523,11 +523,10 @@ sub update_openapi_spec {
         summary     => 'Update an existing page',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Update in v2.0
 
-- You can attach/detach folder and assets in the one request.
+- You can attach/detach folder and assets in one request.
 
 #### Permissions
 
@@ -671,7 +670,7 @@ sub delete_openapi_spec {
         tags        => ['Pages'],
         summary     => 'Delete an existing page',
         description => <<'DESCRIPTION',
-- Authorization is required. This method accepts PUT and POST with __method=DELETE.
+- Authorization is required.
 
 #### Permissions
 

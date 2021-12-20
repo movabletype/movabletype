@@ -281,7 +281,6 @@ sub update_openapi_spec {
         summary     => 'Update an asset',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts PUT and POST with __method=PUT.
 
 #### Permissions
 
@@ -345,7 +344,6 @@ sub delete_openapi_spec {
         summary     => 'Delete an asset',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- This method accepts DELETE and POST with __method=DELETE.
 
 #### Permissions
 

@@ -19,13 +19,13 @@ sub list_openapi_spec {
         tags        => ['Users'],
         summary     => 'Retrieve a list of users in the specified site',
         description => <<'DESCRIPTION',
-- Authentication is required if want to include non-active users. Also, want to get private properties.
+- Authentication is required to include non-active users or to get private properties.
 
 #### Permissions
 
 - administer
-  - for retrieve non-active users
-  - for read private properties
+  - to retrieve non-active users
+  - to read private properties
 DESCRIPTION
         parameters => [
             { '$ref' => '#/components/parameters/user_search' },
@@ -115,7 +115,7 @@ DESCRIPTION
                             properties => {
                                 totalResults => {
                                     type        => 'integer',
-                                    description => ' The total number of users found that by the request.',
+                                    description => ' The total number of users.',
                                 },
                                 items => {
                                     type        => 'array',
@@ -231,7 +231,6 @@ sub delete_openapi_spec {
         summary     => 'Delete user',
         description => <<'DESCRIPTION',
 - Authentication is required.
-- This method accepts DELETE and POST with __method=DELETE.
 - Cannot delete oneself. Also, cannot delete system administrator user.
 
 #### Permissions
