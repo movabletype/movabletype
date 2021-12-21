@@ -18,7 +18,7 @@ sub find_module {
     eval "require $mail_class;";
     return $module = $mail_class unless $@;
 
-    Carp::croak($@) if $@;
+    Carp::croak($@);
     return MT->error(MT->translate('Error loading mail class: [_1].', $mail_class));
 }
 
