@@ -1204,8 +1204,8 @@ function filterItem(type, datepicker_off) {
         dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
         monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
         showMonthAfterYear: true,
-        prevText: '<',
-        nextText: '>',
+        prevText: '&lt;',
+        nextText: '&gt;',
         onSelect: function( dateText, inst ) {
           inst.input.mtValid();
         }
@@ -1686,8 +1686,8 @@ jQuery('#filter-detail').on('click','.filtertype .plus',function(){
       dayNamesMin: [<__trans phrase="_LOCALE_CALENDAR_HEADER_">],
       monthNames: ['- 01','- 02','- 03','- 04','- 05','- 06','- 07','- 08','- 09','- 10','- 11','- 12'],
       showMonthAfterYear: true,
-      prevText: '<',
-      nextText: '>'
+      prevText: '&lt;',
+      nextText: '&gt;'
   });
   $filteritem.find('.minus').show();
 });
