@@ -26,25 +26,6 @@ $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
 
-sub base64_encode_suite {
-    my $mail_class     = shift;
-    my $max_line_octet = $mail_class->MAX_LINE_OCTET;
-    return ({
-            name        => '8bit',
-            input       => 'a' x $max_line_octet,
-            header_args => { 'Content-Transfer-Encoding' => '8bit' },
-            expected    => 'a' x $max_line_octet,
-            headers     => { 'Content-Transfer-Encoding' => qr/\A\dbit\z/, },
-        },
-        {
-            name        => 'Base64 encoded',
-            input       => 'a' x ($max_line_octet + 1),
-            header_args => { 'Content-Transfer-Encoding' => 'base64' },
-            expected    => MIME::Base64::encode_base64('a' x ($max_line_octet + 1)),
-            headers     => { 'Content-Transfer-Encoding' => qr/\Abase64\z/, },
-        });
-}
-
 subtest 'can use modules' => sub {
     my $test = sub {
         my ($missing, $method) = @_;
@@ -73,52 +54,7 @@ subtest 'can use modules' => sub {
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
     my $mail_class = MT::Util::Mail::find_module($c);
 
-    subtest 'render' => sub {
-        my $hdrs = {
-            'Content-Type'              => q(text/plain; charset="utf-8"),
-            'Content-Transfer-Encoding' => '8bit',
-            'MIME-Version'              => "1.0",
-            To                          => 'to@a.com',
-            Cc                          => 'cc@a.com',
-            Bcc                         => 'bcc@a.com',
-        };
-        subtest 'without hide_bcc' => sub {
-            my $hdr_copy = {%$hdrs};
-            my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body');
-            print($ret);
-            like($ret, qr/To:/, 'key exists');
-            like($ret, qr/Cc:/, 'key exists');
-            like($ret, qr/Bcc:/, 'key exists');
-            is(scalar @recipients, 3, 'right number of recipients')
-        };
-        subtest 'with hide_bcc' => sub {
-            my $hdr_copy = {%$hdrs};
-            my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body', hide_bcc => 1);
-            like($ret, qr/To:/, 'key exists');
-            like($ret, qr/Cc:/, 'key exists');
-            unlike($ret, qr/Bcc:/, 'key exists');
-            is(scalar @recipients, 3, 'right number of recipients')
-        };
-    };
-
     subtest $mail_class => sub {
-
-        subtest 'encode' => sub {
-            for my $data (base64_encode_suite($mail_class)) {
-                my ($headers, $body) = send_mail({ %{ $data->{header_args} } }, $data->{input});
-                my $expected = $data->{expected};
-                $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
-                $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
-                is($body, $expected, $data->{name} . ' : body');
-                foreach my $key (sort keys %{ $data->{headers} }) {
-                    like(
-                        $headers->{$key},
-                        $data->{headers}{$key},
-                        $data->{name} . ' : header : ' . $key
-                    );
-                }
-            }
-        };
 
         subtest '_dedupe_headers' => sub {
             my $hdr = {
@@ -132,43 +68,110 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
             $hdr->{From} = [split(/, /, $hdr->{From})] if !ref($hdr->{From});
             is(scalar(@{ $hdr->{From} }), 3, 'right number of elements');
         };
-    };
 
-    subtest 'header encoding' => sub {
-        subtest 'utf-8' => sub {
-            $mt->config('MailEncoding',         'utf-8');
-            $mt->config('MailTransferEncoding', 'base64');
-            my $jp1   = 'あ';
-            my $jp2   = 'い';
-            my $mime1 = '=?UTF-8?B?44GC?=';    # あ
-            my $mime2 = '=?UTF-8?B?44GE?=';    # い
-            subtest 'single' => sub {
-                my $hdrs = { To => "$jp1<t1\@a.com>" };
-                my ($headers, $body) = send_mail($hdrs, 'body text');
-                like($headers->{To}, qr/\Q$mime1\E/, 'right to header');
+        subtest 'render' => sub {
+            my $hdrs = {
+                'Content-Type'              => q(text/plain; charset="utf-8"),
+                'Content-Transfer-Encoding' => '8bit',
+                'MIME-Version'              => "1.0",
+                To                          => 'to@a.com',
+                Cc                          => 'cc@a.com',
+                Bcc                         => 'bcc@a.com',
             };
-            subtest 'multiple' => sub {
-                my $hdrs = { To => ["$jp1<t1\@a.com>", "$jp2<t2\@a.com>"] };
-                my ($headers, $body) = send_mail($hdrs, 'body text');
-                my @addrs = split(', ', $headers->{To});
-                like($addrs[0], qr{\Q$mime1\E}, 'right To header');
-                like($addrs[1], qr{\Q$mime2\E}, 'right To header');
+            subtest 'without hide_bcc' => sub {
+                my $hdr_copy = {%$hdrs};
+                my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body');
+                like($ret, qr/To:/, 'key exists');
+                like($ret, qr/Cc:/, 'key exists');
+                like($ret, qr/Bcc:/, 'key exists');
+                is(scalar @recipients, 3, 'right number of recipients')
+            };
+            subtest 'with hide_bcc' => sub {
+                my $hdr_copy = {%$hdrs};
+                my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body', hide_bcc => 1);
+                like($ret, qr/To:/, 'key exists');
+                like($ret, qr/Cc:/, 'key exists');
+                unlike($ret, qr/Bcc:/, 'key exists');
+                is(scalar @recipients, 3, 'right number of recipients')
             };
         };
-        subtest 'iso-8859-1' => sub {
-            $mt->config('MailEncoding',         'iso-8859-1');
-            $mt->config('MailTransferEncoding', 'base64');
-            subtest 'single' => sub {
-                my $hdrs = { To => "a/a<t1\@a.com>" };
-                my ($headers, $body) = send_mail($hdrs, 'body text');
-                like($headers->{To}, qr{a/a}, 'right to header');
+
+        subtest 'transfer encoding' => sub {
+            my $max_line_octet = $mail_class->MAX_LINE_OCTET;
+            my @cases = ({
+                    name             => '8bit short',
+                    input            => 'a' x $max_line_octet,
+                    TransferEncoding => '8bit',
+                    expected         => sub { $_[0] },
+                },
+                {
+                    name             => '8bit short',
+                    input            => 'a' x ($max_line_octet + 1),
+                    TransferEncoding => '8bit',
+                    expected         => sub { $_[0] },
+                },
+                {
+                    name             => 'Base64 short',
+                    input            => 'a' x ($max_line_octet),
+                    TransferEncoding => 'base64',
+                    expected         => sub { MIME::Base64::encode_base64($_[0]) },
+                },
+                {
+                    name             => 'Base64 long',
+                    input            => 'a' x ($max_line_octet + 1),
+                    TransferEncoding => 'base64',
+                    expected         => sub { MIME::Base64::encode_base64($_[0]) },
+                },
+            );
+            for my $data (@cases) {
+                $mt->config('MailTransferEncoding', $data->{TransferEncoding});
+                subtest $data->{name} => sub {
+                    my ($headers, $body) = send_mail({ %{$data->{header} || {}} }, $data->{input});
+                    my $expected = $data->{expected}->($data->{input});
+                    $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
+                    $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
+                    is($body, $expected, 'right body');
+                    is($headers->{'Content-Transfer-Encoding'}, $data->{TransferEncoding}, 'right transter encoding');
+                };
+            }
+        };
+
+        subtest 'header word encoding' => sub {
+            subtest 'utf-8' => sub {
+                $mt->config('MailEncoding',         'utf-8');
+                $mt->config('MailTransferEncoding', 'base64');
+                my $jp1   = 'あ';
+                my $jp2   = 'い';
+                my $mime1 = '=?UTF-8?B?44GC?=';    # あ
+                my $mime2 = '=?UTF-8?B?44GE?=';    # い
+                subtest 'single' => sub {
+                    my $hdrs = { To => "$jp1<t1\@a.com>" };
+                    my ($headers, $body) = send_mail($hdrs, 'body text');
+                    like($headers->{To}, qr/\Q$mime1\E/, 'right to header');
+                };
+                subtest 'multiple' => sub {
+                    my $hdrs = { To => ["$jp1<t1\@a.com>", "$jp2<t2\@a.com>"] };
+                    my ($headers, $body) = send_mail($hdrs, 'body text');
+                    my @addrs = split(', ', $headers->{To});
+                    like($addrs[0], qr{\Q$mime1\E}, 'right To header');
+                    like($addrs[1], qr{\Q$mime2\E}, 'right To header');
+                };
             };
-            subtest 'multiple' => sub {
-                my $hdrs = { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] };
-                my ($headers, $body) = send_mail($hdrs, 'body text');
-                my @addrs = split(', ', $headers->{To});
-                like($addrs[0], qr{a/a}, 'right To header');
-                like($addrs[1], qr{a/b}, 'right To header');
+            subtest 'iso-8859-1' => sub {
+                $mt->config('MailEncoding',         'iso-8859-1');
+                $mt->config('MailTransferEncoding', 'base64');
+                subtest 'single' => sub {
+                    my $hdrs = { To => "a/a<t1\@a.com>" };
+                    my ($headers, $body) = send_mail($hdrs, 'body text');
+                    like($headers->{To}, qr{a/a}, 'right to header');
+                };
+                subtest 'multiple' => sub {
+                    my $hdrs = { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] };
+                    my ($headers, $body) = send_mail($hdrs, 'body text');
+                    my @addrs = split(', ', $headers->{To});
+                    like($addrs[0], qr{a/a}, 'right To header');
+                    like($addrs[1], qr{a/b}, 'right To header');
+                };
             };
         };
     };
