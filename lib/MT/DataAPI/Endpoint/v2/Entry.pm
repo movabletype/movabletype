@@ -894,7 +894,7 @@ sub preview_by_id_openapi_spec {
         summary     => 'Make a preview for a entry with existing data',
         description => <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available since Movable Type 6.1.2 or later.**
+- **This endpoint has been available since Movable Type 6.1.2.**
 - **entry** parameter is required. If you just want to get preview entry from existing data, you should provide entry parameter with empty json.
 
 #### Permissions
@@ -1012,7 +1012,7 @@ sub preview_openapi_spec {
     $spec->{summary} = 'Make a preview for a entry';
     $spec->{description} = <<'DESCRIPTION',
 - Authorization is required.
-- **This endpoint is available since Movable Type 6.1.2 or later.**
+- **This endpoint has been available since Movable Type 6.1.2.**
 
 #### Permissions
 
