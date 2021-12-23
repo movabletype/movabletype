@@ -15,66 +15,6 @@ use Encode;
 use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
-sub encwords {
-    my ($class, $hdrs, $mail_enc) = @_;
-
-    return unless ($hdrs->{'Content-Transfer-Encoding'} eq 'base64');
-
-    eval "require MIME::EncWords;";
-    unless ($@) {
-        foreach my $header (keys %$hdrs) {
-            my $val = $hdrs->{$header};
-
-            if (ref $val eq 'ARRAY') {
-                foreach (@$val) {
-                    if (($mail_enc ne 'iso-8859-1') || (m/[^[:print:]]/)) {
-                        if ($header =~ m/^(From|To|Reply-To|B?cc)/i) {
-                            if (m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                                $_ = MIME::EncWords::encode_mimeword(
-                                    MT::I18N::default->encode_text_encode($1, undef, $mail_enc),
-                                    'b',
-                                    $mail_enc
-                                    )
-                                    . ' '
-                                    . $2;
-                            }
-                        } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
-                            $_ = MIME::EncWords::encode_mimeword(
-                                MT::I18N::default->encode_text_encode($_, undef, $mail_enc),
-                                'b',
-                                $mail_enc
-                            );
-                        }
-                    }
-                }
-            } else {
-                if (($mail_enc ne 'iso-8859-1') || ($val =~ /[^[:print:]]/)) {
-                    if ($header =~ m/^(From|To|Reply|B?cc)/i) {
-                        if ($val =~ m/^(.+?)\s*(<[^@>]+@[^>]+>)\s*$/) {
-                            $hdrs->{$header} = MIME::EncWords::encode_mimeword(
-                                MT::I18N::default->encode_text_encode($1, undef, $mail_enc),
-                                'b',
-                                $mail_enc
-                                )
-                                . ' '
-                                . $2;
-                        }
-                    } elsif ($header !~ m/^(Content-Type|Content-Transfer-Encoding|MIME-Version)/i) {
-                        $hdrs->{$header} = MIME::EncWords::encode_mimeword(
-                            MT::I18N::default->encode_text_encode($val, undef, $mail_enc),
-                            'b',
-                            $mail_enc
-                        );
-                    }
-                }
-            }
-        }
-    } else {
-        $hdrs->{Subject} = MT::I18N::default->encode_text_encode($hdrs->{Subject}, undef, $mail_enc);
-        $hdrs->{From}    = MT::I18N::default->encode_text_encode($hdrs->{From},    undef, $mail_enc);
-    }
-}
-
 sub send {
     my $class = shift;
     my ($hdrs_arg, $body) = @_;
