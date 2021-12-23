@@ -38,7 +38,6 @@ sub send {
 
     $hdrs{'Content-Type'}              ||= qq(text/plain; charset=") . $mail_enc . q(");
     $hdrs{'Content-Transfer-Encoding'} ||= $mgr->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
-    $hdrs{'MIME-Version'}              ||= "1.0";
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
     if (!$hdrs{From}) {
