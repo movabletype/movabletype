@@ -233,37 +233,38 @@ __END__
 
 =head1 NAME
 
-MT::Mail - Movable Type mail sender
+MT::Mail::MIME - Movable Type mail sender base class
 
 =head1 SYNOPSIS
 
-    use MT::Mail;
+    # use a subclass
+    use MT::Mail::MIME::EmailMIME;
     my %head = ( To => 'foo@bar.com', Subject => 'My Subject' );
     my $body = 'This is the body of the message.';
-    MT::Mail->send(\%head, $body)
-        or die MT::Mail->errstr;
+    MT::Mail::MIME::EmailMIME->send(\%head, $body)
+        or die MT::Mail::MIME::EmailMIME->errstr;
 
 =head1 DESCRIPTION
 
-I<MT::Mail> is the Movable Type mail-sending interface. It can send mail
+I<MT::Mail::MIME> is the Movable Type mail-sending interface. It can send mail
 through I<sendmail> (in several different default locations), through SMTP,
 or through a debugging interface that writes data to STDERR. You can set the
 method of sending mail through the F<mt.cfg> file by changing the value for
 the I<MailTransfer> setting to one of the following values: C<sendmail>,
 C<smtp>, or C<debug>.
 
-If you are using C<sendmail>, I<MT::Mail::send> looks for your I<sendmail>
+If you are using C<sendmail>, I<MT::Mail::MIME::send> looks for your I<sendmail>
 program in any of the following locations: F</usr/lib/sendmail>,
 F</usr/sbin/sendmail>, and F</usr/ucblib/sendmail>. If your I<sendmail> is at
 a different location, you can set it using the I<SendMailPath> directive.
 
-If you are using C<smtp>, I<MT::Mail::send> will by default use C<localhost>
+If you are using C<smtp>, I<MT::Mail::MIME::send> will by default use C<localhost>
 as the SMTP server. You can change this by setting the I<SMTPServer>
 directive.
 
 =head1 USAGE
 
-=head2 MT::Mail->send(\%headers, $body)
+=head2 MT::Mail::MIME->send(\%headers, $body)
 
 Sends a mail message with the headers I<\%headers> and the message body
 I<$body>.
@@ -279,7 +280,7 @@ If you wish the lines in I<$body> to be wrapped, you should do this yourself;
 it will not be done by I<send>.
 
 On success, I<send> returns true; on failure, it returns C<undef>, and the
-error message is in C<MT::Mail-E<gt>errstr>.
+error message is in C<MT::Mail::MIME-E<gt>errstr>.
 
 =head1 AUTHOR & COPYRIGHT
 
