@@ -95,7 +95,7 @@ sub _dedupe_headers {
 sub _send_mt_debug {
     my $class = shift;
     my ($hdrs, $body, $mgr) = @_;
-    my ($msg) = $class->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body);
     print STDERR $msg;
     1;
 }
@@ -174,9 +174,15 @@ sub _send_mt_smtp {
     # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From});
 
-    my ($msg, @recipients) = $class->render(header => $hdrs, body => $body, hide_bcc => 1);
+    for my $h (qw( To Bcc Cc )) {
+        next unless defined $hdrs->{$h};
+        my $addr = $hdrs->{$h};
+        $smtp->recipient($_) for (ref $addr eq 'ARRAY' ? @$addr : $addr);
+    }
 
-    $smtp->recipient($_) for @recipients;
+    delete $hdrs->{Bcc};
+
+    my $msg = $class->render(header => $hdrs, body => $body);
 
     my $_check_smtp_err = sub {
 
@@ -221,7 +227,7 @@ sub _send_mt_sendmail {
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    my ($msg) = $class->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;

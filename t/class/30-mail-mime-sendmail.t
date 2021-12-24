@@ -157,6 +157,24 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
+
+    subtest 'cc and bcc' => sub {
+        eval {
+            MT::Util::Mail->send({
+                    To  => ['t1@host.domain', 't2@host.domain'],
+                    Cc  => ['t3@host.domain'],
+                    Bcc => ['t4@host.domain', 't5@host.domain'],
+                },
+                'mail body'
+            );
+        };
+        ok(!$@,                     "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+        my $last_sent = $sendmail->last_sent_mail();
+        like($last_sent, qr{t3}, 'cc is appeard');
+        like($last_sent, qr{t4}, 'bcc is appeard');
+        like($last_sent, qr{t5}, 'bcc is appeard');
+    };
 }
 
 done_testing();

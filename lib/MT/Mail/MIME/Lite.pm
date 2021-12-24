@@ -17,7 +17,7 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($hdrs, $body, $hide_bcc) = map { $args{$_} } (qw(header body hide_bcc));
+    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
 
     my $mail_enc = ($hdrs->{'Content-Type'} =~ /charset="(.+)"/)[0];
     $class->encwords($hdrs, $mail_enc);
@@ -27,10 +27,6 @@ sub render {
     for my $k (@unique_headers) {
         $hdrs->{$k} = join(', ', @{ $hdrs->{$k} }) if ref $hdrs->{$k};
     }
-
-    my @recipients = map { split(/, /, $_) } grep { $_ } map { $hdrs->{$_} } (qw( To Bcc Cc ));
-
-    delete $hdrs->{Bcc} if $hide_bcc;
 
     my $msg;
 
@@ -46,7 +42,7 @@ sub render {
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
 
-    return ($encoded, @recipients);
+    return $encoded;
 }
 
 sub encwords {

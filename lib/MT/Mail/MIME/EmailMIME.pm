@@ -17,12 +17,7 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($hdrs, $body, $hide_bcc) = map { $args{$_} } (qw(header body hide_bcc));
-
-    my @recipients = map { split(/, /, $_) } grep { $_ } map { $hdrs->{$_} } (qw( To Bcc Cc ));
-
-    delete $hdrs->{Bcc} if $hide_bcc;
-
+    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
     my $msg;
 
     eval {
@@ -40,7 +35,7 @@ sub render {
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
 
-    return ($encoded, @recipients);
+    return $encoded;
 }
 
 1;

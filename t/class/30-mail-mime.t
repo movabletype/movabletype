@@ -69,33 +69,6 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
             is(scalar(@{ $hdr->{From} }), 3, 'right number of elements');
         };
 
-        subtest 'render' => sub {
-            my $hdrs = {
-                'Content-Type'              => q(text/plain; charset="utf-8"),
-                'Content-Transfer-Encoding' => '8bit',
-                'MIME-Version'              => "1.0",
-                To                          => 'to@a.com',
-                Cc                          => 'cc@a.com',
-                Bcc                         => 'bcc@a.com',
-            };
-            subtest 'without hide_bcc' => sub {
-                my $hdr_copy = {%$hdrs};
-                my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body');
-                like($ret, qr/To:/, 'key exists');
-                like($ret, qr/Cc:/, 'key exists');
-                like($ret, qr/Bcc:/, 'key exists');
-                is(scalar @recipients, 3, 'right number of recipients')
-            };
-            subtest 'with hide_bcc' => sub {
-                my $hdr_copy = {%$hdrs};
-                my ($ret, @recipients) = $mail_class->render(header => $hdr_copy, body => 'body', hide_bcc => 1);
-                like($ret, qr/To:/, 'key exists');
-                like($ret, qr/Cc:/, 'key exists');
-                unlike($ret, qr/Bcc:/, 'key exists');
-                is(scalar @recipients, 3, 'right number of recipients')
-            };
-        };
-
         subtest 'transfer encoding' => sub {
             my @cases = ({
                     name             => '8bit short',
