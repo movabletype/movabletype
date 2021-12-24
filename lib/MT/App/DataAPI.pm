@@ -120,9 +120,6 @@ sub core_endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::User::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::User::get_openapi_spec',
-            openapi_options => {
-                can_use_access_token => 1,
-            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested user.',
             },
@@ -179,7 +176,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::Entry::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::list_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'entry,entries',
             },
             default_params => {
@@ -214,9 +210,6 @@ sub core_endpoints {
             version         => 1,
             handler         => '$Core::MT::DataAPI::Endpoint::Entry::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::Entry::get_openapi_spec',
-            openapi_options => {
-                can_use_access_token => 1,
-            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested entry.',
             },
@@ -376,7 +369,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_for_entry',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_for_entry_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category,categories',
             },
             default_params => {
@@ -838,7 +830,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_category',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_category_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'entry,entries',
             },
             default_params => {
@@ -862,7 +853,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_asset',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_asset_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'entry,entries',
             },
             default_params => {
@@ -904,7 +894,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Entry::list_for_site_and_tag_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'entry,entries',
             },
             default_params => {
@@ -999,7 +988,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'page,pages',
             },
             default_params => {
@@ -1023,7 +1011,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_folder',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_folder_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'page,pages',
             },
             default_params => {
@@ -1047,7 +1034,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_asset',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_asset_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'page,pages',
             },
             default_params => {
@@ -1091,7 +1077,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_site_and_tag',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::list_for_site_and_tag_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'page,pages',
             },
             default_params => {
@@ -1126,9 +1111,6 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Page::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Page::get_openapi_spec',
-            openapi_options => {
-                can_use_access_token => 1,
-            },
             error_codes => {
                 403 => 'Do not have permission to retrieve the requested page.',
             },
@@ -2194,7 +2176,6 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::User::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::User::list_openapi_spec',
             openapi_options => {
-                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'user,users',
             },
             default_params => {
