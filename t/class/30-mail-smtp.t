@@ -123,6 +123,26 @@ subtest 'different froms and reply-toes with the same address' => sub {
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
 };
 
+subtest 'cc and bcc' => sub {
+    eval {
+        MT::Mail->send({
+                To  => ['t1@host.domain', 't2@host.domain'],
+                Cc  => ['t3@host.domain'],
+                Bcc => ['t4@host.domain', 't5@host.domain'],
+            },
+            'mail body'
+        );
+    };
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
+    my $last_sent = $server->last_sent_mail;
+    like($last_sent, qr{t3}, 'cc is appeard');
+    unlike($last_sent, qr{t4}, 'bcc is not appeard');
+    unlike($last_sent, qr{t5}, 'bcc is not appeard');
+    my @recipients = $server->last_sent_recipients;
+    is(@recipients, 5, 'right number of recipients');
+};
+
 $server->stop;
 
 done_testing();
