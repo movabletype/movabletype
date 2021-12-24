@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Test::More;
 use Test::TCP;
-use Test::More;
 use MIME::Head;
 use Path::Tiny;
 use IO::String;

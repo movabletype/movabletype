@@ -5,33 +5,14 @@ use lib "$FindBin::Bin/../lib";    # t/lib
 use Test::More;
 use Test::SharedFork;
 use MT::Test::Env;
-BEGIN {
-    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
-}
+use MT::Test::SendmailMock;
 
 our $test_env;
 BEGIN {
-    $test_env = MT::Test::Env->new(
-        MailTransfer => 'sendmail',
-        SendMailPath => 'TEST_ROOT/bin/sendmail.pl',
-    );
+    plan skip_all => 'not for Win32' if $^O eq 'MSWin32';
+    $test_env          = MT::Test::Env->new(MT::Test::SendmailMock->sendmail_config);
     $ENV{MT_CONFIG}    = $test_env->config_file;
     $ENV{MT_TEST_MAIL} = 1;
-
-    my $sendmail = $test_env->save_file('bin/sendmail.pl', <<"SENDMAIL");
-#!$^X
-use strict;
-use warnings;
-use Getopt::Long;
-GetOptions(\\my \%opts => "from|f", "oi", "t");
-
-my \$mail = do { local \$/; <STDIN> };
-
-print STDERR "MAIL: \$mail\\n" if \$ENV{TEST_VERBOSE};
-open my \$fh, '>', "$ENV{MT_TEST_ROOT}/mail";
-print \$fh \$mail, "\\n";
-SENDMAIL
-    chmod 0755, $sendmail;
 }
 
 no Carp::Always;
@@ -44,6 +25,8 @@ use MT::Util ();
 
 MT->instance;
 
+my $sendmail = MT::Test::SendmailMock->new(test_env => $test_env);
+
 subtest 'simple' => sub {
     eval {
         MT::Mail->send({
@@ -54,7 +37,7 @@ subtest 'simple' => sub {
     };
     ok !$@ && !MT::Mail->errstr, "No error" or note $@;
     validate_headers();
-    my $last_sent = last_sent_mail();
+    my $last_sent = $sendmail->last_sent_mail();
     like($last_sent, qr{mail body}, 'right body');
     like($last_sent, qr{Content-Transfer-Encoding: 8bit\n}, 'right newline chars');
 };
@@ -192,12 +175,6 @@ sub validate_headers {
         }
     }
 }
-
-sub last_sent_mail {
-    return do { open my $fh, '<', _last_mail_file() or return; local $/; <$fh> }
-}
-
-sub _last_mail_file { "$ENV{MT_TEST_ROOT}/mail" }
 
 sub _is_valid_email {
     my $address = shift;
