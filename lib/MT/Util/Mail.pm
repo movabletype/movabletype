@@ -36,7 +36,6 @@ sub errstr {
 
 sub can_use {
     my ($class, @mods) = @_;
-    return unless @mods;
 
     my @err;
     for my $module (@mods) {
