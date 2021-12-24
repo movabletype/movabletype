@@ -38,7 +38,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
         my $last_sent = $sendmail->last_sent_mail();
         like($last_sent, qr{mail body},                         'right body');
@@ -54,7 +55,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -70,7 +72,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -86,7 +89,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -102,7 +106,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -118,7 +123,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -132,7 +138,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 
@@ -146,7 +153,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         validate_headers();
     };
 }

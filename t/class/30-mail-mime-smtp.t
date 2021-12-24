@@ -48,7 +48,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
         my $last_sent = $server->last_sent_mail;
         like($last_sent, qr{mail body},                           'right body');
         like($last_sent, qr{Content-Transfer-Encoding: 8bit\r\n}, 'right newline chars');
@@ -63,7 +64,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
     };
 
     subtest 'different froms and reply-toes' => sub {
@@ -78,7 +80,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
     };
 
     subtest 'different froms and reply-toes in scalar' => sub {
@@ -93,7 +96,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
     };
 
     subtest 'different froms and reply-toes with <>' => sub {
@@ -108,7 +112,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
     };
 
     subtest 'different froms and reply-toes with the same address' => sub {
@@ -123,7 +128,8 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 'mail body'
             );
         };
-        ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
+        ok(!$@, "No error") or note($@);
+        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
     };
 
     subtest 'SMTPAuth fails because of lack of user info' => sub {

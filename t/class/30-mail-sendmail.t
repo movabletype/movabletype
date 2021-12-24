@@ -35,7 +35,8 @@ subtest 'simple' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
     my $last_sent = $sendmail->last_sent_mail();
     like($last_sent, qr{mail body}, 'right body');
@@ -51,7 +52,8 @@ subtest 'different cases' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -67,7 +69,8 @@ subtest 'different froms and reply-toes' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -83,7 +86,8 @@ subtest 'different froms and reply-toes in scalar' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -99,7 +103,8 @@ subtest 'different froms and reply-toes with <>' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -115,7 +120,8 @@ subtest 'different froms and reply-toes with the same address' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -129,7 +135,8 @@ subtest 'only uncanonical reply-to' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 
@@ -143,7 +150,8 @@ subtest 'only uncanonical to' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     validate_headers();
 };
 

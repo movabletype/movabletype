@@ -45,7 +45,8 @@ subtest 'simple' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
     my $last_sent = $server->last_sent_mail;
     like($last_sent, qr{mail body}, 'right body');
     like($last_sent, qr{Content-Transfer-Encoding: 8bit\r\n}, 'right newline chars');
@@ -60,7 +61,8 @@ subtest 'different cases' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
 };
 
 subtest 'different froms and reply-toes' => sub {
@@ -75,7 +77,8 @@ subtest 'different froms and reply-toes' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
 };
 
 subtest 'different froms and reply-toes in scalar' => sub {
@@ -90,7 +93,8 @@ subtest 'different froms and reply-toes in scalar' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
 };
 
 subtest 'different froms and reply-toes with <>' => sub {
@@ -105,7 +109,8 @@ subtest 'different froms and reply-toes with <>' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
 };
 
 subtest 'different froms and reply-toes with the same address' => sub {
@@ -120,7 +125,8 @@ subtest 'different froms and reply-toes with the same address' => sub {
             'mail body'
         );
     };
-    ok !$@ && !MT::Mail->errstr, "No error" or note $@;
+    ok(!$@, "No error") or note($@);
+    ok(!MT::Mail->errstr, 'No error') or note(MT::Mail->errstr);
 };
 
 subtest 'cc and bcc' => sub {
