@@ -97,28 +97,27 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         };
 
         subtest 'transfer encoding' => sub {
-            my $max_line_octet = $mail_class->MAX_LINE_OCTET;
             my @cases = ({
                     name             => '8bit short',
-                    input            => 'a' x $max_line_octet,
+                    input            => 'a' x 100, # some number smaller than both 990 and 998
                     TransferEncoding => '8bit',
                     expected         => sub { $_[0] },
                 },
                 {
                     name             => '8bit short',
-                    input            => 'a' x ($max_line_octet + 1),
+                    input            => 'a' x 1000, # some number bigger than both 990 and 998
                     TransferEncoding => '8bit',
                     expected         => sub { $_[0] },
                 },
                 {
                     name             => 'Base64 short',
-                    input            => 'a' x ($max_line_octet),
+                    input            => 'a' x 100, # some number smaller than both 990 and 998
                     TransferEncoding => 'base64',
                     expected         => sub { MIME::Base64::encode_base64($_[0]) },
                 },
                 {
                     name             => 'Base64 long',
-                    input            => 'a' x ($max_line_octet + 1),
+                    input            => 'a' x 1000, # some number bigger than both 990 and 998
                     TransferEncoding => 'base64',
                     expected         => sub { MIME::Base64::encode_base64($_[0]) },
                 },

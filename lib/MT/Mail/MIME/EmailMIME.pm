@@ -13,8 +13,6 @@ use MT;
 use base qw( MT::Mail::MIME );
 use Email::MIME;
 
-sub MAX_LINE_OCTET { 998 }
-
 my $crlf = "\x0d\x0a";
 
 sub render {
