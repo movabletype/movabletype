@@ -46,6 +46,8 @@ sub send {
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
+    $class->_dedupe_headers(\%hdrs);
+
     if ($xfer eq 'sendmail') {
         return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'smtp') {
@@ -54,6 +56,39 @@ sub send {
         return $class->_send_mt_debug(\%hdrs, $body, $mgr);
     } else {
         return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    }
+}
+
+sub _lc {
+    my $field    = shift;
+    my $lc_field = lc $field;
+    $lc_field =~ s/\-/_/g;
+    $lc_field;
+}
+
+sub _dedupe_headers {
+    my ($class, $hdrs) = @_;
+
+    # dedupe for SendGrid (cf. CLOUD-73)
+    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
+    my %canonical_map  = map { _lc($_) => $_ } @unique_headers;
+    for my $k (sort { $a cmp $b } keys %$hdrs) {
+        my $lc_k    = _lc($k);
+        my $canon_k = $canonical_map{$lc_k};
+        if ($canon_k && $canon_k ne $k) {
+            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
+                my $addr = delete $hdrs->{$k};
+                my @addrs =
+                      ref $hdrs->{$canon_k} eq 'ARRAY'                     ? @{ $hdrs->{$canon_k} }
+                    : defined $hdrs->{$canon_k} && $hdrs->{$canon_k} ne '' ? ($hdrs->{$canon_k})
+                    :                                                        ();
+                push @addrs, ref $addr eq 'ARRAY' ? @$addr : $addr;
+                my %seen;
+                $hdrs->{$canon_k} = [grep { !$seen{$_}++ } @addrs];
+            } else {
+                $hdrs->{$canon_k} = delete $hdrs->{$k};
+            }
+        }
     }
 }
 
@@ -136,8 +171,6 @@ sub _send_mt_smtp {
         }
     }
 
-    $class->_dedupe_headers($hdrs);
-
     # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
     $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From});
 
@@ -167,39 +200,6 @@ sub _send_mt_smtp {
     1;
 }
 
-sub _lc {
-    my $field    = shift;
-    my $lc_field = lc $field;
-    $lc_field =~ s/\-/_/g;
-    $lc_field;
-}
-
-sub _dedupe_headers {
-    my ($class, $hdrs) = @_;
-
-    # dedupe for SendGrid (cf. CLOUD-73)
-    my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
-    my %canonical_map  = map { _lc($_) => $_ } @unique_headers;
-    for my $k (sort { $a cmp $b } keys %$hdrs) {
-        my $lc_k    = _lc($k);
-        my $canon_k = $canonical_map{$lc_k};
-        if ($canon_k && $canon_k ne $k) {
-            if ($canon_k =~ /^(?:From|To|Cc|Bcc|Reply-To)$/) {
-                my $addr = delete $hdrs->{$k};
-                my @addrs =
-                      ref $hdrs->{$canon_k} eq 'ARRAY'                     ? @{ $hdrs->{$canon_k} }
-                    : defined $hdrs->{$canon_k} && $hdrs->{$canon_k} ne '' ? ($hdrs->{$canon_k})
-                    :                                                        ();
-                push @addrs, ref $addr eq 'ARRAY' ? @$addr : $addr;
-                my %seen;
-                $hdrs->{$canon_k} = [grep { !$seen{$_}++ } @addrs];
-            } else {
-                $hdrs->{$canon_k} = delete $hdrs->{$k};
-            }
-        }
-    }
-}
-
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
@@ -220,8 +220,6 @@ sub _send_mt_sendmail {
         exec $sm_loc, "-oi", "-t", "-f", $hdrs->{From}
             or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
-
-    $class->_dedupe_headers($hdrs);
 
     my ($msg) = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
