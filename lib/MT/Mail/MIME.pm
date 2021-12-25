@@ -131,37 +131,39 @@ sub _send_mt_smtp {
     my ($hdrs, $body, $mgr) = @_;
 
     # SMTP Configuration
-    my $host      = $mgr->SMTPServer;
-    my $user      = $mgr->SMTPUser;
-    my $pass      = $mgr->SMTPPassword;
-    my $localhost = hostname()     || 'localhost';
-    my $port      = $mgr->SMTPPort || ($mgr->SMTPAuth eq 'ssl' ? 465 : 25);
-    my ($auth, $tls, $ssl);
+    my $host = $mgr->SMTPServer;
+    my $user = $mgr->SMTPUser;
+    my $pass = $mgr->SMTPPassword;
+    my $port = $mgr->SMTPPort || ($mgr->SMTPAuth eq 'ssl' ? 465 : 25);
+    my %args = (
+        Port    => $port,
+        Timeout => $mgr->SMTPTimeout,
+        Hello   => hostname() || 'localhost',
+        ($MT::DebugMode ? (Debug => 1) : ()),
+        doSSL   => '', # must be defined to avoid uuv
+    );
+
+    # Set sender header if smtp user id is valid email
+    $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
+
     if ($mgr->SMTPAuth) {
-        if ('starttls' eq $mgr->SMTPAuth) {
-            $tls  = 1;
-            $auth = 1;
-        } elsif ('ssl' eq $mgr->SMTPAuth) {
-            $ssl  = 1;
-            $auth = 1;
-        } else {
-            $auth = 1;
+        return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
+        require MT::Util::Mail;
+        return unless MT::Util::Mail->can_use('Authen::SASL', 'MIME::Base64');
+        if ($mgr->SMTPAuth =~ /^(?:starttls|ssl)$/) {
+            return unless MT::Util::Mail->can_use('IO::Socket::SSL', 'Net::SSLeay');
+            %args = (
+                %args,
+                doSSL               => $mgr->SMTPAuth,
+                SSL_verify_mode     => ($mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone) ? 0 : 1,
+                SSL_version         => MT->config->SSLVersion || MT->config->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+                SSL_verifycn_name   => $host,
+                SSL_verifycn_scheme => 'smtp',
+            );
+            $args{SSL_ca_file} = Mozilla::CA::SSL_ca_file() if (eval { require Mozilla::CA; 1 });
         }
     }
-    my $do_ssl          = ($ssl || $tls) ? $mgr->SMTPAuth                                             : '';
-    my $ssl_verify_mode = $do_ssl        ? (($mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone) ? 0 : 1) : undef;
-
-    return $class->error(MT->translate("Username and password is required for SMTP authentication."))
-        if $auth and (!$user or !$pass);
-
-    # Check required modules;
-    if ($do_ssl) {
-        return unless $class->can_use_smtpauth_ssl;
-    } elsif ($auth) {
-        return unless $class->can_use_smtpauth;
-    } else {
-        return unless $class->can_use_smtp;
-    }
+    require Net::SMTPS;
 
     # bugid: 111227
     # Do not use IO::Socket::INET6 on Windows environment for avoiding an error.
@@ -170,27 +172,6 @@ sub _send_mt_smtp {
         require IO::Socket::INET;
         unshift @Net::SMTPS::ISA, 'IO::Socket::INET';
     }
-
-    my %args = (
-        Port    => $port,
-        Timeout => $mgr->SMTPTimeout,
-        Hello   => $localhost,
-        doSSL   => $do_ssl,
-        (
-            $do_ssl
-            ? (
-                SSL_verify_mode => $ssl_verify_mode,
-                SSL_version     => MT->config->SSLVersion || MT->config->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
-                (eval { require Mozilla::CA; 1 })
-                ? (SSL_ca_file => Mozilla::CA::SSL_ca_file())
-                : (),
-                SSL_verifycn_name   => $host,
-                SSL_verifycn_scheme => 'smtp'
-                )
-            : ()
-        ),
-        ($MT::DebugMode ? (Debug => 1) : ()),
-    );
 
     # Overwrite the arguments of Net::SMTPS.
     my $smtp_opts = $mgr->SMTPOptions;
@@ -202,7 +183,7 @@ sub _send_mt_smtp {
     my $smtp = Net::SMTPS->new($host, %args)
         or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
-    if ($auth) {
+    if ($mgr->SMTPAuth) {
         my $mech = MT->config->SMTPAuthSASLMechanism || do {
 
             # Disable DIGEST-MD5.
@@ -215,9 +196,6 @@ sub _send_mt_smtp {
             return $class->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
         }
     }
-
-    # Set sender header if smtp user id is valid email
-    $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
     $class->_dedupe_headers($hdrs);
 
@@ -312,29 +290,6 @@ sub _send_mt_sendmail {
     close $MAIL;
     1;
 }
-
-sub _can_use {
-    my ($class, @mods) = @_;
-    return unless @mods;
-
-    my @err;
-    for my $module (@mods) {
-        eval "use $module;";
-        push @err, $module if $@;
-    }
-
-    if (@err) {
-        $class->error(MT->translate("Following required module(s) were not found: ([_1])", (join ', ', @err)));
-        return;
-    }
-
-    return 1;
-}
-
-sub can_use_smtp         { $_[0]->_can_use('Net::SMTPS', 'MIME::Base64') }
-sub can_use_smtpauth     { $_[0]->can_use_smtp     && $_[0]->_can_use('Authen::SASL') }
-sub can_use_smtpauth_ssl { $_[0]->can_use_smtpauth && $_[0]->_can_use('IO::Socket::SSL', 'Net::SSLeay') }
-sub can_use_smtpauth_tls { $_[0]->can_use_smtpauth_ssl }
 
 1;
 __END__

@@ -1031,13 +1031,12 @@ sub optional {
     }
 
     require MT::Util::Mail;
-    my $mail_class = MT::Util::Mail->load_class;
-    $param{has_net_smtp}      = $mail_class->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = $mail_class->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = $mail_class->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = $mail_class->errstr;
-    $param{has_net_smtp_tls}     = $mail_class->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = $mail_class->errstr;
+    $param{has_net_smtp}      = MT::Util::Mail->can_use_smtp         ? 1 : 0;
+    $param{has_net_smtp_auth} = MT::Util::Mail->can_use_smtpauth     ? 1 : 0;
+    $param{has_net_smtp_ssl}  = MT::Util::Mail->can_use_smtpauth_ssl ? 1 : 0;
+    $param{has_net_smtp_ssl_msg} = MT::Util::Mail->errstr;
+    $param{has_net_smtp_tls}     = MT::Util::Mail->can_use_smtpauth_tls ? 1 : 0;
+    $param{has_net_smtp_tls_msg} = MT::Util::Mail->errstr;
     $param{can_use_ssl}          = $param{has_net_smtp_ssl}
         || $param{has_net_smtp_tls};
 

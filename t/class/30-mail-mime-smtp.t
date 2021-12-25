@@ -125,6 +125,42 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         };
         ok !$@ && !MT::Util::Mail->errstr, "No error" or note $@;
     };
+
+    subtest 'SMTPAuth fails because of lack of user info' => sub {
+        my $mt = MT->new();
+        $mt->config('SMTPAuth', 'starttls');
+        eval {
+            MT::Util::Mail->send({
+                    From       => 'test@localhost.localdomain',
+                    To         => 'test@localhost.localdomain',
+                },
+                'mail body'
+            );
+        };
+        is(MT::Util::Mail->errstr, qq{Username and password is required for SMTP authentication.\n}, 'right error');
+        $mt->config->set('SMTPAuth', 0);
+        $MT::ErrorHandler::ERROR = undef;
+    };
+
+    subtest 'SMTPAuth fails' => sub {
+        my $mt = MT->new();
+        $mt->config('SMTPAuth', 'starttls');
+        $mt->config('SMTPUser', 'user');
+        $mt->config('SMTPPassword', 'password');
+        eval {
+            MT::Util::Mail->send({
+                    From       => 'test@localhost.localdomain',
+                    To         => 'test@localhost.localdomain',
+                },
+                'mail body'
+            );
+        };
+        is(MT::Util::Mail->errstr, qq{Authentication failure: Command unknown: 'AUTH'\n}, 'right error');
+        $mt->config->set('SMTPAuth', 0);
+        $mt->config->set('SMTPUser', undef);
+        $mt->config->set('SMTPPassword', undef);
+        $MT::ErrorHandler::ERROR = undef;
+    };
 }
 
 $server->stop;

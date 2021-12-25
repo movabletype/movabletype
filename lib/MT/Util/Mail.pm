@@ -34,4 +34,27 @@ sub errstr {
     return $module ? $module->errstr : $class->SUPER::errstr;
 }
 
+sub can_use {
+    my ($class, @mods) = @_;
+    return unless @mods;
+
+    my @err;
+    for my $module (@mods) {
+        eval "use $module;";
+        push @err, $module if $@;
+    }
+
+    if (@err) {
+        $class->error(MT->translate("Following required module(s) were not found: ([_1])", (join ', ', @err)));
+        return;
+    }
+
+    return 1;
+}
+
+sub can_use_smtp         { $_[0]->can_use('Net::SMTPS', 'MIME::Base64') }
+sub can_use_smtpauth     { $_[0]->can_use_smtp     && $_[0]->can_use('Authen::SASL') }
+sub can_use_smtpauth_ssl { $_[0]->can_use_smtpauth && $_[0]->can_use('IO::Socket::SSL', 'Net::SSLeay') }
+sub can_use_smtpauth_tls { $_[0]->can_use_smtpauth_ssl }
+
 1;

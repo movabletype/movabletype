@@ -34,12 +34,12 @@ subtest 'can use modules' => sub {
             (map { $_ => 0 } @$missing),
         };
         no warnings 'redefine';
-        local *MT::Mail::MIME::_can_use = sub {
+        local *MT::Util::Mail::can_use = sub {
             my ($class, @mods) = @_;
             map { return 0 unless $availability->{$_} } @mods;
             return 1;
         };
-        return MT::Mail::MIME->$method();
+        return MT::Util::Mail->$method();
     };
     is($test->([],                  'can_use_smtp'),         1, 'can use');
     is($test->(['MIME::Base64'],    'can_use_smtp'),         0, 'cannot use');
