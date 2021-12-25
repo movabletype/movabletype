@@ -171,38 +171,28 @@ sub _send_mt_smtp {
         }
     }
 
+    my $err = MT->translate('An error occured during sending mail');
+
     # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
-    $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From});
+    $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
+        or return $self->error(join(':', $err, $smtp->message || ()));
 
     for my $h (qw( To Bcc Cc )) {
         next unless defined $hdrs->{$h};
         my $addr = $hdrs->{$h};
-        $smtp->recipient($_) for (ref $addr eq 'ARRAY' ? @$addr : $addr);
+        for (ref $addr eq 'ARRAY' ? @$addr : $addr) {
+            $smtp->recipient($_) or return $self->error(join(':', $err, $smtp->message || ()));
+        }
     }
 
     delete $hdrs->{Bcc};
 
     my $msg = $self->render(header => $hdrs, body => $body);
+    $smtp->data()         or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->datasend($msg) or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->dataend()      or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->quit           or return $self->error(join(':', $err, $smtp->message || ()));
 
-    my $_check_smtp_err = sub {
-
-        # Net::SMTP::TLS is does'nt work "$smtp->status()" and "$smtp->message()"
-        return unless $smtp->can('status');
-
-        # status 4xx or 5xx is not send message.
-        die scalar $smtp->message() if $smtp->status() =~ /^[45]$/;
-    };
-
-    eval {
-        $smtp->data();
-        $smtp->datasend($msg);
-        $_check_smtp_err->();
-        $smtp->dataend();
-        $smtp->quit;
-    };
-    if ($@) {
-        return $self->error($@);
-    }
     1;
 }
 
