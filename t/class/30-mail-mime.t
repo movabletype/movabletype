@@ -51,6 +51,16 @@ subtest 'can use modules' => sub {
     is($test->(['Net::SSLeay'],     'can_use_smtpauth_ssl'), 0, 'cannot use');
 };
 
+for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
+    my $mail_class = MT::Util::Mail::find_module($c);
+
+    subtest $mail_class => sub {
+        $mail_class->error('error test');
+        is($mail_class->errstr, "error test\n", 'right error');
+        $mail_class->{_errstr} = undef;
+    };
+}
+
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
     my $mail_class = MT::Util::Mail::find_module($c);
 
