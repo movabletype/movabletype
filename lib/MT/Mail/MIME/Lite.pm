@@ -16,11 +16,11 @@ use MIME::Lite;
 my $crlf = "\x0d\x0a";
 
 sub render {
-    my ($class, %args) = @_;
+    my ($self, %args) = @_;
     my ($hdrs, $body) = map { $args{$_} } (qw(header body));
 
     my $mail_enc = ($hdrs->{'Content-Type'} =~ /charset="(.+)"/)[0];
-    $class->encwords($hdrs, $mail_enc);
+    $self->encwords($hdrs, $mail_enc);
 
     # MIME::Lite doesn't allow array ref for unique headers
     my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
@@ -37,7 +37,7 @@ sub render {
         $msg = MIME::Lite->new(%$hdrs, Data => $body);
         $msg->attr($_, $special_fields{$_}) for keys(%special_fields);
     };
-    return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
+    return $self->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
 
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
@@ -46,7 +46,7 @@ sub render {
 }
 
 sub encwords {
-    my ($class, $hdrs, $mail_enc) = @_;
+    my ($self, $hdrs, $mail_enc) = @_;
 
     return unless ($hdrs->{'Content-Transfer-Encoding'} eq 'base64');
 

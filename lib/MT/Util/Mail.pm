@@ -12,21 +12,23 @@ use Carp;
 our $module;
 
 sub find_module {
-    my ($mail_class) = @_;
-    $mail_class ||= MT->config->MailClass || 'MT::Mail';
+    my ($mail_module) = @_;
+    $mail_module ||= MT->config->MailModule || 'MT::Mail';
+    $mail_module = 'MT::Mail::MIME::'. $mail_module if $mail_module !~ /^MT::Mail/;
 
-    eval "require $mail_class;";
-    return $module = $mail_class unless $@;
+    eval "require $mail_module;";
+    return $module = bless({}, $mail_module) unless $@;
 
-    Carp::croak($@);
-    return MT->error(MT->translate('Error loading mail class: [_1].', $mail_class));
+    Carp::carp($@);
+    return MT->error(MT->translate('Error loading mail module: [_1].', $mail_module));
 }
 
 BEGIN { find_module() }
 
 sub send {
     my ($class, @args) = @_;
-    return $module->send(@args);
+    return $module->send(@args) if $module;
+    return MT->error(MT->translate('Error loading mail module: [_1].', MT->config->MailModule || 'MT::Mail'));
 }
 
 sub errstr {
@@ -38,9 +40,9 @@ sub can_use {
     my ($class, @mods) = @_;
 
     my @err;
-    for my $module (@mods) {
-        eval "use $module;";
-        push @err, $module if $@;
+    for my $m (@mods) {
+        eval "use $m;";
+        push @err, $m if $@;
     }
 
     if (@err) {

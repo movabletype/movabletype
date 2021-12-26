@@ -1853,7 +1853,7 @@ BEGIN {
                 { alias => 'HidePerformanceLoggingSettings' },
             'CookieDomain'          => undef,
             'CookiePath'            => undef,
-            'MailClass'             => { default => 'MT::Mail::MIME::Lite', },
+            'MailModule'            => { default => 'MT::Mail', },
             'MailEncoding'          => { default => 'UTF-8', },
             'MailTransfer'          => { default => 'sendmail' },
             'MailTransferEncoding'  => undef,

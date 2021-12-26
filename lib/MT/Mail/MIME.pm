@@ -16,7 +16,7 @@ use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
 sub send {
-    my $class = shift;
+    my $self = shift;
     my ($hdrs_arg, $body) = @_;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
@@ -41,21 +41,21 @@ sub send {
 
     $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
     if (!$hdrs{From}) {
-        return $class->error(MT->translate("System Email Address is not configured."));
+        return $self->error(MT->translate("System Email Address is not configured."));
     }
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
-    $class->_dedupe_headers(\%hdrs);
+    $self->_dedupe_headers(\%hdrs);
 
     if ($xfer eq 'sendmail') {
-        return $class->_send_mt_sendmail(\%hdrs, $body, $mgr);
+        return $self->_send_mt_sendmail(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'smtp') {
-        return $class->_send_mt_smtp(\%hdrs, $body, $mgr);
+        return $self->_send_mt_smtp(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'debug') {
-        return $class->_send_mt_debug(\%hdrs, $body, $mgr);
+        return $self->_send_mt_debug(\%hdrs, $body, $mgr);
     } else {
-        return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+        return $self->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
     }
 }
 
@@ -67,7 +67,7 @@ sub _lc {
 }
 
 sub _dedupe_headers {
-    my ($class, $hdrs) = @_;
+    my ($self, $hdrs) = @_;
 
     # dedupe for SendGrid (cf. CLOUD-73)
     my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
@@ -93,15 +93,15 @@ sub _dedupe_headers {
 }
 
 sub _send_mt_debug {
-    my $class = shift;
+    my $self = shift;
     my ($hdrs, $body, $mgr) = @_;
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my $msg = $self->render(header => $hdrs, body => $body);
     print STDERR $msg;
     1;
 }
 
 sub _send_mt_smtp {
-    my $class = shift;
+    my $self = shift;
     my ($hdrs, $body, $mgr) = @_;
 
     # SMTP Configuration
@@ -121,7 +121,7 @@ sub _send_mt_smtp {
     $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
 
     if ($mgr->SMTPAuth) {
-        return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
+        return $self->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
         require MT::Util::Mail;
         return unless MT::Util::Mail->can_use('Authen::SASL', 'MIME::Base64');
         if ($mgr->SMTPAuth =~ /^(?:starttls|ssl)$/) {
@@ -155,7 +155,7 @@ sub _send_mt_smtp {
 
     # Make a smtp object
     my $smtp = Net::SMTPS->new($host, %args)
-        or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
+        or return $self->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
     if ($mgr->SMTPAuth) {
         my $mech = MT->config->SMTPAuthSASLMechanism || do {
@@ -167,7 +167,7 @@ sub _send_mt_smtp {
         };
 
         if (!eval { $smtp->auth($user, $pass, $mech) }) {
-            return $class->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
+            return $self->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
         }
     }
 
@@ -182,7 +182,7 @@ sub _send_mt_smtp {
 
     delete $hdrs->{Bcc};
 
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my $msg = $self->render(header => $hdrs, body => $body);
 
     my $_check_smtp_err = sub {
 
@@ -201,7 +201,7 @@ sub _send_mt_smtp {
         $smtp->quit;
     };
     if ($@) {
-        return $class->error($@);
+        return $self->error($@);
     }
     1;
 }
@@ -209,7 +209,7 @@ sub _send_mt_smtp {
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
-    my $class = shift;
+    my $self = shift;
     my ($hdrs, $body, $mgr) = @_;
 
     my $sm_loc;
@@ -217,17 +217,17 @@ sub _send_mt_sendmail {
         next unless $loc;
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
-    return $class->error(MT->translate("You do not have a valid path to sendmail on your machine. " . "Perhaps you should try using SMTP?")) unless $sm_loc;
+    return $self->error(MT->translate("You do not have a valid path to sendmail on your machine. " . "Perhaps you should try using SMTP?")) unless $sm_loc;
     local $SIG{PIPE} = {};
     my $pid = open my $MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if (!$pid) {
         exec $sm_loc, "-oi", "-t", "-f", $hdrs->{From}
-            or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
+            or return $self->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    my $msg = $class->render(header => $hdrs, body => $body);
+    my $msg = $self->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;

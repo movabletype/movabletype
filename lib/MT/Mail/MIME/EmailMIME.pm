@@ -16,7 +16,7 @@ use Email::MIME;
 my $crlf = "\x0d\x0a";
 
 sub render {
-    my ($class, %args) = @_;
+    my ($self, %args) = @_;
     my ($hdrs, $body) = map { $args{$_} } (qw(header body));
     my $msg;
 
@@ -30,7 +30,7 @@ sub render {
             },
         );
     };
-    return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
+    return $self->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
 
     my $encoded = $msg->as_string;
     $encoded =~ s{\x0d(?!\x0a)|(?<!\x0d)\x0a}{$crlf}g;
