@@ -41,6 +41,9 @@ sub send {
 
     $self->_dedupe_headers(\%hdrs);
 
+    # Sender MUST occur with multi-address from
+    $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{$hdrs{From}}) > 1);
+
     if ($xfer eq 'sendmail') {
         return $self->_send_mt_sendmail(\%hdrs, $body, $mgr);
     } elsif ($xfer eq 'smtp') {
@@ -110,8 +113,7 @@ sub _send_mt_smtp {
         doSSL   => '', # must be defined to avoid uuv
     );
 
-    # Set sender header if smtp user id is valid email
-    $hdrs->{Sender} = $user if MT::Util::is_valid_email($user);
+    $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user;
 
     if ($mgr->SMTPAuth) {
         return $self->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
@@ -166,9 +168,7 @@ sub _send_mt_smtp {
 
     my $err = MT->translate('An error occured during sending mail');
 
-    # Sending mail (XXX: better to use sender as ->mail only takes a scalar?)
-    $smtp->mail(ref $hdrs->{From} eq 'ARRAY' ? $hdrs->{From}[0] : $hdrs->{From})
-        or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->mail($user) or return $self->error(join(':', $err, $smtp->message || ()));
 
     for my $h (qw( To Bcc Cc )) {
         next unless defined $hdrs->{$h};
