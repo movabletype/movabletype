@@ -32,10 +32,7 @@ sub send {
     my $mgr      = MT->config;
     my $xfer     = $mgr->MailTransfer;
 
-    $hdrs{From} = $mgr->EmailAddressMain unless exists $hdrs{From};
-    if (!$hdrs{From}) {
-        return $self->error(MT->translate("System Email Address is not configured."));
-    }
+    $hdrs{From} ||= $mgr->EmailAddressMain or return $self->error(MT->translate("System Email Address is not configured."));
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
