@@ -52,19 +52,19 @@ subtest 'can use modules' => sub {
 };
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
-    my $mail_class = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c);
 
-    subtest $mail_class => sub {
-        $mail_class->error('error test');
-        is($mail_class->errstr, "error test\n", 'right error');
-        $mail_class->{_errstr} = undef;
+    subtest $mail_module => sub {
+        $mail_module->error('error test');
+        is($mail_module->errstr, "error test\n", 'right error');
+        $mail_module->{_errstr} = undef;
     };
 }
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_class = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c);
 
-    subtest $mail_class => sub {
+    subtest $mail_module => sub {
 
         subtest '_dedupe_headers' => sub {
             my $hdr = {
@@ -73,7 +73,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
                 FROM => ['test3@localhost.localdomain'],
                 To   => 'test@localhost.localdomain',
             };
-            $mail_class->_dedupe_headers($hdr);
+            $mail_module->_dedupe_headers($hdr);
             is(keys(%$hdr), 2, 'right number of keys');
             $hdr->{From} = [split(/, /, $hdr->{From})] if !ref($hdr->{From});
             is(scalar(@{ $hdr->{From} }), 3, 'right number of elements');

@@ -38,7 +38,7 @@ my $server = MT::Test::AnyEventSMTPServer->new;
 MT->config(SMTPPort => $server->port);
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_class = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c);
 
     subtest 'simple' => sub {
         eval {
@@ -145,7 +145,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         };
         is(MT::Util::Mail->errstr, qq{Username and password is required for SMTP authentication.\n}, 'right error');
         $mt->config->set('SMTPAuth', 0);
-        $mail_class->{_errstr} = undef;
+        $mail_module->{_errstr} = undef;
     };
 
     subtest 'SMTPAuth fails' => sub {
@@ -165,7 +165,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
         $mt->config->set('SMTPAuth', 0);
         $mt->config->set('SMTPUser', undef);
         $mt->config->set('SMTPPassword', undef);
-        $mail_class->{_errstr} = undef;
+        $mail_module->{_errstr} = undef;
     };
 
     subtest 'cc and bcc' => sub {
