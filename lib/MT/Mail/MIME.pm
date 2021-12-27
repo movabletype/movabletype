@@ -20,17 +20,15 @@ sub send {
     my ($hdrs_arg, $body) = @_;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
-    foreach my $h (keys %hdrs) {
+    for my $h (keys %hdrs) {
         if (ref($hdrs{$h}) eq 'ARRAY') {
             map { y/\n\r/  / } @{ $hdrs{$h} };
-        } else {
-            $hdrs{$h} =~ y/\n\r/  / unless (ref($hdrs{$h}));
+        } elsif (!ref($hdrs{$h})) {
+            $hdrs{$h} =~ y/\n\r/  /;
         }
     }
 
-    my $id       = delete $hdrs{id};
-    my $mgr      = MT->config;
-    my $xfer     = $mgr->MailTransfer;
+    my $mgr = MT->config;
 
     $hdrs{From} ||= $mgr->EmailAddressMain or return $self->error(MT->translate("System Email Address is not configured."));
 
@@ -39,17 +37,13 @@ sub send {
     $self->_dedupe_headers(\%hdrs);
 
     # Sender MUST occur with multi-address from
-    $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{$hdrs{From}}) > 1);
+    $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
-    if ($xfer eq 'sendmail') {
-        return $self->_send_mt_sendmail(\%hdrs, $body, $mgr);
-    } elsif ($xfer eq 'smtp') {
-        return $self->_send_mt_smtp(\%hdrs, $body, $mgr);
-    } elsif ($xfer eq 'debug') {
-        return $self->_send_mt_debug(\%hdrs, $body, $mgr);
-    } else {
-        return $self->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
-    }
+    my $xfer = $mgr->MailTransfer;
+    return $self->_send_mt_sendmail(\%hdrs, $body, $mgr) if $xfer eq 'sendmail';
+    return $self->_send_mt_smtp(\%hdrs, $body, $mgr)     if $xfer eq 'smtp';
+    return $self->_send_mt_debug(\%hdrs, $body, $mgr)    if $xfer eq 'debug';
+    return $self->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
 sub _lc {
@@ -107,7 +101,7 @@ sub _send_mt_smtp {
         Timeout => $mgr->SMTPTimeout,
         Hello   => hostname() || 'localhost',
         ($MT::DebugMode ? (Debug => 1) : ()),
-        doSSL   => '', # must be defined to avoid uuv
+        doSSL => '',    # must be defined to avoid uuv
     );
 
     # If SMTP user ID is valid email address, it's more suitable for Sender header.
