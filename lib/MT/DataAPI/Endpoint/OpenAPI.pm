@@ -125,7 +125,7 @@ sub build_schema {
         if (@path_parameters) {
             $response->{paths}{$route}{$verb}{parameters} = \@path_parameters;
         }
-        if ($endpoints->{$id}{openapi_options}{can_use_access_token} || _can_use_access_token($endpoints->{$id})) {
+        if ($endpoints->{$id}{openapi_options}{can_use_access_token}) {
             push @{$response->{paths}{$route}{$verb}{parameters}}, +{
                 'in'        => 'header',
                 name        => 'X-MT-Authorization',
@@ -460,20 +460,6 @@ DESCRIPTION
         }
     }
     return $param;
-}
-
-sub _can_use_access_token {
-    my ($endpoint) = @_;
-    my $handler = $endpoint->{handler};
-    $handler =~ /\w+::(\w+)$/;
-    $handler = $1;
-    if (   (exists $endpoint->{requires_login} && $endpoint->{requires_login} == 0)
-        && (!exists($endpoint->{verb}) || $endpoint->{verb} eq 'GET')
-        && $handler =~ m/^(list|get)/)
-    {
-        return 1;
-    }
-    return;
 }
 
 1;
