@@ -110,7 +110,8 @@ sub _send_mt_smtp {
         doSSL   => '', # must be defined to avoid uuv
     );
 
-    $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user;
+    # If SMTP user ID is valid email address, it's more suitable for Sender header.
+    $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user && is_valid_email($user);
 
     if ($mgr->SMTPAuth) {
         return $self->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
