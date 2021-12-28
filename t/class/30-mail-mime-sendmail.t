@@ -27,154 +27,158 @@ MT->instance;
 
 my $sendmail = MT::Test::SendmailMock->new(test_env => $test_env);
 
-for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_module = MT::Util::Mail::find_module($c) or next;
+for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
+    my $mail_module = MT::Util::Mail::find_module($mod_name);
 
-    subtest 'simple' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    To => ['test@localhost.localdomain', 'test2@localhost.localdomain'],
-                },
-                'mail body'
-            );
-        };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-        my $last_sent = $sendmail->last_sent_mail();
-        like($last_sent, qr{mail body},                         'right body');
-        like($last_sent, qr{Content-Transfer-Encoding: 8bit\n}, 'right newline chars');
-    };
+    subtest $mod_name => sub {
+        plan skip_all => MT::Util::Mail->errstr unless $mail_module;
 
-    subtest 'different cases' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    to => ['test@localhost.localdomain'],
-                    To => ['test2@localhost.localdomain'],
-                },
-                'mail body'
-            );
+        subtest 'simple' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        To => ['test@localhost.localdomain', 'test2@localhost.localdomain'],
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
+            my $last_sent = $sendmail->last_sent_mail();
+            like($last_sent, qr{mail body},                         'right body');
+            like($last_sent, qr{Content-Transfer-Encoding: 8bit\n}, 'right newline chars');
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'different froms and reply-toes' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => ['test@localhost.localdomain'],
-                    from       => ['test@localhost.localdomain'],
-                    To         => ['test@localhost.localdomain'],
-                    'Reply-to' => ['test@localhost.localdomain'],
-                    'Reply-To' => ['test2@localhost.localdomain'],
-                },
-                'mail body'
-            );
+        subtest 'different cases' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        to => ['test@localhost.localdomain'],
+                        To => ['test2@localhost.localdomain'],
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'different froms and reply-toes in scalar' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => 'test@localhost.localdomain',
-                    from       => 'test@localhost.localdomain',
-                    To         => 'test@localhost.localdomain',
-                    'Reply-to' => 'test@localhost.localdomain',
-                    'Reply-To' => 'test2@localhost.localdomain',
-                },
-                'mail body'
-            );
+        subtest 'different froms and reply-toes' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => ['test@localhost.localdomain'],
+                        from       => ['test@localhost.localdomain'],
+                        To         => ['test@localhost.localdomain'],
+                        'Reply-to' => ['test@localhost.localdomain'],
+                        'Reply-To' => ['test2@localhost.localdomain'],
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'different froms and reply-toes with <>' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => 'test@localhost.localdomain',
-                    from       => 'test@localhost.localdomain',
-                    To         => 'test@localhost.localdomain',
-                    'Reply-to' => '<test@localhost.localdomain>',
-                    'Reply-To' => '<test2@localhost.localdomain>',
-                },
-                'mail body'
-            );
+        subtest 'different froms and reply-toes in scalar' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => 'test@localhost.localdomain',
+                        from       => 'test@localhost.localdomain',
+                        To         => 'test@localhost.localdomain',
+                        'Reply-to' => 'test@localhost.localdomain',
+                        'Reply-To' => 'test2@localhost.localdomain',
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'different froms and reply-toes with the same address' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => 'test@localhost.localdomain',
-                    from       => 'test@localhost.localdomain',
-                    To         => 'test@localhost.localdomain',
-                    'Reply-to' => 'test@localhost.localdomain',
-                    'Reply-To' => 'test@localhost.localdomain',
-                },
-                'mail body'
-            );
+        subtest 'different froms and reply-toes with <>' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => 'test@localhost.localdomain',
+                        from       => 'test@localhost.localdomain',
+                        To         => 'test@localhost.localdomain',
+                        'Reply-to' => '<test@localhost.localdomain>',
+                        'Reply-To' => '<test2@localhost.localdomain>',
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'only uncanonical reply-to' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => 'test@localhost.localdomain',
-                    To         => 'test@localhost.localdomain',
-                    'Reply-to' => 'test@localhost.localdomain',
-                },
-                'mail body'
-            );
+        subtest 'different froms and reply-toes with the same address' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => 'test@localhost.localdomain',
+                        from       => 'test@localhost.localdomain',
+                        To         => 'test@localhost.localdomain',
+                        'Reply-to' => 'test@localhost.localdomain',
+                        'Reply-To' => 'test@localhost.localdomain',
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'only uncanonical to' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    From       => 'test@localhost.localdomain',
-                    TO         => 'test@localhost.localdomain',
-                    'Reply-To' => 'test@localhost.localdomain',
-                },
-                'mail body'
-            );
+        subtest 'only uncanonical reply-to' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => 'test@localhost.localdomain',
+                        To         => 'test@localhost.localdomain',
+                        'Reply-to' => 'test@localhost.localdomain',
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@, "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        validate_headers();
-    };
 
-    subtest 'cc and bcc' => sub {
-        eval {
-            MT::Util::Mail->send({
-                    To  => ['t1@host.domain', 't2@host.domain'],
-                    Cc  => ['t3@host.domain'],
-                    Bcc => ['t4@host.domain', 't5@host.domain'],
-                },
-                'mail body'
-            );
+        subtest 'only uncanonical to' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        From       => 'test@localhost.localdomain',
+                        TO         => 'test@localhost.localdomain',
+                        'Reply-To' => 'test@localhost.localdomain',
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@, "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            validate_headers();
         };
-        ok(!$@,                     "No error") or note($@);
-        ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
-        my $last_sent = $sendmail->last_sent_mail();
-        like($last_sent, qr{t3}, 'cc is appeard');
-        like($last_sent, qr{t4}, 'bcc is appeard');
-        like($last_sent, qr{t5}, 'bcc is appeard');
-    };
+
+        subtest 'cc and bcc' => sub {
+            eval {
+                MT::Util::Mail->send({
+                        To  => ['t1@host.domain', 't2@host.domain'],
+                        Cc  => ['t3@host.domain'],
+                        Bcc => ['t4@host.domain', 't5@host.domain'],
+                    },
+                    'mail body'
+                );
+            };
+            ok(!$@,                     "No error") or note($@);
+            ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
+            my $last_sent = $sendmail->last_sent_mail();
+            like($last_sent, qr{t3}, 'cc is appeard');
+            like($last_sent, qr{t4}, 'bcc is appeard');
+            like($last_sent, qr{t5}, 'bcc is appeard');
+        };
+    }
 }
 
 done_testing();

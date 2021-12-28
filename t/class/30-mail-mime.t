@@ -26,20 +26,22 @@ $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
 
-for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
-    my $mail_module = MT::Util::Mail::find_module($c) or next;
+for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
+    my $mail_module = MT::Util::Mail::find_module($mod_name);
 
-    subtest $mail_module => sub {
+    subtest $mod_name => sub {
+        plan skip_all => MT::Util::Mail->errstr unless $mail_module;
         $mail_module->error('error test');
         is($mail_module->errstr, "error test\n", 'right error');
         $mail_module->{_errstr} = undef;
     };
 }
 
-for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_module = MT::Util::Mail::find_module($c) or next;
+for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
+    my $mail_module = MT::Util::Mail::find_module($mod_name);
 
-    subtest $mail_module => sub {
+    subtest $mod_name => sub {
+        plan skip_all => MT::Util::Mail->errstr unless $mail_module;
 
         subtest '_dedupe_headers' => sub {
             my $hdr = {
