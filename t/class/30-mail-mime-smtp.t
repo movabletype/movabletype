@@ -38,7 +38,7 @@ my $server = MT::Test::AnyEventSMTPServer->new;
 MT->config(SMTPPort => $server->port);
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_module = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c) or next;
 
     subtest 'simple' => sub {
         eval {

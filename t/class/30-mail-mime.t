@@ -52,7 +52,7 @@ subtest 'can use modules' => sub {
 };
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
-    my $mail_module = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c) or next;
 
     subtest $mail_module => sub {
         $mail_module->error('error test');
@@ -62,7 +62,7 @@ for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
 }
 
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
-    my $mail_module = MT::Util::Mail::find_module($c);
+    my $mail_module = MT::Util::Mail::find_module($c) or next;
 
     subtest $mail_module => sub {
 
