@@ -14,14 +14,16 @@ sub sendmail_config {
 
 sub new {
     my ($class, %args) = @_;
-    my $command = $class->_write_command($args{test_env});
-    bless { command => $command }, $class;
+    bless { command => _write_command() }, $class;
 }
 
 sub _write_command {
-    my ($class, $test_env) = @_;
 
-    my $command = $test_env->save_file('bin/sendmail.pl', <<"SENDMAIL");
+    mkdir($ENV{MT_TEST_ROOT} . '/bin') unless (-d $ENV{MT_TEST_ROOT} . '/bin');
+    my $command        = $ENV{MT_TEST_ROOT} . '/bin/sendmail.pl';
+
+    open my $fh, '>', $command or die "$command: $!";
+    print $fh <<"SENDMAIL";
 #!$^X
 use strict;
 use warnings;

@@ -25,7 +25,7 @@ use MT::Util ();
 
 MT->instance;
 
-my $sendmail = MT::Test::SendmailMock->new(test_env => $test_env);
+my $sendmail = MT::Test::SendmailMock->new;
 
 subtest 'simple' => sub {
     eval {
