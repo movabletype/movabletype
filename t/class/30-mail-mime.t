@@ -26,31 +26,6 @@ $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
 
-subtest 'can use modules' => sub {
-    my $test = sub {
-        my ($missing, $method) = @_;
-        my $availability = {
-            (map { $_ => 1 } ('Net::SMTPS', 'MIME::Base64', 'Authen::SASL', 'IO::Socket::SSL', 'Net::SSLeay')),
-            (map { $_ => 0 } @$missing),
-        };
-        no warnings 'redefine';
-        local *MT::Util::Mail::can_use = sub {
-            my ($class, @mods) = @_;
-            map { return 0 unless $availability->{$_} } @mods;
-            return 1;
-        };
-        return MT::Util::Mail->$method();
-    };
-    is($test->([],                  'can_use_smtp'),         1, 'can use');
-    is($test->(['MIME::Base64'],    'can_use_smtp'),         0, 'cannot use');
-    is($test->([],                  'can_use_smtpauth'),     1, 'can use');
-    is($test->(['MIME::Base64'],    'can_use_smtpauth'),     0, 'cannot use');
-    is($test->(['Authen::SASL'],    'can_use_smtpauth'),     0, 'cannot use');
-    is($test->([],                  'can_use_smtpauth_ssl'), 1, 'can use');
-    is($test->(['IO::Socket::SSL'], 'can_use_smtpauth_ssl'), 0, 'cannot use');
-    is($test->(['Net::SSLeay'],     'can_use_smtpauth_ssl'), 0, 'cannot use');
-};
-
 for my $c ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME', 'MT::Mail') {
     my $mail_module = MT::Util::Mail::find_module($c) or next;
 

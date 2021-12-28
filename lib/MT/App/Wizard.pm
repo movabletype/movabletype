@@ -1031,14 +1031,8 @@ sub optional {
     }
 
     require MT::Util::Mail;
-    $param{has_net_smtp}      = MT::Util::Mail->can_use_smtp         ? 1 : 0;
-    $param{has_net_smtp_auth} = MT::Util::Mail->can_use_smtpauth     ? 1 : 0;
-    $param{has_net_smtp_ssl}  = MT::Util::Mail->can_use_smtpauth_ssl ? 1 : 0;
-    $param{has_net_smtp_ssl_msg} = MT::Util::Mail->errstr;
-    $param{has_net_smtp_tls}     = MT::Util::Mail->can_use_smtpauth_tls ? 1 : 0;
-    $param{has_net_smtp_tls_msg} = MT::Util::Mail->errstr;
-    $param{can_use_ssl}          = $param{has_net_smtp_ssl}
-        || $param{has_net_smtp_tls};
+    $param{can_use_smtp}        = MT::Util::Mail->can_use('Net::SMTPS', 'MIME::Base64');
+    $param{cannot_use_smtp_msg} = MT::Util::Mail->errstr;
 
     my $ok = 1;
     my $err_msg;
