@@ -1235,6 +1235,41 @@ sub core_endpoints {
             requires_login => 0,
         },
         {
+            id              => 'get_blog',
+            route           => '/sites/:site_id',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::get',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
+            error_codes     => {
+                403 => 'Do not have permission to retrieve the requested blog.',
+            },
+            requires_login => 0,
+        },
+        {
+            id              => 'list_blogs_for_user',
+            route           => '/users/:user_id/sites',
+            version         => 2,
+            handler         => '$Core::MT::DataAPI::Endpoint::Blog::list',
+            openapi_handler => '$Core::MT::DataAPI::Endpoint::Blog::list_openapi_spec',
+            openapi_options => {
+                can_use_access_token   => 1,
+                filtered_list_ds_nouns => 'site,sites',
+            },
+            default_params => {
+                limit     => 25,
+                offset    => 0,
+                sortBy    => 'name',
+                sortOrder => 'ascend',
+            },
+            error_codes => {
+                403 => 'Do not have permission to retrieve the list of blogs.',
+            },
+            requires_login => 0,
+        },
+        {
             id              => 'list_sites_by_parent',
             route           => '/sites/:site_id/children',
             verb            => 'GET',
