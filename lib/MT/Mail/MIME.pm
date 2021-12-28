@@ -158,27 +158,32 @@ sub _send_mt_smtp {
         }
     }
 
-    my $err = MT->translate('An error occured during sending mail');
-
-    $smtp->mail($user) or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->mail($user) or return $self->smtp_error($smtp);
 
     for my $h (qw( To Bcc Cc )) {
         next unless defined $hdrs->{$h};
         my $addr = $hdrs->{$h};
         for (ref $addr eq 'ARRAY' ? @$addr : $addr) {
-            $smtp->recipient($_) or return $self->error(join(':', $err, $smtp->message || ()));
+            $smtp->recipient($_) or return $self->smtp_error($smtp);
         }
     }
 
     delete $hdrs->{Bcc};
 
     my $msg = $self->render(header => $hdrs, body => $body);
-    $smtp->data()         or return $self->error(join(':', $err, $smtp->message || ()));
-    $smtp->datasend($msg) or return $self->error(join(':', $err, $smtp->message || ()));
-    $smtp->dataend()      or return $self->error(join(':', $err, $smtp->message || ()));
-    $smtp->quit           or return $self->error(join(':', $err, $smtp->message || ()));
+    $smtp->data()         or return $self->smtp_error($smtp);
+    $smtp->datasend($msg) or return $self->smtp_error($smtp);
+    $smtp->dataend()      or return $self->smtp_error($smtp);
+    $smtp->quit           or return $self->smtp_error($smtp);
 
     1;
+}
+
+my $err = MT->translate('An error occured during sending mail');
+
+sub smtp_error {
+    my ($self, $smtp) = @_;
+    $self->error(join(':', $err, $smtp->message || ()));
 }
 
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
