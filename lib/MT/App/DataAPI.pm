@@ -354,6 +354,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category,categories',
             },
             default_params => {
@@ -398,6 +399,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_parents',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_parents_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the list of categories.',
             },
@@ -411,6 +415,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_siblings',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_siblings_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category,categories',
             },
             default_params => {
@@ -432,6 +437,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::list_children',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::list_children_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the list of categories.',
             },
@@ -455,6 +463,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Category::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Category::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested category.',
             },
@@ -504,6 +515,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'folder,folders',
             },
             default_params => {
@@ -525,6 +537,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_parents',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_parents_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the list of folders.',
             },
@@ -538,6 +553,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_siblings',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_siblings_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'folder,folders',
             },
             default_params => {
@@ -559,6 +575,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_children',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::list_children_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the list of folders.',
             },
@@ -582,6 +601,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Folder::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Folder::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested folder.',
             },
@@ -631,6 +653,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_openapi_spec',
             openapi_options => {
+                can_use_access_token => 1,
                 filtered_list_ds_nouns => 'asset,assets',
             },
             default_params => {
@@ -674,6 +697,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_entry',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_entry_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'asset,assets',
             },
             default_params => {
@@ -697,6 +721,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_page',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_page_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'asset,assets',
             },
             default_params => {
@@ -738,6 +763,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_site_and_tag',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::list_for_site_and_tag_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'asset,assets',
             },
             default_params => {
@@ -789,6 +815,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Asset::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Asset::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested asset.',
             },
@@ -1190,6 +1219,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'site,sites',
             },
             default_params => {
@@ -1212,6 +1242,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_by_parent',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Blog::list_by_parent_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'site,sites',
             },
             default_params => {
@@ -1474,6 +1505,9 @@ sub core_endpoints {
             version         => 2,
             handler         => '$Core::MT::DataAPI::Endpoint::v2::Search::search',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v2::Search::search_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to search objects.',
             },
@@ -2457,6 +2491,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::list_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category_set,category_sets',
             },
             default_params => {
@@ -2489,6 +2524,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::CategorySet::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested category set.',
             },
@@ -2527,6 +2565,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_for_category_set',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_for_category_set_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category,categories',
             },
             default_params => {
@@ -2548,6 +2587,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_parents_for_category_set',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_parents_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
@@ -2561,6 +2603,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_siblings_for_category_set',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_siblings_for_category_set_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'category,categories',
             },
             default_params => {
@@ -2582,6 +2625,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::list_children_for_category_set',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::list_children_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested categories for category set.',
             },
@@ -2606,6 +2652,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Category::get_for_category_set',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Category::get_for_category_set_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested category for category set.',
             },
@@ -2804,6 +2853,7 @@ sub core_endpoints {
             handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::list',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::list_openapi_spec',
             openapi_options => {
+                can_use_access_token   => 1,
                 filtered_list_ds_nouns => 'content_data,content_data',
             },
             default_params => {
@@ -2838,6 +2888,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::ContentData::get',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::ContentData::get_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to retrieve the requested content data.',
             },
@@ -2909,6 +2962,9 @@ sub core_endpoints {
             version         => 4,
             handler         => '$Core::MT::DataAPI::Endpoint::v4::Search::search',
             openapi_handler => '$Core::MT::DataAPI::Endpoint::v4::Search::search_openapi_spec',
+            openapi_options => {
+                can_use_access_token => 1,
+            },
             error_codes     => {
                 403 => 'Do not have permission to search objects.',
             },
