@@ -236,8 +236,6 @@ sub update_openapi_spec {
 - Manage Category Set
 
 Cannot update/insert/delete categories by this endpoint. If you want to manage categories in category set, please use Categories API.
-
-This method accepts PUT or POST with parameter ‘__method=PUT’.
 DESCRIPTION
         requestBody => {
             content => {
@@ -301,9 +299,6 @@ sub delete_openapi_spec {
 **Authentication required** Delete a single category set. This endpoint requires following permissions.
 
 - Manage Category Set
-
-This method accepts DELETE or POST with parameter ‘__method=DELETE’.
-
 DESCRIPTION
         responses => {
             200 => {

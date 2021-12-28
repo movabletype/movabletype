@@ -298,8 +298,6 @@ Update content field. This endpoint requires following permission.
 - Manage Content Types
 
 If you want to update label, description and required, should be use options field. (e.g, {“options”:{“label”:“foo”}})
-
-This method accepts PUT or POST with parameter ‘__method=PUT’.
 DESCRIPTION
         requestBody => {
             content => {
@@ -372,8 +370,6 @@ sub delete_openapi_spec {
 Delete content field from specified content type. This endpoint requires following permission.
 
 - Manage Content Types
-
-This method accepts DELETE or POST with parameter ‘__method=DELETE’.
 DESCRIPTION
         responses => {
             200 => {

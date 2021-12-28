@@ -298,8 +298,6 @@ sub delete_openapi_spec {
 Delete content type. This endpoint requires following permission.
 
 - Manage Content Types
-
-This method accepts DELETE or POST with parameter ‘__method=DELETE’.
 DESCRIPTION
         responses => {
             200 => {

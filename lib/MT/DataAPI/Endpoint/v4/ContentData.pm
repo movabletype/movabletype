@@ -280,8 +280,6 @@ Authentication Required Update a single content data. This endpoint requires fol
 Post form data is following:
 
 - content_data (ContentData, required) -Single ContentData resource.
-
-This method accepts PUT and POST with __method=PUT.
 DESCRIPTION
         requestBody => {
             content => {
@@ -388,9 +386,6 @@ Delete a single content data. This endpoint requires folllowing permissions.
 - Manage Content Data (site, system, each content type)
 - Edit All Content Data (each content type)
 - Publish Content Data (each content type)
-
-This method accepts PUT and POST with __method=DELETE.
-
 DESCRIPTION
         responses => {
             200 => {
