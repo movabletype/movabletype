@@ -40,9 +40,9 @@ sub can_use {
     my ($class, @mods) = @_;
 
     my @err;
-    for my $m (@mods) {
-        eval "use $m;";
-        push @err, $m if $@;
+    for my $mod (@mods) {
+        eval "use $mod;";
+        push @err, $mod if $@;
     }
 
     if (@err) {
