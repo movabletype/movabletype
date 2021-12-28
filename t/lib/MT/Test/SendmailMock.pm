@@ -21,6 +21,7 @@ sub _write_command {
 
     mkdir($ENV{MT_TEST_ROOT} . '/bin') unless (-d $ENV{MT_TEST_ROOT} . '/bin');
     my $command        = $ENV{MT_TEST_ROOT} . '/bin/sendmail.pl';
+    my $last_mail_file = _last_mail_file();
 
     open my $fh, '>', $command or die "$command: $!";
     print $fh <<"SENDMAIL";
@@ -33,7 +34,7 @@ GetOptions(\\my \%opts => "from|f", "oi", "t");
 my \$mail = do { local \$/; <STDIN> };
 
 print STDERR "MAIL: \$mail\\n" if \$ENV{TEST_VERBOSE};
-open my \$fh, '>', "$ENV{MT_TEST_ROOT}/mail";
+open my \$fh, '>', "$last_mail_file";
 print \$fh \$mail, "\\n";
 SENDMAIL
     chmod 0755, $command;
