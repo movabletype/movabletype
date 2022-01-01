@@ -44,7 +44,7 @@
   "homepage": "https://github.com/movabletype/movabletype#readme",
   "devDependencies": {
     "autoprefixer": "^9.8.8",
-    "clean-css-cli": "^5.4.2",
+    "clean-css-cli": "^5.5.0",
     "node-sass": "^6.0.1",
     "postcss-cli": "^7.1.2",
     "postcss-flexbugs-fixes": "^5.0.1"
