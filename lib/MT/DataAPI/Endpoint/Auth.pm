@@ -149,6 +149,7 @@ sub authentication_openapi_spec {
                             },
                             password => {
                                 type        => 'string',
+                                format      => 'password',
                                 description => 'The password of the user.',
                             },
                             clientId => {
