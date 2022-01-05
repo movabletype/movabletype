@@ -21,7 +21,10 @@ sub fields {
             type => 'MT::DataAPI::Resource::DataType::Integer',
         },
         {   name      => 'content_type_count',
-            alias     => 'ct_count',
+            from_object => sub {
+                my ($obj) = @_;
+                return $obj->calculate_ct_count;
+            },
             condition => sub {
                 my $app  = MT->instance or return;
                 my $user = $app->user   or return;

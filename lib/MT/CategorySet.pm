@@ -21,14 +21,12 @@ __PACKAGE__->install_properties(
             blog_id   => 'integer not null',
             name      => 'string(255) not null',
             order     => 'text',
-            cat_count => 'integer not null',
-            ct_count  => 'integer not null',
         },
         indexes => {
             blog_id => 1,
             name    => 1,
         },
-        defaults => { name => '', cat_count => 0, ct_count => 0 },
+        defaults => { name => '' },
         child_of      => [ 'MT::Blog', 'MT::Website' ],
         audit         => 1,
         child_classes => ['MT::Category'],
@@ -36,27 +34,6 @@ __PACKAGE__->install_properties(
         primary_key   => 'id',
     }
 );
-
-MT::ContentField->add_callback( 'post_save', 5, MT->component('core'),
-    \&_post_update_content_type );
-MT::ContentField->add_callback( 'post_remove', 5, MT->component('core'),
-    \&_post_update_content_type );
-
-sub _post_update_content_type {
-    my ( $cb, $cf, $orig ) = @_;
-    if ( $cf->related_cat_set_id || $orig->related_cat_set_id ) {
-        if ( my $cat_set = __PACKAGE__->load( $cf->related_cat_set_id ) ) {
-            $cat_set->_calculate_ct_count;
-            $cat_set->SUPER::save();
-        }
-        if ( $cf->related_cat_set_id != $orig->related_cat_set_id ) {
-            my $old_cat_set = __PACKAGE__->load( $orig->related_cat_set_id )
-                or return;
-            $old_cat_set->_calculate_ct_count;
-            $old_cat_set->SUPER::save();
-        }
-    }
-}
 
 sub class_label {
     MT->translate('Category Set');
@@ -89,7 +66,7 @@ sub list_props {
             base         => '__virtual.integer',
             label        => 'Categories',
             filter_label => 'Category Count',
-            col          => 'cat_count',
+            bulk_html    => \&_cat_count_bulk_html,
             display      => 'default',
             order        => 400,
         },
@@ -97,7 +74,7 @@ sub list_props {
             base         => '__virtual.integer',
             label        => 'Content Types',
             filter_label => 'Content Type Count',
-            col          => 'ct_count',
+            bulk_html    => \&_ct_count_bulk_html,
             html_link    => \&_ct_count_html_link,
             display      => 'default',
             order        => 500,
@@ -134,6 +111,54 @@ sub list_props {
             display => 'none',
         },
     };
+}
+
+sub _cat_count_bulk_html {
+    my ($prop, $objs, $app, $load_options) = @_;
+    my $count_iter = MT->model('category')->count_group_by({
+            blog_id => $app->blog->id,
+        },
+        {
+            group              => ['category_set_id'],
+            no_category_set_id => 1,
+        });
+    my %count;
+    while (my ($count, $set_id) = $count_iter->()) {
+        $count{$set_id} = $count;
+    }
+    my @out;
+    for my $obj (@$objs) {
+        my $count = $count{ $obj->id } || 0;
+        push @out, $count;
+    }
+    return @out;
+}
+
+sub _ct_count_bulk_html {
+    my ($prop, $objs, $app, $load_options) = @_;
+    my $cf_join = MT->model('cf')->join_on(
+        'content_type_id',
+        {
+            type => 'categories',
+        },
+    );
+    my $count_iter = MT->model('content_type')->count_group_by({
+            blog_id => $app->blog->id,
+        },
+        {
+            group => ['cf_related_cat_set_id'],
+            join  => $cf_join,
+        });
+    my %count;
+    while (my ($count, $set_id) = $count_iter->()) {
+        $count{$set_id} = $count;
+    }
+    my @out;
+    for my $obj (@$objs) {
+        my $count = $count{ $obj->id } || 0;
+        push @out, $count;
+    }
+    return @out;
 }
 
 sub _ct_count_html_link {
@@ -245,9 +270,6 @@ sub save {
         if ( MT->app && eval { MT->app->isa('MT::App') } && MT->app->user ) {
             $self->modified_by( MT->app->user->id );
         }
-
-        $self->_calculate_cat_count;
-        $self->_calculate_ct_count;
     }
     $self->SUPER::save(@_);
 }
@@ -267,25 +289,27 @@ sub exist_same_name_in_site {
     );
 }
 
-sub _calculate_cat_count {
+sub calculate_cat_count {
     my $self = shift;
     return unless $self->id;
-    my $count = MT::Category->count( { category_set_id => $self->id } );
-    $self->cat_count($count);
+    my $count = MT::Category->count({ category_set_id => $self->id });
+    return $count;
 }
 
-sub _calculate_ct_count {
+sub calculate_ct_count {
     my $self = shift;
     return unless $self->id;
     my $cf_join = MT::ContentField->join_on(
         'content_type_id',
-        {   type               => 'categories',
+        {
+            type               => 'categories',
             related_cat_set_id => $self->id,
         },
     );
-    my $count = MT::ContentType->count( { blog_id => $self->blog_id },
-        { join => $cf_join } );
-    $self->ct_count($count);
+    my $count = MT::ContentType->count(
+        { blog_id => $self->blog_id },
+        { join    => $cf_join });
+    return $count;
 }
 
 sub remove {

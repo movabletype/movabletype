@@ -87,7 +87,7 @@ sub template {
             {
             category_set_id   => $cs->id,
             category_set_name => $cs->name,
-            categories_count  => $cs->cat_count,
+            categories_count  => $cs->calculate_cat_count,
             checked           => $saved ? $checked_ids{ $cs->id } : 1,
             };
     }
