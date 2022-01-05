@@ -41,23 +41,23 @@ subtest 'cat_count' => sub {
         category_set_id => $cat_set->id,
     );
     $cat_set->save or die $cat_set->errstr;
-    is( $cat_set->cat_count, 1, 'cat_count is 1' );
+    is( $cat_set->calculate_cat_count, 1, 'cat_count is 1' );
 
     my $cat2 = MT::Test::Permission->make_category(
         blog_id         => $blog_id,
         category_set_id => $cat_set->id,
     );
     $cat_set->save or die $cat_set->errstr;
-    is( $cat_set->cat_count, 2, 'cat_count is 2' );
+    is( $cat_set->calculate_cat_count, 2, 'cat_count is 2' );
 
     my $other_cat
         = MT::Test::Permission->make_category( blog_id => $blog_id );
     $cat_set->save or die $cat_set->errstr;
-    is( $cat_set->cat_count, 2, 'cat_count is 2' );
+    is( $cat_set->calculate_cat_count, 2, 'cat_count is 2' );
 
     $cat1->remove  or die $cat1->errstr;
     $cat_set->save or die $cat_set->errstr;
-    is( $cat_set->cat_count, 1, 'cat_count is 1' );
+    is( $cat_set->calculate_cat_count, 1, 'cat_count is 1' );
 };
 
 subtest 'ct_count' => sub {
@@ -82,14 +82,14 @@ subtest 'ct_count' => sub {
     ok( exists MT->registry('content_field_types')->{categories} );
 
     $cat_set = MT::CategorySet->load( $cat_set->id );
-    is( $cat_set->ct_count, 1, 'ct_count is 1' );
+    is( $cat_set->calculate_ct_count, 1, 'ct_count is 1' );
 
     ok( exists MT->registry('content_field_types')->{radio_button} );
 
     $cf->type('radio_button');
     $cf->save or die $cf->errstr;
     $cat_set = MT::CategorySet->load( $cat_set->id );
-    is( $cat_set->ct_count, 0, 'ct_count is 0' );
+    is( $cat_set->calculate_ct_count, 0, 'ct_count is 0' );
 };
 
 subtest 'remove' => sub {
