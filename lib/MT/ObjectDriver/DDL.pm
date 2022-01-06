@@ -229,7 +229,7 @@ sub drop_index_sql {
 
     my $props   = $class->properties;
     my $indexes = $props->{indexes};
-    return q() unless exists( $indexes->{$key} );
+    # return q() unless exists( $indexes->{$key} );
 
     if ( ref $indexes->{$key} eq 'HASH' ) {
         my $idx_info = $indexes->{$key};
