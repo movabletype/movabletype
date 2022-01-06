@@ -71,6 +71,11 @@ sub index_column {
     return $ddl->drop_index_sql(@_), $ddl->index_column_sql(@_);
 }
 
+sub drop_index {
+    my $ddl = shift;
+    return $ddl->drop_index_sql(@_);
+}
+
 sub fix_class {
     my $ddl = shift;
     my ($class) = @_;
