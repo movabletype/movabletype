@@ -68,6 +68,10 @@ sub BEGIN {
             code     => sub { shift->core_column_action( 'index_column', @_ ) },
             priority => 3.5,
         },
+        'core_drop_index' => {
+            code     => sub { shift->core_column_action( 'drop_index', @_ ) },
+            priority => 3.5,
+        },
         'core_seed_database' => {
             code     => \&seed_database,
             priority => 4,
@@ -359,6 +363,8 @@ sub check_type {
                 if $result->{drop_column};
             $self->add_step( 'core_index_column', type => $type )
                 if $result->{index_column};
+            $self->add_step( 'core_drop_index', type => $type )
+                if $result->{drop_index};
         }
     }
 
@@ -400,7 +406,7 @@ sub type_diff {
 
     # we're only scanning defined columns; we don't care about
     # columns that are unique to the table.
-    my ( @cols_to_add, @cols_to_alter, @cols_to_drop, @cols_to_index );
+    my ( @cols_to_add, @cols_to_alter, @cols_to_drop, @cols_to_index, @idxs_to_drop );
 
     if ( !$fix_class ) {
         my @def_cols = keys %$defs;
@@ -434,6 +440,11 @@ sub type_diff {
                     push @cols_to_alter, $col;
                 }
             }
+        }
+
+        for my $col (keys %$db_defs) {
+            next if exists $defs->{$col};
+            push @cols_to_drop, $col;
         }
 
         foreach my $key ( keys %$class_idx_defs ) {
@@ -483,19 +494,26 @@ sub type_diff {
                 }
             }
         }
+
+        for my $key (keys %$db_idx_defs) {
+            next if exists $class_idx_defs->{$key};
+            push @idxs_to_drop, $key;
+        }
     }
 
     if (   $fix_class
         || @cols_to_add
         || @cols_to_alter
         || @cols_to_drop
-        || @cols_to_index )
+        || @cols_to_index
+        || @idxs_to_drop )
     {
         my %param;
         $param{drop_column}  = \@cols_to_drop  if @cols_to_drop;
         $param{add_column}   = \@cols_to_add   if @cols_to_add;
         $param{alter_column} = \@cols_to_alter if @cols_to_alter;
         $param{index_column} = \@cols_to_index if @cols_to_index;
+        $param{drop_index}   = \@idxs_to_drop  if @idxs_to_drop;
         $param{fix}          = $fix_class;
         if (   ( @cols_to_add && !$ddl->can_add_column )
             || ( @cols_to_alter && !$ddl->can_alter_column )
@@ -569,6 +587,8 @@ sub post_drop_column   {1}
 sub pre_add_column     {1}
 sub pre_index_column   {1}
 sub post_index_column  {1}
+sub pre_drop_index     {1}
+sub post_drop_index    {1}
 sub pre_schema_upgrade {1}
 
 # issued last, after all table creation...
@@ -741,6 +761,7 @@ sub core_fix_type {
     my $add_column   = $result->{add_column};
     my $drop_column  = $result->{drop_column};
     my $index_column = $result->{index_column};
+    my $drop_index   = $result->{drop_index};
 
     my $driver = $class->driver;
     my $ddl    = $driver->dbd->ddl_class;
@@ -757,7 +778,11 @@ sub core_fix_type {
         if $drop_column;
     push @stmts, sub { $self->pre_index_column( $class, $index_column ) }
         if $index_column;
+    push @stmts, sub { $self->pre_drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, $ddl->fix_class($class);
+    push @stmts, sub { $ddl->drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, sub { $self->post_create_table($class) };
     push @stmts, sub { $self->post_add_column( $class, $add_column ) }
         if $add_column;
@@ -768,6 +793,8 @@ sub core_fix_type {
         if $drop_column;
     push @stmts, sub { $self->post_index_column( $class, $index_column ) }
         if $index_column;
+    push @stmts, sub { $self->post_drop_index( $class, $drop_index ) }
+        if $drop_index;
     push @stmts, $ddl->upgrade_end($class);
     push @stmts, sub { $self->post_upgrade_class($class) };
     $self->run_statements( $class, @stmts );
