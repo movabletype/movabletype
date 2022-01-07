@@ -303,29 +303,6 @@ sub exist_same_name_in_site {
     );
 }
 
-sub calculate_cat_count {
-    my $self = shift;
-    return unless $self->id;
-    my $count = MT::Category->count({ category_set_id => $self->id });
-    return $count;
-}
-
-sub calculate_ct_count {
-    my $self = shift;
-    return unless $self->id;
-    my $cf_join = MT::ContentField->join_on(
-        'content_type_id',
-        {
-            type               => 'categories',
-            related_cat_set_id => $self->id,
-        },
-    );
-    my $count = MT::ContentType->count(
-        { blog_id => $self->blog_id },
-        { join    => $cf_join });
-    return $count;
-}
-
 sub remove {
     my $self = shift;
     if ( ref $self ) {
