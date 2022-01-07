@@ -113,10 +113,11 @@ sub list_props {
     };
 }
 
-sub _cat_count_bulk_html {
-    my ($prop, $objs, $app, $load_options) = @_;
+sub cat_count_by_blog {
+    my $class      = shift;
+    my ($blog_id)  = @_;
     my $count_iter = MT->model('category')->count_group_by({
-            blog_id => $app->blog->id,
+            blog_id => $blog_id,
         },
         {
             group              => ['category_set_id'],
@@ -126,24 +127,31 @@ sub _cat_count_bulk_html {
     while (my ($count, $set_id) = $count_iter->()) {
         $count{$set_id} = $count;
     }
+    return \%count;
+}
+
+sub _cat_count_bulk_html {
+    my ($prop, $objs, $app, $load_options) = @_;
+    my $cat_count = __PACKAGE__->cat_count_by_blog($app->blog->id);
     my @out;
     for my $obj (@$objs) {
-        my $count = $count{ $obj->id } || 0;
+        my $count = $cat_count->{ $obj->id } || 0;
         push @out, $count;
     }
     return @out;
 }
 
-sub _ct_count_bulk_html {
-    my ($prop, $objs, $app, $load_options) = @_;
-    my $cf_join = MT->model('cf')->join_on(
+sub ct_count_by_blog {
+    my $class     = shift;
+    my ($blog_id) = @_;
+    my $cf_join   = MT->model('cf')->join_on(
         'content_type_id',
         {
             type => 'categories',
         },
     );
     my $count_iter = MT->model('content_type')->count_group_by({
-            blog_id => $app->blog->id,
+            blog_id => $blog_id,
         },
         {
             group => ['cf_related_cat_set_id'],
@@ -153,9 +161,15 @@ sub _ct_count_bulk_html {
     while (my ($count, $set_id) = $count_iter->()) {
         $count{$set_id} = $count;
     }
+    return \%count;
+}
+
+sub _ct_count_bulk_html {
+    my ($prop, $objs, $app, $load_options) = @_;
+    my $ct_count = __PACKAGE__->ct_count_by_blog($app->blog->id);
     my @out;
     for my $obj (@$objs) {
-        my $count = $count{ $obj->id } || 0;
+        my $count = $ct_count->{ $obj->id } || 0;
         push @out, $count;
     }
     return @out;
