@@ -81,13 +81,14 @@ sub template {
         ? map { $_ => 1 } @{ $saved->{default_category_set_export_ids} }
         : ();
 
+    my $cat_count = MT->model('category_set')->cat_count_by_blog($blog->id);
     my @list;
     for my $cs (@category_sets) {
         push @list,
             {
             category_set_id   => $cs->id,
             category_set_name => $cs->name,
-            categories_count  => $cs->calculate_cat_count,
+            categories_count  => $cat_count->{ $cs->id } || 0,
             checked           => $saved ? $checked_ids{ $cs->id } : 1,
             };
     }
