@@ -13,6 +13,8 @@ use base qw( MT::ErrorHandler );
 use MT::ArchiveType;
 use File::Basename;
 
+use MT::Util::Log;
+
 our %ArchiveTypes;
 
 sub new {
