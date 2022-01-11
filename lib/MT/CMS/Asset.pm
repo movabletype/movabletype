@@ -11,6 +11,7 @@ use Symbol;
 use MT::Util
     qw( epoch2ts encode_url format_ts relative_date perl_sha1_digest_hex);
 
+use JSON  ();
 my $default_thumbnail_size = 60;
 
 sub edit {
@@ -170,6 +171,176 @@ sub edit {
     $app->add_breadcrumb( $obj->label ) if $id;
 
     1;
+}
+
+sub dialog_asset_modal_v2 {
+    my $app        = shift;
+    my $json       = $app->param('json');
+    my $blog_id    = $app->param('blog_id');
+    my $blog_class = $app->model('blog');
+
+    my $mode_userpic = $app->param('upload_mode') || '';
+    return $app->return_to_dashboard(redirect => 1)
+        if !$blog_id && $mode_userpic ne 'upload_userpic';
+
+    my %param;
+    _set_start_upload_params($app, \%param);
+
+    if (   $app->param('edit_field')
+        && $app->param('edit_field') =~ m/^customfield_.*$/)
+    {
+        return $app->permission_denied()
+            unless $app->permissions;
+    } else {
+        return $app->permission_denied()
+            if $blog_id && !$app->can_do('access_to_insert_asset_list');
+    }
+
+    $param{can_multi} = 1
+        if ($app->param('upload_mode') || '') ne 'upload_userpic'
+        && $app->param('can_multi')
+        && $app->param('edit_field') !~ m/^customfield_.*$/;
+
+    $param{filter} = $app->param('filter')
+        if defined $app->param('filter');
+    $param{filter_val} = $app->param('filter_val')
+        if defined $app->param('filter_val');
+    $param{search}     = $app->param('search') if defined $app->param('search');
+    $param{edit_field} = $app->param('edit_field')
+        if defined $app->param('edit_field');
+    $param{next_mode}    = $app->param('next_mode');
+    $param{no_insert}    = $app->param('no_insert') ? 1 : 0;
+    $param{asset_select} = $app->param('asset_select');
+    $param{require_type} = $app->param('require_type');
+
+    if ($blog_id) {
+        $param{blog_id}      = $blog_id;
+        $param{edit_blog_id} = $blog_id,;
+    }
+
+    $param{upload_mode} = $mode_userpic;
+    if ($mode_userpic) {
+        $param{user_id}      = $param{filter_val} || $app->user->id;
+        $param{require_type} = 'image';
+        $param{'is_image'}   = 1;
+        $param{can_upload}   = 1;
+    }
+
+    if ($param{require_type}) {
+        my $req_class = $app->model($param{require_type});
+        $param{require_type_label} = $req_class->class_label;
+    }
+
+    $param{page_limit} = 12;
+
+    require MT::Asset;
+    my $subclasses = MT::Asset->list_subclasses;
+
+    my @class_filters;
+    foreach my $k (@$subclasses) {
+        my $c = $k->{class};
+        push @class_filters,
+            {
+            key   => $k->{type},
+            label => $c->class_label_plural,
+            };
+    }
+    $param{class_filter_loop} = \@class_filters if @class_filters;
+
+    # Set directory separator
+    $param{dir_separator} = MT::Util::dir_separator;
+
+    if (my $content_field_id = $app->param('content_field_id')) {
+        require MT::ContentField;
+        if (my $content_field = MT::ContentField->load($content_field_id)) {
+            $param{content_field_id} = $content_field_id;
+            my $options = $content_field->options;
+            $param{can_multi}  = $options->{multiple}     ? 1 : 0;
+            $param{can_upload} = $options->{allow_upload} ? 1 : 0;
+        }
+    }
+
+    my $asset_class = $app->model('asset') or return;
+    my %terms;
+    my %args = (sort => 'created_on', direction => 'descend');
+
+    my $class_filter;
+    my $filter = $app->param('filter') || '';
+    if ($filter eq 'class') {
+        $class_filter = $app->param('filter_val');
+    } elsif ($filter eq 'userpic') {
+        $class_filter      = 'image';
+        $terms{created_by} = $app->param('filter_val');
+        $terms{blog_id}    = 0;
+
+        my $tag = MT->model('tag')->load({ name => '@userpic' }, { binary => { name => 1 } });
+        if ($tag) {
+            require MT::ObjectTag;
+            $args{'join'} = MT::ObjectTag->join_on(
+                'object_id',
+                {
+                    tag_id            => $tag->id,
+                    object_datasource => MT::Asset->datasource
+                },
+                { unique => 1 });
+        }
+    }
+
+    if ($blog_id) {
+        my $blog_ids = $app->_load_child_blog_ids($blog_id);
+        push @$blog_ids, $blog_id;
+        $terms{blog_id} = $blog_ids;
+    }
+
+    if ($class_filter) {
+        my $asset_pkg = MT::Asset->class_handler($class_filter);
+        $terms{class} = $asset_pkg->type_list;
+    } else {
+        $terms{class} = '*';    # all classes
+    }
+    my $count = $asset_class->count(
+        \%terms,
+        \%args
+    );
+    $param{assets_count} = $count;
+    if (!$json) {
+        $args{limit} = $app->config->AssetModalFiestLoad ? $app->config->AssetModalFiestLoad : 120;
+    }
+    my $offset = $app->param('offset') ? $app->param('offset') : 0;
+    if ($offset) {
+        $args{offset} = $offset;
+    }
+    my $iter = $asset_class->load_iter(
+        \%terms,
+        \%args
+    );
+    my @assets;
+    while (my $obj = $iter->()) {
+        my $row = $obj->get_values;
+        push(
+            @assets,
+            {
+                id             => $obj->id,
+                blog_id        => $obj->blog_id,
+                label          => $obj->label,
+                url            => $obj->url,
+                description    => $obj->description,
+                file_name      => $obj->file_name,
+                type           => $row->{class},
+                width          => $row->{class} eq 'image' ? $obj->image_width  : '',
+                height         => $row->{class} eq 'image' ? $obj->image_height : '',
+                insert_options => {
+                    alt     => $obj->label,
+                    width   => $row->{class} eq 'image' ? $obj->image_width : '',
+                    caption => '',
+                    align   => 'none',
+                } });
+    }
+    if ($json) {
+        return JSON::to_json(@assets ? \@assets : []);
+    }
+    $param{assets} = JSON::to_json(@assets ? \@assets : []);
+    return $app->load_tmpl('include/asset_list_modal_v2.tmpl', \%param);
 }
 
 sub dialog_list_asset {
@@ -3048,6 +3219,9 @@ sub transform_image {
 
 sub dialog_asset_modal {
     my $app = shift;
+
+    return dialog_asset_modal_v2($app)
+      if ( $app->config->AssetModalVersion > 1 );
 
     $app->validate_param({
         asset_select     => [qw/MAYBE_STRING/],

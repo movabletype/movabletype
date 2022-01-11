@@ -90,7 +90,7 @@ sub core_methods {
         ## Listing methods
         'list_template' => "${pkg}Template::list",
         'list_asset'    => {
-            code      => "${pkg}Asset::dialog_list_asset",
+            code      => "${pkg}Asset::dialog_asset_modal",
             condition => sub {
                 my $app = shift;
                 return 0 unless $app->param('dialog_view');
@@ -204,7 +204,7 @@ sub core_methods {
             app_mode => 'JSON',
         },
         'dialog_asset_modal' =>
-            { code => "${pkg}Asset::dialog_asset_modal", },
+            { code => "${pkg}Asset::dialog_asset_modal" },
         'dialog_insert_options' => "${pkg}Asset::dialog_insert_options",
         'insert_asset'          => "${pkg}Asset::insert_asset",
 

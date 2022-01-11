@@ -2260,6 +2260,9 @@ BEGIN {
             'ForceExifRemoval' => { default => 1 },
             'TemporaryFileExpiration' => { default => 60 * 60 },
             'ForceAllowStringSub' => undef,
+            # new Asset Modal
+            'AssetModalVersion' => { default => 1 },
+            'AssetModalFiestLoad' => { default => 120 },
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
