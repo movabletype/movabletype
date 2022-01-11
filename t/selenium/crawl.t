@@ -92,6 +92,7 @@ sub assert_no_errors {
     } @logs;
 
     ok(!scalar(@logs), 'no browser error occurs');
+    ok(!$s->generic_error, 'no generic errors');
     $summary = 'test_number_' . $num . ': ' . $summary;
     if (@logs) {
         diag($summary);
@@ -101,6 +102,11 @@ sub assert_no_errors {
     } else {
         note($summary);
         note((' ' x 8) . sprintf('%s: %s', $_, $extra->{$_})) for (sort keys %$extra);
+    }
+    if ($s->generic_error) {
+        note((' ' x 8) . 'error: ' . $s->generic_error);
+    } elsif ($s->message_text) {
+        note((' ' x 8) . 'alert: ' . $s->message_text);
     }
 }
 
