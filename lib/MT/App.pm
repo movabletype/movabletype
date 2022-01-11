@@ -2626,17 +2626,8 @@ sub _send_comment_notification {
     my $author = $entry->author;
     $app->set_language( $author->preferred_language )
         if $author && $author->preferred_language;
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        MT::Util::Deprecated::warning(name => 'EmailReplyTo', since => '7.9');
-        $reply_to = $comment->email;
-    }
-    else {
-        $from_addr = $comment->email;
-    }
+    my $from_addr = $comment->email;
     $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
     if ( $author && $author->email )
     {    # } && is_valid_email($author->email)) {
         if ( !$from_addr ) {
@@ -2648,7 +2639,6 @@ sub _send_comment_notification {
             id => 'new_comment',
             To => $author->email,
             $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
             Subject => '['
                 . $blog->name . '] '
                 . $app->translate(
@@ -2767,19 +2757,9 @@ sub _send_sysadmins_email {
 
     require MT::Util::Mail;
 
-    my $from_addr;
-    my $reply_to;
-    if ( $cfg->EmailReplyTo ) {
-        MT::Util::Deprecated::warning(name => 'EmailReplyTo', since => '7.9');
-        $reply_to = $cfg->EmailAddressMain || $from;
-    }
-    else {
-        $from_addr = $cfg->EmailAddressMain || $from;
-    }
-    $from_addr = undef if $from_addr && !is_valid_email($from_addr);
-    $reply_to  = undef if $reply_to  && !is_valid_email($reply_to);
+    my $from_addr = $cfg->EmailAddressMain || $from;
 
-    unless ( $from_addr || $reply_to ) {
+    if (!$from_addr || !is_valid_email($from_addr)) {
         $app->log(
             {   message =>
                     MT->translate("System Email Address is not configured."),
@@ -2794,10 +2774,9 @@ sub _send_sysadmins_email {
     foreach my $a (@sysadmins) {
         next unless $a->email && is_valid_email( $a->email );
         my %head = (
-            id => $email_id,
-            To => $a->email,
-            $from_addr ? ( From       => $from_addr ) : (),
-            $reply_to  ? ( 'Reply-To' => $reply_to )  : (),
+            id      => $email_id,
+            To      => $a->email,
+            From    => $from_addr,
             Subject => $subject,
         );
         my $charset = $cfg->MailEncoding || $cfg->PublishCharset;
