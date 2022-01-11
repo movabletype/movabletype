@@ -26,6 +26,11 @@ use MT;
 use MT::Test::Fixture;
 use MT::Test::Selenium;
 use Selenium::Waiter;
+use JSON::XS;
+use URI;
+use URI::QueryParam;
+
+my $encoder = JSON::XS->new->canonical;
 
 $test_env->prepare_fixture('db_data');
 
@@ -60,14 +65,22 @@ sub add_queue {
     state %once_queued;
     for my $url (@$urls) {
         next if $url =~ /^http/ && $url !~ /^$baseurl/;
+        my $id = generate_id($url);
         $url =~ s{^$baseurl}{};
         $url = (split(/#/, $url))[0];
-        next if exists($once_queued{$url}) || $url =~ /__mode=logout/;
-        next if $url                               =~ /__mode=tools/;    # skip for now
+        next if exists($once_queued{$id}) || $url =~ /__mode=logout/;
+        next if $url                              =~ /__mode=tools/;    # skip for now
         push @queue, MT::Test::Selenium::Crawler::Job->new($url, $referrer ? \$referrer : ());
-        $once_queued{$url} = 1;
+        $once_queued{$id} = 1;
         shift(@queue) if $max && scalar(@queue) > $max;
     }
+}
+
+sub generate_id {
+    my $url = shift;
+    my $query = URI->new($url)->query_form_hash;
+    delete $query->{magic_token};
+    $encoder->encode($query);
 }
 
 sub assert_no_errors {
