@@ -3302,6 +3302,22 @@ nightly
 --- expected
 Movable Type
 
+=== test 524.1
+--- mt_config
+{HideVersion => 0}
+--- template
+<MTProductName version="1">
+--- expected regexp
+Movable Type [0-9.]+
+
+=== test 524.2
+--- mt_config
+{HideVersion => 1}
+--- template
+<MTProductName version="1">
+--- expected
+Movable Type
+
 === test 525
 --- template
 <MTSection>Content</MTSection>
