@@ -18,10 +18,10 @@ my $crlf = "\x0d\x0a";
 sub render {
     my ($class, %args) = @_;
     my ($hdrs, $body) = map { $args{$_} } (qw(header body));
-    my $mgr      = MT->config;
-    my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
+    my $conf = MT->config;
+    my $mail_enc = lc($conf->MailEncoding || $conf->PublishCharset);
     $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $hdrs->{'Content-Transfer-Encoding'} ||= $mgr->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
+    $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 

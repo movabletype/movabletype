@@ -28,21 +28,21 @@ sub send {
         }
     }
 
-    my $mgr = MT->config;
+    my $conf = MT->config;
 
-    $hdrs{From} ||= $mgr->EmailAddressMain or return $class->error(MT->translate("System Email Address is not configured."));
+    $hdrs{From} ||= $conf->EmailAddressMain or return $class->error(MT->translate("System Email Address is not configured."));
 
-    $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
+    $hdrs{To} = $conf->DebugEmailAddress if (is_valid_email($conf->DebugEmailAddress || ''));
 
     $class->_dedupe_headers(\%hdrs);
 
     # Sender MUST occur with multi-address from
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
-    my $xfer = $mgr->MailTransfer;
-    return $class->_send_mt_sendmail(\%hdrs, $body, $mgr) if $xfer eq 'sendmail';
-    return $class->_send_mt_smtp(\%hdrs, $body, $mgr)     if $xfer eq 'smtp';
-    return $class->_send_mt_debug(\%hdrs, $body, $mgr)    if $xfer eq 'debug';
+    my $xfer = $conf->MailTransfer;
+    return $class->_send_mt_sendmail(\%hdrs, $body) if $xfer eq 'sendmail';
+    return $class->_send_mt_smtp(\%hdrs, $body)     if $xfer eq 'smtp';
+    return $class->_send_mt_debug(\%hdrs, $body)    if $xfer eq 'debug';
     return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
@@ -81,7 +81,7 @@ sub _dedupe_headers {
 
 sub _send_mt_debug {
     my $class = shift;
-    my ($hdrs, $body, $mgr) = @_;
+    my ($hdrs, $body) = @_;
     my $msg = $class->render(header => $hdrs, body => $body);
     print STDERR $msg;
     1;
@@ -89,16 +89,17 @@ sub _send_mt_debug {
 
 sub _send_mt_smtp {
     my $class = shift;
-    my ($hdrs, $body, $mgr) = @_;
+    my ($hdrs, $body) = @_;
+    my $conf = MT->config;
 
     # SMTP Configuration
-    my $host = $mgr->SMTPServer;
-    my $user = $mgr->SMTPUser;
-    my $pass = $mgr->SMTPPassword;
-    my $port = $mgr->SMTPPort || ($mgr->SMTPAuth eq 'ssl' ? 465 : 25);
+    my $host = $conf->SMTPServer;
+    my $user = $conf->SMTPUser;
+    my $pass = $conf->SMTPPassword;
+    my $port = $conf->SMTPPort || ($conf->SMTPAuth eq 'ssl' ? 465 : 25);
     my %args = (
         Port    => $port,
-        Timeout => $mgr->SMTPTimeout,
+        Timeout => $conf->SMTPTimeout,
         Hello   => hostname() || 'localhost',
         ($MT::DebugMode ? (Debug => 1) : ()),
         doSSL => '',    # must be defined to avoid uuv
@@ -107,16 +108,16 @@ sub _send_mt_smtp {
     # If SMTP user ID is valid email address, it's more suitable for Sender header.
     $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user && is_valid_email($user);
 
-    if ($mgr->SMTPAuth) {
+    if ($conf->SMTPAuth) {
         return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
         return unless $class->_can_use('Authen::SASL', 'MIME::Base64');
-        if ($mgr->SMTPAuth =~ /^(?:starttls|ssl)$/) {
+        if ($conf->SMTPAuth =~ /^(?:starttls|ssl)$/) {
             return unless $class->_can_use('IO::Socket::SSL', 'Net::SSLeay');
             %args = (
                 %args,
-                doSSL               => $mgr->SMTPAuth,
-                SSL_verify_mode     => ($mgr->SSLVerifyNone || $mgr->SMTPSSLVerifyNone) ? 0 : 1,
-                SSL_version         => MT->config->SSLVersion || MT->config->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
+                doSSL               => $conf->SMTPAuth,
+                SSL_verify_mode     => ($conf->SSLVerifyNone || $conf->SMTPSSLVerifyNone) ? 0 : 1,
+                SSL_version         => $conf->SSLVersion || $conf->SMTPSSLVersion || 'SSLv23:!SSLv3:!SSLv2',
                 SSL_verifycn_name   => $host,
                 SSL_verifycn_scheme => 'smtp',
             );
@@ -134,7 +135,7 @@ sub _send_mt_smtp {
     }
 
     # Overwrite the arguments of Net::SMTPS.
-    my $smtp_opts = $mgr->SMTPOptions;
+    my $smtp_opts = $conf->SMTPOptions;
     if (ref($smtp_opts) eq 'HASH' && %$smtp_opts) {
         %args = (%args, %$smtp_opts);
     }
@@ -143,8 +144,8 @@ sub _send_mt_smtp {
     my $smtp = Net::SMTPS->new($host, %args)
         or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
-    if ($mgr->SMTPAuth) {
-        my $mech = MT->config->SMTPAuthSASLMechanism || do {
+    if ($conf->SMTPAuth) {
+        my $mech = $conf->SMTPAuthSASLMechanism || do {
 
             # Disable DIGEST-MD5.
             my $m = $smtp->supports('AUTH', 500, ["Command unknown: 'AUTH'"]) || '';
@@ -189,10 +190,11 @@ my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
     my $class = shift;
-    my ($hdrs, $body, $mgr) = @_;
+    my ($hdrs, $body) = @_;
+    my $conf = MT->config;
 
     my $sm_loc;
-    for my $loc ($mgr->SendMailPath, @Sendmail) {
+    for my $loc ($conf->SendMailPath, @Sendmail) {
         next unless $loc;
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
