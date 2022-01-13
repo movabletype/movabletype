@@ -15,32 +15,23 @@ use Email::MIME;
 
 my $crlf = "\x0d\x0a";
 
-sub send {
-    my $self = shift;
-    my ($hdrs, $body) = @_;
+sub render {
+    my ($self, %args) = @_;
+    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
     my $mgr      = MT->config;
     my $mail_enc = lc($mgr->MailEncoding || $mgr->PublishCharset);
     $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
     $hdrs->{'Content-Transfer-Encoding'} ||= $mgr->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
-    $self->{charset} = $mail_enc;
-    $self->{encoding} = $hdrs->{'Content-Transfer-Encoding'};
-    return $self->SUPER::send($hdrs, $body);
-}
 
-sub render {
-    my ($self, %args) = @_;
-    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
-    my $msg;
-
-    eval {
-        $msg = Email::MIME->create(
+    my $msg = eval {
+        Email::MIME->create(
             header_str => [%$hdrs],
             body_str   => $body,
             attributes => {
-                charset  => $self->{charset},
-                encoding => $self->{encoding},
+                charset  => $mail_enc,
+                encoding => $hdrs->{'Content-Transfer-Encoding'},
             },
         );
     };
