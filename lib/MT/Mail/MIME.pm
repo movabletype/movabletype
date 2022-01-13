@@ -179,11 +179,12 @@ sub _send_mt_smtp {
     1;
 }
 
-my $err = MT->translate('An error occured during sending mail');
+my $SMTPErrorMessage;
 
 sub smtp_error {
     my ($class, $smtp) = @_;
-    $class->error(join(':', $err, $smtp->message || ()));
+    $SMTPErrorMessage ||= MT->translate('An error occured during sending mail');
+    $class->error(join(':', $SMTPErrorMessage, $smtp->message || ()));
 }
 
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
