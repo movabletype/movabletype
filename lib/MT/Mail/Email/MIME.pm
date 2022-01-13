@@ -4,7 +4,7 @@
 #
 # $Id$
 
-package MT::Mail::MIME::EmailMIME;
+package MT::Mail::Email::MIME;
 
 use strict;
 use warnings;

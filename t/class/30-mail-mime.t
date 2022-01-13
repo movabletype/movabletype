@@ -26,7 +26,7 @@ $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
 
-for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
+for my $mod_name ('MIME::Lite', 'Email::MIME') {
     my $mail_module = MT::Util::Mail::find_module($mod_name);
 
     subtest $mod_name => sub {

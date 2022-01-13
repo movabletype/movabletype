@@ -15,7 +15,7 @@ sub find_module {
     my ($mail_module) = @_;
     $module = undef;
     $mail_module ||= MT->config->MailModule || 'MT::Mail';
-    $mail_module = 'MT::Mail::MIME::'. $mail_module if $mail_module !~ /^MT::Mail/;
+    $mail_module = 'MT::Mail::'. $mail_module if $mail_module !~ /^MT::Mail/;
 
     eval "require $mail_module;";
     return $module = $mail_module unless $@;

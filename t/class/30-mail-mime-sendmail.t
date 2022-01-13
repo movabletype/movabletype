@@ -27,7 +27,7 @@ MT->instance;
 
 my $sendmail = MT::Test::SendmailMock->new(test_env => $test_env);
 
-for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
+for my $mod_name ('MIME::Lite', 'Email::MIME') {
     my $mail_module = MT::Util::Mail::find_module($mod_name);
 
     subtest $mod_name => sub {
