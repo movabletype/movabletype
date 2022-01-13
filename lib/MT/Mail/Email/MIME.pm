@@ -19,7 +19,7 @@ sub render {
     my ($class, %args) = @_;
     my ($hdrs, $body) = map { $args{$_} } (qw(header body));
     my $conf = MT->config;
-    my $mail_enc = lc($conf->MailEncoding || $conf->PublishCharset);
+    my $mail_enc = lc($conf->MailEncoding || 'utf-8');
     $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
     $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
     require MT::I18N::default;
