@@ -67,11 +67,12 @@ sub work {
                 unless ( $filemgr->exists($path) ) {
                     $filemgr->mkpath($path) or do { $job->failed("Failed to make path: $path"); last };
                 }
-                $filemgr->put_data( $content, $asset_file, 'upload' )
-                    or $job->failed(
-                    "Failed to save content of the file $asset_file via: $url"
-                    );
-                $job->completed();
+                my $ok = $filemgr->put_data( $content, $asset_file, 'upload' );
+                if ($ok) {
+                    $job->completed();
+                } else {
+                    $job->failed("Failed to save content of the file $asset_file via: $url");
+                }
             }
             else {
                 $job->failed("Error downloading $url");
