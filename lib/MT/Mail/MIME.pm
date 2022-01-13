@@ -16,7 +16,7 @@ use Sys::Hostname;
 use MT::Util qw(is_valid_email);
 
 sub send {
-    my $self = shift;
+    my $class = shift;
     my ($hdrs_arg, $body) = @_;
 
     my %hdrs = map { $_ => $hdrs_arg->{$_} } keys %$hdrs_arg;
@@ -30,20 +30,20 @@ sub send {
 
     my $mgr = MT->config;
 
-    $hdrs{From} ||= $mgr->EmailAddressMain or return $self->error(MT->translate("System Email Address is not configured."));
+    $hdrs{From} ||= $mgr->EmailAddressMain or return $class->error(MT->translate("System Email Address is not configured."));
 
     $hdrs{To} = $mgr->DebugEmailAddress if (is_valid_email($mgr->DebugEmailAddress || ''));
 
-    $self->_dedupe_headers(\%hdrs);
+    $class->_dedupe_headers(\%hdrs);
 
     # Sender MUST occur with multi-address from
     $hdrs{Sender} = $hdrs{From}[0] if (ref $hdrs{From} eq 'ARRAY' && scalar(@{ $hdrs{From} }) > 1);
 
     my $xfer = $mgr->MailTransfer;
-    return $self->_send_mt_sendmail(\%hdrs, $body, $mgr) if $xfer eq 'sendmail';
-    return $self->_send_mt_smtp(\%hdrs, $body, $mgr)     if $xfer eq 'smtp';
-    return $self->_send_mt_debug(\%hdrs, $body, $mgr)    if $xfer eq 'debug';
-    return $self->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
+    return $class->_send_mt_sendmail(\%hdrs, $body, $mgr) if $xfer eq 'sendmail';
+    return $class->_send_mt_smtp(\%hdrs, $body, $mgr)     if $xfer eq 'smtp';
+    return $class->_send_mt_debug(\%hdrs, $body, $mgr)    if $xfer eq 'debug';
+    return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
 sub _lc {
@@ -54,7 +54,7 @@ sub _lc {
 }
 
 sub _dedupe_headers {
-    my ($self, $hdrs) = @_;
+    my ($class, $hdrs) = @_;
 
     # dedupe for SendGrid (cf. CLOUD-73)
     my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
@@ -80,15 +80,15 @@ sub _dedupe_headers {
 }
 
 sub _send_mt_debug {
-    my $self = shift;
+    my $class = shift;
     my ($hdrs, $body, $mgr) = @_;
-    my $msg = $self->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body);
     print STDERR $msg;
     1;
 }
 
 sub _send_mt_smtp {
-    my $self = shift;
+    my $class = shift;
     my ($hdrs, $body, $mgr) = @_;
 
     # SMTP Configuration
@@ -108,7 +108,7 @@ sub _send_mt_smtp {
     $hdrs->{Sender} = $user if $user && $hdrs->{From} ne $user && is_valid_email($user);
 
     if ($mgr->SMTPAuth) {
-        return $self->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
+        return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
         require MT::Util::Mail;
         return unless MT::Util::Mail->can_use('Authen::SASL', 'MIME::Base64');
         if ($mgr->SMTPAuth =~ /^(?:starttls|ssl)$/) {
@@ -142,7 +142,7 @@ sub _send_mt_smtp {
 
     # Make a smtp object
     my $smtp = Net::SMTPS->new($host, %args)
-        or return $self->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
+        or return $class->error(MT->translate('Error connecting to SMTP server [_1]:[_2]', $host, $port));
 
     if ($mgr->SMTPAuth) {
         my $mech = MT->config->SMTPAuthSASLMechanism || do {
@@ -154,27 +154,27 @@ sub _send_mt_smtp {
         };
 
         if (!eval { $smtp->auth($user, $pass, $mech) }) {
-            return $self->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
+            return $class->error(MT->translate("Authentication failure: [_1]", $@ ? $@ : scalar $smtp->message));
         }
     }
 
-    $smtp->mail($user) or return $self->smtp_error($smtp);
+    $smtp->mail($user) or return $class->smtp_error($smtp);
 
     for my $h (qw( To Bcc Cc )) {
         next unless defined $hdrs->{$h};
         my $addr = $hdrs->{$h};
         for (ref $addr eq 'ARRAY' ? @$addr : $addr) {
-            $smtp->recipient($_) or return $self->smtp_error($smtp);
+            $smtp->recipient($_) or return $class->smtp_error($smtp);
         }
     }
 
     delete $hdrs->{Bcc};
 
-    my $msg = $self->render(header => $hdrs, body => $body);
-    $smtp->data()         or return $self->smtp_error($smtp);
-    $smtp->datasend($msg) or return $self->smtp_error($smtp);
-    $smtp->dataend()      or return $self->smtp_error($smtp);
-    $smtp->quit           or return $self->smtp_error($smtp);
+    my $msg = $class->render(header => $hdrs, body => $body);
+    $smtp->data()         or return $class->smtp_error($smtp);
+    $smtp->datasend($msg) or return $class->smtp_error($smtp);
+    $smtp->dataend()      or return $class->smtp_error($smtp);
+    $smtp->quit           or return $class->smtp_error($smtp);
 
     1;
 }
@@ -182,14 +182,14 @@ sub _send_mt_smtp {
 my $err = MT->translate('An error occured during sending mail');
 
 sub smtp_error {
-    my ($self, $smtp) = @_;
-    $self->error(join(':', $err, $smtp->message || ()));
+    my ($class, $smtp) = @_;
+    $class->error(join(':', $err, $smtp->message || ()));
 }
 
 my @Sendmail = qw( /usr/lib/sendmail /usr/sbin/sendmail /usr/ucblib/sendmail );
 
 sub _send_mt_sendmail {
-    my $self = shift;
+    my $class = shift;
     my ($hdrs, $body, $mgr) = @_;
 
     my $sm_loc;
@@ -197,17 +197,17 @@ sub _send_mt_sendmail {
         next unless $loc;
         $sm_loc = $loc, last if -x $loc && !-d $loc;
     }
-    return $self->error(MT->translate("You do not have a valid path to sendmail on your machine. " . "Perhaps you should try using SMTP?")) unless $sm_loc;
+    return $class->error(MT->translate("You do not have a valid path to sendmail on your machine. " . "Perhaps you should try using SMTP?")) unless $sm_loc;
     local $SIG{PIPE} = {};
     my $pid = open my $MAIL, '|-';
     local $SIG{ALRM} = sub { CORE::exit() };
     return unless defined $pid;
     if (!$pid) {
         exec $sm_loc, "-oi", "-t", "-f", $hdrs->{From}
-            or return $self->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
+            or return $class->error(MT->translate("Exec of sendmail failed: [_1]", "$!"));
     }
 
-    my $msg = $self->render(header => $hdrs, body => $body);
+    my $msg = $class->render(header => $hdrs, body => $body);
     $msg =~ s{\r\n}{\n}g;
     print $MAIL $msg;
     close $MAIL;
