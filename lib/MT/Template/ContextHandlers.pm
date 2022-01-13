@@ -5960,7 +5960,7 @@ sub _hdlr_product_name {
     my ( $ctx, $args, $cond ) = @_;
     require MT;
     my $short_name = MT->translate( MT->product_name );
-    if ( $args->{version} ) {
+    if ( $args->{version} && !MT->config('HideVersion') ) {
         return MT->translate( "[_1] [_2]", $short_name, MT->version_id );
     }
     else {
