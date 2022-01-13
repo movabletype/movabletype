@@ -148,7 +148,7 @@ for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
             };
             is(MT::Util::Mail->errstr, qq{Username and password is required for SMTP authentication.\n}, 'right error');
             $mt->config->set('SMTPAuth', 0);
-            $mail_module->{_errstr} = undef;
+            $MT::ErrorHandler::ERROR = undef;
         };
 
         subtest 'SMTPAuth fails' => sub {
@@ -168,7 +168,7 @@ for my $mod_name ('MT::Mail::MIME::Lite', 'MT::Mail::MIME::EmailMIME') {
             $mt->config->set('SMTPAuth', 0);
             $mt->config->set('SMTPUser', undef);
             $mt->config->set('SMTPPassword', undef);
-            $mail_module->{_errstr} = undef;
+            $MT::ErrorHandler::ERROR = undef;
         };
 
         subtest 'cc and bcc' => sub {

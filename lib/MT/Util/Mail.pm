@@ -18,7 +18,7 @@ sub find_module {
     $mail_module = 'MT::Mail::MIME::'. $mail_module if $mail_module !~ /^MT::Mail/;
 
     eval "require $mail_module;";
-    return $module = bless({}, $mail_module) unless $@;
+    return $module = $mail_module unless $@;
 
     Carp::carp($@);
     return MT->error(MT->translate('Error loading mail module: [_1].', $mail_module));
