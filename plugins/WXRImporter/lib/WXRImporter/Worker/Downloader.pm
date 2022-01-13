@@ -85,7 +85,7 @@ sub work {
 }
 
 sub grab_for    {60}
-sub max_retries {100000}
+sub max_retries {1}
 sub retry_delay {60}
 
 1;
