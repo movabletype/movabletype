@@ -37,21 +37,4 @@ sub errstr {
     return $module ? $module->errstr : $class->SUPER::errstr;
 }
 
-sub can_use {
-    my ($class, @mods) = @_;
-
-    my @err;
-    for my $mod (@mods) {
-        eval "use $mod;";
-        push @err, $mod if $@;
-    }
-
-    if (@err) {
-        $class->error(MT->translate("Following required module(s) were not found: ([_1])", (join ', ', @err)));
-        return;
-    }
-
-    return 1;
-}
-
 1;

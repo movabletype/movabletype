@@ -109,10 +109,9 @@ sub _send_mt_smtp {
 
     if ($mgr->SMTPAuth) {
         return $class->error(MT->translate("Username and password is required for SMTP authentication.")) if !$user or !$pass;
-        require MT::Util::Mail;
-        return unless MT::Util::Mail->can_use('Authen::SASL', 'MIME::Base64');
+        return unless $class->_can_use('Authen::SASL', 'MIME::Base64');
         if ($mgr->SMTPAuth =~ /^(?:starttls|ssl)$/) {
-            return unless MT::Util::Mail->can_use('IO::Socket::SSL', 'Net::SSLeay');
+            return unless $class->_can_use('IO::Socket::SSL', 'Net::SSLeay');
             %args = (
                 %args,
                 doSSL               => $mgr->SMTPAuth,
@@ -212,6 +211,23 @@ sub _send_mt_sendmail {
     print $MAIL $msg;
     close $MAIL;
     1;
+}
+
+sub _can_use {
+    my ($class, @mods) = @_;
+
+    my @err;
+    for my $mod (@mods) {
+        eval "use $mod;";
+        push @err, $mod if $@;
+    }
+
+    if (@err) {
+        $class->error(MT->translate("Following required module(s) were not found: ([_1])", (join ', ', @err)));
+        return;
+    }
+
+    return 1;
 }
 
 1;

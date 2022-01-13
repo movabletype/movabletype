@@ -1004,10 +1004,11 @@ sub optional {
     $param{smtp_port} = 25
         unless $param{smtp_port};
 
-    my $transfer;
-    push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
-    push @$transfer,
-        { id => 'sendmail', name => $app->translate('Sendmail') };
+    my $transfer = [];
+    if (eval { require Net::SMTPS; 1 }) {
+        push @$transfer, { id => 'smtp', name => $app->translate('SMTP Server') };
+    }
+    push @$transfer, { id => 'sendmail', name => $app->translate('Sendmail') };
 
     foreach (@$transfer) {
         if ( $_->{id} eq $param{mail_transfer} ) {
@@ -1030,9 +1031,8 @@ sub optional {
         };
     }
 
-    require MT::Util::Mail;
-    $param{can_use_smtp}        = MT::Util::Mail->can_use('Net::SMTPS', 'MIME::Base64');
-    $param{cannot_use_smtp_msg} = MT::Util::Mail->errstr;
+    $param{has_auth_modules} = eval { require Authen::SASL; require MIME::Base64; 1 } ? 1 : 0;
+    $param{has_ssl_modules}  = eval { require IO::Socket::SSL; require Net::SSLeay; 1 } ? 1 : 0;
 
     my $ok = 1;
     my $err_msg;
