@@ -65,7 +65,7 @@ sub work {
                     unless $path eq
                     '/';    ## OS X doesn't like / at the end in mkdir().
                 unless ( $filemgr->exists($path) ) {
-                    $filemgr->mkpath($path);
+                    $filemgr->mkpath($path) or do { $job->failed("Failed to make path: $path"); last };
                 }
                 $filemgr->put_data( $content, $asset_file, 'upload' )
                     or $job->failed(
