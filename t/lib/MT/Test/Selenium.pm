@@ -122,8 +122,10 @@ sub new {
             my $pid_file = "$ENV{MT_TEST_ROOT}/.server.pid";
             my $host     = MY_HOST;
             my %extra    = (
-                CGIPath     => "http://$host:$port/cgi-bin/",
-                PIDFilePath => $pid_file,
+                CGIPath        => "http://$host:$port/cgi-bin/",
+                StaticWebPath  => "http://$host:$port/mt-static/",
+                StaticFilePath => "$ENV{MT_HOME}/mt-static",
+                PIDFilePath    => $pid_file,
             );
             $env->update_config(%extra);
 
