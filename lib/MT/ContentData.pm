@@ -1262,12 +1262,13 @@ sub _make_label_html {
 
     my $permalink  = MT::Util::encode_html( $obj->permalink );
     my $static_uri = MT->static_path;
+    my $view_title = MT->translate('View Content Data');
     my $view_link  = ( $status == MT::ContentStatus::RELEASE() && $permalink )
         ? qq{
             <span class="view-link">
               <a href="$permalink" class="d-inline-block" target="_blank">
                 <svg role="img" class="mt-icon mt-icon--sm">
-                  <title>View</title>
+                  <title>${view_title}</title>
                   <use xlink:href="${static_uri}images/sprite.svg#ic_permalink"></use>
                 </svg>
               </a>
