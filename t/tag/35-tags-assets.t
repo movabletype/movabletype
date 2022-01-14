@@ -127,6 +127,16 @@ for my $a ($asset, $no_tag_asset, $file_asset) {
     );
 }
 
+for my $attrs ({ namespace => 'foo', score => 3 }, { namespace => 'baz', score => 0 }) {
+    MT::Test::Permission->make_objectscore(
+        object_ds => 'asset',
+        object_id => $asset->id,
+        score     => $attrs->{score},
+        author_id => $author->id,
+        namespace => $attrs->{namespace},
+    );
+}
+
 my ($year, $month) = unpack('A4A2', $asset->created_on);
 
 ok !$test_env->files(MT->config->AssetCacheDir), "nothing exists under the asset cache dir yet";
@@ -138,6 +148,7 @@ my ($scaled_thumbnail) = $asset->thumbnail_file(Scale => 50);
 ok -f $scaled_thumbnail, "scaled thumbnail exists now";
 
 my %vars = (
+    AUTHOR_NAME       => $author->name,
     EXISTING_ASSET_ID => $asset->id,
     REMOVED_ASSET_ID  => $removed_asset->id,
     FILE_ASSET_ID     => $file_asset->id,
@@ -408,3 +419,29 @@ https://movabletype.atlassian.net/browse/MTC-28119
 </MTPages>
 --- expected
 http://example.com/blog/test.jpg
+
+=== MTPageAssets[namespace][scored_by]
+--- template
+<mt:Assets namespace="foo" scored_by="AUTHOR_NAME">a</mt:Assets>
+--- expected
+a
+
+=== MTPageAssets[namespace=unknown][scored_by]
+--- template
+<mt:Assets namespace="bar" scored_by="AUTHOR_NAME">a</mt:Assets>
+--- expected
+
+=== MTPageAssets[namespace][scored_by=unknown]
+--- template
+<mt:Assets namespace="foo" scored_by="Nobody">a</mt:Assets>
+--- expected_error
+No such user 'Nobody'
+--- expected_php_error
+Invalid scored by filter: Nobody
+
+=== MTPageAssets[namespace][scored_by] for score=0
+--- skip_php
+--- template
+<mt:Assets namespace="baz" scored_by="AUTHOR_NAME">a</mt:Assets>
+--- expected
+a

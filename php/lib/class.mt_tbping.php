@@ -18,7 +18,7 @@ class TBPing extends BaseObject
 
     public function trackback() {
         $col_name = "tbping_tb_id";
-        $$tb = null;
+        $tb = null;
         if (isset($this->$col_name) && is_numeric($this->$col_name)) {
             $tb_id = $this->$col_name;
 

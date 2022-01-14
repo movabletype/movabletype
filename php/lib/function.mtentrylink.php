@@ -8,7 +8,7 @@
 function smarty_function_mtentrylink($args, &$ctx) {
     $args['no_anchor'] = 1;
     $link = $ctx->tag('EntryPermalink', $args);
-    if ($args['with_index'] && preg_match('/\/(#.*)$/', $link)) {
+    if (!empty($args['with_index']) && preg_match('/\/(#.*)$/', $link)) {
         $blog = $ctx->stash('blog');
         $index = $ctx->mt->config('IndexBasename');
         $ext = $blog->blog_file_extension;

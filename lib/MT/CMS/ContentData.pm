@@ -23,6 +23,7 @@ use MT::Session;
 use MT::Template;
 use MT::TemplateMap;
 use MT::Util;
+use MT::Util::Log;
 
 sub edit {
     my ( $app, $param ) = @_;

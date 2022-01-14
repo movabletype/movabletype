@@ -57,7 +57,7 @@ class MTDatabasepostgres extends MTDatabase {
 
     function set_names($mt) {
         $conf = $mt->config('sqlsetnames');
-        if (isset($conf) && $conf == 0)
+        if (isset($conf) && empty($conf))
             return;
 
         $Charset = array(

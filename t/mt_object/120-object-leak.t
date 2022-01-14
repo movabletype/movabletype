@@ -22,6 +22,11 @@ BEGIN {
 
 use MT::Test;
 use MT;
+
+unless (MT::Object->driver->dbd->can_prepare_cached_statements) {
+    plan skip_all => 'Known to be broken if prepare_cached is not used';
+}
+
 plan tests => 36;
 
 $test_env->prepare_fixture('db_data');

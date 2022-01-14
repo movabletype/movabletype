@@ -36,19 +36,19 @@ for my $driver ( $test_env->image_drivers ) {
 
         ok( -s $tempfile, 'JPEG file exists.' );
 
-        # JPEG file does not have 'Orientation' tag.
-        my $tag  = 'Orientation';
+        # JPEG file does not have 'Keywords' tag.
+        my $tag  = 'Keywords';
         my $exif = Image::ExifTool->new;
         $exif->ExtractInfo($tempfile);
         ok( !$exif->GetValue($tag), qq{JPEG file does not have $tag tag.} );
 
-        # Set 'Orientation' tag.
+        # Set 'Keywords' tag.
         $exif->SetNewValue( $tag, 1 );
         $exif->WriteInfo($tempfile);
         $exif->ExtractInfo($tempfile);
         ok( $exif->GetValue($tag), qq{$tag tag is set to JPEG file.} );
 
-        # Remove 'Orientation' tag. (remove all tags)
+        # Remove 'Keywords' tag. (remove all tags)
         MT::Image->remove_metadata($tempfile);
         
         SKIP: {

@@ -17,9 +17,8 @@ use POSIX qw( floor );
 __PACKAGE__->install_properties(
     {   class_type  => 'image',
         column_defs => {
-            'image_width'    => 'integer meta',
-            'image_height'   => 'integer meta',
-            'image_metadata' => 'blob meta',
+            'image_width'  => 'integer meta',
+            'image_height' => 'integer meta',
         },
         child_of => [ 'MT::Blog', 'MT::Website', ],
     }
@@ -32,21 +31,14 @@ sub extensions {
         [ qr/gif/i, qr/jpe?g/i, qr/png/i, qr/bmp/i, qr/tiff?/i, qr/ico/i ] );
 }
 
-sub save {
-    my $asset = shift;
-
-    if ( $asset->has_metadata && $asset->exif ) {
-        my $info = $asset->exif->GetInfo;
-
-# TODO: An error occurs when uploading image having ThumbnailImage tag on Azure.
+sub image_metadata {
+    my $self = shift;
+    if ($self->exif) {
+        my $info = $self->exif->GetInfo;
         delete $info->{ThumbnailImage};
-        $asset->image_metadata($info);
+        return $info;
     }
-    else {
-        $asset->image_metadata(undef);
-    }
-
-    $asset->SUPER::save(@_);
+    return;
 }
 
 sub class_label {
@@ -78,12 +70,11 @@ sub image_height {
     my $height = $asset->meta( 'image_height', @_ );
     return $height if $height || @_;
 
-    eval { require Image::Size; };
-    return undef if $@;
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
+    require MT::Image;
+    my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
     $asset->meta( 'image_height', $h );
     if ( $asset->id ) {
         $asset->save;
@@ -96,12 +87,11 @@ sub image_width {
     my $width = $asset->meta( 'image_width', @_ );
     return $width if $width || @_;
 
-    eval { require Image::Size; };
-    return undef if $@;
     if ( !-e $asset->file_path || !-r $asset->file_path ) {
         return undef;
     }
-    my ( $w, $h, $id ) = Image::Size::imgsize( $asset->file_path );
+    require MT::Image;
+    my ( $w, $h, $id ) = MT::Image->get_image_info( Filename => $asset->file_path );
     $asset->meta( 'image_width', $w );
     if ( $asset->id ) {
         $asset->save;
@@ -141,7 +131,7 @@ sub maybe_dynamic_thumbnail_url {
             height  => $height,
         );
         $args{square} = 1 if $param{Square};
-        $args{ts} = $asset->modified_on if $asset->modified_on;
+        $args{ts} = $asset->modified_on if $param{Ts} && $asset->modified_on;
         my $url = MT->app->mt_uri(
             mode => 'thumbnail_image',
             args => \%args,
@@ -486,25 +476,21 @@ sub insert_options {
     my $perms = $app->{perms};
     my $blog  = $asset->blog or return;
 
-    $param->{do_thumb}
-        = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
+    $param->{do_thumb} = $asset->has_thumbnail && $asset->can_create_thumbnail ? 1 : 0;
 
-    $param->{popup}      = $blog->image_default_popup     ? 1 : 0;
-    $param->{wrap_text}  = $blog->image_default_wrap_text ? 1 : 0;
-    $param->{make_thumb} = $blog->image_default_thumb     ? 1 : 0;
-    $param->{popup_link} = $blog->image_default_link;
-    $param->{ 'align_' . $_ }
-        = ( $blog->image_default_align || 'none' ) eq $_ ? 1 : 0
-        for qw(none left center right);
-    $param->{ 'unit_w' . $_ }
-        = ( $blog->image_default_wunits || 'pixels' ) eq $_ ? 1 : 0
-        for qw(percent pixels);
-    $param->{thumb_width}
-        = $blog->image_default_width
+    $param->{can_popup}       = $blog->can_popup_image();
+    $param->{popup}           = $blog->image_default_popup     ? 1                         : 0;
+    $param->{wrap_text}       = $blog->image_default_wrap_text ? 1                         : 0;
+    $param->{make_thumb}      = $blog->image_default_thumb     ? 1                         : 0;
+    $param->{popup_link}      = $param->{can_popup}            ? $blog->image_default_link : 2;
+    $param->{ 'align_' . $_ } = ($blog->image_default_align  || 'none') eq $_   ? 1 : 0 for qw(none left center right);
+    $param->{ 'unit_w' . $_ } = ($blog->image_default_wunits || 'pixels') eq $_ ? 1 : 0 for qw(percent pixels);
+    $param->{thumb_width} =
+           $blog->image_default_width
         || $asset->image_width
         || 0;
 
-    return $app->build_page( 'include/insert_options_image.tmpl', $param );
+    return $app->build_page('include/insert_options_image.tmpl', $param);
 }
 
 sub on_upload {
@@ -1098,6 +1084,8 @@ sub has_gps_metadata {
         : 0;
 }
 
+my @MandatoryExifTags;
+
 sub has_metadata {
     my ($asset) = @_;
 
@@ -1108,22 +1096,36 @@ sub has_metadata {
     my $exif    = $asset->exif or return;
     my $is_jpeg = $file_ext =~ /^jpe?g$/;
     my $is_tiff = $file_ext =~ /^tiff?$/;
+
+    @MandatoryExifTags = _set_mandatory_exif_tags() unless @MandatoryExifTags;
     for my $g ( $exif->GetGroups ) {
         next
             if $g eq 'ExifTool'
             || $g eq 'File'
-            || ( $is_jpeg && $g eq 'JFIF' )
+            || ( $is_jpeg && $g =~ /\A(?:JFIF|ICC_Profile)\z/ )
             || ( $is_tiff && $g eq 'EXIF' );
-        my @writable_tags = Image::ExifTool::GetWritableTags($g) or next;
+        my %writable_tags = map {$_ => 1} Image::ExifTool::GetWritableTags($g);
+        delete $writable_tags{$_} for @MandatoryExifTags;
+        delete $writable_tags{Orientation};  # special case
+        next unless %writable_tags;
         $exif->Options( Group => $g );
         $exif->ExtractInfo( $asset->file_path );
-        for my $t ( sort $exif->GetTagList ) {
-            if ( grep { $t eq $_ } @writable_tags ) {
-                return 1;
-            }
+        for my $t ( $exif->GetTagList ) {
+            return 1 if $writable_tags{$t};
         }
     }
     return 0;
+}
+
+sub _set_mandatory_exif_tags {
+    require Image::ExifTool::Exif;
+    @MandatoryExifTags = ();
+    for my $value (values %Image::ExifTool::Exif::Main) {
+        if (ref $value eq 'HASH' && $value->{Mandatory}) {
+            push @MandatoryExifTags, $value->{Name};
+        }
+    }
+    @MandatoryExifTags;
 }
 
 sub remove_gps_metadata {
@@ -1142,9 +1144,6 @@ sub remove_gps_metadata {
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
 
-    $asset->image_metadata( $asset->exif->GetInfo );
-    $asset->save or return;
-
     1;
 }
 
@@ -1155,15 +1154,18 @@ sub remove_all_metadata {
     return 1 if $asset->is_metadata_broken;
 
     my $exif = $asset->exif or return;
+
+    my $orientation = $exif->GetValue('Orientation');
+
     $exif->SetNewValue('*');
-    $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 )
-        if lc( $asset->file_ext =~ /^jpe?g$/ );
+    if (lc($asset->file_ext) =~ /^jpe?g$/) {
+        $exif->SetNewValue( 'JFIF:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'ICC_Profile:*', undef, Replace => 2 );
+        $exif->SetNewValue( 'EXIF:Orientation', $orientation ) if $orientation;
+    }
     $exif->WriteInfo( $asset->file_path )
         or return $asset->trans_error( 'Writing image metadata failed: [_1]',
         $exif->GetValue('Error') );
-
-    $asset->image_metadata(undef);
-    $asset->save or return;
 
     1;
 }

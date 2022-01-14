@@ -28,6 +28,8 @@ BEGIN {
         DisableObjectCache => 1,
     );
     $ENV{MT_CONFIG} = $test_env->config_file;
+
+    plan skip_all => 'for MySQL only' unless $test_env->driver eq 'mysql';
 }
 
 $test_env->fix_mysql_create_table_sql;
