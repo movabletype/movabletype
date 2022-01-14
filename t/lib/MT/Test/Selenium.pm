@@ -193,6 +193,7 @@ sub DESTROY {
     }
     my $driver = $self->{driver} or return;
     $driver->quit;
+    $self->{server}->stop;
 }
 
 sub base_url {
