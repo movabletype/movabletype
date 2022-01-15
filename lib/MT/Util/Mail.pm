@@ -9,16 +9,16 @@ use warnings;
 use MT;
 use base qw( MT::ErrorHandler );
 use Carp;
-our $module;
+our $Module;
 
 sub find_module {
     my ($mail_module) = @_;
-    $module = undef;
+    $Module = undef;
     $mail_module ||= MT->config->MailModule || 'MT::Mail';
     $mail_module = 'MT::Mail::'. $mail_module if $mail_module !~ /^MT::Mail/;
 
     eval "require $mail_module;";
-    return $module = $mail_module unless $@;
+    return $Module = $mail_module unless $@;
 
     Carp::carp($@);
     return MT->error(MT->translate('Error loading mail module: [_1].', $mail_module));
@@ -28,13 +28,13 @@ BEGIN { find_module() }
 
 sub send {
     my ($class, @args) = @_;
-    return $module->send(@args) if $module;
+    return $Module->send(@args) if $Module;
     return MT->error(MT->translate('Error loading mail module: [_1].', MT->config->MailModule || 'MT::Mail'));
 }
 
 sub errstr {
     my ($class) = @_;
-    return $module ? $module->errstr : $class->SUPER::errstr;
+    return $Module ? $Module->errstr : $class->SUPER::errstr;
 }
 
 1;
