@@ -54,8 +54,6 @@ sub render {
 sub encwords {
     my ($class, $hdrs, $mail_enc) = @_;
 
-    return unless ($hdrs->{'Content-Transfer-Encoding'} eq 'base64');
-
     eval "require MIME::EncWords;";
     unless ($@) {
         foreach my $header (keys %$hdrs) {
