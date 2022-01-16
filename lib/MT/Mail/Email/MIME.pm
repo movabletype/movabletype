@@ -23,8 +23,6 @@ sub render {
     $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
     $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
     $hdrs->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($hdrs->{'Content-Transfer-Encoding'}, $mail_enc);
-    require MT::I18N::default;
-    $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 
     my $msg = eval {
         Email::MIME->create(

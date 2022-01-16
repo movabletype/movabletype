@@ -73,7 +73,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'respect given xfer encoding when 8bit with length is long',
                     input           => $body_long,
-                    mailEnc         => 'UTF-8',
                     xferEnc         => '8bit',
                     expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
@@ -89,7 +88,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'auto detect base64 short',
                     input           => $body_short,
-                    mailEnc         => 'UTF-8',
                     xferEnc         => undef,
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => { 'Content-Transfer-Encoding' => 'base64' },
@@ -97,7 +95,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'auto detect base64 long',
                     input           => $body_long,
-                    mailEnc         => 'UTF-8',
                     xferEnc         => undef,
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => { 'Content-Transfer-Encoding' => 'base64' },
@@ -113,7 +110,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'auto correct wrong xfer encoding',
                     input           => $body_short,
-                    mailEnc         => 'UTF-8',
                     xferEnc         => '7bit',
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => { 'Content-Transfer-Encoding' => 'base64' },
@@ -121,7 +117,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'auto correct unknown xfer encoding',
                     input           => $body_short,
-                    mailEnc         => 'UTF-8',
                     xferEnc         => 'unknown',
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
                     expected_header => { 'Content-Transfer-Encoding' => 'base64' },
@@ -129,7 +124,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'to header utf8 single',
                     input           => $body_short,
-                    mailEnc         => 'utf-8',
                     xferEnc         => 'base64',
                     header          => { To => "あ<t1\@a.com>" },
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
@@ -141,7 +135,6 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                 {
                     name            => 'to header utf8 multi',
                     input           => $body_short,
-                    mailEnc         => 'utf-8',
                     xferEnc         => 'base64',
                     header          => { To => ["あ<t1\@a.com>", "い<t2\@a.com>"] },
                     expected        => sub { MIME::Base64::encode_base64($_[0]) },
@@ -175,29 +168,57 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     },
                 },
             );
-            for my $data (@cases) {
-                $mt->config->set('MailTransferEncoding', $data->{xferEnc});
-                $mt->config->set('MailEncoding',         $data->{mailEnc});
-                subtest $data->{name} => sub {
-                    my ($headers, $body) = send_mail({ %{ $data->{header} || {} } }, $data->{input});
-                    my $expected = $data->{expected}->($data->{input});
-                    $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
-                    $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
-                    is($body, $expected, 'right body');
-                    for my $field (keys %{ $data->{expected_header} || {} }) {
-                        my $exp = $data->{expected_header}->{$field};
-                        $exp = ref($exp) eq 'ARRAY' ? $exp : [$exp];
-                        for (my $i = 0; $i < scalar(@$exp); $i++) {
-                            if (ref($exp->[$i]) eq 'Regexp') {
-                                like($headers->{$field}->[$i], $exp->[$i], 'right header pattern for ' . $field);
-                            } else {
-                                is($headers->{$field}->[$i], $exp->[$i], 'right header value for ' . $field);
-                            }
+            send_mail_suite($_) for @cases;
+        };
+
+        subtest 'various test for body encoding' => sub {
+            for my $char ('あ') {
+                for my $length (1, 1000) {
+                    for my $lb ('', "\n", "\r\n", "\n\n", "\r\n\r\n", "\r\r\n") {
+                        my @cases = ({
+                                name     => 'utf8',
+                                expected => sub { MIME::Base64::encode_base64($_[0]) },
+                            },
+                            {
+                                name     => 'iso-2022-jp',
+                                mailEnc  => 'iso-2022-jp',
+                                expected => sub { $_[0] },
+                            },
+                        );
+                        for my $case (@cases) {
+                            $case->{input} = ($char x $length) . $lb;
+                            my $lb_c = join(',', map { sprintf('0x%0X', ord($_)) } split('', $lb));
+                            $case->{name} .= ' - ' . join(' - ', $length, $lb_c ? $lb_c : ());
+                            send_mail_suite($case);
                         }
                     }
-                };
+                }
             }
         };
+    };
+}
+
+sub send_mail_suite {
+    my ($data) = @_;
+    $mt->config->set('MailTransferEncoding', $data->{xferEnc});
+    $mt->config->set('MailEncoding',         $data->{mailEnc});
+    subtest $data->{name} => sub {
+        my ($headers, $body) = send_mail({ %{ $data->{header} || {} } }, $data->{input});
+        my $expected = $data->{expected}->(Encode::encode($data->{mailEnc} || 'utf8', $data->{input}));
+        $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
+        $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
+        is($body, $expected, 'right body');
+        for my $field (keys %{ $data->{expected_header} || {} }) {
+            my $exp = $data->{expected_header}->{$field};
+            $exp = ref($exp) eq 'ARRAY' ? $exp : [$exp];
+            for (my $i = 0; $i < scalar(@$exp); $i++) {
+                if (ref($exp->[$i]) eq 'Regexp') {
+                    like($headers->{$field}->[$i], $exp->[$i], 'right header pattern for ' . $field);
+                } else {
+                    is($headers->{$field}->[$i], $exp->[$i], 'right header value for ' . $field);
+                }
+            }
+        }
     };
 }
 
