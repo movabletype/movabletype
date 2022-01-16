@@ -46,6 +46,15 @@ sub send {
     return $class->error(MT->translate("Unknown MailTransfer method '[_1]'", $xfer));
 }
 
+sub fix_xfer_enc {
+    my ($class, $enc, $charset) = @_;
+    $enc = $enc ? lc($enc) : '';
+    $enc = '' unless $enc =~ /^(base64|quoted\-printable|7bit|8bit|binary)$/;
+    $enc = 'base64' if $charset =~ /utf-?8/i && (!$enc || $enc eq '7bit'); # defaults to base64
+    $enc ||= '7bit';
+    return $enc;
+}
+
 sub _lc {
     my $field    = shift;
     my $lc_field = lc $field;

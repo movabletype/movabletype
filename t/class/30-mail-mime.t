@@ -20,11 +20,25 @@ use MT::Test;
 use MT;
 use MT::Util::Mail;
 use MIME::Base64;
+use MIME::EncWords;
+use Encode;
 
 my $mt = MT->new() or die MT->errstr;
 $mt->config('MailTransfer', 'debug');
 
 isa_ok($mt, 'MT');
+
+subtest 'fix_xfer_enc' => sub {
+    my $mail_module = MT::Util::Mail::find_module('Email::MIME');
+    is($mail_module->fix_xfer_enc('',        'utf-8'),       'base64', 'right value');
+    is($mail_module->fix_xfer_enc('',        'iso-2022-jp'), '7bit',   'right value');
+    is($mail_module->fix_xfer_enc('base64',  'utf-8'),       'base64', 'right value');
+    is($mail_module->fix_xfer_enc('8bit',    'utf-8'),       '8bit',   'right value');
+    is($mail_module->fix_xfer_enc('7bit',    'utf-8'),       'base64', 'right value');
+    is($mail_module->fix_xfer_enc('7bit',    'UTF-8'),       'base64', 'right value');
+    is($mail_module->fix_xfer_enc('7bit',    'iso-2022-jp'), '7bit',   'right value');
+    is($mail_module->fix_xfer_enc('unknown', 'iso-2022-jp'), '7bit',   'right value');
+};
 
 for my $mod_name ('MIME::Lite', 'Email::MIME') {
     my $mail_module = MT::Util::Mail::find_module($mod_name);
@@ -46,83 +60,152 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
         };
 
         subtest 'transfer encoding' => sub {
-            my @cases = ({
-                    name             => '8bit short',
-                    input            => 'a' x 100, # some number smaller than both 990 and 998
-                    TransferEncoding => '8bit',
-                    expected         => sub { $_[0] },
+            my $body_short = 'a' x 100;     # some number bigger than both 990 and 998
+            my $body_long  = 'a' x 1000;    # some number bigger than both 990 and 998
+            my @cases      = ({
+                    name            => 'respect given xfer encoding when 8bit',
+                    input           => $body_short,
+                    mailEnc         => 'iso-2022-jp',
+                    xferEnc         => '8bit',
+                    expected        => sub { $_[0] },
+                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
-                    name             => '8bit short',
-                    input            => 'a' x 1000, # some number bigger than both 990 and 998
-                    TransferEncoding => '8bit',
-                    expected         => sub { $_[0] },
+                    name            => 'respect given xfer encoding when 8bit with length is long',
+                    input           => $body_long,
+                    mailEnc         => 'UTF-8',
+                    xferEnc         => '8bit',
+                    expected        => sub { $_[0] },
+                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
-                    name             => 'Base64 short',
-                    input            => 'a' x 100, # some number smaller than both 990 and 998
-                    TransferEncoding => 'base64',
-                    expected         => sub { MIME::Base64::encode_base64($_[0]) },
+                    name            => 'respect given xfer encoding when base64',
+                    input           => $body_long,
+                    mailEnc         => 'iso-2022-jp',
+                    xferEnc         => 'base64',
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
                 },
                 {
-                    name             => 'Base64 long',
-                    input            => 'a' x 1000, # some number bigger than both 990 and 998
-                    TransferEncoding => 'base64',
-                    expected         => sub { MIME::Base64::encode_base64($_[0]) },
+                    name            => 'auto detect base64 short',
+                    input           => $body_short,
+                    mailEnc         => 'UTF-8',
+                    xferEnc         => undef,
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                },
+                {
+                    name            => 'auto detect base64 long',
+                    input           => $body_long,
+                    mailEnc         => 'UTF-8',
+                    xferEnc         => undef,
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                },
+                {
+                    name            => 'auto detect 7bit',
+                    input           => $body_short,
+                    mailEnc         => 'iso-2022-jp',
+                    xferEnc         => undef,
+                    expected        => sub { $_[0] },
+                    expected_header => { 'Content-Transfer-Encoding' => '7bit' },
+                },
+                {
+                    name            => 'auto correct wrong xfer encoding',
+                    input           => $body_short,
+                    mailEnc         => 'UTF-8',
+                    xferEnc         => '7bit',
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                },
+                {
+                    name            => 'auto correct unknown xfer encoding',
+                    input           => $body_short,
+                    mailEnc         => 'UTF-8',
+                    xferEnc         => 'unknown',
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                },
+                {
+                    name            => 'to header utf8 single',
+                    input           => $body_short,
+                    mailEnc         => 'utf-8',
+                    xferEnc         => 'base64',
+                    header          => { To => "あ<t1\@a.com>" },
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => {
+                        To                          => expected_regex('あ'),
+                        'Content-Transfer-Encoding' => 'base64',
+                    },
+                },
+                {
+                    name            => 'to header utf8 multi',
+                    input           => $body_short,
+                    mailEnc         => 'utf-8',
+                    xferEnc         => 'base64',
+                    header          => { To => ["あ<t1\@a.com>", "い<t2\@a.com>"] },
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => {
+                        To                          => expected_regex('あ', 'い'),
+                        'Content-Transfer-Encoding' => 'base64',
+                    },
+                },
+                {
+                    name            => 'to header iso-8859-1 single',
+                    input           => $body_short,
+                    mailEnc         => 'iso-8859-1',
+                    xferEnc         => 'base64',
+                    header          => { To => "a/a<t1\@a.com>" },
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => {
+                        To                          => qr{a/a},
+                        'Content-Transfer-Encoding' => 'base64',
+                    },
+                },
+                {
+                    name            => 'to header iso-8859-1 multi',
+                    input           => $body_short,
+                    mailEnc         => 'iso-8859-1',
+                    xferEnc         => 'base64',
+                    header          => { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] },
+                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected_header => {
+                        To                          => qr{a/a|a/b},
+                        'Content-Transfer-Encoding' => 'base64',
+                    },
                 },
             );
             for my $data (@cases) {
-                $mt->config('MailTransferEncoding', $data->{TransferEncoding});
+                $mt->config->set('MailTransferEncoding', $data->{xferEnc});
+                $mt->config->set('MailEncoding',         $data->{mailEnc});
                 subtest $data->{name} => sub {
-                    my ($headers, $body) = send_mail({ %{$data->{header} || {}} }, $data->{input});
+                    my ($headers, $body) = send_mail({ %{ $data->{header} || {} } }, $data->{input});
                     my $expected = $data->{expected}->($data->{input});
                     $body     =~ s{\x0d\x0a|\x0d|\x0a}{}g;
                     $expected =~ s{\x0d\x0a|\x0d|\x0a}{}g;
                     is($body, $expected, 'right body');
-                    is($headers->{'Content-Transfer-Encoding'}, $data->{TransferEncoding}, 'right transter encoding');
+                    for my $field (keys %{ $data->{expected_header} || {} }) {
+                        my $exp = $data->{expected_header}->{$field};
+                        $exp = ref($exp) eq 'ARRAY' ? $exp : [$exp];
+                        for (my $i = 0; $i < scalar(@$exp); $i++) {
+                            if (ref($exp->[$i]) eq 'Regexp') {
+                                like($headers->{$field}->[$i], $exp->[$i], 'right header pattern for ' . $field);
+                            } else {
+                                is($headers->{$field}->[$i], $exp->[$i], 'right header value for ' . $field);
+                            }
+                        }
+                    }
                 };
             }
         };
-
-        subtest 'header word encoding' => sub {
-            subtest 'utf-8' => sub {
-                $mt->config('MailEncoding',         'utf-8');
-                $mt->config('MailTransferEncoding', 'base64');
-                my $jp1   = 'あ';
-                my $jp2   = 'い';
-                my $mime1 = '=?UTF-8?B?44GC?=';    # あ
-                my $mime2 = '=?UTF-8?B?44GE?=';    # い
-                subtest 'single' => sub {
-                    my $hdrs = { To => "$jp1<t1\@a.com>" };
-                    my ($headers, $body) = send_mail($hdrs, 'body text');
-                    like($headers->{To}, qr/\Q$mime1\E/, 'right to header');
-                };
-                subtest 'multiple' => sub {
-                    my $hdrs = { To => ["$jp1<t1\@a.com>", "$jp2<t2\@a.com>"] };
-                    my ($headers, $body) = send_mail($hdrs, 'body text');
-                    my @addrs = split(', ', $headers->{To});
-                    like($addrs[0], qr{\Q$mime1\E}, 'right To header');
-                    like($addrs[1], qr{\Q$mime2\E}, 'right To header');
-                };
-            };
-            subtest 'iso-8859-1' => sub {
-                $mt->config('MailEncoding',         'iso-8859-1');
-                $mt->config('MailTransferEncoding', 'base64');
-                subtest 'single' => sub {
-                    my $hdrs = { To => "a/a<t1\@a.com>" };
-                    my ($headers, $body) = send_mail($hdrs, 'body text');
-                    like($headers->{To}, qr{a/a}, 'right to header');
-                };
-                subtest 'multiple' => sub {
-                    my $hdrs = { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] };
-                    my ($headers, $body) = send_mail($hdrs, 'body text');
-                    my @addrs = split(', ', $headers->{To});
-                    like($addrs[0], qr{a/a}, 'right To header');
-                    like($addrs[1], qr{a/b}, 'right To header');
-                };
-            };
-        };
     };
+}
+
+sub expected_regex {
+    my (@words) = @_;
+    my @regex   = map { quotemeta(MIME::EncWords::encode_mimeword(Encode::encode('utf8', $_), 'b', 'utf-8')) } @words;
+    my $join    = join('|', @regex);
+    return qr{$join};
 }
 
 sub send_mail {
@@ -139,14 +222,7 @@ sub send_mail {
         last if $line =~ /\A(\x0d\x0a|\x0d|\x0a)\z/;
         $line =~ s{\x0d\x0a|\x0d|\x0a}{}g;
         my ($key, $value) = split /: /, $line, 2;
-        if (exists $headers{$key}) {
-            $headers{$key} = [
-                (ref $headers{$key}) ? @{ $headers{$key} } : $headers{$key},
-                $value,
-            ];
-        } else {
-            $headers{$key} = $value;
-        }
+        push @{ $headers{$key} }, $value;
     }
     $mail_body = join '', <$read>;
 

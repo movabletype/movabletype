@@ -21,7 +21,8 @@ sub render {
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
     $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding || (($mail_enc !~ m/utf-?8/) ? '7bit' : '8bit');
+    $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
+    $hdrs->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($hdrs->{'Content-Transfer-Encoding'}, $mail_enc);
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 

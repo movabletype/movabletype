@@ -54,8 +54,8 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             ok(!$@, "No error") or note($@);
             ok(!MT::Util::Mail->errstr, 'No error') or note(MT::Util::Mail->errstr);
             my $last_sent = $server->last_sent_mail;
-            like($last_sent, qr{mail body},                           'right body');
-            like($last_sent, qr{Content-Transfer-Encoding: 8bit\r\n}, 'right newline chars');
+            like($last_sent, qr{bWFpbCBib2R5},                          'right body');            # 'mail body' in base64
+            like($last_sent, qr{Content-Transfer-Encoding: base64\r\n}, 'right newline chars');
         };
 
         subtest 'different cases' => sub {
