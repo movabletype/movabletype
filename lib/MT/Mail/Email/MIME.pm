@@ -17,20 +17,20 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
+    my ($header, $body) = @args{qw(header body)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
-    $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
-    $hdrs->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($hdrs->{'Content-Transfer-Encoding'}, $mail_enc);
+    $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
+    $header->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
+    $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc);
 
     my $msg = eval {
         Email::MIME->create(
-            header_str => [%$hdrs],
+            header_str => [%$header],
             body_str   => $body,
             attributes => {
                 charset  => $mail_enc,
-                encoding => $hdrs->{'Content-Transfer-Encoding'},
+                encoding => $header->{'Content-Transfer-Encoding'},
             },
         );
     };

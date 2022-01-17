@@ -17,21 +17,21 @@ my $crlf = "\x0d\x0a";
 
 sub render {
     my ($class, %args) = @_;
-    my ($hdrs, $body) = map { $args{$_} } (qw(header body));
+    my ($header, $body) = @args{qw(header body)};
     my $conf = MT->config;
     my $mail_enc = lc($conf->MailEncoding || 'utf-8');
-    $hdrs->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
-    $hdrs->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
-    $hdrs->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($hdrs->{'Content-Transfer-Encoding'}, $mail_enc);
+    $header->{'Content-Type'}              ||= qq(text/plain; charset="$mail_enc");
+    $header->{'Content-Transfer-Encoding'} ||= $conf->MailTransferEncoding;
+    $header->{'Content-Transfer-Encoding'} = $class->fix_xfer_enc($header->{'Content-Transfer-Encoding'}, $mail_enc);
     require MT::I18N::default;
     $body = MT::I18N::default->encode_text_encode($body, undef, $mail_enc);
 
-    $class->encwords($hdrs, $mail_enc);
+    $class->encwords($header, $mail_enc);
 
     # MIME::Lite doesn't allow array ref for unique headers
     my @unique_headers = qw(From Sender Reply-To To Cc Bcc X-SMTPAPI);
     for my $k (@unique_headers) {
-        $hdrs->{$k} = join(', ', @{ $hdrs->{$k} }) if ref $hdrs->{$k};
+        $header->{$k} = join(', ', @{ $header->{$k} }) if ref $header->{$k};
     }
 
     my $msg;
@@ -39,8 +39,8 @@ sub render {
     eval {
         # MIME::Lite suggests direct settting mime-* or content-* fields is dengerous
         my %special_fields;
-        map { $special_fields{$_} = delete $hdrs->{$_} if $_ =~ /^(mime\-|content\-)/i } keys(%$hdrs);
-        $msg = MIME::Lite->new(%$hdrs, Data => $body);
+        map { $special_fields{$_} = delete $header->{$_} if $_ =~ /^(mime\-|content\-)/i } keys(%$header);
+        $msg = MIME::Lite->new(%$header, Data => $body);
         $msg->attr($_, $special_fields{$_}) for keys(%special_fields);
     };
     return $class->error(MT->translate('Failed to encode mail' . ($@ ? ':' . $@ : ''))) if $@ || !$msg;
