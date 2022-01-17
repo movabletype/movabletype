@@ -244,7 +244,7 @@ use_ok('MT::JunkFilter');
 use_ok('MT::Mail');
 use_ok('MT::Mail::MIME');
 use_ok('MT::Mail::MIME::Lite');
-use_ok('MT::Mail::MIME::EmailMIME');
+use_ok('MT::Mail::Email::MIME');
 use_ok('MT::Promise');
 use_ok('MT::Request');
 use_ok('MT::Sanitize');
