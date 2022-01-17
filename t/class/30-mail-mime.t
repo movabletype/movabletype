@@ -33,11 +33,13 @@ subtest 'fix_xfer_enc' => sub {
     is($mail_module->fix_xfer_enc('',        'utf-8'),       'base64', 'right value');
     is($mail_module->fix_xfer_enc('',        'iso-2022-jp'), '7bit',   'right value');
     is($mail_module->fix_xfer_enc('base64',  'utf-8'),       'base64', 'right value');
+    is($mail_module->fix_xfer_enc('base64',  'iso-2022-jp'), 'base64', 'right value');
     is($mail_module->fix_xfer_enc('8bit',    'utf-8'),       '8bit',   'right value');
     is($mail_module->fix_xfer_enc('7bit',    'utf-8'),       'base64', 'right value');
     is($mail_module->fix_xfer_enc('7bit',    'UTF-8'),       'base64', 'right value');
     is($mail_module->fix_xfer_enc('7bit',    'iso-2022-jp'), '7bit',   'right value');
     is($mail_module->fix_xfer_enc('unknown', 'iso-2022-jp'), '7bit',   'right value');
+    is($mail_module->fix_xfer_enc('unknown', 'utf-8'),       'base64', 'right value');
 };
 
 for my $mod_name ('MIME::Lite', 'Email::MIME') {
