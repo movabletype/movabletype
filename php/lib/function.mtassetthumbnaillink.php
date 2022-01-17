@@ -36,7 +36,7 @@ function smarty_function_mtassetthumbnaillink($args, &$ctx) {
 
     $asset_url = smarty_function_mtasseturl($args, $ctx);
 
-    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"\" /></a>",
+    return sprintf("<a href=\"%s\"%s><img src=\"%s\" width=\"%d\" height=\"%d\" alt=\"\" loading=\"lazy\" decoding=\"async\" /></a>",
         $asset_url,
         $target,
         $thumb,
