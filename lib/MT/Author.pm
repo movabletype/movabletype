@@ -1516,20 +1516,39 @@ sub can_do {
 
     return 1 if $author->is_superuser;
 
-    my $sys_perm = MT->model('permission')
-        ->load( { blog_id => 0, author_id => $author->id } );
+    # use the same as MT::Author::permissions
+    my $sys_cache_key = "__perm_author_" . (defined $author->id ? $author->id : '');
+    require MT::Request;
+    my $req = MT::Request->instance;
+    my $sys_perm = $req->stash($sys_cache_key);
+    if (!$sys_perm) {
+        $sys_perm = MT->model('permission')->load( { blog_id => 0, author_id => $author->id } );
+        $req->stash($sys_cache_key, $sys_perm);
+    }
     my $sys_priv;
     if ($sys_perm) {
         $sys_priv = $sys_perm->can_do($action);
     }
     return $sys_priv if $sys_priv;
     if ( $opts{at_least_one} ) {
+        # ignore cache if the reftype of blog_id is uncommon
+        my @blog_ids = ref $opts{blog_id} eq 'ARRAY' ? @{$opts{blog_id}} : !ref $opts{blog_id} ? ($opts{blog_id}) : ();
+        for my $blog_id (@blog_ids) {
+            my $cache_key = $blog_id ? $sys_cache_key . "_blog_$blog_id" : $sys_cache_key;
+            my $perm = $req->stash($cache_key) or next;
+            my $blog_priv = $perm->can_do($action);
+            return $blog_priv if $blog_priv;
+        }
+
         my $perm_iter = MT->model('permission')->load_iter(
             {   author_id => $author->id,
                 ( $opts{blog_id} ? ( blog_id => $opts{blog_id} ) : () ),
             }
         );
         while ( my $perm = $perm_iter->() ) {
+            my $blog_id = $perm->blog_id;
+            my $cache_key = $blog_id ? $sys_cache_key . "_blog_$blog_id" : $sys_cache_key;
+            $req->stash($cache_key, $perm);
             my $blog_priv = $perm->can_do($action);
             return $blog_priv if $blog_priv;
         }
