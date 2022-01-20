@@ -74,6 +74,19 @@
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+  <mt:if name="object_type" eq="entry">
+    <__trans phrase="[_1] is also editing the same entry." params="<mt:var name="is_also_edited_by" escape="html">">
+  <mt:else>
+    <__trans phrase="[_1] is also editing the same page." params="<mt:var name="is_also_edited_by" escape="html">">
+  </mt:if>
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
 </mt:unless>
 <mt:if name="saved_added">
   <mtapp:statusmsg

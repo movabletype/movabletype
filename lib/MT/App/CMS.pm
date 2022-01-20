@@ -4110,6 +4110,37 @@ sub _translate_naughty_words {
     return MT::Util::translate_naughty_words($entry);
 }
 
+sub user_who_is_also_editing {
+    my $app  = shift;
+    my $type = $app->param('_type');
+    return unless $type;
+    my $id = $app->param('id');
+    $id = '0' unless $id;
+    my $ident
+        = 'autosave'
+        . ':user=%'
+        . ':type='
+        . $type . ':id='
+        . $id;
+
+    if ( my $blog = $app->blog ) {
+        $ident .= ':blog_id=' . $blog->id;
+    }
+    if ( $type eq 'content_data' ) {
+        my $content_type_id = $app->param('content_type_id');
+        $ident .= ':content_type_id=' . $content_type_id;
+    }
+    require MT::Session;
+    my $sess_obj = MT::Session->load( { id => {like => $ident}, kind => 'AS' } );
+    if ($sess_obj) {
+        my ($user_id) = $sess_obj->id =~ /:user=([0-9]+)/;
+        if ($user_id != $app->user->id) {
+            return $app->model('author')->load($user_id);
+        }
+    }
+    return;
+}
+
 sub autosave_session_obj {
     my $app           = shift;
     my ($or_make_one) = @_;

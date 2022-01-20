@@ -44,6 +44,15 @@
     <__trans phrase="A saved version of this [_1] was auto-saved [_3]. <a href="[_2]" class="alert-link">Recover auto-saved content</a>" params="<mt:var name="object_label">%%<mt:var name="script_url">?__mode=view&amp;_type=template&amp;_recover=1&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="id">&amp;id=<mt:var name="id" escape="url"></mt:if>%%<mt:If name="blog_id"><mt:date ts="$autosaved_object_ts" relative="1" offset_blog_id="<$mt:var name="blog_id"$>"></mt:If>">
   </mtapp:statusmsg>
   </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same template." params="<mt:var name="is_also_edited_by" escape="html">">
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
 </mt:unless>
 <mt:if name="recovered_object">
   <mtapp:statusmsg

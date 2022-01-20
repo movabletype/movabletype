@@ -25,6 +25,15 @@
   </mtapp:statusmsg>
     </mt:unless>
   </mt:if>
+  <mt:if name="is_also_edited_by">
+    <mt:unless name="error">
+  <mtapp:statusmsg
+     id="someone-is-also-editing"
+     class="warning">
+    <__trans phrase="[_1] is also editing the same data." params="<mt:var name="is_also_edited_by" escape="html">">
+  </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
 </mt:if>
 
 <mt:if name="recovered_failed">
