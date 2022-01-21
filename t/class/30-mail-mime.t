@@ -30,16 +30,41 @@ isa_ok($mt, 'MT');
 
 subtest 'fix_xfer_enc' => sub {
     my $mail_module = MT::Util::Mail::find_module('Email::MIME');
-    is($mail_module->fix_xfer_enc('',        'utf-8'),       'base64', 'right value');
-    is($mail_module->fix_xfer_enc('',        'iso-2022-jp'), '7bit',   'right value');
-    is($mail_module->fix_xfer_enc('base64',  'utf-8'),       'base64', 'right value');
-    is($mail_module->fix_xfer_enc('base64',  'iso-2022-jp'), 'base64', 'right value');
-    is($mail_module->fix_xfer_enc('8bit',    'utf-8'),       '8bit',   'right value');
-    is($mail_module->fix_xfer_enc('7bit',    'utf-8'),       'base64', 'right value');
-    is($mail_module->fix_xfer_enc('7bit',    'UTF-8'),       'base64', 'right value');
-    is($mail_module->fix_xfer_enc('7bit',    'iso-2022-jp'), '7bit',   'right value');
-    is($mail_module->fix_xfer_enc('unknown', 'iso-2022-jp'), '7bit',   'right value');
-    is($mail_module->fix_xfer_enc('unknown', 'utf-8'),       'base64', 'right value');
+    my $test        = sub {
+        my ($conf, $arg, $charset, $expected) = @_;
+        $mt->config->set('MailTransferEncoding', $conf);
+        my $msg = qq!conf:"$conf", arg:"$arg", charset:"$charset"!;
+        $arg ||= $conf; # mimic driver render method
+        is($mail_module->fix_xfer_enc($arg, $charset), $expected, $msg);
+    };
+    $test->('',        '',        'utf-8',       'base64');
+    $test->('',        '',        'iso-2022-jp', '7bit');
+    $test->('',        'base64',  'utf-8',       'base64');
+    $test->('',        'base64',  'iso-2022-jp', 'base64');
+    $test->('',        '8bit',    'utf-8',       '8bit');
+    $test->('',        '8bit',    'iso-2022-jp', '8bit');
+    $test->('',        '7bit',    'utf-8',       'base64');
+    $test->('',        '7bit',    'UTF-8',       'base64');
+    $test->('',        '7bit',    'iso-2022-jp', '7bit');
+    $test->('',        'unknown', 'utf-8',       'base64');
+    $test->('',        'unknown', 'iso-2022-jp', '7bit');
+    $test->('base64',  '',        'utf-8',       'base64');
+    $test->('base64',  '',        'iso-2022-jp', 'base64');
+    $test->('8bit',    '',        'utf-8',       '8bit');
+    $test->('8bit',    '',        'iso-2022-jp', '8bit');
+    $test->('7bit',    '',        'utf-8',       'base64');
+    $test->('7bit',    '',        'UTF-8',       'base64');
+    $test->('7bit',    '',        'iso-2022-jp', '7bit');
+    $test->('unknown', '',        'utf-8',       'base64');
+    $test->('unknown', '',        'iso-2022-jp', '7bit');
+    $test->('7bit',    'base64',  'iso-2022-jp', 'base64');
+    $test->('7bit',    'base64',  'utf-8',       'base64');
+    $test->('8bit',    'base64',  'iso-2022-jp', 'base64');
+    $test->('8bit',    'base64',  'utf-8',       'base64');
+    $test->('base64',  '7bit',    'iso-2022-jp', '7bit');
+    $test->('base64',  '7bit',    'utf-8',       'base64');
+    $test->('base64',  '8bit',    'iso-2022-jp', '8bit');
+    $test->('base64',  '8bit',    'utf-8',       '8bit');
 };
 
 for my $mod_name ('MIME::Lite', 'Email::MIME') {
