@@ -34,7 +34,6 @@ subtest 'fix_xfer_enc' => sub {
         my ($conf, $arg, $charset, $expected) = @_;
         $mt->config->set('MailTransferEncoding', $conf);
         my $msg = qq!conf:"$conf", arg:"$arg", charset:"$charset"!;
-        $arg ||= $conf; # mimic driver render method
         is($mail_module->fix_xfer_enc($arg, $charset), $expected, $msg);
     };
     $test->('',        '',        'utf-8',       'base64');
@@ -49,9 +48,9 @@ subtest 'fix_xfer_enc' => sub {
     $test->('',        'unknown', 'utf-8',       'base64');
     $test->('',        'unknown', 'iso-2022-jp', '7bit');
     $test->('base64',  '',        'utf-8',       'base64');
-    $test->('base64',  '',        'iso-2022-jp', 'base64');
+    $test->('base64',  '',        'iso-2022-jp', '7bit');
     $test->('8bit',    '',        'utf-8',       '8bit');
-    $test->('8bit',    '',        'iso-2022-jp', '8bit');
+    $test->('8bit',    '',        'iso-2022-jp', '7bit');
     $test->('7bit',    '',        'utf-8',       'base64');
     $test->('7bit',    '',        'UTF-8',       'base64');
     $test->('7bit',    '',        'iso-2022-jp', '7bit');
@@ -90,15 +89,15 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             my $body_short = 'a' x 100;     # some number bigger than both 990 and 998
             my $body_long  = 'a' x 1000;    # some number bigger than both 990 and 998
             my @cases      = ({
-                    name            => 'respect given xfer encoding when 8bit',
+                    name            => 'prefer auto detected xfer encoding 7bit',
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => '8bit',
                     expected        => sub { $_[0] },
-                    expected_header => { 'Content-Transfer-Encoding' => '8bit' },
+                    expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
-                    name            => 'respect given xfer encoding when 8bit with length is long',
+                    name            => 'prefer auto detected xfer encoding 7bit with length is long',
                     input           => $body_long,
                     xferEnc         => '8bit',
                     expected        => sub { $_[0] },
@@ -109,8 +108,8 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     input           => $body_long,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => 'base64',
-                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
-                    expected_header => { 'Content-Transfer-Encoding' => 'base64' },
+                    expected        => sub { $_[0] },
+                    expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
                     name            => 'auto detect base64 short',
@@ -174,24 +173,24 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     name            => 'to header iso-8859-1 single',
                     input           => $body_short,
                     mailEnc         => 'iso-8859-1',
-                    xferEnc         => 'base64',
+                    xferEnc         => 'base64', # over spec
                     header          => { To => "a/a<t1\@a.com>" },
-                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected        => sub { $_[0] },
                     expected_header => {
                         To                          => qr{a/a},
-                        'Content-Transfer-Encoding' => 'base64',
+                        'Content-Transfer-Encoding' => '7bit',
                     },
                 },
                 {
                     name            => 'to header iso-8859-1 multi',
                     input           => $body_short,
                     mailEnc         => 'iso-8859-1',
-                    xferEnc         => 'base64',
+                    xferEnc         => 'base64', # over spec
                     header          => { To => ["a/a<t1\@a.com>", "a/b<t2\@a.com>"] },
-                    expected        => sub { MIME::Base64::encode_base64($_[0]) },
+                    expected        => sub { $_[0] },
                     expected_header => {
                         To                          => qr{a/a|a/b},
-                        'Content-Transfer-Encoding' => 'base64',
+                        'Content-Transfer-Encoding' => '7bit',
                     },
                 },
             );
