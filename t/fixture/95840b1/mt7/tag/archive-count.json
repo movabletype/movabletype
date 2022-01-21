@@ -493,10 +493,8 @@
    "mt_category_set" : {
       "cols" : [
          "category_set_blog_id",
-         "category_set_cat_count",
          "category_set_created_by",
          "category_set_created_on",
-         "category_set_ct_count",
          "category_set_id",
          "category_set_modified_by",
          "category_set_modified_on",
@@ -506,10 +504,8 @@
       "rows" : [
          [
             2,
-            0,
             null,
             "__NOW__",
-            2,
             1,
             null,
             "__NOW__",
@@ -548,7 +544,7 @@
             1,
             null,
             "__NOW__",
-            "636f7e5913b18ed387328fac97b3832d2448eb9a",
+            "0fd99e715364a83c2141d4eadd819099a744aff2",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             1,
@@ -556,9 +552,9 @@
             null,
             null,
             "__NOW__",
-            5,
+            0,
             2,
-            "a5e9f850df7bee7b539e87a20a99c2d3a8dccb77",
+            "9a29e53054d5db1f110fb9cad79bdce806530556",
             null,
             201739
          ],
@@ -569,7 +565,7 @@
             1,
             null,
             "__NOW__",
-            "636f7e5913b18ed387328fac97b3832d2448eb9a",
+            "0fd99e715364a83c2141d4eadd819099a744aff2",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             2,
@@ -577,9 +573,9 @@
             null,
             null,
             "__NOW__",
+            9,
             2,
-            2,
-            "8aedd44cff42f43eebf41e74704cee1948388f2d",
+            "270365b8d6843eef516c33eb842c94a185e69dd1",
             null,
             201839
          ],
@@ -590,7 +586,7 @@
             1,
             null,
             "__NOW__",
-            "636f7e5913b18ed387328fac97b3832d2448eb9a",
+            "0fd99e715364a83c2141d4eadd819099a744aff2",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00011A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             3,
@@ -598,9 +594,9 @@
             null,
             null,
             "__NOW__",
-            5,
+            1,
             2,
-            "bc6b2857b8a8ee2c71d86fb2131c7daf2ac683dc",
+            "f3539846992cd0fc5fbccb78051da46a27ebecbb",
             null,
             201939
          ],
@@ -611,7 +607,7 @@
             2,
             null,
             "__NOW__",
-            "d31932873e77ce9a5d74fad22bd51e0807623b8c",
+            "56f68752ced53e05f50d7899cecf318d751e27e9",
             0,
             "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0001\u0000\u0000\u0000\u00012A\u0000\u0000\u0000\u0001-\u0000\u0000\u0000\u00011",
             4,
@@ -619,9 +615,9 @@
             null,
             null,
             "__NOW__",
-            6,
+            8,
             2,
-            "f149a24bfe4f85a304bb372953ada5308cd314c3",
+            "34fe2539bd166f2e94d184228ac77d3e8af6a25e",
             null,
             201739
          ]
@@ -661,7 +657,7 @@
             null,
             null,
             "categories",
-            "7fe94c013de3a3941187ba36e42d9747907c0f40"
+            "5cee9e14a8ad8f9f8d5f5ce8173eafca356b48a3"
          ],
          [
             2,
@@ -678,7 +674,7 @@
             null,
             null,
             "categories",
-            "ce8bba00e2a8d7f0bf6bf1b1ccd01a5de81ca7aa"
+            "b204ea5dea60bb23ed86291a64ea94d1bd34ae5e"
          ]
       ]
    },
@@ -778,7 +774,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0051\n",
+            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
             1
          ]
       ]
@@ -806,12 +802,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rcategories 01\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rcategories 01\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00011",
             1,
             null,
             "__NOW__",
             "test content type 01",
-            "636f7e5913b18ed387328fac97b3832d2448eb9a",
+            "0fd99e715364a83c2141d4eadd819099a744aff2",
             null,
             null
          ],
@@ -821,12 +817,12 @@
             "__NOW__",
             null,
             "This is a sample.",
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rcategories 02\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002A\u0000\u0000\u0000\u0001H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0007optionsH\u0000\u0000\u0000\u0005\u0000\u0000\u0000\u0005label-\u0000\u0000\u0000\rcategories 02\u0000\u0000\u0000\u0003max-\u0000\u0000\u0000\u00015\u0000\u0000\u0000\u0003min-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\fcategory_set-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\bmultiple-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0004type-\u0000\u0000\u0000\ncategories\u0000\u0000\u0000\u0002id-\u0000\u0000\u0000\u00012\u0000\u0000\u0000\u0005order-\u0000\u0000\u0000\u00011",
             2,
             null,
             "__NOW__",
             "test content type 02",
-            "d31932873e77ce9a5d74fad22bd51e0807623b8c",
+            "56f68752ced53e05f50d7899cecf318d751e27e9",
             null,
             null
          ]
@@ -2487,5 +2483,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0051; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0052; formattedtext 1.00; tinymce 1"
 }

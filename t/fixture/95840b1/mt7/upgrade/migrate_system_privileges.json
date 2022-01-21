@@ -79,7 +79,7 @@
             null,
             "__NOW__",
             "Melody",
-            "Abby",
+            "",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -88,7 +88,7 @@
             1,
             null,
             1,
-            "https://example.com/~abby",
+            null,
             null
          ],
          [
@@ -109,8 +109,8 @@
             0,
             null,
             null,
+            "active_author",
             "test1",
-            "Birman",
             "__AUTHOR_PASS__",
             "en_US",
             null,
@@ -119,7 +119,38 @@
             1,
             null,
             1,
-            "",
+            "http://example.com/",
+            null
+         ],
+         [
+            "__API_PASS__",
+            "MT",
+            "test2",
+            null,
+            null,
+            null,
+            "1978-01-31 07:45:00",
+            "relative",
+            "test@example.com",
+            null,
+            null,
+            null,
+            3,
+            null,
+            0,
+            null,
+            null,
+            "inactive_author",
+            "test2",
+            "__AUTHOR_PASS__",
+            "en_US",
+            null,
+            null,
+            null,
+            2,
+            null,
+            1,
+            "http://example.com/",
             null
          ]
       ]
@@ -214,7 +245,7 @@
             null,
             null,
             null,
-            "ContentType-Author",
+            "",
             "",
             null,
             null,
@@ -348,73 +379,6 @@
          ]
       ]
    },
-   "mt_cd" : {
-      "cols" : [
-         "cd_author_id",
-         "cd_authored_on",
-         "cd_blog_id",
-         "cd_content_type_id",
-         "cd_created_by",
-         "cd_created_on",
-         "cd_ct_unique_id",
-         "cd_current_revision",
-         "cd_data",
-         "cd_id",
-         "cd_identifier",
-         "cd_label",
-         "cd_modified_by",
-         "cd_modified_on",
-         "cd_random",
-         "cd_status",
-         "cd_unique_id",
-         "cd_unpublished_on",
-         "cd_week_number"
-      ],
-      "rows" : [
-         [
-            1,
-            "2017-05-30 16:36:00",
-            1,
-            1,
-            null,
-            "__NOW__",
-            "a5f06fe6f59b57482616d4f6f472904e5b4ddfc7",
-            0,
-            null,
-            1,
-            "48cee97c2a2207090a4f1e57f2f9b9965a0a90d0",
-            null,
-            null,
-            "__NOW__",
-            4,
-            2,
-            "48cee97c2a2207090a4f1e57f2f9b9965a0a90d0",
-            null,
-            201722
-         ],
-         [
-            2,
-            "2017-05-30 16:36:00",
-            1,
-            2,
-            null,
-            "__NOW__",
-            "7061b8010d8f017060b68a12e685de62d9e82dff",
-            0,
-            null,
-            2,
-            "c16a10528885da098514c71a236f55ebe91a5a59",
-            null,
-            null,
-            "__NOW__",
-            3,
-            2,
-            "c16a10528885da098514c71a236f55ebe91a5a59",
-            null,
-            201722
-         ]
-      ]
-   },
    "mt_config" : {
       "cols" : [
          "config_data",
@@ -424,55 +388,6 @@
          [
             "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
             1
-         ]
-      ]
-   },
-   "mt_content_type" : {
-      "cols" : [
-         "content_type_blog_id",
-         "content_type_created_by",
-         "content_type_created_on",
-         "content_type_data_label",
-         "content_type_description",
-         "content_type_fields",
-         "content_type_id",
-         "content_type_modified_by",
-         "content_type_modified_on",
-         "content_type_name",
-         "content_type_unique_id",
-         "content_type_user_disp_option",
-         "content_type_version"
-      ],
-      "rows" : [
-         [
-            1,
-            null,
-            "__NOW__",
-            null,
-            "This is a sample.",
-            null,
-            1,
-            null,
-            "__NOW__",
-            "test content type",
-            "a5f06fe6f59b57482616d4f6f472904e5b4ddfc7",
-            null,
-            null
-         ],
-         [
-            1,
-            null,
-            "__NOW__",
-            null,
-            "This is a sample.",
-            null,
-            2,
-            null,
-            "__NOW__",
-            "test content type 2",
-            "7061b8010d8f017060b68a12e685de62d9e82dff",
-            null,
-            null
          ]
       ]
    },
@@ -534,6 +449,22 @@
             "__NOW__",
             null,
             3,
+            null,
+            "__NOW__",
+            null,
+            "'sign_in_cms','sign_in_data_api'",
+            null,
+            0,
+            null
+         ],
+         [
+            3,
+            0,
+            null,
+            null,
+            "__NOW__",
+            null,
+            4,
             null,
             "__NOW__",
             null,
@@ -801,56 +732,6 @@
             1,
             "A request was made to change your Movable Type password. To complete this process click on the link below to select a new password.\n\n<mt:var name=\"link_to_login\">\n\nIf you did not request this change, you can safely ignore this email.\n\n<mt:include module=\"Mail Footer\">\n",
             "email"
-         ],
-         [
-            1,
-            0,
-            0,
-            1,
-            1,
-            null,
-            "__NOW__",
-            0,
-            6,
-            null,
-            null,
-            null,
-            null,
-            null,
-            "__NOW__",
-            "ContentType Test",
-            "blog.html",
-            1,
-            "test",
-            "ct"
-         ]
-      ]
-   },
-   "mt_templatemap" : {
-      "cols" : [
-         "templatemap_archive_type",
-         "templatemap_blog_id",
-         "templatemap_build_interval",
-         "templatemap_build_type",
-         "templatemap_cat_field_id",
-         "templatemap_dt_field_id",
-         "templatemap_file_template",
-         "templatemap_id",
-         "templatemap_is_preferred",
-         "templatemap_template_id"
-      ],
-      "rows" : [
-         [
-            "ContentType-Author",
-            1,
-            null,
-            1,
-            null,
-            null,
-            "author/%-a/%f",
-            1,
-            1,
-            6
          ]
       ]
    },

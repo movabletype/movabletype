@@ -820,7 +820,7 @@
       ],
       "rows" : [
          [
-            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0051\n",
+            "DataAPIDisableSite 0\nPluginAlias ContentType Information Widget=ContentInfoWidget\nPluginAlias Markdown=Markdown/Markdown.pl\nPluginAlias SmartyPants=Markdown/SmartyPants.pl\nPluginAlias SpamLookup - Keyword Filter=spamlookup/spamlookup_words.pl\nPluginAlias SpamLookup - Link=spamlookup/spamlookup_urls.pl\nPluginAlias SpamLookup - Lookups=spamlookup/spamlookup.pl\nPluginAlias Textile=Textile/textile2.pl\nPluginAlias WXR Importer=WXRImporter\nPluginAlias Widget Manager Upgrade Assistant=WidgetManager/WidgetManager.pl\nPluginSchemaVersion WidgetManager=1.1\nPluginSchemaVersion contenttypecolumn=0.01\nPluginSchemaVersion formattedtext=1.00\nPluginSchemaVersion tinymce=1\nPluginSwitch Awesome=1\nPluginSwitch BlockEditor=1\nPluginSwitch ContentInfoWidget=1\nPluginSwitch ContentTypeColumn=1\nPluginSwitch FormattedText=1\nPluginSwitch FormattedTextForTinyMCE=0\nPluginSwitch FormattedTextForTinyMCE5=1\nPluginSwitch GoogleAnalytics=1\nPluginSwitch IllegalObjectType=1\nPluginSwitch Markdown/Markdown.pl=1\nPluginSwitch Markdown/SmartyPants.pl=1\nPluginSwitch SortMethod=1\nPluginSwitch Textile/textile2.pl=1\nPluginSwitch TinyMCE=0\nPluginSwitch TinyMCE5=1\nPluginSwitch WXRImporter=1\nPluginSwitch WidgetManager/WidgetManager.pl=1\nPluginSwitch spamlookup/spamlookup.pl=1\nPluginSwitch spamlookup/spamlookup_urls.pl=1\nPluginSwitch spamlookup/spamlookup_words.pl=1\nSchemaVersion 7.0052\n",
             1
          ]
       ]
@@ -1086,9 +1086,9 @@
          [
             null,
             null,
-            "tag:localhost,2021:/first_website//2.8",
+            "tag:localhost,2022:/first_website//2.8",
             1,
-            "2021-11-17 04:46:59",
+            "2022-01-21 00:11:42",
             "blog_entry_1",
             2,
             null,
@@ -1113,7 +1113,7 @@
             "Blog Entry 1",
             null,
             null,
-            202146
+            202203
          ]
       ]
    },
@@ -2613,13 +2613,13 @@
       ],
       "rows" : [
          [
-            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1637124416\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(cdf8c4b3318d22d52a9b0ef1038746e20779104e",
+            "SERG\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0002H\u0000\u0000\u0000\u0004\u0000\u0000\u0000\u000bmagic_token-\u0000\u0000\u0000(68ddee805f4132795a37e193efd943b53dc5ad2d\u0000\u0000\u0000\bremember-\u0000\u0000\u0000\u00011\u0000\u0000\u0000\u0005start-\u0000\u0000\u0000\n1642723898\u0000\u0000\u0000\tauthor_id-\u0000\u0000\u0000\u00011",
             null,
             null,
-            "458e234469bc2b807fab0885c4be01cf1ca927a0",
+            "fad11a3bbce798ec684fd5fe65fdd0b168fb3f14",
             "US",
             "1",
-            1637124416
+            1642723898
          ]
       ]
    },
@@ -4239,5 +4239,5 @@
          ]
       ]
    },
-   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0051; formattedtext 1.00; tinymce 1"
+   "schema_version" : "WidgetManager 1.1; contenttypecolumn 0.01; core 7.0052; formattedtext 1.00; tinymce 1"
 }
