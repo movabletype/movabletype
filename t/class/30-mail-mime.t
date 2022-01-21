@@ -89,7 +89,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
             my $body_short = 'a' x 100;     # some number bigger than both 990 and 998
             my $body_long  = 'a' x 1000;    # some number bigger than both 990 and 998
             my @cases      = ({
-                    name            => 'prefer auto detected xfer encoding 7bit',
+                    name            => 'reduce over spec encoding for iso-2022-jp',
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => '8bit',
@@ -104,7 +104,7 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
-                    name            => 'respect given xfer encoding when base64',
+                    name            => 'reduce over spec encoding for iso-2022-jp',
                     input           => $body_long,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => 'base64',
@@ -112,21 +112,21 @@ for my $mod_name ('MIME::Lite', 'Email::MIME') {
                     expected_header => { 'Content-Transfer-Encoding' => '7bit' },
                 },
                 {
-                    name            => 'auto detect base64 short',
+                    name            => 'auto detect xfer encoding for short body',
                     input           => $body_short,
                     xferEnc         => undef,
                     expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
-                    name            => 'auto detect base64 long',
+                    name            => 'auto detect xfer encoding for long body',
                     input           => $body_long,
                     xferEnc         => undef,
                     expected        => sub { $_[0] },
                     expected_header => { 'Content-Transfer-Encoding' => '8bit' },
                 },
                 {
-                    name            => 'auto detect 7bit',
+                    name            => 'auto detect xfer encoding for iso-2022-jp',
                     input           => $body_short,
                     mailEnc         => 'iso-2022-jp',
                     xferEnc         => undef,
