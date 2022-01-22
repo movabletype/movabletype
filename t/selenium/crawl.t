@@ -11,6 +11,8 @@ use MT::Test::Env;
 our $test_env;
 
 BEGIN {
+    plan skip_all => 'Skipped because MT_TEST_JOBS is not 1' unless !$ENV{MT_TEST_JOBS} || $ENV{MT_TEST_JOBS} = 1;
+
     $test_env = MT::Test::Env->new(
         StaticFilePath => 'MT_HOME/mt-static/',
         PluginSwitch   => [

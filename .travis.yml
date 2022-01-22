@@ -23,8 +23,6 @@ jobs:
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/tag/"
     - if: type != cron
-      env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
-    - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: type != cron
       env: TEST_IMAGE_NAME="buster" TEST_COMMAND="phpunit && make test-php-lint"
@@ -48,6 +46,10 @@ jobs:
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_COMMAND="MT_TEST_JOBS=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t" USE_SELENIUM=1
 
     - # Perl 5.20 / PHP 5.6 / MySQL 5.5
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
