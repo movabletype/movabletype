@@ -46,10 +46,6 @@ jobs:
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="MT_TEST_RUN_APP_AS_CGI=1 prove -j4 -PMySQLPool=MT::Test::Env -It/lib plugins/*/t"
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="fedora" TEST_COMMAND="phpunit && make test-php-lint"
-    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t" USE_SELENIUM=1
-    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
-      env: TEST_COMMAND="MT_TEST_JOBS=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t" USE_SELENIUM=1
 
     - # Perl 5.20 / PHP 5.6 / MySQL 5.5
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
@@ -111,6 +107,12 @@ jobs:
     - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="phpunit && make test-php-lint"
 
+    - # chromiumdriver
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib t/selenium/*.t"
+    - if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
+      env: TEST_IMAGE_NAME=chromiumdriver TEST_COMMAND="MT_TEST_JOBS=1 prove -j1 -PMySQLPool=MT::Test::Env -It/lib t/selenium/crawl.t"
+
     - # no need to run extra tests under various environments
       if: (type = cron AND (branch = master OR branch = develop OR branch =~ /^support-/ OR branch =~ /^release-/)) OR branch =~ /cron/
       env: TEST_IMAGE_NAME="bullseye" TEST_COMMAND="prove -j4 -PMySQLPool=MT::Test::Env -It/lib xt"
@@ -122,8 +124,7 @@ before_script:
   - docker run -t -v $PWD:/mt -w /mt movabletype/test:buster bash -c "BUILD_RELEASE_NUMBER=1 make"
 
 script:
-  - if [ -z "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND" ; fi
-  - if [ -n "$USE_SELENIUM" ]; then docker run -t -v $PWD:/mt -w /mt movabletype/test:chromiumdriver bash -c "$TEST_COMMAND" ; fi
+  - docker run -t -v $PWD:/mt -w /mt movabletype/test:$TEST_IMAGE_NAME bash -c "$TEST_COMMAND"
 
 notifications:
   slack:
