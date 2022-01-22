@@ -26,6 +26,11 @@ use MT;
 use MT::Test::Fixture;
 use MT::Test::Selenium;
 use Selenium::Waiter;
+use JSON::XS;
+use URI;
+use URI::QueryParam;
+
+my $encoder = JSON::XS->new->canonical;
 
 $test_env->prepare_fixture('db_data');
 
@@ -45,9 +50,18 @@ while (my $job = shift @queue) {
     state $num = 1;
     $s->visit($job->url);
     my @urls = map { $_->get_attribute('href') } $s->driver->find_elements('a[href^="/cgi-bin/"]', 'css');
-    add_queue(\@urls, $job->url);
+    add_queue(\@urls, $job);
     my $title = $s->driver->get_title;
-    assert_no_errors($job, $num, 'Visit ' . $job->url, { title => $title, referrer => ${ $job->referrer } });
+    my %extra = (
+        title    => $title,
+        referrer => $job->referrer,
+    );
+    if ($s->generic_error) {
+        $extra{error} = $s->generic_error;
+    } elsif ($s->message_text) {
+        ($extra{alert} = $s->message_text) =~ s/\s+/ /gs;
+    }
+    assert_no_errors($job, $num, 'Visit ' . $job->url, \%extra);
 
     $num++;
     last                                 if $max && $num > $max;
@@ -55,19 +69,28 @@ while (my $job = shift @queue) {
 }
 
 sub add_queue {
-    my ($urls, $referrer) = @_;
+    my ($urls, $job) = @_;
     state $baseurl = $s->{base_url};
     state %once_queued;
+    my @referrer = $job ? (@{$job->referrer}, $job->url) : ();
     for my $url (@$urls) {
         next if $url =~ /^http/ && $url !~ /^$baseurl/;
+        my $id = generate_id($url);
         $url =~ s{^$baseurl}{};
         $url = (split(/#/, $url))[0];
-        next if exists($once_queued{$url}) || $url =~ /__mode=logout/;
-        next if $url                               =~ /__mode=tools/;    # skip for now
-        push @queue, MT::Test::Selenium::Crawler::Job->new($url, $referrer ? \$referrer : ());
-        $once_queued{$url} = 1;
+        next if exists($once_queued{$id}) || $url =~ /__mode=logout/;
+        next if $url                              =~ /__mode=tools/;    # skip for now
+        push @queue, MT::Test::Selenium::Crawler::Job->new($url, \@referrer);
+        $once_queued{$id} = 1;
         shift(@queue) if $max && scalar(@queue) > $max;
     }
+}
+
+sub generate_id {
+    my $url = shift;
+    my $query = URI->new($url)->query_form_hash;
+    delete $query->{magic_token};
+    $encoder->encode($query);
 }
 
 sub assert_no_errors {
@@ -79,15 +102,16 @@ sub assert_no_errors {
     } @logs;
 
     ok(!scalar(@logs), 'no browser error occurs');
+    ok(!$extra->{error}, 'no generic errors');
     $summary = 'test_number_' . $num . ': ' . $summary;
     if (@logs) {
         diag($summary);
-        diag((' ' x 8) . sprintf('%s: %s', $_, $extra->{$_})) for (sort keys %$extra);
+        diag(explain($extra));
         diag sprintf("<%s> %s", $_->{source}, $_->{message})  for grep { $_->{source} } @logs;
         $s->screenshot_full('test_number_' . $num) if $ENV{MT_TEST_CAPTURE_SCREENSHOT};
     } else {
         note($summary);
-        note((' ' x 8) . sprintf('%s: %s', $_, $extra->{$_})) for (sort keys %$extra);
+        note(explain($extra));
     }
 }
 
@@ -101,7 +125,7 @@ use strict;
 use warnings;
 
 sub url      { shift->[0] }
-sub referrer { shift->[1] || \'null' }
+sub referrer { shift->[1] || [] }
 
 sub new {
     my ($class, $url, $referrer) = @_;
