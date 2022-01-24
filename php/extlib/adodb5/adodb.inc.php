@@ -14,7 +14,7 @@
 /**
 	\mainpage
 
-	@version   v5.20.20  01-Feb-2021
+	@version   v5.20.21  22-Jan-2022
 	@copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
 	@copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
 
@@ -224,7 +224,7 @@ if (!defined('_ADODB_LAYER')) {
 		/**
 		 * ADODB version as a string.
 		 */
-		$ADODB_vers = 'v5.20.20  01-Feb-2021';
+		$ADODB_vers = 'v5.20.21  22-Jan-2022';
 
 		/**
 		 * Determines whether recordset->RecordCount() is used.
@@ -3161,26 +3161,32 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			$this->rs = $rs;
 		}
 
+		#[\ReturnTypeWillChange]
 		function rewind() {}
 
+		#[\ReturnTypeWillChange]
 		function valid() {
 			return !$this->rs->EOF;
 		}
 
+		#[\ReturnTypeWillChange]
 		function key() {
 			return false;
 		}
 
+		#[\ReturnTypeWillChange]
 		function current() {
 			return false;
 		}
 
+		#[\ReturnTypeWillChange]
 		function next() {}
 
 		function __call($func, $params) {
 			return call_user_func_array(array($this->rs, $func), $params);
 		}
 
+		#[\ReturnTypeWillChange]
 		function hasMore() {
 			return false;
 		}
@@ -3226,6 +3232,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 
 		function Init() {}
 
+		#[\ReturnTypeWillChange]
 		function getIterator() {
 			return new ADODB_Iterator_empty($this);
 		}
@@ -3286,22 +3293,27 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 			$this->rs = $rs;
 		}
 
+		#[\ReturnTypeWillChange]
 		function rewind() {
 			$this->rs->MoveFirst();
 		}
 
+		#[\ReturnTypeWillChange]
 		function valid() {
 			return !$this->rs->EOF;
 		}
 
+		#[\ReturnTypeWillChange]
 		function key() {
 			return $this->rs->_currentRow;
 		}
 
+		#[\ReturnTypeWillChange]
 		function current() {
 			return $this->rs->fields;
 		}
 
+		#[\ReturnTypeWillChange]
 		function next() {
 			$this->rs->MoveNext();
 		}
@@ -3378,6 +3390,7 @@ http://www.stanford.edu/dept/itss/docs/oracle/10g/server.101/b10759/statements_1
 		$this->Close();
 	}
 
+	#[\ReturnTypeWillChange]
 	function getIterator() {
 		return new ADODB_Iterator($this);
 	}

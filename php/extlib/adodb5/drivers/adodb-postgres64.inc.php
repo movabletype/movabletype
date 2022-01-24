@@ -1,6 +1,6 @@
 <?php
 /*
- @version   v5.20.20  01-Feb-2021
+ @version   v5.20.21  22-Jan-2022
  @copyright (c) 2000-2013 John Lim (jlim#natsoft.com). All rights reserved.
  @copyright (c) 2014      Damien Regad, Mark Newnham and the ADOdb community
   Released under both BSD license and Lesser GPL library license.
@@ -51,7 +51,6 @@ function adodb_addslashes($s)
 {
 	$len = strlen($s);
 	if ($len == 0) return "''";
-	if (strncmp($s,"'",1) === 0 && substr($s,$len-1) == "'") return $s; // already quoted
 
 	return "'".addslashes($s)."'";
 }
