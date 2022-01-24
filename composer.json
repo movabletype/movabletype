@@ -15,7 +15,7 @@
         "phpunit/phpunit": "^4.8.35 || ^5.7.27 || ^6.0"
     },
     "require": {
-        "adodb/adodb-php": "5.20.20",
+        "adodb/adodb-php": "5.20.21",
         "smarty/smarty": "^v3.1.39"
     },
     "extra": {
