@@ -55,7 +55,7 @@ sub fix_xfer_enc {
     if ($charset =~ /utf-?8/i && (!$enc || $enc eq '7bit')) {
         my $enc_conf = MT->config->MailTransferEncoding;
         $enc_conf = $enc_conf ? lc($enc_conf) : '';
-        $enc = $enc_conf ne '7bit' && $enc_conf =~ $ValidXferEncRegex ? $enc_conf : 'base64';
+        $enc = $enc_conf ne '7bit' && $enc_conf =~ $ValidXferEncRegex ? $enc_conf : '8bit';
     }
     $enc ||= '7bit';
     return $enc;
