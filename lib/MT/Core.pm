@@ -2261,6 +2261,7 @@ BEGIN {
             'TemporaryFileExpiration' => { default => 60 * 60 },
             'ForceAllowStringSub' => undef,
             'HideVersion' => { default => 1 },
+            'AdminThemeId' => undef,
         },
         upgrade_functions => \&load_upgrade_fns,
         applications      => {
