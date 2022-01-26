@@ -1,0 +1,186 @@
+<mt:setvarblock name="page_title"><__trans phrase="Your Profile"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mt:if name="error">
+    <mtapp:statusmsg
+        id="generic-error"
+        class="danger"
+        can_close="0">
+        <mt:var name="error">
+    </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="saved">
+    <mtapp:statusmsg
+        id="saved"
+        class="success"
+        can_close="0">
+        <mt:var name="saved">
+    </mtapp:statusmsg>
+</mt:if>
+
+<form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
+
+<input type="hidden" name="__mode" value="save_profile" />
+<input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" /></mt:if>
+<input type="hidden" name="entry_url" value="<mt:var name="entry_url" escape="html">" />
+<input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
+
+    <mtapp:setting
+        id="name"
+        label="<__trans phrase="Username">"
+        label_class="top-label">
+        <input type="text" name="name" class="form-control text full disabled" readonly="readonly" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="nickname"
+        label="<__trans phrase="Display Name">"
+        label_class="top-label"
+        required="1">
+        <input type="text" name="nickname" id="nickname" class="form-control text full" value="<mt:var name="nickname" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="email"
+        label="<__trans phrase="Email Address">"
+        label_class="top-label"
+        required="$email_required">
+        <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+
+<mt:if name="auth_mode_mt">
+	<mtapp:setting
+	   id="old_pass"
+	   label="<__trans phrase="Current Password">"
+       label_class="top-label">
+	  <input type="password" name="old_pass" id="old_pass" class="form-control text password" value="" />
+	</mtapp:setting>
+
+    <mtapp:setting
+        id="password"
+        label="<__trans phrase="New Password">"
+        label_class="top-label"
+        hint="<__trans phrase="Select a password for yourself."> (<$mt:PasswordValidationRule$>)"
+        hint_id="passwordHint"
+        show_hint="1">
+        <input type="password" name="password" id="password" class="form-control text password" value="" aria-describedby="passwordHint" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="pass_verify"
+        label="<__trans phrase="Confirm Password">"
+        label_class="top-label">
+        <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
+    </mtapp:setting>
+
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    <$mt:PasswordValidation form="profile" password="password" username="name"$>
+    /* ]]> */
+    </script>
+
+<mt:else>
+    <input type="hidden" name="external_auth" value="1" />
+</mt:if>
+
+    <mtapp:setting
+        id="url"
+        label="<__trans phrase="Website URL">"
+        label_class="top-label">
+        <input type="text" name="url" id="url" class="form-control text full" value="<mt:var name="url" escape="html">"  />
+    </mtapp:setting>
+
+    <mt:Loop name="field_loop">
+        <mt:If name="__first__">
+        <input type="hidden" name="_type" value="author" id="obj_type" />
+        <input type="hidden" name="customfield_beacon" value="1" id="customfield_beacon" />
+        </mt:If>
+        <!-- start-customfield_<$mt:Var name="basename"$> -->
+        <mtapp:setting
+            id="$field_id"
+            label="$name"
+            label_class="top-label"
+            hint="$description"
+            shown="$show_field"
+            show_hint="$show_hint"
+            required="$required">
+
+        <$mt:Var name="field_html"$>
+
+        </mtapp:setting>
+        <!-- end-customfield_<$mt:Var name="basename"$> -->
+    </mt:Loop>
+
+    <div class="actions-bar actions-bar-login text-right">
+        <button
+            type="submit"
+            accesskey="s"
+            title="<__trans phrase="Save (s)">"
+            class="save action primary button btn__mobile btn-primary">
+          <__trans phrase="Save">
+        </button>
+    </div>
+
+</form>
+
+
+<mt:if name="saved">
+  <mt:if name="entry_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html" regex_replace="/#.*$/","">#_refresh"></p>
+  <mt:elseif name="return_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html" regex_replace="/#.*$/","">#_refresh"></p>
+  </mt:if>
+<mt:else>
+  <mt:if name="entry_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original entry</a>." params="<mt:var name="entry_url" escape="html">"></p>
+  <mt:elseif name="return_url">
+  <p class="auth-option-info"><__trans phrase="Return to the <a href="[_1]">original page</a>." params="<mt:var name="return_url" escape="html">"></p>
+  </mt:if>
+</mt:if>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+    function isContainsMultiByte ( val ) {
+        var i = 0;
+        while (i < val.length) {
+            if (encodeURI(val.charAt(i)).length >= 4) {
+                return true;
+            }
+            i++;
+        }
+        return false;
+    }
+
+    jQuery.mtValidateAddRules({
+        "#password": function($e) {
+            if ( isContainsMultiByte( $e.val() ) ) {
+                return false;
+            }
+            return true;
+        },
+        "#pass_verify": function($e) {
+            if ( isContainsMultiByte( $e.val() ) ) {
+                return false;
+            }
+            return true;
+        },
+    });
+
+    jQuery.mtValidateAddMessages({
+        "#password": '<__trans phrase="You must use half-width character for password.">',
+        "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
+    });
+
+    jQuery('#profile').on('submit', function(eventObject) {
+        if ( !jQuery("#password").mtValidate('simple') ) return false;
+        if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
+    });
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

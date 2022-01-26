@@ -1,0 +1,63 @@
+<mt:app:ContentFieldOptionGroup
+   type="radio_button">
+
+  <mtapp:ContentFieldOption
+     id="radio_button-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <div class="mt-table--outline mb-3">
+      <table class="table mt-table values-option-table" ref="table">
+        <thead>
+          <tr>
+            <th scope="col"><__trans phrase="Selected"></th>
+            <th scope="col"><__trans phrase="Label"></th>
+            <th scope="col"><__trans phrase="Value"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr each={ values }>
+            <td><input type="radio" class="form-control" name={ id + '-initial' } checked={ checked } onchange={ enterInitial }></td>
+            <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+            <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value } ></td>
+            <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="delete"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg><__trans phrase="delete"></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="add"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add"></use></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
+
+  deleteRow(e) {
+    item = e.item
+    index = this.values.indexOf(item)
+    this.values.splice(index, 1)
+    if ( this.values.length == 0 ) {
+      this.values = [{
+        "checked": "checked"
+      }]
+    }
+    else {
+      found = false
+      this.values.forEach( function(v) {
+        if ( v.checked == "checked" )
+          found = true;
+      });
+      if ( !found )
+        this.values[0].checked = "checked"
+    }
+  }
+
+  enterInitial(e) {
+    this.values.forEach( function(v) {
+      v.checked = "";
+    })
+    e.item.checked = "checked"
+  }
+
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

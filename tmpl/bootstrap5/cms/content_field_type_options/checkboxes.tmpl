@@ -1,0 +1,89 @@
+<mt:app:ContentFieldOptionGroup
+   type="checkboxes">
+
+  <mtapp:ContentFieldOption
+     id="checkboxes-min"
+     label="<__trans phrase="Minimum number of selections">">
+    <input ref="min" type="number" name="min" id="checkboxes-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="checkboxes-max"
+     label="<__trans phrase="Maximum number of selections">">
+    <input ref="max" type="number" name="max" id="checkboxes-max" class="form-control w-25" min="1" value={ options.max } onchange={ enterMax }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="checkboxes-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <div class="mt-table--outline mb-3">
+      <table class="table mt-table values-option-table" ref="table">
+        <thead>
+          <tr>
+            <th scope="col"><__trans phrase="Selected"></th>
+            <th scope="col"><__trans phrase="Label"></th>
+            <th scope="col"><__trans phrase="Value"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr each={ values }>
+            <td><input type="checkbox" class="form-control" checked={ checked } onchange={ enterInitial }></td>
+            <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+            <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value }></td>
+            <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="delete"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg><__trans phrase="delete"></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="add"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add"></use></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
+
+  deleteRow(e) {
+    item = e.item
+    index = this.values.indexOf(item)
+    this.values.splice(index, 1)
+  }
+
+  enterInitial(e) {
+    var target = e.target
+    var state = target.checked
+    var block = jQuery(e.target).parents('.mt-contentfield')
+
+    // Set current item status
+    item = e.item
+    index = this.values.indexOf(item)
+    e.target.checked = state
+    this.values[index].checked = state ? "checked" : ""
+
+    this._updateInittialField(block)
+  }
+  enterMax(e) {
+    var block = jQuery(e.target).parents('.mt-contentfield')
+    this._updateInittialField(block)
+  }
+
+  _updateInittialField(block) {
+    var max = Number(block.find('input[name="max"]').val())
+    var cur = block.find('.values-option-table').find('input[type="checkbox"]:checked').length
+    if ( max == 0 || cur < max ) {
+      var chkbox = block.find('.values-option-table').find('input[type="checkbox"]')
+      jQuery.each( chkbox, function(i) {
+        jQuery(chkbox[i]).prop('disabled', false)
+      })
+    }
+    else {
+      var chkbox = block.find('.values-option-table').find('input[type="checkbox"]:not(:checked)')
+      jQuery.each( chkbox, function(i) {
+        jQuery(chkbox[i]).prop('disabled', true)
+      })
+    }
+  }
+
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

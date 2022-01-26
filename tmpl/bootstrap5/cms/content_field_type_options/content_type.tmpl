@@ -1,0 +1,59 @@
+<mt:app:ContentFieldOptionGroup
+   type="content_type">
+
+  <mtapp:ContentFieldOption
+     id="content_type-multiple"
+     label="<__trans phrase="Allow users to select multiple values?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="content_type-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="content_type-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-min"
+     label="<__trans phrase="Minimum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="content_type-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-max"
+     label="<__trans phrase="Maximum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="content_type-max" class="form-control w-25" min="1" value={ options.max }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="content_type-source"
+     required="1"
+     label="<__trans phrase="Source Content Type">">
+    <mt:if name="content_types">
+      <select ref="source" name="source" id="content_type-source" class="custom-select form-control html5-form">
+      <mt:loop name="content_types">
+        <option value="<mt:var name="id" escape="html">" if={ options.source == <mt:var name="id" escape="html"> } selected="selected"><mt:var name="name" escape="html"></option>
+        <option value="<mt:var name="id" escape="html">" if={ options.source != <mt:var name="id" escape="html"> }><mt:var name="name" escape="html"></option>
+      </mt:loop>
+      </select>
+    <mt:else>
+      <mtapp:statusmsg
+        id="no-content-type"
+        class="warning"
+        can_close="0"
+      >
+        <__trans phrase="There is no content type that can be selected. Please create a content type if you use the Content Type field type.">
+      </mtapp:statusmsg>
+    </mt:if>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+  if ( this.options.multiple === "0" ) {
+    this.options.multiple = 0
+  }
+
+  if ( this.options.can_add === "0" ) {
+    this.options.can_add = 0
+  }
+
+  changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+  }
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

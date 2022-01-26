@@ -1,0 +1,21 @@
+<li>
+  <div class="custom-control custom-checkbox">
+    <input type="checkbox" id="allow_unreg_comments" class="custom-control-input" name="allow_unreg_comments" value="1" onclick="toggleSubPrefs(this); return true"<mt:if name="allow_unreg_comments"> checked="checked"</mt:if> />
+    <label class="custom-control-label" for="allow_unreg_comments">
+      <__trans phrase="Allow comments from anonymous or unauthenticated users.">
+    </label>
+  </div>
+  <ul id="allow_unreg_comments_prefs" style="list-style: none;<mt:unless name="allow_unreg_comments"> display: none;</mt:unless>">
+    <li>
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" value="1" id="require_comment_emails" name="require_comment_emails"<mt:if name="REQUIRE_COMMENT_EMAILS"> checked="checked"</mt:if> class="custom-control-input cb" />
+        <label class="custom-control-label" for="require_comment_emails">
+          <__trans phrase="Require name and E-mail Address for Anonymous Comments">
+        </label>
+      </div>
+      <p class="text-muted hint">
+        <__trans phrase="If enabled, visitors must provide a valid e-mail address when commenting.">
+      </p>
+    </li>
+  </ul>
+</li>

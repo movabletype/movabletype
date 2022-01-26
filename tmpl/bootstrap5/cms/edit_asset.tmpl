@@ -1,0 +1,423 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Asset">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="edit_screen" value="1">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mt:if name="can_rebuild">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     rebuild="all"
+     can_close="0">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+  <mt:else>
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
+<mt:if name="saved_image">
+  <mtapp:statusmsg
+     id="saved_image"
+     class="success">
+    <__trans phrase="Your edited image has been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="broken_metadata">
+  <mtapp:statusmsg
+     id="broken_metadata"
+     class="warning"
+     can_close="0">
+    <__trans phrase="Metadata cannot be updated because Metadata in this image seems to be broken.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+<mtapp:widget
+   id="asset-stats-widget"
+   class="stats-widget"
+   label="<__trans phrase="Stats">">
+  <ul class="list-unstyled object-stats">
+    <li><__trans phrase="[_1] - Created by [_2]" params="<$mt:date ts="$created_on_ts" relative="1" _default="$created_on_formatted" format="%b %e %Y"$>%%<$mt:var name="created_by" escape="html" escape="html"$>"></li>
+  <mt:if name="modified_by">
+    <li><__trans phrase="[_1] - Modified by [_2]" params="<$mt:date ts="$modified_on_ts" relative="1" _default="$modified_on_formatted" format="%b %e %Y"$>%%<$mt:var name="modified_by" escape="html" escape="html"$>"></li>
+  </mt:if>
+  </ul>
+</mtapp:widget>
+
+<mt:if name="show_appears_in_widget">
+<mtapp:widget
+   id="appears-in"
+   label="<__trans phrase="Appears in...">">
+  <ul class="list-unstyled">
+  <mt:loop name="appears_in">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="class">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;id=<mt:var name="id" escape="url">" class="icon-left d-inline-block icon-<mt:var name="class" lower_case="1">">
+    <mt:if name="class" eq="entry">
+        <mtapp:svgicon id="ic_file" title="Entry" size="sm" color="success">
+    <mt:else>
+        <mtapp:svgicon id="ic_file" title="Page" size="sm" color="info">
+    </mt:if>
+        <mt:var name="title" escape="html" default="...">
+      </a>
+    </li>
+  </mt:loop>
+  </ul>
+  <mt:if name="appears_in_uneditables">
+    <span class="hint"><__trans phrase="This asset has been used by other users."></span>
+  </mt:if>
+</mtapp:widget>
+</mt:if>
+
+<mt:if name="related">
+  <mtapp:widget
+     id="related-assets"
+     label="<__trans phrase="Related Assets">">
+  <mt:loop name="related">
+    <div class="row asset asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+      <div class="col-auto asset-thumb thumbnail picture small<mt:if name="file_is_missing"> asset-type-icon missing</mt:if><mt:unless name="has_thumbnail"> asset-type-icon</mt:unless>">
+        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id" escape="url"$>" title="<$mt:var name="file_name" escape="html"$>">
+    <mt:if name="file_is_missing">
+          <div class="mt-user">
+            <div class="mt-thumbnail">
+              <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movide<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+            </div>
+            <div class="mt-user__badge--warning">
+              <svg class="mt-icon--inverse mt-icon--sm">
+                <title>Warning</title>
+                <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_error"></use>
+              </svg>
+            </div>
+          </div>
+    <mt:elseif name="has_thumbnail">
+          <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+    <mt:else>
+          <div class="mt-thumbnail">
+            <img src="<mt:var name="static_uri" escape="html">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+          </div>
+    </mt:if>
+        </a>
+      </div>
+      <div class="col asset-metadata">
+        <ul class="metadata list-unstyled">
+          <li class="metadata-item asset-label"><a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id" escape="url"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name" escape="html"$>"><mt:var name="label" escape="html"></a></li>
+          <li class="metadata-item asset-size"><mt:if name="class" eq="image"><mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html"> - </mt:if><mt:var name="file_size_formatted" escape="html"></li>
+          <li class="metadata-item datetime"><mt:var name="created_on_formatted"></li>
+          <!-- <mt:if var="is_parent">(parent)</mt:if><mt:if var="is_child">(child)</mt:if><mt:if var="is_sibling">(sibling)</mt:if> -->
+        </ul>
+      </div>
+    </div>
+  </mt:loop>
+</mtapp:widget>
+</mt:if>
+  <mtApp:PageActions>
+</mt:setvarblock>
+
+<mt:setvarblock name="object_nav">
+<div class="btn-group d-none d-md-inline-flex mb-4 w-100" data-role="group">
+  <mt:if name="previous_entry_id">
+    <a class="btn btn-default w-50" href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="previous_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+      <mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev">
+    </a>
+  <mt:else>
+    <a class="btn btn-default w-50 disabled">
+      <mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev">
+    </a>
+  </mt:if>
+  <mt:if name="next_entry_id">
+    <a class="btn btn-default w-50" href="<mt:var name="script_url">?__mode=view&amp;_type=asset&amp;id=<mt:var name="next_entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+      <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm">
+    </a>
+  <mt:else>
+    <a class="btn btn-default w-50 disabled">
+      <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm">
+    </a>
+  </mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.validate.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+// array of tag names
+var tagList;
+
+function tagSplit(str) {
+    var delim = RegExp.escape(tag_delim);
+    var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+    str = str.replace(/(^\s+|\s+$)/g, '');
+    var tags = [];
+    while (str.length && str.match(delim_scan)) {
+        str = str.substr(RegExp.$1.length);
+        var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+        tag = tag.replace(/(^\s+|\s+$)/g, '');
+        tag = tag.replace(/\s+/g, ' ');
+        if (tag != '') tags.push(tag);
+    }
+    return tags;
+}
+
+var autoTag;
+<mt:if name="tags_js">
+tagList = <mt:var name="tags_js">;
+</mt:if>
+
+function init()
+{
+    <mt:if name="tags_js">initTags();</mt:if>
+}
+
+var tagPos = 0;
+function initTags() {
+    var t = MT.Util.getByID('tags-cache');
+    if ( t ) {
+        console.info('tag cache:'+t.value);
+        var v = MT.Util.getByID('tags');
+        if ( t.value )
+            v.value = t.value;
+        jQuery(v).on('change', function () {
+          console.info('caching tags');
+          t.value = v.value;
+        });
+    }
+    if (!tagList || tagList.length == 0) return;
+
+    autoTag = new TC.TagComplete("tags", tagList);
+    autoTag.delimiter = tag_delim;
+}
+
+jQuery(window).on('load', init );
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<div id="asset" class="status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
+  <form id="edit_asset" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="asset_type" value="<mt:var name="asset_type" escape="html">" />
+
+    <fieldset class="form-group">
+      <mt:if name="file_is_missing">
+        <mtapp:statusmsg
+           id="file-missing-error"
+           class="danger"
+           can_close="0">
+          <__trans phrase="[_1] is missing" params="<mt:var name="asset_class_label" escape="html">">
+        </mtapp:statusmsg>
+      <mt:elseif name="asset_type" eq="image">
+        <mt:unless name="has_thumbnail">
+          <mtapp:statusmsg
+            id="warning-has-no-thumbnail"
+            class="warning"
+            can_close="0">
+            <__trans phrase="Error creating thumbnail file.">
+          </mtapp:statusmsg>
+        </mt:unless>
+      </mt:if>
+      <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
+      <mt:unless name="file_is_missing">
+        <mt:if name="has_thumbnail">
+        <div class="col-12 col-md-auto asset-preview-thumb picture small">
+          <div class="thumbnail">
+            <img src="<mt:var name="thumbnail_url" escape="html">" class="img-thumbnail p-0" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+          </div>
+        </div>
+        <mt:elseif name="asset_type" ne="image">
+        <div class="col-12 col-md-auto asset-type-icon picture small">
+          <div class="mt-thumbnail">
+            <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+          </div>
+        </div>
+        </mt:if>
+      </mt:unless>
+        <div class="col-12 col-md mt-5 mt-md-0">
+          <div class="asset-metadata">
+            <ul class="list-unstyled metadata">
+              <li class="metadata-item asset-name text-wrap">
+                <strong><__trans phrase="File Name">:</strong>
+                  <mt:var name="file_name" escape="html">
+              </li>
+              <li class="metadata-item asset-type">
+                <strong><__trans phrase="Type">:</strong>
+                <mt:var name="asset_class_label" escape="html">
+              </li>
+              <mt:if name="class" eq="image">
+              <li class="metadata-item asset-dimensions">
+                <strong><__trans phrase="Dimensions">:</strong>
+                <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">
+              </li>
+              </mt:if>
+              <li class="metadata-item asset-size">
+                <strong><__trans phrase="File Size">:</strong>
+                <mt:var name="file_size_formatted" escape="html">
+              </li>
+            </ul>
+          </div>
+          <mt:if name="can_edit_image">
+            <mt:if name="asset_type" eq="image">
+              <mt:unless name="file_is_missing">
+                <mt:if name="has_thumbnail">
+          <div class="image-editor d-none d-md-block">
+            <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">" class="button btn btn-default mt-modal-open" data-mt-modal-large>
+              <__trans phrase="Edit Image">
+            </a>
+          </div>
+                </mt:if>
+              </mt:unless>
+            </mt:if>
+          </mt:if>
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <div class="asset-info">
+        <mtapp:setting
+           id="label"
+           label="<__trans phrase="Label">"
+           label_for="label"
+           label_class="top-label"
+           help_page="assets"
+           help_section="asset_label">
+          <input type="text" name="label" id="label" class="form-control text full" value="<mt:var name="label" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="description"
+           label="<__trans phrase="Description">"
+           label_for="description"
+           label_class="top-label">
+          <textarea name="description" id="description" class="form-control text full low"><mt:var name="description" escape="html"></textarea>
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="tags"
+           label_class="text-top"
+           label="<__trans phrase="Tags">"
+           label_for="tags"
+           label_class="top-label">
+          <div class="form-group position-relative">
+            <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
+            <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+            <div id="tags-suggestion" class="mt-suggest" style="display: none; z-index: 100;">
+              <div id="tags_completion" class="mt_suggest__list">
+               <ul></ul>
+              </div>
+            </div>
+          </div>
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="asset-url"
+           label_class="top-label"
+           label="<__trans phrase="Embed Asset">"
+           label_for="asset-url">
+          <div class="text-wrap">
+            <mt:var name="url" escape="html">
+            <a href="<mt:var name="url" escape="html">" class="button d-inline-block" target="_blank">
+              <mtapp:svgicon id="ic_permalink" title="View" color="secondary">
+            </a>
+            <a href="javascript:void(0);" class="button d-inline-block" id="btn-copy-url">
+              <mtapp:svgicon id="ic_duplicate" title="Copy" color="secondary">
+            </a>
+          </div>
+        </mtapp:setting>
+      </div>
+    </fieldset>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Save changes to this asset (s)">"
+         class="save action primary button btn__mobile btn-primary">
+        <__trans phrase="Save Changes">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+    jQuery('#edit_asset').validate({
+        rules: {
+            label: 'required'
+        },
+        messages: {
+            label: '<__trans phrase="You must specify a name for the asset." escape="singlequotes">'
+        },
+        errorClass: "msg-error",
+        errorPlacement: function(error, element) {
+            element.parents('div.field').addClass('error-field');
+            error.removeAttr('generated').insertAfter(element);
+        }
+    });
+
+    var isDirty = false;
+    jQuery(':input:visible').on('keydown', function(){
+        isDirty = true;
+    });
+
+    jQuery('button.primary').on('click', function() {
+      isDirty = false;
+    })
+
+    jQuery(window).on('beforeunload', function() {
+        if (isDirty) {
+            return '<__trans phrase="You have unsaved changes to this asset that will be lost." escape="js">';
+        }
+    });
+    jQuery('.image-editor a').on('click', function(event) {
+        if (isDirty) {
+            var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to edit image?" escape="js">';
+            if ( confirm(msg) ) {
+                jQuery(this).mtModal.open(jQuery(this).attr('href'), { large: true });
+                isDirty = false;
+            }
+        }
+        else {
+            jQuery(this).mtModal.open(jQuery(this).attr('href'), { large: true });
+        }
+        return false;
+    });
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('#btn-copy-url').on('click', function() {
+      var fld = document.createElement("textarea");
+      fld.value = '<mt:var name="url" escape="js">';
+      document.body.appendChild(fld);
+      fld.select();
+      document.execCommand("copy");
+      fld.parentElement.removeChild(fld);
+    });
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

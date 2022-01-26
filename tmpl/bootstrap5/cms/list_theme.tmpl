@@ -1,0 +1,342 @@
+<mt:setvarblock name="page_title"><__trans phrase="All Themes"></mt:setvarblock>
+<mt:unless name="blog_id">
+    <$mt:setvar name="position_actions_top" value="1"$>
+    <mt:setvar name="system-theme-settings" value="1">
+</mt:unless>
+
+<mt:setvarblock name="content_header">
+<ul class="list-inline action-link-list">
+  <li>
+    <a href="<__trans phrase="_THEME_DIRECTORY_URL">" class="icon-left icon-related d-inline-block" target="_blank">
+      <mtapp:svgicon id="ic_related" title="<__trans phrase="Find Themes">" size="sm">
+      <__trans phrase="Find Themes">
+    </a>
+  </li>
+</ul>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+<div id="msg-block">
+<mt:if name="uninstalled_theme_name">
+  <mtapp:statusmsg
+     id="theme_uninstalled"
+     class="success">
+    <__trans phrase="Theme [_1] has been uninstalled." params="<mt:var name="uninstalled_theme_name">" escape="html">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="applied">
+  <mtapp:statusmsg
+     id="theme_applied"
+     class="success"
+     rebuild="all"
+     can_close="0">
+<mt:if name="warning_on_apply">
+    <__trans phrase="Theme [_1] has been applied (<a href="[_2]" class="alert-link">[quant,_3,warning,warnings]</a>)." params="<mt:var name="current_theme_name" escape="html" escape="html">%%<mt:var name="script_url">?__mode=list&amp;_type=log&blog_id=<mt:var name="blog_id">%%<mt:var name="warning_on_apply">">
+<mt:else>
+    <__trans phrase="Theme [_1] has been applied." params="<mt:var name="current_theme_name" escape="html" escape="html">">
+</mt:if>
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="refreshed">
+  <mtapp:statusmsg
+     id="theme_applied"
+     class="success"
+     rebuild="all"
+     can_close="0">
+     <__trans phrase="You have successfully refreshed your templates." escape="html">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvartemplate name="theme_loop_tmpl">
+<mt:loop name="$loop_for">
+<div id="theme-<mt:var name="id">" class="card theme<mt:if name="current"> current-theme</mt:if><mt:if name="errors"> disabled</mt:if>">
+  <script type="text/javascript">
+  /* <![CDATA[ */
+    theme_ids.push('<mt:var name="id">');
+  /* ]]> */
+  </script>
+<div class="card-header">
+<div class="row">
+  <div class="col-2 align-self-center theme-thumbnail picture small">
+    <img src="<mt:var name="m_thumbnail_url">" class="img-thumbnail" width="<mt:var name="m_thumb_w">" height="<mt:var name="m_thumb_h">" />
+  </div>
+  <div class="col-10 theme-meta">
+
+    <div class="float-right">
+    <mt:unless name="current">
+      <mt:if name="errors">
+      <mtapp:svgicon id="ic_stop" title="failed" color="danger" size="sm">
+      <span class="text-muted mr-2 alert-error icon-left icon-error"><__trans phrase="Failed"></span>
+      </mt:if>
+      <mt:if name="warnings">
+      <mtapp:svgicon id="ic_error" title="warning" color="warning" size="sm">
+      <span class="icon-left icon-warning">
+        <a href="#theme-<mt:var name="id" escape="html">-details" class="theme-detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
+          <__trans phrase="[quant,_1,warning,warnings]" params="<mt:var name="warning_count">">
+        </a>
+      </span>
+      </mt:if>
+    </mt:unless>
+    <mt:if name="blog_id">
+      <mt:unless name="errors">
+        <mt:if name="current">
+      <a href="<mt:var name="mt_url" />?__mode=dialog_refresh_templates&amp;blog_id=<mt:var name="blog_id">&amp;magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">" class="btn btn-default button apply-theme-link mt-open-dialog mt-modal-open">
+        <__trans phrase="Refresh Templates">
+      </a>
+      <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">&amp;magic_token=<mt:var name="magic_token">" class="btn btn-default button apply-theme-link">
+        <__trans phrase="Reapply">
+      </a>
+        <mt:else>
+      <a href="<mt:var name="mt_url" />?__mode=apply_theme&amp;blog_id=<mt:var name="blog_id">&amp;theme_id=<mt:var name="theme_id">&amp;magic_token=<mt:var name="magic_token">" class="btn btn-default button apply-theme-link">
+        <__trans phrase="Apply">
+      </a>
+        </mt:if>
+      </mt:unless>
+    <mt:else>
+      <mt:if name="is_administrator">
+        <mt:if name="theme_type" eq="package">
+          <mt:unless name="protected">
+            <mt:unless name="blog_count">
+      <a href="<mt:var name="mt_url" />?__mode=uninstall_theme&amp;theme_id=<mt:var name="theme_id">&amp;blog_id=<mt:var blog_id>&amp;magic_token=<mt:var name="magic_token">" class="btn btn-default button uninstall-theme-link">
+        <__trans phrase="Uninstall">
+      </a>
+            </mt:unless>
+          </mt:unless>
+        </mt:if>
+      </mt:if>
+    </mt:if>
+    </div>
+
+    <h3 class="theme-title">
+      <a href="#theme-<mt:var name="id" escape="html">-details" class="theme-detail-link toggle-link icon-left icon-spinner" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
+        <mt:var name="name" escape="html">
+      <mt:if name="theme_version">
+        <span class="theme-version"><mt:var name="theme_version" escape="html"></span>
+      </mt:if>
+      </a>
+    </h3>
+    <div class="theme-author">
+    <mt:if name="author_link">
+      <__trans phrase="Author: "><a href="<mt:var name="author_link" escape="html">"><mt:var name="author_name" escape="html" default="-"></a>
+    <mt:else>
+      <__trans phrase="Author: "><mt:var name="author_name" escape="html" default="-">
+    </mt:if>
+    </div>
+  <mt:if name="description">
+    <p class="mt-3 description"><mt:var name="description" escape="html" nl2br="1"></p>
+  </mt:if>
+  <mt:unless name="current">
+    <mt:if name="errors">
+    <p class="error-text">
+      <a href="#theme-<mt:var name="id">-details" class="theme-detail-link text-warning" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
+      <mt:if name="is_blog">
+        <__trans phrase="This theme cannot be applied to the child site due to [_1] errors" params="<mt:var name="error_count">">
+      <mt:else>
+        <__trans phrase="This theme cannot be applied to the site due to [_1] errors" params="<mt:var name="error_count">">
+      </mt:if>
+      </a>
+    </p>
+    </mt:if>
+  </mt:unless>
+
+    <div class="float-right theme-toggle-button">
+      <a href="#theme-<mt:var name="id" escape="html">-details" data-toggle="collapse" aria-expanded="false" aria-controls="theme-<mt:var name="id" escape="html">">
+        <mtapp:svgicon id="ic_collapse" title="toggle_detail" color="secondary">
+      </a>
+    </div>
+  </div>
+</div>
+</div>
+<div id="theme-<mt:var name="id">-details" class="mt-collapse__content card-block collapse pt-0 theme-details">
+    <ul class="nav mt-tabs theme-tabs-list">
+    <mt:unless name="current">
+      <mt:if name="errors">
+      <li class="nav-item">
+        <a class="nav-link" href="#theme-<mt:var name="id">-errors" data-toggle="tab">
+          <__trans phrase="Errors">
+        </a>
+      </li>
+      </mt:if>
+      <mt:if name="warnings">
+      <li class="nav-item">
+        <a class="nav-link" href="#theme-<mt:var name="id">-warnings" data-toggle="tab">
+          <__trans phrase="Warnings">
+        </a>
+      </li>
+      </mt:if>
+    </mt:unless>
+    <mt:if name="info">
+      <li class="nav-item">
+        <a class="nav-link" href="#theme-<mt:var name="id">-info" data-toggle="tab">
+          <__trans phrase="Info">
+        </a>
+      </li>
+    </mt:if>
+    </ul>
+  <div class="tab-content mb-3">
+  <mt:unless name="current">
+    <mt:if name="errors">
+    <div id="theme-<mt:var name="id">-errors" class="tab-pane theme-errors theme-info">
+      <h4 class="ml-3"><__trans phrase="Theme Errors"></h4>
+      <mtapp:statusmsg
+         id="saved-added"
+         class="error mx-3"
+         can_close="0">
+        <mt:if name="is_blog">
+          <__trans phrase="This theme cannot be applied to the child site due to [_1] errors" params="<mt:var name="error_count">">
+        <mt:else>
+          <__trans phrase="This theme cannot be applied to the site due to [_1] errors" params="<mt:var name="error_count">">
+        </mt:if>
+      </mtapp:statusmsg>
+      <ul>
+      <mt:loop name="errors">
+        <li><mt:var name="__value__" escape="html"></li>
+      </mt:loop>
+      </ul>
+    </div>
+    </mt:if>
+    <mt:if name="warnings">
+    <div id="theme-<mt:var name="id">-warnings" class="tab-pane theme-warnings theme-info">
+      <h4 class="ml-3"><__trans phrase="Theme Warnings"></h4>
+      <mtapp:statusmsg
+         id="saved-added"
+         class="alert mx-3"
+         can_close="0">
+        <mt:if name="is_blog">
+          <__trans phrase="Portions of this theme cannot be applied to the child site. [_1] elements will be skipped." params="<mt:var name="warning_count">">
+        <mt:else>
+          <__trans phrase="Portions of this theme cannot be applied to the site. [_1] elements will be skipped." params="<mt:var name="warning_count">">
+        </mt:if>
+      </mtapp:statusmsg>
+      <ul>
+      <mt:loop name="warnings">
+        <li><mt:var name="__value__"></li>
+      </mt:loop>
+      </ul>
+    </div>
+    </mt:if>
+  </mt:unless>
+  <mt:if name="info">
+    <div id="theme-<mt:var name="id">-info" class="tab-pane theme-info">
+      <h4 class="ml-3"><__trans phrase="Theme Information"></h4>
+      <ul>
+      <mt:loop name="info">
+        <li><mt:var name="__value__"></li>
+      </mt:loop>
+      </ul>
+    </div>
+  </mt:if>
+  </div>
+  </div>
+</div>
+<mt:else>
+<mtapp:statusmsg
+   id="no-theme"
+   class="info"
+   can_close="0">
+  <__trans phrase="No themes are installed.">
+</mtapp:statusmsg>
+</mt:loop>
+</mt:setvartemplate>
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+    var theme_ids = [];
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mt:if name="blog_id">
+<div id="current-theme-group" class="theme-group">
+  <h4 class="theme-group-name"><__trans phrase="Current Theme"></h4>
+  <div class="theme-list">
+  <mt:setvar name="loop_for" value="current_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+<mt:else>
+<div id="theme-in-use-group" class="theme-group">
+  <h4 class="theme-group-name"><__trans phrase="Themes in Use"></h4>
+  <div class="theme-list">
+  <mt:setvar name="loop_for" value="theme_in_use_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+</mt:if>
+<div id="<$mt:var name="scope_type"$>-theme-group" class="theme-group">
+  <h4 class="theme-group-name"><__trans phrase="Available Themes"></h4>
+  <div class="theme-list">
+  <mt:setvar name="loop_for" value="available_theme_loop" /><mt:var name="theme_loop_tmpl">
+  </div>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+.card-header {
+ border-bottom: 0;
+}
+
+#theme-in-use-group .card-header,
+#theme-in-use-group .theme-details,
+#current-theme-group .card-header,
+#current-theme-group .theme-details {
+  background-color: #e6f2f4;
+}
+
+.theme-details {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.theme-tabs-list .nav-link {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.disabled .theme-author,
+.disabled .description {
+  color: #868e96;
+}
+
+.theme-toggle-button .mt-icon--secondary {
+  -webkit-transition: 0.2s ease-in-out;
+  transition: 0.2s ease-in-out;
+}
+
+.theme-toggle-button a[aria-expanded="false"] .mt-icon--secondary {
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+}
+
+.theme-toggle-button a[aria-expanded="true"] .mt-icon--secondary {
+  -webkit-transform: rotate(0deg);
+          transform: rotate(0deg);
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+function openWarning(id) {
+  jQuery('#theme-' + id + '-details').collapse('show');
+  jQuery('#theme-' + id + '-warnings').tab('show');
+}
+
+function openError(id) {
+  jQuery('#theme-' + id + '-details').collapse('show');
+  jQuery('#theme-' + id + '-errors').tab('show');
+}
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('.collapse.theme-details').on('show.bs.collapse', function (e) {
+  jQuery('.collapse.theme-details').collapse('hide');
+});
+
+jQuery('.theme-tabs-list li:first-child a').trigger('click');
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

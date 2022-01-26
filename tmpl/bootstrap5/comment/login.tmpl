@@ -1,0 +1,128 @@
+<mt:setvarblock name="page_title"><__trans phrase="Sign in to comment"></mt:setvarblock>
+<mt:setvar name="screen_id" value="sign-in">
+<mt:setvar name="screen_class" value="sign-in">
+<mt:setvar name="no_page_header" value="1">
+
+<mt:setvarblock name="page_content">
+<mt:if name="auth_loop">
+<mtapp:setting
+   id="comment_signin_options"
+   label="<__trans phrase="Sign in using">..."
+   label_for="auth_options"
+   label_class="top-label">
+  <select name="auth_options" id="auth_options" class="custom-select form-control full">
+  <mt:if name="enabled_MovableType">
+    <option value="<mt:var name="default_id" escape="html">"><mt:var name="default_signin" escape="html"></option>
+  </mt:if>
+  <mt:loop name="auth_loop">
+    <option value="<mt:var name="id" escape="html">"><mt:var name="name" escape="html"></option>
+  </mt:loop>
+  </select>
+</mtapp:setting>
+</mt:if>
+
+<mt:if name="message">
+<mtapp:statusmsg
+   id="message"
+   class="warning"
+   can_close="0">
+  <mt:var name="message">
+</mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="enabled_MovableType">
+<div id="signin_with_<mt:var name="default_id" escape="html">"<mt:unless name="enabled_MovableType"> style="display: none"</mt:unless>>
+  <form method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="do_login" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+    <input type="hidden" name="static" value="<mt:var name="static" escape="html">" />
+    <input type="hidden" name="return_url" value="<mt:var name="return_url" escape="html">" />
+  <mt:unless name="auth_mode_mt">
+    <input type="hidden" name="external_auth" value="1" />
+  </mt:unless>
+
+    <mtapp:setting
+       id="username"
+       label="<__trans phrase="Username">"
+       label_for="username"
+       label_class="top-label">
+      <input type="text" name="username" id="username" class="form-control text full" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="password"
+       label="<__trans phrase="Password">"
+       label_for="password"
+       label_class="top-label">
+      <input type="password" name="password" id="password" class="form-control text password full" />
+    </mtapp:setting>
+
+    <div id="remember-me" class="checkbox mb-4">
+      <div class="custom-control custom-checkbox">
+        <input type="checkbox" id="remember" class="custom-control-input" name="remember" value="1" accesskey="r" />
+        <label class="custom-control-label" for="remember"><__trans phrase="Remember me?"></label>
+      </div>
+    </div>
+
+    <div class="row align-items-center actions-bar actions-bar-login">
+      <div class="col order-last order-md-first">
+    <mt:if name="can_recover_password">
+      <div id="forget-password" class="mb-4">
+        <a href="<mt:var name="script_url">?__mode=start_recover<mt:if name="return_url">&return_to=<mt:var name="return_url" escape="url"></mt:if>">
+          <__trans phrase="Forgot your password?">
+        </a>
+      </div>
+    </mt:if>
+    <mt:if name="registration_allowed">
+      <div id="sign-up">
+        <__trans phrase="Not a member? <a href="[_1]">Sign Up</a>!" params="<mt:var name="script_url">?__mode=signup&amp;blog_id=<mt:var name="blog_id">&amp;entry_id=<mt:var name="entry_id" escape="js"><mt:if name="static">&amp;static=<mt:var name="static" escape="url"></mt:if><mt:if name="return_url">&amp;return_url=<mt:var name="return_url" escape="url"></mt:if>">
+      </div>
+    </mt:if>
+      </div>
+      <div class="col-12 col-md-auto order-first order-md-last mb-4 mb-md-0 text-right">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Sign In (s)">"
+           class="sign-in action primary button btn__mobile btn-primary">
+          <__trans phrase="Sign in">
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
+</mt:if>
+
+<mt:if name="auth_loop">
+<mt:loop name="auth_loop">
+<div id="signin_with_<mt:var name="id" escape="html">"<mt:if name="name" ne="$default_signin"> style="display: none"</mt:if>>
+  <mt:var name="login_form">
+</div>
+</mt:loop>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery('#auth_options').on('change', function() {
+        jQuery('div[id^=signin_with_]').hide();
+        jQuery('#signin_with_'+jQuery(this).val()).show();
+    }).trigger('change');
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

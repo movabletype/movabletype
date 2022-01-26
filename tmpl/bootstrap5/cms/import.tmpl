@@ -1,0 +1,189 @@
+<mt:setvarblock name="page_title"><__trans phrase="Import [_1] Entries" params="<mt:var name="scope_label">"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="import" value="1">
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+var last_shown;
+function toggleDisplay(selection) {
+    var id = 'config-' + selection.value;
+    var div = MT.Util.getByID(id);
+    if (div && div.style.display != "block") {
+        if (last_shown) {
+            last_shown.style.display = "none";
+        }
+        div.style.display = "block";
+        last_shown = div;
+    }
+    return false;
+}
+function validate(f) {
+    if (!f['blog_id'].value) {
+        alert("<__trans phrase="You must select a site to import." escape="js">");
+        return false;
+    }
+<mt:if name="password_needed">
+     if (jQuery('input[name="import_as_me"]:checked').val() === '0') {
+        if (!jQuery('input#password').val()) {
+            alert("<__trans phrase="Enter a default password for new users." escape="js">");
+            return false;
+        }
+    }
+</mt:if>
+     return true;
+}
+function selectBlog() {
+    return jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_select_weblog&amp;multi=0&amp;return_args=__mode%3Dstart_import');
+}
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<p class="page-desc">
+  <__trans phrase="Transfer site entries into Movable Type from other Movable Type installations or even other blogging tools or export your entries to create a backup or copy.">
+</p>
+
+<form method="post" id="import_form" enctype="multipart/form-data" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+  <input type="hidden" name="__mode" value="import" />
+  <input type="hidden" id="import_blog_id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:settinggroup id="import-entry-settings">
+  <mt:if name="importer_loop">
+    <mtapp:setting
+       id="import_type"
+       label="<__trans phrase="Importing from">">
+      <select name="import_type" class="custom-select form-control" onchange="return toggleDisplay(this)">
+      <mt:loop name="importer_loop">
+        <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+  <mt:loop name="importer_loop">
+    <div class="config" id="config-<mt:var name="key" escape="html">" style="display:none;">
+      <mt:var name="importer_options_html">
+    </div>
+  </mt:loop>
+  </mt:if>
+
+  <mt:if name="is_administrator">
+    <mtapp:setting
+       id="import_as_me"
+       label="<__trans phrase="Ownership of imported entries">">
+      <ul class="list-unstyled">
+        <li>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="import_as_me-on" name="import_as_me" value="1" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').hide();"</mt:if> checked="checked">
+            <label class="custom-control-label" for="import_as_me-on">
+              <__trans phrase="Import as me">
+            </label>
+          </div>
+        </li>
+        <li>
+          <div class="custom-control custom-radio">
+            <input class="custom-control-input" type="radio" id="import_as_me-off" name="import_as_me" value="0" <mt:if name="password_needed">onclick="jQuery('#setpassworddiv').show();"</mt:if>>
+            <label class="custom-control-label" for="import_as_me-off">
+              <__trans phrase="Preserve original user">
+            </label>
+          </div>
+        </li>
+      </ul>
+    <mt:if name="password_needed">
+      <div id="setpassworddiv" style="display:none;">
+        <p>
+          <__trans phrase="If you choose to preserve the ownership of the imported entries and any of those users must be created in this installation, you must define a default password for those new accounts.">
+        </p>
+        <div class="form-inline">
+          <label class="mr-sm-3" for="password">
+            <__trans phrase="Default password for new users:">
+          </label>
+          <input type="password" name="password" id="password" class="form-control text password" />
+        </div>
+        <div class="form-inline">
+          <small class="text-muted hint">
+            <__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)
+          </small>
+        </div>
+      </div>
+      <script type="text/javascript">
+      /* <![CDATA[ */
+      <$mt:PasswordValidation form="import_form" password="password" username=""$>
+      /* ]]> */
+      </script>
+    </mt:if>
+    </mtapp:setting>
+  <mt:else>
+    <p class="page-desc">
+      <input type="hidden" name="import_as_me" value="1" />
+      <__trans phrase="You will be assigned the user of all imported entries.  If you wish the original user to keep ownership, you must contact your MT system administrator to perform the import so that new users can be created if necessary.">
+    </p>
+  </mt:if>
+
+    <mtapp:setting
+       id="file"
+       label="<__trans phrase="Upload import file (optional)">"
+       help_page="entry_import"
+       help_section="source_file">
+      <input name="file" id="file" type="file" class="form-control-file" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="convert_breaks"
+       label="<__trans phrase="Text Formatting">"
+       show_hint="1"
+       hint_id="textFormatted"
+       hint="<__trans phrase="Apply this formatting if text format is not set on each entry.">">
+      <select name="convert_breaks" id="convert_breaks" class="custom-select form-control" aria-describedby="textFormatted">
+      <mt:loop name="text_filters">
+        <option value="<mt:var name="key" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="encoding"
+       label="<__trans phrase="Import File Encoding">"
+       help_page="entry_import"
+       help_section="source_file_encoding">
+      <select name="encoding" id="encoding" class="custom-select form-control">
+      <mt:loop name="encoding_names">
+        <option value="<mt:var name="name" escape="html">"><__trans phrase="<mt:var name="display_name" escape="html">"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="default_cat_id"
+       label="<__trans phrase="Default category for entries (optional)">"
+       help_page="entry_import"
+       help_section="default_category_for_entries">
+      <select name="default_cat_id" id="default_cat_id" class="custom-select form-control">
+        <option value=""><__trans phrase="Select a category"></option>
+      <mt:loop name="category_loop">
+        <option value="<mt:var name="category_id" escape="html">"><mt:var name="category_label" escape="html"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Import Entries (s)">"
+         class="inport action primary button btn btn-primary">
+        <__trans phrase="Import Entries">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+  </mtapp:settinggroup>
+</form>
+
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,149 @@
+<mt:app:ContentFieldOptionGroup
+   type="select_box">
+
+  <mtapp:ContentFieldOption
+     id="select_box-multiple"
+     label="<__trans phrase="Allow users to select multiple values?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="select_box-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple }><label for="select_box-multiple"><__trans phrase="Allow users to select multiple values?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-min"
+     label="<__trans phrase="Minimum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="select_box-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-max"
+     label="<__trans phrase="Maximum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="select_box-max" class="form-control w-25" min="1" value={ options.max } onchange={ enterMax }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="select_box-values"
+     required="1"
+     label="<__trans phrase="Values">">
+    <div class="mt-table--outline mb-3">
+      <table class="table mt-table values-option-table" ref="table">
+        <thead>
+          <tr>
+            <th scope="col"><__trans phrase="Selected"></th>
+            <th scope="col"><__trans phrase="Label"></th>
+            <th scope="col"><__trans phrase="Value"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr each={ values }>
+            <td><input type="checkbox" class="form-control" checked={ checked } onchange={ enterInitial }></td>
+            <td><input type="text" class="form-control required" name="label" oninput={ enterLabel } value={ label }></td>
+            <td><input type="text" class="form-control required" name="value" oninput={ enterValue } value={ value }></td>
+            <td><button onclick={ parent.deleteRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="delete"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_trash"></use></svg><__trans phrase="delete"></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button onclick={ addRow } type="button" class="btn btn-default btn-sm"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="add"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_add"></use></svg><__trans phrase="add"></button>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+
+  if ( this.options.can_add === "0" ) {
+    this.options.can_add = 0
+  }
+
+  if ( this.options.multiple === "0" ) {
+    this.options.multiple = 0
+  }
+
+  <mt:include name="content_field_type_options/selection_common_script.tmpl">
+
+  deleteRow(e) {
+    item = e.item
+    index = this.values.indexOf(item)
+    this.values.splice(index, 1)
+    if ( this.values.length == 0 ) {
+      this.values = [{
+        "checked": "checked"
+      }]
+    }
+    else {
+      found = false
+      this.values.forEach( function(v) {
+        if ( v.checked == "checked" )
+          found = true;
+      });
+      if ( !found )
+        this.values[0].checked = "checked"
+    }
+  }
+
+  enterInitial(e) {
+    var target = e.target
+    var state = target.checked
+    var block = jQuery(e.target).parents('.mt-contentfield')
+
+    // Clear all check when not to allow multiple selection
+    if ( !this.options.multiple || this.options.multiple == 0 || this.options.multiple == false ) {
+      this._clearAllInitial(block)
+    }
+
+    // Set current item status
+    item = e.item
+    index = this.values.indexOf(item)
+    e.target.checked = state
+    this.values[index].checked = state ? "checked" : ""
+
+    if ( this.options.multiple || this.options.multiple == 1 ) {
+      this._updateInittialField(block)
+    }
+
+  }
+
+  changeStateMultiple(e) {
+    var block = jQuery(e.target).parents('.mt-contentfield')
+    this.options.multiple = e.target.checked
+    if (!this.options.multiple && block.find('.values-option-table').find('input[type="checkbox"]:checked').length > 1) {
+      this._clearAllInitial(block)
+    }
+  }
+
+  enterMax(e) {
+    var block = jQuery(e.target).parents('.mt-contentfield')
+    this._updateInittialField(block)
+  }
+
+  _updateInittialField(block) {
+    var max = Number(block.find('input[name="max"]').val())
+    var cur = block.find('.values-option-table').find('input[type="checkbox"]:checked').length
+    if ( max == 0 || cur < max ) {
+      var chkbox = block.find('.values-option-table').find('input[type="checkbox"]')
+      jQuery.each( chkbox, function(i) {
+        jQuery(chkbox[i]).prop('disabled', false)
+      })
+    }
+    else {
+      var chkbox = block.find('.values-option-table').find('input[type="checkbox"]:not(:checked)')
+      jQuery.each( chkbox, function(i) {
+        jQuery(chkbox[i]).prop('disabled', true)
+      })
+    }
+  }
+    
+  _clearAllInitial(block) {
+    var initials = block.find('.values-option-table').find('input[type="checkbox"]')
+    if ( initials.length > 1 ) {
+      jQuery.each(initials, function(v) {
+        var elm = jQuery(initials[v])
+        elm.prop('checked', false)
+        elm.prop('disabled', false)
+      })
+    }
+    this.values.forEach( function(v) {
+      v.checked = ""
+    })
+  }
+  </mtapp:ContentFieldOptionScript>
+</mt:app:ContentFieldOptionGroup>

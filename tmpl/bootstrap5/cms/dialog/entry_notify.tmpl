@@ -1,0 +1,111 @@
+<mt:setvar name="page_title" value="<__trans phrase="Send a Notification">">
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function doValidateNotifyRecips(f) {
+    if (f.send_notify_list && f.send_notify_list.checked)
+        return true
+
+    if (f.send_notify_emails && !f.send_notify_emails.value) {
+        alert('<__trans phrase="You must specify at least one recipient." escape="singlequotes">');
+        return false;
+    }
+
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form name="notify_form" id="notify_form" method="post" action="<mt:var name="script_url">" target="_top">
+  <input type="hidden" name="__mode" value="send_notify" />
+  <input type="hidden" name="entry_id" value="<mt:var name="entry_id" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+  <p>
+    <__trans phrase="Your [_1]'s name, title, and a link to view it will be sent in the notification. Additionally, you can add a message, include an excerpt and/or send the entire body." params="<mt:var name="scope_label">">
+  </p>
+
+  <mtapp:setting
+     id="send_notify_list"
+     label="<__trans phrase="Recipients">"
+     label_class="top-label"
+     show_hint="1"
+     hint_id="recipientsHelp"
+     hint="<__trans phrase="Enter email addresses on separate lines or separated by commas.">">
+    <ul class="list-unstyled">
+    <mt:if name="config.enableaddressbook">
+      <li>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="send_notify_list" id="send_notify_list" value="1" class="custom-control-input cb" checked="checked" aria-describedby="recipientsHelp" />
+          <label class="custom-control-label" for="send_notify_list"><__trans phrase="All addresses from Address Book"></label>
+        </div>
+      </li>
+    </mt:if>
+      <li>
+        <textarea name="send_notify_emails" id="send_notify_emails" class="form-control text full low"></textarea>
+      </li>
+    </ul>
+  </mtapp:setting>
+  <mtapp:setting
+     id="message"
+     label="<__trans phrase="Optional Message">"
+     label_class="top-label">
+    <textarea name="message" id="message" class="form-control text full high"><mt:var name="notification" escape="html"></textarea>
+  </mtapp:setting>
+  <mtapp:setting
+     id="send_content"
+     label="<__trans phrase="Optional Content">"
+     label_class="top-label">
+    <ul class="list-unstyled">
+      <li>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="send_excerpt" id="send_excerpt" class="custom-control-input" value="1" />
+          <label class="custom-control-label" for="send_excerpt"><__trans phrase="Entry Excerpt"></label>
+        </div>
+      </li>
+      <li>
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="send_body" id="send_body" class="custom-control-input" value="1" />
+          <label class="custom-control-label" for="send_body">
+            <__trans phrase="Body">
+            <span class="text-muted disabled">
+              <__trans phrase="(Body will be sent without any text formatting applied.)">
+            </span>
+          </label>
+        </div>
+      </li>
+    </ul>
+  </mtapp:setting>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+  <button
+     onclick="return doValidateNotifyRecips(this.form);"
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Send notification (s)">"
+     class="send action primary button btn btn-primary">
+    <__trans phrase="Send">
+  </button>
+  <button
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Cancel (x)">"
+     data-mt-modal-close
+     class="cancel action button mt-close-dialog btn btn-default">
+    <__trans phrase="Cancel">
+  </button>
+
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

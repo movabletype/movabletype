@@ -1,0 +1,205 @@
+<mt:unless name="direct_asset_insert"><mt:setvarblock name="screen_type">dialog-screen new-asset</mt:setvarblock></mt:unless>
+<mt:setvarblock name="page_title"><__trans phrase="File Options"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/focus.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+  <script type="text/javascript">
+    /* <![CDATA[ */
+    var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+    // array of tag names
+    var tagList;
+
+    function tagSplit(str) {
+        var delim = RegExp.escape(tag_delim);
+        var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+        str = str.replace(/(^\s+|\s+$)/g, '');
+        var tags = [];
+        while (str.length && str.match(delim_scan)) {
+            str = str.substr(RegExp.$1.length);
+            var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+            tag = tag.replace(/(^\s+|\s+$)/g, '');
+            tag = tag.replace(/\s+/g, ' ');
+            if (tag != '') tags.push(tag);
+        }
+        return tags;
+    }
+
+    var autoTag;
+    <mt:if name="tags_js">
+    tagList = <mt:var name="tags_js">;
+    </mt:if>
+
+    function init()
+    {
+        <mt:if name="tags_js">initTags();</mt:if>
+    }
+
+    var tagPos = 0;
+    function initTags() {
+        var t = getByID('tags-cache');
+        if ( t ) {
+            log('tag cache:'+t.value);
+            var v = getByID('tags');
+            if ( t.value )
+                v.value = t.value;
+            DOM.addEventListener( v, "change", function() { log('caching tags'); t.value = v.value; } );
+        }
+        if (!tagList || tagList.length == 0) return;
+        autoTag = new TC.TagComplete("tags", tagList);
+        autoTag.delimiter = tag_delim;
+    }
+
+    TC.attachLoadEvent( init );
+
+    function presubmit(f) {
+        if(jQuery('[name="thumb"]').prop('checked')){
+          if ( !jQuery('[name="thumb_width"]').mtValidate('default')) {
+            return false;
+          }
+        }
+        var mode = 'complete_upload';
+    <mt:if name="entry_insert">
+        mode = 'asset_insert';
+    <mt:else name="asset_select">
+        mode = 'asset_insert';
+    <mt:else name="can_create_post">
+        if (f.new_entry && f.new_entry.checked) mode = 'start_upload_entry';
+    </mt:if>
+        if (mode != 'asset_insert') {
+            f.target = "_top";
+        }
+        f['__mode'].value = mode;
+        return true;
+    }
+
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery.mtValidateAddRules({
+        '[name="thumb_width"]': function ($e) {
+          return /^\d+$/.test($e.val()) && ($e.val() > 0);
+        }
+    });
+    jQuery.mtValidateAddMessages({
+        '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
+    });
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<mt:if name="extension_message">
+<mtapp:statusmsg
+   id="extension-changed"
+   class="success"
+   camclose="0">
+  <mt:var name="extension_message" escape="html">
+</mtapp:statusmsg>
+</mt:if>
+
+<form action="<mt:var name="script_url">" method="post" onsubmit="return presubmit(this)">
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="id" value="<mt:var name="asset_id">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="site_path" value="<mt:var name="site_path" escape="html">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+  <input type="hidden" name="fname" value="<mt:var name="fname" escape="html">" />
+  <input type="hidden" name="url" value="<mt:var name="url" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:unless name="direct_asset_insert">
+  <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+  <input type="hidden" name="extra_path" value="<mt:var name="extra_path" escape="html">" />
+</mt:unless>
+<mt:if name="entry_insert">
+  <input type="hidden" name="new_entry" value="1" />
+</mt:if>
+<mt:unless name="is_image">
+  <input type="hidden" name="link" value="1" />
+</mt:unless>
+
+<mt:unless name="direct_asset_insert">
+  <div id="asset_details">
+    <mtapp:setting
+       id="label"
+       label_class="top-label"
+       label="<__trans phrase="Label">">
+      <input type="text" name="label" id="label" value="<mt:var name="fname" escape="html">" class="text full">
+    </mtapp:setting>
+    <mtapp:setting
+       id="description"
+       label_class="top-label"
+       label="<__trans phrase="Description">">
+      <textarea name="description" id="description" class="text full low"></textarea>
+    </mtapp:setting>
+    <mtapp:setting
+       id="tags"
+       label_class="top-label"
+       label="<__trans phrase="Tags">">
+      <div class="form-group position-relative">
+        <input type="text" name="tags" id="tags" class="text full" value="" mt:watch-change="1" autocomplete="off" />
+        <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+        <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+          <div id="tags_completion" class="mt_suggest__list">
+            <ul></ul>
+          </div>
+        </div>
+      </div>
+    </mtapp:setting>
+  </div>
+
+  <mt:unless name="asset_select">
+    <mt:unless name="entry_insert">
+      <mt:if name="can_create_post">
+  <mtapp:setting
+     id="new_entry"
+     label="<__trans phrase="Create entry using this uploaded file">"
+     label_class="no-header"
+     help_page="file_upload"
+     help_section="creating_a_new_entry">
+    <input type="checkbox" name="new_entry" id="new_entry" value="1" checked="checked" onclick="toggleSubPrefs(this); return true;" />
+    <label for="new_entry"><__trans phrase="Create a new entry using this uploaded file."></label>
+  </mtapp:setting>
+      </mt:if>
+    </mt:unless>
+  </mt:unless>
+</mt:unless>
+
+<mt:var name="options_snippet">
+
+<mt:setvarblock name="action_buttons">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Finish (s)">"
+     class="action primary button">
+    <__trans phrase="Finish"></button>
+  <button
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Cancel (x)">"
+     class="action button"
+     onclick="cancel_click(this)">
+    <__trans phrase="Cancel"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<script type="text/javascript">
+  /* <![CDATA[ */
+  function cancel_click(btn) {
+      var frm = btn.form;
+      frm.onsubmit = function() {return cancel_upload(frm)};
+      return true;
+  }
+  function cancel_upload(frm) {
+      frm['__mode'].value = 'cancel_upload'
+      parent.jQuery.fn.mtDialog.close();
+      return true;
+  }
+  /* ]]> */
+</script>
+
+<mt:include name="dialog/footer.tmpl">

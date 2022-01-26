@@ -1,0 +1,110 @@
+<$mt:setvar name="screen_type" value="dialog-screen"$>
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = document['add_member'];
+        for (var i = 0; i < dialog.panels.length; i++) {
+            var panel = dialog.panels[i];
+            var fld = frm.elements[panel.name];
+            if (!fld) {
+                alert("cannot find field for " + panel.name);
+                continue;
+            }
+            fld.value = panel.selectionList.items().join(",");
+        }
+        // commit!
+        frm.submit();
+    } else {
+        parent.jQuery.fn.mtDialog.close();
+    }
+}
+
+function init() {
+    dialog = new Dialog.MultiPanel("assoc");
+    panels = [];
+    var panel;<mt:loop name="panel_loop">
+    panel = new ListingPanel("<mt:var name="panel_type">");
+    panel.pager.setState(<mt:var name="pager_json">);
+    panels[panels.length] = panel;</mt:loop>
+    dialog.setPanels(panels);
+    dialog.open({}, dialog_closed);
+}
+
+TC.attachLoadEvent(init);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:if name="missing_data">
+<mt:setvarblock name="modal_body">
+    <mt:if name="missing_group">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=group");' class='alert-link'>">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_author">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href='javascript:void(0)' onclick='parent.jQuery.fn.mtModal.close("<mt:var name="script_full_url">?__mode=view&amp;_type=author");' class='alert-link'>">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+<div class="actions-bar">
+    <form onsubmit="return false" onclick="window.focus();">
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action primary button btn btn-primary"
+           title="<__trans phrase="Close (x)">"
+           data-mt-modal-close
+           ><__trans phrase="Close"></button>
+    </form>
+</div>
+</mt:setvarblock>
+<mt:else>
+<mt:setvarblock name="page_content">
+    <form name="add_member" id="add_member" method="post" target="_top" action="<mt:var name="script_url">">
+        <input type="hidden" name="__mode" value="add_member" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <mt:loop name="panel_loop">
+        <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
+    </form>
+
+    <mt:var name="form_header">
+    <div class="modal-header">
+        <mt:if name="modal_header">
+            <mt:var name="modal_header">
+        <mt:elseif name="page_title">
+            <h4 class="mt-0 modal-title"><mt:var name="page_title"></h4>
+        </mt:if>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+
+    <mt:loop name="panel_loop">
+        <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+    </mt:loop>
+</mt:setvarblock>
+</mt:if>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

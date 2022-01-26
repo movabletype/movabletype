@@ -1,0 +1,191 @@
+<mt:setvar name="edit_group" value="1">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+<mt:if name="id">
+  <mt:setvarblock name="page_title"><__trans phrase="Edit Group"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Create Group"></mt:setvarblock>
+</mt:if>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function toggleDisabled( state ){
+    if (state == 1) {
+        state = false;
+    } else if (state == 2) {
+        state = true;
+    }
+    var elements = TC.getElementsByClassName('state_change');
+    for (var i=0; i < elements.length; i++) {
+        elements[i].disabled = state;
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg" id="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     can_close="1">
+    <__trans phrase="This group profile has been updated.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="status_pending">
+  <mtapp:statusmsg
+     id="group-pending"
+     class="alert"
+     can_close="0">
+    <__trans phrase="This group was classified as pending.">
+  </mtapp:statusmsg>
+<mt:else>
+  <mt:unless name="status_enabled">
+  <mtapp:statusmsg
+     id="group-disabled"
+     class="alert"
+     can_close="0">
+    <__trans phrase="This group was classified as disabled.">
+  </mtapp:statusmsg>
+  </mt:unless>
+</mt:if>
+</mt:setvarblock>
+
+<mt:unless name="new_object">
+<mt:setvarblock name="related_content">
+<mtapp:widget
+  id="user-properties"
+  label="<__trans phrase="Useful links">">
+  <ul class="list-unstyled">
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list&_type=group_member&amp;filter=group_id&amp;filter_val=<mt:var name="id" escape="html">&blog_id=0"><mt:if name="user_count" eq="1"><__trans phrase="Member ([_1])" params="1"><mt:else><__trans phrase="Members ([_1])" params="<mt:var name="user_count">"></mt:if></a></li>
+    <li><a href="<mt:var name="SCRIPT_URL">?__mode=list&_type=association&amp;filter=group_id&amp;filter_val=<mt:var name="id" escape="html">&amp;blog_id=0"><mt:if name="permission_count" eq="1"><__trans phrase="Permission ([_1])" params="1"><mt:else><__trans phrase="Permissions ([_1])" params="<mt:var name="permission_count">"></mt:if></a></li>
+  </ul>
+</mtapp:widget>
+</mt:setvarblock>
+</mt:unless>
+
+<mt:setvarblock name="page_content">
+<div id="edit-group" class="mt-5">
+  <form id="edit_group" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="group" />
+  <mt:if name="id">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  </mt:if>
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <mt:if name="show_external_id">
+    <mt:if name="external_id">
+    <mtapp:setting
+       id="ldap_group_id"
+       label="<__trans phrase="LDAP Group ID">"
+       content_class="field-content-text"
+       hint="<__trans phrase="The LDAP directory ID for this group.">">
+      <p class="static"><mt:var name="external_id" escape="html"></p>
+    </mtapp:setting>
+    </mt:if>
+  </mt:if>
+
+  <mt:if name="id">
+    <mt:if name="status_pending">
+    <$mt:setvar name="group_status" value="group-status-pending"$>
+    <mt:else>
+      <mt:unless name="status_enabled">
+    <$mt:setvar name="group_status" value="group-status-disabled"$>
+      </mt:unless>
+    </mt:if>
+    <mtapp:setting
+       id="status"
+       label="<__trans phrase="_USER_STATUS_CAPTION">"
+       label_class="left-label <$mt:var name="group_status"$>"
+       hint="<__trans phrase="Status of this group in the system. Disabling a group prohibits its members&rsquo; from accessing the system but preserves their content and history.">">
+      <select name="status" id="status" class="custom-select form-control" onchange="toggleDisabled(this.value)">
+        <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1"><__trans phrase="_USER_ENABLED"></option>
+        <option <mt:unless name="status_enabled">selected="selected"</mt:unless> value="2"><__trans phrase="_USER_DISABLED"></option>
+      </select>
+    </mtapp:setting>
+  </mt:if>
+
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Name">"
+       required="1"
+       hint="<__trans phrase="The name used for identifying this group.">">
+    <mt:if name="can_edit_groupname">
+      <input type="text" name="name" id="name" class="form-control text state_change required" value="<mt:var name="name" escape="html">"<mt:unless name="status_enabled"> disabled="disabled"</mt:unless> />
+    <mt:else>
+      <input type="hidden" name="name" id="name" value="<mt:var name="name" escape="html">" />
+      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" disabled="disabled" />
+    </mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="display_name"
+       label="<__trans phrase="Display Name">"
+       hint="<__trans phrase="The display name for this group.">">
+    <mt:if name="display_name_readonly">
+      <input type="hidden" name="dispaly_name" id="display_name" value="<mt:var name="display_name" escape="html">" />
+      <input type="text" name="display_name" id="dispaly_name" class="form-control text" value="<mt:var name="display_name" escape="html">" disabled="disabled" />
+    <mt:else>
+      <input type="text" name="display_name" id="display_name" class="form-control text state_change" value="<mt:var name="display_name" escape="html">"<mt:unless name="status_enabled"> disabled="disabled"</mt:unless> />
+    </mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="description"
+       label="<__trans phrase="Description">"
+       hint="<__trans phrase="The description for this group.">">
+      <textarea name="description"
+       id="description" class="form-control text low state_change"<mt:unless name="status_enabled"> disabled="disabled"</mt:unless>><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+  <mt:if name="id">
+    <mtapp:setting
+       id="created_by"
+       label="<__trans phrase="Created By">">
+      <p class="static"><mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if></p>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="created_on"
+       label="<__trans phrase="Created On">">
+      <p class="static"><mt:date ts="$created_on"></p>
+    </mtapp:setting>
+  </mt:if>
+
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to this field (s)">"
+       class="btn btn-primary save action primary button">
+      <__trans phrase="Save Changes">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+
+    jQuery.mtValidateAddMessages({
+        '#name.required': '<__trans phrase="Each group must have a name." escape="singlequotes">'
+    });
+
+    jQuery('form#edit_group').on('submit', function () {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,281 @@
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="page_title" value="<__trans phrase="Commenter Details">">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved_commenter">
+  <mtapp:statusmsg
+     id="saved-commenter"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="trusted">
+  <mtapp:statusmsg
+     id="trusted"
+     class="success">
+    <__trans phrase="The commenter has been trusted.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="banned">
+  <mtapp:statusmsg
+     id="banned"
+     class="success">
+    <__trans phrase="The commenter has been banned.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+<mtapp:widget
+   id="useful-links"
+   label="<__trans phrase="Useful links">">
+  <ul class="list-unstyled">
+    <li><a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;filter=commenter_id&amp;filter_val=<mt:var name="id" escape="url">"><__trans phrase="Comments from [_1]" params="<mt:var name="nickname" escape="html" escape="html">"></a></li>
+  </ul>
+</mtapp:widget>
+<mtapp:PageActions>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+function countMarked (f, nameRestrict) {
+    var count = 0;
+    var e = f.id;
+    if (!e) return 0;
+    if (e.type && e.type == 'hidden') return 1;
+    if (e.value && e.checked)
+        count++;
+    else
+    if (nameRestrict) {
+        for (i=0; i<e.length; i++)
+            if (e[i].checked && (e[i].name == nameRestrict))
+                count++;
+    } else {
+        for (i=0; i<e.length; i++)
+            if (e[i].checked)
+                count++;
+    }
+   return count;
+}
+
+function doForMarkedInThisWindow (f, singular, plural, nameRestrict,
+                                  mode, args, phrase) {
+    var count = countMarked(f, nameRestrict);
+    if (!count) {
+        alert(trans('You did not select any [_1] [_2].', plural, phrase));
+        return false;
+    }
+    f.target = f.target || "_top";
+    if (f.elements['itemset_action_input'])
+        f.elements['itemset_action_input'].value = '';
+    f.elements["__mode"].value = mode;
+    if (args) {
+        var opt;
+        var input;
+        if (opt = itemset_options[args['action_name']]) {
+            if (opt['min'] && (count < opt['min'])) {
+                alert(trans('You can only act upon a minimum of [_1] [_2].', opt['min'], plural));
+                return false;
+            } else if (opt['max'] && (count > opt['max'])) {
+                alert(trans('You can only act upon a maximum of [_1] [_2].', opt['max'], plural));
+                return false;
+            } else if (opt['input']) {
+                if (input = prompt(opt['input'])) {
+                    f.elements['itemset_action_input'].value = input;
+                } else {
+                    return false;
+                }
+            } else if (opt['continue_prompt']) {
+                if (!confirm(opt['continue_prompt'])) {
+                    return false;
+                }
+            }
+        }
+        for (var arg in args) {
+            if (f.elements[arg]) f.elements[arg].value = args[arg];
+            if (arg == 'search' && f.elements['return_args'].value) {
+                f.elements['return_args'].value += '&do_search=1&search='+encodeURIComponent(args[arg]);
+            }
+        }
+        if (opt && opt['dialog']) {
+            var q = jQuery(f).serialize();
+            var url = ScriptURI+'?'+q;
+            jQuery.fn.mtModal.open(url);
+            return false;
+        }
+    }
+    f.submit();
+}
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+<mt:if name="can_edit_commenters">
+  <mt:unless name="is_me">
+    <mt:if name="id">
+      <mt:unless name="type_author">
+        <mt:unless name="commenter_approved">
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="t"
+     title="<__trans phrase="Trust user (t)">"
+     class="action button btn btn-default">
+    <__trans phrase="Trust">
+  </button>
+        <mt:else>
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'untrust'}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="t"
+     title="<__trans phrase="Untrust user (t)">"
+     class="action button btn btn-default">
+    <__trans phrase="Untrust">
+  </button>
+        </mt:unless>
+      </mt:unless>
+      <mt:unless name="commenter_banned">
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="b"
+     title="<__trans phrase="Ban user (b)">"
+     class="action button btn btn-default">
+    <__trans phrase="Ban">
+  </button>
+      <mt:else>
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'itemset_action', {action_name:'unban'}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="b"
+     title="<__trans phrase="Unban user (b)">"
+     class="action button btn btn-default">
+    <__trans phrase="Unban">
+  </button>
+      </mt:unless>
+    <mt:else>
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'trust_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="t"
+     title="<__trans phrase="Trust user (t)">"
+     class="action button btn btn-default">
+    <__trans phrase="Trust">
+  </button>
+  <button
+     onclick="doForMarkedInThisWindow(this.form, '<__trans phrase="commenter" escape="js">', '<__trans phrase="commenters" escape="js">', 'id', 'ban_commenter', {}, '<__trans phrase="to act upon" escape="js">')"
+     type="submit"
+     accesskey="b"
+     title="<__trans phrase="Ban user (b)">"
+     class="action button btn btn-default">
+    <__trans phrase="Ban">
+  </button>
+    </mt:if>
+  </mt:unless>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="commenter" />
+  <input type="hidden" name="action_name" value="" />
+  <input type="hidden" name="itemset_action_input" value="" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="position_actions_top">
+  <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+</mt:if>
+  <mtapp:setting
+     id="name"
+     label="<__trans phrase="Display Name">">
+    <div class="form-group">
+      <mt:var name="nickname" escape="html">
+      <a title="<__trans phrase="View all comments with this name">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="nickname" escape="url">" class="d-inline-block">
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
+      </a>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="identity"
+     label="<__trans phrase="Identity">">
+    <div class="form-group">
+  <mt:if name="url">
+      <a href="<mt:var name="url" escape="html">" target="_blank" class="d-inline-block"><mt:var name="name" escape="html">
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
+      </a>
+  <mt:else>
+      <mt:var name="name" escape="html">
+  </mt:if>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="email"
+     label="<__trans phrase="Email Address">">
+    <div class="form-group">
+  <mt:if name="is_email_hidden">
+      <__trans phrase="Withheld">
+  <mt:else>
+      <mt:var name="email" escape="html">
+  </mt:if>
+  <mt:if name="is_email_hidden">
+      &nbsp;
+  <mt:else>
+      <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">" class="d-inline-block">
+        <mtapp:svgicon id="ic_search" title="<__trans phrase="Title">" size="sm">
+      </a>
+  </mt:if>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="url"
+     label="<__trans phrase="Website URL">">
+    <div class="form-group">
+  <mt:if name="url">
+      <a href="<mt:var name="url" escape="html">" class="d-inline-block"><mt:var name="url" escape="html">
+        <mtapp:svgicon id="ic_permalink" title="<__trans phrase="View">" size="sm">
+      </a>
+  <mt:else>
+    &nbsp;
+  </mt:if>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="status"
+     label="<__trans phrase="Status">">
+    <div class="form-group">
+  <mt:if name="commenter_approved">
+      <span class="icon-left-wide icon-trusted">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
+        <span class="badge badge-success"><__trans phrase="Trusted"></span>
+      </span>
+  <mt:else>
+    <mt:if name="commenter_banned">
+      <span class="icon-left-wide icon-banned">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
+        <span class="badge badge-default"><__trans phrase="Banned"></span>
+      </span>
+    <mt:else>
+      <span class="icon-left-wide icon-authenticated">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="Authenticated">" size="sm">
+        <span class="badge badge-info"><__trans phrase="Authenticated"></span>
+      </span>
+    </mt:if>
+  </mt:if>
+    </div>
+  </mtapp:setting>
+
+  <mt:if name="position_actions_bottom">
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+  </mt:if>
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

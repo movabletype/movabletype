@@ -1,0 +1,160 @@
+<mt:setvarblock name="page_title"><mt:if name="id"><__trans phrase="Edit Widget Set"><mt:else><__trans phrase="Create Widget Set"></mt:if></mt:setvarblock>
+
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+.placeholder {
+    border: 1px dashed #c0c6c9;
+    border-radius: .25em;
+    background-color: #fbfbfb;
+    margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 0;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<div id="edit-form">
+  <form id="manager" name="manager" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="save_widget" />
+  <mt:if name="id">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  </mt:if>
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="modules" value="" />
+
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Widget Set Name">"
+       label_for="name"
+       label_class="no-header">
+      <input type="text" name="name" id="name" class="form-control text full title required" value="<mt:var name="name" escape="html">" placeholder="<__trans phrase="Widget Set Name">" />
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <div class="my-4">
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Save changes to this widget set (s)">"
+           class="btn btn-primary save action primary button">
+          <__trans phrase="Save Changes">
+        </button>
+      </div>
+    </mt:setvarblock>
+
+    <div class="row">
+      <div class="col">
+        <p class="description"><__trans phrase="Drag and drop the widgets that belong in this Widget Set into the 'Installed Widgets' column."></p>
+      </div>
+    </div>
+
+    <div id="widget-manager" class="row line">
+      <div id="available-column" class="col-6 unit size1of2">
+        <mtapp:widget
+           id="available-widgets"
+           label="<__trans phrase="Available Widgets">">
+          <div id="available-column-items" class="connectSortable p-2">
+          <mt:loop name="available">
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                  <mtapp:svgicon id="ic_edit" title="edit">
+                </a>
+              </div>
+            </div>
+          </mt:loop>
+          </div>
+        </mtapp:widget>
+      </div>
+      <div id="installed-column" class="col-6 unit size1of2">
+        <mtapp:widget
+           id="installed-widgets"
+           label="<__trans phrase="Installed Widgets">">
+          <div id="installed-column-items" class="connectSortable p-2">
+          <mt:loop name="installed">
+            <div id="module-<mt:var name="id" escape="html">" class="mt-draggable my-2 widget widget-item" draggable="true" aria-grabbed="false">
+              <div class="col-auto">
+                <mtapp:svgicon id="ic_move" title="<__trans phrase="Draggable">">
+              </div>
+              <div class="col">
+                <mt:var name="name" escape="html">
+                  <a class="float-right" href="<mt:var name="script_url">?__mode=view&amp;_type=template&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" target="_blank">
+                    <mtapp:svgicon id="ic_edit" title="edit">
+                  </a>
+              </div>
+            </div>
+          </mt:loop>
+          </div>
+        </mtapp:widget>
+      </div>
+    </div>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery(' #installed-column-items, #available-column-items ').sortable({
+        connectWith: '.connectSortable',
+        placeholder: 'placeholder',
+        distance: 3,
+        cursor: 'move',
+        forcePlaceholderSize: true,
+        tolerance: 'pointer',
+        start: function (event, ui) {
+            ui.item.attr('aria-grabbed', true);
+        },
+        stop: function (event, ui) {
+            ui.item.attr('aria-grabbed', false);
+        }
+    }).disableSelection();
+
+    jQuery('button.save').on('click', function () {
+        var data = [];
+        var rex = RegExp("module-([0-9]+)");
+        jQuery('#installed-column-items .widget-item').each( function () {
+            if (this.id.match(rex)) {
+                data.push( RegExp.$1 );
+            }
+        });
+        jQuery('form#manager input[name=modules]').val( data.toString() );
+    });
+
+    jQuery.mtValidateAddMessages({
+        '#name.required': '<__trans phrase="You must set Widget Set Name." escape="js">'
+    });
+
+    jQuery('#manager').on('submit', function () {
+        if ( !jQuery(this).find('input, select').mtValidate('simple') )
+            return false;
+    });
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

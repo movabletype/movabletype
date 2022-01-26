@@ -1,0 +1,174 @@
+<mt:if name="can_multi">
+  <mt:setvarblock name="page_title"><__trans phrase="Add [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">"></mt:setvarblock>
+</mt:if>
+<mt:setvar name="screen_type" value="dialog-screen insert-content-data-dialog">
+
+<mt:setvarblock name="modal_body">
+<div class="row">
+  <div class="col-12">
+    <mt:include name="include/content_data_list.tmpl" dialog="1">
+  </div>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+<div class="actions-bar actions-bar-bottom">
+  <form action="" method="get" onsubmit="return false">
+    <button
+      type="submit"
+      accesskey="s"
+      title="<__trans phrase="Insert (s)">"
+      class="action primary button close-button disabled btn btn-primary"
+      disabled="true">
+      <__trans phrase="Insert">
+    </button>
+    <button
+      type="submit"
+      accesskey="x"
+      class="cancel action button mt-close-dialog btn btn-default"
+      data-mt-modal-close
+      title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </form>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.modal-body {
+  max-height: 20rem;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+<mt:if name="can_add">
+var currentPanel = '#create-content-data-panel';
+<mt:else>
+var currentPanel = '#select-content-data-panel';
+</mt:if>
+jQuery('.left-menu-item').on('click', function () {
+  // Make custom event
+  var event = new jQuery.Event('changePanel');
+
+  currentPanel = jQuery(this).attr('data-panel-id');
+  jQuery('#select_content_data input[name="id"]').val('');
+
+  jQuery('.actions-bar button.primary')
+    .attr('disabled', 'disabled')
+    .addClass('disabled');
+  jQuery('div.panel')
+    .addClass('hidden')
+    .hide();
+  jQuery(currentPanel)
+    .removeClass('hidden')
+    .show()
+    .trigger(event);
+  jQuery(this)
+    .parent('li')
+    .siblings()
+    .removeClass('active');
+  jQuery(this)
+    .parent('li')
+    .addClass('active');
+
+  var buttonText;
+  if (currentPanel === '#create-content-data-panel') {
+    buttonText = '<__trans phrase="Create and Insert">';
+  } else if (currentPanel === '#select-content-data-panel') {
+    buttonText = '<__trans phrase="Insert">';
+  }
+  jQuery('button.primary').text(buttonText);
+});
+jQuery('.actions-bar button.primary').on('click', function() {
+  var contentFieldId = '<mt:var name="content_field_id" escape="js">';
+  var canMulti = <mt:if name="can_multi">true<mt:else>false</mt:if>;
+
+  function getEditUrl(id) {
+    var query = {
+      __mode: 'view',
+      _type: 'content_data',
+      blog_id: '<mt:var name="blog_id" escape="js">',
+      content_type_id: '<mt:var name="content_type_id" escape="js">',
+      id: id
+    };
+    return '<mt:var name="script_url">?' + jQuery.param(query);
+  }
+
+  function getCollapseHtml(id, label, previewData) {
+    return ''
+      + '<div class="mt-draggable"<mt:if name="can_multi"> draggable="true" aria-grabbed="false"</mt:if>>'
+      +   '<input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="'+id+'" />'
+      +   '<div class="col-auto">'
+<mt:if name="can_multi">
+      +     '<mtapp:svgicon id="ic_move" title="Draggable" strip_linefeeds="1">'
+<mt:else>
+      +     '<mtapp:svgicon id="ic_blank" title="Blank" strip_linefeeds="1">'
+</mt:if>
+      +   '</div>'
+      +   '<div class="col text-wrap">'
+      +     label
+      +   '</div>'
+      +   '<div class="col-auto mr-3 d-none d-md-block">'
+      +     '<a href="javascript:void(0)" class="remove">'
+      +       '<__trans phrase="Remove">'
+      +     '</a>'
+      +   '</div>'
+      +   '<div class="col-auto">'
+      +     '<a class="d-inline-block" data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-'+id+'" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
+      +       '<mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary" strip_linefeeds="1">'
+      +     '</a>'
+      +   '</div>'
+      +   '<div class="mt-flexBreak"></div>'
+      +   '<div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html">-'+id+'">'
+      +     '<div class="row py-5 py-md-0 text-wrap preview-data">'
+      +       '<div class="col">'
+      +         previewData
+      +       '</div>'
+      +     '</div>'
+      +     '<div class="row border-top pt-4 d-md-none">'
+      +       '<div class="col-auto mx-auto">'
+      +         '<a href="javascript:void(0)" class="remove">'
+      +           '<__trans phrase="Remove">'
+      +         '</a>'
+      +       '</div>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>';
+  }
+
+  var $contentDataContainer = parent.jQuery('#content-type-field-' + contentFieldId);
+  if (!canMulti) {
+    $contentDataContainer.children('.mt-draggable').remove();
+  }
+
+  jQuery('input[name=id]:checked').each(function (index, input) {
+    var id = input.value;
+    var label = jQuery(input).data('label');
+    if ($contentDataContainer.find('input[value=' + id + ']').length) {
+      return;
+    }
+
+    var previewData = jQuery(input).parents('tr').next('.content-data-preview-data').find('div').html();
+    var html = getCollapseHtml(id, label, previewData);
+    $contentDataContainer.children('.alert').before(html);
+  });
+
+  if ($contentDataContainer.data('mtValidator')) {
+    $contentDataContainer.mtValid({ focus: false });
+  }
+
+  parent.setDirty(true);
+  log('found dirty form');
+  parent.app.setDirty();
+
+  jQuery.fn.mtModal.close();
+  return false;
+});
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

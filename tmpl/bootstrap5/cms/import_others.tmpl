@@ -1,0 +1,25 @@
+    <mtapp:setting
+        id="title_start"
+        label="<__trans phrase="Start title HTML (optional)">">
+        <input type="text" name="title_start" id="title_start" class="form-control" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="title_end"
+        label="<__trans phrase="End title HTML (optional)">"
+        help_page="entry_import"
+        help_section="start_title_html">
+        <input type="text" name="title_end" id="title_end" class="form-control" />
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="default_status"
+        label="<__trans phrase="Default entry status (optional)">"
+        help_page="entry_import"
+        help_section="default_post_status_for_entries">
+<select name="default_status" id="default_status" class="form-control">
+<option value=""><__trans phrase="Select an entry status"></option>
+<option value="1"><__trans phrase="Unpublished"></option>
+<option value="2"><__trans phrase="Published"></option>
+</select>
+    </mtapp:setting>

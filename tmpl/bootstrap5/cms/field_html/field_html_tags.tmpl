@@ -1,0 +1,38 @@
+<input id="tags<mt:var name="content_field_id" escape="html">" type="text" class="form-control text content-field html5-form" autocomplete="off" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="tags" escape="html">" mt:watch-change="1" mt:raw-name="1" <mt:var name="required"> <mt:var name="multiple">>
+<div class="tags-suggestion mt-suggest" style="display: none;">
+  <div id="tags<mt:var name="content_field_id" escape="html">_completion" class="tags_completion mt_suggest__list">
+    <ul></ul>
+  </div>
+</div>
+
+<mt:if name="tags_js">
+<mt:unless name="setup_tags_js">
+<mt:var name="set_tags_js" value="1">
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="html">"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  var tagList = <mt:var name="tags_js">;
+  var tag_delim = '<$mt:var name="tag_delim"$>';
+
+  $('div.form-group').each(function () {
+    $(this).has('.mt-suggest').addClass('position-relative');
+  });
+</mt:setvarblock>
+</mt:unless>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  var autoTag<mt:var name="content_field_id" escape="html">;
+
+  function initTags<mt:var name="content_field_id" escape="html">() {
+    if (!tagList || tagList.length == 0) return;
+    autoTag<mt:var name="content_field_id" escape="html"> = new TC.TagComplete("tags<mt:var name="content_field_id" escape="html">", tagList);
+    autoTag<mt:var name="content_field_id" escape="html">.delimiter = tag_delim;
+  }
+
+  TC.attachLoadEvent(initTags<mt:var name="content_field_id" escape="html">);
+</mt:setvarblock>
+</mt:if>
+

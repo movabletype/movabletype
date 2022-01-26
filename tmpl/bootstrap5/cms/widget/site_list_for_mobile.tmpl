@@ -1,0 +1,80 @@
+<mt:loop name="sites">
+<div class="mt-table--outline d-md-none mb-5">
+  <table class="table mt-table mb-0" style="table-layout: fixed;">
+    <thead>
+      <tr>
+      <th colspan="2" class="p-4">
+        <p class="h3 my-0 text-truncate">
+          <a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">">
+            <mt:var name="site_name" escape="html">
+          </a>
+        </p>
+  <mt:if name="parent_site_name">
+        <p class="font-weight-normal mt-2 mb-0 text-truncate">
+          <__trans phrase="(on [_1])" params="<mt:var name="parent_site_name" escape="html">">
+        </p>
+  </mt:if>
+        <p class="font-weight-normal mt-5 mb-0 text-truncate">
+          <a href="<mt:var name="site_url">" target="_blank">
+            <mt:var name="site_url">
+          </a>
+        </p>
+      </th>
+      </tr>
+    </thead>
+    <tbody>
+  <mt:if name="content_types">
+    <mt:setvar name="collapse_template" value="">
+    <mt:setvar name="collapse_ids" value="">
+    <mt:loop name="content_types">
+      <mt:setvarblock name="collapse_ids" function="push">collapseContentDataList-<mt:var name="blog_id">-<mt:var name="type_id">-mobile</mt:setvarblock>
+
+      <mt:setvarblock name="collapse_template" append="1">
+      <tr class="collapse collapse-<mt:var name="blog_id"> show" id="collapseContentDataList-<mt:var name="blog_id">-<mt:var name="type_id">-mobile">
+        <td class="p-4 text-truncate">
+      <mt:if name="can_list">
+          <span class="ml-5">
+            <a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">">
+              <mt:var name="name" escape="html">
+            </a>
+          </span>
+      <mt:else>
+          <mt:var name="name" escape="html">
+      </mt:if>
+        </td>
+        <td class="text-right">
+          <mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
+        </td>
+      </tr>
+      </mt:setvarblock>
+
+    </mt:loop>
+    <tr class="mt-collapse border-0">
+      <td colspan="2">
+        <svg role="img" class="mt-icon--sm mt-icon--secondary mr-3">
+          <use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentdata"></use>
+        </svg>
+        <a data-toggle="collapse" href="#" data-target=".collapse-<mt:var name="blog_id">" aria-expanded="true" aria-controls="<mt:loop name="collapse_ids" glue=" "><mt:var name="__value__"></mt:loop>">
+          <__trans phrase="Content Data"><svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_collapse"></use></svg>
+        </a>
+      </td>
+    </tr>
+    <mt:var name="collapse_template">
+  </mt:if>
+    <mt:If name="permitted_entry">
+      <tr>
+        <td class="p-4 text-truncate"><mt:If name="can_access_to_entry_list"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_entry"></use></svg><a href="<mt:var name="mt_url">?__mode=list&_type=entry&blog_id=<mt:var name="blog_id">"><__trans phrase="Entry"></a></mt:If></td>
+        <td class="text-right"><mt:If name="can_create_post"><a href="<mt:var name="mt_url">?__mode=edit&_type=entry&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if></td>
+      </tr>
+    </mt:If>
+    <mt:If name="can_manage_pages">
+      <tr>
+        <td class="p-4 text-truncate"><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_page"></use></svg><a href="<mt:var name="mt_url">?__mode=list&_type=page&blog_id=<mt:var name="blog_id">"><__trans phrase="Page"></a></td>
+        <td class="text-right"><a href="<mt:var name="mt_url">?__mode=edit&_type=page&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></td>
+      </tr>
+    </mt:If>
+    </tbody>
+  </table>
+</div>
+</mt:loop>
+

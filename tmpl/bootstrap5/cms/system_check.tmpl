@@ -1,0 +1,106 @@
+<mt:setvarblock name="page_title"><__trans phrase="System Information"></mt:setvarblock>
+<mt:setvar name="system-information" value="1">
+
+<mt:setvarblock name="page_content">
+<ul class="list-unstyled">
+  <li>
+    <strong><__trans phrase="Total Users"></strong>: <mt:var name="user_count">
+  </li>
+  <mt:if name="enabled_plugins{Comments}">
+  <li>
+    <strong><__trans phrase="Commenters"></strong>: <mt:var name="commenter_count">
+  </li>
+  </mt:if>
+</ul>
+
+<ul class="list-unstyled">
+  <li>
+    <strong><__trans phrase="Memcached Status"></strong>:
+    <mt:setvarblock name="memcached_server_string"><mt:if name="memcached_enabled"><__trans phrase="configured"><mt:else><__trans phrase="disabled"></mt:if></mt:setvarblock><__trans phrase="Memcached is [_1]." params="<em><mt:var name="memcached_server_string"></em>">
+  <mt:if name="memcached_enabled">
+    <mt:setvarblock name="memcached_status_string"><mt:if name="memcached_active"><__trans phrase="available"><mt:else><__trans phrase="unavailable"></mt:if></mt:setvarblock><__trans phrase="Memcached Server is [_1]." params="<em><mt:var name="memcached_status_string"></em>">
+  </mt:if>
+  </li>
+  <li>
+    <strong><__trans phrase="Server Model"></strong>:
+    <mt:if name="server_modperl">
+      mod_perl
+    <mt:else name="server_fastcgi">
+      FastCGI
+    <mt:else name="server_psgi">
+      PSGI
+    <mt:else>
+      CGI
+    </mt:if>
+  </li>
+</ul>
+
+<mtapp:setting
+    id="system_check"
+    label="System Info (MTCheck)"
+    label_class="top-label"
+    show_label="0">
+    <div class="info">
+        <mt:if name="syscheck_html">
+          <mt:var name="syscheck_html">
+          <mt:var name="syscheck_script">
+        <mt:else>
+          <p><__trans phrase="Movable Type could not find the script named 'mt-check.cgi'. To resolve this issue, ensure that the mt-check.cgi script exists and that the CheckScript configuration parameter (if it is necessary) references it properly."></p>
+        </mt:if>
+    </div>
+</mtapp:setting>
+</mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+.toggle-link {
+  cursor: pointer;
+  background: transparent;
+  color: #666666;
+  text-decoration: underline;
+}
+
+.toggle-link:link,
+.toggle-link:visited {
+    color: #666666;
+}
+
+.toggle-link:hover,
+.toggle-link:active {
+    text-decoration: none;
+}
+.exception {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.2em 0.25em;
+    margin: 10px 0 0;
+    border: 1px solid #c0c6c9;
+    overflow: auto;
+    font-family: monospace;
+    font-size: 95%;
+    background-color: #f3f3f3;
+    color: #666666;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('.msg-warning').each( function(){
+    var $this = jQuery(this);
+    var $detail = $this.find('span.exception');
+    $detail.hide();
+    $this.find('.detail-link').on( 'mousedown', function() {
+      if ( $detail.hasClass('active') ) {
+        $detail.hide().removeClass('active');
+      } else {
+        $detail.show().addClass('active').css('display', 'block');
+      }
+    });
+  });
+</mt:setVarBlock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

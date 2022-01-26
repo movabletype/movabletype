@@ -1,0 +1,282 @@
+<mt:setvarblock name="page_title"><__trans phrase="Edit Asset"></mt:setvarblock>
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/tagcomplete.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var tag_delim = '<mt:var name="auth_pref_tag_delim">';
+
+// array of tag names
+var tagList;
+
+function tagSplit(str) {
+    var delim = RegExp.escape(tag_delim);
+    var delim_scan = new RegExp('^((([\'"])(.*?)\\3[^' + delim + ']*?|.*?)(' + delim + '\\s*|$))', '');
+    str = str.replace(/(^\s+|\s+$)/g, '');
+    var tags = [];
+    while (str.length && str.match(delim_scan)) {
+        str = str.substr(RegExp.$1.length);
+        var tag = RegExp.$4 ? RegExp.$4 : RegExp.$2;
+        tag = tag.replace(/(^\s+|\s+$)/g, '');
+        tag = tag.replace(/\s+/g, ' ');
+        if (tag != '') tags.push(tag);
+    }
+    return tags;
+}
+
+var autoTag;
+<mt:if name="tags_js">
+tagList = <mt:var name="tags_js">;
+</mt:if>
+
+function init()
+{
+    <mt:if name="tags_js">initTags();</mt:if>
+}
+
+var tagPos = 0;
+function initTags() {
+    var t = MT.Util.getByID('tags-cache');
+    if ( t ) {
+        console.info('tag cache:'+t.value);
+        var v = MT.Util.getByID('tags');
+        if ( t.value )
+            v.value = t.value;
+
+        jQuery(v).on('change', function () {
+          console.info('caching tags');
+          t.value = v.value;
+        });
+    }
+    if (!tagList || tagList.length == 0) return;
+
+    autoTag = new TC.TagComplete("tags", tagList);
+    autoTag.delimiter = tag_delim;
+}
+
+jQuery(window).on('load', init);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+  <form>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+  </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+<div id="msg-block">
+<mt:if name="saved_image">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     can_close="0">
+    <__trans phrase="Your edited image has been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="broken_metadata">
+  <mtapp:statusmsg
+     id="broken_metadata"
+     class="warning"
+     can_close="0">
+    <__trans phrase="Metadata cannot be updated because Metadata in this image seems to be broken.">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
+
+<div class="container-fluid">
+<mt:unless name="has_thumbnail">
+  <mt:if name="asset_type" eq="image">
+    <mtapp:statusmsg
+      id="warning-has-no-thumbnail"
+      class="warning"
+      can_close="0">
+      <__trans phrase="Error creating thumbnail file.">
+    </mtapp:statusmsg>
+  </mt:if>
+</mt:unless>
+  <div class="row asset-preview asset-type-<mt:var name="asset_type" escape="html" lower_case="1"> line">
+<mt:if name="has_thumbnail">
+    <div class="col-12 col-md-auto asset-preview-thumb">
+      <img src="<mt:var name="thumbnail_url" escape="html">" width="<mt:var name="thumbnail_width" escape="html">" height="<mt:var name="thumbnail_height" escape="html">" />
+    </div>
+<mt:elseif name="asset_type" ne="image">
+    <div class="col-12 col-md-auto asset-type-icon picture small">
+      <div class="mt-thumbnail">
+        <img src="<mt:var name="static_uri">images/file-<mt:if name="asset_type" eq="file">default<mt:elseif name="asset_type" eq="video">movie<mt:else><mt:var name="asset_type" escape="html"></mt:if>.svg" width="60" height="60">
+      </div>
+    </div>
+</mt:if>
+    <div class="col-12 col-md my-5 my-md-0 asset-metadata">
+      <ul class="list-unstyled metadata">
+        <li class="metadata-item asset-name text-wrap">
+          <strong><__trans phrase="File Name">:</strong>
+          <mt:var name="file_name" escape="html">
+        </li>
+        <li class="metadata-item asset-type">
+          <strong><__trans phrase="Type">:</strong>
+          <mt:var name="asset_class_label" escape="html">
+        </li>
+<mt:if name="class" eq="image">
+        <li class="metadata-item asset-size">
+          <strong><__trans phrase="Dimensions">:</strong>
+          <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">
+        </li>
+</mt:if>
+        <li class="metadata-item asset-size">
+          <strong><__trans phrase="File Size">:</strong>
+          <mt:var name="file_size_formatted" escape="html">
+        </li>
+      </ul>
+<mt:if name="asset_type" eq="image">
+  <mt:if name="has_thumbnail">
+      <div class="image-editor d-none d-md-block">
+        <a href="<mt:var name="script_url">?__mode=dialog_edit_image&blog_id=<mt:var name="blog_id" escape="html">&id=<mt:var name="id" escape="html">&return_args=<mt:var name="return_args" escape="html" escape="url">%26magic_token%3D<mt:var name="magic_token">" class="btn btn-default button">
+          <__trans phrase="Edit Image">
+        </a>
+      </div>
+  </mt:if>
+</mt:if>
+    </div>
+  </div>
+
+  <div class="asset-info">
+<mtapp:setting
+  id="label"
+  label="<__trans phrase="Label">"
+  label_for="label"
+  label_class="top-label"
+  help_page="assets"
+  help_section="asset_label">
+    <input type="text" name="label" id="label" class="form-control text full" value="<mt:var name="label" escape="html">" />
+</mtapp:setting>
+
+<mtapp:setting
+   id="description"
+   label="<__trans phrase="Description">"
+   label_for="description"
+   label_class="top-label"
+   no_grid="1">
+    <textarea name="description" id="description" class="form-control text full low"><mt:var name="description" escape="html"></textarea>
+</mtapp:setting>
+
+<mtapp:setting
+   id="tags"
+   label_class="text-top"
+   label="<__trans phrase="Tags">"
+   label_for="tags"
+   label_class="top-label">
+    <div class="form-group position-relative">
+      <input type="text" name="tags" id="tags" class="form-control text full" value="<$mt:var name="tags" escape="html"$>" />
+      <input type="hidden" name="_ignore_tags" id="tags-cache" value="<$mt:var name="tags" escape="html"$>" />
+      <div id="tags-suggestion" class="mt-suggest" style="display: none;">
+        <div id="tags_completion" class="mt_suggest__list">
+          <ul></ul>
+        </div>
+      </div>
+    </div>
+</mtapp:setting>
+  </div>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+  <div class="actions-bar">
+    <button
+      id="save"
+      type="button"
+      accesskey="s"
+      title="<__trans phrase="Save changes to this asset (s)">"
+      class="save action primary button btn btn-primary">
+      <__trans phrase="Save">
+    </button>
+    <button
+      type="button"
+      accesskey="x"
+      class="cancel action button btn btn-default"
+      data-mt-modal-close
+      title="<__trans phrase="Close (x)">">
+      <__trans phrase="Close">
+    </button>
+  </div>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+
+var isDirty = false;
+
+function closeModalWithCheck() {
+    if (isDirty) {
+        var msg = '<__trans phrase="You have unsaved changes to this asset that will be lost. Are you sure you want to close this dialog?" escape="js">';
+        if ( confirm(msg) ) {
+            return true;
+        }
+    } else {
+        return true;
+    }
+    return false;
+}
+
+function openEditImageModal(href) {
+    window.top.jQuery.fn.mtModal.open(href, { large: true });
+}
+
+window.onbeforeunload = closeModalWithCheck;
+
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+
+jQuery('#save').on('click', function(){
+  jQuery('#msg-block').empty();
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'js_save_asset',
+      blog_id: <mt:var name="blog_id" escape="js">,
+      id: <mt:var name="id" escape="js">,
+      magic_token: '<mt:var name="magic_token" escape="js">',
+      label: jQuery('#label').val(),
+      description: jQuery('#description').val(),
+      tags: jQuery('#tags').val()
+    },
+  })
+  .done(function(data) {
+    if ( data.error ) {
+      jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error">' + data.error +'</div>');
+    }
+    else {
+      jQuery('#msg-block').append('<div class="alert alert-success msg msg-success"><__trans phrase="Your changes have been saved."></div>');
+    }
+    isDirty = false;
+  })
+  .fail(function(XMLHttpRequest, textStatus, errorThrown) {
+    jQuery('#msg-block').append('<div class="alert alert-danger msg msg-error"><__trans phrase="An error occurred."></div>');
+  })
+
+  return false;
+});
+
+jQuery(':input:visible').on('keydown', function(){
+    isDirty = true;
+});
+
+jQuery('.image-editor a').on('click', function(event) {
+    if (!closeModalWithCheck()) {
+        return false;
+    }
+    openEditImageModal(jQuery(this).attr('href'));
+    return false;
+});
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

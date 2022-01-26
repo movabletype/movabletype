@@ -1,0 +1,480 @@
+<mt:unless name="json">
+  <mt:var name="screen_type" value="dialog-screen insert-content-data-dialog">
+
+<div style="display: none;">
+  <form action="" method="get" id="modal-search" class="form-inline">
+    <input type="text" id="search" name="search" class="form-control search-input text" style="width: 40%" value="<mt:var name="search">" placeholder="<__trans phrase="Search">" />
+    <input type="image" id="search-button" class="search-command search-submit" src="<mt:var name="static_uri">images/search-submit-dialog.png" title="<__trans phrase="Search">" />
+    <a href="javascript:void(0)" class="search-reset hidden">
+      <__trans phrase="Reset">
+    </a>
+  </form>
+</div>
+
+  <mt:setvarblock name="list_actions">
+        <div class="col indicator">
+          <img alt="<__trans phrase="Loading...">" src="<mt:var name="static_uri">images/ic_loading-xsm.gif" witdh="16" height="16" />
+          <__trans phrase="Loading...">
+        </div>
+        <div class="col-auto mx-auto mt-5 mt-md-3">
+          <nav aria-label="<mt:var name="object_type" escape="html"> list">
+            <ul class="pagination d-none d-md-flex"></ul>
+            <ul class="pagination__mobile d-md-none"></ul>
+          </nav>
+        </div>
+  </mt:setvarblock>
+
+<div id="listing" class="listing line has-filter">
+  <div class="unit size1of1">
+    <div id="listing-table" class="listing-table-block">
+      <div id="listing-table-overlay" class="overlay"></div>
+      <div class="mt-table--outline">
+        <table id="content-data-table" class="table mt-table listing-table">
+          <thead>
+            <th class="head cb mt-table__control">&nbsp;</th>
+            <th class="head string" scope="col">
+              <span class="col-label"><__trans phrase="Label"></span>
+            </th>
+            <th class="head string d-none d-md-table-cell" scope="col">
+              <span class="col-label"><__trans phrase="Date Modified"></span>
+            </th>
+            <th class="head string d-none d-md-table-cell" scope="col">
+              <span class="col-label"><__trans phrase="Author"></span>
+            </th>
+            <th class="head string" scope="col">
+              <span class="col-label d-none d-md-inline"><__trans phrase="Data"></span>
+              <span id="page-status" class="float-right d-md-none"></span>
+            </th>
+          </thead>
+</mt:unless>
+          <tbody>
+<mt:loop name="object_loop">
+            <tr id="content-data-<mt:var name="id" escape="html">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+              <td scope="row" class="cb">
+                <input type="hidden" id="content-data-<mt:var name="id" escape="html">-json" value="<mt:var name="metadata_json" escape="html">" />
+                <div class="custom-control <mt:if name="can_multi">custom-checkbox<mt:else>custom-radio</mt:if>">
+                  <input type="<mt:if name="can_multi">checkbox<mt:else>radio</mt:if>" name="id" value="<mt:var name="id" escape="html">" class="select custom-control-input" id="content-data-select-<mt:var name="id" escape="html">" onchange="toggleSelectedRow(this);" data-label="<mt:var name="label" escape="html">" />
+                  <label class="custom-control-label" for="content-data-select-<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+                </div>
+              </td>
+              <td class="content-data-label primary">
+                <mt:var name="label" escape="html">
+              </td>
+              <td class="content-data-modified-date d-none d-md-table-cell">
+                <mt:var name="modified_date" escape="html">
+              </td>
+              <td class="content-data-author d-none d-md-table-cell">
+                <mt:var name="author_name" escape="html">
+              </td>
+              <td class="content-data-data text-right text-md-left">
+                <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+                  <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
+                </a>
+              </td>
+            </tr>
+            <tr class="content-data-preview-data">
+              <td class="p-0" colspan="5">
+                <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
+                  <mt:var name="preview_data" _default="<__trans phrase="No field data.">">
+                </div>
+              </td>
+            </tr>
+</mt:loop>
+<mt:unless name="object_loop">
+            <tr class="odd">
+              <td class="fullwidth-row" colspan="5">
+                <__trans phrase="No [_1] could be found." params="<mt:var name="content_type_name" _default="Content Data">">
+              </td>
+            </tr>
+</mt:unless>
+          </tbody>
+<mt:unless name="json">
+        </table>
+      </div>
+    </div>
+    <div id="actions-bar" class="row line">
+      <mt:var name="list_actions">
+    </div>
+  </div>
+</div>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+td.content-data-data table td,
+td.content-data-data table th {
+  border: 1px solid #000000;
+}
+
+tr.content-data-preview-data {
+  background-color: #f4f4f4;
+}
+
+.content-data-data .mt-icon--secondary{
+  margin: 0 .5rem 0 0;
+  transition: 0.2s ease-in-out;
+}
+.content-data-data a[aria-expanded="false"] .mt-icon--secondary{
+  transform: rotate(180deg);
+}
+.content-data-data a[aria-expanded="true"] .mt-icon--secondary{
+  transform: rotate(0deg);
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script src="<mt:var name="static_uri">js/list_table.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+var checked = [];
+var currentPage = 1;
+
+function toggleClassOfPaginationContainer() {
+  var $paginationContainer = jQuery('.pagination__mobile').parents('div').first();
+  var $pageItems = $paginationContainer.find('.pagination__mobile .page-item');
+  if (jQuery(window).width() < 400 && $pageItems.length >= 7) {
+    $paginationContainer.addClass('w-100');
+    $pageItems.addClass('mr-auto');
+  } else {
+    $paginationContainer.removeClass('w-100');
+    $pageItems.removeClass('mr-auto');
+  }
+}
+
+function loadContentDataList(offset) {
+  jQuery('.indicator, #listing-table-overlay').show();
+  jQuery('ul.pagination').hide();
+  jQuery('ul.pagination__mobile').hide();
+  jQuery('#search').attr('disabled', 'disabled');
+  jQuery('#search-button').attr('disabled', 'disabled');
+
+  var opts = {
+    offset: offset,
+    __mode: 'dialog_list_content_data',
+  <mt:if name="blog_id">
+    blog_id: <mt:var name="blog_id" escape="js">,
+  </mt:if>
+  <mt:if name="content_field_id">
+    content_field_id: <mt:var name="content_field_id" escape="js">,
+  </mt:if>
+    dialog: 1,
+    dialog_view: 1,
+    json: 1
+  };
+
+  if (jQuery('#search').val().length > 0) {
+    opts.search = jQuery('#search').val();
+  }
+
+  var canPagenate = true;
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded: charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: opts,
+    success: function (data) {
+      if (data.html) {
+        jQuery('#content-data-table tbody').remove();
+        jQuery('#content-data-table').append(data.html);
+        if (data.pager) {
+          renderPagination(data.pager);
+          renderPaginationForMobile(data.pager);
+        } else {
+          canPagenate = false;
+        }
+      }
+      jQuery('tr.content-data-preview-data').hide();
+    },
+    complete: function () {
+      jQuery('.indicator, #listing-table-overlay').hide();
+      if (canPagenate) {
+        jQuery('ul.pagination').show();
+        jQuery('ul.pagination__mobile').show();
+      }
+      jQuery('#search').prop('disabled', false);
+      jQuery('#search-button').prop('disabled', false);
+
+      jQuery('table.listing-table tbody tr input[name="id"]').on('click', function () {
+        if (jQuery('table.listing-table tbody tr input:checked').length > 0) {
+          // Enable submit button
+          jQuery('.actions-bar button.primary')
+            .prop('disabled', false)
+            .removeClass('disabled');
+        } else {
+          // Disable submit button
+          jQuery('.actions-bar button.primary')
+            .attr('disabled', 'disabled')
+            .addClass('disabled');
+        }
+        saveChecked(currentPage);
+      });
+
+      toggleClassOfPaginationContainer();
+    },
+    error: function(xhr, status, error) {
+      console.log('error: ' + status + ':' + error);
+    }
+  });
+}
+
+function renderPagination(pager) {
+  var $e = jQuery('.pagination').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var usefirst = false;
+  var uselast = false;
+  var prevPos = 0;
+  var nextPos = 0;
+  var start;
+  var end;
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  currentPage = page;
+
+  if ( page > 1 ) {
+    usefirst = true;
+    prevPos = pager.offset - pager.limit;
+    start = pager.offset + 1;
+  }
+  else {
+    prevPos = 0;
+    start = 1;
+  }
+
+  if (page < maxPage) {
+    uselast = true;
+    nextPos = pager.offset + pager.limit;
+    end = pager.offset + pager.limit;
+    last = (maxPage-1) * pager.limit;
+  }
+  else {
+    nextPos = pager.offset + pager.limit;
+    end = pager.listTotal;
+    last = (maxPage-1) * pager.limit;
+  }
+
+  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-start"><__trans phrase="Previous" escape="js"></a></li>');
+
+  if (page - 2 >= 1) {
+    $e.append('<li class="page-item first-last"><a href="#" class="page-link start">1</a></li>');
+  }
+  if (page - 3 >= 1) {
+    $e.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+
+  if (page - 1 >= 1) {
+    var firstLastClass = page - 1 == 1 ? ' first-last' : '';
+    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-start">' + String(page - 1) + '</a></li>');
+  }
+
+  $e.append('<li class="page-item active"><a href="#" class="page-link">' + page + '<span class="sr-only">(currnt)</span></a></li>');
+
+  if (page + 1 <= maxPage) {
+    var firstLastClass = page + 1 == maxPage ? ' first-last' : '';
+    $e.append('<li class="page-item' + firstLastClass + '"><a href="#" class="page-link to-end">' + String(page + 1) + '</a></li>');
+  }
+
+  if (page + 3 <= maxPage) {
+    $e.append('<li class="page-item" aria-hidden="true">...</li>');
+  }
+  if (page + 2 <= maxPage) {
+    $e.append('<li class="page-item first-last"><a href="#" class="page-link end">' + maxPage + '</a></li>');
+  }
+
+  $e.append('<li class="page-item"><a href="#" class="page-link pagenav to-end"><__trans phrase="Next" escape="js"></a></li>');
+
+  jQuery('a.start').on('click', function() {
+    saveChecked(page);
+    loadContentDataList(0);
+    return false;
+  });
+  jQuery('a.to-start').on('click', function() {
+    if (!usefirst) {
+      return false;
+    }
+    saveChecked(page);
+    loadContentDataList(prevPos);
+    return false;
+  });
+  jQuery('a.to-end').on('click', function() {
+    if (!uselast) {
+      return false;
+    }
+    saveChecked(page);
+    loadContentDataList(nextPos);
+    return false;
+  });
+  jQuery('a.end').on('click', function() {
+    saveChecked(page);
+    loadContentDataList(last);
+    return false;
+  });
+}
+
+function renderPaginationForMobile(pager) {
+  var $paginationMobile = jQuery('.pagination__mobile').empty();
+
+  if ( pager.rows == 0 ) {
+    return;
+  }
+
+  var page = parseInt(pager.offset / pager.limit) + 1;
+  var maxPage = Math.ceil(pager.listTotal / pager.limit);
+  var start = page > 1 ? pager.offset + 1 : 1;
+  var end = page < maxPage ? pager.offset + pager.limit : pager.listTotal;
+
+  var page_status = trans('[_1] - [_2] of [_3]', start, end, pager.listTotal);
+  jQuery('#page-status').text(page_status);
+
+  var setMrAuto = jQuery(window).width() < 400 && maxPage >= 5;
+
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page - 1, setMrAuto, false)
+  );
+  if (page - 4 >= 1 && maxPage - page < 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 4, setMrAuto)
+    );
+  }
+  if (page - 3 >= 1 && maxPage - page < 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 3, setMrAuto)
+    );
+  }
+  if (page - 2 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 2, setMrAuto)
+    );
+  }
+  if (page - 1 >= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page - 1, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLink(page, setMrAuto, true)
+  );
+  if (page + 1 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 1, setMrAuto)
+    );
+  }
+  if (page + 2 <= maxPage) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 2, setMrAuto)
+    );
+  }
+  if (page + 3 <= maxPage && page <= 2) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 3, setMrAuto)
+    );
+  }
+  if (page + 4 <= maxPage && page <= 1) {
+    $paginationMobile.append(
+      generateMobilePageLink(page + 4, setMrAuto)
+    );
+  }
+  $paginationMobile.append(
+    generateMobilePageLinkTriangle(page + 1, false, true)
+  );
+
+  jQuery('.pagination__mobile a.page-link').on('click', function () {
+    var nextPage = this.dataset.mtNextPage || this.text;
+    if (nextPage.match(/\d+/) && nextPage > 0 && nextPage <= maxPage) {
+      saveChecked(page);
+      loadContentDataList((nextPage - 1) * pager.limit);
+    }
+    return false;
+  });
+}
+
+function generateMobilePageLink(page, setMrAuto, current) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  if (current) {
+    return '<li class="page-item' + mrAutoClass + ' active"><a href="#" class="page-link">' + page + '<span class="sr-only">(current)</span></a></li>';
+  } else {
+    return '<li class="page-item' + mrAutoClass + '"><a href="#" class="page-link">' + page + '</a></li>';
+  }
+}
+
+function generateMobilePageLinkTriangle(page, setMrAuto, next) {
+  var mrAutoClass = setMrAuto ? ' mr-auto' : '';
+  var iconId = next ? 'ic_tri-right' : 'ic_tri-left';
+  return '<li class="page-item' + mrAutoClass + '"><a class="page-link" href="#" aria-hidden="true" data-mt-next-page="' + page + '"><svg role="img" class="mt-icon--inverse mt-icon--sm"><title>next</title><use xlink:href="<mt:var name="static_uri">/images/sprite.svg#' + iconId + '"></use></svg></a></li>'
+}
+
+function saveChecked(page) {
+  checked[page] = [];
+  jQuery('table.listing-table tbody tr input:checked').each(function () {
+    var id = jQuery(this).parents('tr').attr('id');
+    checked[page][id] = jQuery(this).val();
+  });
+}
+
+jQuery('#modal-search').on('submit', function () {
+  checked = [];
+  loadContentDataList(0);
+  jQuery('.search-reset').removeClass('hidden').show();
+  return false;
+});
+
+jQuery('.search-reset').on('click', function () {
+  checked = [];
+  jQuery('#search').val('');
+  loadContentDataList(0);
+  jQuery('.search-reset').addClass('hidden').hide();
+});
+
+jQuery('.actions-bar button.primary').on('click', function () {
+  if ( currentPanel != '#select-content-data-panel' ) {
+    return;
+  }
+
+  var ids = [];
+  var page_keys = Object.keys(checked);
+  for(i=0; i < page_keys.length; i++) {
+    var item_keys = Object.keys(checked[page_keys[i]]);
+    for(j=0;j < item_keys.length; j++) {
+      ids.push(checked[page_keys[i]][item_keys[j]]);
+    }
+  }
+  // Set content_data ID
+  jQuery('#select_content_data input[name="id"]').val(ids.join(','));
+});
+
+jQuery(document).on('show.bs.collapse', 'tr.content-data-preview-data div', function () {
+  jQuery(this).parents('tr').show();
+});
+
+jQuery(document).on('hidden.bs.collapse', 'tr.content-data-preview-data div', function () {
+  jQuery(this).parents('tr').hide();
+});
+
+if (MT.Util.isIos()) {
+  jQuery(window).on('resize orientationchange', toggleClassOfPaginationContainer);
+} else {
+  jQuery(window).on('resize', toggleClassOfPaginationContainer);
+}
+
+jQuery('#content-data-table').on('click', 'td.cb + td.content-data-label', function (e) {
+  if (!MT.Util.isMobileView()) {
+    return;
+  }
+  if (e.target.tagName == 'INPUT' && (e.target.type == 'checkbox' || e.target.type == 'radio')) {
+    return;
+  }
+  var $input = jQuery(this).parents('tr').find('input[name=id]');
+  $input.trigger('click');
+  return false;
+});
+
+// Initial loading
+loadContentDataList(0);
+</mt:setvarblock>
+
+</mt:unless>

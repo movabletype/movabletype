@@ -1,0 +1,116 @@
+<table id="js-table-<mt:var name="content_field_id" escape="html">" style="display: none">
+<mt:var name="table_value">
+</table>
+<input type="hidden" id="content-field-<mt:var name="content_field_id" escape="html">" name="content-field-<mt:var name="content_field_id" escape="html">" value="" mt:raw-name="1" />
+
+<mt:unless name="loaded_tables_field_css">
+  <mt:var name="loaded_tables_field_css" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/fonts/a-table-icon.css?v=<mt:var name="mt_version_id" escape="html">">
+<link rel="stylesheet" href="<mt:var name="static_uri">a-table.js/css/a-table.css?v=<mt:var name="mt_version_id" escape="html">">
+
+<style type="text/css">
+.a-table-btn-group-list > .a-table-btn-list:first-child,
+.a-table-btn-group-list > .a-table-btn-list:last-child {
+  display: none;
+}
+
+.a-table-btn {
+  cursor: pointer;
+}
+
+@media (max-width: 767.98px) {
+  .a-table-btn-list {
+    padding-bottom: 16px!important;
+    padding-right: 5px!important;
+  }
+  .a-table-btn {
+    height: 36px!important;
+    width: 36px;
+  }
+}
+</style>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="js_include" append="1">
+<script src="<mt:var name="static_uri">a-table.js/build/a-table.js?v=<mt:var name="mt_version_id" escape="html">" charset="utf-8"></script>
+  </mt:setvarblock>
+
+  <mt:setvarblock name="jq_js_include" append="1">
+var browserIsFirefox = window.navigator.userAgent.toLowerCase().indexOf('firefox') !== -1;
+if (browserIsFirefox) {
+  jQuery(document).on('focus', '.a-table-editable', function () {
+    if (this.textContent === '') {
+      this.innerHTML = '<br>';
+    }
+  });
+}
+  </mt:setvarblock>
+</mt:unless>
+
+<mt:setvarblock name="jq_js_include" append="1">
+(function() {
+  var increaseDecreaseColumns = <mt:if name="options{increase_decrease_cols}">true<mt:else>false</mt:if>;
+  var increaseDecreaseRows = <mt:if name="options{increase_decrease_rows}">true<mt:else>false</mt:if>;
+  var fieldId = '<mt:var name="content_field_id" escape="js">';
+  var languageTag = '<mt:var name="language_tag" escape="js">';
+
+  var table = new aTable(
+    '#js-table-' + fieldId,
+    {
+      increaseDecreaseColumns: increaseDecreaseColumns,
+      increaseDecreaseRows: increaseDecreaseRows,
+      lang: languageTag,
+      mark: {
+        icon: {
+          td: false,
+          th: false
+        }
+      },
+      message: {
+        mergeCells: '<__trans phrase="merge cell" escape="js">',
+        splitCell: '<__trans phrase="split cell" escape="js">',
+        changeToTh: '<__trans phrase="change to th" escape="js">',
+        changeToTd: '<__trans phrase="change to td" escape="js">',
+        alignLeft: '<__trans phrase="align left" escape="js">',
+        alignCenter: '<__trans phrase="align center" escape="js">',
+        alignRight: '<__trans phrase="align right" escape="js">',
+        addColumnLeft: '<__trans phrase="insert column on the left" escape="js">',
+        addColumnRight: '<__trans phrase="insert column on the right" escape="js">',
+        removeColumn: '<__trans phrase="remove column" escape="js">',
+        addRowTop: '<__trans phrase="insert row above" escape="js">',
+        addRowBottom: '<__trans phrase="insert row below" escape="js">',
+        removeRow: '<__trans phrase="remove row" escape="js">',
+        source: '<__trans phrase="Source" escape="js">',
+        mergeCellError1: '<__trans phrase="All possible cells should be selected so to merge cells into one" escape="js">',
+        mergeCellConfirm1: '<__trans phrase="The top left cell's value of the selected range will only be saved. Are you sure you want to continue?" escape="js">',
+        pasteError1: '<__trans phrase="You can't paste here" escape="js">',
+        splitError1: '<__trans phrase="Cell is not selected" escape="js">',
+        splitError2: '<__trans phrase="Only one cell should be selected" escape="js">',
+        splitError3: '<__trans phrase="You can't split the cell anymore" escape="js">',
+      }
+    }
+  );
+
+  table.afterAction =
+  table.afterEntered = function() {
+    setDirty(true);
+    log('found dirty form: #js-table-' + fieldId);
+    (app.getIndirectMethod('setDirty'))();
+  };
+
+  function updateTableInputValue() {
+    var tableInnerHtml = jQuery(table.getTable()).children().html();
+    jQuery('#content-field-' + fieldId).val(tableInnerHtml);
+  }
+
+  jQuery(window).on('pre_autosave', function() {
+    updateTableInputValue();
+  });
+
+  jQuery('form#edit-content-type-data-form').on('submit', function() {
+    updateTableInputValue();
+  });
+})();
+</mt:setvarblock>

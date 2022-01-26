@@ -1,0 +1,41 @@
+  this.values = this.options.values
+  if ( !this.values ) {
+    this.values = [{
+      "checked": ""
+    }]
+  }
+
+  this.on('updated', function () {
+    this.validateTable()
+  })
+
+  addRow(e) {
+    this.values.push({"checked": ""})
+  }
+
+  enterLabel(e) {
+    e.item.label = e.target.value
+  }
+
+  enterValue(e) {
+    e.item.value = e.target.value
+  }
+
+  gather() {
+    return {
+      values: this.values
+    }
+  }
+
+  validateTable() {
+    const $table = jQuery(this.refs.table)
+    const tableIsValidated = $table.data('mtValidator') ? true : false
+    if (tableIsValidated) {
+      const $notValidatedLabelsValues = $table.find('input[type=text]:not(.is-invalid)')
+      if ($notValidatedLabelsValues.length > 0) {
+        $notValidatedLabelsValues.mtValidate('simple')
+      } else {
+        $table.mtValid({ focus: false })
+      }
+    }
+  }

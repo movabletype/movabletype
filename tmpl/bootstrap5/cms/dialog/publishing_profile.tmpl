@@ -1,0 +1,190 @@
+<mt:var name="page_title" value="<__trans phrase="Publishing Profile">">
+<mt:setvarblock name="target"><mt:if name="is_blog"><__trans phrase="child site"><mt:else><__trans phrase="site"></mt:if></mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = getByID("publishing_profiles_form");
+        frm.submit();
+    } else {
+        jQuery.fn.mtModal.close();
+    }
+}
+function init() {
+    dialog = new Dialog.MultiPanel("profile");
+    panels = [];
+    var panel;
+    panel = new ListingPanel("profile");
+    panels[panels.length] = panel;
+    panel = new ListingPanel("confirm");
+    panels[panels.length] = panel;
+    dialog.setPanels(panels);
+    dialog.open({}, dialog_closed);
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+
+<form name="publishing_profiles_form" id="publishing_profiles_form" method="post" action="<mt:var name="script_url">" target="_top" onsubmit="return false">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="cfg_screen" value="cfg_publish_profile" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+    <div class="modal-header">
+        <h4 class="modal-title"><mt:var name="page_title"></h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+
+    <div id="profile-panel" style="display: none;">
+
+        <div class="modal-body">
+
+        <p>
+            <__trans phrase="Choose the profile that best matches the requirements for this [_1]." params="<mt:var name="target">">
+        </p>
+
+        <mtapp:setting
+            id="dynamicity"
+            label="<__trans phrase="Publishing Profile">"
+            show_label="0"
+            label_class="top-label"
+            help_page="blog_settings_publishing"
+            help_section="dynamic_publishing">
+            <ul class="list-unstyled">
+                <li>
+                    <label for="dynamicity-sync">
+                      <input type="radio" id="dynamicity-sync" name="dynamicity" value="none" <mt:if name="dynamicity" eq="none"> checked="checked"</mt:if>/>
+                      <__trans phrase="Static Publishing">
+                      <small class="form-text text-muted hint">
+                        <__trans phrase="Immediately publish all templates statically.">
+                      </small>
+                    </label>
+                </li>
+                <li>
+                    <label for="dynamicity-async">
+                      <input type="radio" id="dynamicity-async" name="dynamicity" value="async_all" <mt:if name="dynamicity" eq="async_all"> checked="checked"</mt:if>/>
+                      <__trans phrase="Background Publishing">
+                      <small class="form-text text-muted hint">
+                        <__trans phrase="All templates published statically via Publish Queue.">
+                      </small>
+                    </label>
+                </li>
+                <li>
+                    <label for="dynamicity-partialasync">
+                        <input type="radio" id="dynamicity-partialasync" name="dynamicity" value="async_partial" <mt:if name="dynamicity" eq="async_partial"> checked="checked"</mt:if>/>
+                        <__trans phrase="High Priority Static Publishing">
+                        <small class="form-text text-muted hint">
+                            <__trans phrase="Immediately publish Main Index and Feed template, Entry archives, Page archives and ContentType archives statically. Use Publish Queue to publish all other templates statically.">
+                        </small>
+                    </label>
+                </li>
+                <li>
+                    <label for="dynamicity-dynamic">
+                      <input type="radio" id="dynamicity-dynamic" name="dynamicity" value="all" <mt:if name="dynamicity" eq="all"> checked="checked"</mt:if>/>
+                      <__trans phrase="Dynamic Publishing">
+                      <small class="form-text text-muted hint">
+                        <__trans phrase="Publish all templates dynamically.">
+                      </small>
+                    </label>
+                </li>
+                <li>
+                    <label for="dynamicity-archives">
+                      <input type="radio" id="dynamicity-archives" name="dynamicity" value="archives" <mt:if name="dynamicity" eq="archives"> checked="checked"</mt:if>/>
+                      <__trans phrase="Dynamic Archives Only">
+                      <small class="form-text text-muted hint">
+                        <__trans phrase="Publish all Archive templates dynamically. Immediately publish all other templates statically.">
+                      </small>
+                    </label>
+                </li>
+            </ul>
+        </mtapp:setting>
+
+        </div>
+
+        <div class="modal-footer actions-bar">
+            <button
+               type="submit"
+               accesskey="s"
+               class="action primary button next btn btn-primary">
+              <__trans phrase="Continue">
+            </button>
+            <button
+               type="submit"
+               accesskey="x"
+               title="<__trans phrase="Cancel (x)">"
+               data-mt-modal-close
+               class="action button mt-close-dialog btn btn-default">
+              <__trans phrase="Cancel">
+            </button>
+        </div>
+
+    </div>
+
+    <div id="confirm-panel" style="display: none;">
+        <div class="modal-body">
+
+        <p>
+          <__trans phrase="This new publishing profile will update your publishing settings.">
+        </p>
+
+        <p>
+          <strong>
+            <__trans phrase="Are you sure you wish to continue?">
+          </strong>
+        </p>
+
+        </div>
+
+        <div class="modal-footer actions-bar">
+            <button
+                type="button"
+                accesskey="s"
+                class="close-button action primary button btn btn-primary">
+              <__trans phrase="Execute">
+            </button>
+            <button
+                type="submit"
+                class="cancel action button mt-close-dialog btn btn-default"
+                data-mt-modal-close
+                accesskey="x"
+                title="<__trans phrase="Cancel (x)">">
+              <__trans phrase="Cancel">
+            </button>
+            <!-- <button
+                onclick="toggleHidden('confirm-panel'); toggleHidden('refresh-panel'); return false"
+                type="submit"
+                accesskey="b"
+                title="<__trans phrase="Back (b)">"
+                ><__trans phrase="Back"></button> -->
+        </div>
+
+    </div>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    init();
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,88 @@
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+<!--
+    /* <![CDATA[ */
+        MT.App.categoryList = <$mt:if name="category_tree"><$mt:var name="category_tree" to_json="1" regex_replace="/(s)(cript)/ig","$1\$2"$><mt:else>[]</mt:if>;
+        Template.templates.categorySelectorList = '<mt:section encode_js="1">
+                [# if ( item.path == null ) item.path = [] #]
+                <div class="row" style="text-align:left; margin-left:[#= item.path.length * 10 #]px; margin-right: 0;">
+                    <div class="col text-break custom-control <mt:if name="object_type" eq="page">custom-radio<mt:else>custom-checkbox</mt:if>" style="">
+                        <input type="<mt:if name="object_type" eq="page">radio<mt:else>checkbox</mt:if>" id="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" name="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>" class="custom-control-input add-category-checkbox" <mt:if name="category_is_selected">checked="checked"</mt:if> />
+                        <label class="custom-control-label" for="<mt:if name="object_type" eq="entry">add_</mt:if>category_id<mt:if name="object_type" eq="entry">_[#= item.id #]</mt:if>">[#|h item.label #]</label>
+                    </div>
+                <mt:if name="can_edit_categories">
+                    <div class="col-auto d-md-block">
+                        <a href="javascript:void(0);" mt:id="[#= item.id #]" mt:command="show-add-category" class="float-right add-category-new-link">
+                            <mtapp:svgicon id="ic_add" color="success" title="Add">
+                        </a>
+                    </div>
+                </mt:if>
+                </div>
+        </mt:section>';
+        Template.templates.categorySelectorAddForm = '<mt:section encode_js="1">
+<mt:if name="object_type" eq="entry">
+        [# div.className="add-category-form m-3"; div.style.display = "none" #]
+          <div class="form-group row">
+            <div class="col-auto pl-0 pr-0">
+              <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
+            </div>
+            <div class="col pl-0">
+              <div class="input-group">
+                <input id="add-category-input-movable" class="form-control form-control-inline add-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub category" ) #]" />
+                <div class="input-group-append">
+                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link btn btn-default">[#|h trans( "Add" ) #]</a>
+                </div>
+              </div>
+            </div>
+          </div>
+<mt:else>
+        [# div.className="add-category-form m-3"; div.style.display = "none" #]
+          <div class="form-group row">
+            <div class="col-auto pl-0 pr-0">
+              <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link btn"><mtapp:svgicon id="ic_caution" title="Cancel"></a>
+            </div>
+            <div class="col pl-0">
+              <div class="input-group">
+                <input id="add-category-input-movable" class="form-control fadd-category-input input-hint" type="text" value="" placeholder="[#|h trans( "Add sub folder" ) #]" />
+                <div class="input-group-append">
+                  <a href="javascript:void(0);" mt:command="add" class="add-category-save-link btn btn-default">[#|h trans( "Add" ) #]</a>
+                </div>
+              </div>
+            </div>
+          </div>
+</mt:if>
+        </mt:section>';
+    <mt:ignore>
+        <__trans phrase="Cancel">
+    </mt:ignore>
+    /* ]]> */
+-->
+</script>
+</mt:setvarblock>
+
+<div id="<$mt:var name="container_type" lower_case="1"$>-selector" class="category-selector" style="display: none;">
+<mt:if name="object_type" eq="entry">
+  <mt:if name="can_edit_categories">
+  <div class="input-group d-md-flex">
+    <input id="add-category-input" type="text" class="form-control" placeholder="<$mt:var name="container_label_name"$>" aria-label="<$mt:var name="container_label_name"$>">
+    <div class="input-group-append">
+      <button class="btn btn-default" type="button" mt:command="add"><mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">"><__trans phrase="Add"></button>
+    </div>
+  </div>
+  </mt:if>
+</mt:if>
+<mt:if name="object_type" eq="page">
+  <mt:if name="can_edit_categories">
+    <div id="add-category-form" class="form-inline add-category-form mb-3" style="display: none;">
+        <input id="add-category-input" class="form-control add-category-input input-hint" type="text" value="" placeholder="<$mt:var name="container_label_name"$>" />
+        <a href="javascript:void(0);" mt:command="add" class="add-category-save-link">
+          <mtapp:svgicon id="ic_add" color="success" title="<__trans phrase="Add">">
+        </a>
+        <a href="javascript:void(0);" mt:command="cancel" class="add-category-cancel-link">
+          <mtapp:svgicon id="ic_remove" color="danger" title="<__trans phrase="Cancel">">
+        </a>
+    </div>
+  </mt:if>
+</mt:if>
+  <div id="<$mt:var name="container_type" lower_case="1"$>-selector-list" class="mt-categorylist"></div>
+</div><!-- /category-selector -->

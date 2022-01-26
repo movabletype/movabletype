@@ -1,0 +1,10 @@
+<div class="group-container">
+  <mt:loop name="options_values">
+  <div class="custom-control custom-radio mb-5 mb-md-0">
+    <input type="radio" class="html5-form content-field group custom-control-input" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" value="<mt:var name="v" escape="html">" <mt:var name="checked"> mt:watch-change="1" mt:raw-name="1" <mt:if name="__first__"><mt:var name="required"></mt:if>>
+    <label class="custom-control-label" for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">">
+      <mt:var name="l" escape="html">
+    </label>
+  </div>
+  </mt:loop>
+</div>

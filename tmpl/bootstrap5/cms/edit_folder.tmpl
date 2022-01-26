@@ -1,0 +1,136 @@
+<mt:setvar name="page_title" value="<__trans phrase="Edit Folder">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+
+<MTSetVarBlock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+            id="generic-error"
+            class="error"
+            can_close="0">
+            <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all"
+            can_close="0">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</MTSetVarBlock>
+<mt:setvarblock name="useful_links">
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul class="list-unstyled">
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type==folder&amp;blog_id=<$mt:var name="blog_id" escape="url"$>"><__trans phrase="Manage Folders"></a></li>
+            <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=page&amp;blog_id=<$mt:var name="blog_id" escape="url"$>&amp;filter=category_id&amp;filter_val=<$mt:var name="id" escape="url"$>"><__trans phrase="Manage pages in this folder"></a></li>
+        </ul>
+    </mtapp:widget>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery('input.mt-edit-field').mtEditInput({
+    edit: '<__trans phrase="Edit">'
+});
+
+function validate(form) {
+    if ( !form.label.value.match(/\S/,'') ) {
+        alert('<__trans phrase="You must specify a label for the folder." escape="singlequotes">');
+        form.label.focus();
+        return false;
+    }
+    if ( form.basename.value.match(/[^\w\-]/) ) {
+        alert('<__trans phrase="Please enter a valid basename." escape="singlequotes">');
+        form.basename.focus();
+        return false;
+    }
+
+    return true;
+}
+
+function toggleFile() {
+    var fld = getByID("basename");
+    if (fld) {
+        fld.disabled = false;
+        fld.focus();
+        var baseman = getByID("basename_manual");
+        if (baseman) baseman.value = "1";
+        var basewarn = getByID("basename-warning");
+        if (basewarn) basewarn.style.display = "block";
+    }
+    var img = getByID("basename-lock");
+    if (img)
+        img.style.display = 'none';
+    return false;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<div id="folder-details-content">
+
+    <form method="post" action="<mt:var name="script_url">" onsubmit="return validate(this)">
+        <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+        <input type="hidden" name="__mode" value="save" />
+        <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+        <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+        <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+        <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+        <input type="hidden" name="folder_parent" value="<mt:var name="parent" escape="html">" />
+
+        <mtapp:setting
+            id="label"
+            label="<__trans phrase="Label">"
+            help_page="folders"
+            help_section="folder_label"
+            required="1">
+            <input type="text" name="label" id="label" class="form-control text" maxlength="100" value="<mt:var name="label" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+            id="basename"
+            label="<__trans phrase="Path">"
+            help_page="folders"
+            help_section="folder_path">
+            <div class="form-inline">
+              <input type="hidden" name="basename_manual" id="basename_manual" value="0" />
+              <input type="hidden" name="basename_old" id="basename_old" value="<mt:var name="basename_old" escape="html">" />
+
+              <$mt:var name="path_prefix" escape="html"$><input type="text" name="basename" id="basename" class="form-control mt-edit-field text path" maxlength="250" value="<mt:var name="basename" escape="html">" />
+            </div>
+        </mtapp:setting>
+
+        <mtapp:setting
+            id="description"
+            label="<__trans phrase="Description">"
+            help_page="folders"
+            help_section="folder_description">
+          <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
+        </mtapp:setting>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Save changes to this folder (s)">"
+        class="save action primary button btn__mobile btn-primary">
+      <__trans phrase="Save Changes">
+    </button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+</div>
+
+<$MTApp:PageActions$>
+
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

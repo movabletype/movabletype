@@ -1,0 +1,171 @@
+<div class="mt-mobileGlobalMenu<mt:if name="scope_type" eq="user"> mb-5</mt:if>">
+  <div class="mt-mobileGlobalMenu__dropdown">
+    <a id="mobileGlobalMenu__dropdownMenuButton" href="javascript:void(0);" class="mt-mobileGlobalMenu__dropdownMenuButton" data-role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <mtapp:svgicon title="Open mobile global menu" data-role="img" color="inverse" id="ic_menu">
+    </a>
+    <div class="mt-mobileGlobalMenu__dropdownMenu dropdown-menu" aria-labelledby="mobileGlobalMenu__dropdownMenuButton">
+      <ul>
+<mt:setvarblock name="show_dashboard_link"><mt:if name="scope_type" ne="user">1<mt:elseif name="override_scope_type">1</mt:if></mt:setvarblock>
+<mt:if name="show_dashboard_link">
+        <li class="mt-mobileGlobalMenu__menu--dashboard">
+          <a href="<mt:var name="script_url">?__mode=dashboard">
+            <mtapp:svgicon id="ic_dashboard" title="Dashboard" role="img" color="inverse">
+            <__trans phrase="Dashboard">
+          </a>
+        </li>
+</mt:if>
+<mt:if name="fav_website_loop">
+        <li class="mt-mobileGlobalMenu__menu--label">
+          <span>
+            <__trans phrase="Sites">
+          </span>
+        </li>
+  <mt:loop name="fav_website_loop">
+        <li class="mt-mobileGlobalMenu__menu--site">
+    <mt:if name="fav_website_can_link">
+          <a href="<mt:var name="mt_url">?blog_id=<mt:var name="fav_website_id" escape="html">&__mode=dashboard">
+            <mt:var name="fav_website_name" escape="html">
+          </a>
+    <mt:else>
+          <span>
+            <mt:var name="fav_website_name" escape="html">
+          </span>
+        </li>
+    </mt:if>
+    <mt:loop name="fav_website_children">
+        <li class="mt-mobileGlobalMenu__menu--childSite">
+          <a href="<mt:var name="mt_url">?blog_id=<mt:var name="fav_blog_id" escape="html">&__mode=dashboard">
+            <mt:var name="fav_blog_name" escape="html">
+          </a>
+        </li>
+    </mt:loop>
+  </mt:loop>
+</mt:if>
+<mt:unless name="selector_hide_website_chooser">
+        <li class="mt-mobileGlobalMenu__menu--siteSelector">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_website&select_favorites=1&return_args=__mode&3Ddashboard" class="mt-modal-open" data-mt-modal-large>
+            (<__trans phrase="Select another site...">)
+          </a>
+        </li>
+</mt:unless>
+<mt:unless name="selector_hide_blog_chooser">
+        <li class="mt-mobileGlobalMenu__menu--siteSelector">
+          <a href="<mt:var name="script_url">?__mode=dialog_select_weblog&select_favorites=1&return_args=<mt:var name="return_args">" class="mt-modal-open" data-mt-modal-large>
+            (<__trans phrase="Select another child site...">)
+          </a>
+        </li>
+</mt:unless>
+        <li class="mt-mobileGlobalMenu__menu--username">
+          <span>
+<mt:if name="author_userpic_url">
+            <img src="<mt:var name="author_userpic_url" escape="html">" width="32" height="32" class="rounded-circle" alt="">
+<mt:else>
+            <img src="<mt:var name="static_uri">images/user-default.svg" width="32" height="32" alt="">
+</mt:if>
+            <mt:var name="author_display_name" escape="html">
+          </span>
+        </li>
+        <li class="mt-mobileGlobalMenu__menu--userAction">
+<mt:if name="author_id">
+          <a href="<mt:var name="script_url">?__mode=logout">
+</mt:if>
+            <__trans phrase="Sign out">
+<mt:if name="author_id">
+          </a>
+</mt:if>
+        </li>
+        <li class="mt-mobileGlobalMenu__menu">
+          <a href="javascript:void(0);" onclick="changeToPCView();">
+            <__trans phrase="PC View">
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+<mt:if name="scope_type" like="^user|system$">
+  <div class="mt-mobileGlobalMenu__name--invert">
+    <span>
+  <mt:if name="scope_type" eq="user">
+      <__trans phrase="Dashboard">
+  <mt:else>
+      <__trans phrase="System">
+  </mt:if>
+    </span>
+  </div>
+<mt:elseif name="scope_type" eq="website">
+  <div class="mt-mobileGlobalMenu__name">
+    <span>
+      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id" escape="html">">
+        <mt:var name="curr_website_name" escape="html">
+      </a>
+    </span>
+  </div>
+<mt:else>
+  <div class="mt-mobileGlobalMenu__name">
+    <span>
+      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_website_id" escape="html">">
+        <mt:var name="curr_website_name" escape="html">
+      </a>
+    </span>
+    <span class="separator">
+      &gt;
+    </span>
+    <span class="currentSite">
+      <a href="<mt:var name="script_url">?__mode=dashboard&blog_id=<mt:var name="curr_blog_id" escape="html">">
+        <mt:var name="curr_blog_name" escape="html">
+      </a>
+    </span>
+  </div>
+</mt:if>
+<mt:if name="menu_actions">
+  <div class="mt-mobileGlobalMenu__menuActions">
+  <mt:loop name="menu_actions">
+    <mt:setvarblock name="menu_action_href"><mt:if name="href"><mt:var name="href" escape="html"><mt:elseif name="mode"><mt:var name="mt_url">?__mode=<mt:var name="mode" escape="html"><mt:if name="blog_id" ne="">&blog_id=<mt:var name="blog_id"></mt:if><mt:else>javascript:void(0)</mt:if></mt:setvarblock>
+    <mt:setvarblock name="escaped_menu_action_label"><mt:var name="label" escape="html"></mt:setvarblock>
+    <a id="mobile-menu-<mt:var name="id" escape="html">" href="<mt:var name="menu_action_href">" class="<mt:var name="class" escape="html">"<mt:if name="target"> target="<mt:var name="target" escape="html">"</mt:if>>
+      <mtapp:svgicon id="$icon" title="$escaped_menu_action_label" size="lg">
+    </a>
+  </mt:loop>
+  </div>
+</mt:if>
+</div>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('.mt-mobileGlobalMenu__dropdownMenu').on('click', function (e) {
+  e.stopPropagation();
+});
+jQuery(window).on('load resize', function () {
+  var $dropdownMenu = jQuery('.mt-mobileGlobalMenu__dropdownMenu');
+  var globalMenuWidth = $dropdownMenu.parents('.mt-mobileGlobalMenu').width();
+  $dropdownMenu.width(globalMenuWidth * 0.8);
+});
+</mt:setvarblock>
+
+<script>
+  function updateViewport() {
+    jQuery('meta[name=viewport]').attr('content', 'width=1200, initial-scale=0.25');
+  }
+
+  function closeMobileGlobalMenu() {
+    jQuery('.mt-mobileGlobalMenu__dropdownMenu').dropdown('toggle');
+  }
+
+  function changeToPCView() {
+    jQuery.ajax({
+      type: 'POST',
+      url: '<mt:var name="script_url">',
+      dataType: 'json',
+      data: {
+        __mode: 'change_to_pc_view'
+      }
+    }).done(function () {
+      updateViewport();
+      closeMobileGlobalMenu();
+    });
+  }
+
+  var pcView = <mt:var name="pc_view" escape="js"> ? true : false;
+  if (pcView) {
+    updateViewport();
+  }
+</script>

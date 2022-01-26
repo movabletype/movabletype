@@ -1,0 +1,36 @@
+<mt:setvartemplate name="layout">
+
+  <mt:include name="layout/common/header.tmpl">
+
+  <mt:if name="form_header">
+    <mt:var name="form_header">
+  </mt:if>
+
+  <mt:include name="include/mobile_global_menu.tmpl">
+
+  <div class="row">
+  <mt:if name="has_menu">
+    <mt:include name="include/primary_navigation.tmpl">
+  <mt:else>
+    <mt:include name="include/primary_navigation.tmpl" scope_type="user" override_scope_type="1">
+  </mt:if>
+
+    <mt:include name="include/main_content.tmpl">
+
+  <mt:setvarblock name="has_info"><mt:if name="object_nav">1<mt:elseif name="related_content">1</mt:if></mt:setvarblock>
+
+  <mt:if name="has_info">
+    <div class="<mt:var name="secondary_panel_class" default="mt-secondaryPanel">">
+    <mt:if name="object_nav">
+      <mt:var name="object_nav">
+    </mt:if>
+      <mt:var name="related_content">
+    </div>
+  </mt:if>
+  </div>
+  <mt:if name="form_footer">
+    <mt:var name="form_footer">
+  </mt:if>
+
+  <mt:include name="layout/common/footer.tmpl">
+</mt:setvartemplate>

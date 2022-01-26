@@ -1,0 +1,56 @@
+## Movable Type Configuration File
+##
+## This file defines system-wide
+## settings for Movable Type. In 
+## total, there are over a hundred 
+## options, but only those 
+## critical for everyone are listed 
+## below.
+##
+## Information on all others can be 
+## found at:
+##  <mt:var name="help_url">config
+
+#======== REQUIRED SETTINGS ==========
+
+CGIPath        <mt:var name="cgi_path">
+StaticWebPath  <mt:var name="static_web_path">
+StaticFilePath <mt:var name="static_file_path"><mt:if name="publish_charset">
+PublishCharset <mt:var name="publish_charset"></mt:if><mt:if name="non_cgi_suffix">
+
+#======== SCRIPT NAMES ===============<mt:if name="mod_perl">
+# Since you're using mod_perl, these names
+# must map to your mod_perl handlers.
+# Adjust as necessary.
+</mt:if><mt:loop name="script_loop">
+<mt:var name="name"> <mt:var name="path"></mt:loop></mt:if>
+
+#======== DATABASE SETTINGS ==========<mt:if name="use_dbms">
+
+ObjectDriver <mt:var name="object_driver">
+Database <mt:var name="database_name"><mt:if name="database_username">
+DBUser <mt:var name="database_username"></mt:if><mt:if name="database_password">
+DBPassword <mt:var name="database_password"></mt:if><mt:if name="database_host">
+DBHost <mt:var name="database_host"></mt:if><mt:if name="database_port">
+DBPort <mt:var name="database_port"></mt:if><mt:if name="database_socket">
+DBSocket <mt:var name="database_socket"></mt:if><mt:if name="database_odbcdriver">
+ODBCDriver <mt:var name="odbcdriver"></mt:if></mt:if><mt:if name="use_sqlite2">
+UseSQLite2 1</mt:if>
+
+#======== MAIL =======================
+EmailAddressMain <mt:var name="email_address_main"><mt:if name="mail_transfer">
+MailTransfer <mt:var name="mail_transfer"><mt:if name="mail_transfer" eq="smtp">
+SMTPServer <mt:var name="smtp_server">
+SMTPPort <mt:var name="smtp_port"><mt:if name="smtp_auth">
+SMTPAuth <mt:var name="smtp_auth">
+SMTPUser <mt:var name="smtp_auth_username">
+SMTPPassword <mt:var name="smtp_auth_password"></mt:if><mt:else><mt:if name="sendmail_path">
+SendMailPath <mt:var name="sendmail_path"></mt:if></mt:if></mt:if><mt:if name="temp_dir">
+
+TempDir <mt:var name="temp_dir"></mt:if><mt:if name="default_language">
+    
+DefaultLanguage <mt:var name="default_language"></mt:if><mt:if name="image_driver">
+
+ImageDriver <mt:var name="image_driver"></mt:if><mt:loop name="tmpl_loop">
+
+<mt:var name="tmpl_code"></mt:loop>

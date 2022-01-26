@@ -1,0 +1,23 @@
+<mt:if name="missing_paths">
+  <mt:if name="have_permissions">
+<mt:setvarblock name="page_title"><__trans phrase="You need to configure your blog."></mt:setvarblock>
+  <mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Your blog has not been published."></mt:setvarblock>
+  </mt:if>
+<mt:else>
+  <mt:setvarblock name="page_title"><__trans phrase="Upload File"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="html_head" append="1">
+  <script type="text/javascript" src="<mt:var name="static_uri">js/upload_settings.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+</mt:setvarblock>
+
+<mt:include name="dialog/header.tmpl">
+
+<mt:if name="compat_upload_template">
+<mt:include name="include/asset_upload.tmpl" dialog="1">
+<mtelse>
+<mt:include name="include/async_asset_upload.tmpl" dialog="1">
+</mt:if>
+
+<mt:include name="dialog/footer.tmpl">

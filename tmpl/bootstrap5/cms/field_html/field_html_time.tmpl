@@ -1,0 +1,80 @@
+<div class="time-field-container row">
+  <div class="form-group col-auto d-none d-md-block mb-0">
+    <input type="text" name="time-<mt:var name="content_field_id" escape="html">" id="time-<mt:var name="content_field_id">" class="time-field form-control text time html5-form content-field" value="<mt:var name="time" escape="html">" placeholder="HH:mm:ss" mt:watch-change="1" mt:raw-name="1" <mt:var name="required">>
+  </div>
+  <div class="form-inline col d-md-none">
+    <select class="time-field-hour custom-control custom-select w-25" name="time-<mt:var name="content_field_id" escape="html">-hour">
+      <option value=""></option>
+<mt:for var="x" from="0" to="23">
+  <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+  <mt:if name="y" eq="$hour">
+      <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+  <mt:else>
+      <option value="<mt:var name="y">"><mt:var name="y"></option>
+  </mt:if>
+</mt:for>
+    </select>
+    :
+    <select class="time-field-minute custom-control custom-select w-25" name="time-<mt:var name="content_field_id" escape="html">-minute">
+      <option value=""></option>
+<mt:for var="x" from="0" to="59">
+  <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+  <mt:if name="y" eq="$minute">
+      <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+  <mt:else>
+      <option value="<mt:var name="y">"><mt:var name="y"></option>
+  </mt:if>
+</mt:for>
+    </select>
+    :
+    <select class="time-field-second custom-control custom-select w-25" name="time-<mt:var name="content_field_id" escape="html">-second">
+      <option value=""></option>
+<mt:for var="x" from="0" to="59">
+  <mt:setvarblock name="y"><mt:if name="x" lt="10">0</mt:if><mt:var name="x"></mt:setvarblock>
+  <mt:if name="y" eq="$second">
+      <option value="<mt:var name="y">" selected="selected"><mt:var name="y"></option>
+  <mt:else>
+      <option value="<mt:var name="y">"><mt:var name="y"></option>
+  </mt:if>
+</mt:for>
+    </select>
+  </div>
+</div>
+
+<mt:unless name="loaded_time_field_jds">
+  <mt:setvar name="loaded_time_field_js" value="1">
+  <mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('change_to_mobile_view', function () {
+  jQuery('.time-field-container input.time-field').mtUnvalidate().removeClass('content-field');
+
+  jQuery('.time-field-container').each(function () {
+    var time = jQuery(this).find('input.time-field').val();
+    var hour, minute, second;
+    [hour, minute, second] = time.split(':');
+    jQuery(this).find('select.time-field-hour').val(hour);
+    jQuery(this).find('select.time-field-minute').val(minute);
+    jQuery(this).find('select.time-field-second').val(second);
+  });
+});
+jQuery(window).on('change_to_pc_view', function () {
+  jQuery('.time-field-container input.time-field').addClass('content-field');
+
+  jQuery('.time-field-container').each(function () {
+    var hour = jQuery(this).find('select.time-field-hour').val();
+    var minute = jQuery(this).find('select.time-field-minute').val();
+    var second = jQuery(this).find('select.time-field-second').val();
+    var time;
+    if (hour || minute || second) {
+      time = [hour, minute, second].join(':');
+      jQuery(this).find('input.time-field').val(time);
+    }
+  });
+});
+if (MT.Util.isMobileView()) {
+  jQuery('.time-field-container input.time-field').removeClass('content-field');
+} else {
+  jQuery('.time-field-container input.time-field').addClass('content-field');
+}
+  </mt:setvarblock>
+</mt:unless>
+

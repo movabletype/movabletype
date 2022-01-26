@@ -1,0 +1,194 @@
+<mt:setvarblock name="page_title"><__trans phrase="Requirements Check"></mt:setvarblock> 
+
+<mt:setvarblock name="page_content">
+<form method="post">
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="step" value="start" />
+  <input type="hidden" name="config" value="<$mt:var name="config" escape="html"$>" />
+  <input type="hidden" name="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
+  <input type="hidden" name="set_static_file_to" value="<mt:var name="static_file" escape="html">" />
+  <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
+<mt:if name="missing_db">
+  <mtapp:statusmsg
+     id="missing-db"
+     class="error"
+     can_close="0">
+    <__trans phrase="The following Perl modules are required in order to make a database connection.  Movable Type requires a database in order to store your data of sites and child sites.  Please install one of the packages listed here in order to proceed.  When you are ready, click the 'Retry' button.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="optional">
+  <p class="intro">
+    <span class="text-success ready"><__trans phrase="All required Perl modules were found."></span> <__trans phrase="You are ready to proceed with the installation of Movable Type.">
+  </p>
+  <p id="package-list-msg" class="note"><__trans phrase="Some optional Perl modules could not be found. <a href="javascript:void(0)" onclick="[_1]">Display list of optional modules</a>" params="toggleList()"></p>
+</mt:if>
+<mt:if name="required">
+  <mtapp:statusmsg
+     id="required"
+     class="error"
+     can_close="0">
+    <__trans phrase="One or more Perl modules required by Movable Type could not be found.">
+  </mtapp:statusmsg>
+  <p><__trans phrase="The following Perl modules are required for Movable Type to run properly. Once you have met these requirements, click the 'Retry' button to re-test for these packages."></p>
+</mt:if>
+
+<mt:if name="optional">
+  <div id="package-list" style="display: none">
+  <p class="note"><__trans phrase="Some optional Perl modules could not be found. You may continue without installing these optional Perl modules. They may be installed at any time if they are needed. Click 'Retry' to test for the modules again."></p>
+</mt:if>
+
+<mt:if name="missing_db">
+  <mtapp:statusmsg
+     id="missing_db"
+     class="error"
+     can_close="0">
+    <__trans phrase="Missing Database Modules">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="optional">
+  <mtapp:statusmsg
+     id="optional"
+     class="info"
+     can_close="0">
+    <__trans phrase="Missing Optional Modules">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="required">
+  <mtapp:statusmsg
+     id="required"
+     class="error"
+     can_close="0">
+    <__trans phrase="Missing Required Modules">
+  </mtapp:statusmsg>
+</mt:if>
+
+<dl id="packages-list">
+<mt:loop name="package_loop">
+  <dt><span class="module-name"><a href="<mt:var name="link">" target="cpan"><mt:var name="module"></a></span></dt>
+  <dd>
+    <p class="module-description"><mt:var name="description"></p>
+  <mt:if name="version">
+    <p><em><__trans phrase="Minimal version requirement: [_1]" params="<mt:var name="version">"></em></p>
+  </mt:if>
+  </dd>
+</mt:loop>
+</dl>
+
+<mt:if name="optional">
+  <p><a target="cpan" href="<__trans phrase="https://www.movabletype.org/documentation/installation/perl-modules.html">"><__trans phrase="Learn more about installing Perl modules."></a></p>
+</div>
+</mt:if>
+
+
+<mt:if name="success">
+  <div class="message">
+    <__trans phrase="Your server has all of the required modules installed; you do not need to perform any additional module installations.">
+  </div>
+</mt:if>
+
+  <div class="actions-bar text-right">
+  <mt:if name="missing_db_or_optional">
+    <mt:if name="missing_db">
+    <button
+       name="retry"
+       type="submit"
+       onclick="go('retry');"
+       class="retry action button btn btn-default">
+      <__trans phrase="Retry">
+    </button>
+    <mt:else>
+      <mt:if name="optional">
+    <button 
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button btn btn-primary">
+      <__trans phrase="Continue">
+    </button>
+    <button
+       name="retry"
+       type="submit"
+       onclick="go('retry');"
+       id="retry-btn"
+       style="display: none;"
+       class="retry action button btn btn-default">
+      <__trans phrase="Retry">
+    </button>
+      <mt:else>
+    <button
+       name="retry"
+       type="submit"
+       value="<__trans phrase="Retry">"
+       class="retry action button btn btn-default">
+      <__trans phrase="Retry">
+    </button>
+      </mt:if>
+    </mt:if>
+  <mt:else>
+    <mt:if name="required">
+    <button
+       name="retry"
+       type="submit"
+       value="<__trans phrase="Retry">"
+       class="retry action button btn btn-default">
+      <__trans phrase="Retry">
+    </button>
+    </mt:if>
+  </mt:if>
+
+  <mt:if name="success">
+    <button 
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button btn btn-primary">
+      <__trans phrase="Continue">
+    </button>
+  </mt:if>
+    <button 
+       name="back"
+       type="submit"
+       onclick="this.form.reset(); go('previous_step');"
+       class="goback action button btn btn-default">
+      <__trans phrase="Back">
+    </button>
+
+  </div>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+
+function toggleList() {
+    var list = getByID('package-list');
+    var list_msg = getByID('package-list-msg');
+    if (list) {
+        if (list.style.display == 'none') {
+            list.style.display = 'block';
+            list_msg.style.display = 'none';
+        } else {
+            list.style.display = 'none';
+            list_msg.style.display = 'block';
+        }
+    }
+    var retry_btn = getByID('retry-btn');
+    if (retry_btn) {
+        if (retry_btn.style.display == 'none')
+            retry_btn.style.display = 'inline';
+        else
+            retry_btn.style.display = 'none';
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

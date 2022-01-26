@@ -1,0 +1,182 @@
+<mt:unless name="invalid_source">
+
+<div id="content-type-field-<mt:var name="content_field_id" escape="html">" class="content-type-field-container content-field" data-mt-content-type-name="<mt:var name="content_type_name" escape="html">" <mt:var name="required"> <mt:var name="multiple">>
+
+<mt:loop name="content_data_loop">
+  <div class="mt-draggable"<mt:if name="multiple"> draggable="true" aria-grabbed="false"</mt:if>>
+    <input type="hidden" name="content-field-<mt:var name="content_field_id" escape="html">" value="<mt:var name="cd_id" escape="html">" />
+    <div class="col-auto">
+  <mt:if name="multiple">
+      <mtapp:svgicon id="ic_move" title="Draggable">
+  <mt:else>
+      <mtapp:svgicon id="ic_blank" title="Blank">
+  </mt:if>
+    </div>
+    <div class="col text-wrap">
+      <mt:var name="cd_label" escape="html">
+    </div>
+    <div class="col-auto mr-3 d-none d-md-block">
+      <a href="javascript:void(0)" class="remove">
+        <__trans phrase="Remove">
+      </a>
+    </div>
+    <div class="col-auto">
+      <a class="d-inline-block" data-toggle="collapse" href="#collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">" aria-expanded="false" aria-controls="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
+        <mtapp:svgicon id="ic_collapse" title="Collapse" color="secondary">
+      </a>
+    </div>
+    <div class="mt-flexBreak"></div>
+    <div class="collapse mt-collapse__content w-100 pb-2" id="collapse-<mt:var name="content_field_id" escape="html">-<mt:var name="cd_id" escape="html">">
+      <div class="row py-5 py-md-0 text-wrap preview-data">
+        <div class="col">
+          <mt:var name="cd_data" _default="<__trans phrase="No field data.">">
+        </div>
+      </div>
+      <div class="row border-top pt-4 d-md-none">
+        <div class="col-auto mx-auto">
+          <a href="javascript:void(0)" class="remove">
+            <__trans phrase="Remove">
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</mt:loop>
+  <div class="alert alert-info mb-0">
+    <__trans phrase="No [_1]" params="<mt:var name="content_type_name" escape="html">">
+  </div>
+</div>
+
+<div class="mt-3">
+  <a href="<mt:var name="script_url">?__mode=dialog_content_data_modal&blog_id=<mt:var name="blog_id">&content_field_id=<mt:var name="content_field_id">" class="mt-open-dialog mt-modal-open d-inline-block" data-mt-modal-large>
+    <mtapp:svgicon id="ic_add" title="Add" color="primary" size="sm">
+<mt:if name="multiple">
+    <__trans phrase="Add [_1]" params="<mt:var name="content_type_name" escape="html">">
+<mt:else>
+    <__trans phrase="Choose [_1]" params="<mt:var name="content_type_name" escape="html">">
+</mt:if>
+  </a>
+</div>
+
+<mt:unless name="loaded_content_type_field_js">
+  <mt:var name="loaded_content_type_field_js" value="1">
+
+  <mt:setvarblock name="jq_js_include" append="1">
+jQuery.mtValidateAddRules({
+  'div.content-type-field-container': function ($e) {
+      var contentTypeName = $e.data('mt-content-type-name');
+      var multiple = $e.data('mt-multiple') ? true : false;
+      var max = Number($e.data('mt-max-select')) || 0;
+      var min = Number($e.data('mt-min-select')) || 0;
+      var required = $e.data('mt-required') ? true : false;
+      var selectedCount = $e.children('.mt-draggable').length;
+      if ( multiple && max && max < selectedCount ) {
+          this.error = true;
+          this.errstr = trans('[_1] less than or equal to [_2] must be selected', contentTypeName, max);
+          return false;
+      }
+      if ( multiple && min && min > selectedCount ) {
+          this.error = true;
+          this.errstr = trans('[_1] greater than or equal to [_2] must be selected', contentTypeName, min);
+          return false;
+      }
+      if ( !multiple && selectedCount > 1 ) {
+          this.error = true;
+          this.errstr = trans('Only 1 [_1] can be selected', contentTypeName);
+          return false;
+      }
+      if ( required && selectedCount === 0 ) {
+          this.error = true;
+          this.errstr = trans('This field is required');
+          return false;
+      }
+      return true;
+  }
+});
+
+jQuery('.content-type-field-container').on('click', 'a.remove', function () {
+  var $container = jQuery(this).parents('.content-type-field-container');
+
+  jQuery(this).parents('.mt-draggable').remove();
+
+  if ($container.data('mtValidator')) {
+    $container.mtValid({ focus: false });
+  }
+
+  setDirty(true);
+  log('found dirty form');
+  app.setDirty();
+});
+
+window.contentTypeFieldSortableChanged = {};
+  </mt:setvarblock>
+
+  <mt:setvarblock name="css_include" append="1">
+<style>
+.content-type-field-container div:not(:first-child).alert {
+  display: none;
+}
+
+.placeholder {
+    border: 1px dashed #c0c6c9;
+    background-color: #fbfbfb;
+    margin-bottom: 2px;
+    padding: 0.5rem 0;
+}
+
+@media (max-width: 767.98px) {
+    .content-type-field-container .mt-draggable {
+        padding-right: 0;
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:first-child {
+        background-color: #F4F4F4;  /* $gray-lightest */
+    }
+    .content-type-field-container .mt-draggable .mt-collapse__content .row:last-child {
+        margin-right: -14px;
+    }
+}
+</style>
+  </mt:setvarblock>
+
+</mt:unless>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('#content-type-field-<mt:var name="content_field_id" escape="html">').sortable({
+  items: 'div.mt-draggable[draggable=true][aria-grabbed]',
+  handle: MT.Util.isMobileView() ? '.col-auto:first' : false,
+  placeholder: 'placeholder',
+  distance: 3,
+  opacity: 0.8,
+  cursor: 'move',
+  forcePlaceholderSize: true,
+  containment: '.mt-mainContent',
+  start: function (event, ui) {
+    ui.item.attr('aria-grabbed', true);
+
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  sort: function (event, ui) {
+    if (window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">]) {
+      ui.helper.offset({
+        top: ui.helper.offset().top + jQuery('body').scrollTop()
+      });
+    }
+  },
+  change: function (event, ui) {
+    window.contentTypeFieldSortableChanged[<mt:var name="content_field_id" escape="js">] = true;
+  },
+  stop: function (event, ui) {
+    ui.item.attr('aria-grabbed', false);
+  }
+});
+</mt:setvarblock>
+
+<mt:else>
+<div class="alert alert-warning">
+  <__trans phrase="This field is disabled because valid Content Type is not selected in this field.">
+</div>
+</mt:unless>

@@ -1,0 +1,55 @@
+<mtapp:listing id="default_category_sets" loop="category_sets" hide_pager="1" show_actions="0" type="category_set">
+<mt:if name="__first__">
+
+<mt:setvarblock name="table_header">
+  <tr>
+    <th class="head cb">
+      <div class="custom-control custom-checkbox">
+        <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+        <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+      </div>
+    </th>
+    <th class="head display-name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+    <th class="head categories primary"><span class="col-label"><__trans phrase="Categories"></span></th>
+  </tr>
+</mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd</mt:if>">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input
+             type="checkbox"
+             name="default_category_set_export_ids"
+             id="default_category_set_<mt:var name="category_set_id">"
+             class="custom-control-input select category-set"
+             value="<mt:var name="category_set_id">"
+             <mt:if name="checked">checked="checked"</mt:if>
+             />
+          <label class="custom-control-label" for="default_category_set_<mt:var name="category_set_id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
+      <td class="display-name">
+        <div>
+          <mt:var name="category_set_name" escape="html">
+        </div>
+      </td>
+      <td class="categories">
+        <div>
+          <mt:var name="categories_count" escape="html">
+        </div>
+      </td>
+    </tr>
+<mt:if __last__>
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<script type="text/javascript">
+jQuery.mtCheckbox();
+</script>
+

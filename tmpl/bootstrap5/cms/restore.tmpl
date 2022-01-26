@@ -1,0 +1,70 @@
+<mt:setvarblock name="page_title"><__trans phrase="Import from Exported file"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvar name="restore" value="1">
+
+<mt:setvarblock name="page_content">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+
+<div id="restore-panel">
+<mt:if name="missing_sax">
+  <mtapp:statusmsg
+     id="missing-sax"
+     class="danger"
+     can_close="0">
+    <__trans phrase="Perl module XML::SAX and/or some of its dependencies are missing.  Movable Type cannot restore the system without these modules.">
+  </mtapp:statusmsg>
+<mt:else>
+  <form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="restore" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <mtapp:setting
+       id="file"
+       label="<__trans phrase="Exported File">"
+       help_page="backup_restore"
+       help_section="source_file">
+      <input name="file" class="form-control-file" type="file" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="overwrite_global_templates"
+       label="<__trans phrase="Options">"
+       show_label="0">
+      <div class="custom-control custom-checkbox">
+        <input name="overwrite_global_templates" id="overwrite_global_templates" type="checkbox" class="custom-control-input" />
+        <label class="custom-control-label" for="overwrite_global_templates"><__trans phrase="Overwrite global templates."></label>
+      </div>
+    </mtapp:setting>
+
+    <mt:setvarblock name="action_buttons">
+      <button
+         type="submit"
+         accesskey="i"
+         title="<__trans phrase="Import (i)">"
+         class="restore action primary button btn btn-primary">
+        <__trans phrase="Import">
+      </button>
+    </mt:setvarblock>
+    <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+  </form>
+</mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+<mt:if name="open_dialog">
+jQuery.fn.mtModal.open(
+  '<mt:var name="script_url">?__mode=<mt:var name="dialog_mode">&<mt:var name="dialog_params">',
+  { large: true }
+);
+</mt:if>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

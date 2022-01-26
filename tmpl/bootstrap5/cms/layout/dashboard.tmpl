@@ -1,0 +1,46 @@
+<mt:setvartemplate name="layout">
+
+  <mt:include name="layout/common/header.tmpl">
+
+  <mt:include name="include/mobile_global_menu.tmpl">
+
+  <div class="row">
+    <mt:include name="include/primary_navigation.tmpl">
+
+    <div class="mt-mainContent" style="min-width: 0;">
+
+      <mt:include name="include/breadcrumbs.tmpl">
+
+      <h2 id="page-title" class="d-none d-md-block"><mt:var name="page_title"></h2>
+
+  <mt:if name="scope_type" ne="user">
+      <mt:include name="include/mobile_primary_menu.tmpl">
+  </mt:if>
+
+      <mt:include name="include/system_msg.tmpl">
+
+      <div class="clearfix mb-5">
+        <div class="float-right">
+          <form name="dashoboard_reload_form" id="dashoboard_reload_form" method="post" action="<$mt:var name="script_url"$>" mt:once="1">
+            <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<$mt:var name="blog_id" escape="html"$>"></mt:if>
+            <mt:if name="system_overview_nav"><input type="hidden" name="blog_id" value="0"></mt:if>
+            <input type="hidden" name="__mode" value="dashboard">
+            <input type="hidden" name="reload" value="1">
+            <button type="submit" class="btn btn-default"><svg role="img" class="mt-icon mt-icon--sm"><title><__trans phrase="reload"></title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_reload"></use></svg> <__trans phrase="Reload"></button>
+          </form>
+        </div>
+      </div>
+
+      <mt:var name="page_content">
+
+    </div>
+
+  <mt:if name="related_content">
+    <div class="mt-secondaryPanel d-none d-md-block">
+      <mt:var name="related_content">
+    </div>
+  </mt:if>
+  </div>
+
+  <mt:include name="layout/common/footer.tmpl">
+</mt:setvartemplate>

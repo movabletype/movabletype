@@ -1,0 +1,138 @@
+<mt:if name="entry_type" eq="page">
+  <mt:setvar name="type_label" value="<__trans phrase="Pages">">
+  <mt:setvar name="mode" value="list&amp;_type=page">
+<mt:else>
+  <mt:setvar name="type_label" value="<__trans phrase="Entries">">
+  <mt:setvar name="mode" value="list&amp;_type=entry">
+</mt:if>
+
+<mt:setvarblock name="action_buttons">
+<mt:if name="is_administrator">
+  <button
+     type="button"
+     accesskey="e"
+     title="<__trans phrase="Enable selected users (e)">"
+     class="button mt-enable-users btn btn-default">
+    <__trans phrase="_USER_ENABLE" escape="js">
+  </button>
+  <button
+     type="button"
+     accesskey="d"
+     title="<__trans phrase="Disable selected users (d)">"
+     class="button mt-disable-users btn btn-default">
+    <__trans phrase="_USER_DISABLE" escape="js">
+  </button>
+</mt:if>
+</mt:setvarblock>
+
+<mtapp:listing>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="select custom-control-input" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
+      <th class="head name primary"><span class="col-label"><__trans phrase="Display Name"></span></th>
+      <th class="head created"><span class="col-label"><__trans phrase="Created By"></span></th>
+    <mt:unless name="hide_entries_col">
+      <th class="head num entries"><span class="col-label"><mt:var name="type_label"></span></th>
+    </mt:unless>
+    <mt:loop name="more_column_headers">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <mt:setvarblock name="is_administrator_and_me"><mt:if name="is_administrator"><mt:if name="is_me">1<mt:else>0</mt:if><mt:else>0</mt:if></mt:setvarblock>
+          <input id="<mt:if name="is_administrator_and_me">sysadmin<mt:else>select_<mt:var name="id" escape="html"></mt:if>" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="<mt:if name="is_administrator_and_me">sysadmin<mt:else>select_<mt:var name="id" escape="html"></mt:if>">
+            <span class="sr-only"><__trans phrase="Select"></span>
+          </label>
+        </div>
+      </td>
+      <td class="username">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="User">" size="sm">
+
+ <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">">
+ </mt:if>
+          <mt:var name="name" escape="html">
+ <mt:if name="has_edit_access">
+        </a>
+ </mt:if>
+
+ <mt:if name="status_enabled">
+        <span class="badge badge-success"><__trans phrase="_USER_ENABLED"></span>
+ <mt:elseif name="status_pending">
+        <span class="badge badge-default"><__trans phrase="Pending"></span>
+ <mt:else>
+        <span class="badge badge-warning"><__trans phrase="_USER_DISABLED"></span>
+ </mt:if>
+      </td>
+      <td class="name">
+      <mt:if name="nickname">
+        <span class="status-name"><mt:var name="nickname" escape="html"></span>
+      </mt:if>
+      <mt:if name="email">
+        <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a></span>
+      </mt:if>
+      <mt:if name="url">
+        <span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a></span>
+      </mt:if>
+      </td>
+      <td class="created">
+      <mt:if name="created_by_name">
+        <mt:var name="created_by_name" escape="html">
+      <mt:else>
+        <em><__trans phrase="System"></em>
+      </mt:if>
+      </td>
+    <mt:unless name="hide_entries_col">
+      <td class="entries">
+      <mt:if name="entry_count">
+        <a href="<mt:var name="script_url">?__mode=<mt:if name="blog_id"><mt:var name="mode"><mt:else>list&amp;_type=entry</mt:if>&amp;blog_id=<mt:if name="blog_id"><mt:var name="blog_id"><mt:else>0</mt:if>&amp;filter=author_id&amp;filter_val=<mt:var name="id">"><mt:var name="entry_count"></a>
+      <mt:else>
+        &nbsp;
+      </mt:if>
+      </td>
+    </mt:unless>
+    <mt:loop name="more_columns">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-enable-users').mtEnableUsers({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-disable-users').mtDisableUsers({
+        message: '<__trans phrase="_NO_SUPERUSER_DISABLE" escape="js">',
+        id: '<$mt:var name="object_type"$>-listing-form',
+        plural: '<__trans phrase="user" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="users" escape="js">'
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>

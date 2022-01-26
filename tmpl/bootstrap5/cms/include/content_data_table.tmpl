@@ -1,0 +1,211 @@
+<mt:setvarblock name="save_button_title"><__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
+<mt:setvarblock name="republish_button_title"><__trans phrase="Republish selected [_1] (r)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
+<mt:setvarblock name="delete_button_title"><__trans phrase="Delete selected [_1] (x)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+#content_data-listing-table td.data table td,
+#content_data-listing-table td.data table th {
+  border: 1px solid #000000;
+}
+
+tr.preview-data {
+  background-color: #f4f4f4;
+}
+
+td.data .mt-icon--secondary{
+  margin: 0 .5rem 0 0;
+  transition: 0.2s ease-in-out;
+}
+td.data a[aria-expanded="false"] .mt-icon--secondary{
+  transform: rotate(180deg);
+}
+td.data a[aria-expanded="true"] .mt-icon--secondary{
+  transform: rotate(0deg);
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <mt:if name="can_republish">
+<button
+   accesskey="r"
+   title="<$mt:var name="republish_button_title"$>"
+   class="button mt-publish-items btn btn-default">
+  <__trans phrase="Publish">
+</button>
+  </mt:if>
+<button
+   accesskey="x"
+   title="<$mt:var name="delete_button_title"$>"
+   class="button mt-delete-items btn btn-default">
+  <__trans phrase="Delete">
+</button>
+</mt:setvarblock>
+
+<mt:setvarblock name="original_blog_id"><mt:var name="blog_id"></mt:setvarblock>
+
+<mtapp:listing  hide_pager="1">
+  <mt:if name="__first__">
+    <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
+      <th class="head data-label primary"><span class="col-label"><__trans phrase="Data Label"></span></th>
+      <mt:unless name="is_blog">
+      <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
+      </mt:unless>
+      <th class="head author"><span class="col-label"><__trans phrase="Author"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Created"></span></th>
+      <th class="head data"><span class="col-label"><__trans phrase="Data"></span></th>
+      <th class="head view"><span class="col-label"><__trans phrase="View"></span></th>
+    </tr>
+    </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+  </mt:if>
+    <tr>
+      <td class="cb">
+  <mt:if name="has_edit_access">
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+  <mt:else>
+        &#160;
+  </mt:if>
+      </td>
+      <td class="status si">
+    <mt:if name="status_draft">
+        <mtapp:svgicon id="ic_draft" title="<__trans phrase="Draft">" size="sm">
+    <mt:elseif name="status_publish">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
+    <mt:elseif name="status_review">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Review">" size="sm" color="warning">
+    <mt:elseif name="status_future">
+        <mtapp:svgicon id="ic_clock" title="<__trans phrase="Future">" size="sm" color="info">
+    <mt:elseif name="status_spam">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+    <mt:elseif name="status_unpublish">
+        <mtapp:svgicon id="ic_stop" title="<__trans phrase="Unpublish">" size="sm" color="danger">
+    </mt:if>
+      </td>
+      <td class="id">
+        <strong>
+          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="weblog_id"$>&amp;content_type_id=<mt:var name="content_type_id" escape="html">" target="_blank">
+            <$mt:var name="label" escape="html"$>
+          </a>
+        </strong>
+        <br/>
+  <mt:if name="has_edit_access">
+        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="weblog_id"$>&amp;content_type_id=<mt:var name="content_type_id" escape="html">" target="_blank">
+          <__trans phrase="Edit [_1]" params="<mt:var name="object_type" escape="html">">
+        </a>
+  <mt:else>
+        &#160;
+  </mt:if>
+      </td>
+  <mt:unless name="blog_view">
+    <mt:unless name="scope_type" eq="blog">
+      <td class="blog">
+        <a href="<$mt:var name="script_url"$>?__mode=list&_type=<mt:var name="object_type">&amp;blog_id=<$mt:var name="weblog_id"$>&amp;type=content_data_<mt:var name="content_type_id" escape="html">">
+          <$mt:var name="weblog_name" escape="html"$>
+        </a>
+      </td>
+    </mt:unless>
+  </mt:unless>
+      <td class="author">
+    <mt:var name="author_name" escape="html">
+      </td>
+      <td class="datetime">
+        <span title="<$mt:var name="created_on_time_formatted"$>">
+      <mt:if name="created_on_relative">
+        <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
+      <mt:else>
+        <mt:var name="created_on_formatted">
+      </mt:if>
+        </span>
+      </td>
+      <td class="data">
+        <a class="d-inline-block" data-toggle="collapse" href="#content-data-data-<mt:var name="id" escape="html">" aria-expanded="false" aria-controls="content-data-data-<mt:var name="id" escape="html">">
+          <mtapp:svgicon title="Collapse" color="secondary" id="ic_collapse">
+        </a>
+      </td>
+      <td class="view status-view">
+  <mt:if name="content_data_permalink">
+        <a class="d-inline-block" href="<$mt:var name="content_data_permalink"$>" target="<__trans phrase="_external_link_target">" title="<__trans phrase="View [_1]" params="<mt:var name="content_type_name" escape="html">">">
+          <mtapp:svgicon id="ic_permalink" size="sm" title="<__trans phrase="View Content Data">">
+        </a>
+  <mt:else>
+        &#160;
+  </mt:if>
+      </td>
+    </tr>
+    <tr class="preview-data">
+      <td class="p-0" colspan="8">
+        <div class="collapse mt-collapse__content" id="content-data-data-<mt:var name="id" escape="html">">
+          <mt:var name="preview_data">
+        </div>
+      </td>
+    </tr>
+  <mt:if name="__last__">
+  </tbody>
+</mt:if>
+
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-publish-items').mtPublishItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        mode: 'rebuild_new_phase',
+        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if><mt:if name="search"><mt:if name="blog_id">, </mt:if>'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to republish" escape="js">'
+    });
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+    jQuery('button.mt-submit-items').mtSubmitItems({
+        id: '<$mt:var name="object_type"$>-listing-form'
+    });
+
+    jQuery('#content_data-listing-form').prepend('<input type="hidden" name="content_type_id" value="<mt:var name="content_type_id" escape="html">">');
+
+    jQuery('#content_data-listing-table tr.preview-data').hide();
+    jQuery('#content_data-listing-table tr.preview-data div')
+        .on('show.bs.collapse', function () {
+            jQuery(this).parents('tr').show();
+        })
+        .on('hidden.bs.collapse', function () {
+            jQuery(this).parents('tr').hide();
+        });
+
+  <mt:if name="error">
+    <mt:if name="replace">
+    $('#search-replace-toggle-replace').trigger('click');
+    </mt:if>
+  </mt:if>
+</mt:setvarblock>

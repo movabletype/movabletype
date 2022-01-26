@@ -1,0 +1,10 @@
+<div class="group-container">
+  <mt:loop name="options_values">
+  <div class="custom-control custom-checkbox mb-5 mb-md-0">
+    <input type="checkbox" name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">" class="checkbox content-field group custom-control-input" value="<mt:var name="v" escape="html">" <mt:var name="checked"> mt:watch-change="1" mt:raw-name="1" <mt:var name="multiple"> <mt:var name="required">>
+    <label class="custom-control-label" for="content-field-<mt:var name="content_field_id" escape="html">-<mt:var name="__counter__">">
+      <mt:var name="l" escape="html">
+    </label>
+  </div>
+  </mt:loop>
+</div>

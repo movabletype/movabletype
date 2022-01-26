@@ -1,0 +1,184 @@
+<mt:setvarblock name="page_title"><__trans phrase="Export Themes"></mt:setvarblock>
+
+<mt:setvar name="export_theme" value="1">
+
+<mt:setvarblock name="system_msg">
+<div id="msg-block">
+  <mt:if name="save_success">
+    <mtapp:statusmsg
+       id="saved-theme"
+       class="success">
+      <__trans phrase="Theme package have been saved.">
+    </mtapp:statusmsg>
+  </mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form id="theme_settings" method="post" enctype="multipart/form-data" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="do_export_theme" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="theme_class" value="<mt:var name="theme_class" escape="html"/>" />
+<mt:unless name="select_output_method">
+<mt:loop name="output_methods">
+  <input type="hidden" name="output" value="<mt:var name="id" />" />
+</mt:loop>
+</mt:unless>
+
+  <fieldset>
+    <mtapp:setting
+       id="theme-name-field"
+       required="1"
+       label="<__trans phrase="Name">"
+       label_for="theme_name">
+      <input type="text" name="theme_name" id="theme_name" class="form-control text required" value="<mt:var name="theme_name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-id-field"
+       required="1"
+       label="<__trans phrase="Basename">"
+       label_for="theme_id"
+       show_hint="1"
+       hint_id="basenameHelp"
+       hint="<__trans phrase="Use letters, numbers, dash or underscore only (a-z, A-Z, 0-9, '-' or '_').">">
+      <input type="text" name="theme_id" id="theme_id" class="form-control text required" value="<mt:var name="theme_id" escape="html">" aria-describedby="basenameHelp" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-version-field"
+       required="1"
+       label="<__trans phrase="Version">"
+       label_for="theme_version">
+       <input type="text" name="theme_version" id="theme_version" class="form-control text required" value="<mt:var name="theme_version" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-description-field"
+       label="<__trans phrase="Description">"
+       label_for="description">
+       <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-author-name-field"
+       label="<__trans phrase="_THEME_AUTHOR">"
+       label_for="theme_author_name">
+       <input type="text" name="theme_author_name" id="theme_author_name" class="form-control text" value="<mt:var name="theme_author_name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-author-link-field"
+       label="<__trans phrase="Author link">"
+       label_for="theme_author_link">
+      <input type="text" name="theme_author_link" id="theme_author_link" class="form-control text" value="<mt:var name="theme_author_link" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="theme-options-field"
+       label="<__trans phrase="Options">">
+      <ul class="list-unstyled">
+      <mt:loop name="exporters">
+        <li>
+          <div class="form-inline">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="<mt:var name="id">-include" class="custom-control-input" name="include" value="<mt:var name="id">" onclick="toggleActive('<mt:var name="id">-detail')" <mt:if name="included">checked="checked"</mt:if>>
+              <label class="custom-control-label" for="<mt:var name="id" escape="html">-include"><mt:var name="label"></label>
+            </div>
+        <mt:if name="template">
+            <span id="<mt:var name="id">-detail" class="theme-option-detail ml-3 <mt:unless name="include"> active</mt:unless>">
+              <a href="<mt:var name="script_url">?__mode=theme_element_detail&exporter_id=<mt:var name="id">&blog_id=<mt:var name="blog_id">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+                <__trans phrase="Details">
+              </a>
+            </span>
+        </mt:if>
+          </div>
+        </li>
+      </mt:loop>
+      </ul>
+    </mtapp:setting>
+
+  <mt:if name="select_output_method">
+    <mtapp:setting
+       id="theme-output-field"
+       label="<__trans phrase="Destination">"
+       label_for="output">
+      <select name="output" id="output" class="custom-select form-control">
+      <mt:loop name="output_methods">
+        <option value="<mt:var name="id">"<mt:if name="output" eq="$id"> selected="selected"</mt:if>>
+          <mt:var name="label">
+        </option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+  </mt:if>
+  </fieldset>
+
+<mt:loop name="exporters">
+  <div id="<mt:var name="id">" class="panel" style="display: none;">
+    <h3><__trans phrase="Setting for [_1]" params="<mt:var name="label">"></h3>
+    <div id="<mt:var name="id">-setting"></div>
+  </div>
+</mt:loop>
+
+<mt:setvarblock name="action_buttons">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Export Theme">"
+     class="export action button primary btn btn-primary">
+    <__trans phrase="Export Theme"></button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery.mtCheckbox();
+
+var existing_ids = <mt:Var name="existing_ids" to_json="1" />;
+jQuery(function() {
+    function is_valid_basename(name) {
+        return name.match(/^[a-zA-Z][a-zA-Z0-9_-]*$/);
+    }
+    function is_valid_version(name) {
+        return name.match(/^[\w\._-]+$/);
+    }
+    function is_duplicated_basename() {
+        var current_id = jQuery('#theme_id').val();
+        var destination = jQuery('#output').val() || 'themedir';
+        return (existing_ids[current_id] && ( destination == 'themedir' ));
+    }
+    jQuery.mtValidateAddRules({
+        '#theme_id': function ($e) {
+            if ( !is_valid_basename( $e.val() ) ) {
+                return this.raise('<__trans phrase="Basename may only contain letters, numbers, and the dash or underscore character. The basename must begin with a letter." escape="singlequotes">');
+            }
+            if ( is_duplicated_basename( $e.val() ) ) {
+                return this.raise('<__trans phrase="Cannot install new theme with existing (and protected) theme\'s basename." escape="singlequotes">');
+            }
+            return true;
+        },
+        '#theme_version': function ($e) {
+            return is_valid_version($e.val()) ? true : false;
+        }
+    });
+    jQuery.mtValidateAddMessages({
+        '#theme_name': '<__trans phrase="You must set Theme Name." escape="singlequotes">',
+        '#theme_version': '<__trans phrase="Theme version may only contain letters, numbers, and the dash or underscore character." escape="singlequotes">'
+    });
+    jQuery('#theme_settings').on('submit', function() {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+});
+    <mt:var name="js_include_footer" />
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

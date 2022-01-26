@@ -1,0 +1,605 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Confirm Publishing Configuration">"$>
+<$mt:setvar name="screen_type" value="restore-confirm-publishing-config"$>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+var websites_path = Array();
+var websites_url  = Array();
+<mt:loop name="all_websites">
+websites_path['site_path_<mt:var name="website_id">'] = '<mt:var name="website_site_path"escape="js">';
+websites_url['site_url_<mt:var name="website_id">'] = '<mt:var name="website_site_url" escape="js">';
+</mt:loop>
+
+function changeParent (ws) {
+
+    var rex = RegExp("parent_id_([0-9]+)");
+    if (ws.name.match(rex)) {
+        blog_id = RegExp.$1;
+    }
+
+    var selected = ws.options[ws.selectedIndex].value;
+    var new_path = '';
+    var new_url = '';
+
+    if (selected != 0) {
+        new_path = websites_path['site_path_'+selected] + "<mt:var name="path_separator" escape="js">";
+        new_url = websites_url['site_url_'+selected];
+    }
+
+    jQuery('.parent_site_path_'+blog_id).text(new_path);
+
+    var ids = [ 'site', 'archive' ];
+    jQuery.each(ids,  function () {
+        var obj = jQuery('#'+this+'_path'+blog_id+'-field');
+        if ( obj.find('.use-absolute').hasClass('default-absolute') ) {
+            obj.find('.use-absolute :checkbox').prop('checked', true);
+            obj.find('.relative-site_path').hide();
+            obj.find('.absolute-site_path').show();
+        } else {
+            obj.find('.absolute-site_path :input').attr('value', new_path);
+            obj.find('.use-absolute :checkbox').prop('checked', false);
+            obj.find('.relative-site_path').show();
+            obj.find('.absolute-site_path').hide();
+        }
+    });
+
+    var matches = new_url.match(/(https?):\/\/(.+\/)$/);
+    if ( matches && matches.length ) {
+        jQuery('.parent_site_url_scheme_'+blog_id).text(matches[1] + '://');
+        jQuery('.parent_site_url_domain_'+blog_id).text(matches[2]);
+        jQuery('#site_url'+blog_id+'-field').show();
+        jQuery('#site_path'+blog_id+'-field').show();
+        jQuery('#archive_url'+blog_id+'-field').show();
+        jQuery('#archive_path'+blog_id+'-field').show();
+    }
+}
+
+function toggleWebsite() {
+    var $website_configs = jQuery('#adjust_sitepath .for-website input');
+    if ($website_configs.mtValidate('simple')) {
+        $website_configs.mtUnvalidate();
+        jQuery('input[name^=site_name_]').each(function(){
+           if (this.name.match(/site_name_([0-9]+)/)) {
+               var blog_id = RegExp.$1;
+               var name = this.value;
+               jQuery('select[name^=parent_id_]').each(function(){
+                   jQuery(this).find('option[value='+blog_id+']').text(name);
+               });
+           }
+        });
+        jQuery('.for-website').hide();
+        jQuery('.for-blog').show();
+    }
+}
+
+function toggleBlog() {
+    jQuery('.for-website').show();
+    jQuery('.for-blog').hide();
+}
+
+function init() {
+    jQuery('.parent_website').each( function () {
+        this.onchange(this);
+    });
+}
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form name="adjust_sitepath" id="adjust_sitepath" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="adjust_sitepath" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="tmp_dir" value="<mt:var name="tmp_dir" escape="html">" />
+  <input type="hidden" name="restore_upload" value="<mt:var name="restore_upload" escape="html">" />
+  <input type="hidden" name="error" value="<mt:var name="error" escape="html">" />
+  <input type="hidden" name="asset_ids" value="<mt:var name="asset_ids" escape="html">" />
+  <input type="hidden" name="files" value="<mt:var name="files" escape="html">" />
+  <input type="hidden" name="assets" value="<mt:var name="assets" escape="html">" />
+  <input type="hidden" name="current_file" value="<mt:var name="name" escape="html">" />
+  <input type="hidden" name="last" value="<mt:var name="last" escape="html">" />
+  <input type="hidden" name="redirect" value="<mt:var name="redirect" escape="html">" />
+  <input type="hidden" name="is_dirty" value="<mt:var name="is_dirty" escape="html">" />
+  <input type="hidden" name="is_asset" value="<mt:var name="is_asset" escape="html">" />
+  <input type="hidden" name="objects_json" value="<mt:var name="objects_json" escape="html">" />
+  <input type="hidden" name="deferred_json" value="<mt:var name="deferred_json" escape="html">" />
+  <input type="hidden" name="blogs_meta" value="<mt:var name="blogs_meta" escape="html">" />
+  <input type="hidden" name="cfg_screen" value="adjust_sitepath" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+  <div class="restore-publishing-paths">
+
+    <div id="website-paths" class="for-website">
+    <mt:loop name="website_loop">
+    <mt:if name="__first__">
+      <h2><__trans phrase="Sites"></h2>
+    </mt:if>
+      <fieldset class="form-group">
+        <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+        <mtapp:setting
+           id="site_name"
+           label="<__trans phrase="Site Name">"
+           label_for="site_name_<mt:var name="id" escape="html">"
+           label_class="top-label">
+          <input type="text" name="site_name_<mt:var name="id" escape="html">" id="site_name_<mt:var name="id" escape="html">" class="form-control text" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="site_url"
+           label="<__trans phrase="Site URL">"
+           label_for="site_url_<mt:var name="id" escape="html">"
+           label_class="top-label">
+        <mt:if name="old_site_url">
+          <input type="hidden" name="old_site_url_<mt:var name="id" escape="html">" id="old_site_url_<mt:var name="id" escape="html">" value="<mt:var name="old_site_url" escape="html">" />
+        </mt:if>
+          <input type="text" name="site_url_<mt:var name="id" escape="html">" id="site_url_<mt:var name="id" escape="html">" class="form-control website-url-text text site_url" value="<mt:var name="old_site_url" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="site_path"
+           label="<__trans phrase="Site Path">"
+           label_for="site_path_<mt:var name="id" escape="html">"
+           label_class="top-label">
+        <mt:if name="old_site_path">
+          <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
+        </mt:if>
+          <input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="form-control website-path-text text<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<$mt:var name="old_site_path" escape="html"$>" />
+        </mtapp:setting>
+      </fieldset>
+
+      </mt:loop>
+    </div>
+
+    <div id="blog-paths" class="for-blog"<mt:if name="website_loop"> style="display: none"</mt:if>>
+    <mt:loop name="blogs_loop">
+    <mt:if name="__first__">
+      <h2><__trans phrase="Child Sites"></h2>
+    </mt:if>
+      <fieldset class="form-group">
+        <legend class="h3"><$mt:var name="name" escape="html"$> (<$mt:var name="id" escape="html"$>)</legend>
+        <mtapp:setting
+           id="site_name"
+           label="<__trans phrase="Site Name">"
+           label_for="site_name_<mt:var name="id" escape="html">"
+           label_class="top-label">
+          <input type="text" name="site_name_<mt:var name="id" escape="html">" id="site_name_<mt:var name="id" escape="html">" class="form-control text" value="<mt:var name="name" escape="html">" />
+        </mtapp:setting>
+
+        <mtapp:setting
+           id="parent_id"
+           label="<__trans phrase="Parent Site">"
+           label_for="parent_id_<mt:var name="id">"
+           label_class="top-label">
+          <select id="parent_id_<mt:var name="id">" name="parent_id_<mt:var name="id">" class="custom-select form-control parent_website" onchange="changeParent(this)">
+            <option value="0"><__trans phrase="Please choose parent site."></option>
+          <mt:loop name="all_websites">
+            <option value="<mt:var name="website_id">"<mt:if name="parent_id" eq="$website_id"> selected</mt:if>> <mt:var name="website_name" escape="html"></option>
+          </mt:loop>
+          </select>
+        </mtapp:setting>
+
+        <mt:setvarblock name="site_url_id">site_url<mt:var name="id"></mt:setvarblock>
+        <mtapp:setting
+           id="$site_url_id"
+           class="url-field"
+           shown="0"
+           label="<__trans phrase="Site URL">"
+           label_class="top-label"
+           hint="<__trans phrase="Enter the new URL of your public child site. End with '/'. Example: http://www.example.com/blog/">"
+           show_hint="1">
+        <mt:if name="old_site_url_subdomain">
+          <div class="site-url content-path form-inline">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
+            </span>
+            <span class="website-url">
+              <span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span>
+            </span>
+            <span class="extra-path">
+              <input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="form-control blog-url-text text path" value="<mt:var name="old_site_url_path" escape="html">" />
+            </span>
+          </div>
+          <div class="use_subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" checked="checked" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        <mt:elseif name="old_site_url_path">
+          <div class="site-url content-path form-inline">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
+            </span>
+            <span class="website-url">
+              <span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span>
+            </span>
+            <span class="extra-path">
+              <input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="form-control blog-url-text text path" value="<mt:var name="old_site_url_path" escape="html">" />
+            </span>
+          </div>
+          <div class="use_subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        <mt:else>
+          <div class="site-url content-path form-inline">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="site_url_subdomain_<mt:var name="id" escape="html">" id="site_url_subdomain_<mt:var name="id" escape="html">" class="form-control blog-subdomain-text text path" value="<mt:var name="old_site_url_subdomain" escape="html">" />.
+            </span>
+            <span class="website-url">
+              <span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span>
+            </span>
+            <span class="extra-path">
+              <input type="text" name="site_url_path_<mt:var name="id" escape="html">" id="site_url_path_<mt:var name="id" escape="html">" class="form-control blog-url-text text path" value="<mt:var name="old_site_url_path" escape="html">" />
+            </span>
+          </div>
+          <div class="use_subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_subdomain_<mt:var name="id">" id="use_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        </mt:if>
+        </mtapp:setting>
+
+        <mt:setvarblock name="site_path_id">site_path<mt:var name="id"></mt:setvarblock>
+        <mtapp:setting
+           id="$site_path_id"
+           class="site-path-field"
+           shown="0"
+           label="<__trans phrase="Site Root">"
+           label_class="top-label">
+        <mt:if name="old_site_path">
+          <input type="hidden" name="old_site_path_<mt:var name="id" escape="html">" id="old_site_path_<mt:var name="id" escape="html">" value="<mt:var name="old_site_path" escape="html">" />
+        </mt:if>
+          <div class="relative-site_path content-path form-inline">
+            <span class="website-path">
+              <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
+            </span>
+            <input type="text" name="site_path_<mt:var name="id" escape="html">" id="site_path_<mt:var name="id" escape="html">" class="form-control blog-path-text text path" value="<mt:unless name="site_path_absolute"><$mt:var name="old_site_path" escape="html"$></mt:unless>" />
+          </div>
+          <mt:unless name="sitepath_limited">
+          <div class="absolute-site_path content-path">
+            <input type="text" name="site_path_absolute_<mt:var name="id" escape="html">" id="site_path_absolute_<mt:var name="id" escape="html">" value="<$mt:var name="old_site_path" escape="html"$>" class="form-control blog-path-text text" />
+          </div>
+          <div class="option use-absolute<mt:if name="site_path_absolute"> default-absolute</mt:if>">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_absolute_<mt:var name="id" escape="html">" id="use_absolute_<mt:var name="id" escape="html">" value="1" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_absolute_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+            </div>
+          </div>
+          </mt:unless>
+          <div class="text-muted hint relative-site_path-hint">
+            <__trans phrase="Enter the new path where your main index file will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
+          </div>
+          <div class="text-muted hint absolute-site_path-hint">
+            <__trans phrase="Enter the new path where your main index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
+          </div>
+        </mtapp:setting>
+
+
+      <mt:if name="old_archive_url">
+        <mt:setvarblock name="archive_url_id">archive_url<mt:var name="id"></mt:setvarblock>
+        <mtapp:setting
+           id="$archive_url_id"
+           class="url-field"
+           shown="0"
+           label="<__trans phrase="Archive URL">"
+           label_class="top-label"
+           hint="<__trans phrase="Enter the new URL of the archives section of your child site. Example: http://www.example.com/blog/archives/">"
+           show_hint="1">
+          <input type="hidden" name="old_archive_url_<mt:var name="id" escape="html">" id="old_archive_url_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_url" escape="html">" />
+        <mt:if name="old_archive_url_subdomain">
+          <div class="archive-url content-path">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="form-control blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" />
+            </span>
+          </div>
+          <div class="use-subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" checked="checked" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        <mt:elseif name="old_archive_url_path">
+          <div class="archive-url content-path">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="archive-subdomain-text text path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="webarchive-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_path_<mt:var name="id" escape="html">" id="archive_url_path_<mt:var name="id" escape="html">" class="form-control blog-url-text archive-url-text text path" value="<mt:var name="old_archive_url_path" escape="html">" />
+            </span>
+          </div>
+          <div class="use_subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        <mt:elseif name="old_archive_url">
+          <div class="archive-url content-path">
+            <span class="parent_site_url_scheme_<mt:var name="id">">&nbsp;</span>
+            <span class="subdomain">
+              <input type="text" name="archive_url_subdomain_<mt:var name="id" escape="html">" id="archive_url_subdomain_<mt:var name="id" escape="html">" class="form-control archive-subdomain-text extra-path" value="<mt:var name="old_archive_url_subdomain" escape="html">" />.</span><span class="website-url"><span class="parent_site_url_domain_<mt:var name="id">">&nbsp;</span></span><span class="extra-path"><input type="text" name="archive_url_<mt:var name="id" escape="html">" id="archive_url_<mt:var name="id" escape="html">" class="blog-url-text text path" value="<mt:var name="old_archive_url" escape="html">" />
+            </span>
+          </div>
+          <div class="use-subdomain option">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_archive_subdomain_<mt:var name="id">" id="use_archive_subdomain_<mt:var name="id">" value="1" class="custom-control-input cb" />
+              <label class="custom-control-label" for="use_archive_subdomain_<mt:var name="id" escape="html">"><__trans phrase="Use subdomain"></label>
+            </div>
+          </div>
+        </mt:if>
+        </mtapp:setting>
+      </mt:if>
+
+      <mt:if name="old_archive_path">
+        <mt:setvarblock name="archive_path_id">archive_path<mt:var name="id"></mt:setvarblock>
+        <mtapp:setting
+           id="$archive_path_id"
+           class="site-path-field"
+           shown="0"
+           label="<__trans phrase="Archive Root">"
+           label_class="top-label">
+          <input type="hidden" name="old_archive_path_<mt:var name="id" escape="html">" id="old_archive_path_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" />
+          <div class="relative-site_path content-path form-inline">
+            <span class="website-path">
+              <span class="parent_site_path_<mt:var name="id">">&nbsp;</span>
+            </span>
+            <input type="text" name="archive_path_<mt:var name="id" escape="html">" id="archive_path_<mt:var name="id" escape="html">" class="form-control blog-path-text archive-path text path" value="<mt:unless name="archive_path_absolute"><mt:var name="old_archive_path" escape="html"></mt:unless>" />
+          </div>
+          <mt:unless name="sitepath_limited">
+          <div class="absolute-site_path content-path">
+            <input type="text" name="archive_path_absolute_<mt:var name="id" escape="html">" id="archive_path_absolute_<mt:var name="id" escape="html">" value="<mt:var name="old_archive_path" escape="html">" class="form-control blog-path-text archive-path text" />
+          </div>
+          <div class="option use-absolute<mt:if name="archive_path_absolute"> default-absolute</mt:if>">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" name="use_absolute_archive_<mt:var name="id" escape="html">" id="use_absolute_archive_<mt:var name="id" escape="html">" value="1" class="custom-control-input cb"<mt:if name="archive_path_absolute"> checked="checked"</mt:if> />
+              <label class="custom-control-label" for="use_absolute_archive_<mt:var name="id" escape="html">"><__trans phrase="Use absolute path"></label>
+            </div>
+          </div>
+          </mt:unless>
+          <div class="text-muted hint relative-site_path-hint">
+            <__trans phrase="Enter the new path where your archives section index files will be published. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog">
+          </div>
+          <div class="text-muted hint absolute-site_path-hint">
+            <__trans phrase="Enter the new path where your archives section index files will be published. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred. Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html">
+          </div>
+        </mtapp:setting>
+      </mt:if>
+      </fieldset>
+    </mt:loop>
+    </div>
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+<button
+   value="<__trans phrase="Continue">"
+   type="submit"
+   accesskey="s"
+   title="<__trans phrase="Continue (s)">"
+   class="btn btn-primary continue action button primary for-blog"<mt:if name="website_loop"><mt:if name="blogs_loop">
+   style="display: none"</mt:if></mt:if>
+   ><__trans phrase="Continue"></button>
+<mt:if name="website_loop"><mt:if name="blogs_loop">
+<button
+   value="<__trans phrase="Back">"
+   type="button"
+   accesskey="b"
+   title="<__trans phrase="Back (b)">"
+   class="back action button for-blog btn btn-default"
+   onclick="toggleBlog();"
+   style="display: none"
+   ><__trans phrase="Back"></button>
+<button
+   value="<__trans phrase="Continue">"
+   type="button"
+   accesskey="s"
+   title="<__trans phrase="Continue (s)">"
+   class="continue action button primary for-website btn btn-primary"
+   onclick="toggleWebsite();"
+   ><__trans phrase="Continue"></button>
+</mt:if></mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
+        if ( path_.match( re ) ) {
+            return true;
+        }
+        re = new RegExp("^<mt:var name="sitepath_limited_trail" escape="js" escape="js">", "i");
+        if ( !path_.match( re ) ) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+
+    jQuery.mtValidateAddRules({
+        // Website paths
+        '.website-url-text': function ($e) {
+            return MT.Validator.url($e.val());
+        },
+        '.website-path-text': function ($e) {
+            var rex = RegExp("site_path_([0-9]+)");
+            var parent_path = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                parent_path = jQuery('.parent_site_path_'+b_id).text();
+            }
+            if (parent_path == '' && $e.val() == '')
+                return false;
+            var full_path = parent_path + $e.val();
+            return MT.Validator.path(full_path);
+        },
+<mt:if name="sitepath_limited">
+       ".limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
+        // Blog paths
+        '.relative-site_path .blog-path-text': function ($e) {
+            return !MT.Validator.absolutePath($e.val());   // IS IT OK?
+        },
+        '.site-url .blog-url-text': function ($e) {
+            return MT.Validator.urlPath($e.val());
+        },
+        '.site-url .blog-subdomain-text': function ($e) {
+            return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
+        },
+        '.absolute-site_path .blog-path-text': function ($e) {
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_absolute_' + b_id + ':checked').length &&
+                     !jQuery('#site_path_absolute_' + b_id + ':hidden').length  ) {
+                    <mt:if name="sitepath_limited">
+                    var limit = '<mt:var name="sitepath_limited" escape="js">';
+                    var path_ = $e.val();
+                    re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
+                    if ( !path_.match( re ) ) {
+                        re = new RegExp("^<mt:var name="sitepath_limited_trail" escape="js" escape="js">", "i");
+                            if ( !path_.match( re ) ) {
+                                return false;
+                            }
+                    }
+                    </mt:if>
+                    return MT.Validator.absolutePath($e.val());
+                }
+            }
+            return $e.val().length;
+        },
+    <mt:if name="enabled_archives">
+        '.archive-url .archive-url-text': function ($e) {
+            return MT.Validator.urlPath($e.val());
+        },
+        '.archive-url .archive-subdomain-text': function ($e) {
+            return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
+        },
+        '.relative-site_path .archive-path': function ($e) {
+            var value = $e.val();
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( !jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
+                    return MT.Validator.path(value)
+                        && !MT.Validator.absolutePath(value);
+                }
+            }
+            return true;
+        },
+        '.absolute-site_path .archive-path': function ($e) {
+            var value = $e.val();
+            var rex = RegExp("site_url_path_([0-9]+)");
+            var parent_url = '';
+            if ($e.attr('name').match(rex)) {
+                var b_id = RegExp.$1;
+                if ( jQuery('#use_absolute_archive_'+b_id+':checked').length ) {
+                    return MT.Validator.absolutePath(value);
+                }
+            }
+            return $e.val().length;
+        },
+    </mt:if>
+        '.parent_website': function ($e) {
+            return $e.val() > 0;
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        '.website-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.website-path-text': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
+        '.site-url .blog-url-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.site-url .blog-subdomain-text': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+        '.absolute-site_path .blog-path-text': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
+        '.archive-url .archive-url-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.archive-url .archive-subdomain-text': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.relative-site_path .archive-path': '<__trans phrase="You must set a valid Archive URL." escape="singlequotes">',
+        '.absolute-site_path .archive-path': '<__trans phrase="You must set a valid Local Archive Path." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        ".limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+</mt:if>
+        '.parent_website': '<__trans phrase="You must select a parent site." escape="singlequotes">'
+    });
+
+    jQuery('#adjust_sitepath').on('submit', function () {
+        var $form = jQuery(this),
+            $url = $form.find('.site-url .blog-url-text,.site-url .blog-subdomain-text,.archive-url  .archive-url-text,.archive-url .archive-subdomain-text');
+            $simple = $form.find('input:visible, select:visible').filter(function() {
+                return jQuery.inArray(this, $url) === -1;
+            });
+        if (! ($url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple'))) {
+            return false;
+        }
+
+        <mt:if name="request_method" op="eq" value="GET">
+        jQuery(this).find('input[name=asset_ids]').val(window.parent.RestoredAssetIds());
+        </mt:if>
+    });
+
+    jQuery('.website-path-text').on('change', function () {
+        // Remove unnecessary trailing directory separators in website path.
+        this.value = this.value.replace(/\<mt:var name="path_separator">+$/, '');
+
+        websites_path[this.name] = this.value;
+
+        var rex = RegExp("site_path_([0-9]+)");
+        if (this.name.match(rex)) {
+            var id = RegExp.$1;
+            jQuery('.parent_website').each( function () {
+                if (this.value == id) {
+                    this.onchange(this);
+                    return;
+                }
+            });
+        }
+    });
+
+    jQuery('.website-url-text').on('change', function () {
+        // Remove unnecessary trailing slashes in website URL.
+        this.value  = this.value.replace(/\/+$/, '');
+        this.value += '/';
+
+        websites_url[this.name] = this.value;
+        var rex = RegExp("site_url_([0-9]+)");
+        if (this.name.match(rex)) {
+            var id = RegExp.$1;
+            jQuery('.parent_website').each( function () {
+                if (this.value == id) {
+                    this.onchange(this);
+                    return;
+                }
+            });
+        }
+    });
+
+    jQuery.mtUseSubdomain();
+    jQuery.mtUseAbsolute();
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

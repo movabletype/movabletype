@@ -1,0 +1,22 @@
+<select name="content-field-<mt:var name="content_field_id" escape="html">" id="content-field-<mt:var name="content_field_id">" class="form-control custom-select html5-form content-field <mt:var name="multiple_class">" mt:watch-change="1" mt:raw-name="1" <mt:var name="multiple"> <mt:var name="required">>
+<mt:unless name="multiple"><mt:unless name="required"><option value=""><__trans phrase="Not Selected"></option></mt:unless></mt:unless>
+<mt:loop name="options_values">
+  <option value="<mt:var name="v" escape="html">" <mt:var name="selected">><mt:var name="l" escape="html"></option>
+</mt:loop>
+</select>
+
+<mt:unless name="loaded_select_box_field_css">
+  <mt:setvar name="loaded_select_box_field_css" value="1">
+
+  <mt:setvarblock name="css_include" append="1">
+<style type="text/css">
+@media (min-width: 768px) {
+  select.content-field.multiple-select {
+    min-width: 10em;
+    min-height: 10em;
+  }
+}
+</style>
+  </mt:setvarblock>
+</mt:unless>
+

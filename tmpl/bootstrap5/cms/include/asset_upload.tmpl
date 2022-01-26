@@ -1,0 +1,254 @@
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+  jQuery('#warning-site-thumb-path').css('display', 'block');
+  jQuery('#warning-archive-thumb-path').css('display', 'none');
+});
+
+function setExtraPath(sel) {
+   var opt = sel.options[sel.selectedIndex];
+   var path = opt.getAttribute("middle_path");
+   if (!path) path = '';
+   var middle = sel.form['middle_path'];
+   if (middle) middle.value = path;
+
+   // Switch display of warnings
+   if (opt.value === '1') {
+     jQuery('#warning-site-thumb-path').css('display', 'block');
+     jQuery('#warning-archive-thumb-path').css('display', 'none');
+   } else if (opt.value === '0') {
+     jQuery('#warning-site-thumb-path').css('display', 'none');
+     jQuery('#warning-archive-thumb-path').css('display', 'block');
+   }
+}
+
+function validate(f) {
+<mt:if name="extra_paths">
+    if (!is_valid_path(f.extra_path.value)){
+        alert(trans('[_1] contains a character that is invalid when used in a directory name: [_2]', '<__trans phrase="Upload Destination" escape="js">', f.extra_path.value));
+        return false;
+    }
+</mt:if>
+}
+
+function is_valid_path(path_){
+    var str = path_.replace(/[ "%<>\[\\\]\^`{\|}~$\+,\/:;=\?@]/g, "");
+    str = encodeURIComponent(str);
+    if (str.indexOf('%') != -1) {
+        return false;
+    }
+    if (str.match(/\.\./)) {
+        return false;
+    }
+    return true;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mt:if name="missing_paths">
+  <mt:if name="have_permissions">
+    <mt:if name="dialog">
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="javascript:void(0);" onclick="parent.jQuery.fn.mtDialog.close('<mt:var name="script_full_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">');">%%</a>"></p>
+    <mt:else>
+<p><__trans phrase="Before you can upload a file, you need to publish your [_1]. [_2]Configure your [_1]'s publishing paths[_3] and republish your [_1]." params="<mt:var name="scope_label">%%<a href="<mt:var name="script_url">?__mode=cfg_prefs&amp;blog_id=<mt:var name="blog_id">">%%</a>"></p>
+    </mt:if>
+  <mt:else>
+<p><__trans phrase="Your system or [_1] administrator needs to publish the [_1] before you can upload files. Please contact your system or [_1] administrator." params="<mt:var name="scope_label">"></p>
+  </mt:if>
+  <mt:if name="dialog">
+<div class="actions-bar">
+  <button
+     type="submit"
+     accesskey="x"
+     class="close action button mt-close-dialog"
+     title="<__trans phrase="Close (x)">"
+     onclick="jQuery.fn.mtModal.close(); return false;"
+     class="close action button mt-close-dialog btn btn-default">
+    <__trans phrase="Close">
+  </button>
+</div>
+  </mt:if>
+<mt:else>
+  <mt:if name="error">
+<mtapp:statusmsg
+   id="generic-error"
+   class="error"
+   can_close="0">
+  <mt:var name="error">
+</mtapp:statusmsg>
+  </mt:if>
+  <mt:loop name="thumb_dir_warnings">
+<mtapp:statusmsg
+   id="warning-<mt:var name="key">-thumb-path"
+   class="warning"
+   can_close="0">
+  <__trans phrase="Cannot write to '[_1]'. Image upload is possible, but thumbnail is not created.", params="<mt:var name="path">" escape="html">
+</mtapp:statusmsg>
+  </mt:loop>
+  <mt:if name="uploaded">
+<mtapp:statusmsg
+   id="asset-uploaded"
+   class="success">
+  <__trans phrase="Asset file('[_1]') has been uploaded.", params="<mt:var name="uploaded_filename">" escape="html" escape="html">
+</mtapp:statusmsg>
+  </mt:if>
+
+<form method="post" enctype="multipart/form-data" action="<mt:var name="script_url">" id="upload-form" onsubmit="return validate(this)">
+  <input type="hidden" name="__mode" value="<mt:if name="upload_mode"><mt:var name="upload_mode" escape="html"><mt:else>upload_file</mt:if>" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="middle_path" value="<mt:var name="middle_path" escape="html">" />
+  <input type="hidden" name="entry_insert" value="<mt:var name="entry_insert" escape="html">" />
+  <input type="hidden" name="asset_select" value="<mt:var name="asset_select" escape="html">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+  <input type="hidden" name="require_type" value="<mt:var name="require_type" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <mt:if name="no_insert">
+  <input type="hidden" name="no_insert" value="<mt:var name="no_insert">" />
+  </mt:if>
+  <mt:if name="user_id">
+  <input type="hidden" name="user_id" value="<mt:var name="user_id" escape="html">" />
+  </mt:if>
+  <mt:if name="dialog">
+  <input type="hidden" name="dialog" value="<mt:var name="dialog">" />
+  </mt:if>
+  <input type="hidden" name="auto_rename_if_exists" value="<mt:if name="auto_rename_if_exists">1<mt:Else>0</mt:if>" />
+  <input type="hidden" name="normalize_orientation" value="<mt:if name="normalize_orientation">1<mt:Else>0</mt:if>" />
+<mt:if name="dir_separator">
+  <input type="hidden" name="dir_separator" value="<mt:var name="dir_separator">" />
+</mt:if>
+
+  <mtapp:setting
+     id="file"
+     label_class="top-label"
+     label="<__trans phrase="Select File to Upload">">
+    <input type="file" name="file" id="file" />
+  </mtapp:setting>
+
+  <mt:if name="enable_destination">
+  <mt:setvarblock name="upload_hint"><__trans phrase="_USAGE_UPLOAD" params="<$mt:var name="blog_name" escape="html"$>"></mt:setvarblock>
+  <mtapp:setting
+     id="site_path"
+     label_class="top-label"
+     label="<__trans phrase="Upload Destination">"
+     hint="<$mt:var name="upload_hint"$>"
+     show_hint="1"
+     class="form-inline">
+    <mt:var name="object_type" value="page">
+    <script type="text/javascript" src="<$mt:var name="static_uri"$>js/tc/client.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+    <script type="text/javascript">
+       /* <![CDATA[ */
+           MT.App.selectedCategoryList = [];
+           MT.App.objectType = '<mt:var name="object_type" escape="js">';
+
+           App.singletonConstructor =
+           MT.App = new Class( MT.App, {
+
+               initComponents: function() {
+                   arguments.callee.applySuper( this, arguments );
+
+                   this.categorySelector = this.addComponent( new this.constructor.CategorySelector( "folder-selector", "categorySelectorList" ) );
+                   var cats = MT.App.categoryList;
+                   if ( cats ) {
+                       /* cache all the categories */
+                       this.catCache = new Cache( cats.length + 50 );
+                       for ( var i = 0; i < cats.length; i++ )
+                           this.catCache.setItem( 'cat:'+cats[ i ].id, cats[ i ] );
+                   }
+
+                   this.catList = { redraw: this.getIndirectMethod( "redrawFolderList" ) };
+                   /* we don't need the modal mask here */
+                   this.modalMask = { element: DOM.getElement( "folder-selector" ), show: Function.stub, hide: Function.stub };
+                   this.form = DOM.getElement( "upload-form" );
+               },
+
+
+               redrawFolderList: function() {
+                   var item = this.catCache.getItem( "cat:" + MT.App.selectedCategoryList );
+                   var path = [];
+                   var cat;
+                   for ( var i = 1, len = item.path.length; i < len; i++ ) {
+                       cat = this.catCache.getItem( "cat:" + item.path[ i ] );
+                       if ( cat )
+                           path.push( cat.basename );
+                   }
+                   path.push( item.basename );
+                   /* no leading slash */
+                   path[ 0 ] = path[ 0 ].replace( /^\//, '' );
+                   DOM.getElement( "extra_path" ).value = path.join( '' );
+               },
+
+
+               eventClick: function( event ) {
+                   var command = this.getMouseEventCommand( event );
+                   switch( command ) {
+
+                       case "openFolderSelector":
+                           this.categorySelector.open( event.commandElement );
+                           break;
+
+                   }
+                   return arguments.callee.applySuper( this, arguments );
+               }
+
+           } );
+       /* ]]> */
+     </script>
+
+     <!-- <$mt:var name="blog_url" escape="html"$> -->
+
+     <select name="site_path" id="site_path" class="form-control" onchange="setExtraPath(this)">
+       <option value="1">&#60;<__trans phrase="Site Root">&#62;</option>
+     <mt:if name="enable_archive_paths">
+       <option value="0"<mt:if name="archive_path"> selected="selected"</mt:if>>&#60;<__trans phrase="Archive Root">&#62;</option>
+     </mt:if>
+     <mt:if name="extra_paths">
+     <mt:loop name="extra_paths">
+       <option value="<mt:if name="enable_archive_paths">0<mt:else>1</mt:if>" middle_path="<mt:var name="path" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+     </mt:loop>
+     </mt:if>
+     </select> / <input type="text" name="extra_path" id="extra_path" class="form-control text path" value="<mt:var name="extra_path" escape="html">" />
+     <a href="javascript:void(0);" mt:command="open-folder-selector" class="toggle-link"><__trans phrase="Choose Folder"></a>
+  </mtapp:setting>
+  </mt:if>
+
+  <mt:if name="enable_destination">
+  <mt:var name="container_type" value="folder">
+  <mt:include name="include/category_selector.tmpl">
+  </mt:if>
+
+  <div class="actions-bar">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Upload (s)">"
+       class="upload action primary button btn btn-primary">
+      <__trans phrase="Upload">
+    </button>
+  <mt:if name="dialog">
+    <button
+       type="submit"
+       accesskey="x"
+       onclick="jQuery.fn.mtModal.close(); return false;"
+       class="cancel action button mt-close-dialog btn btn-default"
+       title="<__trans phrase="Cancel (x)">">
+      <__trans phrase="Cancel">
+    </button>
+  </mt:if>
+  <mt:if name="included_upload_asset">
+    <button
+       onclick="toggleHidden('list-assets-dialog'); toggleHidden('upload-asset-dialog'); return false"
+       type="submit"
+       accesskey="b"
+       class="goback button action btn btn-default"
+       title="<__trans phrase="Back (b)">">
+      <__trans phrase="Back">
+    </button>
+  </mt:if>
+  </div>
+</form>
+</mt:if>
+
+</mt:setvarblock>

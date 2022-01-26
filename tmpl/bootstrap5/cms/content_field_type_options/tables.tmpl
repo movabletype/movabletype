@@ -1,0 +1,39 @@
+<mt:app:ContentFieldOptionGroup
+   type="tables">
+
+  <mtapp:ContentFieldOption
+     id="tables-initial_rows"
+     label="<__trans phrase="Initial Rows">">
+    <input ref="initial_rows" type="number" name="initial_rows" id="tables-initial_rows" class="form-control w-25" min="1" value={ options.initial_rows || 1 }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tables-initial_cols"
+     label="<__trans phrase="Initial Cols">">
+    <input ref="initial_cols" type="number" name="initial_cols" id="tables-initial_cols" class="form-control w-25" min="1" value={ options.initial_cols || 1 }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tables-can_increase_decrease_rows"
+     label="<__trans phrase="Allow users to increase/decrease rows?">">
+    <input ref="increase_decrease_rows" type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_rows" name="increase_decrease_rows" checked={ options.increase_decrease_rows }><label for="tables-can_increase_decrease_rows"><__trans phrase="Allow users to increase/decrease rows?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="tables-can_increase_decrease_cols"
+     label="<__trans phrase="Allow users to increase/decrease cols?">">
+    <input ref="increase_decrease_cols" type="checkbox" class="mt-switch form-control" id="tables-can_increase_decrease_cols" name="increase_decrease_cols" checked={ options.increase_decrease_cols }><label for="tables-can_increase_decrease_cols"><__trans phrase="Allow users to increase/decrease cols?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+  if ( this.options.increase_decrease_rows === "0" ) {
+    this.options.increase_decrease_rows = 0
+  }
+
+  if ( this.options.increase_decrease_cols === "0" ) {
+    this.options.increase_decrease_cols = 0
+  }
+  </mtapp:ContentFieldOptionScript>
+
+</mt:app:ContentFieldOptionGroup>
+

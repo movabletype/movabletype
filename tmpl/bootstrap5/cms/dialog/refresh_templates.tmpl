@@ -1,0 +1,239 @@
+<mt:if name="blog_id">
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Templates">">
+<mt:else>
+    <mt:var
+        name="page_title"
+        value="<__trans phrase="Refresh Global Templates">">
+</mt:if>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function enable(id) {
+    var el = MT.Util.getByID(id);
+    if (el)
+        el.disabled = false;
+}
+function disable(id) {
+    var el = MT.Util.getByID(id);
+    if (el)
+        el.disabled = true;
+}
+function toggleHidden( ids ) {
+    ids = [].concat(ids);
+    ids.forEach(function (id) {
+      var element = document.getElementById( id );
+      if ( !element ) {
+        return;
+      }
+      jQuery(element).toggle();
+    });
+    return false;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:if name="template_set_not_found">
+
+<mt:setvarblock name="modal_body">
+  <mtapp:statusmsg
+     id="template_set_not_found"
+     class="error"
+     can_close="0">
+    <__trans phrase="Cannot find template set. Please apply [_1]theme[_2] to refresh your templates." params="<a href="javascript:void(0);" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=list_theme&amp;blog_id=<mt:var name="blog_id">');" class="alert-link">%%</a>">
+  </mtapp:statusmsg>
+</mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <button
+    type="submit"
+    accesskey="x"
+    class="cancel close action button mt-close-dialog"
+    title="<__trans phrase="Close">"
+  >
+    <__trans phrase="Close">
+  </button>
+</mt:setvarblock>
+
+<mt:else>
+
+<mt:setvarblock name="form_header">
+  <form name="refresh_form" id="refresh_form" method="post" action="<mt:var name="script_url">" target="_top">
+    <input type="hidden" name="__mode" value="refresh_all_templates" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+  </form>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body" append="1">
+    <div id="refresh-panel-body">
+
+    <mt:if name="blog_id">
+        <mt:setvarblock name="refresh_label"><__trans phrase="Revert modifications of theme templates" params="<mt:var name="current_label" escape="html">"></mt:setvarblock>
+        <mt:setvarblock name="new_label"><__trans phrase="Reset to theme defaults"></mt:setvarblock>
+        <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and install the selected theme's default."></mt:setvarblock>
+    <mt:else>
+        <mt:setvarblock name="refresh_label"><__trans phrase="Refresh global templates"></mt:setvarblock>
+        <mt:setvarblock name="new_label"><__trans phrase="Reset to factory defaults"></mt:setvarblock>
+        <mt:setvarblock name="new_hint"><__trans phrase="Deletes all existing templates and installs factory default template set."></mt:setvarblock>
+    </mt:if>
+
+    <mtapp:setting
+        id="refresh_templates"
+        label="$refresh_label"
+        label_class="top-label"
+        show_label="0"
+        show_hint="1"
+        hint_id="refreshTemplates"
+        hint="<__trans phrase="Updates current templates while retaining any user-created templates.">">
+        <div class="form-group field-header">
+            <div class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_refresh" class="custom-control-input" value="refresh" onclick="disable('template_set');toggleHidden('confirm-clean');toggleHidden('confirm-refresh');" checked="checked" aria-describedby="refreshTemplates" />
+              <label class="custom-control-label" for="refresh_type_refresh"><$mt:var name="refresh_label"$></label>
+            </div>
+        </div>
+    </mtapp:setting>
+    <mtapp:setting
+        id="clean_start"
+        label="$new_label"
+        show_label="0"
+        show_hint="1"
+        hint_id="cleanStart"
+        hint="$new_hint"
+        label_class="top-label">
+
+        <div class="form-group field-header">
+            <div class="custom-control custom-radio">
+              <input type="radio" name="refresh_type" id="refresh_type_clean" class="custom-control-input" value="clean" onclick="enable('template_set');toggleHidden('confirm-refresh');toggleHidden('confirm-clean');" />
+              <label class="custom-control-label" for="refresh_type_clean"><$mt:var name="new_label"$></label>
+            </div>
+        </div>
+    </mtapp:setting>
+
+        <div class="form-group">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="backup" class="custom-control-input" name="backup" value="1" checked="checked" onclick="toggleHidden('backups-message-refresh');toggleHidden('backups-message-clean');" aria-describedby="cleanStart" />
+                <label class="custom-control-label" for="backup">
+                    <__trans phrase="Make backups of existing templates first">
+                </label>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="confirm-panel-body" style="display: none;">
+        <div id="confirm-refresh">
+            <mt:if name="blog_id">
+                <p>
+                  <__trans phrase="You have requested to <strong>refresh the current template set</strong>. This action will:">
+                </p>
+            <mt:else>
+                <p>
+                  <__trans phrase="You have requested to <strong>refresh the global templates</strong>. This action will:">
+                </p>
+            </mt:if>
+
+            <ul class="list-unstyled">
+                <li id="backups-message-refresh">
+                  <__trans phrase="make backups of your templates that can be accessed through your backup filter">
+                </li>
+                <li>
+                  <__trans phrase="potentially install new templates">
+                </li>
+                <li>
+                  <__trans phrase="overwrite some existing templates with new template code">
+                </li>
+            </ul>
+        </div>
+
+        <div id="confirm-clean" style="display: none;">
+            <mt:if name="blog_id">
+                <p>
+                  <__trans phrase="You have requested to <strong>apply a new template set</strong>. This action will:">
+                </p>
+            <mt:else>
+                <p>
+                  <__trans phrase="You have requested to <strong>reset to the default global templates</strong>. This action will:">
+                </p>
+            </mt:if>
+
+            <ul class="list-unstyled">
+                <li id="backups-message-clean">
+                  <__trans phrase="make backups of your templates that can be accessed through your backup filter">
+                </li>
+              <mt:if name="blog_id">
+                <li>
+                  <__trans phrase="delete all of the templates in your blog">
+                </li>
+                <li>
+                  <__trans phrase="install new templates from the selected template set">
+                </li>
+              <mt:else>
+                <li>
+                  <__trans phrase="delete all of your global templates">
+                </li>
+                <li>
+                  <__trans phrase="install new templates from the default global templates">
+                </li>
+              </mt:if>
+            </ul>
+        </div>
+
+        <p><strong><__trans phrase="Are you sure you wish to continue?"></strong></p>
+
+     </div>
+
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+      <div id="refresh-panel-footer">
+        <div class="actions-bar">
+            <button
+               type="button"
+               accesskey="s"
+               class="action primary button next btn btn-primary"
+               onclick="toggleHidden(['refresh-panel-body', 'confirm-panel-body', 'refresh-panel-footer', 'confirm-panel-footer']); return false;">
+              <__trans phrase="Continue">
+            </button>
+            <button
+               type="button"
+               accesskey="x"
+               title="<__trans phrase="Cancel (x)">"
+               data-mt-modal-close
+               class="action button mt-close-dialog btn btn-default">
+              <__trans phrase="Cancel">
+            </button>
+        </div>
+      </div>
+
+      <div id="confirm-panel-footer" style="display: none;">
+        <div class="actions-bar">
+            <button
+               type="submit"
+               accesskey="s"
+               class="action primary button btn btn-primary">
+              <__trans phrase="Execute">
+            </button>
+            <button
+               type="button"
+               accesskey="x"
+               class="action button mt-close-dialog btn btn-default"
+               data-mt-modal-close
+               title="<__trans phrase="Cancel (x)">">
+              <__trans phrase="Cancel">
+            </button>
+        </div>
+    </div>
+</mt:setvarblock>
+
+</mt:if>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

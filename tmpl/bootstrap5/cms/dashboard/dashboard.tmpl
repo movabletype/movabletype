@@ -1,0 +1,92 @@
+<mt:if name="scope_type" like="(blog|website)">
+  <mt:setvarblock name="html_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
+  <mt:setvarblock name="page_title"><$mt:var name="blog_name" escape="html"$></mt:setvarblock>
+<mt:else name="scope_type" eq="system">
+  <mt:setvarblock name="html_title"><__trans phrase="System Overview"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="System Overview"></mt:setvarblock>
+<mt:else>
+  <mt:setvarblock name="html_title"><__trans phrase="Dashboard"></mt:setvarblock>
+  <mt:setvarblock name="page_title"><__trans phrase="Dashboard"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="css_include" append="1">
+<link rel="stylesheet" href="<mt:var name="static_uri">css/widget.css?v=<mt:var name="mt_version_id" escape="URL">" />
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">jquery/jquery.mtremovewidget.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('button.remove-widget').mtRemoveWidget();
+</mt:setvarblock>
+
+<mt:setvartemplate name="select_widget_form">
+<mt:var name="widget_options" value="0">
+<mt:setvarblock name="add_widget_form">
+<form method="POST" action="<mt:var name="script_url">" class="listing form-inline d-none d-md-flex">
+  <input type="hidden" name="__mode" value="update_widget_prefs" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="widget_action" value="add" />
+  <input type="hidden" name="widget_scope" value="<mt:var name="widget_scope" escape="html">" />
+  <input type="hidden" name="widget_set" value="<mt:var name="set">" />
+  <div class="actions-bar buttons">
+    <select name="widget_id" class="custom-select form-control">
+      <option value=""><__trans phrase="Select a Widget..."></option>
+    <mt:loop name="all_widget_loop">
+    <mt:if name="widget_set">
+      <mt:if name="widget_set" eq="$set">
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+      </mt:if>
+    <mt:else>
+      <mt:var name="widget_options" value="1">
+      <option value="<mt:var name="widget_id" escape="html">"><mt:var name="widget_label" escape="html"></option>
+    </mt:if>
+    </mt:loop>
+    </select>
+    <button
+       type="submit"
+       class="button btn btn-default">
+      <__trans phrase="Add">
+    </button>
+  </div>
+</form>
+</mt:setvarblock>
+<mt:if name="widget_options"><mt:var name="add_widget_form"></mt:if>
+</mt:setvartemplate>
+
+<mt:setvarblock name="related_content">
+<mt:if name="sidebar"><div id="widget-container-sidebar">
+  <mt:section id="sidebar" class="widget-container"><mt:var name="sidebar"></mt:section>
+</div></mt:if>
+<mt:if name="select_widget_form"><mt:var name="select_widget_form" set="sidebar"></mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="info">
+    <__trans phrase="Your Dashboard has been updated.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="permission">
+  <mtapp:statusmsg
+     id="permissions"
+     class="error"
+     can_close="0">
+    <__trans phrase="You attempted to use a feature that you do not have permission to access. If you believe you are seeing this message in error contact your system administrator.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+  <mt:section id="main" class="widget-container"><mt:var name="main"></mt:section>
+  <mt:var name="select_widget_form" set="main">
+</mt:setvarblock>
+
+<mt:include name="layout/dashboard.tmpl">
+<mt:var name="layout">

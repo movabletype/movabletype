@@ -1,0 +1,80 @@
+<mt:setvarblock name="css_include" append="1">
+<style>
+td.log-message {
+  max-width: 200px;
+}
+</style>
+</mt:setvarblock>
+
+<mtapp:listing empty_message="<__trans phrase="No log records could be found." escape="html">">
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head log-message primary"><span class="col-label"><__trans phrase="Log Message"></span></th>
+    <mt:unless name="is_blog">
+      <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
+    </mt:unless>
+      <th class="head action-by"><span class="col-label"><__trans phrase="_LOG_TABLE_BY"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Date"></span></th>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="log_detail">log-detail-parent </mt:if><mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="log_detail"> id="log-detail-parent-<$mt:var name="id"$>"</mt:if>>
+      <td class="log-message">
+      <mt:if name="log_detail">
+         <a href="#log-detail-<mt:var name="id" escape="html">" data-toggle="collapse" class="dropdown-toggle toggle-link icon-left icon-spinner detail-link" aria-expanded="false" aria-controls="log-detail-<mt:var name="id" escape="html">">
+           <mt:var name="log_message" escape="html">
+         </a>
+      <mt:else>
+        <mt:var name="log_message" escape="html">
+      </mt:if>
+      <mt:if name="system_overview_nav">
+        <mt:if name="log_ip"> (<__trans phrase="IP: [_1]" params="<$mt:var name="log_ip"$>">)</mt:if>
+      </mt:if>
+      <mt:if name="log_detail">
+        <div id="log-detail-<mt:var name="id" escape="html">" class="collapse">
+          <div class="card card-block bg-light mt-2 p-2">
+            <pre class="pre-scrollable"><code><mt:var name="log_detail" escape="html"></code></pre>
+          </div>
+        </div>
+      </mt:if>
+      </td>
+    <mt:unless name="is_blog">
+      <td class="blog">
+        <a href="<$mt:var name="script_url"$>?__mode=list&amp;_type=log&amp;blog_id=<$mt:var name="blog_id"$>"><$mt:var name="weblog_name" escape="html"$></a>
+      </td>
+    </mt:unless>
+      <td class="action-by">
+      <mt:if name="username">
+        <mt:var name="username" escape="html">
+      <mt:else>
+        <__trans phrase="[_1]" params="<$mt:var name="log_ip"$>">
+      </mt:if>
+      </td>
+      <td class="datetime">
+      <mt:if name="is_last">
+        <a name="last"></a>
+      </mt:if>
+        <span title="<mt:var name="created_on_formatted">">
+        <mt:if name="created_on_relative">
+          <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+          <mt:else>
+          <mt:var name="created_on_formatted">
+          </mt:if>
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
+        </span>
+      </td>
+    </tr>
+  </mt:if>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>
+

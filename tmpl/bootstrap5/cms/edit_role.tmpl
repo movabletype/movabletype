@@ -1,0 +1,380 @@
+<mt:setvar name="edit_role" value="1">
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:if name="id">
+  <mt:setvar name="page_title" value="<__trans phrase="Edit Role">">
+<mt:else>
+  <mt:setvar name="page_title" value="<__trans phrase="Create Role">">
+</mt:if>
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved-added"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+
+<mt:if name="id">
+<mt:setvarblock name="related_content">
+  <mtapp:widget
+    id="useful-links"
+    label="<__trans phrase="Useful links">">
+    <ul class="list-unstyled action-link-list">
+      <li><a href="<mt:var name="script_url">?__mode=list&amp;_type=association&amp;filter=role_id&amp;filter_val=<mt:var name="id" escape="url">&amp;blog_id=0"><mt:if name="members" eq="1"><__trans phrase="Association (1)"><mt:else><__trans phrase="Associations ([_1])" params="<mt:var name="members">"></mt:if></a></li>
+    </ul>
+  </mtapp:widget>
+</mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function togglePerms(c, a) {
+    permsChanged = "yes";
+    if (a == '') {
+        return;
+    }
+
+    if (c.checked) {
+        jQuery(a).each(function(){
+            this.checked = true;
+            this.disabled = true;
+            this.onclick();
+        });
+    } else {
+        jQuery(a).each(function(){
+            this.checked = false;
+            this.disabled = false;
+            this.onclick();
+        });
+    }
+}
+
+var permsChanged = "no";
+
+function doSubmitFormConfirm( f, mode, message ) {
+    if (confirm(message)) {
+        if (f.elements["__mode"] && mode)
+            f.elements["__mode"].value = mode;
+        return true;
+    }
+    return false;
+}
+
+function checkChanged() {
+    var orig_roleName = "<mt:var name="name" escape="js">";
+    var roleName = getByID('name').value;
+    if(permsChanged == "yes") {
+        if(roleName == orig_roleName) {
+            return doSubmitFormConfirm(document.role, 'save_role', '<__trans phrase="You have changed the privileges for this role. This will alter what it is that the users associated with this role will be able to do. If you prefer, you can save this role with a different name.  Otherwise, be aware of any changes to users with this role.">');
+        }
+    }
+    return true;
+}
+
+function getParentByClass(n, c) {
+    var result = n;
+    while (!result.className.match(c)
+           && result.nodeName && (result.nodeName != 'body')) {
+       result = result.parentNode;
+    }
+    return result;
+}
+
+function init() {
+    jQuery('.cb').each(function(){
+        if (this.checked)
+            this.onclick();
+    });
+    permsChanged = "no";
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mt:if name="id">
+<form id="role" name="role" method="post" action="<mt:var name="script_url">" onsubmit="return this['__mode'] ? true : false">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+<mt:else>
+<form id="role" name="role" method="post" action="<mt:var name="script_url">">
+</mt:if>
+  <input type="hidden" name="__mode" value="save_role" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:settinggroup id="role-details">
+    <legend class="h3"><__trans phrase="Role Details"></legend>
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Role Name">"
+       label_for="name"
+       required="1">
+      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="description"
+       label="<__trans phrase="Description">"
+       label_for="description">
+      <textarea name="description" id="description" class="form-control text low"><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+  <mt:if name="id">
+    <mtapp:setting
+       id="created_by"
+       label="<__trans phrase="Created by">">
+      <div class="form-group">
+        <mt:if name="created_by"><mt:var name="created_by" escape="html"><mt:else><em><__trans phrase="System"></em></mt:if>
+      </div>
+    </mtapp:setting>
+  </mt:if>
+  </mtapp:settinggroup>
+
+  <mtapp:settinggroup id="role-privileges">
+    <legend class="h3"><__trans phrase="Privileges"></legend>
+    <mtapp:setting
+       id="administration"
+       label="<__trans phrase="Administration">">
+      <div class="form-group">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_admin">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
+        </div>
+      </mt:if>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="authoring_publishing"
+       label="<__trans phrase="Authoring and Publishing">">
+      <div class="form-group">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="auth_pub">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
+        </div>
+      </mt:if>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="designing"
+       label="<__trans phrase="Designing">">
+      <div class="form-group">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_design">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
+        </div>
+      </mt:if>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="assets"
+       label="<__trans phrase="Assets">">
+      <div class="form-group">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_upload">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
+        </div>
+      </mt:if>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+
+    <mt:if name="enabled_plugins{CommentsTrackback}">
+    <mtapp:setting
+       id="commenting"
+       label="<__trans phrase="Commenting">">
+      <div class="form-group">
+      <mt:loop name="loaded_permissions">
+      <mt:if name="group" eq="blog_comment">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do"> checked="checked"</mt:if>>
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+          </div>
+        </div>
+      </mt:if>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+    </mt:if>
+  </mtapp:settinggroup>
+
+<mt:if name="content_type_perm_groups">
+  <mtapp:settinggroup id="role-content-type-privileges">
+    <legend class="h3"><__trans phrase="Content Type Privileges"></legend>
+    <mt:loop name="content_type_perm_groups">
+        <mt:setvar name="manage_content_data" value="">
+        <mt:setvar name="manage_content_field" value="">
+        <mt:loop name="loaded_permissions">
+        <mt:if name="content_type_unique_id" eq="$ct_perm_group_unique_id">
+
+            <mt:if test="$id =~ /^manage_content_data/">
+                <mt:setvarblock name="all">
+                <div class="form-check">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><span class="h4"><mt:var name="label" escape="html"></span></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+
+            <mt:elseif test="$id =~ /^create|publish|edit_all|_contentdata:/">
+                <mt:setvarblock name="manage_content_data" append="1">
+                <div class="form-check">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+
+            <mt:else>
+                <mt:setvarblock name="manage_content_field" append="1">
+                <div class="form-check mb-3" style="">
+                    <div class="custom-control custom-checkbox">
+                        <input id="<mt:var name="id">" type="checkbox" onclick="togglePerms(this, '<mt:var name="children" replace=":","\\:">')" class="<mt:var name="id"> cb custom-control-input" name="permission" value="<mt:var name="id">"<mt:if name="can_do">  checked="checked"</mt:if>>
+                        <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label" escape="html"></label>
+                    </div>
+                </div>
+                </mt:setvarblock>
+            </mt:if>
+
+        </mt:if>
+        </mt:loop>
+
+
+        <mtapp:setting
+          id="ct-perm-group-<mt:var name="ct_perm_group_unique_id" escape="html">"
+          label_class="label-none">
+
+            <div class="mt-collapse ">
+                
+                <a class="btn btn-link" data-toggle="collapse" href="#collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">" aria-expanded="false" aria-controls="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
+                    <svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<$mt:var name="static_uri"$>images/sprite.svg#ic_collapse"></use></svg>
+                    <mt:var name="ct_perm_group_label" escape="html">
+                </a>
+
+                <div class="collapse" id="collapsePermissions_<mt:var name="ct_perm_group_unique_id" escape="html">">
+                    <div class="form-group manage_all_content_data ml-3 mb-3">
+                        <mt:var name="all">
+                    </div>
+
+                    <div class="form-group manage_content_data d-flex flex-wrap ml-3 mb-3">
+                        <mt:var name="manage_content_data">
+                    </div>
+
+                    <hr class="manage_content_data_bottom">
+                    <h4 class="ml-5"><__trans phrase="Content Field Privileges"></h4>
+
+                    <div class="form-group ml-3 mb-3">
+                        <div class="row ml-2 mb-2">
+                        <div class="col-auto"><a href="#" class="check_all_content_field"><__trans phrase="Check All"></a></div>
+                        <div class="col-auto"><a href="#" class="uncheck_all_content_field"><__trans phrase="Uncheck All"></a></div>
+                        </div>
+                        <div class="manage_content_field d-flex flex-wrap">
+                        <mt:var name="manage_content_field">
+                        </div>
+                    </div>
+                </div>
+          </div>
+        </mtapp:setting>
+    </mt:loop>
+  </mtapp:settinggroup>
+</mt:if>
+
+  <mt:if name="id">
+    <mt:if name="same_perm_loop">
+      <mtapp:settinggroup id="duplicate-roles">
+        <legend class="h3"><__trans phrase="Duplicate Roles"></legend>
+          <div class="static">
+            <ul>
+          <mt:loop name="same_perm_loop">
+              <li><a href="<mt:var name="script_url">?__mode=view&amp;_type=role&amp;id=<mt:var name="id" escape="url">"><mt:var name="name" escape="html"></a></li>
+          </mt:loop>
+            </ul>
+          </div>
+      </mtapp:settinggroup>
+    </mt:if>
+  </mt:if>
+
+  <mt:setvarblock name="action_buttons">
+    <button
+    <mt:if name="id">
+      onclick="return checkChanged();"
+    </mt:if>
+      type="submit"
+      accesskey="s"
+      title="<__trans phrase="Save changes to this role (s)">"
+      class="save action primary button btn btn-primary">
+     <__trans phrase="Save Changes">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery('form#role').on('submit', function () {
+        jQuery("input:checked").each(function(){
+            this.disabled = false;
+        });
+    });
+    jQuery('.check_all_content_field').on('click', function(){
+        const $parent = jQuery(this).closest('.collapse');
+        const $target = $parent.find('.manage_content_field input[type="checkbox"]')
+        if($target.prop('disabled')) return false;
+        $target .prop('checked', true);
+        return false;
+    });
+    jQuery('.uncheck_all_content_field').on('click', function(){
+        const $parent = jQuery(this).closest('.collapse');
+        const $target = $parent.find('.manage_content_field input[type="checkbox"]')
+        if($target.prop('disabled')) return false;
+        $target .prop('checked', false);
+        return false;
+    });
+
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<style>
+#role-content-type-privileges .field-label-none > label {
+  display: none;
+}
+#role-content-type-privileges .manage_content_data_bottom {
+    width: 94%;
+}
+#role-content-type-privileges .manage_content_field.d-flex .form-check {
+  flex-basis: 33%;
+  margin-bottom: 3px;
+}
+</style>
+</mt:setvarblock>
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

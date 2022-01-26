@@ -1,0 +1,186 @@
+<mt:setvarblock name="action_buttons">
+  <mt:unless name="filter_spam">
+    <mt:if name="state_editable">
+<button
+   accesskey="a"
+   title="<__trans phrase="Publish selected comments (a)">"
+   class="button mt-publish-items btn btn-default">
+  <__trans phrase="Publish">
+</button>
+    </mt:if>
+  </mt:unless>
+<button
+   accesskey="x"
+   title="<__trans phrase="Delete selected comments (x)">"
+   class="button mt-delete-items btn btn-default">
+  <__trans phrase="Delete">
+</button>
+</mt:setvarblock>
+
+<mtapp:listing id="comment-listing">
+  <mt:if name="__first__">
+    <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
+      <th class="head commenter primary"><span class="col-label"><__trans phrase="Comment"></span></th>
+      <mt:unless name="is_blog">
+      <th class="head blog primary"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
+      </mt:unless>
+      <th class="head entry primary"><span class="col-label"><__trans phrase="Entry/Page"></span></th>
+      <th class="head date"><span class="col-label"><__trans phrase="Date"></span></th>
+      <mt:if name="show_ip_info">
+      <th class="head ip"><span class="col-label"><__trans phrase="IP address"></span></th>
+      </mt:if>
+    </tr>
+    </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+  </mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>"<mt:if name="visible"> onmouseover="showReply('replyto_<mt:var name="id" escape="js">',document,'visible');" onmouseout="hideReply('replyto_<mt:var name="id escape="js"">');"</mt:if>>
+      <td class="cb">
+  <mt:if name="has_edit_access">
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+  <mt:else>
+        &nbsp;
+  </mt:if>
+      </td>
+      <td class="si <mt:if name="visible">status-publish<mt:elseif name="junk_status" eq="-1">status-spam<mt:else>status-pending</mt:if>">
+  <mt:if name="visible">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Approved">" size="sm" color="success">
+  <mt:elseif name="junk_status" eq="-1">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+  <mt:else>
+        <mtapp:svgicon id="ic_draft" title="<__trans phrase="Unapproved">" size="sm">
+  </mt:if>
+      </td>
+      <td class="comment">
+  <mt:var name="comment_long" escape="html">
+  <mt:if name="has_edit_access">
+        <span class="actions-link">
+          <a href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">" title="<__trans phrase="Edit this comment">">
+            <__trans phrase="Edit">
+          </a>
+  <mt:if name="visible">
+    <mt:if name="can_reply">
+          |
+          <a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url"><mt:if name="return_args">&amp;return_args=<mt:var name="return_args" escape="url"><mt:if name="search">%26do_search%3D1%26search%3D<mt:var name="search" escape="url"></mt:if></mt:if>" class="mt-open-dialog">
+            <__trans phrase="Reply">
+          </a>
+    </mt:if>
+  </mt:if>
+        </span>
+  </mt:if>
+  <mt:if name="reply_count">
+        <__trans phrase="([quant,_1,reply,replies])" params="<mt:var name="reply_count">">
+  </mt:if>
+
+  <br/>
+
+  <mt:if name="commenter_id">
+    <mt:if name="commenter_approved">
+      <mt:setvar name="commenter_status" value="<__trans phrase="Trusted">">
+    <mt:else>
+      <mt:if name="commenter_banned">
+        <mt:setvar name="commenter_status" value="<__trans phrase="Blocked">">
+      <mt:else>
+        <mt:setvar name="commenter_status" value="<__trans phrase="Authenticated">">
+      </mt:if>
+    </mt:if>
+
+    <mt:if name="auth_icon_url">
+        <img style="background-image: none" src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
+    </mt:if>
+    <mt:if name="can_edit_commenter">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="icon-right-wide" title="<__trans phrase="Edit this [_1] commenter" params="<$mt:var name="commenter_status" escape="html"$>">">
+          <mt:var name="author" escape="html">
+        </a>
+    <mt:else>
+        <span class="icon-right-wide">
+          <mt:var name="author" escape="html">
+        </span>
+    </mt:if>
+  <mt:else>
+    <mt:if name="author">
+        <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment&amp;search_cols=author&amp;is_limited=1&amp;do_search=1&amp;search=<mt:var name="author" escape="url">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Search for comments by this commenter">">
+          <mt:var name="author_display" escape="html">
+        </a>
+    <mt:else>
+        [<__trans phrase="Anonymous">]
+    </mt:if>
+  </mt:if>
+      </td><mt:ignore>close tag of div.comment</mt:ignore>
+  <mt:unless name="is_blog">
+      <td class="blog">
+        <a href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></a>
+      </td>
+  </mt:unless>
+      <td class="entry">
+  <mt:if name="entry_title">
+    <mt:if name="can_edit_entry">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="entry_id" escape="url">" title="<mt:if name="entry_class" eq="entry"><__trans phrase="View this entry"><mt:else><__trans phrase="View this page"></mt:if>"><mt:var name="entry_title" escape="html"></a>
+    <mt:else>
+        <mt:var name="entry_title" escape="html">
+    </mt:if>
+  <mt:else>
+        &nbsp;
+  </mt:if>
+      </td>
+      <td class="date">
+        <span title="<mt:var name="created_on_time_formatted">">
+  <mt:if name="created_on_relative">
+    <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+    <mt:else>
+          <mt:var name="created_on_formatted">
+    </mt:if>
+  <mt:else>
+          <mt:var name="created_on_formatted">
+  </mt:if>
+        </span>
+      </td>
+  <mt:if name="show_ip_info">
+      <td class="ip">
+        <a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=comment<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="html"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a>
+      </td>
+  </mt:if>
+    </tr>
+  <mt:if name="__last__">
+  </tbody>
+  </mt:if>
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-publish-items').mtPublishItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        mode: 'approve_item',
+        args: {<mt:if name="blog_id">'blog_id': '<mt:var name="blog_id">'</mt:if><mt:if name="search"><mt:if name="blog_id">, </mt:if>'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to republish" escape="js">'
+    });
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>

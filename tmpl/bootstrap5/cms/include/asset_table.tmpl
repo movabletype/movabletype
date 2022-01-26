@@ -1,0 +1,103 @@
+<script type="text/javascript" src="<mt:var name="static_uri">js/assetdetail.js?v=<mt:var name="mt_version_id" escape="url">"></script>
+<mt:setvarblock name="action_buttons">
+<mt:if name="can_delete_files">
+  <button
+     accesskey="x"
+     title="<__trans phrase="Delete selected assets (x)">"
+     class="mt-delete-items button btn btn-default">
+    <__trans phrase="Delete">
+  </button>
+</mt:if>
+</mt:setvarblock>
+
+<mtapp:listing>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="selct_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head asset-thumbnail">&nbsp;</th>
+      <th class="head name primary"><span class="col-label"><__trans phrase="Label"></span></th>
+    <mt:unless name="blog_view">
+      <mt:unless name="scope_type" eq="blog">
+      <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
+      </mt:unless>
+    </mt:unless>
+      <th class="head file-size"><span class="col-label"><__trans phrase="Size"></span></th>
+      <th class="head created-by"><span class="col-label"><__trans phrase="Created By"></span></th>
+      <th class="head created-on"><span class="col-label"><__trans phrase="Created On"></span></th>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr id="asset-<mt:var name="id">" class="<mt:if name="__odd__">odd<mt:else>even</mt:if> status-<mt:if name="file_is_missing">missing<mt:else>publish</mt:if><mt:unless name="file_is_missing"> <mt:if name="has_thumbnail">asset-thumbnail<mt:else>asset-no-thumbnail</mt:if></mt:unless>">
+      <td class="cb">
+        <input type="hidden" id="asset-<mt:var name="id">-json" value="<mt:var name="metadata_json" escape="html">" />
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
+      <td class="asset-thumbnail asset-type-<mt:var name="asset_type" escape="html" lower_case="1">">
+        <div class="asset-thumb thumbnail">
+        <mt:if name="file_is_missing">
+          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><span class="asset-missing"><__trans phrase="Asset Missing"></span></a>
+        <mt:else>
+          <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>" class="<mt:var name="type">">
+          <mt:if name="has_thumbnail">
+            <img src="<mt:var name="thumbnail_url" escape="html">"<mt:if name="thumbnail_width"> style="padding: <$mt:var name="thumbnail_height_offset"$>px <$mt:var name="thumbnail_width_offset"$>px"</mt:if> />
+          <mt:else>
+            <span><__trans phrase="No thumbnail image"></span>
+          </mt:if>
+          </a>
+        </mt:if>
+        </div>
+      </td>
+      <td class="name">
+        <a href="<$mt:var name="script_url"$>?__mode=view&amp;_type=<mt:var name="object_type">&amp;id=<$mt:var name="id"$>&amp;blog_id=<$mt:var name="blog_id"$>" title="<$mt:var name="file_name"$>"><$mt:var name="label" escape="html"$></a>
+        <div class="as-asset-type"><mt:if name="file_is_missing"><__trans phrase="[_1] is missing" params="<mt:var name="asset_class" escape="html">"><mt:else><mt:var name="asset_class" escape="html"></mt:if></div>
+      </td>
+      <mt:unless name="blog_view">
+        <mt:unless name="scope_type" eq="blog">
+      <td class="blog"><a href="<mt:var name="script_url">?__mode=list&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">"><mt:var name="blog_name" escape="html"></a></td>
+        </mt:unless>
+      </mt:unless>
+      <td class="file-size" title="<mt:var name="file_size">">
+      <mt:if name="asset_type" eq="image">
+        <mt:var name="image_width" escape="html"> &times; <mt:var name="image_height" escape="html">px<br />
+      </mt:if>
+      <mt:if name="file_size_formatted">
+        <mt:var name="file_size_formatted">
+      <mt:else>
+        <mt:var name="file_size">
+      </mt:if>
+      </td>
+      <td class="created-by"><mt:var name="created_by" escape="html"></td>
+      <td class="created-on"><span title="<mt:var name="created_on_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-delete-items').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>

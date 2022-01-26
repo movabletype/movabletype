@@ -1,0 +1,54 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved_deleted">
+        <mt:if name="object_type" eq="website">
+            <mtapp:statusmsg
+                id="saved-deleted"
+                class="success">
+                <__trans phrase="You have successfully deleted the site from the Movable Type system. The files still exist in the site path. Please delete files if not needed.">
+            </mtapp:statusmsg>
+        <mt:else>
+            <mtapp:statusmsg
+                id="saved-deleted"
+                class="success">
+                <__trans phrase="You have successfully deleted the child site from the site. The files still exist in the site path. Please delete files if not needed.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+    <mt:if name="request.refreshed">
+        <mtapp:statusmsg
+            id="refreshed"
+            class="success">
+            <__trans phrase="You have successfully refreshed your templates.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.moved">
+        <mtapp:statusmsg
+            id="moved"
+            class="success">
+            <__trans phrase="You have successfully moved selected child sites to another site.">
+        </mtapp:statusmsg>
+        <mtapp:statusmsg
+            id="moved-warning"
+            class="alert">
+            <__trans phrase="Warning: You need to copy uploaded assets to new locations manually. You should consider maintaining copies of uploaded assets in their original locations to avoid broken links.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.not_refreshed">
+        <mtapp:statusmsg
+            id="not-refreshed"
+            class="error"
+            can_close="0">
+            <__trans phrase="Some templates were not refreshed.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.not_deleted">
+        <mt:if name="object_type" eq="website">
+            <mtapp:statusmsg
+                id="not-deleted"
+                class="error"
+                can_close="0">
+                <__trans phrase="Some sites were not deleted. You need to delete child sites under the site first.">
+            </mtapp:statusmsg>
+        </mt:if>
+    </mt:if>
+</mt:setvarblock>

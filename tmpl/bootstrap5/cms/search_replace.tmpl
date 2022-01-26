@@ -1,0 +1,501 @@
+<mt:setvarblock name="page_title"><__trans phrase="Search &amp; Replace"></mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+/* copy from ".mt-table thead th" in mt.css and fix borders */
+.mt-table tfoot th {
+  background: #F4F4F4;
+  border-top: 1px solid #A5A5A5;
+  border-bottom: 0;
+  color: #2F2F2F;
+  font-weight: bold;
+  white-space: nowrap;
+}
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function toggleVisibility(c, s) {
+    if (c.checked) jQuery('#'+s).show();
+    if (!c.checked) jQuery('#'+s).hide();
+}
+
+function toggleSearchAndReplace(selection) {
+    if (selection.value == 'search') {
+        jQuery('#search-bar-search-field').css('display', '');
+        jQuery('#search-bar-advanced-search').css('display', '');
+	jQuery('#search-bar-replace-fields').hide();
+        if (jQuery('#is_limited').is(':checked')) {
+            jQuery('#limited-fields').css('display', '');
+        } else {
+            jQuery('#limited-fields').hide();
+        }
+        if (jQuery('#is_dateranged').is(':checked')) {
+            jQuery('#date-range').css('display', '');
+        }
+    } else if (selection.value == 'replace') {
+        jQuery('#search-bar-search-field').hide();
+        jQuery('#search-bar-advanced-search').hide();
+	jQuery('#search-bar-replace-fields').css('display', '');
+        jQuery('#limited-fields').hide();
+        jQuery('#date-range').hide();
+    }
+}
+
+function reSearch(type) {
+    if (type && (jQuery('#search_form input[name=_type]').val() != type)) {
+        if (jQuery('#search_form input[name=orig_search]').val() != '') {
+            jQuery('#search_form input[name=do_search]').val(1);
+        }
+        jQuery('#search_form input[name=_type]').val(type);
+        jQuery('#search_form').trigger('submit');
+    }
+    return false;
+}
+
+function unLimit(newLimit) {
+    jQuery('#search_form input[name=limit]').val(newLimit);
+    jQuery('#search_form input[name=do_search]').val(1);
+    jQuery('#search_form').trigger('submit');
+    return false;
+}
+
+function doSearch() {
+    jQuery('#search_form input[name=limit]').val('');
+    jQuery('#search_form input[name=do_search]').val(1);
+    jQuery('#search_form').trigger('submit');
+}
+
+function doReplace() {
+    var ids = new Array();
+    var $checked = jQuery('#<$mt:var name="object_type"$>-listing tbody input:checked');
+    if ($checked.length) {
+        $checked.each(function() {
+            ids.push(jQuery(this).val());
+        });
+        jQuery('#search_form input[name=replace_ids]').val(ids.join(','));
+        jQuery('#search_form input[name=do_replace]').val(1);
+        jQuery('#search_form').trigger('submit');
+    } else {
+        alert("<__trans phrase="You must select one or more items to replace." escape="js">");
+    }
+    return false;
+}
+
+function toggleContentTypeLimitedFields() {
+  var contentTypeId = jQuery('select[name=content_type_id]').val();
+  var selector = '#limited-fields li[data-mt-content-type]';
+  jQuery(selector).each(function () {
+    var $li = jQuery(this);
+    var $checkbox = $li.find('input[type=checkbox]');
+    if ($li.data('mtContentType') == contentTypeId) {
+      $li.show();
+      $checkbox.prop('disabled', false);
+    } else {
+      $li.hide();
+      $checkbox.attr('disabled', 'disabled');
+    }
+  });
+}
+
+function toggleContentTypeDateTimeField() {
+  var contentTypeId = jQuery('select[name=content_type_id]').val();
+  var $select = jQuery('select#date_time_field_id');
+  $select.find('option[data-mt-content-type]').each(function () {
+    var $option = jQuery(this);
+    if ($option.data('mtContentType') == contentTypeId) {
+      $option.show()
+             .prop('disabled', false);
+    } else {
+      $option.hide()
+             .attr('disabled', 'disabled');
+    }
+    if ($option.attr('selected') && $option.attr('disabled')) {
+      $option.removeAttr('selected');
+      $select.find(':not([data-mt-content-type])')
+             .attr('selected', 'selected');
+      toggleContentTypeDateTimeInputs();
+    }
+  });
+
+  var $optgroupDateTime = jQuery('#optgroup_date_and_time');
+  var $optgroupDate = jQuery('#optgroup_date');
+  var $optgroupTime = jQuery('#optgroup_time');
+  if ($optgroupDateTime.find('option:enabled').length > 0) {
+    $optgroupDateTime.show();
+  } else {
+    $optgroupDateTime.hide();
+  }
+  if ($optgroupDate.find('option:enabled').length > 0) {
+    $optgroupDate.show();
+  } else {
+    $optgroupDate.hide();
+  }
+  if ($optgroupTime.find('option:enabled').length > 0) {
+    $optgroupTime.show();
+  } else {
+    $optgroupTime.hide();
+  }
+}
+
+function toggleContentTypeDateTimeInputs() {
+  var $selectedOptgroup = jQuery('select#date_time_field_id option:selected').parents('optgroup');
+  var $dateFrom = jQuery('#datefrom').parents('.form-group');
+  var $dateTo = jQuery('#dateto').parents('.form-group');
+  var $timeFrom = jQuery('#timefrom').parents('.form-group');
+  var $timeTo = jQuery('#timeto').parents('.form-group');
+  if ($selectedOptgroup.attr('label') == 'Time') {
+    $dateFrom.hide();
+    $dateTo.hide();
+    $timeFrom.show();
+    $timeTo.show();
+  } else {
+    $dateFrom.show();
+    $dateTo.show();
+    $timeFrom.hide();
+    $timeTo.hide();
+  }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<div id="search-form" class="mt-3 mb-5">
+  <form id="search_form" name="search_form" method="post" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="search_replace" />
+    <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+    <input type="hidden" name="limit" value="<mt:if name="limit_all">all<mt:else><mt:var name="limit" escape="html"></mt:if>" />
+  <mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  </mt:if>
+  <mt:if name="entry_type">
+    <input type="hidden" name="entry_type" value="<mt:var name="entry_type" escape="html">" />
+  </mt:if>
+  <mt:if name="searched"><mt:if name="search" ne="">
+    <input type="hidden" name="orig_search" value="<mt:var name="search" escape="html">" /></mt:if>
+  </mt:if>
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+    <input type="hidden" name="return_args" value="<mt:if name="search" ne="">search=<mt:var name="search" escape="html">&amp;</mt:if><mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="replace_ids" value="" />
+    <input type="hidden" name="do_search" value="" />
+    <input type="hidden" name="do_replace" value="" />
+    <input type="hidden" name="filter" value="<mt:var name="filter" escape="html">" />
+    <input type="hidden" name="filter_val" value="<mt:var name="filter_val" escape="html">" />
+
+    <div id="search-tabs">
+      <ul id="search-tabs-list" class="nav nav-tabs search-tabs-list tabs">
+      <mt:loop name="search_tabs">
+        <li id="results-<mt:var name="key" escape="html">-tab" class="nav-item tab">
+          <a href="#" class="nav-link<mt:if name="object_type" eq="$key"> active</mt:if>" data-mt-object-type="<mt:var name="key" escape="html">" onclick="reSearch(this.dataset.mtObjectType); return false;">
+            <span>
+              <mt:var name="label" escape="html">
+            </span>
+          </a>
+        </li>
+      </mt:loop>
+      </ul>
+    </div>
+
+    <div id="search-bar" class="line">
+    <mt:if name="have_results">
+      <mt:if name="can_replace">
+      <div id="search-bar-toggle" class="mt-3 mod">
+      <ul class="list-inline multiple-selection">
+          <li class="list-inline-item">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="search-replace-toggle-search" name="search-replace-toggle" value="search" checked="checked" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="custom-control-label" for="search-replace-toggle-search"><__trans phrase="Search Again"></label>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div class="custom-control custom-radio">
+              <input type="radio" id="search-replace-toggle-replace" name="search-replace-toggle" value="replace" class="custom-control-input rb" onclick="toggleSearchAndReplace(this)" />
+              <label class="custom-control-label" for="search-replace-toggle-replace"><__trans phrase="Search &amp; Replace"></label>
+            </div>
+          </li>
+        </ul>
+      </div>
+      </mt:if>
+    </mt:if>
+
+      <div id="search-bar-search-field" class="mt-3 mod">
+    <mt:if name="object_type" eq="content_data">
+        <mtapp:setting
+           id="content-type"
+           label="<__trans phrase="Content Type">"
+           label_class="top-label"
+           help_section="search-alt">
+           <select class="custom-select form-control" name="content_type_id">
+      <mt:loop name="content_types">
+             <option value="<mt:var name="content_type_id" escape="html">"<mt:if name="selected"> selected="selected"</mt:if>>
+               <mt:var name="content_type_name" escape="html">
+             </option>
+      </mt:loop>
+           </select>
+        </mtapp:setting>
+    </mt:if>
+        <mtapp:setting
+           id="search"
+           label="<__trans phrase="Search">"
+           label_class="top-label"
+           help_section="search-alt">
+          <input type="text" name="search" id="search" class="form-control text query" value="<mt:var name="search" escape="html">" />
+        </mtapp:setting>
+        <ul id="search-bar-advanced-search" class="list-inline multiple-selection">
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="case" name="case" value="1"<mt:if name="case"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="case"><__trans phrase="Case Sensitive"></label>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_regex" name="is_regex" value="1"<mt:if name="is_regex"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="is_regex"><__trans phrase="Regex Match"></label>
+            </div>
+          </li>
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_limited" name="is_limited" value="1"<mt:if name="is_limited"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'limited-fields')" />
+              <label class="custom-control-label" for="is_limited"><__trans phrase="Limited Fields"></label>
+            </div>
+          </li>
+        <mt:if name="can_search_by_date">
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_dateranged" name="is_dateranged" value="1"<mt:if name="is_dateranged"> checked="checked"</mt:if> class="custom-control-input cb" onclick="toggleVisibility(this, 'date-range')" />
+              <label class="custom-control-label" for="is_dateranged">
+    <mt:if name="object_type" eq="content_data">
+                <__trans phrase="Date/Time Range">
+    <mt:else>
+                <__trans phrase="Date Range">
+    </mt:if>
+              </label>
+            </div>
+          </li>
+        </mt:if>
+        <mt:if name="can_search_junk">
+          <li class="list-inline-item">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" id="is_junk" name="is_junk" value="1"<mt:if name="is_junk"> checked="checked"</mt:if> class="custom-control-input cb" />
+              <label class="custom-control-label" for="is_junk"><__trans phrase="Reported as Spam?"></label>
+            </div>
+          </li>
+        </mt:if>
+        </ul>
+        <div id="limited-fields" class="mod advanced-options"<mt:unless name="is_limited"> style="display: none;"</mt:unless>>
+        <mt:if name="search_cols">
+          <div id="<mt:var name="object_type">-fields" class="card card-block">
+            <ul class="list-inline mb-0 multiple-selection">
+            <mt:loop name="search_cols">
+              <li class="list-inline-item m-2"<mt:if name="field_ct_id"> data-mt-content-type="<mt:var name="field_ct_id" escape="html">"</mt:if><mt:if name="hidden"> style="display: none;"</mt:if>>
+                <div class="custom-control custom-checkbox">
+                  <input type="checkbox" id="search_cols-<mt:var name="field" escape="html">" name="search_cols" value="<mt:var name="field" escape="html">"<mt:if name="selected"> checked="checked"</mt:if><mt:if name="hidden"> disabled="disabled"</mt:if> class="custom-control-input cb" />
+                  <label class="custom-control-label" for="search_cols-<mt:var name="field" escape="html">"><mt:var name="label" escape="html"><mt:unless name="replaceable"> <__trans phrase="(search only)"></mt:unless></label>
+                </div>
+              </li>
+            </mt:loop>
+            </ul>
+          </div>
+        </mt:if>
+        </div>
+        <div id="date-range" class="card card-block mod advanced-options"<mt:unless name="is_dateranged"> style="display: none;"</mt:unless>>
+          <div class="form-inline p-2">
+            <input type="hidden" name="dates-disabled" id="dates-disabled" value="<mt:if name="from">0<mt:else>1</mt:if>" />
+    <mt:if name="object_type" eq="content_data">
+            <div class="form-group mx-3">
+              <label for="date_time_field_id">
+                <__trans phrase="Field">:
+              </label>
+              <select id="date_time_field_id" name="date_time_field_id" class="custom-select form-control">
+                <option value="0">
+                  <__trans phrase="Publish Date">
+                </option>
+      <mt:setvartemplate name="date_time_field_options">
+                  <option value="<mt:var name="date_time_field_id" escape="html">" data-mt-content-type="<mt:var name="date_time_field_ct_id" escape="html">"<mt:if name="date_time_field_selected"> selected="selected"</mt:if>>
+                    <mt:var name="date_time_field_label" escape="html">
+                  </option>
+      </mt:setvartemplate>
+      <mt:if name="date_time_fields">
+                <optgroup id="optgroup_date_and_time" label="<__trans phrase="Date and Time" escape="html">">
+        <mt:loop name="date_time_fields">
+                  <mt:var name="date_time_field_options">
+        </mt:loop>
+                </optgroup>
+      </mt:if>
+      <mt:if name="date_fields">
+                <optgroup id="optgroup_date" label="<__trans phrase="Date" escape="html">">
+        <mt:loop name="date_fields">
+                  <mt:var name="date_time_field_options">
+        </mt:loop>
+                </optgroup>
+      </mt:if>
+      <mt:if name="time_fields">
+                <optgroup id="optgroup_time" label="<__trans phrase="Time" escape="html">">
+         <mt:loop name="time_fields">
+                  <mt:var name="date_time_field_options">
+         </mt:loop>
+                </optgroup>
+      </mt:if>
+              </select>
+            </div>
+    </mt:if>
+            <div class="form-group"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="datefrom"><__trans phrase="_DATE_FROM">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="from" id="datefrom" class="form-control text-date text date" value="<mt:if name="from"><mt:var name="from" escape="html"></mt:if>">
+            </div>
+            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" eq="time"> style="display: none;"</mt:if>>
+              <label for="dateto"><__trans phrase="_DATE_TO">:</label>
+              <input placeholder="YYYY-MM-DD" type="text" name="to" id="dateto" class="form-control text-date text date" value="<mt:if name="to"><mt:var name="to" escape="html"></mt:if>">
+            </div>
+    <mt:if name="object_type" eq="content_data">
+            <div class="form-group"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timefrom"><__trans phrase="_TIME_FROM">:</label>
+              <input placeholder="HH:mm:ss" type="text" name="timefrom" id="timefrom" class="form-control text-time text time" value="<mt:if name="timefrom"><mt:var name="timefrom" escape="html"></mt:if>">
+            </div>
+            <div class="form-group mx-3"<mt:if name="show_datetime_fields_type" ne="time"> style="display: none;"</mt:if>>
+              <label for="timeto"><__trans phrase="_TIME_TO">:</label>
+              <input placeholder="HH:mm:ss" type="text" name="timeto" id="timeto" class="form-control text-time text time" value="<mt:if name="timeto"><mt:var name="timeto" escape="html"></mt:if>">
+            </div>
+    </mt:if>
+          </div>
+        </div>
+        <div class="actions-bar mt-3">
+          <button
+             onclick="doSearch()"
+             type="submit"
+             accesskey="s"
+             title="<__trans phrase="Submit search (s)" escape="html">"
+             id="search-button"
+             class="search action primary button btn btn-primary">
+            <__trans phrase="Search">
+          </button>
+        </div>
+      </div>
+
+    <mt:if name="have_results">
+      <div id="search-bar-replace-fields" class="mod" style="display: none;">
+        <!-- Search -->
+      <mt:if name="object_type" eq="content_data">
+        <mtapp:setting
+           id="content-type-alt"
+           label="<__trans phrase="Content Type">"
+           label_class="top-label"
+           help_section="content-type-alt">
+          <select name="content-type-alt" class="custom-select form-control" disabled>
+        <mt:loop name="content_types">
+          <mt:if name="selected">
+            <option value="content_type_id"><mt:var name="content_type_name" escape="html"></option>
+          </mt:if>
+        </mt:loop>
+           </select>
+        </mtapp:setting>
+      </mt:if>
+        <mtapp:setting
+           id="search-alt"
+           label="<__trans phrase="Search For">"
+           label_class="top-label"
+           help_section="search-alt">
+          <input type="text" name="search-alt" id="search-alt" class="form-control text query disabled" disabled value="<mt:var name="search" escape="html">" readonly="readonly" />
+        </mtapp:setting>
+        <!-- Replace -->
+        <mtapp:setting
+           id="replace"
+           label="<__trans phrase="Replace With">"
+           label_class="top-label"
+           help_section="replace">
+          <textarea name="replace" id="replace" class="form-control text low"><mt:var name="replace" escape="html"></textarea>
+        </mtapp:setting>
+        <div class="actions-bar">
+          <button
+             onclick="doReplace(); return false"
+             type="submit"
+             id="replace-button"
+             class="replace action primary button btn btn-primary">
+            <__trans phrase="Replace Checked">
+          </button>
+        </div>
+      </div>
+    </mt:if>
+
+    </div>
+  </form>
+</div>
+
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error" escape="html">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="replace_count">
+    <mt:if name="object_type" like="website|blog">
+      <mt:setvar name="rebuild_type" value="$object_type">
+      <mt:setvar name="no_link" value="1">
+    <mt:else>
+      <mt:setvar name="rebuild_type" value="all">
+      <mt:setvar name="no_link" value="0">
+    </mt:if>
+  <mtapp:statusmsg
+     id="replace-count"
+     class="success"
+     rebuild="$rebuild_type"
+     no_link="$no_link"
+     can_close="0">
+    <__trans phrase="Successfully replaced [quant,_1,record,records]." params="<mt:var name="replace_count">">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="have_more">
+  <mtapp:statusmsg
+     id="have-more-count"
+     class="success">
+    <__trans phrase="Showing first [_1] results." params="<mt:var name="limit" escape="html">"> <a href="javascript:void(0)" onclick="return unLimit('all'); return false" class="alert-link"><__trans phrase="Show all matches"></a>
+  </mtapp:statusmsg>
+<mt:else>
+  <mt:unless name="replace_count">
+    <mt:if name="have_results">
+  <mtapp:statusmsg
+     id="result-count"
+     class="success">
+    <__trans phrase="[quant,_1,result,results] found" params="<mt:var name="count_matches">">
+  </mtapp:statusmsg>
+    </mt:if>
+  </mt:unless>
+</mt:if>
+
+<mt:if name="searched" id="search_results">
+<mt:ignore>Search results will be placed here from app code.</mt:ignore>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery.mtCheckbox();
+
+<mt:unless name="have_results">
+    jQuery('#search').trigger('focus');
+</mt:unless>
+
+    jQuery('select[name=content_type_id]').on('change', function () {
+      toggleContentTypeLimitedFields();
+      toggleContentTypeDateTimeField();
+    });
+    jQuery('select#date_time_field_id').on('change', toggleContentTypeDateTimeInputs);
+
+    toggleContentTypeDateTimeField();
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,276 @@
+<mt:setvar name="page_title" value="<__trans phrase="Create Child Site">">
+<$mt:setvar name="position_actions_bottom" value="1"$>
+
+<mt:setvarblock name="related_content">
+    <$mtapp:PageActions$>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg">
+    <mt:if name="error">
+        <mtapp:statusmsg
+           id="generic-error"
+           class="error"
+           can_close="0">
+          <mt:var name="error">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+           id="saved"
+           class="success"
+           rebuild="all"
+           can_close="0">
+          <__trans phrase="Your child site configuration has been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+var orig_site_url = "<mt:var name="site_url" _default="$suggested_site_url" escape="js">";
+var orig_site_path = "<mt:var name="site_path" _default="$suggested_site_path" escape="js">";
+function dirify_blog_name(fld) {
+    var dir_blog_name = MT.Util.dirify(fld.value);
+    if (!dir_blog_name.length) return;
+    var url = fld.form['site_url_path'];
+    var path = fld.form['site_path'];
+
+    url.value = dir_blog_name + '/';
+    path.value = dir_blog_name;
+}
+function init() {
+<mt:if name="new_object">
+    jQuery('#name').trigger('focus');
+</mt:if>
+}
+
+jQuery(window).on('load', function () {
+  init();
+  jQuery.mtUseSubdomain();
+  jQuery.mtUseAbsolute();
+
+  jQuery.mtValidateAddRules({
+    '#site_url_path': function ($e) {
+      return MT.Validator.urlPath($e.val());
+    },
+    "#site_url_subdomain": function($e) {
+      return ! $e.is(':visible') || MT.Validator.urlSubdomain($e.val());
+    },
+    '#site_path': function ($e) {
+      return MT.Validator.path($e.val(), 1);
+    },
+    '#site_path_absolute': function ($e) {
+      if ( jQuery('#use_absolute:checked').length <= 0 ) {
+        return true;
+      }
+      return MT.Validator.absolutePath($e.val());
+    },
+    '#server_offset': function ($e) {
+      return $e.val() !== '';
+    }
+  });
+
+  jQuery.mtValidateAddMessages({
+    '#name': '<__trans phrase="You must set your Site Name." escape="singlequotes">',
+    '#server_offset': '<__trans phrase="You did not select a time zone." escape="singlequotes">',
+    '#site_url_path': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+    '#site_url_subdomain': '<__trans phrase="You must set a valid Site URL." escape="singlequotes">',
+    '#site_path.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+    '#site_path': '<__trans phrase="You must set a valid local site path." escape="singlequotes">',
+    '#site_path_absolute.required': '<__trans phrase="You must set your Local Site Path." escape="singlequotes">',
+    '#site_path_absolute': '<__trans phrase="You must set a valid local site path." escape="singlequotes">'
+  });
+
+  jQuery('#cfg_form').on('submit', function () {
+      var $form = jQuery(this),
+          $url = $form.find('#site_url_path, #site_url_subdomain'),
+          $simple = $form.find('input:visible, select:visible').filter(function() {
+              return jQuery.inArray(this, $url) === -1;
+          });
+
+      return $url.mtValidate('url_path_subdomain') && $simple.mtValidate('simple');
+  });
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form method="post" id="cfg_form" action="<mt:var name="script_url">">
+<mt:unless name="new_object">
+    <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+</mt:unless>
+    <input type="hidden" name="__mode" value="save" />
+    <input type="hidden" name="_type" value="blog" />
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+<fieldset>
+<mt:if name="can_edit_config">
+    <mtapp:setting
+        id="blog_theme"
+        label="<__trans phrase="Site Theme">"
+        label_for="blog_theme"
+        hint="<__trans phrase="Select the theme you wish to use for this child site.">"
+        hint_id="blogTheme"
+        show_hint="1"
+        help_page="blog_settings_general"
+        help_section="blog_theme">
+        <select id="blog_theme" name="blog_theme" class="custom-select form-control" aria-describedby="blogTheme">
+        <mt:loop name="theme_loop">
+          <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+        </mt:loop>
+        </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="name"
+        label="<__trans phrase="Site Name">"
+        label_for="name"
+        hint="<__trans phrase="Name your child site. The site name can be changed at any time.">"
+        hint_id="siteName"
+        show_hint="1"
+        help_page="blog_settings_general"
+        help_section="blog_name">
+        <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" onkeyup="dirify_blog_name(this)" aria-describedby="siteName" />
+    </mtapp:setting>
+</mt:if>
+<mt:if name="can_set_publish_paths">
+    <mtapp:setting
+        id="site_url"
+        class="url-field field-content"
+        label="<__trans phrase="Site URL">"
+        hint="<__trans phrase="Enter the URL of your Child Site. Exclude the filename (i.e. index.html). Example: http://www.example.com/blog/">"
+        hint_id="siteUrl"
+        show_hint="1"
+        help_page="blog_settings_publishing"
+        help_section="site_url">
+        <div class="form-inline site-url content-path">
+            <mt:var name="website_scheme">://
+            <span class="subdomain">
+              <mt:unless name="ignore_subdomain">
+                <input type="text" name="site_url_subdomain" id="site_url_subdomain"  class="form-control blog-subdomain-text text path" value="<mt:var name="site_url_subdomain">" aria-describedby="siteUrl" />.
+              </mt:unless>
+            </span>
+            <span class="website-url">
+              <mt:var name="website_domain" encode_html="1">
+            </span>
+            <span class="extra-path">
+              <input type="text" name="site_url_path" id="site_url_path" class="form-control blog-url-text text path" value="<mt:var name="site_url_path" _default="$suggested_site_url" escape="html">" aria-describedby="siteUrl" />
+            </span>
+        </div>
+        <mt:unless name="ignore_subdomain">
+        <div class="use-subdomain option">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="use_subdomain" id="use_subdomain" value="1" class="custom-control-input cb"<mt:if name="use_subdomain">checked="checked"</mt:if> />
+                <label class="custom-control-label" for="use_subdomain"><__trans phrase="Use subdomain"></label>
+            </div>
+        </div>
+        </mt:unless>
+    </mtapp:setting>
+
+    <mtapp:setting
+        id="site_path"
+        class="field-content site-path-field"
+        label="<__trans phrase="Site Root">"
+        help_page="blog_settings_publishing"
+        help_section="site_root">
+        <div class="form-inline relative-site_path content-path">
+          <span class="website-path">
+            <mt:var name="website_path" encode_html="1">
+          </span>
+          <input type="text" name="site_path" id="site_path" class="form-control blog-path-text text path" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" aria-describedby="relativePath" />
+        </div>
+        <mt:unless name="sitepath_limited">
+        <div class="absolute-site_path content-path">
+          <input type="text" name="site_path_absolute" id="site_path_absolute" value="<mt:if name="site_path_absolute"><mt:var name="site_path_absolute" escape="html"><mt:else><mt:var name="website_path" escape="html"></mt:if>" class="form-control blog-path-text text hide-input required" aria-describedby="absolutePath" />
+        </div>
+        <div class="use-absolute option">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" name="use_absolute" id="use_absolute" class="custom-control-input cb" value="1"<mt:if name="site_path_absolute"> checked="checked"</mt:if> />
+                <label class="custom-control-label" for="use_absolute"><__trans phrase="Use absolute path"></label>
+            </div>
+        </div>
+        <small id="absolutePath" class="form-text text-muted hint absolute-site_path-hint"><__trans phrase="The path where your index files will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred.  Do not end with '/' or '\'. Example: /home/mt/public_html or C:\www\public_html"></small>
+        </mt:unless>
+        <small id="relativePath" class="form-text text-muted hint relative-site_path-hint"><__trans phrase="The path where your index files will be located. Do not end with '/' or '\'.  Example: /home/mt/public_html/blog or C:\www\public_html\blog"></small>
+    </mtapp:setting>
+</mt:if>
+<mt:if name="can_edit_config">
+    <mtapp:setting
+        id="server_offset"
+        label="<__trans phrase="Time Zone">"
+        label_for="server_offset"
+        hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+        hint_id="timeZone"
+        show_hint="1"
+        help_page="blog_settings_general"
+        help_section="blog_timezone">
+            <select name="server_offset" id="server_offset" class="custom-select form-control" aria-describedby="timeZone">
+                <option value=""><__trans phrase="Time zone not selected"></option>
+                <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+                <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+                <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+                <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+                <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+                <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+                <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+                <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+                <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+                <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+                <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+                <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+                <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+                <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+                <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+                <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+                <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+                <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+                <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+                <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+                <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+                <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+                <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+                <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+                <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+                <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+                <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+                <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+                <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+                <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+            </select>
+    </mtapp:setting>
+</mt:if>
+
+<mtapp:setting
+    id="blog_language"
+    label="<__trans phrase="Language">"
+    label_for="blog_language"
+    hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
+    hint_id="languageHelp"
+    show_hint="1">
+    <select name="blog_language" id="blog_language" class="custom-select form-control se" aria-describedby="languageHelp">
+    <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+    </mt:loop>
+    </select>
+</mtapp:setting>
+
+<mt:setvarblock name="action_buttons">
+    <button
+        type="submit"
+        accesskey="s"
+        title="<__trans phrase="Create Child Site (s)">"
+        class="save action primary button btn btn-primary">
+      <__trans phrase="Create Child Site">
+    </button>
+</mt:setvarblock>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+    </fieldset>
+</form>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,60 @@
+<div id="mobilePrimaryMenu" class="mt-mobilePrimaryMenu">
+<mt:unless name="is_full_screen">
+  <mt:if name="top_nav_loop">
+  <button id="mobilePrimaryMenu__dropdownMenuButton" class="mt-mobilePrimaryMenu__dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    <mtapp:svgicon id="ic_menuhamburger" title="Open primary menu">
+  </button>
+  </mt:if>
+</mt:unless>
+  <span class="mt-mobilePrimaryMenu__name">
+    <mt:var name="page_title">
+  </span>
+  <div id="mobilePrimaryMenu__dropdownMenu" class="mt-mobilePrimaryMenu__dropdownMenu dropdown-menu" aria-labelledby="mobilePrimaryMenu__dropdownMenuButton" data-children=".mt-mobilePrimaryMenu__menuItem">
+    <ul>
+<mt:loop name="top_nav_loop">
+  <mt:if name="mobile">
+      <li class="mt-mobilePrimaryMenu__menuItem">
+        <a data-toggle="collapse" data-parent="#mobilePrimaryMenu" href="#mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" aria-expanded="true" aria-controls="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">">
+    <mt:setvarblock name="escaped_label"><mt:var name="label" escape="html"></mt:setvarblock>
+    <mt:if name="icon">
+      <mt:setvarblock name="escaped_icon"><mt:var name="icon" escape="html"></mt:setvarblock>
+          <mtapp:svgicon id="$escaped_icon" title="$scaped_label">
+    <mt:else>
+          <mtapp:svgicon id="ic_box" title="$escaped_label">
+    </mt:if>
+          <mt:var name="escaped_label">
+        </a>
+      </li>
+      <li id="mobilePrimaryMenu__subMenus<mt:var name="__counter__" escape="html">" class="collapse show" data-role="tabpanel"><ul>
+    <mt:loop name="sub_nav_loop">
+      <mt:if name="mobile">
+        <mt:if name="allowed">
+        <li class="mt-mobilePrimaryMenu__menuItem">
+          <a href="<mt:var name="link" escape="html">"<mt:if name="current"> class="selected"<mt:elseif name="dialog"> class="mt-modal-open" data-mt-modal-large</mt:if>>
+            <mt:var name="label" escape="html">
+          </a>
+        </li>
+        </mt:if>
+      </mt:if>
+    </mt:loop>
+      </ul></li>
+  </mt:if>
+</mt:loop>
+    </ul>
+  </div>
+</div>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery(window).on('load resize', function () {
+  var screenWidth = jQuery(window).width();
+  var $dropdownMenu = jQuery('.mt-mobilePrimaryMenu__dropdownMenu');
+  $dropdownMenu.width(screenWidth * 0.8);
+});
+jQuery('.mt-mobilePrimaryMenu__dropdownMenu a').on('click', function (e) {
+  if (this.dataset.toggle) {
+    var collapseId = this.getAttribute('href');
+    jQuery(collapseId).collapse('toggle');
+  }
+  e.stopPropagation();
+});
+</mt:setvarblock>

@@ -1,0 +1,89 @@
+<mt:var name="screen_id" value="reset-password">
+<mt:setvarblock name="page_title"><__trans phrase="Reset Password"></mt:setvarblock>
+<mt:setvar name="complete" value="1">
+
+<mt:setvarblock name="page_content">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="not_unique_email">
+  <mtapp:statusmsg
+     id="not-unique-email"
+     class="warning"
+     can_close="0">
+    <__trans phrase="The email address provided is not unique.  Please enter your username.">
+  </mtapp:statusmsg>
+</mt:if>
+
+<mt:if name="recovered">
+<p><__trans phrase="An email with a link to reset your password has been sent to your email address ([_1]).", params="<mt:var name="email" escape="html">"></p>
+<div class="actions-bar actions-bar-login text-right">
+<mt:if name="return_to">
+  <a
+     href="<$mt:var name="return_to" escape="html" $>"
+     accesskey="x"
+     title="<__trans phrase="Back (x)">"
+     class="btn__mobile btn-default">
+    <__trans phrase="Back">
+  </a>
+<mt:elseif name="can_signin">
+  <a
+     href="<$mt:var name="script_url"$>"
+     accesskey="s"
+     title="<__trans phrase="Sign in to Movable Type (s)">"
+     class="btn__mobile btn-primary">
+    <__trans phrase="Sign in to Movable Type">
+  </a>
+</mt:if>
+</div>
+
+<mt:else>
+
+<form method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="recover" />
+  <input type="hidden" name="return_to" value="<mt:Var name="return_to" escape="html">" />
+    <mtapp:setting
+       id="email"
+       label="<__trans phrase="Email Address">"
+       label_for="email"
+       label_class="top-label form-group">
+      <input type="text" name="email" id="email" class="form-control text full" value="<mt:var name="email" escape="html">" />
+    </mtapp:setting>
+  <mt:if name="not_unique_email">
+    <mtapp:setting
+       id="name"
+       label="<__trans phrase="Username">"
+       label_for="name"
+       label_class="top-label form-group">
+      <input type="text" name="name" id="name" class="form-control text full" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+  </mt:if>
+  <div class="actions-bar actions-bar-login text-right">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Reset (s)">"
+       class="btn__mobile btn-primary">
+      <__trans phrase="Reset">
+    </button>
+    <button
+       onclick="history.back(); return false;"
+       type="submit"
+       accesskey="x"
+       class="btn__mobile btn-default"
+       title="<__trans phrase="Back (x)">">
+      <__trans phrase="Back">
+    </button>
+  </div>
+</form>
+</mt:if>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

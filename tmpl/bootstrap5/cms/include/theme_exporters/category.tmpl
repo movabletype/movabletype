@@ -1,0 +1,71 @@
+<mtapp:listing id="default_categories" loop="categories" hide_pager="1" show_actions="0" type="category">
+<mt:if name="__first__">
+
+<mt:setvarblock name="table_header">
+  <tr>
+    <th class="head cb">
+      <div class="custom-control custom-checkbox">
+        <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+        <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+      </div>
+    </th>
+    <th class="head display-name primary"><span class="col-label"><__trans phrase="Category Name"></span></th>
+    <th class="head description primary"><span class="col-label"><__trans phrase="Description"></span></th>
+  </tr>
+</mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd</mt:if>">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input
+             type="checkbox"
+             name="default_category_export_ids"
+             id="default_category_<mt:var name="category_id">"
+             class="custom-control-input select category-tree"
+             value="<mt:var name="category_id">"
+             <mt:if name="category_parent">category_parent="<mt:var name="category_parent">"</mt:if>
+             <mt:if name="category_path_ids">category_path="<mt:loop name="category_path_ids">(<mt:var name="__value__">)</mt:loop>"</mt:if>
+             <mt:if name="checked">checked="checked"</mt:if>
+             />
+          <label class="custom-control-label" for="default_category_<mt:var name="category_id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
+      <td class="display-name">
+        <div style="margin-left: <mt:var name="category_pixel_depth">px;">
+          <mt:var name="category_label" escape="html">
+        </div>
+      </td>
+      <td class="description">
+        <mt:var name="category_description" escape="html">
+      </td>
+    </tr>
+<mt:if __last__>
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<script type="text/javascript">
+jQuery('.category-tree').on('click', function(){
+    var cat = this;
+    if ( jQuery(cat).prop('checked') ) {
+        var parent = jQuery( '#default_category_' + jQuery(cat).attr('category_parent') );
+        var path_ids = jQuery(cat).attr('category_path');
+        path_ids = path_ids ? path_ids.toString().slice(1,-1).split(')(') : [];
+        jQuery.each(path_ids, function() {
+            jQuery("#default_categories #default_category_" + this ).prop('checked',true);
+        });
+    }
+    else {
+        var id = jQuery(cat).val();
+        jQuery("#default_categories input[category_path*='(" + id + ")']:checked").each(function() {
+            jQuery(this).prop('checked', false);
+        });
+    }
+});
+jQuery.mtCheckbox();
+</script>

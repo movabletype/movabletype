@@ -1,0 +1,95 @@
+<mtapp:widget
+  class="site-list-widget"
+  label="<__trans phrase="Site List">"
+  can_close="1">
+  <mt:If name="sites">
+    <mt:Loop name="sites">
+  <div class="mt-widget--site">
+    <div class="row">
+      <div class="col">
+        <h3 class="mt-widget__sitename"><a href="<mt:var name="mt_url">?__mode=dashboard&blog_id=<mt:var name="blog_id">"><mt:Var name="site_name" escape="html"></a></h3>
+      <mt:If name="parent_site_name">
+          <p class="mt-widget__sitename"><__trans phrase="(on [_1])" params="<mt:Var name="parent_site_name" escape="html">"></p>
+      </mt:If>
+        <p class="mt-widget__url"><a href="<mt:Var name="site_url">" target="_blank"><mt:Var name="site_url"></a></p>
+        <div class="btn-group" data-role="group">
+      <mt:If name="can_edit_template">
+          <a class="btn btn-default" href="<mt:var name="mt_url">?__mode=list_template&blog_id=<mt:var name="blog_id">"><__trans phrase="Design"></a>
+      </mt:If>
+      <mt:If name="can_edit_config">
+          <a class="btn btn-default" href="<mt:var name="mt_url">?__mode=cfg_prefs&blog_id=<mt:var name="blog_id">"><__trans phrase="Setting"></a>
+      </mt:If>
+        </div>
+      </div>
+    </div>
+    <mt:if name="content_types">
+    <div class="row mt-collapse mt-widget__contenttype__block">
+      <div class="col pr-0">
+        <div class="row">
+          <div><svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_contentdata"></use></svg><a data-toggle="collapse" href="#collapseContentDataList_<mt:var name="blog_id">" aria-expanded="true" aria-controls="collapseContentDataList_<mt:var name="blog_id">"><__trans phrase="Content Data"><svg role="img" class="mt-icon--secondary"><title>Collapse</title><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_collapse"></use></svg></a></div>
+        </div>
+
+        <div class="row collapse show" id="collapseContentDataList_<mt:var name="blog_id">">
+          <div class="col pr-0">
+          <mt:Loop name="content_types">
+            <div class="row mt-widget__contenttype">
+              <div class="col-8">
+                <mt:If name="can_list"><a href="<mt:var name="mt_url">?__mode=list&_type=content_data&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">"></mt:If>
+                  <mt:Var name="name" escape="html">
+                <mt:If name="can_list"></a></mt:If>
+              </div>
+              <div class="col text-right pr-0">
+                <mt:If name="can_create"><a href="<mt:var name="mt_url">?__mode=edit&_type=content_data&content_type_id=<mt:var name="content_type_id">&type=<mt:var name="type_id">&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
+              </div>
+            </div>
+          </mt:Loop>
+          </div>
+        </div>
+      </div>
+    </div>
+    </mt:if>
+
+    <mt:If name="permitted_entry">
+    <div class="row mt-widget__entry">
+      <div class="col-8">
+        <svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_entry"></use></svg>
+        <mt:If name="can_access_to_entry_list"><a href="<mt:var name="mt_url">?__mode=list&_type=entry&blog_id=<mt:var name="blog_id">"></mt:If>
+        <__trans phrase="Entry">
+        <mt:If name="can_access_to_entry_list"></a></mt:If>
+      </div>
+      <div class="col text-right pr-0">
+        <mt:If name="can_create_post"><a href="<mt:var name="mt_url">?__mode=edit&_type=entry&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a></mt:if>
+      </div>
+    </div>
+    </mt:if>
+
+    <mt:If name="can_manage_pages">
+    <div class="row mt-widget__page">
+      <div class="col-8">
+        <svg role="img" class="mt-icon--sm mt-icon--secondary mr-3"><use xlink:href="<mt:var name="static_uri">images/sprite.svg#ic_page"></use></svg>
+        <a href="<mt:var name="mt_url">?__mode=list&_type=page&blog_id=<mt:var name="blog_id">"><__trans phrase="Page"></a>
+      </div>
+      <div class="col text-right pr-0">
+        <a href="<mt:var name="mt_url">?__mode=edit&_type=page&blog_id=<mt:var name="blog_id">" class="d-inline-block"><__trans phrase="Create"></a>
+      </div>
+    </div>
+    </mt:if>
+
+    <div class="row">
+      <div class="col pl-0 pr-0">
+      <mt:If name="recent_post">
+        <h4 class="mt-widget__latest"><__trans phrase="Recent Posts"></h4>
+        <ul class="list-unstyled">
+        <mt:Loop name="recent_post">
+          <li class="row"><span class="col-2"><mt:var name="created_on_formatted"></span><span class="col"><a href="<mt:var name="mt_url">?__mode=edit&_type=<mt:var name="object_type">&blog_id=<mt:var name="blog_id">&id=<mt:var name="id"><mt:if name="subtype">&type=<mt:var name="subtype"></mt:if><mt:if name="content_type_id">&content_type_id=<mt:var name="content_type_id"></mt:if>">[<mt:var name="object_name" escape="html">] <mt:var name="title" escape="html"></a></span></li>
+        </mt:Loop>
+        </ul>
+      </mt:If>
+      </div>
+    </div>
+  </div>
+    </mt:Loop>
+  </mt:If>
+</mtapp:widget>
+
+

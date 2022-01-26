@@ -1,0 +1,173 @@
+<mt:if name="object_type" eq="entry">
+  <mt:setvar name="page_title" value="<__trans phrase="Batch Edit Entries">">
+<mt:else>
+  <mt:setvar name="page_title" value="<__trans phrase="Batch Edit Pages">">
+</mt:if>
+
+<mt:setvarblock name="system_msg">
+<div id="msg-container">
+<mt:if name="dynamic_all">
+  <mt:setvar name="rebuild" value="">
+<mt:else>
+  <mt:setvar name="rebuild" value="all">
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     rebuild="$rebuild"
+     can_close="0">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="save_button_title"><__trans phrase="Save these [_1] (s)" params="<mt:var name="object_label_plural" lower_case="1">"></mt:setvarblock>
+
+<mt:setvarblock name="action_buttons">
+  <div class="col my-4">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<$mt:var name="save_button_title"$>"
+       class="save action primary button mt-submit-items btn btn-primary">
+      <__trans phrase="Save">
+    </button>
+  </div>
+</mt:setvarblock>
+
+<mt:setvar name="hide_pager" value="1">
+<mt:setvarblock name="original_blog_id"><mt:var name="blog_id"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mtapp:listing
+   hide_pager="$hide_pager">
+<mt:if __first__>
+    <thead>
+      <tr>
+        <th class="head status" scope="col"><span class="col-label"><__trans phrase="Status"></span></th>
+        <th class="head title primary" scope="col"><span class="col-label"><__trans phrase="Title"></span></th>
+        <th class="head category" scope="col"><span class="col-label"><mt:if name="object_type" eq="page"><__trans phrase="Folder"><mt:else><__trans phrase="Category"></mt:if></span></th>
+        <th class="head author" scope="col"><span class="col-label"><__trans phrase="Author"></span></th>
+        <th class="head datetime" scope="col"><span class="col-label"><__trans phrase="Published Date"></span></th>
+        <th class="head datetime" scope="col"><span class="col-label"><__trans phrase="Date Modified"></span></th>
+      </tr>
+    </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+    <mt:if name="has_publish_access">
+      <td class="status">
+        <select name="status_<$mt:var name="id"$>" class="custom-select form-control">
+          <option value="1"<mt:if name="status_draft"> selected="selected"</mt:if>><__trans phrase="Unpublished (Draft)"></option>
+          <option value="2"<mt:if name="status_publish"> selected="selected"</mt:if>><__trans phrase="Published"></option>
+          <option value="3"<mt:if name="status_review"> selected="selected"</mt:if>><__trans phrase="Unpublished (Review)"></option>
+          <option value="4"<mt:if name="status_future"> selected="selected"</mt:if>><__trans phrase="Scheduled"></option>
+        <mt:if name="status_unpublish">
+          <option value="6" selected="selected"><__trans phrase="Unpublished (End)"></option>
+        </mt:if>
+        </select>
+      </td>
+    </mt:if>
+      <td class="title">
+      <mt:if name="has_edit_access">
+        <mt:if name="title">
+        <input type="text" name="title_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="title" escape="html" default="..."$>" />
+        <mt:else>
+        <input type="hidden" name="title_<$mt:var name="id"$>" value="" />
+        <input type="text" name="no_title_<$mt:var name="id"$>" class="form-control text full" placeholder="<$mt:var name="title_short" escape="html"$>" />
+        </mt:if>
+      <mt:else>
+        <mt:var name="title" escape="html" default="...">
+      </mt:if>
+      </td>
+      <td class="category">
+      <mt:if name="is_editable">
+        <mt:if name="entry_blog_id" eq="$original_blog_id">
+        <select name="category_id_<$mt:var name="id"$>" class="custom-select form-control">
+          <option value=""><__trans phrase="None"></option>
+        <mt:loop name="row_category_loop">
+          <option value="<$mt:var name="category_id"$>" title="<$mt:var name="category_label" encode_html="1"$>"<mt:if name="category_is_selected"> selected="selected"</mt:if>><$mt:var name="category_label_spacer"$><$mt:var name="category_label" encode_html="1"$></option>
+        </mt:loop>
+        </select>
+        <mt:else>
+        <input type="hidden" name="category_id_<$mt:var name="id"$>" value="<mt:var name="category_id">">
+          <mt:if name="object_type" eq="entry">
+        <mt:var name="category_label" escape="html" default="-">
+          <mt:else>
+        <mt:var name="category_label" escape="html" default="(root)">
+          </mt:if>
+        </mt:if>
+      <mt:else>
+        <input type="hidden" name="category_id_<$mt:var name="id"$>" value="<mt:var name="category_id">">
+        <mt:if name="object_type" eq="entry">
+        <mt:var name="category_label" escape="html" default="-">
+        <mt:else>
+        <mt:var name="category_label" escape="html" default="(root)">
+        </mt:if>
+      </mt:if>
+      </td>
+      <td class="author">
+      <mt:if name="is_editable">
+        <input type="hidden" name="author_id_<$mt:var name="id"$>" value="<$mt:var name="row_author_id"$>" id="entry_author_id_<$mt:var name="id"$>">
+        <a href="<$mt:var name="script_url"$>?__mode=dialog_select_author&amp;blog_id=<$mt:var name="blog_id"$>&amp;multi=0&amp;entry_type=<mt:var name="object_type">&amp;idfield=entry_author_id_<$mt:var name="id"$>&amp;namefield=entry_author_name_<$mt:var name="id"$>" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <span id="entry_author_name_<$mt:var name="id"$>">
+            <$mt:var name="row_author_name" escape="html"$>
+          </span>
+        </a>
+      <mt:else>
+        <mt:var name="author_name" escape="html">
+      </mt:if>
+      </td>
+      <td class="datetime">
+      <mt:if name="has_publish_access">
+        <input type="text" name="created_on_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="created_on_time_formatted"$>" />
+      <mt:else>
+        <span title="<$mt:var name="created_on_time_formatted"$>">
+        <mt:if name="created_on_relative">
+          <mt:if name="dates_relative">
+          <mt:var name="created_on_relative">
+          <mt:else>
+          <mt:var name="created_on_formatted">
+          </mt:if>
+        <mt:else>
+          <mt:var name="created_on_formatted">
+        </mt:if>
+        </span>
+        <input type="hidden" name="created_on_<$mt:var name="id"$>" value="<$mt:var name="created_on_time_formatted"$>" />
+      </mt:if>
+      </td>
+      <td class="datetime">
+      <mt:if name="has_publish_access">
+        <input type="text" name="modified_on_<$mt:var name="id"$>" class="form-control text full" value="<$mt:var name="modified_on_time_formatted"$>" />
+      <mt:else>
+        <span title="<$mt:var name="modified_on_time_formatted"$>">
+        <mt:if name="modified_on_relative">
+          <mt:if name="dates_relative">
+          <mt:var name="modified_on_relative">
+          <mt:else>
+          <mt:var name="modified_on_formatted">
+          </mt:if>
+        <mt:else>
+          <mt:var name="modified_on_formatted">
+        </mt:if>
+        </span>
+        <input type="hidden" name="modified_on_<$mt:var name="id"$>" value="<$mt:var name="modified_on_time_formatted"$>" />
+      </mt:if>
+      </td>
+    </tr>
+<mt:if __last__>
+  </tbody>
+</mt:if>
+</mtapp:listing>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-submit-items').mtSubmitItems({
+        id: '<$mt:var name="object_type"$>-listing-form'
+    });
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

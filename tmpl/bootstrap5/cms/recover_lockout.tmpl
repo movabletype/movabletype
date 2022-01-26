@@ -1,0 +1,29 @@
+<mt:setvarblock name="page_title"><__trans phrase="Recovered from lockout"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<mtapp:statusmsg
+   id="recovred"
+   class="success"
+   can_close="0">
+<__trans phrase="User '[_1]' has been unlocked." params="<mt:var name="author_nickname" encode_html="1" />">
+</mtapp:statusmsg>
+
+<mt:if name="author_edit_link">
+<mt:setvarblock name="action_buttons">
+<button
+   id="goback-button"
+   onclick="window.location.href='<mt:var name="author_edit_link" encode_js="1" />'; return false"
+   type="submit"
+   accesskey="s"
+   class="goback action primary button btn btn-primary">
+   <__trans phrase="Edit Profile" />
+</button>
+</mt:setvarblock>
+</mt:if>
+
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

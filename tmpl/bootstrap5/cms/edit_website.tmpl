@@ -1,0 +1,214 @@
+<mt:setvar name="page_title" value="<__trans phrase="Create Site">">
+<mt:setvar name="position_actions_bottom" value="1">
+<mt:setvarblock name="related_content">
+<$mtapp:PageActions$>
+</mt:setvarblock>
+<mt:setvarblock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success"
+     rebuild="all"
+     can_close="0">
+    <__trans phrase="Your site configuration has been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form method="post" action="<mt:var name="script_url">" id="new_website_form">
+<mt:unless name="new_object">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+</mt:unless>
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="website" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="create_site" value="1" />
+  <mtapp:setting
+     id="website_theme"
+     label="<__trans phrase="Site Theme">"
+     label_for="website_theme"
+     hint="<__trans phrase="Select the theme you wish to use for this site.">"
+     hint_id="siteTheme"
+     show_hint="1"
+     help_page="blog_settings_general"
+     help_section="website_theme">
+    <select id="website_theme" name="website_theme" class="custom-select form-control" aria-describedby="siteTheme">
+    <mt:loop name="theme_loop">
+      <option value="<mt:var name="value" escape="html">"<mt:if name="t_selected"> selected="selected"</mt:if>><mt:var name="label" escape="html"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+  <mtapp:setting
+     id="name"
+     label="<__trans phrase="Site Name">"
+     label_for="name"
+     hint="<__trans phrase="Name your site. The site name can be changed at any time.">"
+     hint_id="siteName"
+     required="1"
+     show_hint="1"
+     help_page="blog_settings_general"
+     help_section="website_name">
+    <input type="text" name="name" id="name" class="form-control text required" value="<mt:var name="name" escape="html">" aria-describedby="siteName" />
+  </mtapp:setting>
+  <mtapp:setting
+     id="website_url"
+     label="<__trans phrase="Site URL">"
+     label_for="site_url"
+     hint="<__trans phrase="Enter the URL of your site. Exclude the filename (i.e. index.html). Example: http://www.example.com/">"
+     required="1"
+     show_hint="1"
+     hint_id="siteUrl"
+     help_page="blog_settings_publishing"
+     help_section="website_url">
+    <input type="text" name="site_url" id="site_url" class="form-control text required" value="<mt:var name="site_url"  escape="html">" aria-describedby="siteName" />
+  </mtapp:setting>
+  <mtapp:setting
+     id="website_path"
+     label="<__trans phrase="Site Root">"
+     label_for="site_path"
+     hint="<__trans phrase="Enter the path where your main index file will be located. An absolute path (starting with '/' for Linux or 'C:\' for Windows) is preferred, but you can also use a path relative to the Movable Type directory. Example: /home/melody/public_html/ or C:\www\public_html">"
+     required="1"
+     show_hint="1"
+     hint_id="siteRoot"
+     help_page="blog_settings_publishing"
+     help_section="website_root">
+    <input type="text" name="site_path" id="site_path" class="form-control text required<mt:if name="sitepath_limited"> limited_path</mt:if>" value="<mt:var name="site_path" _default="$suggested_site_path" escape="html">" aria-describedby="siteRoot" />
+  </mtapp:setting>
+  <mtapp:setting
+     id="server_offset"
+     label="<__trans phrase="Time Zone">"
+     label_for="server_offset"
+     hint="<__trans phrase="Select your timezone from the pulldown menu.">"
+     hint_id="timeZone"
+     show_hint="1"
+     help_page="blog_settings_general"
+     help_section="blog_timezone">
+    <select name="server_offset" id="server_offset" class="custom-select form-control" aria-describedby="timeZone">
+      <option value=""><__trans phrase="Time zone not selected"></option>
+      <option value="13"<mt:if name="SERVER_OFFSET_13"> selected="selected"</mt:if>><__trans phrase="UTC+13 (New Zealand Daylight Savings Time)"></option>
+      <option value="12"<mt:if name="SERVER_OFFSET_12"> selected="selected"</mt:if>><__trans phrase="UTC+12 (International Date Line East)"></option>
+      <option value="11"<mt:if name="SERVER_OFFSET_11"> selected="selected"</mt:if>><__trans phrase="UTC+11"></option>
+      <option value="10"<mt:if name="SERVER_OFFSET_10"> selected="selected"</mt:if>><__trans phrase="UTC+10 (East Australian Time)"></option>
+      <option value="9.5"<mt:if name="SERVER_OFFSET_9_5"> selected="selected"</mt:if>><__trans phrase="UTC+9.5 (Central Australian Time)"></option>
+      <option value="9"<mt:if name="SERVER_OFFSET_9"> selected="selected"</mt:if>><__trans phrase="UTC+9 (Japan Time)"></option>
+      <option value="8"<mt:if name="SERVER_OFFSET_8"> selected="selected"</mt:if>><__trans phrase="UTC+8 (China Coast Time)"></option>
+      <option value="7"<mt:if name="SERVER_OFFSET_7"> selected="selected"</mt:if>><__trans phrase="UTC+7 (West Australian Time)"></option>
+      <option value="6.5"<mt:if name="SERVER_OFFSET_6_5"> selected="selected"</mt:if>><__trans phrase="UTC+6.5 (North Sumatra)"></option>
+      <option value="6"<mt:if name="SERVER_OFFSET_6"> selected="selected"</mt:if>><__trans phrase="UTC+6 (Russian Federation Zone 5)"></option>
+      <option value="5.5"<mt:if name="SERVER_OFFSET_5_5"> selected="selected"</mt:if>><__trans phrase="UTC+5.5 (Indian)"></option>
+      <option value="5"<mt:if name="SERVER_OFFSET_5"> selected="selected"</mt:if>><__trans phrase="UTC+5 (Russian Federation Zone 4)"></option>
+      <option value="4"<mt:if name="SERVER_OFFSET_4"> selected="selected"</mt:if>><__trans phrase="UTC+4 (Russian Federation Zone 3)"></option>
+      <option value="3.5"<mt:if name="SERVER_OFFSET_3_5"> selected="selected"</mt:if>><__trans phrase="UTC+3.5 (Iran)"></option>
+      <option value="3"<mt:if name="SERVER_OFFSET_3"> selected="selected"</mt:if>><__trans phrase="UTC+3 (Baghdad Time/Moscow Time)"></option>
+      <option value="2"<mt:if name="SERVER_OFFSET_2"> selected="selected"</mt:if>><__trans phrase="UTC+2 (Eastern Europe Time)"></option>
+      <option value="1"<mt:if name="SERVER_OFFSET_1"> selected="selected"</mt:if>><__trans phrase="UTC+1 (Central European Time)"></option>
+      <option value="0"<mt:if name="SERVER_OFFSET_0"> selected="selected"</mt:if>><__trans phrase="UTC+0 (Universal Time Coordinated)"></option>
+      <option value="-1"<mt:if name="SERVER_OFFSET__1"> selected="selected"</mt:if>><__trans phrase="UTC-1 (West Africa Time)"></option>
+      <option value="-2"<mt:if name="SERVER_OFFSET__2"> selected="selected"</mt:if>><__trans phrase="UTC-2 (Azores Time)"></option>
+      <option value="-3"<mt:if name="SERVER_OFFSET__3"> selected="selected"</mt:if>><__trans phrase="UTC-3 (Atlantic Time)"></option>
+      <option value="-3.5"<mt:if name="SERVER_OFFSET__3_5"> selected="selected"</mt:if>><__trans phrase="UTC-3.5 (Newfoundland)"></option>
+      <option value="-4"<mt:if name="SERVER_OFFSET__4"> selected="selected"</mt:if>><__trans phrase="UTC-4 (Atlantic Time)"></option>
+      <option value="-5"<mt:if name="SERVER_OFFSET__5"> selected="selected"</mt:if>><__trans phrase="UTC-5 (Eastern Time)"></option>
+      <option value="-6"<mt:if name="SERVER_OFFSET__6"> selected="selected"</mt:if>><__trans phrase="UTC-6 (Central Time)"></option>
+      <option value="-7"<mt:if name="SERVER_OFFSET__7"> selected="selected"</mt:if>><__trans phrase="UTC-7 (Mountain Time)"></option>
+      <option value="-8"<mt:if name="SERVER_OFFSET__8"> selected="selected"</mt:if>><__trans phrase="UTC-8 (Pacific Time)"></option>
+      <option value="-9"<mt:if name="SERVER_OFFSET__9"> selected="selected"</mt:if>><__trans phrase="UTC-9 (Alaskan Time)"></option>
+      <option value="-10"<mt:if name="SERVER_OFFSET__10"> selected="selected"</mt:if>><__trans phrase="UTC-10 (Aleutians-Hawaii Time)"></option>
+      <option value="-11"<mt:if name="SERVER_OFFSET__11"> selected="selected"</mt:if>><__trans phrase="UTC-11 (Nome Time)"></option>
+    </select>
+  </mtapp:setting>
+  <mtapp:setting
+     id="blog_language"
+     label="<__trans phrase="Language">"
+     label_for="blog_language"
+     hint="<__trans phrase="If you choose a different language than the default language defined at the system level, you may need to change module names in certain templates to include different global modules.">"
+     hint_id="blogLanguage"
+     show_hint="1">
+    <select name="blog_language" id="blog_language" class="custom-select form-control se" aria-describedby="blogLanguage">
+    <mt:loop name="languages">
+      <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Create Site (s)">"
+       class="create action primary button btn btn-primary">
+      <__trans phrase="Create Site">
+    </button>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include">
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(function() {
+    jQuery('#name').trigger('focus');
+
+    <mt:if name="sitepath_limited">
+    function is_path_limit_clear( path_ ) {
+        re = new RegExp("^<mt:var name="sitepath_limited" escape="js" escape="js">$", "i");
+        if ( path_.match( re ) ) {
+            return true;
+        }
+        re = new RegExp("^<mt:var name="sitepath_limited_trail" escape="js" escape="js">", "i");
+        if ( !path_.match( re ) ) {
+            return false;
+        }
+        return true;
+    }
+    </mt:if>
+
+    jQuery.mtValidateAddRules({
+        '#site_url': function ($e) {
+            return MT.Validator.url($e.val()) ? true : false;
+        },
+        '#site_path': function ($e) {
+            return MT.Validator.path($e.val()) ? true : false;
+        },
+<mt:if name="sitepath_limited">
+       "#site_path.limited_path": function( $e ) {
+           return is_path_limit_clear( $e.val() );
+       },
+</mt:if>
+        '#server_offset': function ($e) {
+            return $e.val() !== '';
+        }
+    });
+
+    jQuery.mtValidateAddMessages({
+        '#name.required': '<__trans phrase="This field is required." escape="singlequotes">',
+        '#site_url': '<__trans phrase="Please enter a valid URL." escape="singlequotes">',
+        '#site_path': '<__trans phrase="Please enter a valid site path." escape="singlequotes">',
+        '#site_path.required': '<__trans phrase="This field is required." escape="singlequotes">',
+<mt:if name="sitepath_limited">
+        "#site_path.limited_path": '<__trans phrase="Site root must be under [_1]" params="<mt:var name="sitepath_limited">" escape="singlequotes">',
+</mt:if>
+        '#server_offset': '<__trans phrase="You did not select a timezone." escape="singlequotes">'
+    });
+
+    jQuery('form#new_website_form').on('submit', function () {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

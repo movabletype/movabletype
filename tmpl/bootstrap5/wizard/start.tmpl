@@ -1,0 +1,226 @@
+<mt:setvarblock name="inline_styles">
+<style type="text/css" media="screen">
+body {
+    background-color: #f3f3f3;
+    color: #2b2b2b;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 13px;
+}
+a {
+    color: #507ea4;
+    outline: 0;
+}
+a:hover,
+a:active {
+    color: #839b5c;
+    text-decoration: none;
+}
+#brand {
+    display: none;
+}
+.actions-bar {
+    min-height: 30px;
+    margin: 25px 0 0;
+}
+.container {
+    position: relative;
+    width: 550px;
+    margin: 45px auto 30px;
+    padding: 10px 30px 25px;
+    border: 1px solid #c0c6c9;
+    border-radius: 5px;
+    background-color: #fff;
+}
+.field {
+    margin-bottom: 20px;
+}
+label {
+    font-weight: bold;
+}
+.text.full {
+    width: 99%;
+}
+.hint {
+    color: #a3a3a2;
+    font-size: 95%;
+    font-style: Italic;
+}
+.msg {
+    margin: 10px 0;
+    padding: 0.8em;
+}
+.msg-text {
+    margin: 0;
+}
+.msg-error {
+    background-color: #f6bfbc;
+}
+</style>
+</mt:setvarblock>
+
+<mt:unless name="cfg_exists">
+<mt:setvarblock name="page_title"><__trans phrase="Welcome to Movable Type"></mt:setvarblock>
+  <mt:unless name="valid_static_path">
+    <mt:unless name="file_invalid">
+<mt:setvarblock name="html_head" append="1">
+  <mt:var name="inline_styles">
+</mt:setvarblock>
+    </mt:unless>
+  </mt:unless>
+<mt:else>
+<mt:setvarblock name="page_title"><__trans phrase="Configuration File Exists"></mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+<mt:var name="inline_styles">
+</mt:setvarblock>
+</mt:unless>
+
+<mt:setvarblock name="page_content">
+<mt:unless name="cfg_exists">
+<form method="post" onsubmit="return check_static_uri();">
+  <input type="hidden" name="__mode" value="next_step" />
+  <input type="hidden" name="step" value="pre_start" />
+  <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+  <noscript>
+    <p><__trans phrase="Movable Type requires that you enable JavaScript in your browser. Please enable it and refresh this page to proceed."></p>
+  </noscript>
+  <p class="intro"><__trans phrase="This wizard will help you configure the basic settings needed to run Movable Type."></p>
+  <mtapp:setting
+     id="default_language"
+     label="<__trans phrase="Language">"
+     label_class="top-label">
+    <select name="default_language" id="default_language" class="custom-select form-control">
+    <mt:loop name="languages">
+      <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+    </mt:loop>
+    </select>
+  </mtapp:setting>
+
+  <div class="no-static-path">
+    <h2><__trans phrase="Configure Static Web Path"></h2>
+
+  <mt:if name="uri_invalid">
+  <div id="uri_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_uri_to" escape="html" escape="html"$>">
+    </p>
+  </div>
+  </mt:if>
+  <mt:if name="file_invalid">
+  <div id="file_invalid" class="msg msg-error">
+    <p class="msg-text">
+      <__trans phrase="<strong>Error: '[_1]' could not be found.</strong>  Please move your static files to the directory first or correct the setting if it is incorrect." params="<$mt:var name="set_static_file_to" escape="html" escape="html"$>">
+    </p>
+  </div>
+  </mt:if>
+
+    <p><__trans phrase="Movable Type ships with directory named [_1] which contains a number of important files such as images, javascript files and stylesheets." params="<strong>mt-static</strong>"></p>
+  <mt:if name="mt_static_exists">
+    <p><__trans phrase="The [_1] directory is in the main Movable Type directory which this wizard script resides, but due to your web server's configuration, the [_1] directory is not accessible in this location and must be moved to a web-accessible location (e.g., your web document root directory)." params="<strong>mt-static</strong>"></p>
+  <mt:else>
+    <p><__trans phrase="This directory has either been renamed or moved to a location outside of the Movable Type directory."></p>
+  </mt:if>
+    <p><__trans phrase="Once the [_1] directory is in a web-accessible location, specify the location below." params="<strong>mt-static</strong>"></p>
+  </div>
+
+  <div id="static_webpath_config">
+  <mt:setvarblock name="hintfoo">
+    <__trans phrase="This URL path can be in the form of [_1] or simply [_2]" params="<strong>http://example.com/mt-static/</strong>%%<strong>/mt-static</strong>">
+  </mt:setvarblock>
+  <mt:setvarblock name="hintfp">
+    <__trans phrase="This path must be in the form of [_1]" params="<strong>/absolute/path/to/mt-static</strong>">
+  </mt:setvarblock>
+    <mtapp:setting
+       id="set_static_uri_to"
+       label="<__trans phrase="Static web path">"
+       label_class="top-label"
+       show_hint="1"
+       hint_id="staticWebPath"
+       hint="$hintfoo">
+      <input type="text" name="set_static_uri_to" id="set_static_uri_to" class="form-control text full" value="<$mt:var name="set_static_uri_to" default="$static_uri" escape="html"$>" size="" aria-describedby="staticWebPath">
+    </mtapp:setting>
+    <mtapp:setting
+       id="set_static_file_to"
+       label="<__trans phrase="Static file path">"
+       label_class="top-label"
+       show_hint="1"
+       hint_id="staticFilePath"
+       hint="$hintfp">
+      <input type="text" name="set_static_file_to" id="set_static_file_to" class="form-control text full" value="<$mt:var name="set_static_file_to" default="$static_file_path" escape="html"$>" size="" aria-describedby="staticFilePath">
+    </mtapp:setting>
+  </div>
+
+  <div class="actions-bar" style="text-align: right;">
+    <button
+       type="submit"
+       title="<__trans phrase="Begin">"
+       class="next action primary button btn btn-primary">
+      <__trans phrase="Begin">
+    </button>
+  </div>
+</form>
+<mt:else>
+<p><__trans phrase="A configuration (mt-config.cgi) file already exists, <a href="[_1]">sign in</a> to Movable Type." params="mt.cgi"></p>
+<p><__trans phrase="To create a new configuration file using the Wizard, remove the current configuration file and then refresh this page"></p>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:unless name="uri_invalid">
+    <mt:unless name="file_invalid">
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery(function() {
+        jQuery('div.no-static-path, div#static_webpath_config').hide();
+    });
+</mt:setvarblock>
+    </mt:unless>
+</mt:unless>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function check_static_uri() {
+    var input = '<input type="hidden" name="uri_valid" value="1" />';
+
+    function submit_uri_valid() {
+        jQuery('form')
+            .removeAttr('onload')
+            .append(input)
+            .submit();
+    }
+
+    function submit_uri_invalid() {
+        var form = document.forms[0];
+        form.removeAttribute('onload');
+        form.submit();
+    }
+
+    if (window.jQuery) {
+        jQuery('form').append(input);
+        return true;
+    } else {
+        var static_uri = document.getElementById('set_static_uri_to').value + '/jquery/jquery.js?.r=' + Math.random();
+        var script     = document.createElement('script');
+
+        script.type = 'text/javascript';
+        script.src  = static_uri;
+
+        // Submit form after checking static web path.
+        script.onerror = submit_uri_invalid;
+        script.onload  = function() {
+            if (window.jQuery) {
+                submit_uri_valid();
+            } else {
+                submit_uri_invalid();
+            }
+        };
+ 
+        document.body.appendChild(script);
+        return false;
+    }
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">
+

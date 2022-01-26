@@ -1,0 +1,180 @@
+<mt:setvarblock name="system_msg" append="1">
+    <mt:if name="request.saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="all"
+            can_close="0">
+            <__trans phrase="Your tag changes and additions have been made.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="request.saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            rebuild="all"
+            class="success">
+            <__trans phrase="You have successfully deleted the selected tags.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script>
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?");
+//trans("The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?");
+
+<mt:if name="blog_id">var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]'?";
+<mt:else>var tag_rename_warning = "The tag '[_2]' already exists. Are you sure you want to merge '[_1]' with '[_2]' across all blogs?";
+</mt:if>
+
+var tag_names = {};
+
+function submitEdit( id, newname, oldname ) {
+  // if old name matches new name, ignore submission (same as cancel)
+  // if new name is already in our tagList array, warn user
+  // if not in tagList and not in range of tagList tags, check with server.
+  if ( newname == oldname ) {
+    closeTagEditor();
+    return false;
+  }
+
+  if (!newname) {
+      alert('<__trans phrase="Specify new name of the tag.">');
+      return false;
+  }
+
+  var okgo = true;
+  if ( tag_names[ newname ] ) {
+    if (!confirm(trans(tag_rename_warning, oldname, newname))) {
+      return false;
+    }
+  }
+  else {
+    jQuery.ajax({
+      type: 'POST',
+      contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+      async: false,
+      url: '<mt:var name="script_url">',
+      dataType: 'json',
+      data: {
+        __mode: 'js_tag_check',
+        tag_name: newname,
+        blog_id: <mt:var name="blog_id">,
+        xhr: 1
+      },
+      success: function(data) {
+        if ( !handleMessages(data) ) {
+          okgo = false;
+          return false;
+        }
+        if ( !data.result.valid ) {
+          alert(trans("Tag must have a valid name"));
+          okgo = false;
+          return false;
+        }
+        if ( data.result.exists ) {
+          if (!confirm(trans(tag_rename_warning, oldname, newname))) {
+            return false;
+          }
+        }
+      },
+      error: function(xhr, status) {
+        if ( xhr.status == 401 ) {
+          loginAgain(function(){
+            removeFilter(element);
+          });
+        }
+        else {
+          okgo = false;
+          alert('Ajax error: ' + status);
+        }
+      }
+    });
+  }
+  if ( !okgo )
+    return false;
+
+  jQuery.ajax({
+    type: 'POST',
+    contentType: 'application/x-www-form-urlencoded; charset=utf-8',
+    url: '<mt:var name="script_url">',
+    dataType: 'json',
+    data: {
+      __mode: 'rename_tag',
+      blog_id: <mt:var name="blog_id">,
+      datasource: 'tag',
+      xhr: 'false',
+      __id: id,
+      tag_name: newname,
+      magic_token: '<mt:var name="magic_token">'
+    },
+  }).always(function () {
+    listStore.trigger('load_list');
+  });
+
+  return false;
+}
+
+function closeTagEditor(e) {
+  jQuery('.tag-editor').remove();
+  jQuery('.edit-tag').show();
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}
+
+function editTagName(anchor) {
+  var $anchor = jQuery(anchor);
+  $anchor.attr('href').match(/#tagid\-(\d+)/);
+  var id = RegExp.$1;
+  var name = $anchor.text();
+  closeTagEditor();
+  jQuery(anchor)
+    .hide()
+    .after(
+      jQuery('<div>')
+      .attr('class', 'form-inline tag-editor inline-editor')
+      .append(
+        jQuery('<input>')
+          .val(name)
+          .attr('class','form-control text short newname')
+          .on('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          })
+      )
+      .append(
+        jQuery('<button>')
+          .attr('class', 'button btn btn-default')
+          .text('<__trans phrase="Rename">')
+          .button()
+          .on('click',  function(e) {
+            var newname = jQuery('input.newname').val();
+            submitEdit( id, newname, name );
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          })
+      )
+      .append(
+        jQuery('<button>')
+          .attr('class', 'button btn btn-default')
+          .text('<__trans phrase="Cancel">')
+          .button()
+          .on('click', function (e) { closeTagEditor(e) } )
+      )
+    )
+  return false;
+}
+
+jQuery(window).on('listReady', function() {
+  tag_names = {};
+  jQuery('.edit-tag').each(function(){
+    tag_names[ jQuery(this).text() ] = 1;
+  });
+
+})
+</script>
+</mt:setvarblock>

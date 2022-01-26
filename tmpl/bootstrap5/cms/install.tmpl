@@ -1,0 +1,213 @@
+<mt:setvarblock name="html_title">
+<mt:if name="version_warning">
+  <__trans phrase="Welcome to Movable Type">
+<mt:else>
+  <__trans phrase="Create Your Account">
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_title">
+<mt:if name="version_warning">
+  <span id="version-warning-header"><__trans phrase="Welcome to Movable Type"></span>
+</mt:if>
+<span id="welcome-header"<mt:if name="version_warning"> style="display: none;"</mt:if>><__trans phrase="Create Your Account"></span>
+</mt:setvarblock>
+
+<mt:setvar name="complete" value="1">
+
+<mt:setvar name="version_warning">
+
+<mt:setvarblock name="page_content">
+<div class="upgrade">
+<mt:if name="version_warning">
+  <div class="warning" id="version-warning">
+    <p><__trans phrase="The version of Perl installed on your server ([_1]) is lower than the minimum supported version ([_2])." params="<mt:var name="perl_version">%%<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="While Movable Type may run, it is an <strong>untested and unsupported environment</strong>.  We strongly recommend upgrading to at least Perl [_1]." params="<mt:var name="perl_minimum">"></p>
+    <p><__trans phrase="Do you want to proceed with the installation anyway?"></p>
+    <div class="actions-bar text-right">
+      <input type="hidden" name="continue" value="1" />
+      <button
+         onclick="dismiss('version-warning'); show('welcome'); return false;"
+         type="submit"
+         accesskey="s"
+         title="<__trans phrase="Yes (s)">"
+         class="action primary button">
+        <__trans phrase="Yes">
+      </button>
+      <button
+         onclick="javascript:location.href='mt-check.cgi'"
+         type="submit"
+         accesskey="x"
+         title="<__trans phrase="View MT-Check (x)">"
+         class="action button">
+        <__trans phrase="No">
+      </button>
+    </div>
+  </div>
+  </mt:if>
+
+  <div id="welcome"<mt:if name="version_warning"> style="display: none;"</mt:if>>
+    <p class="intro"><__trans phrase="Please create an administrator account for your system. When you are done, Movable Type will initialize your database."></p>
+  <mt:if name="error">
+    <mtapp:statusmsg
+       id="generic-error"
+       class="error"
+       can_close="0">
+      <mt:var name="error" escape="html">
+    </mtapp:statusmsg>
+  </mt:if>
+
+    <form id="install_form" method="post" action="<mt:var name="script_url">">
+      <input type="hidden" name="__mode" value="init_user" />
+    <mt:if name="auth_mode_ldap">
+      <p><__trans phrase="To proceed, you must authenticate properly with your LDAP server."></p>
+    </mt:if>
+    <mt:if name="auth_mode_mt">
+      <mtapp:setting
+         id="admin_username"
+         label="<__trans phrase="Username">"
+         label_class="top-label">
+        <input type="text" id="admin_username" class="form-control text full required" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="admin_nickname"
+         label="<__trans phrase="Display Name">"
+         label_class="top-label">
+        <input type="text" name="admin_nickname" id="admin_nickname" class="form-control text full required" value="<mt:var name="admin_nickname" escape="html">" />
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="admin_email"
+         label="<__trans phrase="Email Address">"
+         label_class="top-label">
+        <input type="text" id="admin_email" class="form-control text full<mt:if name="config.requireduseremail"> required</mt:if> email" name="admin_email" value="<mt:var name="admin_email" escape="html">" />
+      </mtapp:setting>
+
+      <mt:unless name="config.emailaddressmain">
+          <mtapp:setting
+             id="use_system_email"
+             lebel="<__trans phrase="System Email">"
+             label_class="no-header"
+             hint="<__trans phrase="This email address is used in the 'From:' header of each email sent by Movable Type.  Email may be sent for password recovery, commenter registration, comment and trackback notification, user or IP address lockout, and a few other minor events.">"
+             hind_id="systemEmail"
+             show_hint="1">
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="use_system_email" name="use_system_email" <mt:if name="use_system_email">checked="checked"</mt:if> id="use_system_email" aria-describedby="systemEmail" />
+              <label class="custom-control-label" for="use_system_email">
+                <__trans phrase="Use this as system email address">
+              </label>
+            </div>
+          </mtapp:setting>
+      </mt:unless>
+
+      <mtapp:setting
+         id="preferred_language"
+         label="<__trans phrase="Language">"
+         label_class="top-label">
+        <select name="preferred_language" id="preferred_language" class="custom-select form-control"><mt:loop name="languages">
+          <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="admin_password"
+         label="<__trans phrase="Password">"
+         label_class="top-label"
+         hint="<__trans phrase="Select a password for your account."> (<$mt:PasswordValidationRule$>)"
+         hint_id="passwordHint"
+         show_hint="1">
+        <input type="password" id="admin_password" class="form-control text password required" name="admin_password" aria-describedby="passwordHint" />
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="admin_password_confirm"
+         label="<__trans phrase="Confirm Password">"
+         label_class="top-label">
+        <input type="password" id="admin_password_confirm" class="form-control text password" name="admin_password_confirm" />
+      </mtapp:setting>
+      <script type="text/javascript">
+      /* <![CDATA[ */
+        <$mt:PasswordValidation form="install_form" password="admin_password" username="admin_username"$>
+      /* ]]> */
+      </script>
+    </mt:if>
+
+    <mt:if name="auth_mode_ldap">
+      <mtapp:setting
+         id="admin_username"
+         label="<__trans phrase="Username">"
+         label_class="top-label">
+        <input type="text" id="admin_username" class="form-control text full" name="admin_username" value="<mt:var name="admin_username" escape="html">" />
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="preferred_language"
+         label="<__trans phrase="Language">"
+         label_class="top-label">
+        <select name="preferred_language" id="preferred_language" class="custom-control form-control"><mt:loop name="languages">
+          <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option></mt:loop>
+        </select>
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="admin_password"
+         label="<__trans phrase="Password">"
+         label_class="top-label">
+        <input type="password" id="admin_password" class="form-control text password" name="admin_password" />
+      </mtapp:setting>
+    </mt:if>
+
+      <div class="actions-bar text-right">
+        <input type="hidden" name="continue" value="1" />
+        <button
+           type="submit"
+           accesskey="s"
+           title="<__trans phrase="Finish install (s)">"
+           class="save action primary button btn btn-primary">
+          <__trans phrase="Finish install">
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function dismiss(id) {
+    jQuery('#'+id).hide();
+    jQuery('#'+id+'-header').hide();
+}
+
+function show(id) {
+    jQuery('#'+id).show();
+    jQuery('#'+id+'-header').show();
+}
+
+jQuery(function() {
+    jQuery('#admin_username').trigger('focus');
+    jQuery.mtValidateAddRules({
+        '#admin_password_confirm': function ($e) {
+            return $e.val() == jQuery('#admin_password').val() ? true : false;
+        }
+    });
+    jQuery.mtValidateAddMessages({
+        '#admin_username.required': '<__trans phrase="The initial account name is required." escape="singlequotes">'
+<mt:if name="auth_mode_mt">,
+        '#admin_nickname.required': '<__trans phrase="The display name is required." escape="singlequotes">',
+        '#admin_email.required': '<__trans phrase="The e-mail address is required." escape="singlequotes">',
+        '#admin_password_confirm': '<__trans phrase="Both passwords must match." escape="singlequotes">'
+</mt:if>
+    });
+    jQuery('#install_form').on('submit', function() {
+        return jQuery(this).find('input, select').mtValidate('simple') ? true : false;
+    });
+});
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

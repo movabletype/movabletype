@@ -1,0 +1,133 @@
+<mt:setvarblock name="action_buttons">
+<button
+   onclick="doRemoveItems(getByID('<$mt:var name="object_type"$>-listing-form'), '<__trans phrase="user" escape="js">', '<__trans phrase="users" escape="js">', 'id', {<mt:if name="search">'search':'<mt:var name="search" escape="js">'</mt:if>}, { 'mode': 'remove_user_assoc', 'singular_prompt': '<__trans phrase="Are you sure you want to remove the selected user from this [_1]?" params="<mt:var name="scope_label">" escape="js">', 'plural_prompt': '<__trans phrase="Are you sure you want to remove the [_1] selected users from this [_2]?" params="[_1]%%<mt:var name="scope_label">" escape="js">' }); return false;"
+   accesskey="r"
+   title="<__trans phrase="Remove selected user(s) (r)">"
+   class="button btn btn-default">
+  <__trans phrase="Remove">
+</button>
+</mt:setvarblock>
+
+<mtapp:listing>
+<mt:if name="__first__">
+  <!-- for role_revoke mode -->
+  <input type="hidden" name="role_id" value="" />
+  <input type="hidden" name="author_id" value="" />
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head username primary"><span class="col-label"><__trans phrase="Username"></span></th>
+      <th class="head name primary"><span class="col-label"><__trans phrase="Name"></span></th>
+    <mt:if name="can_manage">
+      <mt:unless name="filter_key" eq="commenter">
+      <th class="head roles"><span class="col-label"><__trans phrase="Roles"></span></th>
+      </mt:unless>
+    </mt:if>
+    <mt:loop name="more_column_headers">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+  </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb">
+        <div class="custom-control custom-checkbox">
+          <input<mt:if name="is_administrator"><mt:if n ame="is_me"> id="sysadmin"</mt:if></mt:if> type="checkbox" id="select_<mt:var name="id" escape="html">" name="id" value="<$mt:var name="id"$>" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+      </td>
+    <mt:if name="usertype_author">
+      <td class="username">
+        <mtapp:svgicon id="ic_user" title="<__trans phrase="User">" size="sm">
+
+      <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=author&amp;id=<mt:var name="id">">
+      </mt:if>
+          <mt:var name="name" escape="html">
+      <mt:if name="has_edit_access">
+        </a>
+      </mt:if>
+
+      <mt:if name="status_enabled">
+        <span class="badge badge-success"><__trans phrase="Enabled"></span>
+      <mt:elseif name="status_pending">
+        <span class="badge badge-warning"><__trans phrase="Pending"></span>
+      <mt:else>
+        <span class="badge badge-default"><__trans phrase="Disabled"></span>
+      </mt:if>
+      </td>
+    <mt:else>
+      <td class="username">
+      <mt:if name="auth_icon_url">
+        <img src="<mt:var name="auth_icon_url">" height="16" width="16" alt="" title="<mt:var name="auth_icon_url">" border="0" style="background-image: none" />
+      </mt:if>
+
+      <mt:if name="user_id" eq="PSEUDO">
+        <mt:var name="user_name">
+      <mt:else>
+        <mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">">
+        </mt:if>
+          <mt:var name="name" escape="html">
+        <mt:if name="has_edit_access">
+          </a>
+        </mt:if>
+      </mt:if>
+
+      <mt:if name="status_trusted">
+        <span class="badge badge-success"><__trans phrase="Trusted"><span>
+      </mt:if>
+      </td>
+    </mt:if>
+      <td class="name">
+        <mt:if name="nickname">
+          <span class="status-name"><mt:var name="nickname" escape="html"></span><mt:elseif name="user_nickname"><span class="status-name"><mt:var name="user_nickname" escape="html"></span>
+        </mt:if>
+        <mt:if name="email">
+          <span class="status-email"><a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a></span>
+        </mt:if>
+        <mt:if name="url">
+          <span class="status-link"><a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a></span>
+        </mt:if>
+      </td>
+    <mt:if name="can_manage">
+      <mt:unless name="filter_key" eq="commenter">
+      <td class="roles">
+      <mt:if name="role_loop">
+        <mt:loop name="role_loop" glue=", ">
+        <mt:if name="__first__">
+        <ul>
+        </mt:if>
+          <li class="role-item" title="<mt:var name="role_perms" escape="html">" onmouseover="DOM.addClassName(this, 'focus')" onmouseout="DOM.removeClassName(this, 'focus')">
+            <mt:var name="role_name">
+            <mt:if name="can_manage">
+              <mt:if name="is_removable">
+                <a href="javascript:void(0)" onclick="return removeMemberRole(<mt:var name="id">,<mt:var name="role_id">)" class="delete" title="<__trans phrase="Remove this role">">&nbsp;</a>
+              </mt:if>
+            </mt:if>
+          </li>
+        <mt:if name="__last__">
+        <li>
+        </mt:if>
+        </mt:loop>
+      </mt:if>
+      </td>
+      </mt:unless>
+    </mt:if>
+    <mt:loop name="more_columns">
+      <mt:var name="__value__">
+    </mt:loop>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>

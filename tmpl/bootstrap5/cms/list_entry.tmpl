@@ -1,0 +1,281 @@
+<mt:if name="object_type" eq="entry">
+    <$mt:setvar name="page_title" value="<__trans phrase="Manage Entries">"$>
+    <mt:if name="is_power_edit">
+        <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Entries">"$>
+    </mt:if>
+    <mt:if name="is_blog">
+        <$mt:setvar name="object_type_feed" value="<__trans phrase="Entries Feed">"$>
+    </mt:if>
+<mt:else>
+    <$mt:setvar name="page_title" value="<__trans phrase="Manage Pages">"$>
+    <mt:if name="is_power_edit">
+        <$mt:setvar name="page_title" value="<__trans phrase="Batch Edit Pages">"$>
+    </mt:if>
+    <$mt:setvar name="object_type_feed" value="<__trans phrase="Pages Feed">"$>
+</mt:if>
+<mt:setvarblock name="system_msg">
+    <div id="msg-container">
+    <mt:if name="dynamic_all">
+        <mt:setvar name="rebuild" value="">
+    <mt:elseif name="no_rebuild">
+        <mt:setvar name="rebuild" value="">
+    <mt:else>
+        <mt:if name="blog_id">    
+            <mt:setvar name="rebuild" value="all">
+        <mt:else>
+            <mt:setvar name="rebuild" value="">
+        </mt:if>
+    </mt:if>
+    <mt:if name="saved">
+        <mtapp:statusmsg
+            id="saved"
+            class="success"
+            rebuild="$rebuild"
+            can_close="0">
+            <__trans phrase="Your changes have been saved.">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="saved_deleted">
+        <mtapp:statusmsg
+            id="saved-deleted"
+            class="success"
+            rebuild="$rebuild"
+            can_close="0">
+            <mt:if name="object_type" eq="entry">
+                <__trans phrase="The entry has been deleted from the database.">
+            <mt:else>
+                <__trans phrase="The page has been deleted from the database.">
+            </mt:if>
+        </mtapp:statusmsg>
+    </mt:if>
+    </div>
+</mt:setvarblock>
+<mt:unless name="is_power_edit">
+
+<mt:if name="can_create_post">
+<mt:setvarblock name="content_header">
+    <ul class="action-link-list">
+    <mt:if name="object_type" eq="entry">
+        <mt:if name="is_blog">
+        <li><a  href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=entry&amp;blog_id=<$mt:var name="blog_id"$>" class="icon-left icon-create"><__trans phrase="New Entry"></a></li>
+        </mt:if>
+    <mt:else>
+        <li><a href="<$mt:var name="mt_url"$>?__mode=view&amp;_type=page&amp;blog_id=<$mt:var name="blog_id"$>" class="icon-left icon-create"><__trans phrase="New Page"></a></li>
+    </mt:if>
+    </ul>
+</mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:ListFilters$>
+<mt:if name="scope_type" eq="blog">
+        <ul>
+            <li>
+        <mt:if name="feed_url">
+            <mt:if name="object_type_feed">
+                <a href="<$mt:var name="feed_url" escape="html"$>" class="icon-feed icon-left" title="<$mt:var name="feed_name" escape="html"$>"><$mt:var name="object_type_feed"$></a>
+            </mt:if>
+        <mt:else>
+                <a href="<$mt:var name="mt_url">?__mode=view&amp;_type=author&amp;id=<$mt:var name="author_id" escape="url"$>" class="icon-feed-disabled icon-left" title="<__trans phrase="[_1] (Disabled)" params="<$mt:var name="feed_name" escape="html"$>">"><__trans phrase="Set Web Services Password"></a>
+        </mt:if>
+            </li>
+        </ul>
+</mt:if>
+    </mtapp:widget>
+    <$mtapp:PageActions from="$mode"$>
+</mt:setvarblock>
+
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+</mt:unless>
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function enableFilterButton(fld) {
+    if (fld && (fld.id == "author_id-val" || fld.id == "asset_id-val")) {
+        var opt = fld.options[fld.selectedIndex];
+        if (opt.id == 'filter-user-search') {
+            jQuery.fn.mtDialog.open('<mt:var name="script_url">?__mode=dialog_select_author&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id">&amp;entry_type=<mt:var name="object_type">&amp;idfield=filter-user-search&amp;include_child=1');
+        }
+        else if (opt.id == 'filter-asset-search') {
+            window.location = ScriptURI + '?__mode=search_replace&_type=asset';
+        }
+        else {
+            if (opt.value == "") {
+                jQuery('#filter-button').hide();
+                return;
+            }
+        }
+    } else if (fld && (fld.id == "filter-col")) {
+        var opt = fld.options[fld.selectedIndex];
+        if (opt.value == 'author_id') {
+            if (jQuery('#author_id-val').val() == '') {
+                jQuery('#filter-button').hide();
+                return;
+            }
+        }
+    }
+    jQuery('#filter-button').css('display', 'inline');
+}
+
+function toggleFilter() {
+    if (jQuery('#filter-title').toggle().css('display') == 'none') {
+        <mt:unless name="filter">setFilterCol('status');</mt:unless>
+    }
+    jQuery('#filter-select').toggle();
+}
+
+function setFilterCol(choice) {
+    if (!jQuery('#filter-select').length) return;
+    if (choice != 'none') {
+        jQuery('#filter-select span').not('.buttons').hide();
+        jQuery('#filter-'+choice).show().addClass('filter-'+choice);
+        jQuery('#filter-col').val(choice);
+        jQuery('#filter-text-col').html('<strong>'+jQuery('#filter-col option:selected').text()+'</strong>');
+    }
+}
+
+var tableSelect;
+function init()
+{
+    setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    setFilterVal('<mt:var name="filter_val" escape="js">');</mt:if>
+    <mt:if name="filter" eq="author_id">
+    jQuery('#filter-text-val').html('<strong><mt:var name="filter_value"></strong>');
+    </mt:if>
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="list_filter_form">
+<mt:unless name="is_power_edit">
+    <div class="listing-filter">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="<mt:var name="mode" escape="html">" />
+    <mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+    </mt:if>
+    <mt:if name="is_power_edit">
+    <input type="hidden" name="is_power_edit" value="1" />
+    </mt:if>
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+<form id="filter-select-form" method="get" onsubmt="return execFilter(this)">
+    <div class="filter">
+        <div id="filter-title">
+        <mt:if name="filter_key">
+            <strong><__trans phrase="Showing only: [_1]" params="<mt:var name="filter_label">"></strong>
+            <a class="filter-link" href="<mt:var name="script_url">?__mode=<mt:var name="mode" escape="url"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>">[ <__trans phrase="Remove filter"> ]</a>
+        <mt:else>
+            <mt:unless name="filter">
+            <strong><__trans phrase="All [_1]" params="<$mt:var name="object_label_plural"$>"></strong>
+            <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+            <mt:else>
+            <strong><a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="[_1] where [_2] is [_3]" params='<$mt:var name="object_label_plural"$>%%<span id="filter-text-col">&nbsp;</span>%%<span id="filter-text-val"></span>'></a></strong>
+            <a href="<mt:var name="script_url">?__mode=<mt:var name="mode" escape="url"><mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id" escape="url"></mt:if><mt:if name="is_power_edit">&amp;is_power_edit=1</mt:if>" class="filter-link">[ <__trans phrase="Remove filter"> ]</a>
+            </mt:unless>
+        </mt:if>
+        </div>
+        <div id="filter-select" class="page-title" style="display: none">
+            <mt:if name="object_type" eq="entry">
+                <__trans phrase="Show only entries where">
+            <mt:else>
+                <__trans phrase="Show only pages where">
+            </mt:if>
+            <!-- start filter form -->
+                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton(this)">
+                    <option value="status"><__trans phrase="status"></option>
+                    <option value="author_id"><__trans phrase="user"></option>
+                    <option value="exacttag"><__trans phrase="tag (exact match)"></option>
+                    <option value="normalizedtag"><__trans phrase="tag (fuzzy match)"></option>
+    <mt:if name="category_loop">
+                    <option value="category_id"><mt:var name="container_label"></option>
+    </mt:if>
+    <mt:if name="entry_asset_loop">
+                    <option value="asset_id"><__trans phrase="asset"></option>
+    </mt:if>
+    <mt:loop name="quickfilter_loop">
+                    <option value="<mt:var name="filter" escape="html">"><mt:var name="label" escape="html"></option>
+    </mt:loop>
+                </select>
+                <__trans phrase="is">
+                <span id="filter-status" style="display: none">
+                    <select id="status-val" name="filter_val" onchange="enableFilterButton()">
+                        <option value="2"><__trans phrase="published"></option>
+                        <option value="1"><__trans phrase="unpublished"></option>
+                        <mt:if name="object_type" eq="entry"><option value="3"><__trans phrase="review"></option></mt:if>
+                        <option value="4"><__trans phrase="scheduled"></option>
+                        <mt:if name="object_type" eq="entry"><option value="5"><__trans phrase="spam"></option></mt:if>
+                    </select>
+                </span>
+                <span id="filter-exacttag" style="display: none">
+                    <input type="text" id="exacttag-val" name="filter_val" value="<mt:if name="filter_col_exacttag"><mt:var name="filter_val" escape="html"></mt:if><mt:if name="filter_col_normalizedtag"><mt:var name="filter_val" escape="html"></mt:if>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+                </span>
+                <span id="filter-normalizedtag" style="display: none">
+                    <input type="text" id="normalizedtag-val" name="filter_val" value="<mt:if name="filter_col_exacttag"><mt:var name="filter_val" escape="html"></mt:if><mt:if name="filter_col_normalizedtag"><mt:var name="filter_val" escape="html"></mt:if>" onchange="enableFilterButton()" onkeypress="enableFilterButton()" />
+                </span>
+    <mt:if name="category_loop">
+                <span id="filter-category_id" style="display: none">
+                    <select id="category_id-val" name="filter_val" onchange="enableFilterButton()">
+        <mt:loop name="category_loop">
+                        <option value="<mt:var name="category_id">"><mt:var name="category_label_spacer"><mt:var name="category_label" escape="html"></option>
+        </mt:loop>
+                    </select>
+                </span>
+    </mt:if>
+                <span id="filter-author_id" style="display: none">
+                    <select id="author_id-val" name="filter_val" onchange="enableFilterButton(this)">
+                        <option selected="selected" value=""><__trans phrase='Select A User:'></option>
+                        <option id="filter-user-search" value=""><__trans phrase='User Search...'></option>
+                        <optgroup label="<__trans phrase='Recent Users...'>" value="">
+    <mt:loop name="entry_author_loop">
+                            <option value="<mt:var name="author_id" escape="html">"><mt:var name="author_name" escape="html"></option>
+    </mt:loop>
+                        </optgroup>
+                    </select>
+                </span>
+    <mt:loop name="quickfilter_loop">
+                <span id="filter-<mt:var name="filter" escape="html">" style="display: none">
+        <mt:if name="type" eq="select">
+                        <select id="<mt:var name="filter">-val" name="filter_val" onchange="enableFilterButton(this)">
+                            <option value=""><__trans phrase="Select..."></option>
+            <mt:loop name="options">
+                            <option value="<mt:var name="key" escape="html">"><mt:var name="label" escape="html"></option>
+            </mt:loop>
+                        </select>
+        </mt:if>
+                </span>
+    </mt:loop>
+            <!-- end of filter form -->
+            <span class="buttons">
+                <button
+                    id="filter-button"
+                    onclick="return execFilter(getByID('filter-select-form'))"
+                    type="submit"
+                    ><__trans phrase="Filter"></button>
+                <button
+                    onclick="toggleFilter(); return false;"
+                    type="submit"
+                    ><__trans phrase="Cancel"></button>
+            </span>
+    </div>
+</form>
+    </div>
+</div>
+</mt:unless>
+</mt:setvarblock>
+
+<$mt:include name="include/header.tmpl" id="header_include"$>
+<$mt:var name="list_filter_form"$>
+<$mt:include name="include/entry_table.tmpl"$>
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+    jQuery.mtCheckbox();
+</mt:setvarblock>
+<$mt:include name="include/old_footer.tmpl"$>

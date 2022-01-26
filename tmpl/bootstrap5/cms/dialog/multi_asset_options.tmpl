@@ -1,0 +1,220 @@
+<mt:setvarblock name="page_title"><__trans phrase="Insert Options"></mt:setvarblock>
+
+<mt:setvarblock name="css_include" append="1">
+<style>
+ .asset-detail-panel {
+     border: 1px solid #c0c6c9;
+     background-color: #f3f3f3;
+     border-radius: 3px;
+     margin-bottom: 1em;
+ }
+
+ .asset-detail-panel.except {
+     border: 1px solid #c0c6c9;
+     background-color: #fff;
+     border-radius: 3px;
+     margin-bottom: 1em;
+ }
+
+ .asset-detail-panel .toggle-selector {
+     float: right;
+     line-height: 1.5em;
+     width: 1.5em;
+     text-align: center;
+     font-size: 2em;
+     border-top: 0px;
+     border-right: 0px;
+     border-left: solid 1px #c0c6c9;
+     border-bottom: solid 1px #c0c6c9;
+ }
+</style>
+</mt:setvarblock>
+
+<mt:setvarblock name="form_header">
+<form id="asset-detail-panel-form">
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_body">
+  <div id="asset_details">
+<mt:loop name="options_loop" >
+    <div id="entry-prefs-<mt:var name="id">" class="asset-detail-panel p-2" data-asset-id="<mt:var name="id">">
+      <div class="mod mb-5" style="border-bottom: solid 1px #f3f3f3">
+<mt:if name="thumbnail">
+        <img src="<mt:var name="thumbnail">" class="img-thumbnail" width="60" height="60" style="margin-right: 0.5em;">
+<mt:else>
+        <img src="<mt:var name="static_uri">images/file-<mt:var name="thumbnail_type" escape="html">.svg" width="60" height="60">
+</mtif>
+        <span><mt:var name="label" escape="html"></span>
+      </div>
+      <div id="display_asset_prefs-<mt:var name="id">" class="mod">
+  <mtapp:setting
+     id="display_asset_prefs-<mt:var name="id">"
+     label='<__trans phrase="Display [_1]" params="<mt:var name="class_label">">'>
+      <div class="form-group">
+        <div class="custom-control custom-checkbox">
+          <input type="checkbox" name="include" id="display_asset_prefs_toggle-<mt:var name="id">" class="custom-control-input" value="1" data-target="#include_prefs-<mt:var name="id" escape="html">" data-toggle="collapse" checked="checked" aria-expanded="true" aria-controls="include_prefs-<mt:var name="id" escape="html">" />
+          <label class="custom-control-label" for="display_asset_prefs_toggle-<mt:var name="id" escape="html">">
+            <__trans phrase="Display [_1]" params="<mt:var name="class_label">">
+          </label>
+        </div>
+      </div>
+  </mtapp:setting>
+      </div>
+      <div id="include_prefs-<mt:var name="id">" class="mod collapse show">
+        <mt:var name="options">
+      </div>
+    </div>
+</mtloop>
+  </div>
+</mt:setvarblock>
+
+<mt:setvarblock name="modal_footer">
+  <button
+     type="submit"
+     accesskey="s"
+     title="<__trans phrase="Finish (s)">"
+     class="action primary button btn btn-primary">
+    <__trans phrase="Finish"></button>
+  <button
+     type="submit"
+     accesskey="x"
+     title="<__trans phrase="Cancel (x)">"
+     data-mt-modal-close
+     class="cancel action button mt-close-dialog btn btn-default"
+     onclick="cancel_click(this)">
+    <__trans phrase="Cancel"></button>
+<mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="form_footer">
+</form>
+
+<form id="asset-detail-form" action="<mt:var name="script_url">" method="post">
+  <input type="hidden" name="__mode" value="insert_asset" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+  <input type="hidden" name="edit_field" value="<mt:var name="edit_field" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <input type="hidden" name="prefs_json" value="" />
+<mt:if name="new_entry">
+  <input type="hidden" name="new_entry" value="1" />
+</mt:if>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+  jQuery('div.toggle-selector').on('click', function() {
+    var $parent = jQuery(this).parent('.asset-detail-panel');
+    if ($parent.hasClass('excepr')) {
+      jQuery(this).removeClass('except');
+    }
+    else {
+      jQuery(this).addClass('except');
+    }
+  });
+
+  jQuery('button.primary').on('click', function(){
+    var options = [];
+    var errors = 0;
+    jQuery('#asset_details').find('div.asset-detail-panel').each(function() {
+      var $this = jQuery(this);
+      var id = $this.attr('data-asset-id');
+      var opts = {};
+      opts.id = id;
+      if(jQuery(this).find('[name="thumb"]').prop('checked')){
+        if ( !jQuery(this).find('[name="thumb_width"]').mtValidate('default')) {
+          // each continue
+          errors = 1;
+          return true;
+        }
+      }
+      jQuery(this).find('input').each(function() {
+        if (jQuery(this).prop('type') === 'checkbox' || jQuery(this).prop('type') === 'radio') {
+         if(jQuery(this).prop('checked')) {
+           opts[jQuery(this).attr('name')] = jQuery(this).val();
+         }
+        }
+        else {
+          opts[jQuery(this).attr('name')] = jQuery(this).val();
+        }
+      });
+      options.push(opts);
+    });
+
+    if( errors == 0 ){
+      var json = JSON.stringify(options);
+      var $form = jQuery('#asset-detail-form');
+      $form.find('[name="prefs_json"]').val(json);
+      $form.trigger('submit');
+    }
+    return false;
+  });
+
+  jQuery('input[name="thumb_width"]').on('keypress', function(event){
+    var key = event.charCode || event.keyCode;
+    if (( key == null) || ( key == 0 ) || ( key == 8 ) ||
+        ( key == 9 ) || ( key == 13 ) || ( key == 27 ))
+        return true;
+    if (key > 60000) // handles range of special keys such as arrow keys
+        return true;
+    if (event.ctrlKey || event.altKey)
+        return true;
+    if ((key < 48) || (key > 57)){
+      event.preventDefault
+      return false;
+    }
+    return true;
+  });
+  jQuery.mtValidateAddRules({
+      '[name="thumb_width"]': function ($e) {
+        return /^\d+$/.test($e.val()) && ($e.val() > 0);
+      }
+  });
+  jQuery.mtValidateAddMessages({
+      '[name="thumb_width"]': '<__trans phrase="This field must be a positive integer.">'
+  });
+
+  jQuery('input[type=checkbox], input[type=radio]').on('change', function () {
+    MT.Util.refreshModalBodyOnIos();
+  });
+
+  jQuery('input[id^=display_asset_prefs_toggle-]').on('show.bs.collapse', function () {
+    jQuery(this).attr('checked', 'checked');
+  }).on('hide.bs.collapse', function () {
+    jQuery(this).removeAttr('checked');
+  });
+
+  jQuery('input[name^=popup-]').each(function(){
+  if (!jQuery(this).prop('checked')) {
+  jQuery(this).parent().parent().find('.custom-radio').hide();
+  }
+  });
+
+  jQuery('input[name^=popup-]').on('change', function(){
+  var radios = jQuery(this).parent().parent().find('.custom-radio');
+  if (jQuery(this).prop('checked')) {
+  radios.show();
+  } else {
+  radios.hide();
+  }
+  });
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+  /* <![CDATA[ */
+  function cancel_click(btn) {
+      var frm = btn.form;
+      frm.onsubmit = function() {return cancel_upload(frm)};
+      return true;
+  }
+  function cancel_upload(frm) {
+      frm['__mode'].value = 'cancel_upload';
+      jQuery.fn.mtModal.close();
+      return true;
+  }
+  /* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,28 @@
+<$mt:setvar name="page_title" value="<__trans phrase="Importing...">"$>
+<$mt:setvar name="screen_type" value="restore-publishing-config"$>
+
+<mt:setvarblock name="html_head" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function progress(str, id) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = str;
+}
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:include name="layout/modal/header.tmpl">
+
+<div class="modal-header">
+  <h4 class="modal-title">
+    <mt:var name="page_title">
+  </h4>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+  <div id="progressbar" class="progressbar indeterminate"></div>
+  <div class="card card-block" style="height: 300px; overflow: auto; background-color: #fafafa;">
+    <pre class="pre-scrollable p-3"><code><mt:var name="name" escape="html">

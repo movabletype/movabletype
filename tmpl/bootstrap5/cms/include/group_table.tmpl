@@ -1,0 +1,117 @@
+<mt:setvarblock name="action_buttons">
+<mt:if name="is_administrator">
+  <mt:unless name="edit_author_id">
+<button
+   accesskey="e"
+   title="<__trans phrase="Enable selected group (e)">"
+   class="btn btn-default mt-enable-items button">
+  <__trans phrase="_USER_ENABLE" escape="js">
+</button>
+<button
+   accesskey="d"
+   title="<__trans phrase="Disable selected group (d)">"
+   class="btn btn-default mt-disable-items button">
+  <__trans phrase="_USER_DISABLE" escape="js">
+</button>
+  </mt:unless>
+</mt:if>
+<mt:unless name="external_group_management">
+  <mt:if name="is_administrator">
+    <mt:if name="edit_author_id">
+<button
+   class="btn btn-default"
+   onclick="doRemoveGroups(getByID('group-listing-form'), '<__trans phrase="group" escape="js">', '<__trans phrase="groups" escape="js">'); return false;"
+   accesskey="d"
+   title="<__trans phrase="Remove selected group (d)">">
+  <__trans phrase="Remove">
+</button>
+    </mt:if>
+  </mt:if>
+</mt:unless>
+</mt:setvarblock>
+
+<mtapp:listing>
+<mt:if name="edit_author_id">
+  <input type="hidden" name="author_id" value="<mt:var name="edit_author_id" escape="html">">
+</mt:if>
+<mt:if name="__first__">
+  <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+      <th class="head username"><span class="col-label"><__trans phrase="Name"></span></th>
+      <th class="head name"><span class="col-label"><__trans phrase="Display Name"></span></th>
+      <th class="head description primary"><span class="col-label"><__trans phrase="Description"></span></th>
+      <th class="head num members"><span class="col-label"><__trans phrase="Members"></span></th>
+    </tr>
+  </mt:setvarblock>
+
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tfoot>
+    <mt:var name="table_header">
+  </tfoot>
+  <tbody>
+</mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb">
+<mt:if name="has_edit_access">
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id" escape="html">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+<mt:else>
+        &nbsp;
+</mt:if>
+      </td>
+      <td class="username">
+        <mtapp:svgicon id="ic_member" title="<__trans phrase="Group">" size="sm">
+<mt:if name="has_edit_access">
+        <a href="<mt:var name="script_url">?__mode=view&amp;_type=group&amp;id=<mt:var name="id" escape="html">">
+</mt:if>
+          <mt:var name="name" escape="html">
+<mt:if name="has_edit_access">
+        </a>
+</mt:if>
+<mt:if name="status_enabled">
+        <span class="badge badge-success"><__trans phrase="_USER_ENABLED"></span>
+<mt:else>
+        <span class="badge badge-default"><__trans phrase="_USER_DISABLED"></span>
+</mt:if>
+      </td>
+      <td class="name"><mt:if name="display_name"><mt:var name="display_name" escape="html"><mt:else>&nbsp;</mt:if></td>
+      <td class="description"><mt:if name="description"><mt:var name="description" escape="html"><mt:else>&nbsp;</mt:if></td>
+      <td class="members"><a href="<mt:var name="script_url">?__mode=list&filter=group_id&_type=group_member&blog_id=0&filter_val=<mt:var name="id">"><mt:if name="user_count"><mt:var name="user_count"><mt:else>0</mt:if></a></td>
+    </tr>
+<mt:if name="__last__">
+  </tbody>
+</mt:if>
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-enable-items').mtSetObjectStatus({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        status: 1
+    });
+    jQuery('button.mt-disable-items').mtSetObjectStatus({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<mt:var name="object_label" lower_case="1" escape="js">',
+        plural: '<mt:var name="object_label_plural" lower_case="1" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        status: 0
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>

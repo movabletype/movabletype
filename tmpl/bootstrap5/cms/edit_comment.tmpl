@@ -1,0 +1,404 @@
+<mt:setvarblock name="page_title"><__trans phrase="Edit Comment"></mt:setvarblock>
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:setvarblock name="system_msg">
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="approved">
+  <mtapp:statusmsg
+     id="approved"
+     class="success">
+    <__trans phrase="The comment has been approved.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="is_junk">
+  <mt:if name="junk_log_loop">
+  <div id="junk-message" class="alert alert-warning msg msg-alert">
+    <p class="msg-text">
+      <__trans phrase="This comment was classified as spam.">
+        <a href="#comment-feedback-rating" class="detail-link" data-toggle="collapse" aria-expanded="false" aria-controls="comment-feedback-rating"><__trans phrase="Details"></a>
+    </p>
+    <div id="comment-feedback-rating" class="collapse detail">
+      <p class="junk-score"><__trans phrase="Total Feedback Rating: [_1]" params="<$mt:var name="junk_score"$>"></p>
+      <div id="spam-log-listing" class="listing">
+        <div class="mt-table--outline">
+          <table class="table mt-table bg-white">
+            <thead>
+              <tr>
+                <th id="jl-test" class="head" scope="col"><span class="col-label"><__trans phrase="Test"></span></th>
+                <th id="jl-score" class="head" scope="col"><span class="col-label"><__trans phrase="Score"></span></th>
+                <th id="jl-results" class="head" scope="col"><span class="col-label"><__trans phrase="Results"></span></th>
+              </tr>
+            </thead>
+            <tbody>
+            <mt:loop name="junk_log_loop">
+              <tr class="<mt:if name="__odd__">odd</mt:if>">
+                <td class="col"><mt:var name="test" escape="html"></td>
+                <td class="col"><mt:var name="score"></td>
+                <td class="col"><mt:var name="log"></td>
+              </tr>
+            </mt:loop>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <mt:else>
+  <mtapp:statusmsg
+     id="junk-message"
+     class="alert"
+     can_close="0">
+    <__trans phrase="This comment was classified as spam.">
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvartemplate name="action_buttons">
+<button
+   type="submit"
+   accesskey="s"
+   title="<__trans phrase="Save changes to this comment (s)">"
+   class="save action primary button btn__mobile btn-primary">
+  <__trans phrase="Save Changes">
+</button>
+<mt:if name="can_delete_comment">
+<button
+   onclick="return MT.Util.doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
+   type="submit"
+   accesskey="x"
+   title="<__trans phrase="Delete this comment (x)">"
+   class="delete action button btn btn-default d-none d-md-inline-block">
+  <__trans phrase="Delete">
+</button>
+<button
+   onclick="return MT.Util.doRemoveItems(this.form, '<__trans phrase="comment">', '<__trans phrase="comments">', 'id', {'return_args' : '__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">'})"
+   type="submit"
+   accesskey="x"
+   title="<__trans phrase="Delete this comment (x)">"
+   class="delete action button btn__mobile btn-danger d-md-none">
+  <__trans phrase="Delete">
+</button>
+</mt:if>
+</mt:setvartemplate>
+
+<mt:setvarblock name="related_content">
+<mtapp:widget
+   id="useful-links"
+   label="<__trans phrase="Useful links">">
+  <ul class="list-unstyled">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id" escape="url">">
+        <__trans phrase="Manage Comments">
+      </a>
+    </li>
+  <mt:if name="entry_permalink">
+    <li>
+        <a href="<mt:var name="entry_permalink">" target="<__trans phrase="_external_link_target">">
+          <__trans phrase="View [_1] comment was left on" params="<mt:var name="entry_class_label" lower_case="1">">
+        </a>
+    </li>
+  </mt:if>
+  <mt:if name="comment_approved">
+    <li>
+      <a href="<mt:var name="script_url">?__mode=dialog_post_comment&amp;reply_to=<mt:var name="id" escape="url">&amp;magic_token=<mt:var name="magic_token" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;return_args=<mt:var name="return_args" escape="url">" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+        <__trans phrase="Reply to this comment">
+      </a>
+    </li>
+  </mt:if>
+  </ul>
+</mtapp:widget>
+
+<mtapp:PageActions>
+</mt:setvarblock>
+
+<mt:setvarblock name="object_nav">
+<div class="btn-group d-none d-md-inline-flex mb-4 w-100" data-role="group">
+  <mt:if name="previous_comment_id">
+    <a class="btn btn-default w-50" href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="previous_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+      <mtapp:svgicon id="ic_tri-left" title="Prev" color="primary" size="sm"><__trans phrase="Prev">
+    </a>
+  <mt:else>
+    <a class="btn btn-default w-50 disabled">
+      <mtapp:svgicon id="ic_tri-left" title="Prev" color="secondary" size="sm"><__trans phrase="Prev">
+    </a>
+  </mt:if>
+  <mt:if name="next_comment_id">
+    <a class="btn btn-default w-50" href="<mt:var name="script_url">?__mode=view&amp;_type=comment&amp;id=<mt:var name="next_comment_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">">
+      <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="primary" size="sm">
+    </a>
+  <mt:else>
+    <a class="btn btn-default w-50 disabled">
+      <__trans phrase="Next"><mtapp:svgicon id="ic_tri-right" title="Next" color="secondary" size="sm">
+    </a>
+  </mt:if>
+</div>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="action_name" value="" />
+  <input type="hidden" name="itemset_action_input" value="" />
+  <input type="hidden" name="_type" value="comment" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="position_actions_top">
+  <mt:include name="include/actions_bar.tmpl" bar_position="top" hide_pager="1">
+</mt:if>
+
+  <mtapp:setting
+     id="status"
+     label="<__trans phrase="Status">"
+     label_for="status"
+     label_class="left-label">
+    <div class="form-row align-items-center">
+      <div class="col">
+  <mt:if name="has_publish_access">
+        <select id="status" name="status" class="custom-select form-control comment-status">
+          <option value="publish" <mt:if name="comment_approved">selected="selected"</mt:if>><__trans phrase="Approved"></option>
+          <option value="moderate" <mt:if name="comment_pending">selected="selected"</mt:if>><__trans phrase="Unapproved"></option>
+          <option value="junk" <mt:if name="is_junk">selected="selected"</mt:if>><__trans phrase="Reported as Spam"></option>
+        </select>
+  <mt:else>
+    <mt:if name="comment_approved">
+        <span><__trans phrase="Approved"></span><input type="hidden" name="status" value="publish" />
+    <mt:else>
+      <mt:if name="comment_pending">
+        <span><__trans phrase="Unapproved"></span><input type="hidden" name="status" value="moderate" />
+      <mt:else>
+        <mt:if name="is_junk">
+        <span><__trans phrase="Reported as Spam"></span><input type="hidden" name="status" value="junk" />
+        </mt:if>
+      </mt:if>
+    </mt:if>
+  </mt:if>
+      </div>
+      <div class="col-1 d-none d-md-block">
+        <a title="<__trans phrase="View all comments with this status">" href="<mt:var name="script_url">?__mode=list&_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=status&amp;filter_val=<mt:if name="comment_approved">approved</mt:if><mt:if name="comment_pending">pending</mt:if><mt:if name="is_junk">junk</mt:if>" class="d-inline-block">
+          <mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm">
+        </a>
+      </div>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="author"
+     label="<__trans phrase="Commenter">">
+  <mt:if name="commenter_id">
+    <div class="form-group">
+    <mt:if name="auth_icon_url">
+      <img src="<mt:var name="auth_icon_url">" height="9" width="9" alt="" border="0" />
+    </mt:if>
+    <mt:if name="commenter_url">
+      <a href="<mt:var name="commenter_url">" class="commenter-link d-none d-md-inline"><mt:var name="author" escape="html"></a>
+      <span class="d-md-none"><mt:var name="author" escape="html"></span>
+    <mt:else>
+      <mt:var name="nickname" escape="html"><mt:var name="author" escape="html">
+    </mt:if>
+      <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=commenter_id&amp;blog_id=<mt:var name="blog_id">&amp;filter_val=<mt:var name="commenter_id" escape="html">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+    </div>
+  <mt:else>
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="author" id="author" class="form-control text" value="<mt:var name="author" escape="html">" />
+      </div>
+      <div class="col-1 d-none d-md-block">
+        <a title="<__trans phrase="View all comments by this commenter">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=author&amp;filter_val=<mt:var name="author" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+      </div>
+    </div>
+  </mt:if>
+  </mtapp:setting>
+
+<mt:if name="commenter_id">
+  <mtapp:setting
+     id="author"
+     label="<__trans phrase="Commenter Status">">
+    <div class="form-group">
+    <mt:if name="commenter_approved">
+      <mt:if name="can_edit_commenters">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm"></a>
+      <mt:else>
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Trusted">" size="sm">
+      </mt:if>
+      <span class="badge badge-success hint"><__trans phrase="Trusted"></span>
+      <mt:unless name="is_mine">
+      <span class="commenter-actions">
+        <mt:if name="can_edit_commenters">
+          <mt:unless name="type_author">
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=untrust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-neutral"><__trans phrase="Untrust Commenter"></a>
+          </mt:unless>
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-ban"><__trans phrase="Ban Commenter"></a>
+      </span>
+        </mt:if>
+      </mt:unless>
+
+    <mt:else name="commenter_banned">
+      <mt:if name="can_edit_commenters">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block"  title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm"></a>
+      <mt:else>
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Banned">" size="sm">
+      </mt:if>
+      <span class="badge badge-default hint"><__trans phrase="Banned"></span>
+      <mt:unless name="is_mine">
+        <mt:if name="can_edit_commenters">
+      <span class="commenter-actions">
+          <mt:unless name="type_author">
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-trust"><__trans phrase="Trust Commenter"></a>
+          </mt:unless>
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=unban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-neutral"><__trans phrase="Unban Commenter"></a>
+      </span>
+        </mt:if>
+      </mt:unless>
+
+    <mt:else>
+      <mt:if name="can_edit_commenters">
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=commenter&amp;blog_id=<mt:var name="blog_id">&amp;id=<mt:var name="commenter_id">" class="commenter-detail-link d-inline-block" title="<__trans phrase="View this commenter detail">"><mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary"></a>
+      <mt:else>
+      <mtapp:svgicon id="ic_user" title="<__trans phrase="Pending">" size="sm" color="secondary">
+      </mt:if>
+      <span class="badge badge-default hint"><__trans phrase="Pending"></span>
+      <mt:unless name="is_mine">
+        <mt:if name="can_edit_commenters">
+      <span class="commenter-actions">
+          <mt:unless name="type_author">
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=trust&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-trust"><__trans phrase="Trust Commenter"></a>
+          </mt:unless>
+        <a href="<mt:var name="script_url">?__mode=save_commenter_perm&amp;action=ban&amp;blog_id=<mt:var name="blog_id">&amp;commenter_id=<mt:var name="commenter_id">&amp;return_args=<mt:var name="return_args" escape="url">&amp;magic_token=<mt:var name="magic_token">" class="button commenter-ban"><__trans phrase="Ban Commenter"></a>
+      </span>
+        </mt:if>
+      </mt:unless>
+    </mt:if>
+    </div>
+  </mtapp:setting>
+</mt:if>
+
+  <mtapp:setting
+     id="email"
+     label="<__trans phrase="Email Address">"
+     label_for="email">
+  <mt:if name="commenter_id">
+    <div class="form-group">
+    <mt:if name="email">
+      <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">"><mt:var name="email" escape="html"></a>
+    <mt:else>
+      <em><__trans phrase="Unavailable for OpenID user"></em>
+    </mt:if>
+  <mt:else>
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" />
+      </div>
+      <div class="col-1">
+  </mt:if>
+  <mt:if name="email">
+        <a href="mailto:<mt:var name="email" escape="html">" title="<mt:var name="email" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_mail" title="<__trans phrase="Email">" size="sm"></a>
+        <a title="<__trans phrase="View all comments with this email address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=email&amp;filter_val=<mt:var name="email" escape="url">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+  </mt:if>
+  <mt:unless name="commenter_id">
+      </div>
+  </mt:unless>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="url"
+     label="<__trans phrase="Website URL">"
+     label_for="url">
+  <mt:if name="commenter_id">
+    <div class="form-group">
+    <mt:if name="url">
+      <a href="<mt:var name="url" escape="html">"><$mt:Var name="url" escape="html"$></a>
+    <mt:else>
+      <__trans phrase="No url in profile">
+    </mt:if>
+  <mt:else>
+    <div class="form-row align-items-center">
+      <div class="col">
+        <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" />
+      </div>
+      <div class="col-1">
+  </mt:if>
+  <mt:if name="url">
+        <a href="<mt:var name="url" escape="html">" title="<mt:var name="url" escape="html">" class="d-inline-block"><mtapp:svgicon id="ic_link" title="<__trans phrase="Link">" size="sm"></a>
+    <mt:unless name="commenter_id">
+        <a title="<__trans phrase="View all comments with this URL">" href="<mt:var name="script_url">?__mode=list&amp;blog_id=<mt:var name="blog_id" escape="url">&amp;_type=comment&amp;filter=url&amp;filter_val=<mt:var name="url" escape="url">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+    </mt:unless>
+  </mt:if>
+  <mt:unless name="commenter_id">
+      </div>
+  </mt:unless>
+    </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="entry"
+     label="$entry_class_label">
+    <div class="form-group">
+  <mt:if name="no_entry">
+      [<__trans phrase="[_1] no longer exists" params="<mt:var name="entry_class_label">">]
+  <mt:else>
+      <a href="<mt:var name="script_url">?__mode=view&amp;_type=<mt:var name="entry_class" escape="url">&amp;id=<mt:var name="entry_id" escape="url">&amp;blog_id=<mt:var name="blog_id" escape="url">"><mt:var name="entry_title" escape="html"></a>
+  </mt:if>
+      <a title="<__trans phrase="View all comments on this [_1]" params="<mt:var name="entry_class_label" lower_case="1">">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=entry&amp;filter_val=<mt:var name="entry_id" escape="url">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+     </div>
+  </mtapp:setting>
+
+  <mtapp:setting
+     id="date"
+     label="<__trans phrase="Date">">
+    <div class="form-group">
+      <mt:var name="created_on_time_formatted">
+      <a title="<__trans phrase="View all comments created on this day">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;filter=created_on&amp;filter_val=<mt:date ts="$created_on" format="%Y%m%d">-<mt:date ts="$created_on" format="%Y%m%d">&amp;show_all=1&amp;blog_id=<mt:var name="blog_id">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+    </div>
+  </mtapp:setting>
+
+<mt:if name="config.ShowIPInformation">
+  <mtapp:setting
+     id="ip"
+     label="<__trans phrase="IP Address">">
+    <div class="form-group">
+      <mt:var name="ip" escape="html">
+      <a title="<__trans phrase="View all comments from this IP Address">" href="<mt:var name="script_url">?__mode=list&amp;_type=comment&amp;blog_id=<mt:var name="blog_id">&amp;filter=ip&amp;filter_val=<mt:var name="ip" escape="html">" class="d-none d-md-inline-block"><mtapp:svgicon id="ic_search" title="<__trans phrase="Search">" size="sm"></a>
+    </div>
+  </mtapp:setting>
+</mt:if>
+
+  <mtapp:setting
+     id="text"
+     label="<__trans phrase="Comment Text">"
+     label_for="text">
+    <textarea name="text" id="text" class="form-control text high"><mt:var name="text" escape="html"></textarea>
+  </mtapp:setting>
+
+<mt:if name="position_actions_bottom">
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1">
+</mt:if>
+</form>
+
+<mt:ignore>
+<mt:if name="object_loop">
+<h2><__trans phrase="Responses to this comment"></h2>
+<mt:include name="include/comment_table.tmpl">
+</mt:if>
+</mt:ignore>
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,122 @@
+<mt:setvarblock name="action_buttons">
+  <mt:unless name="filter_spam">
+    <mt:if name="state_editable">
+<button
+   accesskey="p"
+   title="<__trans phrase="Publish selected [_1] (p)" params="<$mt:var name="object_label_plural"$>">"
+   class="button mt-publish-trachbacks btn btn-default">
+  <__trans phrase="Publish">
+</button>
+    </mt:if>
+  </mt:unless>
+<button
+   accesskey="x"
+   title="<__trans phrase="Delete selected [_1] (x)" params="<$mt:var name="object_label_plural"$>">"
+   class="button mt-delete-trachbacks btn btn-default">
+  <__trans phrase="Delete">
+</button>
+</mt:setvarblock>
+
+<mtapp:listing>
+  <mt:if name="__first__">
+    <mt:setvarblock name="table_header">
+    <tr>
+      <th class="head cb">
+        <div class="custom-control custom-checkbox">
+          <input id="select_all" type="checkbox" name="id-head" value="all" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_all"><span class="sr-only"><__trans phrase="Select All"></span></label>
+        </div>
+      </th>
+    <mt:unless name="tab_junk">
+      <th class="head status si">
+        <mtapp:svgicon id="ic_flag" title="<__trans phrase="Status">" size="sm">
+      </th>
+    </mt:unless>
+      <th class="head from primary"><span class="col-label"><__trans phrase="From"></span></th>
+    <mt:unless name="is_blog">
+      <th class="head blog"><span class="col-label"><__trans phrase="Site/Child Site"></span></th>
+    </mt:unless>
+      <th class="head target"><span class="col-label"><__trans phrase="Target"></span></th>
+      <th class="head datetime"><span class="col-label"><__trans phrase="Date"></span></th>
+    <mt:if name="show_ip_info">
+      <th class="head ip"><span class="col-label"><__trans phrase="IP address"></span></th>
+    </mt:if>
+    </tr>
+    </mt:setvarblock>
+  <thead>
+    <mt:var name="table_header">
+  </thead>
+  <tbody>
+  </mt:if>
+    <tr class="<mt:if name="__odd__">odd<mt:else>even</mt:if>">
+      <td class="cb">
+  <mt:if name="has_edit_access">
+        <div class="custom-control custom-checkbox">
+          <input id="select_<mt:var name="id" escape="html">" type="checkbox" name="id" value="<mt:var name="id">" class="custom-control-input select" />
+          <label class="custom-control-label" for="select_<mt:var name="id" escape="html">"><span class="sr-only"><__trans phrase="Select"></span></label>
+        </div>
+  <mt:else>
+        &nbsp;
+  </mt:if>
+      </td>
+  <mt:unless name="tab_junk">
+      <td class="si status-<mt:if name="visible">publish<mt:elseif name="junk_status">pending</mt:if>">
+    <mt:if name="visible">
+        <mtapp:svgicon id="ic_checkbox" title="<__trans phrase="Published">" size="sm" color="success">
+    <mt:elseif name="junk_status">
+        <mtapp:svgicon id="ic_error" title="<__trans phrase="Junk">" size="sm" color="warning">
+    <mt:else>
+        <mtapp:svgicon id="ic_draft" title="<__trans phrase="Moderated">" size="sm">
+    </mt:if>
+      </td>
+  </mt:unless>
+      <td class="excerpt">
+  <mt:if name="excerpt">
+    <mt:var name="excerpt" escape="html">
+    <mt:if name="has_edit_access">
+        <span class="actions-link">
+          <a href="<mt:var name="script_url">?__mode=view&amp;_type=ping&amp;id=<mt:var name="id">&amp;blog_id=<mt:var name="blog_id">" title="<__trans phrase="Edit this TrackBack">"><__trans phrase="Edit"></a>
+        </span>
+    </mt:if>
+  <mt:else>
+        &nbsp;
+  </mt:if>
+        <br/>
+        <mt:var name="blog_name" escape="html">: <a href="<mt:var name="source_url" escape="html">" title="<__trans phrase="Go to the source entry of this TrackBack">"><mt:var name="title" escape="html"></a> &#187;
+      </td>
+  <mt:unless name="is_blog">
+      <td class="blog"><a href="<mt:var name="script_url">?__mode=list&amp;_type=ping&amp;blog_id=<mt:var name="weblog_id">"><mt:var name="weblog_name" escape="html"></td>
+  </mt:unless>
+      <td class="target"><a href="<mt:var name="target_link" escape="html">" title="<__trans phrase="View the [_1] for this TrackBack" params="<mt:var name="target_type">">"><mt:var name="target_title" escape="html"></a></td>
+      <td class="datetime"><span title="<mt:var name="created_on_time_formatted">"><mt:if name="created_on_relative"><mt:if name="dates_relative"><mt:var name="created_on_relative"><mt:else><mt:var name="created_on_formatted"></mt:if><mt:else><mt:var name="created_on_formatted"></mt:if></span></td>
+  <mt:if name="show_ip_info">
+      <td class="ip"><a href="<mt:var name="script_url">?__mode=search_replace&amp;_type=ping<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;is_limited=1&amp;search_cols=ip&amp;search=<mt:var name="ip" escape="url"><mt:if name="tab_junk">&amp;is_junk=1</mt:if>&amp;do_search=1" title="<__trans phrase="Search for all comments from this IP address">"><mt:var name="ip" escape="html"></a></td>
+  </mt:if>
+    </tr>
+  <mt:if name="__last__">
+    </tbody>
+  </mt:if>
+</mtapp:listing>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    jQuery('button.mt-publish-trachbacks').mtPublishItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<__trans phrase="TrackBack" escape="js">',
+        plural: '<__trans phrase="TrackBacks" escape="js">',
+        mode: 'approve_ping',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to republish" escape="js">'
+    });
+    jQuery('button.mt-delete-trachbacks').mtDeleteItems({
+        id: '<$mt:var name="object_type"$>-listing-form',
+        singular: '<__trans phrase="TrackBack" escape="js">',
+        plural: '<__trans phrase="TrackBacks" escape="js">',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>}
+    });
+    jQuery('button.mt-<mt:var name="form_id">-action').mtDoPluginAction({
+        id: '<mt:var name="form_id">',
+        plural: '<mt:if name="object_label_plural"><mt:var name="object_label_plural" escape="js"></mt:if>',
+        args: {<mt:if name="search">'search': '<mt:var name="search" escape="js">'</mt:if>},
+        phrase: '<__trans phrase="to act upon" escape="js">'
+    });
+</mt:setvarblock>

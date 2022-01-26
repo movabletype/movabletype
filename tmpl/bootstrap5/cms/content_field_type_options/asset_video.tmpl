@@ -1,0 +1,44 @@
+<mt:app:ContentFieldOptionGroup
+   type="asset_video">
+
+  <mtapp:ContentFieldOption
+     id="asset_video-multiple"
+     label="<__trans phrase="Allow users to select multiple video assets?">">
+    <input ref="multiple" type="checkbox" class="mt-switch form-control" id="asset_video-multiple" name="multiple" checked={ options.multiple } onclick={ changeStateMultiple } ><label for="asset_video-multiple"><__trans phrase="Allow users to select multiple video assets?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="asset_video-min"
+     label="<__trans phrase="Minimum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="min" type="number" name="min" id="asset_video-min" class="form-control w-25" min="0" value={ options.min }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="asset_video-max"
+     label="<__trans phrase="Maximum number of selections">"
+     attr="show={ options.multiple }">
+    <input ref="max" type="number" name="max" id="asset_video-max" class="form-control w-25" min="1" value={ options.max }>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOption
+     id="asset_video-allow_upload"
+     label="<__trans phrase="Allow users to upload a new video asset?">">
+    <input ref="allow_upload" type="checkbox" class="mt-switch form-control" id="asset_video-allow_upload" name="allow_upload" checked={ options.allow_upload }><label for="asset_video-allow_upload"><__trans phrase="Allow users to upload a new video asset?"></label>
+  </mtapp:ContentFieldOption>
+
+  <mtapp:ContentFieldOptionScript>
+    if ( this.options.multiple === "0" ) {
+      this.options.multiple = 0
+    }
+
+    if ( this.options.allow_upload === "0" ) {
+      this.options.allow_upload = 0
+    }
+
+    changeStateMultiple(e) {
+    this.options.multiple = e.target.checked
+    }
+  </mtapp:ContentFieldOptionScript>
+
+</mt:app:ContentFieldOptionGroup>

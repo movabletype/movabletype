@@ -1,0 +1,181 @@
+<mt:setvar name="activity-log" value="1">
+<mt:setvar name="page_title" value="<__trans phrase="Activity Log">">
+<mt:setvarblock name="system_msg">
+    <mt:if name="reset">
+        <mtapp:statusmsg
+            id="reset"
+            class="success">
+            <__trans phrase="The activity log has been reset.">
+        </mtapp:statusmsg>
+    </mt:if>
+</mt:setvarblock>
+<mt:setvarblock name="content_header">
+    <p class="page-desc">
+    <mt:if name="time_offset">
+    <__trans phrase="All times are displayed in GMT[_1]." params="<mt:var name="time_offset">">
+    <mt:else>
+    <__trans phrase="All times are displayed in GMT.">
+    </mt:if>
+    </p>
+</mt:setvarblock>
+<mt:setvarblock name="related_content">
+    <mtapp:widget
+        id="quickfilters"
+        label="<__trans phrase="Quickfilters">">
+        <$mtapp:ListFilters$>
+        <ul>
+            <li><a href="<mt:var name="script_url">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>&amp;filter=level&amp;filter_val=4"><__trans phrase="Show only errors"></a></li>
+        </ul>
+    </mtapp:widget>
+    <mtapp:widget
+        id="useful-links"
+        label="<__trans phrase="Useful links">">
+        <ul>
+            <mt:if name="is_administrator">
+                <mt:if name="blog_id">
+                <li><a href="<mt:var name="script_url">?__mode=view_log"><__trans phrase="System Activity Log"></a></li>
+                </mt:if>
+            </mt:if>
+    <mt:unless name="scope_type" eq="website">
+        <mt:if name="filter">
+            <li><a href="<mt:var name="feed_url" escape="html">" title="<__trans phrase="Filtered"> <mt:var name="feed_name" escape="html">" class="icon-left icon-feed"><__trans phrase="Filtered Activity Feed"></a></li>
+            <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Filtered Log (CSV)"></a></li>
+        <mt:else>
+            <li><mt:include name="include/feed_link.tmpl"></li>
+            <li><a href="<MT_ACTION mode="export_log" <mt:if name="blog_id">blog_id="<mt:var name="blog_id">"</mt:if> magic_token="<mt:var name="magic_token">" return_args="<mt:var name="return_args">" filter_args="<mt:var name="filter_args">">" class="icon-left icon-download"><__trans phrase="Download Log (CSV)"></a></li>
+        </mt:if>
+    </mt:unless>
+        </ul>
+    </mtapp:widget>
+    <$mtapp:PageActions from="$mode"$>
+</mt:setvarblock>
+<mt:setvarblock name="html_body_footer">
+    <$mt:include name="include/display_options.tmpl"$>
+</mt:setvarblock>
+<mt:setvarblock name="action_buttons">
+    <mt:unless name="search_replace_template">
+    <button
+        onclick="doResetLog(this.form); return false;"
+        ><__trans phrase="Clear Activity Log"></button>
+    </mt:unless>
+</mt:setvarblock>
+<mt:setvarblock name="html_head" append="1">
+    <script type="text/javascript">
+    /* <![CDATA[ */
+    function doResetLog(f) {
+        if (confirm('<__trans phrase="Are you sure you want to reset the activity log?" escape="singlequotes">')) {
+            window.location='<mt:var name="script_url">?__mode=reset_log&amp;<mt:if name="blog_id">blog_id=<mt:var name="blog_id">&amp;</mt:if>magic_token=<mt:var name="magic_token">&amp;return_args=<mt:var name="return_args" escape="url">';
+        }
+    }
+
+    function enableFilterButton() {
+        jQuery('#filter-button').css('display', 'inline');
+    }
+
+    function toggleFilter() {
+        if (jQuery('#filter-title').toggle().css('display') == 'none') {
+            <mt:unless name="filter">setFilterCol('level');</mt:unless>
+        }
+        jQuery('#filter-select').toggle();
+    }
+
+    function setFilterCol(choice) {
+        if (!jQuery('#filter-select').length) return;
+        if (choice != 'none') {
+            jQuery('#filter-select span').show().children('span').hide();
+            jQuery('#filter-'+choice).show().addClass('filter-'+choice);
+            jQuery('#filter-col').val(choice);
+            jQuery('#filter-text-col').html('<strong>'+jQuery('#filter-col option:selected').text()+'</strong>');
+        }
+    }
+
+    function init() {
+    	setFilterCol(<mt:if name="filter">'<mt:var name="filter" escape="js">'<mt:else>'none'</mt:if>);<mt:if name="filter">
+    	setFilterVal('<mt:var name="filter_val" escape="js">');
+    </mt:if>
+    }
+    /* ]]> */
+    </script>
+</mt:setvarblock>
+<mt:setvarblock name="list_filter_form">
+<form id="filter-form" method="get" action="<mt:var name="mt_url">">
+    <input type="hidden" name="__mode" value="view_log" />
+    <mt:if name="blog_id">
+    <input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    </mt:if>
+    <input id="filter" type="hidden" name="filter" value="" />
+    <input id="filter_val" type="hidden" name="filter_val" value="" />
+</form>
+    <div class="listing-filter">
+        <div class="listing-filter-inner inner pkg">
+    <form id="filter-select-form" method="get" onsubmit="return execFilter(this)">
+    <div class="filter">
+        <div id="filter-title">
+    <mt:unless name="filter">
+            <__trans phrase="Showing all log records">
+            <a href="javascript:void(0)" onclick="toggleFilter()" class="filter-link">[ <__trans phrase="change"> ]</a>
+    <mt:else>
+            <a href="javascript:void(0)" onclick="toggleFilter()"><__trans phrase="Showing log records where"> <span id="filter-text-col">&nbsp;</span> <__trans phrase="is"> <span id="filter-text-val"></span></a>
+            <a href="<mt:var name="script_url" class="filter-link">?__mode=view_log<mt:if name="blog_id">&amp;blog_id=<mt:var name="blog_id"></mt:if>">[ <__trans phrase="Reset"> ]</a>
+    </mt:unless>
+        </div>
+        <div id="filter-select" style="display: none">
+            <__trans phrase="Show log records where">
+            <span id="filter-mode-only" style="display: none">
+                <select id="filter-col" name="filter" onchange="setFilterCol(this.options[this.selectedIndex].value);enableFilterButton()">
+                    <option value="level"><__trans phrase="level"></option>
+    <mt:if name="class_loop">
+                    <option value="class"><__trans phrase="classification"></option>
+    </mt:if>
+                </select>
+                <__trans phrase="is">
+                <span id="filter-level" style="display: none">
+                    <select id="level-val" name="filter_val" onchange="enableFilterButton()">
+                        <option value="5"><__trans phrase="Security"></option>
+                        <option value="4"><__trans phrase="Error"></option>
+                        <option value="3"><__trans phrase="Warning"></option>
+                        <option value="1"><__trans phrase="Information"></option>
+                        <option value="0"><__trans phrase="Debug"></option>
+                        <option value="5,4"><__trans phrase="Security or error"></option>
+                        <option value="5,4,3"><__trans phrase="Security/error/warning"></option>
+                        <option value="5,4,3,2,1"><__trans phrase="Not debug"></option>
+                        <option value="4,0"><__trans phrase="Debug/error"></option>
+                    </select>
+                </span>
+    <mt:if name="class_loop">
+                <span id="filter-class" style="display: none">
+                    <select id="class-val" name="filter_val" onchange="enableFilterButton()">
+        <mt:loop name="class_loop">
+                        <option value="<mt:var name="class_name">"><mt:var name="class_label"></option>
+        </mt:loop>
+                    </select>
+                </span>
+    </mt:if>
+            </span>
+            <span class="buttons">
+                <button
+                    id="filter-button"
+                    onclick="return execFilter(getByID('filter-select-form'))"
+                    type="submit"
+                    ><__trans phrase="Filter"></button>
+                <button
+                    class="button"
+                    onclick="toggleFilter(); return false;"
+                    type="submit"
+                    ><__trans phrase="Cancel"></button>
+            </span>
+        </div>
+    </div>
+</form>
+        </div>
+    </div>
+</mt:setvarblock>
+<$mt:include name="include/header.tmpl" id="header_include"$>
+<$mt:var name="list_filter_form"$>
+<$mt:include name="include/log_table.tmpl"$>
+
+<mt:setvarblock name="jq_js_include" append="1">
+    init();
+</mt:setvarblock>
+
+<$mt:include name="include/old_footer.tmpl"$>

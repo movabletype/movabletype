@@ -1,0 +1,583 @@
+<mt:setvar name="edit_author" value="1">
+<mt:setvar name="position_actions_bottom" value="1">
+
+<mt:if name="new_object">
+  <mt:setvar name="page_title" value="<__trans phrase="Create User">">
+<mt:else>
+  <mt:if name="nickname">
+  <mt:setvarblock name="page_title_name"><mt:var name="nickname" escape="html"></mt:setvarblock>
+  <mt:else>
+  <mt:setvarblock name="page_title_name"><mt:var name="name" escape="html"></mt:setvarblock>
+  </mt:if>
+  <mt:setvarblock name="page_title"><__trans phrase="Edit Profile"></mt:setvarblock>
+</mt:if>
+
+<mt:setvarblock name="related_content">
+<mtapp:PageActions>
+</mt:setvarblock>
+
+<mt:setvarblock name="system_msg" id="system_msg">
+<mt:if name="email_is_blank">
+  <mtapp:statusmsg
+     id="saved"
+     class="warning">
+    <__trans phrase="Email Address is required for password reset.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="This profile has been updated.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="recovered">
+  <mtapp:statusmsg
+     id="recovered"
+     class="success">
+    <__trans phrase="A new password has been generated and sent to the email address [_1]." params="<mt:var name="email" escape="html">">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="unlocked">
+  <mtapp:statusmsg
+     id="unlocked"
+     class="success">
+    <__trans phrase="This profile has been unlocked.">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="danger"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="editing_other_profile">
+  <mt:if name="status_pending">
+    <mtapp:statusmsg
+       id="user-pending"
+       class="alert"
+       can_close="0">
+      <__trans phrase="This user was classified as pending.">
+    </mtapp:statusmsg>
+  <mt:else>
+    <mt:unless name="status_enabled">
+    <mtapp:statusmsg
+       id="user-disabled"
+       class="alert"
+       can_close="0">
+      <__trans phrase="This user was classified as disabled.">
+    </mtapp:statusmsg>
+    </mt:unless>
+  </mt:if>
+</mt:if>
+<mt:if name="locked_out">
+  <mtapp:statusmsg
+     id="user-locked-out"
+     class="alert"
+     can_close="0">
+    <__trans phrase="This user was locked out."><mt:if name="recover_lockout_link"> <__trans phrase="If you want to unlock this user click the 'Unlock' link. <a href="[_1]">Unlock</a>" params="<mt:var name="recover_lockout_link">"></mt:if>
+  </mtapp:statusmsg>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="related_content">
+<mt:unless name="new_object">
+  <mtapp:widget
+     id="user-properties"
+     label="<__trans phrase="User properties">">
+    <mt:include name="include/users_content_nav.tmpl">
+  </mtapp:widget>
+</mt:unless>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+function reveal_api_password() {
+    var pw = MT.Util.getByID("api_password");
+    alert("<__trans phrase="Your web services password is currently">: " + pw.value);
+    return false;
+}
+function tagDelimChoice(sel) {
+    if (sel.selectedIndex == 2) {
+        show("tag_delim_input");
+        var el = MT.Util.getByID("tag_delim_input");
+        if (el) el.focus();
+    } else {
+        hide("tag_delim_input");
+    }
+}
+
+function passwordResetConfirm() {
+    var username = '<mt:var name="name" escape="js">';
+    var email = '<mt:var name="email" escape="js">';
+    if (confirm('<__trans phrase="_WARNING_PASSWORD_RESET_SINGLE" params="'+username+'%%'+email+'">')) {
+        document.forms['recover'].submit();
+    }
+}
+function toggleDisabled( state ){
+    if (state == 1) {
+        state = false;
+    } else if (state == 2) {
+        state = true;
+    }
+    var elements = document.getElementsByClassName('state_change');
+    for (var i=0; i < elements.length; i++) {
+        elements[i].disabled = state;
+    }
+}
+function togglePerms(c, a) {
+    if (a == '') {
+        return;
+    }
+    var relatedClasses = a.split(',');
+    if (c.checked) {
+        jQuery(a).each(function(){
+            this.checked = true;
+            this.disabled = true;
+        });
+    } else {
+        jQuery(relatedClasses).each(function(idx){
+            if ( c.id == 'can_administer' || canUncheckPerm(relatedClasses[idx]) ) {
+                jQuery(relatedClasses[idx]).each(function(){
+                    this.checked = false;
+                    this.disabled = false;
+                });
+            }
+        })
+    }
+}
+
+function canUncheckPerm (a) {
+    var canUnCheck = true;
+    var related = jQuery('[data-child-perm="' + a + '"]');
+    if (related) {
+        jQuery(related).each(function() {
+            if (this.checked) {
+                canUnCheck = false;
+                return false;
+            }
+        })
+    }
+    return canUnCheck;
+}
+
+function removeUserpic() {
+    var data = '__mode=remove_userpic'
+        + '&user_id=<mt:var name="id" escape="url">'
+        + '&magic_token=<mt:var name="magic_token">';
+    jQuery.post(
+      '<mt:var name="script_url">',
+      data,
+      removedUserpic
+    );
+}
+
+function removedUserpic(data) {
+    if (data.error) {
+        message = '<__trans phrase="Error occurred while removing userpic." escape="js">';
+        showMsg(message, 'ajax-message', 'error');
+    }
+
+    MT.Util.getByID('userpic_asset_id').value = '0';
+    jQuery('#userpic-preview').hide();
+    jQuery('#remove-userpic').hide();
+    return false
+}
+
+<mt:if name="auth_mode_mt">
+<$mt:PasswordValidation form="profile" password="pass" username="name"$>
+</mt:if>
+
+function isContainsMultiByte ( val ) {
+    var i = 0;
+    while (i < val.length) {
+        if (encodeURI(val.charAt(i)).length >= 4) {
+            return true;
+        }
+        i++;
+    }
+    return false;
+}
+
+function showPasswordField() {
+    jQuery('#change-password-link').parents('#show_password-field').next('#password-fields').show().trigger('focus');
+    jQuery('#change-password-link').parents('#show_password-field').hide();
+    event.preventDefault();
+}
+
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form name="profile" id="profile" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="author" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+<mt:if name="editing_other_profile">
+  <input type="hidden" name="_type" value="author" />
+</mt:if>
+<mt:if name="id">
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" />
+</mt:if>
+<mt:if name="new_object">
+  <input type="hidden" id="status" name="status" value="1" />
+</mt:if>
+
+  <fieldset id="author-profile-settings" class="form-group">
+    <legend class="h3"><__trans phrase="Profile"></legend>
+<mt:unless name="new_object">
+  <mt:if name="can_modify_sys_perms">
+
+    <mtapp:setting
+       id="status"
+       label="<__trans phrase="_USER_STATUS_CAPTION">"
+       label_for="status"
+       label_class="left-label <mt:var name="user_status">">
+      <select name="status" id="status" class="form-control half-width" onchange="toggleDisabled(this.value);">
+        <option <mt:if name="status_enabled">selected="selected"</mt:if> value="1">
+          <__trans phrase="_USER_ENABLED">
+        </option>
+      <mt:if name="status_pending">
+        <option selected="selected" value="3">
+          <__trans phrase="_USER_PENDING">
+        </option>
+      </mt:if>
+        <option <mt:unless name="status_enabled"><mt:unless name="status_pending">selected="selected"</mt:unless></mt:unless> value="2">
+          <__trans phrase="_USER_DISABLED">
+        </option>
+      </select>
+    </mtapp:setting>
+  </mt:if>
+</mt:unless>
+
+    <mtapp:setting
+       id="name"
+       required="1"
+       label="<__trans phrase="Username">"
+       label_for="name">
+      <input type="text" name="name" id="name" class="form-control text" value="<mt:var name="name" escape="html">" <mt:unless name="auth_mode_mt"><mt:unless name="new_user_external_auth">disabled="disabled"</mt:unless></mt:unless> />
+      <mt:unless name="auth_mode_mt">
+        <mt:unless name="new_user_external_auth">
+          <input name="name" type="hidden" value="<mt:var name="name" escape="html">" />
+        </mt:unless>
+      </mt:unless>
+    </mtapp:setting>
+
+  <mt:if name="external_id">
+    <mt:if name="show_external_id">
+    <mtapp:setting
+       id="external_id"
+       label="<__trans phrase="External user ID">">
+      <p><mt:var name="external_id" escape="html"></p>
+    </mtapp:setting>
+    </mt:if>
+  </mt:if>
+
+  <mt:unless name="new_user_external_auth">
+    <mtapp:setting
+       id="nickname"
+       required="1"
+       label="<__trans phrase="Display Name">"
+       label_for="nickname"
+       show_hint="1"
+       hint_id="displayName"
+       hint="<__trans phrase="The name displayed when content from this user is published.">">
+      <input type="text" name="nickname" id="nickname" class="form-control text" value="<mt:var name="nickname" escape="html">" <mt:if name="nickname_readonly">disabled="disabled"</mt:if> aria-describedby="displayName" />
+      <mt:if name="nickname_readonly">
+        <input name="nickname" type="hidden" value="<mt:var name="nickname" escape="html">" />
+      </mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="email"
+       required="$email_is_required"
+       label="<__trans phrase="Email Address">"
+       label_for="email">
+       <input type="text" name="email" id="email" class="form-control text" value="<mt:var name="email" escape="html">" <mt:if name="email_readonly">disabled="disabled"</mt:if> />
+       <mt:if name="email_readonly">
+        <input name="email" type="hidden" value="<mt:var name="email" escape="html">" />
+       </mt:if>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="url"
+       label="<__trans phrase="Website URL">"
+       label_for="url"
+       show_hint="1"
+       hint_id="websiteUrl"
+       hint="<__trans phrase="This User's website (e.g. https://www.movabletype.com/).  If the Website URL and Display Name fields are both populated, Movable Type will by default publish entries and comments with bylines linked to this URL.">">
+      <input type="text" name="url" id="url" class="form-control text" value="<mt:var name="url" escape="html">" aria-describedby="websiteUrl" />
+    </mtapp:setting>
+
+    <mt:if name="id">
+      <mt:if name="can_use_userpic">
+    <mtapp:setting
+       id="userpic_asset_id"
+       label="<__trans phrase="Userpic">">
+      <input type="hidden" name="userpic_asset_id" id="userpic_asset_id" value="<mt:var name="userpic_asset_id" default="0" escape="html">" />
+      <div id="userpic-preview"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
+        <span id="userpic-preview-userpic"><mt:var name="userpic"></span>
+      </div>
+      <div>
+        <a href="<mt:var name="script_url">?__mode=dialog_list_asset&amp;edit_field=userpic_asset_id&amp;blog_id=0&amp;filter=userpic&amp;filter_val=<mt:var name="id" escape="url">&amp;next_mode=asset_userpic&amp;upload_mode=upload_userpic" class="mt-open-dialog mt-modal-open" data-mt-modal-large>
+          <__trans phrase="Select Userpic">
+        </a>
+        <span id="remove-userpic"<mt:unless name="userpic"> style="display: none;"</mt:unless>>
+          <a href="javascript:void(0)" onclick="removeUserpic()"><__trans phrase="Remove Userpic"></a>
+          <span id="ajax-message"></span>
+        </span>
+      </div>
+    </mtapp:setting>
+      </mt:if>
+    </mt:if>
+
+    <mt:if name="can_modify_password">
+      <mt:unless name="new_object">
+    <mtapp:setting
+       id="show_password"
+       label="<__trans phrase="Password">">
+      <div>
+        <a id="change-password-link" href="#" class="toggle-link" onclick="showPasswordField();"><__trans phrase="Change Password"></a>
+      </div>
+    </mtapp:setting>
+      </mt:unless>
+    <div id="password-fields"<mt:unless name="new_object"> style="display: none;"</mt:unless>>
+      <mt:unless name="new_object">
+        <mt:if name="is_me">
+      <mtapp:setting
+         id="old_pass"
+         label="<__trans phrase="Current Password">"
+         label_for="old_pass">
+        <input type="password" name="old_pass" id="old_pass" class="form-control text password" value="" />
+      </mtapp:setting>
+        </mt:if>
+      </mt:unless>
+
+      <mt:if name="new_object">
+        <mt:setvar name="password_required" value="1">
+        <mt:setvar name="password_prompt" value="<__trans phrase="Initial Password">">
+        <mt:setvar name="password_hint" value="<__trans phrase="Enter preferred password."> (<$mt:PasswordValidationRule$>)">
+      <mt:else>
+        <mt:setvar name="password_required" value="0">
+        <mt:setvar name="password_prompt" value="<__trans phrase="New Password">">
+        <mt:setvar name="password_hint" value="<__trans phrase="Enter the new password."> (<$mt:PasswordValidationRule$>)">
+      </mt:if>
+
+      <mtapp:setting
+         id="pass"
+         label="$password_prompt"
+         label_for="pass"
+         required="$password_required"
+         hint="$password_hint"
+         hint_id="passwordHelp"
+         show_hint="1">
+        <input type="password" name="pass" id="pass" class="form-control text password" value=""  aria-describedby="passwordHelp" />
+      </mtapp:setting>
+
+      <mtapp:setting
+         id="pass_verify"
+         label="<__trans phrase="Confirm Password">"
+         label_for="pass_verify"
+         required="$password_required">
+        <input type="password" name="pass_verify" id="pass_verify" class="form-control text password" value="" />
+      </mtapp:setting>
+
+      <mt:unless name="new_object">
+        <mt:if name="hint">
+      <mtapp:setting
+         id="hint"
+         required="0"
+         label="<__trans phrase="Password recovery word/phrase">"
+         label_for="hint">
+        <input name="hint" id="hint" value="<mt:var name="hint" escape="html">" />
+      </mtapp:setting>
+        </mt:if>
+      </mt:unless>
+    </div>
+    </mt:if>
+  </fieldset>
+
+  <fieldset id="author-preferences-settings" class="form-group">
+    <legend class="h3"><__trans phrase="Preferences"></legend>
+    <mtapp:setting
+       id="preferred_language"
+       label="<__trans phrase="Language">"
+       label_for="preferred_language"
+       show_hint="1"
+       hint_id="langaugeHelp"
+       hint="<__trans phrase="Display language for the Movable Type interface.">">
+      <select name="preferred_language" id="preferred_language" class="custom-select form-control" aria-describedby="languageHelp">
+      <mt:loop name="languages">
+        <option value="<mt:var name="l_tag">"<mt:if name="l_selected"> selected="selected"</mt:if>><mt:var name="l_name"></option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="text_format"
+       label="<__trans phrase="Text Format">"
+       label_for="text_format"
+       show_hint="1"
+       hint_id="textFormat"
+       hint="<__trans phrase="Default text formatting filter when creating new entries and new pages.">">
+      <select name="text_format" id="text_format" class="custom-select form-control se" aria-describedby="textFormat">
+      <mt:loop name="text_filters">
+        <option value="<mt:var name="key">"<mt:if name="selected"> selected="selected"</mt:if>>
+          <mt:if name="key" eq="0">
+            <__trans phrase="(Use Site Default)">
+          <mt:else>
+            <mt:var name="label" escape="html">
+          </mt:if>
+        </option>
+      </mt:loop>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="date_format"
+       label="<__trans phrase="Date Format">"
+       label_for="date_format"
+       show_hint="1"
+       hint_id="dateFormat"
+       hint="<__trans phrase="Default date formatting in the Movable Type interface.">">
+      <select name="date_format" id="date_format" class="custom-select form-control" aria-describedby="dateFormat">
+        <option value="relative"<mt:if name="date_format" eq="relative"> selected="selected"</mt:if>><__trans phrase="Relative"></option>
+        <option value="full"<mt:if name="date_format" eq="full"> selected="selected"</mt:if>><__trans phrase="Full"></option>
+      </select>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="tag_delim"
+       label="<__trans phrase="Tag Delimiter">"
+       label_for="tag_delim"
+       show_hint="1"
+       hint_id="tagDelimiter"
+       hint="<__trans phrase="Preferred method of separating tags.">">
+      <select name="tag_delim" id="tag_delim" class="custom-select form-control se" aria-describedby="tagDelimiter">
+        <option value="comma"<mt:if name="auth_pref_tag_delim_comma"> selected="selected"</mt:if>><__trans phrase="Comma"></option>
+        <option value="space"<mt:if name="auth_pref_tag_delim_space"> selected="selected"</mt:if>><__trans phrase="Space"></option>
+      </select>
+    </mtapp:setting>
+  </mt:unless>
+
+  <mt:if name="can_modify_api_password">
+    <mtapp:setting
+       id="api_password"
+       label="<__trans phrase="Web Services Password">"
+       label_for="api_password">
+      <div class="form-row align-items-center">
+        <div class="col-3">
+          <input type="password" name="api_password" id="api_password" class="form-control text password" autocomplete="new-password" value="<mt:var name="api_password" escape="html">" />
+        </div>
+        <div class="col">
+          <a href="javascript:void(0)" onclick="return reveal_api_password()"><__trans phrase="Reveal"></a>
+        </div>
+      </div>
+    </mtapp:setting>
+  </mt:if>
+  </fieldset>
+
+  <fieldset id="author-permission-settings" class="form-group">
+    <legend class="h3"><__trans phrase="System Permissions"></legend>
+    <mtapp:setting
+       id="system_permissions"
+       label="<__trans phrase="Permissions">">
+      <div class="form-group align-items-center">
+      <mt:loop name="loaded_permissions">
+        <div class="form-check form-check-inline">
+          <div class="custom-control custom-checkbox">
+            <input name="<mt:var name="id">" id="<mt:var name="id">" class="custom-control-input permission-checkbox" type="checkbox" value="1"<mt:if name="can_do"> checked="checked"</mt:if> <mt:unless name="can_modify_sys_perms">disabled="disabled"</mt:unless> onclick="togglePerms(this, '<mt:var name="children">')"<mt:if name="children"> data-child-perm='<mt:var name="children">'</mt:if> />
+            <label class="custom-control-label" for="<mt:var name="id" escape="html">"><mt:var name="label"></label>
+          </div>
+        </div>
+      </mt:loop>
+      </div>
+    </mtapp:setting>
+  </fieldset>
+
+  <mt:setvarblock name="action_buttons">
+  <mt:if name="new_object">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Create User (s)">"
+       class="create action primary button btn btn-primary">
+      <__trans phrase="Create User">
+    </button>
+  <mt:else>
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to this author (s)">"
+       class="save action primary button btn btn-primary">
+      <__trans phrase="Save Changes">
+    </button>
+  </mt:if>
+  </mt:setvarblock>
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+</form>
+
+<mt:if name="auth_mode_mt">
+  <mt:unless name="can_modify_password">
+    <mt:unless name="new_object">
+<form name="recover" method="post" action="<mt:var name="script_url">">
+  <input type="hidden" name="__mode" value="recover_profile_password" />
+  <input type="hidden" name="author_id" value="<mt:var name="id" escape="html">" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+  <mtapp:settinggroup id="password-recovery">
+    <legend class="h3"><__trans phrase="Password Recovery"></legend>
+    <p><__trans phrase="_USAGE_PASSWORD_RESET" params="<mt:var name="email" escape="html">"></p>
+    <div style="text-align: center">
+      <input class="state_change" onclick="passwordResetConfirm()" type="button" value="<__trans phrase="Initiate Password Recovery">" <mt:unless name="status_enabled">disabled</mt:unless> />
+    </div>
+  </mtapp:settinggroup>
+</form>
+    </mt:unless>
+  </mt:unless>
+</mt:if>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+jQuery('input[type="checkbox"].permission-checkbox').each(function(){
+    if (this.checked)
+        this.onclick();
+});
+
+jQuery.mtValidateAddRules({
+    "#pass": function($e) {
+        if ( isContainsMultiByte( $e.val() ) ) {
+            return false;
+        }
+        return true;
+    },
+    "#pass_verify": function($e) {
+        if ( isContainsMultiByte( $e.val() ) ) {
+            return false;
+        }
+        return true;
+    },
+});
+
+jQuery.mtValidateAddMessages({
+    "#pass": '<__trans phrase="You must use half-width character for password.">',
+    "#pass_verify": '<__trans phrase="You must use half-width character for password.">'
+});
+
+jQuery('#profile').on('submit', function(eventObject) {
+    if ( !jQuery("#pass").mtValidate('simple') ) return false;
+    if ( !jQuery("#pass_verify").mtValidate('simple') ) return false;
+    jQuery("input:checked").each(function(){
+        this.disabled = false;
+    });
+});
+
+</mt:setvarblock>
+
+<mt:include name="layout/default.tmpl">
+<mt:var name="layout">

@@ -1,0 +1,273 @@
+<mt:setvarblock name="page_title"><__trans phrase="Database Configuration"></mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+<form id="configure_form" method="post">
+  <input type="hidden" name="__mode" value="" />
+  <input type="hidden" name="step" value="configure" />
+  <input type="hidden" name="set_static_uri_to" id="set_static_uri_to" value="<mt:var name="static_uri" escape="html">" />
+  <input type="hidden" name="default_language" value="<mt:var name="default_language" escape="html">" />
+  <input type="hidden" name="config" value="<mt:var name="config" escape="html">" />
+<mt:if name="connect_error">
+  <mtapp:statusmsg
+     id="connect_error"
+     class="error"
+     can_close="0">
+    <mt:var name="error" escape="html"><mt:if name="error_more"> <a href="#" class="detail-link"><__trans phrase="Details"></a></mt:if>
+    <mt:if name="error_more">
+      <div class="detail">
+        <mt:var name="error_more" escape="html">
+      </div>
+    </mt:if>
+  </mtapp:statusmsg>
+<mt:else>
+  <mt:if name="error">
+  <mtapp:statusmsg
+     id="error"
+     class="error"
+     can_close="0">
+    <mt:var name="error" escape="html">
+  </mtapp:statusmsg>
+  </mt:if>
+</mt:if>
+
+<mt:if name="success">
+  <p class="intro"><span class="ready"><__trans phrase="Your database configuration is complete."></span> <__trans phrase="You may proceed to the next step."></p>
+  <p id="show_settings"><a href="javascript:void(0)" onclick="showByID('db_settings'); hideByID('show_settings'); hideByID('success'); return false;"><__trans phrase="Show Current Settings"></a></p>
+  <div id="success" class="actions-bar text-right">
+    <button
+       name="continue"
+       type="submit"
+       onclick="go('next_step');"
+       class="continue action primary button btn btn-primary">
+      <__trans phrase="Continue">
+    </button>
+    <button
+       name="back"
+       type="submit"
+       onclick="needValidate = false; this.form.reset(); go('previous_step');"
+       class="goback action button btn btn-default">
+      <__trans phrase="Back">
+    </button>
+  </div>
+<mt:else>
+  <p class="intro"><__trans phrase="Please enter the parameters necessary for connecting to your database."></p>
+</mt:if>
+
+  <div id="db_settings" <mt:if name="success"> style="display: none;"</mt:if>>
+      <mtapp:setting
+         id="dbtype"
+         label="<__trans phrase="Database Type">"
+         label_class="top-label">
+        <select id="dbtype" class="custom-select form-control" name="dbtype">
+        <mt:unless name="one_db">
+          <option value=""><__trans phrase="Select One..."></option>
+        </mt:unless>
+        <mt:loop name="db_loop">
+          <option value="<mt:var name="id">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
+        </mt:loop>
+        </select>
+      </mtapp:setting>
+
+    <mt:unless name="db_loop">
+    <mt:setvarblock name="db_setup_url"><__trans phrase="https://www.movabletype.org/documentation/[_1]" params="installation/setting-up-your-database.html"></mt:setvarblock>
+      <div id="db_hint">
+        <p class="hint"><__trans phrase="Is your preferred database not listed? View the <a href="[_1]" target="_blank">Movable Type System Check</a> see if additional modules are necessary." params="mt-check.cgi"></p>
+        <p class="hint"><__trans phrase="Once installed, <a href="javascript:void(0)" onclick="[_1]">click here to refresh this screen</a>." params="reTest();"></p>
+        <p class="hint"><__trans phrase="Read more: <a href="[_1]" target="_blank">Setting Up Your Database</a>" params="<mt:var name="db_setup_url">"></p>
+      </div>
+    </mt:unless>
+
+      <div id="params">
+      <mt:loop name="field_loop">
+        <mtapp:setting
+           id="<mt:var name="id">"
+           label="<mt:var name="label">"
+           label_class="top-label"
+           hint="<mt:var name="hint">"
+           show_hint="<mt:var name="show_hint" default="0">">
+        <mt:if name="element" eq="select">
+          <select id="<mt:var name="id">" class="custom-select form-control" name="<mt:var name="id">">
+          <mt:loop name="option_loop">
+            <option value="<mt:var name="value">" <mt:if name="selected">selected="selected"</mt:if>><mt:var name="label"></option>
+          </mt:loop>
+          </select>
+        <mt:else>
+          <input
+             type="<mt:var name="type">"
+             name="<mt:var name="id">"
+             class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full<mt:elseif name="type" eq="password"> text short</mt:if>"
+             value="<mt:var name="$id" escape="html">" />
+        </mt:if>
+        </mtapp:setting>
+      </mt:loop>
+
+      <mt:if name="advanced_loop">
+        <p id="more"><a href="#"><__trans phrase="Show Advanced Configuration Options"></a></p>
+        <div id="advanced_fields" style="display: none;">
+        <mt:loop name="advanced_loop">
+          <mtapp:setting
+             id="<mt:var name="id">"
+             label="<mt:var name="label">"
+             label_class="top-label">
+            <input type="<mt:var name="type">" name="<mt:var name="id">" class="form-control <mt:var name="type"><mt:if name="type" eq="text"> full</mt:if>" value="<mt:if name="$id"><mt:var name="$id" escape="html"><mt:else><mt:var name="default" escape="html"></mt:if>" />
+          </mtapp:setting>
+        </mt:loop>
+        </div>
+      </mt:if>
+      </div>
+
+    <mt:unless name="success">
+      <div id="submit" class="actions-bar text-right" <mt:unless name="dbtype">style="display: none"</mt:unless>>
+        <button
+           name="test"
+           type="submit"
+           value="1"
+           onclick="go('test');"
+           class="action primary button btn btn-primary">
+          <__trans phrase="Test Connection">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="needValidate = false; this.form.reset(); go('previous_step');"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+
+      <div id="goback" class="actions-bar text-right" <mt:if name="dbtype">style="display: none"</mt:if>>
+        <button
+           name="back"
+           type="submit"
+           onclick="needValidate = false; this.form.reset(); go('previous_step');"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+    </mt:unless>
+
+    <mt:if name="success">
+      <div id="continue" class="actions-bar text-right">
+        <button
+           name="continue"
+           type="submit"
+           onclick="go('next_step');"
+           class="continue action primary button btn btn-primary">
+          <__trans phrase="Continue">
+        </button>
+        <button
+           name="test"
+           type="submit"
+           value="1"
+           onclick="go('test');"
+           class="action button btn btn-default">
+          <__trans phrase="Test Connection">
+        </button>
+        <button
+           name="back"
+           type="submit"
+           onclick="needValidate = false; this.form.reset(); go('previous_step');"
+           class="goback action button btn btn-default">
+          <__trans phrase="Back">
+        </button>
+      </div>
+    </mt:if>
+  </div>
+</form>
+</mt:setvarblock>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript">
+/* <![CDATA[ */
+var needValidate = true;
+
+function validate (f) {
+    if (needValidate) {
+        var db = f.dbtype.options[f.dbtype.selectedIndex].value;
+        if ((db == "sqlite") || (db == "sqlite2")) {
+            if (!f.dbpath.value) {
+                alert('<__trans phrase="You must set your Database Path." escape="js">');
+                f.dbpath.focus();
+                return false;
+            }
+        } else {
+            if ((!f.dbuser.value) && (db != "mssqlserver") && (db != "umssqlserver")) {
+                alert('<__trans phrase="You must set your Username." escape="js">');
+                f.dbuser.focus();
+                return false;
+            } else if ((!f.dbserver.value) && (db != "oracle")) {
+                alert('<__trans phrase="You must set your Database Server." escape="js">');
+                f.dbserver.focus();
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+function go(mode) {
+    var f = document.forms[0];
+    f['__mode'].value = mode;
+}
+
+function reTest() {
+  needValidate = false;
+  go('retry');
+  document.forms[0].submit();
+}
+
+var database = new Array();
+<mt:loop name="db_loop">
+<mt:if name="display">
+    database['<mt:var name="id">'] = new Array(<mt:var name="display">);
+</mt:if>
+</mt:loop>
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+<mt:unless name="success">
+<mt:if name="one_db">
+  jQuery('#dbtype').val(<mt:var name="id">);
+</mt:if>
+</mt:unless>
+    function show_fields() {
+        jQuery('#params .field').hide();
+        var dbtype = jQuery('#dbtype').val();
+        jQuery('#more').hide();
+        if (dbtype) {
+            jQuery.each(database[dbtype], function() {
+               var id = '#'+this+'-field';
+               jQuery(id).show();
+               if (jQuery('#advanced_fields '+id).length) {
+                   jQuery('#more').show();
+               }
+            });
+            if (database[dbtype]) {
+                jQuery('#db_hint').hide();
+                jQuery('#goback').hide();
+                jQuery('#submit').show();
+            } else {
+                jQuery('#goback').show();
+                jQuery('#submit').hide();
+            }
+        }
+    }
+
+    jQuery('#dbtype').on('change', function() {
+        show_fields();
+    });
+    show_fields();
+
+    jQuery('#more').on('click', function(event) {
+        jQuery('#advanced_fields').show();
+        jQuery(this).remove();
+    });
+<mt:if name="connect_error">
+    jQuery('#connect_error').mtToggleField();
+</mt:if>
+</mt:setvarblock>
+
+<mt:include name="layout/chromeless.tmpl">
+<mt:var name="layout">

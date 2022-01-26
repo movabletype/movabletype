@@ -1,0 +1,420 @@
+<$mt:setvar name="screen_type" value="dialog-screen dialog-grant-role"$>
+<mt:setvarblock name="page_title"><mt:var name="dialog_title"></mt:setvarblock>
+
+<mt:Ignore>
+This dialog presents a list of roles for selection. The user may
+select one and only one role.
+
+If the role selected was a system role, then there is nothing further
+to do.
+
+Upon selecting a non-system role, the user clicks the "Next" button to
+then select one or more weblogs.
+
+possible paths:
+
+creating a new user association
+    list of users -> list of roles -> list of weblogs
+
+creating a new group association
+    list of groups -> list of roles -> list of weblogs
+
+creating a new association for a particular user
+    list of roles -> list of weblogs
+
+creating a new association for a particular group
+    list of roles -> list of weblogs
+
+To facilitate this, I need to create divs for each "page" of the dialog
+all but the first will be hidden. The "continue" button will toggle from
+one page to the following page.
+</mt:Ignore>
+
+<mt:setvarblock name="js_include" append="1">
+<script type="text/javascript" src="<mt:var name="static_uri">js/tc/client.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<mt:var name="static_uri">js/dialog.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var dialog;
+var panels;
+function dialog_closed(ok) {
+    if (ok) {
+        // fill out form and submit to create the association
+        var frm = document['grant'];
+        for (var i = 0; i < dialog.panels.length; i++) {
+            var panel = dialog.panels[i];
+            var fld = frm.elements[panel.name];
+            if (!fld) {
+                alert("cannot find field for " + panel.name);
+                continue;
+            }
+            var items = panel.selectionList.items();
+
+            var item_length = items.length;
+            for(var x = 0; x < item_length; x++){
+                var val = items[x];
+                var type = val.slice(0, val.indexOf('-'));
+                if(panel.name != type){
+                    var input_val = frm.elements[type].value;
+                    if(input_val) input_val += ',';
+                    input_val += val;
+                    frm.elements[type].value = input_val
+                }
+            }
+            var target_items =  items.filter(function(val){
+                var type = val.slice(0, val.indexOf('-'));
+                return( panel.name === type);
+            });
+            fld.value = target_items.join(',');
+        }
+        // commit!
+        frm.submit();
+    } else {
+        jQuery.fn.mtModal.close();
+    }
+}
+
+function returnRoleSelection(ok) {
+    if (ok) {
+        parent.jQuery('span.items').empty();
+
+        var panel = panels[dialog.currentPanel];
+        var items = panel.selectionList.items();
+        var ids = new Array();
+        for(var i = 0; i < items.length; i++) {
+            var key = items[i];
+            if (panel.selectionList.itemHash[key]) {
+                var id = key.split('-')[1];
+                var label = panel.selectionList.itemHash[key].label
+                ids.push(id);
+                parent.jQuery('span.items').append(
+                  '<span id="selected-role-' + id + '" class="badge badge-pill badge-default sticky-label selected-item mr-2" aria-label="Close">' + label + '&nbsp;<span aria-hidden="true" class="tag-pill remove clickable" style="cursor: pointer;">×</span>');
+            }
+        }
+        parent.jQuery('input#new_created_user_role').val( ids.join(",") );
+    }
+    jQuery.fn.mtModal.close();
+}
+
+
+function init() {
+    TC.TableSelect.prototype.click = function( evt ) {
+        evt = evt || event;
+        var element = evt.target || evt.srcElement;
+        this.shiftKey = evt.shiftKey;
+
+        // get tag name
+        var tagName = element.tagName ? element.tagName.toLowerCase() : null;
+
+        // handle checkboxes
+        if ( tagName == "input" &&
+            TC.hasClassName( element, "select" ) ) {
+            if ((element.type == "checkbox") || (element.type == "radio"))
+                var parent = TC.getParentByTagName( element, "tr" );
+                if (parent) this.setFocus( parent );
+                evt.preventDefault();
+                return this.select( element );
+        }
+
+        // handle rows
+        if ( !this.rowSelect && tagName != "td" ) return;
+        if ( ( tagName == 'a') || ( TC.getParentByTagName( element, "a" ) ) )
+            return;
+
+        var parent;
+        if ( ( tagName == "li" || tagName == "label" || tagName == "span" )) {
+            if(tagName == "li") {
+                parent = element;
+            } else {
+                if( TC.hasClassName( TC.getParentByTagName( element, "li" ), "child_obj") ) {
+                    parent = TC.getParentByTagName( element, "li" );
+                } else {
+                    parent = TC.getParentByTagName( element, "tr" );
+                }
+            }
+        } else {
+            parent = TC.getParentByTagName( element, "tr" );
+        }
+        while ( TC.hasClassName( parent, "slave" ) )
+            parent = this.getPreviousSibling( parent );
+
+        if ( parent ) {
+            this.setFocus( parent );
+            var elements = TC.getElementsByTagAndClassName( "input", "select", parent );
+            for ( var i = 0; i < elements.length; i++ ) {
+                element = elements[ i ];
+                if ( (element.type == "checkbox") || (element.type == "radio") ) {
+                    if ( element.disabled ) return;
+                    element.checked = !element.checked;
+                    evt.preventDefault();
+                    return this.select( element, parent );
+                }
+            }
+        }
+    };
+    dialog = new Dialog.MultiPanel("assoc");
+    panels = [];
+    var panel;<mt:loop name="panel_loop">
+
+    panel = new ListingPanel("<mt:var name="panel_type">");
+    <mt:if name="panel_type" eq="site">panel.listChanged = function(ts, row, checked) {
+        if (this.selectionList) {
+            var self = this;
+            if (checked){
+                if(jQuery(row).hasClass('child_obj')){
+                    var label = jQuery(row).parents('.has_child').find('.panel-label').text() + '/' + jQuery(row).find('.child-panel-label').text();
+                    self.selectionList.add(row.id, {label: label});
+                } else {
+                    self.selectionList.add(row.id);
+                }
+                if(jQuery(row).hasClass('has_child')){
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    var label = jQuery(row).find('.panel-label').text() + '/' + jQuery(this).find('.child-panel-label').text();
+                    self.selectionList.add(this.id, {label: label});
+                  });
+                }
+            } else {
+                this.selectionList.remove(row.id);
+                if(jQuery(row).hasClass('has_child')){
+                  var self = this;
+                  jQuery(row).find('.list-unstyled li').each(function(){
+                    self.selectionList.remove(this.id);
+                  });
+                }
+            }
+        } else {
+            var count = ts.selected().length;
+            if (this.nextButton) {
+                if (count == 0)
+                    TC.addClassName(this.nextButton, "disabled");
+                else
+                    TC.removeClassName(this.nextButton, "disabled");
+                this.nextButton.disabled = count == 0;
+            }
+            if (this.closeButton) {
+                if (count == 0)
+                    TC.addClassName(this.closeButton, "disabled");
+                else
+                    TC.removeClassName(this.closeButton, "disabled");
+                this.closeButton.disabled = count == 0;
+            }
+        }
+    };
+    if (panel.selectionList) {
+        panel.selectionList.remove = function(name) {
+            var self = this;
+            if(jQuery('#'+name).hasClass('has_child')){
+                jQuery('#'+name).find('.list-unstyled li').each(function(){
+                  self.remove.call(self, this.id);
+                });
+            }
+            if (name in this.itemHash) {
+                var pos;
+                for (pos = 0; pos < this.itemList.length; pos++) {
+                    if (this.itemList[pos] == name) {
+                        this.itemList.splice(pos, 1);
+                        this.changed(false, name, this.itemHash[name]);
+                        delete this.itemHash[name];
+                        this.render();
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    </mt:if>
+    panel.pager.setState(<mt:var name="pager_json">);
+    panels[panels.length] = panel;</mt:loop>
+    dialog.setPanels(panels);
+    var callback = function(index){
+        var new_panel = this.panels[this.currentPanel+index];
+        if(new_panel.name != 'author'){
+            jQuery('.select_assoc_type').hide();
+        } else {
+            jQuery('.select_assoc_type').show();
+        }
+    };
+    var next_event = dialog.nextPanel;
+    var prev_event = dialog.previousPanel;
+    dialog.nextPanel = function(){
+        callback.apply(this,[1]);
+        next_event.apply(this,arguments);
+    };
+    dialog.previousPanel = function(){
+        callback.apply(this,[-1]);
+        prev_event.apply(this,arguments);
+    };
+<mt:if name="role_selection">
+    dialog.open({}, returnRoleSelection);
+<mt:else>
+    dialog.open({}, dialog_closed);
+</mt:if>
+
+<mt:if name="has_group">
+    var panel = panels[dialog.currentPanel];
+    var datasource = panel.datasource;
+    datasource.type = null;
+
+    jQuery('.select_assoc_type').on('change', function(){
+        if (datasource.searching) return;
+
+        var doc = TC.getOwnerDocument(datasource.element);
+        var args = doc.location.search;
+        args = args.replace(/^\?/, '');
+        args = args.replace(/&?offset=\d+/, '');
+        args = args.replace(/&_type=\w+/, '');
+        args = args.replace(/&search=\w+/, '');
+        args = args.replace(/&link_filter=\d+/, '');
+        args = args.replace(/&json=\d+/, '');
+        args = args.replace(/&no_limit=\d+/, '');
+
+        var target = jQuery(this).val();
+        var search = jQuery('.search-input');
+        if(target == 'both' && search.val() == ''){
+            args += '&_type=user';
+            panel.searchField.value = "";
+            jQuery(panel.searchReset).hide();
+            history.pushState(args, '', CMSScriptURI + '?' + args);
+            datasource.navigate(0);
+
+            return;
+        }
+
+
+        datasource.searching = true;
+        if (datasource.pager)
+            datasource.pager.render();
+        if (datasource.pager2)
+            datasource.pager2.render();
+
+        if(search.val() != ''){
+            args += '&search=' + escape(search.val());
+        }
+        if(target == 'both'){
+            args += '&_type=user';
+        } else if(target == 'author'){
+            args += '&_type=author&link_filter=1';
+        }else if(target == 'group'){
+            args += '&_type=group&link_filter=1';
+        }
+        args += '&json=1&no_limit=1';
+
+        TC.Client.call({
+            'load': function(c,r) { datasource.searched(r); },
+            'error': function() { alert("Error during search."); datasource.searched(null); },
+            'method': 'POST',
+            'uri': ScriptURI,
+            'arguments': args
+        });
+
+        args = args.replace(/&search=\w+/, '');
+        history.pushState(args, '', CMSScriptURI + '?' + args);
+    });
+    if ( jQuery('#modal-search-author').length ) {
+      jQuery('#modal-search-author').prepend(jQuery('.select_assoc_type'));
+      jQuery('.select_assoc_type').trigger('change');
+    }
+    else {
+      jQuery('.select_assoc_type').hide();
+    }
+</mt:if>
+}
+
+TC.attachLoadEvent(init);
+/* ]]> */
+</script>
+</mt:setvarblock>
+
+<mt:setvarblock name="page_content">
+
+<form name="grant" id="grant" method="post" target="_top" action="<mt:var name="script_url">">
+    <input type="hidden" name="__mode" value="grant_role" />
+    <input type="hidden" name="magic_token" value="<mt:var name="magic_token" escape="html">" />
+    <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+    <mt:if name="blog_id"><input type="hidden" name="blog_id" value="<mt:var name="blog_id">" />
+    </mt:if><mt:if name="edit_author_id"><input type="hidden" name="author_id" value="<mt:var name="edit_author_id">" />
+    </mt:if><mt:if name="group_id"><input type="hidden" name="group_id" value="<mt:var name="group_id" escape="html">" />
+    </mt:if><mt:if name="role_id"><input type="hidden" name="role_id" value="<mt:var name="role_id" escape="html">" />
+    </mt:if><mt:loop name="panel_loop">
+    <input type="hidden" name="<mt:var name="panel_type">" value="" /></mt:loop>
+    <mt:if name="has_group"><input type="hidden" name="group" value="" /></mt:if>
+</form>
+
+<div class="modal-header">
+    <h4 class="mt-0 modal-title"><mt:var name="page_title"></h4>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close" data-mt-modal-close>
+      <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<mt:if name="missing_data">
+<div class="modal-body">
+    <mt:if name="missing_role">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No roles exist in this installation. [_1]Create a role</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=role');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_group">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No groups exist in this installation. [_1]Create a group</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=group');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_author">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No users exist in this installation. [_1]Create a user</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=author');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_site">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No sites exist in this installation. [_1]Create a site</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=website&amp;blog_id=0');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+    <mt:if name="missing_blog">
+        <mtapp:statusmsg
+            id="generic-info"
+            class="info"
+            can_close="0">
+            <__trans phrase="No blogs exist in this installation. [_1]Create a blog</a>" params="<a href="javascript:void(0)" onclick="jQuery.fn.mtModal.close('<mt:var name="script_full_url">?__mode=view&amp;_type=blog');" class="alert-link">">
+        </mtapp:statusmsg>
+    </mt:if>
+</div>
+<div class="modal-footer actions-bar">
+    <form onsubmit="return false" onclick="window.focus();">
+        <button
+           type="submit"
+           accesskey="x"
+           class="cancel action primary button btn btn-primary"
+           title="<__trans phrase="Close (x)">"
+           ><__trans phrase="Close"></button>
+    </form>
+</div>
+<mt:else>
+    <mt:if name="has_group">
+      <select class="custom-select form-control select_assoc_type mr-3">
+        <option value="both" selected><__trans phrase="all"></option>
+        <option value="group"><__trans phrase="Groups"></option>
+        <option value="author"><__trans phrase="Users"></option>
+      </select>
+    </mt:if>
+
+    <mt:loop name="panel_loop">
+      <mt:include name="include/listing_panel.tmpl" use_page_content="1">
+    </mt:loop>
+</mt:if>
+</mt:setvarblock>
+
+<mt:include name="layout/modal.tmpl">
+<mt:var name="layout">
