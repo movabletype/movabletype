@@ -410,7 +410,7 @@ sub as_html {
             my $link
                 = $thumb
                 ? sprintf(
-                '<img src="%s" %s alt="%s" %s />',
+                '<img src="%s" %s alt="%s" %s loading="lazy" decoding="async" />',
                 MT::Util::encode_html( $thumb->url ),   $dimensions,
                 MT::Util::encode_html( $asset->label ), $wrap_style
                 )
@@ -436,7 +436,7 @@ sub as_html {
         else {
             if ( $param->{thumb} ) {
                 $text = sprintf(
-                    '<a href="%s"><img alt="%s" src="%s" %s %s /></a>',
+                    '<a href="%s"><img alt="%s" src="%s" %s %s loading="lazy" decoding="async" /></a>',
                     MT::Util::encode_html( $asset->url ),
                     MT::Util::encode_html( $asset->label ),
                     MT::Util::encode_html( $thumb->url ),
@@ -446,7 +446,7 @@ sub as_html {
             }
             else {
                 $text = sprintf(
-                    '<img alt="%s" src="%s" %s %s />',
+                    '<img alt="%s" src="%s" %s %s loading="lazy" decoding="async" />',
                     MT::Util::encode_html( $asset->label ),
                     MT::Util::encode_html( $asset->url ),
                     $dimensions, $wrap_style,

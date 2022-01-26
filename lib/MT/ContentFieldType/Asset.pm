@@ -607,14 +607,14 @@ sub preview_handler {
             if ($url) {
                 $contents .= qq{
                         <li>
-                            <img class="img-thumbnail p-0" width="60" height="60" src="$url">
+                            <img class="img-thumbnail p-0" width="60" height="60" src="$url" loading="lazy" decoding="async">
                             <span>$encoded_label (ID:$id)</span>
                         </li>
                     };
             }
             else {
                 my $svg
-                    = qq{<img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">};
+                    = qq{<img src="${static_uri}images/file-$svg_class.svg" width="60" height="60" loading="lazy" decoding="async">};
                 $contents .= qq{
                     <li>
                         $svg
@@ -626,7 +626,7 @@ sub preview_handler {
         else {
             my $svg = qq{
               <div class="mt-user">
-                <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60">
+                <img src="${static_uri}images/file-$svg_class.svg" width="60" height="60" loading="lazy" decoding="async">
                 <div class="mt-user__badge--warning">
                   <svg class="mt-icon--inverse mt-icon--sm">
                     <title>Warning</title>
